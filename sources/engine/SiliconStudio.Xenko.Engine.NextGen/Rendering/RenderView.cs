@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -37,6 +38,11 @@ namespace SiliconStudio.Xenko.Rendering
         public List<RenderViewFeature> Features = new List<RenderViewFeature>();
 
         public List<RenderViewStage> RenderStages = new List<RenderViewStage>();
+
+        /// <summary>
+        /// The camera for this view. 
+        /// </summary>
+        public CameraComponent Camera;
 
         /// <summary>
         /// The view matrix for this view.

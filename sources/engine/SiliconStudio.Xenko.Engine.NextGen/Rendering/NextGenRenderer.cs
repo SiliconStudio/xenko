@@ -24,6 +24,142 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Render stages
         internal ForwardLightingRenderFeature forwardLightingRenderFeature;
+
+        public RenderContext RenderContext;
+
+        public void Draw(RenderDrawContext context)
+        {
+            // Update current camera to render view
+            foreach (var mainRenderView in Views)
+            {
+                if (mainRenderView.GetType() == typeof(RenderView))
+                {
+                    UpdateCameraToRenderView(context, mainRenderView);
+                }
+            }
+
+            // Extract data from the scene
+            Extract(context.RenderContext);
+
+            // Perform most of computations
+            Prepare();
+        }
+
+        private void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
+        {
+            if (renderView.Camera == null)
+                return;
+
+            // Setup viewport size
+            var currentViewport = context.CommandList.Viewport;
+            var aspectRatio = currentViewport.AspectRatio;
+
+            // Update the aspect ratio
+            if (renderView.Camera.UseCustomAspectRatio)
+            {
+                aspectRatio = renderView.Camera.AspectRatio;
+            }
+
+            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+            renderView.Camera.Update(aspectRatio);
+
+            renderView.View = renderView.Camera.ViewMatrix;
+            renderView.Projection = renderView.Camera.ProjectionMatrix;
+        }
+
+        private void Prepare()
+        {
+            // Sync point: after extract, before prepare (game simulation could resume now)
+
+            // Generate and execute prepare effect jobs
+            foreach (var renderFeature in RenderFeatures)
+            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.PrepareEffectPermutations();
+            }
+
+            // Generate and execute prepare jobs
+            foreach (var renderFeature in RenderFeatures)
+            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.Prepare(RenderContext);
+            }
+        }
+
+        private void Extract(RenderContext context)
+        {
+            // Reset render context data
+            Reset();
+
+            // Create object nodes
+            foreach (var renderObject in RenderObjects)
+            {
+                var renderFeature = renderObject.RenderFeature;
+                renderFeature.GetOrCreateObjectNode(renderObject);
+            }
+
+            // Ensure size of data arrays per objects
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.PrepareDataArrays();
+            }
+
+            // Generate and execute extract jobs
+            foreach (var renderFeature in RenderFeatures)
+            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.Extract();
+            }
+
+            // Reset view specific render context data
+            ResetViews();
+
+            // Collect objects to render (later we will also cull/filter them)
+            foreach (var view in Views)
+            {
+                // TODO: Culling & filtering
+                foreach (var renderObject in RenderObjects)
+                {
+                    var viewFeature = view.Features[renderObject.RenderFeature.Index];
+
+                    var renderFeature = renderObject.RenderFeature;
+
+                    var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
+                    viewFeature.ViewObjectNodes.Add(renderViewNode);
+
+                    // Collect object
+                    // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
+                    // TODO: For now, we build list and then copy. Another way would be to count and then fill (might be worse, need to check)
+                    var activeRenderStages = renderObject.ActiveRenderStages;
+                    foreach (var renderViewStage in view.RenderStages)
+                    {
+                        // Check if this RenderObject wants to be rendered for this render stage
+                        var renderStageIndex = renderViewStage.RenderStage.Index;
+                        if (!activeRenderStages[renderStageIndex].Active)
+                            continue;
+
+                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
+
+                        // Note: Used mostly during updating
+                        viewFeature.RenderNodes.Add(renderNode);
+
+                        // Note: Used mostly during rendering
+                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode));
+                    }
+                }
+
+                // TODO: Sort RenderStage.RenderNodes
+            }
+
+            // Ensure size of all other data arrays
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.PrepareDataArrays();
+            }
+        }
     }
 
     [DataContract("NextGenRenderer")]
@@ -42,8 +178,6 @@ namespace SiliconStudio.Xenko.Rendering
         public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = true;
-
-        private double time;
 
         protected override void InitializeCore()
         {
@@ -161,18 +295,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            // Move viewpoint
-            // TODO: Use camera system and Renderer
-            time += EffectSystem.Game.DrawTime.Elapsed.TotalSeconds;
-
-            // Update current camera to render view
-            UpdateCameraToRenderView(context, context.RenderContext.GetCurrentCamera(), mainRenderView);
-
-            // Extract data from the scene
-            Extract(context.RenderContext);
-
-            // Perform most of computations
-            Prepare();
+            // TODO GRAPHICS REFACTOR: Should go in a per-renderer pre-extract phase
+            mainRenderView.Camera = context.RenderContext.GetCurrentCamera();
 
             var currentViewport = context.CommandList.Viewport;
 
@@ -269,121 +393,6 @@ namespace SiliconStudio.Xenko.Rendering
         public static Int4 PickingResult; 
         private ImageReadback<Int4> pickingReadback;
         private Texture pickingTexture;
-
-        private void UpdateCameraToRenderView(RenderDrawContext context, CameraComponent camera, RenderView renderView)
-        {
-            // Setup viewport size
-            var currentViewport = context.CommandList.Viewport;
-            var aspectRatio = currentViewport.AspectRatio;
-
-            // Update the aspect ratio
-            if (camera.UseCustomAspectRatio)
-            {
-                aspectRatio = camera.AspectRatio;
-            }
-
-            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-            camera.Update(aspectRatio);
-
-            renderView.View = camera.ViewMatrix;
-            renderView.Projection = camera.ProjectionMatrix;
-        }
-
-        private void Extract(RenderContext context)
-        {
-            var sceneInstance = SceneInstance.GetCurrent(context);
-            
-            // Reset render context data
-            RenderSystem.Reset();
-
-            // Create object nodes
-            foreach (var renderObject in RenderSystem.RenderObjects)
-            {
-                var renderFeature = renderObject.RenderFeature;
-                renderFeature.GetOrCreateObjectNode(renderObject);
-            }
-
-            // Ensure size of data arrays per objects
-            foreach (var renderFeature in RenderSystem.RenderFeatures)
-            {
-                renderFeature.PrepareDataArrays();
-            }
-
-            // Generate and execute extract jobs
-            foreach (var renderFeature in RenderSystem.RenderFeatures)
-                // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.Extract();
-            }
-
-            // Reset view specific render context data
-            RenderSystem.ResetViews();
-
-            // Collect objects to render (later we will also cull/filter them)
-            foreach (var view in RenderSystem.Views)
-            {
-                // TODO: Culling & filtering
-                foreach (var renderObject in RenderSystem.RenderObjects)
-                {
-                    var viewFeature = view.Features[renderObject.RenderFeature.Index];
-
-                    var renderFeature = renderObject.RenderFeature;
-
-                    var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
-                    viewFeature.ViewObjectNodes.Add(renderViewNode);
-
-                    // Collect object
-                    // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
-                    // TODO: For now, we build list and then copy. Another way would be to count and then fill (might be worse, need to check)
-                    var activeRenderStages = renderObject.ActiveRenderStages;
-                    foreach (var renderViewStage in view.RenderStages)
-                    {
-                        // Check if this RenderObject wants to be rendered for this render stage
-                        var renderStageIndex = renderViewStage.RenderStage.Index;
-                        if (!activeRenderStages[renderStageIndex].Active)
-                            continue;
-
-                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
-
-                        // Note: Used mostly during updating
-                        viewFeature.RenderNodes.Add(renderNode);
-
-                        // Note: Used mostly during rendering
-                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode));
-                    }
-                }
-
-                // TODO: Sort RenderStage.RenderNodes
-            }
-
-            // Ensure size of all other data arrays
-            foreach (var renderFeature in RenderSystem.RenderFeatures)
-            {
-                renderFeature.PrepareDataArrays();
-            }
-        }
-
-        private void Prepare()
-        {
-            // Sync point: after extract, before prepare (game simulation could resume now)
-
-            // Generate and execute prepare effect jobs
-            foreach (var renderFeature in RenderSystem.RenderFeatures)
-                // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.PrepareEffectPermutations();
-            }
-
-            // Generate and execute prepare jobs
-            foreach (var renderFeature in RenderSystem.RenderFeatures)
-                // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.Prepare(RenderContext);
-            }
-        }
 
         public static void Draw(NextGenRenderSystem renderSystem, RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
         {
