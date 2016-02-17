@@ -145,7 +145,10 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            Items.Items.CopyTo(array, arrayIndex);
+            foreach (var item in Items)
+            {
+                array[arrayIndex++] = item;
+            }
         }
 
         /// <inheritdoc/>
@@ -155,9 +158,12 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        void ICollection.CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int arrayIndex)
         {
-            Items.Items.CopyTo(array, index);
+            foreach (var item in Items)
+            {
+                ((IList)array)[arrayIndex++] = item;
+            }
         }
         
         /// <inheritdoc/>
