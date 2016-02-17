@@ -48,12 +48,14 @@
     <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\MenuItemCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\MouseMoveCaptureBehaviorBase.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
     <Compile Include="Behaviors\OnMouseEventBehavior.cs" />
     <Compile Include="Behaviors\MultiOverrideCursorBehavior.cs" />
     <Compile Include="Behaviors\OverrideCursorBehavior.cs" />
+    <Compile Include="Behaviors\SelectionRectangleBehavior.cs" />
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
@@ -108,7 +110,6 @@
     <Compile Include="Commands\ICommandBase.cs" />
     <Compile Include="Behaviors\DropCommandParameters.cs" />
     <Compile Include="Behaviors\GridViewAutoSizeBehavior.cs" />
-    <Compile Include="Behaviors\ListBoxRectangleSelectionBehavior.cs" />
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />
