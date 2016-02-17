@@ -194,6 +194,7 @@ namespace SiliconStudio.AssemblyProcessor
                     processors.Add(new ModuleInitializerProcessor());
                 }
 
+                processors.Add(new InitLocalsProcessor());
                 processors.Add(new OpenSourceSignProcessor());
 
                 // Check if pdb was actually read

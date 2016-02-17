@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Graphics
             UnbindResources(graphicsDeviceDefault);
         }
 
-        internal EffectParameterResourceBinding GetParameterFastUpdater<T>(ParameterKey<T> value)
+        public EffectParameterResourceBinding GetParameterFastUpdater<T>(ParameterKey<T> value)
         {
             for (int i = 0; i < resourceBindings.Length; i++)
             {

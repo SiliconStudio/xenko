@@ -18,6 +18,11 @@ namespace SiliconStudio.Xenko.Input
         [DllImport(Core.NativeLibrary.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool IsXInputDevice(ref Guid guid);
 
+        static InputManagerBase()
+        {
+            Core.NativeLibrary.PreloadLibrary(Core.NativeLibrary.LibraryName);
+        }
+
         /// <summary>
         /// Internal GamePad factory handling DirectInput gamepads.
         /// </summary>
