@@ -68,11 +68,14 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="fontFamily">The font family.</param>
         /// <param name="fontSize">The font size.</param>
         /// <param name="fontWeight">The font weight.</param>
+        /// <param name="hAlign">The horizontal alignment.</param>
+        /// <param name="vAlign">The vertical alignment.</param>
         /// <returns>The size of the text.</returns>
         /// <example>Subscript: H_{2}O
         /// Superscript: E=mc^{2}
         /// Both: A^{2}_{i,j}</example>
-        public static void DrawMathText(this CanvasRenderer renderer, Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        public static void DrawMathText(this CanvasRenderer renderer, Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -85,7 +88,7 @@ namespace SiliconStudio.Presentation.Extensions
             }
             else
             {
-                renderer.DrawText(point, color, text, fontFamily, fontSize, fontWeight);
+                renderer.DrawText(point, color, text, fontFamily, fontSize, fontWeight, hAlign, vAlign);
             }
         }
 
