@@ -55,6 +55,7 @@
     <Compile Include="Behaviors\OnMouseEventBehavior.cs" />
     <Compile Include="Behaviors\MultiOverrideCursorBehavior.cs" />
     <Compile Include="Behaviors\OverrideCursorBehavior.cs" />
+    <Compile Include="Behaviors\SelectionRectangleBehavior.cs" />
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
