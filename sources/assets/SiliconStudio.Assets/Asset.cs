@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Microsoft.Build.Framework.XamlTypes;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 
@@ -82,17 +83,27 @@ namespace SiliconStudio.Assets
         /// Gets or sets the base.
         /// </summary>
         /// <value>The base.</value>
-        [DataMember("~Base"), DefaultValue(null)]
+        [DataMember(BaseProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         public AssetBase Base { get; set; }
+
+        /// <summary>
+        /// The YAML serialized name of the <see cref="Base"/> property.
+        /// </summary>
+        public const string BaseProperty = "~" + nameof(Base);
 
         /// <summary>
         /// Gets or sets the base for part assets.
         /// </summary>
         /// <value>The part assets.</value>
-        [DataMember("~BaseParts"), DefaultValue(null)]
+        [DataMember(BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         public List<AssetBase> BaseParts { get; set; }
+
+        /// <summary>
+        /// The YAML serialized name of the <see cref="BaseParts"/> property.
+        /// </summary>
+        public const string BasePartsProperty = "~" + nameof(BaseParts);
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -123,12 +134,8 @@ namespace SiliconStudio.Assets
         {
             if (location == null) throw new ArgumentNullException(nameof(location));
 
-            // Clone this asset
+            // Clone this asset to make the base
             var assetBase = (Asset)AssetCloner.Clone(this);
-
-            // Remove the base
-            assetBase.Base = null;
-            assetBase.BaseParts = null;
 
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
             var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
