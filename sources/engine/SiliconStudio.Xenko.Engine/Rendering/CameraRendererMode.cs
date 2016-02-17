@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering
         // TODO: Where should we put this key?
         public static readonly PropertyKey<EntityComponentRendererTypeCollection> RendererTypesKey = new PropertyKey<EntityComponentRendererTypeCollection>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
 
-        private readonly Dictionary<Type, IEntityComponentRenderer> componentTypeToRenderer = new Dictionary<Type, IEntityComponentRenderer>();
+        private readonly Dictionary<TypeInfo, IEntityComponentRenderer> componentTypeToRenderer = new Dictionary<TypeInfo, IEntityComponentRenderer>();
         private readonly List<EntityComponentRendererType> sortedRendererTypes;
         private readonly EntityComponentRendererBatch batchRenderer;
 
@@ -33,9 +33,9 @@ namespace SiliconStudio.Xenko.Rendering
         {
             sortedRendererTypes = new List<EntityComponentRendererType>();
             batchRenderer = new EntityComponentRendererBatch();
-            RendererOverrides = new Dictionary<Type, IEntityComponentRenderer>();
-            RenderComponentTypes = new HashSet<Type>();
-            SkipComponentTypes = new HashSet<Type>();
+            RendererOverrides = new Dictionary<TypeInfo, IEntityComponentRenderer>();
+            RenderComponentTypes = new HashSet<TypeInfo>();
+            SkipComponentTypes = new HashSet<TypeInfo>();
         }
 
         /// <summary>
@@ -51,21 +51,21 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <value>The renderer overrides.</value>
         [DataMemberIgnore]
-        public Dictionary<Type, IEntityComponentRenderer> RendererOverrides { get; private set; }
+        public Dictionary<TypeInfo, IEntityComponentRenderer> RendererOverrides { get; private set; }
 
         /// <summary>
         /// Gets the filter on the types to render.
         /// </summary>
         /// <value>The filter renderer types.</value>
         [DataMemberIgnore]
-        public HashSet<Type> RenderComponentTypes { get; private set; }
+        public HashSet<TypeInfo> RenderComponentTypes { get; private set; }
 
         /// <summary>
         /// Gets the filter on the types to skip.
         /// </summary>
         /// <value>The filter renderer types.</value>
         [DataMemberIgnore]
-        public HashSet<Type> SkipComponentTypes { get; private set; }
+        public HashSet<TypeInfo> SkipComponentTypes { get; private set; }
 
         [DataMemberIgnore]
         public EntityComponentRendererBatch Renderers

@@ -9,16 +9,22 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// Identifies a camera slotIndex in a scene composition.
     /// </summary>
     [DataContract("SceneCameraSlotIndex")]
-    public struct SceneCameraSlotIndex
+    public class SceneCameraSlotIndex
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneCameraSlotIndex"/> struct.
+        /// Initializes a new instance of the <see cref="SceneCameraSlotIndex"/> class.
         /// </summary>
         /// <param name="index">The index.</param>
         public SceneCameraSlotIndex(int index)
-            : this()
         {
             Index = index;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneCameraSlotIndex"/> class.
+        /// </summary>
+        public SceneCameraSlotIndex()
+        {
         }
 
         /// <summary>
@@ -51,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public override string ToString()
         {
-            return string.Format("Cameras[{0}]", Index);
+            return $"Cameras[{Index}]";
         }
     }
 }

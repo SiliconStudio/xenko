@@ -13,24 +13,30 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static readonly string ExeName = Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        public static void Main(string[] args)
+        public int Run(string[] args, TextWriter logger = null)
         {
+
+            if (logger == null)
+            {
+                logger = Console.Out;
+            }
+
             bool showHelp;
             string outputFilePath;
 
             OptionSet p;
             List<string> inputFiles;
-            var app = CreateAssemblyProcessorApp(args, out p, out showHelp, out outputFilePath, out inputFiles);
+            var app = CreateAssemblyProcessorApp(args, logger, out p, out showHelp, out outputFilePath, out inputFiles);
             if (showHelp)
             {
-                p.WriteOptionDescriptions(Console.Out);
-                return;
+                p.WriteOptionDescriptions(logger);
+                return 1;
             }
 
             if (inputFiles.Count != 1)
             {
-                p.WriteOptionDescriptions(Console.Out);
-                ExitWithError("This tool requires one input file.");
+                p.WriteOptionDescriptions(logger);
+                return ExitWithError("This tool requires one input file.", logger);
             }
 
             var inputFile = inputFiles[0];
@@ -53,25 +59,38 @@ namespace SiliconStudio.AssemblyProcessor
 
             if (!app.Run(inputFile, outputFilePath))
             {
-                ExitWithError();
+                return ExitWithError("Unexpected error", logger);
             }
+
+            return 0;
         }
 
-        public static AssemblyProcessorApp CreateAssemblyProcessorApp(string[] args)
+
+        public static int Main(string[] args)
         {
+            var program = new AssemblyProcessorProgram();
+            return program.Run(args);
+        }
+
+        public static AssemblyProcessorApp CreateAssemblyProcessorApp(string[] args, TextWriter logger = null)
+        {
+            logger = logger ?? Console.Out;
+
             OptionSet p;
             bool showHelp;
             string outputFilePath;
             List<String> inputFiles;
-            return CreateAssemblyProcessorApp(args, out p, out showHelp, out outputFilePath, out inputFiles);
+            return CreateAssemblyProcessorApp(args, logger, out p, out showHelp, out outputFilePath, out inputFiles);
         }
 
-        public static AssemblyProcessorApp CreateAssemblyProcessorApp(string[] args, out OptionSet p, out bool showHelp, out string outputFilePath, out List<string> inputFiles)
+        public static AssemblyProcessorApp CreateAssemblyProcessorApp(string[] args, TextWriter logger, out OptionSet p, out bool showHelp, out string outputFilePath, out List<string> inputFiles)
         {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
             bool localShowHelp = false;
             string localOutputFilePath = null;
 
-            var app = new AssemblyProcessorApp();
+            var app = new AssemblyProcessorApp(logger);
             p = new OptionSet()
             {
                 "Copyright (C) 2011-2012 Silicon Studio Corporation. All Rights Reserved",
@@ -103,6 +122,7 @@ namespace SiliconStudio.AssemblyProcessor
                 { "add-reference=", "References to explicitely add", v => app.ReferencesToAdd.Add(v) },
                 { "Werror", "Promote warnings to errors", v => app.TreatWarningsAsErrors = true },
                 { "delete-output-on-error", "Delete output file if an error happened", v => app.DeleteOutputOnError = true },
+                { "keep-original", "Keep copy of the original assembly", v => app.KeepOriginal = true },
             };
 
             inputFiles = p.Parse(args);
@@ -111,11 +131,12 @@ namespace SiliconStudio.AssemblyProcessor
             return app;
         }
 
-        private static void ExitWithError(string message = null)
+        private int ExitWithError(string message, TextWriter logger)
         {
+            logger = logger ?? Console.Out;
             if (message != null)
-                Console.WriteLine(message);
-            Environment.Exit(1);
+                logger.WriteLine(message);
+            return 1;
         }
     }
 }

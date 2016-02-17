@@ -122,7 +122,11 @@ namespace SiliconStudio.Xenko.Engine.Tests
             DumpGC($"End - Elapsed {stepTime}ms ");
             totalTime += stepTime;
 
-            Assert.True(totalTime < 3000, "This test should run in less than 3000ms");
+            // Only perform this assert on Windows
+            if (Platform.Type == PlatformType.Windows)
+            {
+                Assert.True(totalTime < 3000, "This test should run in less than 3000ms");
+            }
 
             Console.WriteLine($"Total Time: {totalTime}ms");
         }

@@ -33,7 +33,6 @@
     <Compile Include="Commands\SimpleNodeCommandActionItem.cs" />
     <Compile Include="Commands\SyncNodeCommand.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
-    <Compile Include="Contents\OverridableMemberContent.cs" />
     <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
@@ -45,6 +44,7 @@
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
+    <Compile Include="NodeFactoryId.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
     <Compile Include="ModelConsistencyCheckVisitor.cs" />
     <Compile Include="GraphNodePath.cs" />

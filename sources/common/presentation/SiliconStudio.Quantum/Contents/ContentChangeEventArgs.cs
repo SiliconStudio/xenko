@@ -4,6 +4,7 @@ namespace SiliconStudio.Quantum.Contents
 {
     public enum ContentChangeType
     {
+        None,
         ValueChange,
         CollectionAdd,
         CollectionRemove,

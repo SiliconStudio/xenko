@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -90,6 +93,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The collider shape.
         /// </value>
+        [DataMemberIgnore]
         public override ColliderShape ColliderShape
         {
             get
@@ -490,6 +494,14 @@ namespace SiliconStudio.Xenko.Physics
         public void ApplyTorqueImpulse(Vector3 torque)
         {
             InternalRigidBody.ApplyTorqueImpulse(torque);
+        }
+
+        /// <summary>
+        /// Clears all forces being applied to this rigidbody
+        /// </summary>
+        public void ClearForces()
+        {
+            InternalRigidBody.ClearForces();
         }
 
         /// <summary>

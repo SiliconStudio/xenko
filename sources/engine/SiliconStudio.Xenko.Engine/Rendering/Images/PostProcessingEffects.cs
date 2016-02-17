@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>The camera.</value>
         /// <userdoc>Specifies the camera to use for the sequence of post-effects</userdoc>
         [DataMember(5)]
-        public SceneCameraSlotIndex Camera { get; set; }
+        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
         /// <summary>
         /// Gets the depth of field effect.

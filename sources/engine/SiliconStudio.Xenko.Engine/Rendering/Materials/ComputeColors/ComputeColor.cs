@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
@@ -49,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             return "Color";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
 
