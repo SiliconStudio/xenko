@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The camera.</value>
         /// <userdoc>The camera to use to render the scene.</userdoc>
         [DataMember(20)]
-        public SceneCameraSlotIndex Camera { get; set; }
+        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
         /// <summary>
         /// Gets or sets the culling mask.

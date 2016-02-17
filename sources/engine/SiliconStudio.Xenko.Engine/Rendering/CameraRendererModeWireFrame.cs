@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
-
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -32,8 +32,8 @@ namespace SiliconStudio.Xenko.Rendering
             ModelEffect = WireFrameEffect;
 
             // Render only CameraComponent and ModelComponent
-            RenderComponentTypes.Add(typeof(CameraComponent));
-            RenderComponentTypes.Add(typeof(ModelComponent));
+            RenderComponentTypes.Add(typeof(CameraComponent).GetTypeInfo());
+            RenderComponentTypes.Add(typeof(ModelComponent).GetTypeInfo());
 
             // TODO GRAPHICS REFACTOR
             //modelComponentAndPickingRenderer = new ModelComponentAndPickingRenderer();
