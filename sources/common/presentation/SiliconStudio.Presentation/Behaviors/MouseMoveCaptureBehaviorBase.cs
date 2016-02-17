@@ -33,7 +33,7 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             AssociatedObject.MouseDown += MouseDown;
             AssociatedObject.MouseMove += MouseMove;
-            AssociatedObject.MouseUp += MouseUp;
+            AssociatedObject.PreviewMouseUp += MouseUp;
             AssociatedObject.LostMouseCapture += OnLostMouseCapture;
         }
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             AssociatedObject.MouseDown -= MouseDown;
             AssociatedObject.MouseMove -= MouseMove;
-            AssociatedObject.MouseUp -= MouseUp;
+            AssociatedObject.PreviewMouseUp -= MouseUp;
             AssociatedObject.LostMouseCapture -= OnLostMouseCapture;
         }
 
