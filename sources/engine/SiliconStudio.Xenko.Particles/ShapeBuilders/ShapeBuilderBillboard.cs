@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var lifeField = sorter.GetField(ParticleFields.Life);
             var sizeField = sorter.GetField(ParticleFields.Size);
             var angleField = sorter.GetField(ParticleFields.Angle);
-            var hasAngle = angleField.IsValid();
+            var hasAngle = angleField.IsValid() || (SamplerRotation != null);
 
 
             // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
