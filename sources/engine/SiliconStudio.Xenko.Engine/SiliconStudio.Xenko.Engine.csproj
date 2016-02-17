@@ -3,6 +3,9 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>TRACE;FRAMEWORK_SHADER_USE_SHARPDX;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45;FRAMEWORK_SHADER_USE_SHARPDX;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11;SILICONSTUDIO_XENKO_EFFECT_COMPILER</DefineConstants>
+  </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -1169,7 +1172,7 @@
     <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs" />
     <Compile Include="Rendering\Materials\MaterialStreamType.cs" />
     <Compile Include="Rendering\Materials\MaterialUtility.cs" />
-    <Compile Include="Rendering\Materials\ShaderGeneratorContextBase.cs" />
+    <Compile Include="Rendering\Materials\ShaderGeneratorContext.cs" />
     <Compile Include="Rendering\Materials\Shaders\ComputeColorMaterialAlphaBlend.cs">
       <DependentUpon>ComputeColorMaterialAlphaBlend.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

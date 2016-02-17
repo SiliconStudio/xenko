@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials
@@ -23,6 +23,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Generates the shader source equivalent for this node
         /// </summary>
         /// <returns>ShaderSource.</returns>
-        ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+        ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys);
     }
 }
