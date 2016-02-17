@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
 
-        public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
+        public readonly Dictionary<LightComponent, ILightShadowMapRenderer> LightComponentsWithShadows;
 
         public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowmapRenderStage)
         {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
-            LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
+            LightComponentsWithShadows = new Dictionary<LightComponent, ILightShadowMapRenderer>(16);
 
             Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
@@ -78,39 +78,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return shadowMapRenderer;
         }
 
-        public void Extract(RenderContext context, List<LightComponent> visibleLights)
+        public void Extract(Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
         {
-            // We must be running inside the context of 
-            var sceneInstance = SceneInstance.GetCurrent(context);
-            if (sceneInstance == null)
-            {
-                throw new InvalidOperationException("ShadowMapRenderer expects to be used inside the context of a SceneInstance.Draw()");
-            }
-
-            // TODO GRAPHICS REFACTOR use current view/iterate all views instead of getting camera
-
-            // Gets the current camera
-            Camera = context.GetCurrentCamera();
-            if (Camera == null)
-            {
-                return;
-            }
+            // Cleanup previous shadow render views
+            foreach (var shadowRenderView in shadowRenderViews)
+                RenderSystem.Views.Remove(shadowRenderView);
+            shadowRenderViews.Clear();
 
             // Clear currently associated shadows
             shadowMapTextures.Clear();
             LightComponentsWithShadows.Clear();
-
-            // Collect all required shadow maps
-            CollectShadowMaps(visibleLights);
-
-            // No shadow maps to render
-            if (shadowMapTextures.Count == 0)
-            {
-                return;
-            }
-
-            // Assign rectangles to shadow maps
-            AssignRectangles();
 
             // Reset the state of renderers
             foreach (var rendererKeyPairs in Renderers)
@@ -119,32 +96,48 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 renderer.Reset();
             }
 
-            // Cleanup previous shadow render views
-            foreach (var renderView in shadowRenderViews)
-                RenderSystem.Views.Remove(renderView);
-            shadowRenderViews.Clear();
-
-            // TODO GRAPHICS REFACTOR create ShadowMapRenderViews for each main render view.
-            // ShadowMapRenderViews needs to hold the LightShadmapTexture.ShaderData calculated in Extract
-
-            // Collect shadow render views
-            foreach (var shadowMapTexture in LightComponentsWithShadows)
+            foreach (var renderViewData in renderViewLightDatas)
             {
-                ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).Extract(RenderSystem.RenderContextOld, this, shadowMapTexture.Value);
-                for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.Value.CascadeCount; cascadeIndex++)
+                // Gets the current camera
+                Camera = renderViewData.Key.Camera;
+
+                if (Camera == null)
                 {
-                    // TODO GRAPHICS REFACTOR reuse views
-                    var shadowRenderView = new ShadowMapRenderView
+                    continue;
+                }
+
+                // Collect all required shadow maps
+                CollectShadowMaps(renderViewData.Key, renderViewData.Value.VisibleLightsWithShadows);
+
+                // No shadow maps to render
+                if (shadowMapTextures.Count == 0)
+                {
+                    continue;
+                }
+
+                // Assign rectangles to shadow maps
+                AssignRectangles();
+
+                // Collect shadow render views
+                foreach (var shadowMapTexture in shadowMapTextures)
+                {
+                    shadowMapTexture.Renderer.Extract(RenderSystem.RenderContextOld, this, shadowMapTexture);
+                    for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
-                        RenderStages = { shadowmapRenderStage },
-                        ShadowMapTexture = shadowMapTexture.Value,
-                        Rectangle = shadowMapTexture.Value.GetRectangle(cascadeIndex)
-                    };
+                        // TODO GRAPHICS REFACTOR reuse views
+                        var shadowRenderView = new ShadowMapRenderView
+                        {
+                            RenderStages = { shadowmapRenderStage },
+                            RenderView = renderViewData.Key,
+                            ShadowMapTexture = shadowMapTexture,
+                            Rectangle = shadowMapTexture.GetRectangle(cascadeIndex)
+                        };
 
-                    ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).GetCascadeViewParameters(shadowMapTexture.Value, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                        shadowMapTexture.Renderer.GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
 
-                    shadowRenderViews.Add(shadowRenderView);
-                    RenderSystem.Views.Add(shadowRenderView);
+                        shadowRenderViews.Add(shadowRenderView);
+                        RenderSystem.Views.Add(shadowRenderView);
+                    }
                 }
             }
         }
@@ -208,16 +201,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
 
             // Make sure the atlas cleared (will be clear just once)
-            currentAtlas.MarkClearNeeded();
             lightShadowMapTexture.TextureId = (byte)currentAtlas.Id;
             lightShadowMapTexture.Atlas = currentAtlas;
         }
 
-        private void CollectShadowMaps(List<LightComponent> visibleLights)
+        private void CollectShadowMaps(RenderView renderView, List<LightComponent> visibleLights)
         {
-            // TODO GRAPHICS REFACTOR Get viewport from RenderFrame of this render view
-            var sceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
-            var camera = RenderSystem.RenderContextOld.GetCurrentCamera();
+            // TODO GRAPHICS REFACTOR Only lights of current scene!
+
+            var sceneCameraRenderer = renderView.SceneCameraRenderer;
             var viewport = sceneCameraRenderer.ComputedViewport;
 
             foreach (var lightComponent in visibleLights)
@@ -246,7 +238,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var position = lightComponent.Position;
 
                 // Compute the coverage of this light on the screen
-                var size = light.ComputeScreenCoverage(camera, position, direction, viewport.Width, viewport.Height);
+                var size = light.ComputeScreenCoverage(renderView.Camera, position, direction, viewport.Width, viewport.Height);
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Size);
@@ -263,7 +255,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Get or allocate  a ShadowMapTexture
                 var shadowMapTexture = shadowMapTextures.Add();
                 shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
-                LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
+
+                LightComponentsWithShadows.Add(lightComponent, renderer);
             }
         }
 

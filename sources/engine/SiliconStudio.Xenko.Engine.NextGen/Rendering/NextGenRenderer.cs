@@ -47,11 +47,13 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
         {
+            renderView.Camera = context.RenderContext.GetCameraFromSlot(renderView.SceneCameraRenderer.Camera);
+
             if (renderView.Camera == null)
                 return;
 
             // Setup viewport size
-            var currentViewport = context.CommandList.Viewport;
+            var currentViewport = renderView.SceneCameraRenderer.ComputedViewport;
             var aspectRatio = currentViewport.AspectRatio;
 
             // Update the aspect ratio
@@ -281,23 +283,22 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderContext = new RenderContext(Services);
 
-            // Describe views
-            mainRenderView = new RenderView { RenderStages = { RenderSystem.mainRenderStage, RenderSystem.transparentRenderStage, RenderSystem.gbufferRenderStage, RenderSystem.pickingRenderStage } };
-            RenderSystem.Views.Add(mainRenderView);
-
             // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
             sceneInstance.Processors.Add(new NextGenModelProcessor());
             sceneInstance.Processors.Add(new NextGenSpriteProcessor());
             sceneInstance.Processors.Add(new NextGenBackgroundProcessor());
             sceneInstance.Processors.Add(new NextGenSkyboxProcessor());
+
+            // Describe views
+            mainRenderView = new RenderView { RenderStages = { RenderSystem.mainRenderStage, RenderSystem.transparentRenderStage, RenderSystem.gbufferRenderStage, RenderSystem.pickingRenderStage } };
+            mainRenderView.SceneInstance = sceneInstance;
+            mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
+            RenderSystem.Views.Add(mainRenderView);
         }
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            // TODO GRAPHICS REFACTOR: Should go in a per-renderer pre-extract phase
-            mainRenderView.Camera = context.RenderContext.GetCurrentCamera();
-
             var currentViewport = context.CommandList.Viewport;
 
             // GBuffer
@@ -314,20 +315,22 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Shadow maps
-            // TODO: Move that to a class that will handle all the details of shadow mapping
             if (Shadows)
             {
+                // Clear atlases
                 RenderSystem.forwardLightingRenderFeature.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
 
                 context.PushRenderTargets();
 
+                // Draw all shadow views generated for the current view
                 foreach (var renderView in RenderSystem.Views)
                 {
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
-                    if (shadowmapRenderView != null)
+                    if (shadowmapRenderView != null && shadowmapRenderView.RenderView == mainRenderView)
                     {
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
+                        shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
                         context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
                         Draw(RenderSystem, context, shadowmapRenderView, RenderSystem.shadowmapRenderStage);
