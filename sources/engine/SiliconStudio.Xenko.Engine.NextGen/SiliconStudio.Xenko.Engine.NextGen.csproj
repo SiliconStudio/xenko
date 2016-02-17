@@ -132,6 +132,10 @@
       <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Xenko.Physics</Name>
@@ -182,6 +186,9 @@
     <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\Editor\PickingRenderFeature.cs" />
+    <Compile Include="Rendering\Particles\ParticleSystemProcessor.cs" />
+    <Compile Include="Rendering\Particles\ParticleSystemRenderFeature.cs" />
+    <Compile Include="Rendering\Particles\RenderParticleSystem.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

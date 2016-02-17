@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// Unmaps the subresource after all the particle data has been updated
         /// </summary>
         /// <param name="device"></param>
-        public void UnmapBuffer(GraphicsDevice device)
+        public void UnmapBuffer(CommandList commandList)
         {
             if (bufferIsDirty)
                 return;
@@ -227,21 +227,21 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             vertexBuffer = IntPtr.Zero;
             vertexBufferOrigin = IntPtr.Zero;
 
-            device.UnmapSubresource(mappedVertices);
+            commandList.UnmapSubresource(mappedVertices);
         }
 
         /// <summary>
         /// Draws the generated vertex buffer with the particle data from this frame
         /// </summary>
         /// <param name="device"></param>
-        public void Draw(GraphicsDevice device)
+        public void Draw(CommandList commandList)
         {
             if (bufferIsDirty)
                 return;
 
-            device.SetVertexArrayObject(resourceContext.VertexArrayObject);
+            commandList.SetVertexArrayObject(resourceContext.VertexArrayObject);
 
-            device.DrawIndexed(PrimitiveType.TriangleList, livingQuads * indicesPerQuad, resourceContext.IndexBufferPosition);
+            commandList.DrawIndexed(PrimitiveType.TriangleList, livingQuads * indicesPerQuad, resourceContext.IndexBufferPosition);
         }
 
         /// <summary>

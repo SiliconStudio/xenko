@@ -929,16 +929,16 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="viewMatrix">The current camera's view matrix</param>
         /// <param name="projMatrix">The current camera's projection matrix</param>
         /// <param name="color">Color scale (color shade) for all particles</param>
-        public void KickVertexBuffer(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, Color4 color)
+        public void KickVertexBuffer(RenderDrawContext context, ref Matrix viewMatrix, ref Matrix projMatrix, Color4 color)
         {
             // Calling the method here causes mismatching vertex declarations in the EffectInputSignature (correct) and VertexAttributeLayout (wrong)
-            if (Material.Effect != null) vertexBuilder.CreateVAO(device, Material.Effect);
+            if (Material.Effect != null) vertexBuilder.CreateVAO(context, Material.Effect);
 
-            Material.Setup(device, context, viewMatrix, projMatrix, color);
+            Material.Setup(context, viewMatrix, projMatrix, color);
 
-            Material.ApplyEffect(device);
+            Material.ApplyEffect(context);
 
-            vertexBuilder.Draw(device);
+            vertexBuilder.Draw(context);
         }
         #endregion
 

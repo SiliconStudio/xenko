@@ -253,15 +253,15 @@ namespace SiliconStudio.Xenko.Particles
         /// <userdoc>
         /// Render all particles in this particle system. Particles might have different materials assigned.
         /// </userdoc>
-        public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
+        public void Draw(RenderDrawContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
         {
             foreach (var particleEmitter in Emitters)
             {
                 if (particleEmitter.Enabled)
                 {
-                    particleEmitter.BuildVertexBuffer(device, ref invViewMatrix);
+                    particleEmitter.BuildVertexBuffer(context, ref invViewMatrix);
 
-                    particleEmitter.KickVertexBuffer(device, context, ref viewMatrix, ref projMatrix, color);
+                    particleEmitter.KickVertexBuffer(context, ref viewMatrix, ref projMatrix, color);
                 }
             }
         }
