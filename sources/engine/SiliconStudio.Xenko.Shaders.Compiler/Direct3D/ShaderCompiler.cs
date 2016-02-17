@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX;
 using SharpDX.D3DCompiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Storage;
@@ -44,6 +45,15 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             }
             else
             {
+                // TODO: Make this optional
+                try
+                {
+                    byteCodeResult.DisassembleText = compilationResult.Bytecode.Disassemble();
+                }
+                catch (SharpDXException)
+                {
+                }
+
                 // As effect bytecode binary can changed when having debug infos (with d3dcompiler_47), we are calculating a bytecodeId on the stripped version
                 var rawData = compilationResult.Bytecode.Strip(StripFlags.CompilerStripDebugInformation | StripFlags.CompilerStripReflectionData);
                 var bytecodeId = ObjectId.FromBytes(rawData);
