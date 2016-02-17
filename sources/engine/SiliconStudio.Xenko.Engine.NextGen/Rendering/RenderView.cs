@@ -44,6 +44,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public CameraComponent Camera;
 
+        public SceneInstance SceneInstance;
+
+        public SceneCameraRenderer SceneCameraRenderer;
+
         /// <summary>
         /// The view matrix for this view.
         /// </summary>

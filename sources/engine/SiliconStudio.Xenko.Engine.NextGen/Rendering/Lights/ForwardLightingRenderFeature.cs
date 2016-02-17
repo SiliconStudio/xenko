@@ -18,6 +18,19 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public class ForwardLightingRenderFeature : SubRenderFeature
     {
+        public class RenderViewLightData
+        {
+            public readonly List<LightComponent> VisibleLights;
+
+            public readonly List<LightComponent> VisibleLightsWithShadows;
+
+            public RenderViewLightData()
+            {
+                VisibleLights = new List<LightComponent>(1024);
+                VisibleLightsWithShadows = new List<LightComponent>(1024);
+            }
+        }
+
         private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private EffectDescriptorSetReference perLightingDescriptorSetSlot;
@@ -33,19 +46,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private readonly List<KeyValuePair<Type, LightGroupRendererBase>> lightRenderers;
 
-        private NextGenModelProcessor modelProcessor;
-
-        private CameraComponent sceneCamera;
-
-        private readonly List<LightComponent> visibleLights;
-
-        private readonly List<LightComponent> visibleLightsWithShadows;
+        private readonly Dictionary<RenderView, RenderViewLightData> renderViewData;
 
         private readonly List<ActiveLightGroupRenderer> activeRenderers;
-
-        private SceneCameraRenderer sceneCameraRenderer;
-
-        private EntityGroupMask sceneCullingMask;
 
         private readonly Dictionary<ObjectId, LightShaderPermutationEntry> shaderEntries;
         private readonly Dictionary<ObjectId, LightParametersPermutationEntry> lightParameterEntries;
@@ -101,8 +104,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
             lightRenderers = new List<KeyValuePair<Type, LightGroupRendererBase>>(16);
 
-            visibleLights = new List<LightComponent>(1024);
-            visibleLightsWithShadows = new List<LightComponent>(1024);
+            renderViewData = new Dictionary<RenderView, RenderViewLightData>();
 
             shaderEntries = new Dictionary<ObjectId, LightShaderPermutationEntry>(1024);
 
@@ -135,25 +137,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void Extract()
         {
-            modelProcessor = SceneInstance.GetCurrent(RenderSystem.RenderContextOld).GetProcessor<NextGenModelProcessor>();
-            lightProcessor = SceneInstance.GetCurrent(RenderSystem.RenderContextOld).GetProcessor<LightProcessor>();
-
-            // No light processors means no light in the scene, so we can early exit
-            if (lightProcessor == null || modelProcessor == null)
-            {
-                return;
-            }
-
-            // Not in the context of a SceneCameraRenderer? just exit
-            sceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
-            sceneCamera = RenderSystem.RenderContextOld.Tags.Get(CameraComponentRenderer.Current);
-            if (sceneCameraRenderer == null || sceneCamera == null)
-            {
-                return;
-            }
-            sceneCullingMask = sceneCameraRenderer.CullingMask;
-
-            // Setup the callback on the ModelRenderer and shadow map LightGroupRenderer
+            // Initialize shadow map renderer
             if (!isShadowMapRendererSetUp)
             {
                 // TODO: Shadow mapping is currently disabled in new render system
@@ -173,11 +157,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Collect all visible lights
             CollectVisibleLights();
 
-            // Draw shadow maps
-            ShadowMapRenderer?.Extract(RenderSystem.RenderContextOld, visibleLightsWithShadows);
-
             // Prepare active renderers in an ordered list (by type and shadow on/off)
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
+
+            // Collect shadow maps
+            ShadowMapRenderer?.Extract(renderViewData);
 
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
@@ -344,55 +328,80 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         private void CollectVisibleLights()
         {
-            visibleLights.Clear();
-            visibleLightsWithShadows.Clear();
-
             // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
             ClearCache(activeLightGroups);
             ClearCache(activeLightGroupsWithShadows);
 
-            // 2) Cull lights with the frustum
-            var frustum = sceneCamera.Frustum;
-            foreach (var light in lightProcessor.Lights)
+            foreach (var renderView in RenderSystem.Views)
             {
-                // If light is not part of the culling mask group, we can skip it
-                var entityLightMask = (EntityGroupMask)(1 << (int)light.Entity.Group);
-                if ((entityLightMask & sceneCullingMask) == 0 && (light.CullingMask & sceneCullingMask) == 0)
-                {
+                if (renderView.GetType() != typeof(RenderView))
                     continue;
-                }
 
-                // If light is not in the frustum, we can skip it
-                var directLight = light.Type as IDirectLight;
-                if (directLight != null && directLight.HasBoundingBox && !frustum.Contains(ref light.BoundingBoxExt))
-                {
+                if (renderView.Camera == null)
                     continue;
-                }
 
-                // Find the group for this light
-                var lightGroup = GetLightGroup(light);
-                lightGroup.PrepareLight(light);
+                lightProcessor = renderView.SceneInstance.GetProcessor<LightProcessor>();
 
-                // This is a visible light
-                visibleLights.Add(light);
+                // No light processors means no light in the scene, so we can early exit
+                if (lightProcessor == null)
+                    continue;
 
-                // Add light to a special list if it has shadows
-                if (directLight != null && directLight.Shadow.Enabled && ShadowMapRenderer != null)
+                RenderViewLightData renderViewLightData;
+                if (!renderViewData.TryGetValue(renderView, out renderViewLightData))
                 {
-                    // A visible light with shadows
-                    visibleLightsWithShadows.Add(light);
+                    renderViewLightData = new RenderViewLightData();
+                    renderViewData.Add(renderView, renderViewLightData);
                 }
-            }
 
-            // 3) Allocate collection based on their culling mask
-            AllocateCollectionsPerGroupOfCullingMask(activeLightGroups);
-            AllocateCollectionsPerGroupOfCullingMask(activeLightGroupsWithShadows);
+                renderViewLightData.VisibleLights.Clear();
+                renderViewLightData.VisibleLightsWithShadows.Clear();
 
-            // 4) Collect lights to the correct light collection group
-            foreach (var light in visibleLights)
-            {
-                var lightGroup = GetLightGroup(light);
-                lightGroup.AddLight(light);
+                // TODO GRAPHICS REFACTOR
+                var sceneCullingMask = renderView.SceneCameraRenderer.CullingMask;
+
+                // 2) Cull lights with the frustum
+                var frustum = renderView.Camera.Frustum;
+                foreach (var light in lightProcessor.Lights)
+                {
+                    // If light is not part of the culling mask group, we can skip it
+                    var entityLightMask = (EntityGroupMask)(1 << (int)light.Entity.Group);
+                    if ((entityLightMask & sceneCullingMask) == 0 && (light.CullingMask & sceneCullingMask) == 0)
+                    {
+                        continue;
+                    }
+
+                    // If light is not in the frustum, we can skip it
+                    var directLight = light.Type as IDirectLight;
+                    if (directLight != null && directLight.HasBoundingBox && !frustum.Contains(ref light.BoundingBoxExt))
+                    {
+                        continue;
+                    }
+
+                    // Find the group for this light
+                    var lightGroup = GetLightGroup(light);
+                    lightGroup.PrepareLight(light);
+
+                    // This is a visible light
+                    renderViewLightData.VisibleLights.Add(light);
+
+                    // Add light to a special list if it has shadows
+                    if (directLight != null && directLight.Shadow.Enabled && ShadowMapRenderer != null)
+                    {
+                        // A visible light with shadows
+                        renderViewLightData.VisibleLightsWithShadows.Add(light);
+                    }
+                }
+
+                // 3) Allocate collection based on their culling mask
+                AllocateCollectionsPerGroupOfCullingMask(activeLightGroups);
+                AllocateCollectionsPerGroupOfCullingMask(activeLightGroupsWithShadows);
+
+                // 4) Collect lights to the correct light collection group
+                foreach (var light in renderViewLightData.VisibleLights)
+                {
+                    var lightGroup = GetLightGroup(light);
+                    lightGroup.AddLight(light);
+                }
             }
         }
 
