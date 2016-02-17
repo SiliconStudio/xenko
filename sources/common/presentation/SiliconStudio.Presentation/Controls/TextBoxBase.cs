@@ -183,10 +183,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public void Validate()
         {
-            if (!HasChangesToValidate)
+            if (IsReadOnly || !HasChangesToValidate)
                 return;
 
-            var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
+                var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
             OnValidating(cancelRoutedEventArgs);
             if (cancelRoutedEventArgs.Cancel)
                 return;
@@ -228,6 +228,9 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public void Cancel()
         {
+            if (IsReadOnly)
+                return;
+
             BindingExpression expression = GetBindingExpression(TextProperty);
             expression?.UpdateTarget();
 

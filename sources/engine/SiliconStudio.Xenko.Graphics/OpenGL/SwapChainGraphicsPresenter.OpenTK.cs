@@ -1,9 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using SiliconStudio.Core.Mathematics;
 using OpenTK;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
+#if SILICONSTUDIO_XENKO_UI_SDL
+using WindowState = SiliconStudio.Xenko.Graphics.SDL.FormWindowState;
+using OpenGLWindow = SiliconStudio.Xenko.Graphics.SDL.Window;
+#else
+using WindowState = OpenTK.WindowState;
+using OpenGLWindow = OpenTK.GameWindow;
+#endif
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -13,7 +20,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
+            device.Begin();
             device.InitDefaultRenderTarget(presentationParameters);
+            device.End();
             backBuffer = device.DefaultRenderTarget;
         }
 
@@ -31,11 +40,11 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                return ((OpenTK.GameWindow)Description.DeviceWindowHandle.NativeHandle).WindowState == WindowState.Fullscreen;
+                return ((OpenGLWindow)Description.DeviceWindowHandle.NativeHandle).WindowState == WindowState.Fullscreen;
             }
             set
             {
-                var gameWindow = (OpenTK.GameWindow)Description.DeviceWindowHandle.NativeHandle;
+                var gameWindow = (OpenGLWindow)Description.DeviceWindowHandle.NativeHandle;
                 if (gameWindow.Exists)
                     gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
             }

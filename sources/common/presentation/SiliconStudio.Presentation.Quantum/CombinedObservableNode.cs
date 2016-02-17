@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Quantum;
 
@@ -103,11 +104,11 @@ namespace SiliconStudio.Presentation.Quantum
             }
             else
             {
-                var allChildren = GetAllChildrenByValue();
-                if (allChildren != null)
+                var commonChildren = GetCommonChildrenInList();
+                if (commonChildren != null)
                 {
                     // TODO: Disable list children for now - they need to be improved a lot (resulting combinaison is very random, especially for list of ints
-                    //GenerateListChildren(allChildren);
+                    GenerateChildren(commonChildren);
                 }
             }
             foreach (var key in AssociatedData.Keys.ToList())
@@ -146,6 +147,8 @@ namespace SiliconStudio.Presentation.Quantum
         public IEnumerable<object> DistinctInitialValues => distinctCombinedNodeInitialValues;
 
         public override int? Order => order;
+
+        public bool GroupByType { get; set; }
 
         /// <inheritdoc/>
         public override sealed bool HasList => CombinedNodes.First().HasList;
@@ -264,6 +267,39 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             return allChildNodes.Where(x => ShouldCombine(x.Value, CombinedNodes.Count, x.Key));
+        }
+
+        private IEnumerable<KeyValuePair<string, List<SingleObservableNode>>> GetCommonChildrenInList()
+        {
+            var allChildNodes = new Dictionary<string, List<SingleObservableNode>>();
+            ITypeDescriptor singleType = null;
+            foreach (var singleNode in CombinedNodes)
+            {
+                var descriptor = TypeDescriptorFactory.Default.Find(singleNode.Type);
+                if (singleType != null && singleType != descriptor)
+                    return null;
+
+                singleType = descriptor;
+            }
+
+            // If we're in a collection of value type, use usual name-based combination (which should actually be index-based)
+            if (singleType.GetInnerCollectionType().IsValueType)
+                return GetCommonChildren();
+
+            if (GroupByType)
+            {
+                return null;
+            }
+            return GetCommonChildren();
+            //// When the collection are not of 
+            //foreach (var observableNode in singleNode.Children)
+            //{
+            //    var child = (SingleObservableNode)observableNode;
+            //    var list = allChildNodes.GetOrCreateValue(child.Name);
+            //    list.Add(child);
+            //}
+
+            //return allChildNodes.Where(x => ShouldCombine(x.Value, CombinedNodes.Count, x.Key));
         }
 
         private static bool ShouldCombine(List<SingleObservableNode> nodes, int combineCount, string name, bool ignoreNameConstraint = false)

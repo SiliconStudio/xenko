@@ -320,9 +320,8 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Deep clone this package.
         /// </summary>
-        /// <param name="deepCloneAsset">if set to <c>true</c> assets will stored in this package will be also deeply cloned.</param>
         /// <returns>The package cloned.</returns>
-        public Package Clone(bool deepCloneAsset)
+        public Package Clone()
         {
             // Use a new ShadowRegistry to copy override parameters
             // Clone this asset
@@ -330,7 +329,7 @@ namespace SiliconStudio.Assets
             package.FullPath = FullPath;
             foreach (var asset in Assets)
             {
-                var newAsset = deepCloneAsset ? (Asset)AssetCloner.Clone(asset.Asset) : asset.Asset;
+                var newAsset = asset.Asset;
                 var assetItem = new AssetItem(asset.Location, newAsset)
                 {
                     SourceFolder = asset.SourceFolder,
@@ -538,7 +537,7 @@ namespace SiliconStudio.Assets
                             var assetBase = asset.Asset.Base;
                             if (assetBase != null && !assetBase.IsRootImport)
                             {
-                                assetBase.Asset.Base = UpdateAssetBase(assetBase);
+                                asset.Asset.Base = UpdateAssetBase(assetBase);
                             }
 
                             // Update base for BaseParts
@@ -593,8 +592,6 @@ namespace SiliconStudio.Assets
             if (assetBaseItem != null)
             {
                 var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
-                newBase.Base = null;
-                newBase.BaseParts = null;
                 return new AssetBase(assetBase.Location, newBase);
             }
             // TODO: If we don't find it, should we log an error instead?
@@ -822,7 +819,8 @@ namespace SiliconStudio.Assets
                     Assets.Add(item);
                 }
 
-                var dirtyAssets = outputItems.Where(o => o.IsDirty)
+                // Don't delete SourceCodeAssets as their files are handled by the package upgrader
+                var dirtyAssets = outputItems.Where(o => o.IsDirty && !(o.Asset is SourceCodeAsset))
                     .Join(TemporaryAssets, o => o.Id, t => t.Id, (o, t) => t)
                     .ToList();
                 // Dirty assets (except in system package) should be mark as deleted so that are properly saved again later.
@@ -1032,15 +1030,6 @@ namespace SiliconStudio.Assets
             var sourceCodeAsset = asset as SourceCodeAsset;
             if (sourceCodeAsset != null)
             {
-                // Keep text in memory if package upgrading produced custom content
-                if (assetContent != null)
-                {
-                    using (var reader = new StreamReader(new MemoryStream(assetContent)))
-                    {
-                        sourceCodeAsset.Text = reader.ReadToEnd();
-                    }
-                }
-
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
                 sourceCodeAsset.AbsoluteSourceLocation = assetFullPath;

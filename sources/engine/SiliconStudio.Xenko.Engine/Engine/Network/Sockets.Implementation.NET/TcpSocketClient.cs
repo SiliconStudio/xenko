@@ -55,6 +55,8 @@ namespace Sockets.Plugin
         /// <param name="secure">True to enable TLS on the socket.</param>
         public async Task ConnectAsync(string address, int port, bool secure = false)
         {
+            RemoteAddress = address;
+            RemotePort = port;
             await _backingTcpClient.ConnectAsync(address, port);
             InitializeWriteStream();
             if (secure)
@@ -136,26 +138,15 @@ namespace Sockets.Plugin
             }
         }
 
-        private IPEndPoint RemoteEndpoint
-        {
-            get { return _backingTcpClient.Client.RemoteEndPoint as IPEndPoint; }
-        }
-
         /// <summary>
         ///     The address of the remote endpoint to which the <code>TcpSocketClient</code> is currently connected.
         /// </summary>
-        public string RemoteAddress
-        {
-            get { return RemoteEndpoint.Address.ToString(); }
-        }
+        public string RemoteAddress { get; private set; }
 
         /// <summary>
         ///     The port of the remote endpoint to which the <code>TcpSocketClient</code> is currently connected.
         /// </summary>
-        public int RemotePort
-        {
-            get { return RemoteEndpoint.Port; }
-        }
+        public int RemotePort { get; private set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -176,13 +167,7 @@ namespace Sockets.Plugin
 
         private void InitializeWriteStream()
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             _writeStream = _bufferSize != 0 ? (Stream)new BufferedStream(_backingTcpClient.GetStream(), _bufferSize) : _backingTcpClient.GetStream();
-#else
-                // Note that BufferedStream is planned for a future release of CoreFX, so once this 
-                // is available we can remove the #if.
-            _writeStream = _backingTcpClient.GetStream();
-#endif
         }
 
         private void Dispose(bool disposing)
