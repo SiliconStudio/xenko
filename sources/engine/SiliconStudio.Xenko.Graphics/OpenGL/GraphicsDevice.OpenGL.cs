@@ -165,8 +165,6 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         public bool IsOpenGLES2 { get; private set; }
 
-        private Buffer constantBuffer;
-
         // Need to change sampler state depending on if texture has mipmap or not during PreDraw
         private bool[] hasMipmaps = new bool[64];
 #endif
