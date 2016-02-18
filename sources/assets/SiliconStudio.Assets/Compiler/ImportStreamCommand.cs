@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SiliconStudio.Assets.Compiler
 {
     [Description("Import stream")]
-    public class ImportStreamCommand : SingleFileImportCommand
+    public sealed class ImportStreamCommand : SingleFileImportCommand
     {
         /// <inheritdoc/>
         public override string Title { get { string title = "Import Stream "; try { title += Path.GetFileName(SourcePath) ?? "[File]"; } catch { title += "[INVALID PATH]"; } return title; } }
