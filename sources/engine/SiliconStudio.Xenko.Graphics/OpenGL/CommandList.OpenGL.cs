@@ -643,10 +643,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void BeginProfile(Color profileColor, string name)
         {
+            if (GraphicsDevice.ProfileEnabled)
+                GL.PushDebugGroup(DebugSourceExternal.DebugSourceApplication, 1, -1, name);
         }
 
         public void EndProfile()
         {
+            if (GraphicsDevice.ProfileEnabled)
+                GL.PopDebugGroup();
         }
 
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)

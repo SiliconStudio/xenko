@@ -57,6 +57,7 @@ namespace SiliconStudio.Xenko.Graphics
         private bool asyncCreationLockTaken;
 
         internal bool ApplicationPaused = false;
+        internal bool ProfileEnabled = true;
 
         internal IWindowInfo deviceCreationWindowInfo;
         internal object asyncCreationLockObject = new object();
@@ -368,6 +369,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void EnableProfile(bool enabledFlag)
         {
+            ProfileEnabled = true;
         }
 
         /// <summary>
