@@ -379,6 +379,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
             coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, depthAreas);
+            var camera = context.RenderContext.GetCurrentCamera();
+            if (camera != null)
+                coclinearDepthMapEffect.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(camera.NearClipPlane, camera.FarClipPlane));
             coclinearDepthMapEffect.Draw(context, "CoC_LinearDepth");
 
             if (AutoFocus)
