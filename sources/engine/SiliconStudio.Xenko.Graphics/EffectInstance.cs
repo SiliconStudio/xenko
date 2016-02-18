@@ -57,7 +57,12 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 permutationCounter = Parameters.PermutationCounter;
 
+                var oldEffect = effect;
                 ChooseEffect(graphicsDevice);
+
+                // Early exit: same effect, and already initialized
+                if (oldEffect == effect && descriptorReflection != null)
+                    return false;
 
                 // Update reflection and rearrange buffers/resources
                 var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
