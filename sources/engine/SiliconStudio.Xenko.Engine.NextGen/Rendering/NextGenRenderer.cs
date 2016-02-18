@@ -46,8 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
         {
-            var compositor = renderView.SceneInstance.Scene.Settings.GraphicsCompositor as SceneGraphicsCompositorLayers;
-            renderView.Camera = compositor?.Cameras.GetCamera(renderView.SceneCameraRenderer.Camera);
+            renderView.Camera = renderView.SceneCameraSlotCollection.GetCamera(renderView.SceneCameraRenderer.Camera);
 
             if (renderView.Camera == null)
                 return;
@@ -294,6 +293,7 @@ namespace SiliconStudio.Xenko.Rendering
             mainRenderView = new RenderView { RenderStages = { RenderSystem.mainRenderStage, RenderSystem.transparentRenderStage, RenderSystem.gbufferRenderStage, RenderSystem.pickingRenderStage } };
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
+            mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
             RenderSystem.Views.Add(mainRenderView);
         }
 
