@@ -106,10 +106,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            if (pipelineStateDirty)
+            if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty)
             {
-                EffectInstance.UpdateEffect(GraphicsDevice);
-
                 pipelineState.State.SetDefaults();
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
