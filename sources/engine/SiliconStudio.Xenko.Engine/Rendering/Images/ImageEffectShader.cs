@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         private MutablePipelineState pipelineState = new MutablePipelineState();
         private bool pipelineStateDirty = true;
-        private BlendStateDescription blendState = new BlendStateDescription(Blend.One, Blend.Zero);
+        private BlendStateDescription blendState = BlendStateDescription.Default;
 
         public BlendStateDescription BlendState
         {
