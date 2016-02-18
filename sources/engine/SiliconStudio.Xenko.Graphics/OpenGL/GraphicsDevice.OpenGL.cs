@@ -853,9 +853,7 @@ namespace SiliconStudio.Xenko.Graphics
                 isFramebufferSRGB ? presentationParameters.BackBufferFormat : presentationParameters.BackBufferFormat.ToNonSRgb(), TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             WindowProvidedRenderTexture.Reload = graphicsResource => { };
 
-            if (windowProvidedFrameBuffer != 0)
-            {
-                // Extract FBO render target
+            // Extract FBO render target
             if (windowProvidedFrameBuffer != 0)
             {
                 int framebufferAttachmentType;
