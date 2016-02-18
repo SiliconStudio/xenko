@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
-    ///     Performs primitive-based rendering, creates resources, handles system-level variables, adjusts gamma ramp levels, and creates shaders. See <see cref="The+GraphicsDevice+class"/> to learn more about the class.
+    /// Used for GPU resources creation (buffers, textures, states, shaders), and <see cref="CommandList"/> manipulations.
     /// </summary>
     public partial class GraphicsDevice : ComponentBase
     {

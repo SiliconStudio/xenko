@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Represents a <see cref="RenderObject"/> drawn with a specific <see cref="RenderEffect"/>, with attached properties.
     /// </summary>
-    struct EffectObjectNode
+    public struct EffectObjectNode
     {
         /// <summary>
         /// The effect used.

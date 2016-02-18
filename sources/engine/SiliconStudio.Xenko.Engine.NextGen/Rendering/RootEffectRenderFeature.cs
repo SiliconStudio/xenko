@@ -35,15 +35,15 @@ namespace SiliconStudio.Xenko.Rendering
         private EffectDescriptorSetReference perViewDescriptorSetSlot;
         private EffectDescriptorSetReference perDrawDescriptorSetSlot;
 
-        internal List<EffectObjectNode> EffectObjectNodes { get; } = new List<EffectObjectNode>();
+        public List<EffectObjectNode> EffectObjectNodes { get; } = new List<EffectObjectNode>();
 
         public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
 
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
-        internal delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
-        internal ProcessPipelineStateDelegate PostProcessPipelineState;
+        public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
+        public ProcessPipelineStateDelegate PostProcessPipelineState;
 
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
@@ -300,7 +300,6 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
         public override void Prepare(RenderContext context)
         {
@@ -309,7 +308,7 @@ namespace SiliconStudio.Xenko.Rendering
             int requiredDescriptorSets = 0;
 
             // Make sure descriptor set pool is large enough
-            var expectedDescriptorSetPoolSize = renderNodes.Count * effectDescriptorSetSlots.Count;
+            var expectedDescriptorSetPoolSize = RenderNodes.Count * effectDescriptorSetSlots.Count;
             if (ResourceGroupPool.Length < expectedDescriptorSetPoolSize)
                 Array.Resize(ref ResourceGroupPool, expectedDescriptorSetPoolSize);
 
@@ -392,7 +391,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.PipelineState = MutablePipeline.CurrentState;
                     }
 
-                    renderNodes[renderNodeReference.Index] = renderNode;
+                    RenderNodes[renderNodeReference.Index] = renderNode;
 
                     // Create EffectObjectNode
                     EffectObjectNodes.Add(new EffectObjectNode(renderEffect, viewObjectNode.ObjectNode));
@@ -580,13 +579,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 Variable = variable;
             }
-        }
-
-        struct DescriptorSetLayoutEntry
-        {
-            public string Name;
-            public DescriptorSetLayout Layout;
-            public ObjectId LayoutHash;
         }
     }
 }

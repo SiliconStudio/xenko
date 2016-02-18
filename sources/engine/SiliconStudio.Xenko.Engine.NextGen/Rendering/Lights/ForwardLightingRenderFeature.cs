@@ -227,9 +227,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderContext context)
         {
             var renderObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
 
@@ -287,10 +286,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
 
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
+            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
-                var renderNode = RootRenderFeature.renderNodes[renderNodeIndex];
+                var renderNode = RootRenderFeature.RenderNodes[renderNodeIndex];
                 var renderObjectInfo = renderObjectInfoData[renderNode.RenderObject.ObjectNode];
 
                 if (renderObjectInfo == null)

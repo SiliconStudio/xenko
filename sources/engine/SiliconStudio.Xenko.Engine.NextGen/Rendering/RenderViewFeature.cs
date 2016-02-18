@@ -12,12 +12,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render nodes. It might cover multiple RenderStage, RenderStages contains range information.
         /// </summary>
-        internal List<RenderNodeReference> RenderNodes = new List<RenderNodeReference>();
+        public List<RenderNodeReference> RenderNodes = new List<RenderNodeReference>();
 
         /// <summary>
         /// The list of object nodes contained in this view.
         /// </summary>
-        internal List<ViewObjectNodeReference> ViewObjectNodes = new List<ViewObjectNodeReference>();
+        public List<ViewObjectNodeReference> ViewObjectNodes = new List<ViewObjectNodeReference>();
 
         /// <summary>
         /// List of resource layouts used by this render view.

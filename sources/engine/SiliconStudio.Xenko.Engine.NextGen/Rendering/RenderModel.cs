@@ -25,12 +25,12 @@ namespace SiliconStudio.Xenko.Rendering
     public abstract class RenderObject
     {
         // Kept in cache to quickly know if RenderPerFrameNode was already generated
-        internal RootRenderFeature RenderFeature;
-        internal ObjectNodeReference ObjectNode;
+        public RootRenderFeature RenderFeature;
+        public ObjectNodeReference ObjectNode;
 
-        internal StaticObjectNodeReference StaticObjectNode;
+        public StaticObjectNodeReference StaticObjectNode;
 
-        internal ActiveRenderStage[] ActiveRenderStages;
+        public ActiveRenderStage[] ActiveRenderStages;
 
         // TODO: Switch to a "StaticPropertyContainer" that will be optimized by assembly processor
         //public PropertyContainer Tags;
