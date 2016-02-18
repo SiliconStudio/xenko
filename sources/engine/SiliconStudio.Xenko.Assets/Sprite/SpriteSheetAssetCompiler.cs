@@ -76,15 +76,24 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
                     // Get absolute path of asset source on disk
                     var assetDirectory = assetAbsolutePath.GetParent();
-                    var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
-                    // add the texture build command.
-                    result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
+                    try
                     {
-                        new TextureAssetCompiler.TextureConvertCommand(
-                            textureUrl,
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace))
-                    });
+                        var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
+
+                        // add the texture build command.
+                        result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
+                        {
+                            new TextureAssetCompiler.TextureConvertCommand(
+                                textureUrl,
+                                new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace))
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        result.Error("The source '{0}' for sprite sheet [{1}] is not a valid path: {2}", e, spriteAssetArray[0].Source, asset, e.Message);
+                        return;
+                    }
                 }
             }
 

@@ -94,12 +94,21 @@ namespace SiliconStudio.Assets.Compiler
 
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
-            // Ensure the file exists
-            if (!File.Exists(assetSource))
+            try
             {
-                result.Error("Unable to find the source file '{1}' for Asset [{0}]", asset, assetSource);
+                var assetSource = UPath.Combine(assetDirectory, asset.Source);
+
+                // Ensure the file exists
+                if (!File.Exists(assetSource))
+                {
+                    result.Error("Unable to find the source file '{1}' for Asset [{0}]", asset, assetSource);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.Error("The source file '{1}' for Asset [{0}] is not a valid path: {2}", e, asset, asset.Source, e.Message);
                 return false;
             }
 

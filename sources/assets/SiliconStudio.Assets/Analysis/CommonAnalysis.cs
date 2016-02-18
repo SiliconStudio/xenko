@@ -30,24 +30,34 @@ namespace SiliconStudio.Assets.Analysis
 
                 var uFile = currentLocation as UFile;
                 var uDirectory = currentLocation as UDirectory;
-                if (!string.IsNullOrEmpty(uFile))
-                {
-                    var previousLocationOnDisk = UPath.Combine(fileDirectory, uFile);
 
-                    // If UseRelativeForUFile is used, then turn 
-                    newLocation = parameters.ConvertUPathTo == UPathType.Relative ? previousLocationOnDisk.MakeRelative(fileDirectory) : previousLocationOnDisk;
-                }
-                else if (!string.IsNullOrEmpty(uDirectory))
+                try
                 {
-                    var previousDirectoryOnDisk = UPath.Combine(fileDirectory, uDirectory);
+                    if (!string.IsNullOrEmpty(uFile))
+                    {
+                        var previousLocationOnDisk = UPath.Combine(fileDirectory, uFile);
 
-                    // If UseRelativeForUFile is used, then turn 
-                    newLocation = parameters.ConvertUPathTo == UPathType.Relative ? previousDirectoryOnDisk.MakeRelative(fileDirectory) : previousDirectoryOnDisk;
+                        // If UseRelativeForUFile is used, then turn 
+                        newLocation = parameters.ConvertUPathTo == UPathType.Relative ? previousLocationOnDisk.MakeRelative(fileDirectory) : previousLocationOnDisk;
+                    }
+                    else if (!string.IsNullOrEmpty(uDirectory))
+                    {
+                        var previousDirectoryOnDisk = UPath.Combine(fileDirectory, uDirectory);
+
+                        // If UseRelativeForUFile is used, then turn 
+                        newLocation = parameters.ConvertUPathTo == UPathType.Relative ? previousDirectoryOnDisk.MakeRelative(fileDirectory) : previousDirectoryOnDisk;
+                    }
                 }
+                catch (Exception)
+                {
+                    // Preserve invalid paths
+                    newLocation = currentLocation;
+                }
+
                 // Only update location that are actually different
                 if (currentLocation != newLocation)
                 {
-                    assetReferenceLink.UpdateReference(null, newLocation != null ? newLocation.FullPath : null);
+                    assetReferenceLink.UpdateReference(null, newLocation?.FullPath);
                     if (parameters.SetDirtyFlagOnAssetWhenFixingUFile)
                     {
                         parentFileSync.IsDirty = true;

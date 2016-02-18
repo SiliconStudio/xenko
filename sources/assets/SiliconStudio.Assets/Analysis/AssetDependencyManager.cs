@@ -1050,13 +1050,23 @@ namespace SiliconStudio.Assets.Analysis
                 // Currently an AssetImport is linked only to a single entry, but it could have probably have multiple input dependencies in the future
                 var newInputPathDependencies = new HashSet<UFile>();
                 var pathToSourceRawAsset = assetImport.Source;
+
                 if (string.IsNullOrEmpty(pathToSourceRawAsset))
                 {
                     return;
                 }
-                if (!pathToSourceRawAsset.IsAbsolute)
+
+                try
                 {
-                    pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
+                    if (!pathToSourceRawAsset.IsAbsolute)
+                    {
+                        pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Treat invalid paths like unset paths
+                    return;
                 }
 
                 newInputPathDependencies.Add(pathToSourceRawAsset);

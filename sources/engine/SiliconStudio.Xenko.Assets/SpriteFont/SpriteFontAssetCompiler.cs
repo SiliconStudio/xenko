@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #pragma warning disable 162 // Unreachable code detected (due to useCacheFonts)
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
         {
+            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
+                return;
+
             var colorSpace = context.GetColorSpace();
 
             if (asset.IsDynamic)
@@ -36,15 +40,23 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 if (!string.IsNullOrEmpty(asset.Source))
                 {
-                    var assetDirectory = assetAbsolutePath.GetParent();
-                    fontPathOnDisk = UPath.Combine(assetDirectory, asset.Source);
-                    if (!File.Exists(fontPathOnDisk))
+                    try
                     {
-                        result.Error("The font source '{0}' does not exist on the PC.", asset.FontName);
+                        var assetDirectory = assetAbsolutePath.GetParent();
+                        fontPathOnDisk = UPath.Combine(assetDirectory, asset.Source);
+                        if (!File.Exists(fontPathOnDisk))
+                        {
+                            result.Error("The font source '{0}' does not exist on the PC.", asset.FontName);
+                            return;
+                        }
+                        // set the source filename as font name instead of the font family.
+                        asset.FontName = fontPathOnDisk.GetFileName();
+                    }
+                    catch (Exception e)
+                    {
+                        result.Error("The source '{0}' for font '{1}' is not a valid path: {2}", e, asset.Source, asset.FontName, e.Message);
                         return;
                     }
-                    // set the source filename as font name instead of the font family.
-                    asset.FontName = fontPathOnDisk.GetFileName();
                 }
                 else
                 {
@@ -68,8 +80,27 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
-                assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source): null;
-                assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
+
+                try
+                {
+                    assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source) : null;
+                }
+                catch (Exception e)
+                {
+                    result.Error("The source '{0}' for font '{1}' is not a valid path: {2}", e, asset.Source, asset.FontName, e.Message);
+                    return;
+                }
+
+
+                try
+                {
+                    assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet) : null;
+                }
+                catch (Exception e)
+                {
+                    result.Error("The character set '{0}' for font '{1}' is not a valid path: {2}", e, asset.CharacterSet, asset.FontName, e.Message);
+                    return;
+                }
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone, colorSpace) };
             }
