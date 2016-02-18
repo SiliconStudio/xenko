@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         // Mixin 
         mixin ToneMapShader<ToneMapKeys.AutoKey, ToneMapKeys.AutoExposure>;
+        context.PushParameters(ToneMapKeys.Operator.Parameters);
         mixin compose ToneMapOperator = ColorTransformKeys.Shader;
+        context.PopParameters();
     };
 }

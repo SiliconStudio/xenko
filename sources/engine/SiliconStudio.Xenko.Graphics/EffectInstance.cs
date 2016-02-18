@@ -53,7 +53,12 @@ namespace SiliconStudio.Xenko.Rendering
             Parameters.Dispose();
         }
 
-        public void UpdateEffect(GraphicsDevice graphicsDevice)
+        /// <summary>
+        /// Compiles or recompiles the effect if necesssary.
+        /// </summary>
+        /// <param name="graphicsDevice"></param>
+        /// <returns>True if the effect was recompiled, false otherwise.</returns>
+        public bool UpdateEffect(GraphicsDevice graphicsDevice)
         {
             if (permutationCounter != Parameters.PermutationCounter)
             {
@@ -99,7 +104,11 @@ namespace SiliconStudio.Xenko.Rendering
                 // Update parameters layout to match what this effect expect
                 Parameters.UpdateLayout(parameterCollectionLayout);
                 constantBufferTotalSize = parameterCollectionLayout.BufferSize;
+
+                return true;
             }
+
+            return false;
         }
 
         protected virtual void ChooseEffect(GraphicsDevice graphicsDevice)

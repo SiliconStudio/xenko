@@ -581,5 +581,126 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
         }
+
+        public struct CompositionCopier
+        {
+            List<CopyRange> ranges;
+            NextGenParameterCollection destination;
+
+            public void Copy(NextGenParameterCollection source)
+            {
+                foreach (var range in ranges)
+                {
+                    if (range.IsResource)
+                    {
+                        for (int i = 0; i < range.Size; ++i)
+                        {
+                            destination.ObjectValues[range.DestStart + i] = source.ObjectValues[range.SourceStart + i];
+                        }
+                    }
+                    else if (range.IsData)
+                    {
+                        Utilities.CopyMemory(destination.DataValues + range.DestStart, source.DataValues + range.SourceStart, range.Size);
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Compute copy operations. Assumes destination layout is sequential.
+            /// </summary>
+            /// <param name="dest"></param>
+            /// <param name="source"></param>
+            /// <param name="keyRoot"></param>
+            public void Compute(NextGenParameterCollection dest, NextGenParameterCollection source, string keyRoot)
+            {
+                ranges = new List<CopyRange>();
+                destination = dest;
+                var sourceLayout = new NextGenParameterCollectionLayout();
+
+                // Helper structures to try to keep range contiguous and have as few copy operations as possible (note: there can be some padding)
+                var currentDataRange = new CopyRange { IsData = true, DestStart = -1 };
+                var currentResourceRange = new CopyRange { IsResource = true, DestStart = -1 };
+
+                // Iterate over each variable in dest, and if they match keyRoot, create the equivalent layout in source
+                foreach (var parameterKeyInfo in dest.layoutParameterKeyInfos)
+                {
+                    bool isResource = parameterKeyInfo.BindingSlot != -1;
+                    bool isData = parameterKeyInfo.Offset != -1;
+
+                    if (parameterKeyInfo.Key.Name.EndsWith(keyRoot))
+                    {
+                        // That's a match
+
+                        var subkeyName = parameterKeyInfo.Key.Name.Substring(0, parameterKeyInfo.Key.Name.Length - keyRoot.Length);
+                        var subkey = ParameterKeys.FindByName(subkeyName);
+
+                        if (isData)
+                        {
+                            // First time since range reset, let's setup destination offset
+                            if (currentDataRange.DestStart == -1)
+                                currentDataRange.DestStart = parameterKeyInfo.Offset;
+
+                            // Might be some empty space (padding)
+                            currentDataRange.Size = parameterKeyInfo.Offset - currentDataRange.DestStart;
+
+                            sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size, parameterKeyInfo.Size));
+
+                            currentDataRange.Size += parameterKeyInfo.Size;
+                        }
+                        else if (isResource)
+                        {
+                            // First time since range reset, let's setup destination offset
+                            if (currentResourceRange.DestStart == -1)
+                                currentResourceRange.DestStart = parameterKeyInfo.BindingSlot;
+
+                            // Might be some empty space (padding) (probably unlikely for resources...)
+                            currentResourceRange.Size = parameterKeyInfo.BindingSlot - currentResourceRange.DestStart;
+
+                            sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size));
+
+                            currentResourceRange.Size += parameterKeyInfo.Size;
+                        }
+                    }
+                    else
+                    {
+                        // Found one item not part of the range, let's finish it
+                        if (isData)
+                            FlushRangeIfNecessary(ref currentDataRange);
+                        else if (isResource)
+                            FlushRangeIfNecessary(ref currentResourceRange);
+                    }
+                }
+
+                // Finish ranges
+                FlushRangeIfNecessary(ref currentDataRange);
+                FlushRangeIfNecessary(ref currentResourceRange);
+
+                // Update sizes
+                sourceLayout.BufferSize = currentDataRange.SourceStart;
+                sourceLayout.ResourceCount = currentResourceRange.SourceStart;
+
+                source.UpdateLayout(sourceLayout);
+            }
+
+            private void FlushRangeIfNecessary(ref CopyRange currentRange)
+            {
+                if (currentRange.Size > 0)
+                {
+                    ranges.Add(currentRange);
+                    currentRange.SourceStart += currentRange.Size;
+                    currentRange.DestStart = -1;
+                    currentRange.Size = 0;
+                }
+            }
+
+            struct CopyRange
+            {
+                public bool IsResource;
+                public bool IsData;
+                public int SourceStart;
+                public int DestStart;
+                public int Size;
+            }
+        }
     }
 }
