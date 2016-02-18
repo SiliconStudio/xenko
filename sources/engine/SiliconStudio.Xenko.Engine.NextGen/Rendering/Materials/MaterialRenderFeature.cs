@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public unsafe override void Prepare(RenderContext context)
         {
             foreach (var materialInfo in activeMaterialInfos)
             {
@@ -166,7 +166,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 if (materialInfo.ConstantBufferReflection != null)
                 {
                     var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, material.Parameters.DataValues, materialInfo.Resources.ConstantBuffer.Size);
+                    fixed (byte* dataValues = material.Parameters.DataValues)
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, materialInfo.Resources.ConstantBuffer.Size);
                 }
             }
 

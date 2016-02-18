@@ -229,7 +229,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public unsafe override void Prepare(RenderContext context)
         {
             var renderObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
 
@@ -281,7 +281,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (lightShadersPermutation.ConstantBufferReflection != null)
                 {
                     var mappedCB = lightShadersPermutation.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
+                    fixed (byte* dataValues = parameters.DataValues)
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
                 }
             }
 
