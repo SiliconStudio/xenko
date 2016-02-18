@@ -253,7 +253,10 @@ namespace SiliconStudio.Presentation
         /// <param name="fontFamily">The font family.</param>
         /// <param name="fontSize">Size of the font.</param>
         /// <param name="fontWeight">The font weight.</param>
-        public void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        /// <param name="hAlign">The horizontal alignment.</param>
+        /// <param name="vAlign">The vertical alignment.</param>
+        public void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
         {
             var textBlock = Create<TextBlock>();
             textBlock.Foreground = GetBrush(color);
@@ -261,7 +264,29 @@ namespace SiliconStudio.Presentation
             textBlock.FontSize = fontSize;
             textBlock.FontWeight = fontWeight;
             textBlock.Text = text;
-            textBlock.RenderTransform = new TranslateTransform(point.X, point.Y);
+
+            var dx = 0.0;
+            var dy = 0.0;
+
+            if (hAlign != HorizontalAlignment.Left || vAlign != VerticalAlignment.Top)
+            {
+                textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                var size = textBlock.DesiredSize;
+                if (hAlign == HorizontalAlignment.Center)
+                    dx = -size.Width / 2;
+
+                if (hAlign == HorizontalAlignment.Right)
+                    dx = -size.Width;
+
+                if (vAlign == VerticalAlignment.Center)
+                    dy = -size.Height / 2;
+
+                if (vAlign == VerticalAlignment.Bottom)
+                    dy = -size.Height;
+            }
+
+            textBlock.RenderTransform = new TranslateTransform(point.X + dx, point.Y + dy);
+            textBlock.SetValue(RenderOptions.ClearTypeHintProperty, ClearTypeHint.Enabled);
         }
 
         /// <summary>
@@ -286,7 +311,7 @@ namespace SiliconStudio.Presentation
                 FontWeight = fontWeight,
                 Text = text,
             };
-            textBlock.Measure(new Size(double.MaxValue, double.MaxValue));
+            textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
         }
 

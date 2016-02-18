@@ -191,10 +191,6 @@
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
-    <Compile Include="Curves\ControlPoint.cs" />
-    <Compile Include="Curves\CurveData.cs" />
-    <Compile Include="Curves\CurvePoint.cs" />
-    <Compile Include="Curves\CurvePointCollection.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
