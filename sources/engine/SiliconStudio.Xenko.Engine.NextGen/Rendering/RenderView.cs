@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -47,6 +48,8 @@ namespace SiliconStudio.Xenko.Rendering
         public SceneInstance SceneInstance;
 
         public SceneCameraRenderer SceneCameraRenderer;
+
+        public SceneCameraSlotCollection SceneCameraSlotCollection;
 
         /// <summary>
         /// The view matrix for this view.
