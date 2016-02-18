@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderSystem.Views.Add(mainRenderView);
 
-            RenderSystem.Initialize();
+            RenderSystem.InitializeFeatures();
 
             // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
