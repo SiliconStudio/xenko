@@ -53,6 +53,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
+
         // Used when locking asyncCreationLockObject
         private bool asyncCreationLockTaken;
 
@@ -774,8 +776,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userparam)
         {
-            string msg = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message);
-            Console.WriteLine("[GL] {0}; {1}; {2}; {3}; {4}", source, type, id, severity, msg);
+            if (severity == DebugSeverity.DebugSeverityHigh)
+            {
+                string msg = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message);
+                Log.Error("[GL] {0}; {1}; {2}; {3}; {4}", source, type, id, severity, msg);
+            }
         }
 
         protected void DestroyPlatformDevice()
