@@ -206,8 +206,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void Extract(RenderContext context)
         {
-            var sceneInstance = SceneInstance.GetCurrent(context);
-            
             // Reset render context data
             RenderSystem.Reset();
 

@@ -118,9 +118,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderContext context)
         {
             foreach (var materialInfo in activeMaterialInfos)
             {
@@ -173,10 +172,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
+            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
-                var renderNode = RootRenderFeature.renderNodes[renderNodeIndex];
+                var renderNode = RootRenderFeature.RenderNodes[renderNodeIndex];
                 var renderMesh = (RenderMesh)renderNode.RenderObject;
 
                 // Collect materials and create associated MaterialInfo (includes reflection) first time

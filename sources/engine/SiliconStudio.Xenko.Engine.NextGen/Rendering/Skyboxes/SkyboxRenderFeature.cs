@@ -18,11 +18,13 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
         private ConstantBufferOffsetReference matrixTransform;
 
+        /// <inheritdoc/>
         public override bool SupportsRenderObject(RenderObject renderObject)
         {
             return renderObject is RenderSkybox;
         }
 
+        /// <inheritdoc/>
         public override void Initialize()
         {
             base.Initialize();
@@ -34,6 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Initialize();
         }
 
+        /// <inheritdoc/>
         public override void Extract()
         {
             base.Extract();
@@ -41,6 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Extract();
         }
 
+        /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl()
         {
             var renderEffects = GetData(RenderEffectKey);
@@ -67,14 +71,15 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.PrepareEffectPermutations();
         }
 
-        public unsafe override void Prepare(RenderContext context)
+        /// <inheritdoc/>
+        public override unsafe void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
-            for (int renderNodeIndex = 0; renderNodeIndex < renderNodes.Count; renderNodeIndex++)
+            for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
-                var renderNode = renderNodes[renderNodeIndex];
+                var renderNode = RenderNodes[renderNodeIndex];
 
                 var renderSkybox = (RenderSkybox)renderNode.RenderObject;
                 var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
