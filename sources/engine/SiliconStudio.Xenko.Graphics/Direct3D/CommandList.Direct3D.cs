@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             fixed (Viewport* viewportsPtr = viewports)
             {
-                nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, renderTargetCount);
+                nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, renderTargetCount > 0 ? renderTargetCount : 1);
             }
         }
 
