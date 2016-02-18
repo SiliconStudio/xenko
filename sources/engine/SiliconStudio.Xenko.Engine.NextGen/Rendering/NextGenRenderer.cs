@@ -5,6 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Background;
+using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -25,9 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
         // Render stages
         internal ForwardLightingRenderFeature forwardLightingRenderFeature;
 
-        public RenderContext RenderContext;
-
-        public void Draw(RenderDrawContext context)
+        public void ExtractAndPrepare(RenderDrawContext context)
         {
             // Update current camera to render view
             foreach (var mainRenderView in Views)
@@ -39,15 +38,16 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Extract data from the scene
-            Extract(context.RenderContext);
+            Extract(context);
 
             // Perform most of computations
-            Prepare();
+            Prepare(context);
         }
 
         private void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
         {
-            renderView.Camera = context.RenderContext.GetCameraFromSlot(renderView.SceneCameraRenderer.Camera);
+            var compositor = renderView.SceneInstance.Scene.Settings.GraphicsCompositor as SceneGraphicsCompositorLayers;
+            renderView.Camera = compositor?.Cameras.GetCamera(renderView.SceneCameraRenderer.Camera);
 
             if (renderView.Camera == null)
                 return;
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering
             renderView.Projection = renderView.Camera.ProjectionMatrix;
         }
 
-        private void Prepare()
+        private void Prepare(RenderDrawContext context)
         {
             // Sync point: after extract, before prepare (game simulation could resume now)
 
@@ -86,11 +86,11 @@ namespace SiliconStudio.Xenko.Rendering
             // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
             {
                 // Divide into task chunks for parallelism
-                renderFeature.Prepare(RenderContext);
+                renderFeature.Prepare(context.RenderContext);
             }
         }
 
-        private void Extract(RenderContext context)
+        private void Extract(RenderDrawContext context)
         {
             // Reset render context data
             Reset();
