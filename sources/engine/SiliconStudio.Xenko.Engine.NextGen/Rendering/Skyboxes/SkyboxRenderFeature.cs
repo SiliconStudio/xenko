@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.PrepareEffectPermutations();
         }
 
-        public override void Prepare(RenderContext context)
+        public unsafe override void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
@@ -145,7 +145,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 if (renderSkybox.Resources.ConstantBuffer.Size > 0)
                 {
                     var mappedCB = renderSkybox.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, renderSkybox.Resources.ConstantBuffer.Size);
+                    fixed (byte* dataValues = parameters.DataValues)
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, renderSkybox.Resources.ConstantBuffer.Size);
                 }
             }
 

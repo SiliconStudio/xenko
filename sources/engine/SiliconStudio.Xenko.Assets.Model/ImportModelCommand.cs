@@ -181,7 +181,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <param name="parameters0">The first ParameterCollection.</param>
         /// <param name="parameters1">The second ParameterCollection.</param>
         /// <returns>True if the collections are the same, false otherwise.</returns>
-        private static bool IsSubsetOf(NextGenParameterCollection parameters0, NextGenParameterCollection parameters1)
+        private unsafe static bool IsSubsetOf(NextGenParameterCollection parameters0, NextGenParameterCollection parameters1)
         {
             foreach (var parameterKeyInfo in parameters0.ParameterKeyInfos)
             {
@@ -194,8 +194,10 @@ namespace SiliconStudio.Xenko.Assets.Model
                 if (parameterKeyInfo.Offset != -1)
                 {
                     // Data
-                    if (!Utilities.CompareMemory(parameters0.DataValues + parameterKeyInfo.Offset, parameters1.DataValues + otherParameterKeyInfo.Offset, parameterKeyInfo.Size))
-                        return false;
+                    fixed (byte* dataValues0 = parameters0.DataValues)
+                    fixed (byte* dataValues1 = parameters1.DataValues)
+                        if (!Utilities.CompareMemory((IntPtr)dataValues0 + parameterKeyInfo.Offset, (IntPtr)dataValues1 + otherParameterKeyInfo.Offset, parameterKeyInfo.Size))
+                            return false;
                 }
                 else if (parameterKeyInfo.BindingSlot != -1)
                 {

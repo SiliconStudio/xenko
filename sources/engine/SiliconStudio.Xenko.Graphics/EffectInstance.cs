@@ -46,13 +46,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public NextGenParameterCollection Parameters { get; }
 
-        protected override void Destroy()
-        {
-            base.Destroy();
-
-            Parameters.Dispose();
-        }
-
         /// <summary>
         /// Compiles or recompiles the effect if necesssary.
         /// </summary>
@@ -115,7 +108,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
-        public void Apply(CommandList commandList)
+        public unsafe void Apply(CommandList commandList)
         {
             UpdateEffect(commandList.GraphicsDevice);
 
@@ -156,7 +149,8 @@ namespace SiliconStudio.Xenko.Rendering
 
                     if (resourceGroup.ConstantBuffer.Size > 0)
                     {
-                        Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, Parameters.DataValues + bufferStartOffset, resourceGroup.ConstantBuffer.Size);
+                        fixed (byte* dataValues = Parameters.DataValues)
+                            Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, (IntPtr)dataValues + bufferStartOffset, resourceGroup.ConstantBuffer.Size);
                         bufferStartOffset += resourceGroup.ConstantBuffer.Size;
                     }
                 }

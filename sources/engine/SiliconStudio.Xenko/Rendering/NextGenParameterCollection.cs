@@ -13,8 +13,10 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataSerializer(typeof(NextGenParameterCollection.Serializer))]
     [DataSerializerGlobal(null, typeof(FastList<ParameterKeyInfo>))]
-    public class NextGenParameterCollection : IDisposable
+    public class NextGenParameterCollection
     {
+        private static readonly byte[] EmptyData = new byte[0];
+
         private FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos;
 
         // TODO: Switch to FastListStruct (for serialization)
@@ -23,8 +25,7 @@ namespace SiliconStudio.Xenko.Rendering
         // Constants and resources
         // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
         //   However, maybe ref locals would make this not needed anymore?
-        public IntPtr DataValues;
-        public int DataValuesSize;
+        public byte[] DataValues = EmptyData;
         public object[] ObjectValues;
 
         public int PermutationCounter;
@@ -32,15 +33,6 @@ namespace SiliconStudio.Xenko.Rendering
         public IEnumerable<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
-
-        public void Dispose()
-        {
-            if (DataValues != IntPtr.Zero)
-            {
-                Marshal.FreeHGlobal(DataValues);
-                DataValues = IntPtr.Zero;
-            }
-        }
 
         /// <summary>
         /// Gets an accessor to get and set objects more quickly.
@@ -71,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameterKey"></param>
         /// <returns></returns>
-        public ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
+        public unsafe ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -103,70 +95,17 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Create offset entry
             var result = new ValueParameter<T>(parameterKeyInfos.Count);
-            var memberOffset = DataValuesSize;
+            var memberOffset = DataValues.Length;
             parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
 
             // We append at the end; resize array to accomodate new data
-            DataValuesSize += totalSize;
-            DataValues = DataValues != IntPtr.Zero
-                ? Marshal.ReAllocHGlobal(DataValues, (IntPtr)DataValuesSize)
-                : Marshal.AllocHGlobal((IntPtr)DataValuesSize);
+            Array.Resize(ref DataValues, DataValues.Length + totalSize);
 
             // Initialize default value
             if (parameterKey.DefaultValueMetadata != null)
             {
-                parameterKey.DefaultValueMetadata.WriteBuffer(DataValues + memberOffset, 16);
-            }
-
-            return result;
-        }
-
-        [Obsolete]
-        public ValueParameter<T> GetValueParameterArray<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
-        {
-            // Find existing first
-            for (int i = 0; i < parameterKeyInfos.Count; ++i)
-            {
-                if (parameterKeyInfos[i].Key == parameterKey)
-                {
-                    return new ValueParameter<T>(i);
-                }
-            }
-
-            // Check layout if it exists
-            if (layoutParameterKeyInfos.Count > 0)
-            {
-                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
-                {
-                    if (layoutParameterKeyInfo.Key == parameterKey)
-                    {
-                        parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return new ValueParameter<T>(parameterKeyInfos.Count - 1);
-                    }
-                }
-            }
-
-            // Compute size
-            var elementSize = parameterKey.Size;
-            var totalSize = elementSize;
-            if (elementCount > 1)
-                totalSize += (elementSize + 15) / 16 * 16 * (elementCount - 1);
-
-            // Create offset entry
-            var result = new ValueParameter<T>(parameterKeyInfos.Count);
-            var memberOffset = DataValuesSize;
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
-
-            // We append at the end; resize array to accomodate new data
-            DataValuesSize += totalSize;
-            DataValues = DataValues != IntPtr.Zero
-                ? Marshal.ReAllocHGlobal(DataValues, (IntPtr)DataValuesSize)
-                : Marshal.AllocHGlobal((IntPtr)DataValuesSize);
-
-            // Initialize default value
-            if (parameterKey.DefaultValueMetadata != null)
-            {
-                parameterKey.DefaultValueMetadata.WriteBuffer(DataValues + memberOffset, 16);
+                fixed (byte* dataValues = DataValues)
+                    parameterKey.DefaultValueMetadata.WriteBuffer((IntPtr)dataValues + memberOffset, 16);
             }
 
             return result;
@@ -178,9 +117,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
+        public unsafe IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
         {
-            return DataValues + parameterKeyInfos[parameter.Index].Offset;
+            fixed (byte* dataValues = DataValues)
+                return (IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset;
         }
 
         /// <summary>
@@ -290,9 +230,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <param name="value"></param>
-        public void Set<T>(ValueParameter<T> parameter, T value) where T : struct
+        public unsafe void Set<T>(ValueParameter<T> parameter, T value) where T : struct
         {
-            Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
+            fixed (byte* dataValues = DataValues)
+                Utilities.Write((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
         /// <summary>
@@ -301,9 +242,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <param name="value"></param>
-        public void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
+        public unsafe void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
         {
-            Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
+            fixed (byte* dataValues = DataValues)
+                Utilities.Write((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
         /// <summary>
@@ -359,9 +301,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public T Get<T>(ValueParameter<T> parameter) where T : struct
+        public unsafe T Get<T>(ValueParameter<T> parameter) where T : struct
         {
-            return Utilities.Read<T>(DataValues + parameterKeyInfos[parameter.Index].Offset);
+            fixed (byte* dataValues = DataValues)
+                return Utilities.Read<T>((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset);
         }
 
         /// <summary>
@@ -424,7 +367,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="bufferSize"></param>
         /// <param name="constantBuffers"></param>
         /// <param name="descriptorSetLayouts"></param>
-        public void UpdateLayout(NextGenParameterCollectionLayout layout)
+        public unsafe void UpdateLayout(NextGenParameterCollectionLayout layout)
         {
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
@@ -476,7 +419,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
             
-            var newDataValues = Marshal.AllocHGlobal(bufferSize);
+            var newDataValues = new byte[bufferSize];
             var newResourceValues = new object[resourceCount];
 
             // Update default values
@@ -490,7 +433,8 @@ namespace SiliconStudio.Xenko.Rendering
                     var defaultValueMetadata = layoutParameterKeyInfo.Key?.DefaultValueMetadata;
                     if (defaultValueMetadata != null)
                     {
-                        defaultValueMetadata.WriteBuffer(newDataValues + bufferOffset + layoutParameterKeyInfo.Offset, 16);
+                        fixed (byte* newDataValuesPtr = newDataValues)
+                            defaultValueMetadata.WriteBuffer((IntPtr)newDataValuesPtr + bufferOffset + layoutParameterKeyInfo.Offset, 16);
                     }
                 }
             }
@@ -504,7 +448,9 @@ namespace SiliconStudio.Xenko.Rendering
                 if (newParameterKeyInfo.Offset != -1)
                 {
                     // It's data
-                    Utilities.CopyMemory(newDataValues + newParameterKeyInfo.Offset, DataValues + parameterKeyInfo.Offset, newParameterKeyInfo.Size);
+                    fixed (byte* dataValues = DataValues)
+                    fixed (byte* newDataValuesPtr = newDataValues)
+                        Utilities.CopyMemory((IntPtr)newDataValuesPtr + newParameterKeyInfo.Offset, (IntPtr)dataValues + parameterKeyInfo.Offset, newParameterKeyInfo.Size);
                 }
                 else if (newParameterKeyInfo.BindingSlot != -1)
                 {
@@ -516,9 +462,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Update new content
             parameterKeyInfos = newParameterKeyInfos;
 
-            Marshal.FreeHGlobal(DataValues);
             DataValues = newDataValues;
-            DataValuesSize = bufferSize;
             ObjectValues = newResourceValues;
         }
 
@@ -569,16 +513,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
                 stream.SerializeExtended(ref parameterCollection.ObjectValues, mode);
-                stream.Serialize(ref parameterCollection.DataValuesSize, mode);
-
-                if (parameterCollection.DataValuesSize > 0)
-                {
-                    // If deserializing, allocate if necessary
-                    if (mode == ArchiveMode.Deserialize)
-                        parameterCollection.DataValues = Marshal.AllocHGlobal(parameterCollection.DataValuesSize);
-
-                    stream.Serialize(parameterCollection.DataValues, parameterCollection.DataValuesSize);
-                }
+                stream.Serialize(ref parameterCollection.DataValues, mode);
             }
         }
 
@@ -587,7 +522,11 @@ namespace SiliconStudio.Xenko.Rendering
             List<CopyRange> ranges;
             NextGenParameterCollection destination;
 
-            public void Copy(NextGenParameterCollection source)
+            /// <summary>
+            /// Copies data from source to destination according to previously compiled layout.
+            /// </summary>
+            /// <param name="source"></param>
+            public unsafe void Copy(NextGenParameterCollection source)
             {
                 foreach (var range in ranges)
                 {
@@ -600,7 +539,9 @@ namespace SiliconStudio.Xenko.Rendering
                     }
                     else if (range.IsData)
                     {
-                        Utilities.CopyMemory(destination.DataValues + range.DestStart, source.DataValues + range.SourceStart, range.Size);
+                        fixed (byte* destDataValues = destination.DataValues)
+                        fixed (byte* sourceDataValues = source.DataValues)
+                            Utilities.CopyMemory((IntPtr)destDataValues + range.DestStart, (IntPtr)sourceDataValues + range.SourceStart, range.Size);
                     }
                 }
             }
