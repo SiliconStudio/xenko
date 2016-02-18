@@ -25,8 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             this.group = group;
             this.renderContext = renderContext;
             inputs = new List<Texture>();
-            throw new NotImplementedException();
-            //sharedParameters = group.Parameters;
+            sharedParameters = group.Parameters;
             transformParameters = new NextGenParameterCollection();
         }
 

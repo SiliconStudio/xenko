@@ -7,5 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly PermutationParameterKey<bool> AutoExposure = ParameterKeys.NewPermutation(false);
 
         public static readonly PermutationParameterKey<bool> AutoKey = ParameterKeys.NewPermutation(false);
+
+        public static readonly PermutationParameterKey<ToneMapOperator> Operator = ParameterKeys.NewPermutation<ToneMapOperator>();
     }
 }
