@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Shaders;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
@@ -43,6 +44,8 @@ namespace SiliconStudio.Xenko.Graphics
         private SamplerState[] samplerStates = new SamplerState[64];
         private IntPtr indexBufferOffset;
         internal bool hasRenderTarget, hasDepthStencilBuffer;
+
+        private Buffer constantBuffer;
 
         private int boundFBO;
         private bool needUpdateFBO = true;
@@ -271,7 +274,9 @@ namespace SiliconStudio.Xenko.Graphics
             // Set default render targets
             SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             GL.Enable(EnableCap.FramebufferSrgb);
+#endif
         }
 
         /// <summary>
@@ -310,7 +315,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, GraphicsDevice.FindOrCreateFBO(source));
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (IsOpenGLES2)
+                if (GraphicsDevice.IsOpenGLES2)
                 {
                     var format = destTexture.FormatGl;
                     var type = destTexture.Type;
@@ -340,7 +345,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            if (IsOpenGLES2)
+            if (GraphicsDevice.IsOpenGLES2)
             {
                 CopyScaler2D(sourceTexture, destTexture, sourceRectangle, new Rectangle(dstX, dstY, sourceRectangle.Width, sourceRectangle.Height));
             }
@@ -601,12 +606,10 @@ namespace SiliconStudio.Xenko.Graphics
             PreDraw();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            if (IsOpenGLES2)
+            if (GraphicsDevice.IsOpenGLES2)
                 throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
-            GL.DrawArraysInstanced(primitiveType.ToOpenGLES(), startVertexLocation, vertexCountPerInstance, instanceCount);
-#else
-            GL.DrawArraysInstanced(newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
 #endif
+            GL.DrawArraysInstanced(newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
@@ -673,7 +676,7 @@ namespace SiliconStudio.Xenko.Graphics
                         lengthInBytes);
                 }
                 
-                if (IsOpenGLES2)
+                if (GraphicsDevice.IsOpenGLES2)
                     throw new NotImplementedException();
 #endif
 
@@ -708,7 +711,7 @@ namespace SiliconStudio.Xenko.Graphics
                         throw new NotSupportedException("Only staging textures can be mapped.");
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
+                    if (GraphicsDevice.IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
                     {
                         return new MappedResource(resource, subResourceIndex,
                             new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
@@ -722,7 +725,7 @@ namespace SiliconStudio.Xenko.Graphics
                 else if (mapMode == MapMode.WriteDiscard)
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2)
+                    if (GraphicsDevice.IsOpenGLES2)
                         throw new NotImplementedException();
 #endif
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
@@ -964,7 +967,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // TODO: Dirty flags on both constant buffer content and if constant buffer changed
-            if (IsOpenGLES2)
+            if (GraphicsDevice.IsOpenGLES2)
             {
                 if (stage != ShaderStage.Vertex || slot != 0)
                     throw new InvalidOperationException("Only cbuffer slot 0 of vertex shader stage should be used on OpenGL ES 2.0.");
@@ -1231,7 +1234,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     // unmapping on OpenGL ES 2 means doing nothing since the buffer is on the CPU memory
-                    if (!IsOpenGLES2)
+                    if (!GraphicsDevice.IsOpenGLES2)
 #endif
                     {
                         GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.PixelBufferObjectId);
@@ -1240,7 +1243,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
                 }
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                else if (!IsOpenGLES2 && texture.Description.Usage == GraphicsResourceUsage.Dynamic)
+                else if (!GraphicsDevice.IsOpenGLES2 && texture.Description.Usage == GraphicsResourceUsage.Dynamic)
 #else
                 else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
 #endif
@@ -1281,7 +1284,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (buffer != null)
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2)
+                    if (GraphicsDevice.IsOpenGLES2)
                     {
                         // Only buffer with StagingData (fake cbuffer) could be mapped
                         if (buffer.StagingData == null)
@@ -1290,7 +1293,7 @@ namespace SiliconStudio.Xenko.Graphics
                         // Is it a real buffer? (fake cbuffer have no real GPU counter-part in OpenGL ES 2.0
                         if (buffer.ResourceId != 0)
                         {
-                            UnbindVertexArrayObject();
+                            //UnbindVertexArrayObject();
                             GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
                             GL.BufferSubData(buffer.bufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
                         }
