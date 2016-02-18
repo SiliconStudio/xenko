@@ -192,6 +192,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             // Align offset and store it as member offset
                             constantBufferOffset = (constantBufferOffset + alignment - 1)/alignment*alignment;
                             member.Offset = constantBufferOffset;
+                            member.Size = memberSize;
 
                             // Adjust offset for next item
                             constantBufferOffset += memberSize;
@@ -336,11 +337,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             if (member.Count > 1)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
-                size = roundedSize * member.Count; // last element might be smaller than vec4
-                alignment = size;
+                size = roundedSize * (member.Count - 1) + size; // last element might be smaller than vec4
+                alignment = roundedSize * member.Count;
             }
 
-            // Alignment is rounded up to vec4
+            // Alignment is maxed up to vec4
             if (alignment > 16)
                 alignment = 16;
 
