@@ -24,10 +24,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly List<LightComponent> VisibleLightsWithShadows;
 
+            public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
+
             public RenderViewLightData()
             {
                 VisibleLights = new List<LightComponent>(1024);
                 VisibleLightsWithShadows = new List<LightComponent>(1024);
+                LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
             }
         }
 
@@ -46,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private readonly List<KeyValuePair<Type, LightGroupRendererBase>> lightRenderers;
 
-        private readonly Dictionary<RenderView, RenderViewLightData> renderViewData;
+        private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas;
 
         private readonly List<ActiveLightGroupRenderer> activeRenderers;
 
@@ -59,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private readonly List<LightEntry> environmentLightsPerMesh;
         private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
 
-        private ObjectPropertyKey<LightParametersPermutationEntry> renderModelObjectInfoKey;
+        private ViewObjectPropertyKey<LightParametersPermutationEntry> renderViewObjectInfoKey;
 
         /// <summary>
         /// Gets the lights without shadow per light type.
@@ -104,7 +107,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
             lightRenderers = new List<KeyValuePair<Type, LightGroupRendererBase>>(16);
 
-            renderViewData = new Dictionary<RenderView, RenderViewLightData>();
+            renderViewDatas = new Dictionary<RenderView, RenderViewLightData>();
 
             shaderEntries = new Dictionary<ObjectId, LightShaderPermutationEntry>(1024);
 
@@ -129,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             base.Initialize();
 
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
-            renderModelObjectInfoKey = RootRenderFeature.CreateObjectKey<LightParametersPermutationEntry>();
+            renderViewObjectInfoKey = RootRenderFeature.CreateViewObjectKey<LightParametersPermutationEntry>();
 
             perLightingDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerLighting");
         }
@@ -138,21 +141,22 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public override void Extract()
         {
             // Initialize shadow map renderer
-            if (!isShadowMapRendererSetUp)
-            {
-                // TODO: Shadow mapping is currently disabled in new render system
-                // TODO: Make this pluggable
-                // TODO: Shadows should work on mobile platforms
-                if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
-                    && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
-                {
-                    ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
-                    ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
-                    ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
-                }
+            // TODO GRAPHICS REFACTOR: Move depth readback to shadow stage (and out of PostRenderers)
+            //if (!isShadowMapRendererSetUp)
+            //{
+            //    // TODO: Shadow mapping is currently disabled in new render system
+            //    // TODO: Make this pluggable
+            //    // TODO: Shadows should work on mobile platforms
+            //    if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
+            //        && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
+            //    {
+            //        ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
+            //        ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
+            //        ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
+            //    }
 
-                isShadowMapRendererSetUp = true;
-            }
+            //    isShadowMapRendererSetUp = true;
+            //}
 
             // Collect all visible lights
             CollectVisibleLights();
@@ -161,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
 
             // Collect shadow maps
-            ShadowMapRenderer?.Extract(renderViewData);
+            ShadowMapRenderer?.Extract(renderViewDatas);
 
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
@@ -178,32 +182,45 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             var renderEffects = RootRenderFeature.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
-            var renderObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
 
-            // TODO: Old code is working with RenderModel, but we should probably directly work with RenderMesh
-            foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
+            foreach (var view in RenderSystem.Views)
             {
-                var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
-                var renderMesh = (RenderMesh)objectNode.RenderObject;
-                var staticObjectNode = renderMesh.StaticObjectNode;
+                if (view.GetType() != typeof(RenderView))
+                    continue;
 
-                for (int i = 0; i < effectSlotCount; ++i)
+                RenderViewLightData renderViewData;
+                if (!renderViewDatas.TryGetValue(view, out renderViewData))
+                    continue;
+
+                var viewFeature = view.Features[RootRenderFeature.Index];
+
+                foreach (var renderPerViewNodeReference in viewFeature.ViewObjectNodes)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
-                    var renderEffect = renderEffects[staticEffectObjectNode];
+                    var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
 
-                    // Skip effects not used during this frame
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
-                        continue;
+                    var renderMesh = (RenderMesh)renderPerViewNode.RenderObject;
+                    var staticObjectNode = renderMesh.StaticObjectNode;
 
-                    var renderObjectInfo = PrepareRenderMeshForRendering(renderMesh, renderEffect, effectSlotCount);
-                    renderObjectInfoData[objectNodeReference] = renderObjectInfo;
+                    for (int i = 0; i < effectSlotCount; ++i)
+                    {
+                        var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                        var renderEffect = renderEffects[staticEffectObjectNode];
 
-                    if (renderObjectInfo == null)
-                        continue;
+                        // Skip effects not used during this frame
+                        if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                            continue;
 
-                    renderEffect.EffectValidator.ValidateParameter(LightingKeys.DirectLightGroups, renderObjectInfo.ShaderPermutationEntry.DirectLightShaders);
-                    renderEffect.EffectValidator.ValidateParameter(LightingKeys.EnvironmentLights, renderObjectInfo.ShaderPermutationEntry.EnvironmentLightShaders);
+                        // TODO GRAPHICS REFACTOR: Shader permutations can be collected per-object. Only parameter permutations need to be per-view-object.
+                        var renderObjectInfo = PrepareRenderMeshForRendering(renderViewData, renderMesh, renderEffect, effectSlotCount);
+                        renderViewObjectInfoData[renderPerViewNodeReference] = renderObjectInfo;
+
+                        if (renderObjectInfo == null)
+                            continue;
+
+                        renderEffect.EffectValidator.ValidateParameter(LightingKeys.DirectLightGroups, renderObjectInfo.ShaderPermutationEntry.DirectLightShaders);
+                        renderEffect.EffectValidator.ValidateParameter(LightingKeys.EnvironmentLights, renderObjectInfo.ShaderPermutationEntry.EnvironmentLightShaders);
+                    }
                 }
             }
         }
@@ -212,7 +229,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void Prepare(RenderContext context)
         {
-            var renderObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
 
             foreach (var lightParameterEntry in lightParameterEntries)
             {
@@ -271,13 +288,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var renderNode = RootRenderFeature.renderNodes[renderNodeIndex];
-                var renderObjectInfo = renderObjectInfoData[renderNode.RenderObject.ObjectNode];
+                var renderViewObjectInfo = renderViewObjectInfoData[renderNode.ViewObjectNode];
 
-                if (renderObjectInfo == null)
+                if (renderViewObjectInfo == null)
                     continue;
                 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
-                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderObjectInfo.ShaderPermutationEntry.Resources;
+                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderViewObjectInfo.ShaderPermutationEntry.Resources;
             }
         }
 
@@ -347,10 +364,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 RenderViewLightData renderViewLightData;
-                if (!renderViewData.TryGetValue(renderView, out renderViewLightData))
+                if (!renderViewDatas.TryGetValue(renderView, out renderViewLightData))
                 {
                     renderViewLightData = new RenderViewLightData();
-                    renderViewData.Add(renderView, renderViewLightData);
+                    renderViewDatas.Add(renderView, renderViewLightData);
                 }
 
                 renderViewLightData.VisibleLights.Clear();
@@ -405,7 +422,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private LightParametersPermutationEntry PrepareRenderMeshForRendering(RenderMesh renderMesh, RenderEffect renderEffect, int effectSlot)
+        private LightParametersPermutationEntry PrepareRenderMeshForRendering(RenderViewLightData renderViewData, RenderMesh renderMesh, RenderEffect renderEffect, int effectSlot)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
@@ -481,7 +498,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         LightShadowType shadowType = 0;
                         ILightShadowMapRenderer newShadowRenderer = null;
 
-                        if (ShadowMapRenderer != null && ShadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
+                        if (ShadowMapRenderer != null && renderViewData.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
                             newShadowRenderer = (ILightShadowMapRenderer)shadowTexture.Renderer;

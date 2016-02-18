@@ -42,8 +42,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
 
-        public readonly Dictionary<LightComponent, ILightShadowMapRenderer> LightComponentsWithShadows;
-
         public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowmapRenderStage)
         {
             RenderSystem = renderSystem;
@@ -51,7 +49,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
-            LightComponentsWithShadows = new Dictionary<LightComponent, ILightShadowMapRenderer>(16);
 
             Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
@@ -87,8 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             // Clear currently associated shadows
             shadowMapTextures.Clear();
-            LightComponentsWithShadows.Clear();
-
+            
             // Reset the state of renderers
             foreach (var rendererKeyPairs in Renderers)
             {
@@ -98,6 +94,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             foreach (var renderViewData in renderViewLightDatas)
             {
+                renderViewData.Value.LightComponentsWithShadows.Clear();
+
                 // Gets the current camera
                 Camera = renderViewData.Key.Camera;
 
@@ -107,7 +105,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Collect all required shadow maps
-                CollectShadowMaps(renderViewData.Key, renderViewData.Value.VisibleLightsWithShadows);
+                CollectShadowMaps(renderViewData.Key, renderViewData.Value);
 
                 // No shadow maps to render
                 if (shadowMapTextures.Count == 0)
@@ -119,8 +117,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 AssignRectangles();
 
                 // Collect shadow render views
-                foreach (var shadowMapTexture in shadowMapTextures)
+                foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
+                    var shadowMapTexture = lightShadowMapTexture.Value;
                     shadowMapTexture.Renderer.Extract(RenderSystem.RenderContextOld, this, shadowMapTexture);
                     for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
@@ -205,14 +204,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             lightShadowMapTexture.Atlas = currentAtlas;
         }
 
-        private void CollectShadowMaps(RenderView renderView, List<LightComponent> visibleLights)
+        private void CollectShadowMaps(RenderView renderView, ForwardLightingRenderFeature.RenderViewLightData renderViewLightData)
         {
             // TODO GRAPHICS REFACTOR Only lights of current scene!
 
             var sceneCameraRenderer = renderView.SceneCameraRenderer;
             var viewport = sceneCameraRenderer.ComputedViewport;
 
-            foreach (var lightComponent in visibleLights)
+            foreach (var lightComponent in renderViewLightData.VisibleLightsWithShadows)
             {
                 var light = lightComponent.Type as IDirectLight;
                 if (light == null)
@@ -256,7 +255,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var shadowMapTexture = shadowMapTextures.Add();
                 shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
 
-                LightComponentsWithShadows.Add(lightComponent, renderer);
+                renderViewLightData.LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
             }
         }
 
@@ -270,6 +269,29 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private static LightShadowMapTexture CreateLightShadowMapTexture()
         {
             return new LightShadowMapTexture();
+        }
+
+        public struct LightComponentKey : IEquatable<LightComponentKey>
+        {
+            public readonly LightComponent LightComponent;
+
+            public readonly RenderView RenderView;
+
+            public LightComponentKey(LightComponent lightComponent, RenderView renderView)
+            {
+                LightComponent = lightComponent;
+                RenderView = renderView;
+            }
+
+            public bool Equals(LightComponentKey other)
+            {
+                return LightComponent == other.LightComponent && RenderView == other.RenderView;
+            }
+
+            public override int GetHashCode()
+            {
+                return LightComponent.GetHashCode() ^ (397 * RenderView.GetHashCode());
+            }
         }
     }
 }

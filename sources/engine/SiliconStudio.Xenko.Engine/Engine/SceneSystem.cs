@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Engine
 
             // Extract and prepare phase
             var renderSystem = Services.GetServiceAs<NextGenRenderSystem>();
-            renderSystem?.Draw(renderDrawContext);
+            renderSystem?.ExtractAndPrepare(renderDrawContext);
 
             // Render phase
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);
