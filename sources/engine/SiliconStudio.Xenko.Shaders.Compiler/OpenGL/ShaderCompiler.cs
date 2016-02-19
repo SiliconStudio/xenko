@@ -172,7 +172,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     {
                         constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
                     }
+                }
 
+                foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
+                {
                     // Update constant buffer itself (first time only)
                     var reflectionConstantBuffer = reflection.ConstantBuffers.FirstOrDefault(x => x.Name == constantBuffer.Name && x.Size == 0);
                     if (reflectionConstantBuffer != null)

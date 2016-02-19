@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Graphics
         private IntPtr indexBufferOffset;
         internal bool hasRenderTarget, hasDepthStencilBuffer;
 
-        private Buffer constantBuffer;
+        private Buffer[] constantBuffers = new Buffer[64];
 
         private int boundFBO;
         private bool needUpdateFBO = true;
@@ -767,7 +767,7 @@ namespace SiliconStudio.Xenko.Graphics
             return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
         }
 
-        internal void PreDraw()
+        internal unsafe void PreDraw()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
             // Device with no background loading context: check if some loading is pending
@@ -872,90 +872,93 @@ namespace SiliconStudio.Xenko.Graphics
             SetViewportImpl();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            unsafe
+            if (GraphicsDevice.IsOpenGLES2)
             {
                 fixed(byte* boundUniforms = newPipelineState.EffectProgram.BoundUniforms)
                 {
-                    if (constantBuffer != null)
+                    foreach (var uniform in newPipelineState.EffectProgram.Uniforms)
                     {
+                        var constantBuffer = constantBuffers[uniform.ConstantBufferSlot];
+                        if (constantBuffer == null)
+                            continue;
+
+                        var constantBufferOffsetStart = newPipelineState.EffectProgram.ConstantBufferOffsets[uniform.ConstantBufferSlot];
+
                         var constantBufferData = constantBuffer.StagingData;
-                        foreach (var uniform in newPipelineState.EffectProgram.Uniforms)
+                        var firstUniformIndex = uniform.UniformIndex;
+                        var lastUniformIndex = firstUniformIndex + uniform.Count;
+                        var offset = uniform.Offset;
+                        var boundData = (IntPtr)boundUniforms + offset + constantBufferOffsetStart;
+                        var currentData = constantBufferData + offset;
+
+                        // Already updated? Early exit.
+                        // TODO: Not optimal for float1/float2 arrays (rare?)
+                        // Better to do "sparse" comparison, not sure if C# code would behave well though
+                        if (SiliconStudio.Core.Utilities.CompareMemory(boundData, currentData, uniform.CompareSize))
+                            continue;
+
+                        // Update bound cache for early exit
+                        SiliconStudio.Core.Utilities.CopyMemory(boundData, currentData, uniform.CompareSize);
+
+                        switch (uniform.Type)
                         {
-                            var firstUniformIndex = uniform.UniformIndex;
-                            var lastUniformIndex = firstUniformIndex + uniform.Count;
-                            var offset = uniform.Offset;
-                            var boundData = (IntPtr)boundUniforms + offset;
-                            var currentData = constantBufferData + offset;
-
-                            // Already updated? Early exit.
-                            // TODO: Not optimal for float1/float2 arrays (rare?)
-                            // Better to do "sparse" comparison, not sure if C# code would behave well though
-                            if (SiliconStudio.Core.Utilities.CompareMemory(boundData, currentData, uniform.CompareSize))
-                                continue;
-
-                            // Update bound cache for early exit
-                            SiliconStudio.Core.Utilities.CopyMemory(boundData, currentData, uniform.CompareSize);
-
-                            switch (uniform.Type)
-                            {
-                                case ActiveUniformType.Float:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform1(uniformIndex, 1, (float*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.FloatVec2:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform2(uniformIndex, 1, (float*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.FloatVec3:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform3(uniformIndex, 1, (float*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.FloatVec4:
-                                    GL.Uniform4(firstUniformIndex, uniform.Count, (float*)currentData);
-                                    break;
-                                case ActiveUniformType.FloatMat4:
-                                    GL.UniformMatrix4(uniform.UniformIndex, uniform.Count, false, (float*)currentData);
-                                    break;
-                                case ActiveUniformType.Bool:
-                                case ActiveUniformType.Int:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform1(uniformIndex, 1, (int*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.BoolVec2:
-                                case ActiveUniformType.IntVec2:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform2(uniformIndex, 1, (int*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.BoolVec3:
-                                case ActiveUniformType.IntVec3:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform3(uniformIndex, 1, (int*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.BoolVec4:
-                                case ActiveUniformType.IntVec4:
-                                    GL.Uniform4(firstUniformIndex, uniform.Count, (int*)currentData);
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
+                            case ActiveUniformType.Float:
+                                for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
+                                {
+                                    GL.Uniform1(uniformIndex, 1, (float*)currentData);
+                                    currentData += 16; // Each array element is spaced by 16 bytes
+                                }
+                                break;
+                            case ActiveUniformType.FloatVec2:
+                                for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
+                                {
+                                    GL.Uniform2(uniformIndex, 1, (float*)currentData);
+                                    currentData += 16; // Each array element is spaced by 16 bytes
+                                }
+                                break;
+                            case ActiveUniformType.FloatVec3:
+                                for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
+                                {
+                                    GL.Uniform3(uniformIndex, 1, (float*)currentData);
+                                    currentData += 16; // Each array element is spaced by 16 bytes
+                                }
+                                break;
+                            case ActiveUniformType.FloatVec4:
+                                GL.Uniform4(firstUniformIndex, uniform.Count, (float*)currentData);
+                                break;
+                            case ActiveUniformType.FloatMat4:
+                                GL.UniformMatrix4(uniform.UniformIndex, uniform.Count, false, (float*)currentData);
+                                break;
+                            case ActiveUniformType.Bool:
+                            case ActiveUniformType.Int:
+                                for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
+                                {
+                                    GL.Uniform1(uniformIndex, 1, (int*)currentData);
+                                    currentData += 16; // Each array element is spaced by 16 bytes
+                                }
+                                break;
+                            case ActiveUniformType.BoolVec2:
+                            case ActiveUniformType.IntVec2:
+                                for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
+                                {
+                                    GL.Uniform2(uniformIndex, 1, (int*)currentData);
+                                    currentData += 16; // Each array element is spaced by 16 bytes
+                                }
+                                break;
+                            case ActiveUniformType.BoolVec3:
+                            case ActiveUniformType.IntVec3:
+                                for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
+                                {
+                                    GL.Uniform3(uniformIndex, 1, (int*)currentData);
+                                    currentData += 16; // Each array element is spaced by 16 bytes
+                                }
+                                break;
+                            case ActiveUniformType.BoolVec4:
+                            case ActiveUniformType.IntVec4:
+                                GL.Uniform4(firstUniformIndex, uniform.Count, (int*)currentData);
+                                break;
+                            default:
+                                throw new NotImplementedException();
                         }
                     }
                 }                
@@ -981,10 +984,7 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: Dirty flags on both constant buffer content and if constant buffer changed
             if (GraphicsDevice.IsOpenGLES2)
             {
-                if (stage != ShaderStage.Vertex || slot != 0)
-                    throw new InvalidOperationException("Only cbuffer slot 0 of vertex shader stage should be used on OpenGL ES 2.0.");
-
-                constantBuffer = buffer;
+                constantBuffers[slot] = buffer;
             }
             else
 #endif
