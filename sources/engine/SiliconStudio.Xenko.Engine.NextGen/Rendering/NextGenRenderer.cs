@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
-        public bool Picking { get; set; } = true;
+        public bool Picking { get; set; } = false;
 
         protected override void InitializeCore()
         {
@@ -343,6 +343,15 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             Draw(RenderSystem, context, mainRenderView, RenderSystem.mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
+
+            // Depth readback
+            //if (Shadows)
+            //{
+            //    foreach (var renderer in RenderSystem.forwardLightingRenderFeature.ShadowMapRenderer.Renderers)
+            //    {
+                    
+            //    }
+            //}
 
             // Picking
             if (Picking)
