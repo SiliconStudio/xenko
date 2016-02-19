@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -7,10 +8,21 @@ namespace SiliconStudio.Presentation.Behaviors
         where TElement : UIElement
     {
         /// <summary>
+        /// Identifies the <see cref="IsInProgress"/> dependency property key.
+        /// </summary>
+        public static readonly DependencyPropertyKey IsInProgressPropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(IsInProgress), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(false));
+        /// <summary>
+        /// Identifies the <see cref="IsInProgress"/> dependency property.
+        /// </summary>
+        [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
+        private static readonly DependencyProperty IsInProgressProperty = IsInProgressPropertyKey.DependencyProperty;
+        
+        /// <summary>
         /// True if an operation is in progress, False otherwise.
         /// </summary>
-        public bool IsInProgress { get; protected set; }
-
+        public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } protected set { SetValue(IsInProgressPropertyKey, value); } }
+        
         protected void Cancel()
         {
             if (!IsInProgress)

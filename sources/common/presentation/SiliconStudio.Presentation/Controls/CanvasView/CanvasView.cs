@@ -141,15 +141,8 @@ namespace SiliconStudio.Presentation.Controls
             return base.ArrangeOverride(arrangeBounds);
         }
 
-        //protected override Size MeasureOverride(Size availableSize)
-        //{
-        //    var realBounds = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
-        //    realBounds.Union(CanvasBounds);
-        //    return new Size(realBounds.Width, realBounds.Height);
-        //}
-
         /// <summary>
-        /// Invalidates the canvas. The <see cref="Model"/> will render it only once, after all non-idle operations are completed
+        /// Invalidates the canvas (not blocking the UI thread). The <see cref="Model"/> will render it only once, after all non-idle operations are completed
         /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
         /// even when other operations are coming.
         /// </summary>
@@ -172,7 +165,6 @@ namespace SiliconStudio.Presentation.Controls
                 {
                     CanvasBounds = VisualTreeHelper.GetDescendantBounds(renderer.Canvas);
                     IsCanvasValid = true;
-                    //InvalidateMeasure();
                     // We must wait after the canvas is rendered to get correct values
                 }, DispatcherPriority.Loaded);
             }, DispatcherPriority.Background);
