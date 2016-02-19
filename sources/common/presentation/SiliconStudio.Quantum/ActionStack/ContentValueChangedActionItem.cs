@@ -11,7 +11,6 @@ namespace SiliconStudio.Quantum.ActionStack
     public class ContentValueChangedActionItem : DirtiableActionItem
     {
         protected readonly IContent Content;
-        protected ContentChangeType ChangeType;
         protected object Index;
         protected object PreviousValue;
 
@@ -32,6 +31,8 @@ namespace SiliconStudio.Quantum.ActionStack
             PreviousValue = previousValue;
             Index = index;
         }
+
+        public ContentChangeType ChangeType { get; protected set; }
 
         /// <inheritdoc/>
         protected override void FreezeMembers()
