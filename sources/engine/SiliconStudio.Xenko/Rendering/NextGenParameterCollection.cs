@@ -186,7 +186,18 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="values"></param>
         public void Set<T>(ValueParameterKey<T> parameter, T[] values) where T : struct
         {
-            Set(GetAccessor(parameter, values.Length), values);
+            Set(GetAccessor(parameter, values.Length), values.Length, ref values[0]);
+        }
+
+        /// <summary>
+        /// Sets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="values"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, int count, ref T firstValue) where T : struct
+        {
+            Set(GetAccessor(parameter, count), count, ref firstValue);
         }
 
         /// <summary>
@@ -254,21 +265,25 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <param name="values"></param>
-        public void Set<T>(ValueParameter<T> parameter, T[] values) where T : struct
+        public void Set<T>(ValueParameter<T> parameter, int count, ref T firstValue) where T : struct
         {
             var data = GetValuePointer(parameter);
 
             // Align to float4
             var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
             var elementCount = (parameterKeyInfos[parameter.Index].Size + stride) / stride;
-            if (values.Length > elementCount)
+            if (count > elementCount)
             {
                 throw new IndexOutOfRangeException();
             }
-            for (int i = 0; i < values.Length; ++i)
+
+            var value = Interop.Pin(ref firstValue);
+            for (int i = 0; i < count; ++i)
             {
-                Utilities.Write(data, ref values[i]);
+                Utilities.Write(data, ref value);
                 data += stride;
+
+                value = Interop.IncrementPinned(value);
             }
         }
 
