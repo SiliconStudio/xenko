@@ -17,6 +17,18 @@ namespace SiliconStudio.Xenko.Particles.Updaters
     [Display("Rotation Animation")]
     public class UpdaterRotationOverTime : ParticleUpdater
     {
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
+        public UpdaterRotationOverTime()
+        {
+            RequiredFields.Add(ParticleFields.Angle);
+
+            var curve = new ComputeAnimationCurveFloat();
+            SamplerMain.Curve = curve;
+        }
+
+
         /// <inheritdoc />
         [DataMemberIgnore]
         public override bool IsPostUpdater => true;
@@ -52,14 +64,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
-        /// <inheritdoc />
-        public UpdaterRotationOverTime()
-        {
-            RequiredFields.Add(ParticleFields.Angle);
-
-            var curve = new ComputeAnimationCurveFloat();
-            SamplerMain.Curve = curve;
-        }
 
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
@@ -76,6 +80,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             UpdateDoubleSampler(pool);
         }
 
+        /// <summary>
+        /// Updates the field by sampling a single value over the particle's lifetime
+        /// </summary>
+        /// <param name="pool">Target <see cref="ParticlePool"/></param>
         private unsafe void UpdateSingleSampler(ParticlePool pool)
         {
             var angleField = pool.GetField(ParticleFields.Angle);
@@ -91,6 +99,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             }
         }
 
+        /// <summary>
+        /// Updates the field by interpolating between two sampled values over the particle's lifetime
+        /// </summary>
+        /// <param name="pool">Target <see cref="ParticlePool"/></param>
         private unsafe void UpdateDoubleSampler(ParticlePool pool)
         {
             var angleField = pool.GetField(ParticleFields.Angle);
