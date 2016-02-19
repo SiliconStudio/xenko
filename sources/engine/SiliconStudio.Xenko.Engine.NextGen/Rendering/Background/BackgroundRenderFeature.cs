@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
                 // TODO GRAPHICS REFACTOR: Disable depth once we sort properly
                 spriteBatch.Begin(context.CommandList, SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.DepthRead, null, backgroundEffect);
-                spriteBatch.Parameters.SetValueSlow(BackgroundEffectKeys.Intensity, renderBackground.Intensity);
+                spriteBatch.Parameters.Set(BackgroundEffectKeys.Intensity, renderBackground.Intensity);
                 spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero, layerDepth: -0.5f);
                 spriteBatch.End();
             }
