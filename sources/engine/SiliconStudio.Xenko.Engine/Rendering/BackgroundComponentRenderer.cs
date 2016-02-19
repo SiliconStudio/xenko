@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering
             var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
             spriteBatch.Begin(context.CommandList, SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.None, null, backgroundEffect);
-            spriteBatch.Parameters.SetValueSlow(BackgroundEffectKeys.Intensity, background.Intensity);
+            spriteBatch.Parameters.Set(BackgroundEffectKeys.Intensity, background.Intensity);
             spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero);
             spriteBatch.End();
         }

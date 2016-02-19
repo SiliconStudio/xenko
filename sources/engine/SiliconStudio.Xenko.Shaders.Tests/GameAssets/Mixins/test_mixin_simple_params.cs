@@ -18,9 +18,9 @@ namespace Test7
 {
     [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<bool> param1 = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<int> param2 = ParameterKeys.New<int>(1);
-        public static readonly ParameterKey<string> param3 = ParameterKeys.New<string>("ok");
+        public static readonly PermutationParameterKey<bool> param1 = ParameterKeys.NewPermutation<bool>();
+        public static readonly PermutationParameterKey<int> param2 = ParameterKeys.NewPermutation<int>(1);
+        public static readonly PermutationParameterKey<string> param3 = ParameterKeys.NewPermutation<string>("ok");
     };
     internal static partial class ShaderMixins
     {

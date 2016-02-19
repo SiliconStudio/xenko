@@ -102,10 +102,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var skybox = (SkyboxComponent)renderItems[i].DrawContext;
 
                 // Setup the intensity
-                skyboxEffect.Parameters.SetValueSlow(SkyboxKeys.Intensity, skybox.Intensity);
+                skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, skybox.Intensity);
 
                 // Setup the rotation
-                skyboxEffect.Parameters.SetValueSlow(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
+                skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
 
                 skyboxEffect.SetOutput(CurrentRenderFrame.RenderTargets);
                 skyboxEffect.SetViewport(viewport);

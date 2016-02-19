@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 }
 
                 var shaderSource = asset.Model.Generate(context);
-                parameters.SetResourceSlow(SkyboxKeys.Shader, shaderSource);
+                parameters.Set(SkyboxKeys.Shader, shaderSource);
 
                 // -------------------------------------------------------------------
                 // Calculate Diffuse prefiltering
@@ -149,8 +149,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     coefficients[i] = coefficients[i] * bases[i];
                 }
 
-                skybox.DiffuseLightingParameters.SetResourceSlow(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
-                skybox.DiffuseLightingParameters.SetValueSlow(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
+                skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
+                skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
 
                 // -------------------------------------------------------------------
                 // Calculate Specular prefiltering
@@ -176,8 +176,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage(context.RenderDrawContext.CommandList));
 
-                    skybox.SpecularLightingParameters.SetResourceSlow(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
-                    skybox.SpecularLightingParameters.SetResourceSlow(SkyboxKeys.CubeMap, cubeTexture);
+                    skybox.SpecularLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
+                    skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, cubeTexture);
                 }
 
                 // TODO: cubeTexture is not deallocated

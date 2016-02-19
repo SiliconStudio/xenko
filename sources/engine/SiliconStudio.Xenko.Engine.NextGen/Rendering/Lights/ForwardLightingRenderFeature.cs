@@ -228,9 +228,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderContext context)
         {
             var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
 
@@ -275,22 +274,23 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Set resource bindings in PerLighting resource set
                 for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
                 {
-                    lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
+                    lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerMaterial cbuffer
                 if (lightShadersPermutation.ConstantBufferReflection != null)
                 {
                     var mappedCB = lightShadersPermutation.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
+                    fixed (byte* dataValues = parameters.DataValues)
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
                 }
             }
 
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
+            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
-                var renderNode = RootRenderFeature.renderNodes[renderNodeIndex];
+                var renderNode = RootRenderFeature.RenderNodes[renderNodeIndex];
                 var renderViewObjectInfo = renderViewObjectInfoData[renderNode.ViewObjectNode];
 
                 if (renderViewObjectInfo == null)

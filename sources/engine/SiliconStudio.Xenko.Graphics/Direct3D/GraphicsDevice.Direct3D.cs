@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
             simulateReset = true;
         }
 
-        private void InitializeFactories()
+        private void InitializePostFeatures()
         {
             
         }

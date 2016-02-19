@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -13,12 +13,12 @@ namespace SiliconStudio.Xenko.Physics
     {
         private static EffectBytecode bytecode;
 
-        private readonly ParameterCollection parameters;
+        private readonly NextGenParameterCollection parameters;
 
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode)))
         {
-            parameters = new ParameterCollection();
+            parameters = new NextGenParameterCollection();
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;
@@ -63,6 +63,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public void Apply()
         {
+            // TODO GRAPHICS REFACTOR
             //Apply(parameters);
             throw new NotImplementedException();
         }

@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets
 
         private readonly Dictionary<ParameterKey, int> parameterKeyIndices;
 
-        private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
+        private readonly Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>> declaredSamplerStates;
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
 
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets
         {
             Parameters = new NextGenParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
-            declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
+            declaredSamplerStates = new Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>>();
         }
 
         public NextGenParameterCollection Parameters { get; set; }
@@ -98,24 +98,24 @@ namespace SiliconStudio.Xenko.Assets
             return texture;
         }
 
-        public ParameterKey<Texture> GetTextureKey(Texture texture, ParameterKey<Texture> key, Color? defaultTextureValue = null)
+        public ObjectParameterKey<Texture> GetTextureKey(Texture texture, ObjectParameterKey<Texture> key, Color? defaultTextureValue = null)
         {
-            var textureKey = (ParameterKey<Texture>)GetParameterKey(key);
+            var textureKey = (ObjectParameterKey<Texture>)GetParameterKey(key);
             if (texture != null)
             {
-                Parameters.SetResourceSlow(textureKey, texture);
+                Parameters.Set(textureKey, texture);
             }
             else if (defaultTextureValue != null && Assets != null)
             {
                 texture = GenerateTextureFromColor(defaultTextureValue.Value);
-                Parameters.SetResourceSlow(textureKey, texture);
+                Parameters.Set(textureKey, texture);
             }
             return textureKey;
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc)
         {
-            ParameterKey<SamplerState> key;
+            ObjectParameterKey<SamplerState> key;
 
             if (!declaredSamplerStates.TryGetValue(samplerStateDesc, out key))
             {
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             var samplerState = SamplerState.NewFake(samplerStateDesc);
-            Parameters.SetResourceSlow(key, samplerState);
+            Parameters.Set(key, samplerState);
             return key;
         }
     }

@@ -10,14 +10,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public static class MyCustomShaderKeys
     {
-        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
+        public static readonly ValueParameterKey<Vector4> ColorFactor2 = ParameterKeys.NewValue<Vector4>();
     }
 
     [TestFixture]
     public class TestCustomEffect : GraphicTestGameBase
     {
-        private ParameterCollection effectParameters;
-
         private DynamicEffectInstance effectInstance;
 
         private float switchEffectLevel;
@@ -38,8 +36,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-
-            effectParameters = new ParameterCollection();
             effectInstance = new DynamicEffectInstance("CustomEffect.CustomSubEffect");
             effectInstance.Initialize(Services);
         }
@@ -58,9 +54,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            effectInstance.Parameters.SetValueSlow(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
-            effectInstance.Parameters.SetValueSlow(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
-            effectInstance.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
+            effectInstance.Parameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
+            effectInstance.Parameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
+            effectInstance.Parameters.Set(TexturingKeys.Texture0, UVTexture);
             switchEffectLevel++; // TODO: Add switch Effect to test and capture frames
 
             GraphicsCommandList.DrawQuad(effectInstance);

@@ -15,6 +15,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <userdoc>
         /// If checked, the mesh parameters will be used to generate effects.
         /// </userdoc>
-        public static readonly ParameterKey<bool> UseParameters = ParameterKeys.New<bool>();
+        public static readonly ValueParameterKey<bool> UseParameters = ParameterKeys.NewValue<bool>();
     }
 }

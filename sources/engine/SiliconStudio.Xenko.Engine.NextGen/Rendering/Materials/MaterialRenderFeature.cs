@@ -44,9 +44,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public Buffer ConstantBuffer;
             public ShaderConstantBufferDescription ConstantBufferReflection;
 
-            public ResourceParameter<ShaderSource> PixelStageSurfaceShaders;
-            public ResourceParameter<ShaderSource> PixelStageStreamInitializer;
-            public ResourceParameter<ShaderSource> PixelStageSurfaceFilter;
+            public PermutationParameter<ShaderSource> PixelStageSurfaceShaders;
+            public PermutationParameter<ShaderSource> PixelStageStreamInitializer;
+            public PermutationParameter<ShaderSource> PixelStageSurfaceFilter;
             public RenderEffect RenderEffect;
 
             public MaterialInfo(Material material)
@@ -97,9 +97,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         material.RenderData = materialInfo;
                         allMaterialInfos.Add(materialInfo);
 
-                        materialInfo.PixelStageSurfaceShaders = material.Parameters.GetResourceParameter(MaterialKeys.PixelStageSurfaceShaders);
-                        materialInfo.PixelStageStreamInitializer = material.Parameters.GetResourceParameter(MaterialKeys.PixelStageStreamInitializer);
-                        materialInfo.PixelStageSurfaceFilter = material.Parameters.GetResourceParameter(MaterialKeys.PixelStageSurfaceFilter);
+                        materialInfo.PixelStageSurfaceShaders = material.Parameters.GetAccessor(MaterialKeys.PixelStageSurfaceShaders);
+                        materialInfo.PixelStageStreamInitializer = material.Parameters.GetAccessor(MaterialKeys.PixelStageStreamInitializer);
+                        materialInfo.PixelStageSurfaceFilter = material.Parameters.GetAccessor(MaterialKeys.PixelStageSurfaceFilter);
 
                         materialInfo.RenderEffect = renderEffect;
                     }
@@ -118,9 +118,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderContext context)
         {
             foreach (var materialInfo in activeMaterialInfos)
             {
@@ -159,23 +158,24 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Set resource bindings in PerMaterial resource set
                 for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)
                 {
-                    materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, material.Parameters.ResourceValues[resourceSlot]);
+                    materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, material.Parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerMaterial cbuffer
                 if (materialInfo.ConstantBufferReflection != null)
                 {
                     var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, material.Parameters.DataValues, materialInfo.Resources.ConstantBuffer.Size);
+                    fixed (byte* dataValues = material.Parameters.DataValues)
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, materialInfo.Resources.ConstantBuffer.Size);
                 }
             }
 
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
+            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
-                var renderNode = RootRenderFeature.renderNodes[renderNodeIndex];
+                var renderNode = RootRenderFeature.RenderNodes[renderNodeIndex];
                 var renderMesh = (RenderMesh)renderNode.RenderObject;
 
                 // Collect materials and create associated MaterialInfo (includes reflection) first time

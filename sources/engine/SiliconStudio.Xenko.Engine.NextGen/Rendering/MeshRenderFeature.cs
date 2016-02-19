@@ -51,7 +51,6 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
         public override void Prepare(RenderContext context)
         {

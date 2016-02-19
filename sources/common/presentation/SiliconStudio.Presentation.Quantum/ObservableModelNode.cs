@@ -153,9 +153,6 @@ namespace SiliconStudio.Presentation.Quantum
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
-        // TODO: would be better to put the override info in an associated data or in a specialized derived class.
-        public OverrideType Override => (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base;
-
         internal Guid ModelGuid => SourceNode.Guid;
    
         /// <summary>
@@ -340,15 +337,10 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        public virtual void ForceSetValue(object newValue)
-        {
-            Value = newValue;
-        }
-
         /// <summary>
         /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
         /// </summary>
-        public virtual void Refresh()
+        protected void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
@@ -447,7 +439,6 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 ((ObservableNode)Parent)?.NotifyPropertyChanging(Name);
                 OnPropertyChanging(nameof(TypedValue));
-                OnPropertyChanging(nameof(Override));
             }
         }
 
@@ -455,15 +446,15 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (IsValidChange(e))
             {
-                EnsureNotDisposed();
                 ((ObservableNode)Parent)?.NotifyPropertyChanged(Name);
 
-                if (!IsPrimitive)
+                // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
+                // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
+                if (!IsPrimitive && !IsDisposed)
                 {
                     Refresh();
                 }
 
-                OnPropertyChanged(nameof(Override));
                 OnPropertyChanged(nameof(TypedValue));
                 OnValueChanged();
                 Owner.NotifyNodeChanged(Path);

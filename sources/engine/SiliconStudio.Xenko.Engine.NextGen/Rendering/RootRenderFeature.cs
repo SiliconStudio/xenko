@@ -12,19 +12,6 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract partial class RootRenderFeature : RenderFeature
     {
-        // Index that will be used for collections such as RenderView.RenderNodes and RenderView.ViewObjectNodes
-        internal int Index;
-
-        /// <summary>
-        /// List of <see cref="RenderObject"/> initialized with this root render feature.
-        /// </summary>
-        public List<RenderObject> RenderObjects = new List<RenderObject>(); // Note: user should add/remove with RenderObjectSet
-
-        // Nodes to process this frame
-        internal List<ObjectNodeReference> ObjectNodeReferences { get; } = new List<ObjectNodeReference>();
-
-        // Nodes for temporary storage
-        internal List<RenderNode> renderNodes = new List<RenderNode>();
         private List<ViewObjectNode> viewObjectNodes = new List<ViewObjectNode>();
         private List<ObjectNode> objectNodes = new List<ObjectNode>();
 
@@ -32,6 +19,27 @@ namespace SiliconStudio.Xenko.Rendering
         private Dictionary<object, int> dataArraysByDefinition = new Dictionary<object, int>();
         private FastListStruct<DataArray> dataArrays = new FastListStruct<DataArray>(8);
 
+        // Index that will be used for collections such as RenderView.RenderNodes and RenderView.ViewObjectNodes
+        public int Index { get; internal set; }
+
+        /// <summary>
+        /// List of <see cref="RenderObject"/> initialized with this root render feature.
+        /// </summary>
+        public List<RenderObject> RenderObjects = new List<RenderObject>();
+
+        /// <summary>
+        /// Object nodes to process this frame.
+        /// </summary>
+        public List<ObjectNodeReference> ObjectNodeReferences { get; } = new List<ObjectNodeReference>();
+
+        /// <summary>
+        /// List of render nodes for this specific root render feature.
+        /// </summary>
+        public List<RenderNode> RenderNodes { get; } = new List<RenderNode>();
+
+        /// <summary>
+        /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
+        /// </summary>
         public Action<RenderObject> ComputeRenderStages;
 
         /// <summary>
@@ -41,20 +49,35 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns>True if this type of object is supported, false otherwise.</returns>
         public abstract bool SupportsRenderObject(RenderObject renderObject);
 
+        /// <summary>
+        /// Gets the render node from its reference.
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <returns>The render node.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal RenderNode GetRenderNode(RenderNodeReference reference)
+        public RenderNode GetRenderNode(RenderNodeReference reference)
         {
-            return renderNodes[reference.Index];
+            return RenderNodes[reference.Index];
         }
 
+        /// <summary>
+        /// Gets the view object node from its reference.
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <returns>The view object node.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ViewObjectNode GetViewObjectNode(ViewObjectNodeReference reference)
+        public ViewObjectNode GetViewObjectNode(ViewObjectNodeReference reference)
         {
             return viewObjectNodes[reference.Index];
         }
 
+        /// <summary>
+        /// Gets the object node from its reference.
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <returns>The object node.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ObjectNode GetObjectNode(ObjectNodeReference reference)
+        public ObjectNode GetObjectNode(ObjectNodeReference reference)
         {
             return objectNodes[reference.Index];
         }
@@ -64,12 +87,18 @@ namespace SiliconStudio.Xenko.Rendering
             var renderNode = new RenderNode(renderObject, renderView, renderPerViewNode, renderStage);
 
             // Create view node
-            var result = new RenderNodeReference(renderNodes.Count);
-            renderNodes.Add(renderNode);
+            var result = new RenderNodeReference(RenderNodes.Count);
+            RenderNodes.Add(renderNode);
             return result;
         }
 
-        internal ViewObjectNodeReference CreateViewObjectNode(RenderView view, RenderObject renderObject)
+        /// <summary>
+        /// Creates a view object node during Extract phase.
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="renderObject"></param>
+        /// <returns>The view object node reference.</returns>
+        public ViewObjectNodeReference CreateViewObjectNode(RenderView view, RenderObject renderObject)
         {
             var renderViewNode = new ViewObjectNode(renderObject, view, renderObject.ObjectNode);
 
@@ -93,11 +122,19 @@ namespace SiliconStudio.Xenko.Rendering
             return renderObject.ObjectNode;
         }
 
+        /// <summary>
+        /// Called when a render object is added.
+        /// </summary>
+        /// <param name="renderObject"></param>
         protected virtual void OnAddRenderObject(RenderObject renderObject)
         {
             
         }
 
+        /// <summary>
+        /// Called when a render object is removed.
+        /// </summary>
+        /// <param name="renderObject"></param>
         protected virtual void OnRemoveRenderObject(RenderObject renderObject)
         {
 
@@ -163,7 +200,7 @@ namespace SiliconStudio.Xenko.Rendering
             viewObjectNodes.Clear();
             objectNodes.Clear();
             ObjectNodeReferences.Clear();
-            renderNodes.Clear();
+            RenderNodes.Clear();
         }
 
         public void PrepareDataArrays()
@@ -186,7 +223,7 @@ namespace SiliconStudio.Xenko.Rendering
                 case DataType.Object:
                     return objectNodes.Count;
                 case DataType.Render:
-                    return renderNodes.Count;
+                    return RenderNodes.Count;
                 case DataType.View:
                     return RenderSystem.Views.Count;
                 case DataType.StaticObject:

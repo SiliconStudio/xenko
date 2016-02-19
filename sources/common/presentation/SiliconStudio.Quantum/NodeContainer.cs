@@ -15,8 +15,11 @@ namespace SiliconStudio.Quantum
     public class NodeContainer
     {
         private readonly Dictionary<Guid, IGraphNode> nodesByGuid = new Dictionary<Guid, IGraphNode>();
+        private readonly Dictionary<IGraphNode, NodeFactoryDelegate> factoriesByNode = new Dictionary<IGraphNode, NodeFactoryDelegate>();
+        private readonly Dictionary<NodeFactoryId, NodeFactoryDelegate> nodeFactories = new Dictionary<NodeFactoryId, NodeFactoryDelegate>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
+        private NodeFactoryDelegate defaultNodeFactory;
 
         /// <summary>
         /// Create a new instance of <see cref="NodeContainer"/>.
@@ -27,8 +30,9 @@ namespace SiliconStudio.Quantum
             if (instantiateGuidContainer)
                 guidContainer = new GuidContainer();
             NodeBuilder = CreateDefaultNodeBuilder();
+            RegisterDefaultFactory((name, content, guid) => new GraphNode(name, content, guid));
         }
-        
+
         /// <summary>
         /// Create a new instance of <see cref="NodeContainer"/>. This constructor allows to provide a <see cref="IGuidContainer"/>,
         /// in order to share object <see cref="Guid"/> between different <see cref="NodeContainer"/>.
@@ -39,6 +43,7 @@ namespace SiliconStudio.Quantum
             if (guidContainer == null) throw new ArgumentNullException(nameof(guidContainer));
             this.guidContainer = guidContainer;
             NodeBuilder = CreateDefaultNodeBuilder();
+            RegisterDefaultFactory((name, content, guid) => new GraphNode(name, content, guid));
         }
 
         /// <summary>
@@ -55,6 +60,29 @@ namespace SiliconStudio.Quantum
         /// Gets or set the visitor to use to create nodes. Default value is a <see cref="DefaultNodeBuilder"/> constructed with default parameters.
         /// </summary>
         public INodeBuilder NodeBuilder { get; set; }
+
+        /// <summary>
+        /// Registers the default factory to use to create <see cref="IGraphNode"/> instances.
+        /// </summary>
+        /// <param name="nodeFactory">The factory to register.</param>
+        public void RegisterDefaultFactory(NodeFactoryDelegate nodeFactory)
+        {
+            lock (lockObject)
+            {
+                nodeFactories[new NodeFactoryId(Guid.Empty)] = nodeFactory;
+                defaultNodeFactory = nodeFactory;
+            }
+        }
+
+        public NodeFactoryId RegisterFactory(NodeFactoryDelegate nodeFactory)
+        {
+            lock (lockObject)
+            {
+                var id = new NodeFactoryId(Guid.NewGuid());
+                nodeFactories.Add(id, nodeFactory);
+                return id;
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="IGraphNode"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
@@ -87,7 +115,9 @@ namespace SiliconStudio.Quantum
                 if (nodesByGuid.TryGetValue(guid, out result))
                 {
                     if (result != null)
+                    {
                         UpdateReferences(result);
+                    }
                 }
                 return result;
             }
@@ -111,9 +141,33 @@ namespace SiliconStudio.Quantum
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
+        /// <param name="nodeFactoryId">An identifier to the node factory to use to create nodes.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
-        public IGraphNode GetOrCreateNode(object rootObject)
+        public IGraphNode GetOrCreateNode(object rootObject, NodeFactoryId nodeFactoryId = default(NodeFactoryId))
         {
+            if (rootObject == null)
+                return null;
+
+            lock (lockObject)
+            {
+                NodeFactoryDelegate nodeFactory;
+                nodeFactories.TryGetValue(nodeFactoryId, out nodeFactory);
+                if (nodeFactory == null)
+                    nodeFactory = defaultNodeFactory;
+                return GetOrCreateNode(rootObject, nodeFactory);
+            }
+        }
+
+        /// <summary>
+        /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
+        /// </summary>
+        /// <param name="rootObject">The data object.</param>
+        /// <param name="nodeFactory">The factory to use to create nodes.</param>
+        /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
+        internal IGraphNode GetOrCreateNode(object rootObject, NodeFactoryDelegate nodeFactory)
+        {
+            if (nodeFactory == null) throw new ArgumentNullException(nameof(nodeFactory));
+
             if (rootObject == null)
                 return null;
 
@@ -125,7 +179,7 @@ namespace SiliconStudio.Quantum
                     result = GetNode(rootObject);
                 }
 
-                return result ?? CreateNode(rootObject);
+                return result ?? CreateNode(rootObject, nodeFactory);
             }
         }
 
@@ -149,11 +203,16 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
+                NodeFactoryDelegate nodeFactory;
+                factoriesByNode.TryGetValue(node, out nodeFactory);
+                if (nodeFactory == null)
+                    nodeFactory = defaultNodeFactory;
+
                 // If the node was holding a reference, refresh the reference
                 if (node.Content.IsReference)
                 {
                     node.Content.Reference.Refresh(node.Content.Value);
-                    UpdateOrCreateReferenceTarget(node.Content.Reference, node);
+                    UpdateOrCreateReferenceTarget(node.Content.Reference, node, nodeFactory);
                 }
                 else
                 {
@@ -161,7 +220,7 @@ namespace SiliconStudio.Quantum
                     foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
                     {
                         child.Content.Reference.Refresh(child.Content.Value);
-                        UpdateOrCreateReferenceTarget(child.Content.Reference, child);
+                        UpdateOrCreateReferenceTarget(child.Content.Reference, child, nodeFactory);
                     }
                 }
             }
@@ -171,9 +230,9 @@ namespace SiliconStudio.Quantum
         /// Creates a graph node.
         /// </summary>
         /// <param name="rootObject">The root object.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
-        private IGraphNode CreateNode(object rootObject)
+        /// <param name="nodeFactory">The factory to use to create nodes.</param>
+        /// <returns>A new graph node representing the given root object.</returns>
+        private IGraphNode CreateNode(object rootObject, NodeFactoryDelegate nodeFactory)
         {
             if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
 
@@ -183,10 +242,12 @@ namespace SiliconStudio.Quantum
             if (guidContainer != null && !rootObject.GetType().IsValueType)
                 guid = guidContainer.GetOrCreateGuid(rootObject);
 
-            var result = (GraphNode)NodeBuilder.Build(rootObject, guid);
+            var result = (GraphNode)NodeBuilder.Build(rootObject, guid, nodeFactory);
 
             if (result != null)
             {
+                // Register the factory used to create this node.
+                factoriesByNode.Add(result, nodeFactory);
                 // Register reference objects
                 nodesByGuid.Add(result.Guid, result);
                 // Create or update nodes of referenced objects
@@ -196,7 +257,7 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
-        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, Stack<object> indices = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, NodeFactoryDelegate nodeFactory, Stack<object> indices = null)
         {
             if (reference == null) throw new ArgumentNullException(nameof(reference));
             if (node == null) throw new ArgumentNullException(nameof(node));
@@ -212,7 +273,7 @@ namespace SiliconStudio.Quantum
                 foreach (var itemReference in referenceEnumerable)
                 {
                     indices.Push(itemReference.Index);
-                    UpdateOrCreateReferenceTarget(itemReference, node, indices);
+                    UpdateOrCreateReferenceTarget(itemReference, node, nodeFactory, indices);
                     indices.Pop();
                 }
             }
@@ -229,7 +290,7 @@ namespace SiliconStudio.Quantum
                     if (singleReference.TargetNode == null && reference.ObjectValue != null)
                     {
                         // This call will recursively update the references.
-                        var target = singleReference.SetTarget(this);
+                        var target = singleReference.SetTarget(this, nodeFactory);
                         if (target != null)
                         {                 
                             var structContent = target.Content as BoxedContent;

@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class SpriteEffectKeys
     {
-        public static readonly ParameterKey<Color4> Color = ParameterKeys.New<Color4>(new Color4(1,1,1,1));
+        public static readonly ValueParameterKey<Color4> Color = ParameterKeys.NewValue<Color4>(new Color4(1,1,1,1));
     }
 }

@@ -13,31 +13,56 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial class DepthStencilState
+    public class DepthStencilState
     {
+        internal bool DepthBufferWriteEnable;
+
+        private bool depthBufferEnable;
+        private bool stencilEnable;
+        private byte stencilWriteMask;
+        private byte stencilMask;
+
         private DepthFunction depthFunction;
 
-        private DepthStencilState(GraphicsDevice device, DepthStencilStateDescription depthStencilStateDescription)
-            : base(device)
-        {
-            Description = depthStencilStateDescription;
+        private StencilFunction frontFaceStencilFunction;
+        private StencilOp frontFaceDepthFailOp;
+        private StencilOp frontFaceFailOp;
+        private StencilOp frontFacePassOp;
 
-            depthFunction = Description.DepthBufferFunction.ToOpenGLDepthFunction();
-        }
+        private StencilFunction backFaceStencilFunction;
+        private StencilOp backFaceDepthFailOp;
+        private StencilOp backFaceFailOp;
+        private StencilOp backFacePassOp;
 
-        /// <inheritdoc/>
-        protected internal override bool OnRecreate()
+        private int stencilReference;
+
+        internal DepthStencilState(DepthStencilStateDescription depthStencilStateDescription, bool hasDepthStencilBuffer)
         {
-            base.OnRecreate();
-            return true;
+            depthBufferEnable = depthStencilStateDescription.DepthBufferEnable;
+            DepthBufferWriteEnable = depthStencilStateDescription.DepthBufferWriteEnable && hasDepthStencilBuffer;
+
+            stencilEnable = depthStencilStateDescription.StencilEnable;
+            stencilMask = depthStencilStateDescription.StencilMask;
+            stencilWriteMask = depthStencilStateDescription.StencilWriteMask;
+
+            depthFunction = depthStencilStateDescription.DepthBufferFunction.ToOpenGLDepthFunction();
+
+            frontFaceStencilFunction = depthStencilStateDescription.FrontFace.StencilFunction.ToOpenGLStencilFunction();
+            frontFaceDepthFailOp = depthStencilStateDescription.FrontFace.StencilDepthBufferFail.ToOpenGL();
+            frontFaceFailOp = depthStencilStateDescription.FrontFace.StencilFail.ToOpenGL();
+            frontFacePassOp = depthStencilStateDescription.FrontFace.StencilPass.ToOpenGL();
+
+            backFaceStencilFunction = depthStencilStateDescription.BackFace.StencilFunction.ToOpenGLStencilFunction();
+            backFaceDepthFailOp = depthStencilStateDescription.BackFace.StencilDepthBufferFail.ToOpenGL();
+            backFaceFailOp = depthStencilStateDescription.BackFace.StencilFail.ToOpenGL();
+            backFacePassOp = depthStencilStateDescription.BackFace.StencilPass.ToOpenGL();
         }
 
         public void Apply(int stencilReference)
         {
-            if (Description.DepthBufferEnable)
+            if (depthBufferEnable)
             {
                 GL.Enable(EnableCap.DepthTest);
-                ApplyDepthMask();
                 GL.DepthFunc(depthFunction);
             }
             else
@@ -45,32 +70,29 @@ namespace SiliconStudio.Xenko.Graphics
                 GL.Disable(EnableCap.DepthTest);
             }
 
-            if (Description.StencilEnable)
+            GL.DepthMask(DepthBufferWriteEnable);
+
+            if (stencilEnable)
             {
                 GL.Enable(EnableCap.StencilTest);
-                GL.StencilMask(Description.StencilMask);
+                GL.StencilMask(stencilMask);
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-                GL.StencilFunc(Description.FrontFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask); // set both faces
-                GL.StencilFuncSeparate(StencilFace.Back, Description.BackFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask); // override back face
-                GL.StencilOpSeparate(StencilFace.Front, Description.FrontFace.StencilDepthBufferFail.ToOpenGL(), Description.FrontFace.StencilFail.ToOpenGL(), Description.FrontFace.StencilPass.ToOpenGL());
-                GL.StencilOpSeparate(StencilFace.Back, Description.BackFace.StencilDepthBufferFail.ToOpenGL(), Description.BackFace.StencilFail.ToOpenGL(), Description.BackFace.StencilPass.ToOpenGL());
+                GL.StencilFuncSeparate(StencilFace.Front, frontFaceStencilFunction, stencilReference, stencilWriteMask); // set both faces
+                GL.StencilFuncSeparate(StencilFace.Back, backFaceStencilFunction, stencilReference, stencilWriteMask); // override back face
+                GL.StencilOpSeparate(StencilFace.Front, frontFaceDepthFailOp, frontFaceFailOp, frontFacePassOp);
+                GL.StencilOpSeparate(StencilFace.Back, backFaceDepthFailOp, backFaceFailOp, backFacePassOp);
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                GL.StencilFuncSeparate(CullFaceMode.Front, Description.FrontFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask);
-                GL.StencilFuncSeparate(CullFaceMode.Back, Description.BackFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask);
-                GL.StencilOpSeparate(CullFaceMode.Front, Description.FrontFace.StencilDepthBufferFail.ToOpenGL(), Description.FrontFace.StencilFail.ToOpenGL(), Description.FrontFace.StencilPass.ToOpenGL());
-                GL.StencilOpSeparate(CullFaceMode.Back, Description.BackFace.StencilDepthBufferFail.ToOpenGL(), Description.BackFace.StencilFail.ToOpenGL(), Description.BackFace.StencilPass.ToOpenGL());
+                GL.StencilFuncSeparate(CullFaceMode.Front, frontFaceStencilFunction, stencilReference, stencilWriteMask);
+                GL.StencilFuncSeparate(CullFaceMode.Back, backFaceStencilFunction, stencilReference, stencilWriteMask);
+                GL.StencilOpSeparate(CullFaceMode.Front, frontFaceDepthFailOp, frontFaceFailOp, frontFacePassOp);
+                GL.StencilOpSeparate(CullFaceMode.Back, backFaceDepthFailOp, backFaceFailOp, backFacePassOp);
 #endif
             }
             else
             {
                 GL.Disable(EnableCap.StencilTest);
             }
-        }
-
-        internal void ApplyDepthMask()
-        {
-            GL.DepthMask(Description.DepthBufferWriteEnable && GraphicsDevice.hasDepthStencilBuffer);
         }
     }
 } 

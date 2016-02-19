@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Engine
             for (int i = 0; i < additionalTypes.Length; i++)
             {
                 var requiredType = additionalTypes[i];
-                if (!typeof(EntityComponent).IsAssignableFrom(requiredType.GetTypeInfo()))
+                if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(requiredType.GetTypeInfo()))
                 {
                     throw new ArgumentException($"Invalid required type [{requiredType}]. Expecting only an EntityComponent type");
                 }

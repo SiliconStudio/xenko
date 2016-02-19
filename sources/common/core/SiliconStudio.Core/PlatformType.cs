@@ -13,6 +13,12 @@ namespace SiliconStudio.Core
 #endif
 
     {
+        // ***************************************************************
+        // NOTE: This file is shared with the AssemblyProcessor.
+        // If this file is modified, the AssemblyProcessor has to be
+        // recompiled separately. See build\Xenko-AssemblyProcessor.sln
+        // ***************************************************************
+
         /// <summary>
         /// This is shared across platforms
         /// </summary>
@@ -47,5 +53,10 @@ namespace SiliconStudio.Core
         /// The Windows 10 OS.
         /// </summary>
         Windows10,
+
+        /// <summary>
+        /// The Linux OS.
+        /// </summary>
+        Linux,
     }
 }

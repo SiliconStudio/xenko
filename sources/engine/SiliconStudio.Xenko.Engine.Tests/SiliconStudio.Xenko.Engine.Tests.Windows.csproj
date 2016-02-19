@@ -173,8 +173,6 @@
     <Compile Include="Module.cs" />
     <Compile Include="AnimationChannelTest.cs" />
     <Compile Include="EntitySerializerTest.cs" />
-    <Compile Include="ParameterPathTest.cs" />
-    <Compile Include="ParametersTest.cs" />
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>

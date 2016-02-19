@@ -174,6 +174,8 @@ namespace SiliconStudio.Xenko.Rendering
         // Render views
         private RenderView mainRenderView;
 
+        private ForwardLightingRenderFeature forwardLightingRenderFeasture;
+
         public override string ModelEffect { get; set; }
 
         public bool Shadows { get; set; } = false;
@@ -277,7 +279,7 @@ namespace SiliconStudio.Xenko.Rendering
                 RenderSystem.RenderFeatures.Add(skyboxRenderFeature);
                 RenderSystem.RenderFeatures.Add(backgroundFeature);
 
-                RenderSystem.Initialize();
+                RenderSystem.InitializeFeatures();
             }
 
             RenderContext = new RenderContext(Services);
@@ -349,7 +351,6 @@ namespace SiliconStudio.Xenko.Rendering
             //{
             //    foreach (var renderer in RenderSystem.forwardLightingRenderFeature.ShadowMapRenderer.Renderers)
             //    {
-                    
             //    }
             //}
 

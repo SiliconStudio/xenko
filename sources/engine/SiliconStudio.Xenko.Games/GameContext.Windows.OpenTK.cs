@@ -20,7 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
+#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
 using System;
 using OpenTK;
 using OpenTK.Graphics;
@@ -48,9 +48,12 @@ namespace SiliconStudio.Xenko.Games
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
+            if ((this.DeviceCreationFlags & Graphics.DeviceCreationFlags.Debug) != 0)
+                creationFlags |= GraphicsContextFlags.Debug;
+
             // force the stencil buffer to be not null.
             var defaultMode = GraphicsMode.Default;
-            var graphicMode = new GraphicsMode(defaultMode.ColorFormat, defaultMode.Depth, 8, defaultMode.Samples, defaultMode.AccumulatorFormat, defaultMode.Buffers, defaultMode.Stereo);
+            var graphicMode = new GraphicsMode(defaultMode.ColorFormat, 0, 0, defaultMode.Samples, defaultMode.AccumulatorFormat, defaultMode.Buffers, defaultMode.Stereo);
             
             GraphicsContext.ShareContexts = true;
 
@@ -105,7 +108,7 @@ namespace SiliconStudio.Xenko.Games
         {
             try
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Preload proper SDL native library (depending on CPU type)
                 // This is for OpenGL ES on desktop
                 Core.NativeLibrary.PreloadLibrary("SDL2.dll");

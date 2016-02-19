@@ -158,17 +158,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private readonly ShaderMixinSource shadowShader;
 
-            private readonly ParameterKey<Texture> shadowMapTextureKey;
+            private readonly ObjectParameterKey<Texture> shadowMapTextureKey;
 
-            private readonly ParameterKey<Matrix> worldToShadowCascadeUVsKey;
+            private readonly ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
 
-            private readonly ParameterKey<float> depthBiasesKey;
+            private readonly ValueParameterKey<float> depthBiasesKey;
 
-            private readonly ParameterKey<float> offsetScalesKey;
+            private readonly ValueParameterKey<float> offsetScalesKey;
 
-            private readonly ParameterKey<Vector2> shadowMapTextureSizeKey;
+            private readonly ValueParameterKey<Vector2> shadowMapTextureSizeKey;
 
-            private readonly ParameterKey<Vector2> shadowMapTextureTexelSizeKey;
+            private readonly ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LightSpotShadowMapGroupShaderData" /> class.
@@ -239,12 +239,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public void ApplyParameters(NextGenParameterCollection parameters)
             {
-                parameters.SetResourceSlow(shadowMapTextureKey, shadowMapTexture);
-                parameters.SetValueSlow(shadowMapTextureSizeKey, shadowMapTextureSize);
-                parameters.SetValueSlow(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
-                parameters.SetValueSlow(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
-                parameters.SetValueSlow(depthBiasesKey, depthBiases);
-                parameters.SetValueSlow(offsetScalesKey, offsetScales);
+                parameters.Set(shadowMapTextureKey, shadowMapTexture);
+                parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
+                parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
+                parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
+                parameters.Set(depthBiasesKey, depthBiases);
+                parameters.Set(offsetScalesKey, offsetScales);
             }
         }
 

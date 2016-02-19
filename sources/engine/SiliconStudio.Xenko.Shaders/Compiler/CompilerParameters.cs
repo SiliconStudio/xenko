@@ -18,17 +18,17 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// <summary>
         /// The compiler platform type.
         /// </summary>
-        public static readonly ParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.New<GraphicsPlatform>();
+        public static readonly PermutationParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.NewPermutation<GraphicsPlatform>();
 
         /// <summary>
         /// The graphics profile target type.
         /// </summary>
-        public static readonly ParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.New<GraphicsProfile>();
+        public static readonly PermutationParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.NewPermutation<GraphicsProfile>();
 
         /// <summary>
         /// The debug flag.
         /// </summary>
-        public static readonly ParameterKey<bool> DebugKey = ParameterKeys.New(true);
+        public static readonly PermutationParameterKey<bool> DebugKey = ParameterKeys.NewPermutation(true);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.

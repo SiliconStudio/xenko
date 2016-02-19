@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class TestErrorsKeys
     {
-        public static readonly ParameterKey<float> nonStream = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> nonStream = ParameterKeys.NewValue<float>();
     }
 }

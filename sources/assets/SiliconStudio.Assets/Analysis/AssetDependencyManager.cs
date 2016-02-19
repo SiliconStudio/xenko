@@ -712,7 +712,7 @@ namespace SiliconStudio.Assets.Analysis
                 // No need to clone assets from readonly package 
                 var assetItemCloned = assetItem.Package.IsSystem
                     ? assetItem
-                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset), assetItem.Package)
+                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
                         {
                             SourceFolder = assetItem.SourceFolder,
                             SourceProject = assetItem.SourceProject
@@ -1135,7 +1135,7 @@ namespace SiliconStudio.Assets.Analysis
                 AssetDependencies dependencies;
                 if (Dependencies.TryGetValue(asset.Id, out dependencies))
                 {
-                    dependencies.Item.Asset = (Asset)AssetCloner.Clone(asset);
+                    dependencies.Item.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
                     UpdateAssetDependencies(dependencies);
 
                     // Notify an asset changed
@@ -1525,7 +1525,7 @@ namespace SiliconStudio.Assets.Analysis
             public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
             {
                 // Don't visit base parts as they are visited at the top level.
-                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == "~BaseParts"))
+                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BasePartsProperty))
                 {
                     return;
                 }
