@@ -94,7 +94,9 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: from 4.0: tessellation, draw indirect
             // TODO: from 4.1: separate shader object
 #endif
-            
+
+            deviceRoot.HasDepthClamp = SupportedExtensions.Contains("GL_ARB_depth_clamp");
+
             HasDriverCommandLists = false;
             HasMultiThreadingConcurrentResources = false;
 

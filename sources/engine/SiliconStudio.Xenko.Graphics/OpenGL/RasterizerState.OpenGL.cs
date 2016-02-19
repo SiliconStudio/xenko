@@ -12,7 +12,16 @@ namespace SiliconStudio.Xenko.Graphics
 {
     class RasterizerState
     {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+        private const EnableCap DepthClamp = (EnableCap)0x864F;
+#else
+        private const EnableCap DepthClamp = (EnableCap)ArbDepthClamp.DepthClamp;
+#endif
+
         private bool scissorTestEnable;
+
+        private bool supportsDepthClamp;
+        private bool depthClamp;
 
         private bool needCulling;
         private CullFaceMode cullMode;
@@ -27,6 +36,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal RasterizerState(RasterizerStateDescription rasterizerStateDescription)
         {
             scissorTestEnable = rasterizerStateDescription.ScissorTestEnable;
+
+            depthClamp = rasterizerStateDescription.DepthClipEnable;
 
             needCulling = rasterizerStateDescription.CullMode != CullMode.None;
             cullMode = GetCullMode(rasterizerStateDescription.CullMode);
@@ -47,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (rasterizerStateDescription.DepthBiasClamp != 0.0f) throw new NotSupportedException();
         }
 
-        public void Apply()
+        public void Apply(bool supportsDepthClamp)
         {
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
@@ -55,6 +66,14 @@ namespace SiliconStudio.Xenko.Graphics
             GL.PolygonOffset(depthBias, slopeScaleDepthBias);
 
             GL.FrontFace(frontFaceDirection);
+
+            if (supportsDepthClamp)
+            {
+                if (depthClamp)
+                    GL.Enable(DepthClamp);
+                else
+                    GL.Disable(DepthClamp);
+            }
 
             if (needCulling)
             {
@@ -86,4 +105,4 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 } 
-#endif 
+#endif
