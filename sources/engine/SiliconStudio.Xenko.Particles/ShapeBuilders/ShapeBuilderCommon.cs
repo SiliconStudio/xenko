@@ -11,9 +11,14 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
+    /// <summary>
+    /// The common shape builder provides additive animation for the particle's position and size fields,
+    ///  assuming that all derived shape builders will have position and size fields
+    /// </summary>
     [DataContract("ShapeBuilderCommon")]
     public abstract class ShapeBuilderCommon : ShapeBuilder
     {
+        /// <inheritdoc />
         public override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             SamplerPosition?.UpdateChanges();
@@ -33,6 +38,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Additive Position Animation")]
         public ComputeCurveSampler<Vector3> SamplerPosition { get; set; }
 
+        /// <summary>
+        /// Additive animation for the particle size. If present, particle's own size will be multiplied with the sampled curve value
+        /// </summary>
+        /// <userdoc>
+        /// Additive animation for the particle size. If present, particle's own size will be multiplied with the sampled curve value
+        /// </userdoc>
+        [DataMember(200)]
+        [Display("Additive Size Animation")]
+        public ComputeCurveSampler<float> SamplerSize { get; set; }
+
+        /// <summary>
+        /// Gets the combined position for the particle, adding its field value (if any) to its sampled value from the curve
+        /// </summary>
+        /// <param name="particle"></param>
+        /// <param name="positionField"></param>
+        /// <param name="lifeField">Normalized life for sampling</param>
+        /// <returns>Particle's current 3D position</returns>
         protected unsafe Vector3 GetParticlePosition(Particle particle, ParticleFieldAccessor<Vector3> positionField, ParticleFieldAccessor<float> lifeField)
         {
             if (SamplerPosition == null)
@@ -44,15 +66,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <summary>
-        /// Additive animation for the particle size. If present, particle's own size will be multiplied with the sampled curve value
+        /// Gets the combined size for the particle, adding its field value (if any) to its sampled value from the curve
         /// </summary>
-        /// <userdoc>
-        /// Additive animation for the particle size. If present, particle's own size will be multiplied with the sampled curve value
-        /// </userdoc>
-        [DataMember(200)]
-        [Display("Additive Size Animation")]
-        public ComputeCurveSampler<float> SamplerSize { get; set; }
-
+        /// <param name="particle">Target particle</param>
+        /// <param name="sizeField">Size field accessor</param>
+        /// <param name="lifeField">Normalized life for sampling</param>
+        /// <returns>Particle's current uniform size</returns>
         protected unsafe float GetParticleSize(Particle particle, ParticleFieldAccessor<float> sizeField, ParticleFieldAccessor<float> lifeField)
         {
             var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;

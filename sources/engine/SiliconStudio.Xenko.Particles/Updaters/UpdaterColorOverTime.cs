@@ -11,12 +11,25 @@ using SiliconStudio.Xenko.Particles.Modules;
 namespace SiliconStudio.Xenko.Particles.Updaters
 {
     /// <summary>
-    /// Updater which sets the particle's size to a fixed value sampled based on the particle's normalized life value
+    /// Updater which sets the particle's color to a fixed value sampled based on the particle's normalized life value
     /// </summary>
     [DataContract("UpdaterColorOverTime")]
     [Display("Color Animation")]
     public class UpdaterColorOverTime : ParticleUpdater
     {
+
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
+        public UpdaterColorOverTime()
+        {
+            RequiredFields.Add(ParticleFields.Color);
+
+            var curve = new ComputeAnimationCurveVector4();
+            SamplerMain.Curve = curve;
+        }
+
+
         /// <inheritdoc />
         [DataMemberIgnore]
         public override bool IsPostUpdater => true;
@@ -51,16 +64,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         [DataMember(300)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
-
-        /// <inheritdoc />
-        public UpdaterColorOverTime()
-        {
-            RequiredFields.Add(ParticleFields.Color);
-
-            var curve = new ComputeAnimationCurveVector4();
-            SamplerMain.Curve = curve;
-        }
-
+        
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
         {
@@ -76,6 +80,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             UpdateDoubleSampler(pool);
         }
 
+        /// <summary>
+        /// Updates the field by sampling a single value over the particle's lifetime
+        /// </summary>
+        /// <param name="pool">Target <see cref="ParticlePool"/></param>
         private unsafe void UpdateSingleSampler(ParticlePool pool)
         {
             var colorField = pool.GetField(ParticleFields.Color);
@@ -98,6 +106,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             }
         }
 
+        /// <summary>
+        /// Updates the field by interpolating between two sampled values over the particle's lifetime
+        /// </summary>
+        /// <param name="pool">Target <see cref="ParticlePool"/></param>
         private unsafe void UpdateDoubleSampler(ParticlePool pool)
         {
             var colorField = pool.GetField(ParticleFields.Color);

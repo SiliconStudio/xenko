@@ -20,6 +20,17 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
 
+        /// <summary>
+        /// Additive animation for the particle rotation. If present, particle's own rotation will be added to the sampled curve value
+        /// </summary>
+        /// <userdoc>
+        /// Additive animation for the particle rotation. If present, particle's own rotation will be added to the sampled curve value
+        /// </userdoc>
+        [DataMember(300)]
+        [Display("Additive Rotation Animation")]
+        public ComputeCurveSampler<float> SamplerRotation { get; set; }
+
+
         /// <inheritdoc />
         public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
@@ -120,15 +131,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <summary>
-        /// Additive animation for the particle rotation. If present, particle's own rotation will be added to the sampled curve value
+        /// Gets the combined rotation for the particle, adding its field value (if any) to its sampled value from the curve
         /// </summary>
-        /// <userdoc>
-        /// Additive animation for the particle rotation. If present, particle's own rotation will be added to the sampled curve value
-        /// </userdoc>
-        [DataMember(300)]
-        [Display("Additive Rotation Animation")]
-        public ComputeCurveSampler<float> SamplerRotation { get; set; }
-
+        /// <param name="particle">Target particle</param>
+        /// <param name="rotationField">Rotation field accessor</param>
+        /// <param name="lifeField">Normalized particle life for sampling</param>
+        /// <returns>Screenspace rotation in radians, positive is clockwise</returns>
         protected unsafe float GetParticleRotation(Particle particle, ParticleFieldAccessor<float> rotationField, ParticleFieldAccessor<float> lifeField)
         {
             var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : 1f;

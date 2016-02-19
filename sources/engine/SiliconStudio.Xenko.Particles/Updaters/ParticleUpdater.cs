@@ -5,6 +5,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
+    /// <summary>
+    /// The <see cref="ParticleUpdater"/> updates one or more fields, such as velocity or position, in all living particles in a target <see cref="ParticlePool"/>
+    /// </summary>
     [DataContract("ParticleUpdater")]
     public abstract class ParticleUpdater : ParticleModule
     {
@@ -25,19 +28,5 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// <param name="dt">Delta time in seconds which has passed since the last update call</param>
         /// <param name="pool">The target <see cref="ParticlePool"/> which needs to be updated</param>
         public abstract void Update(float dt, ParticlePool pool);
-        /*
-        {
-            // Example - nullify the position's Y coordinate
-            if (!pool.FieldExists(ParticleFields.Position))
-                return;
-
-            var posField = pool.GetField(ParticleFields.Position);
-
-            foreach (var particle in pool)
-            {
-                (*((Vector3*)particle[posField])).Y = 0;
-            }
-        }
-        //*/
     }
 }
