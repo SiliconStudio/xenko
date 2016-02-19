@@ -29,9 +29,11 @@ namespace SiliconStudio.Xenko.Graphics
     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
-        public const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
+        private const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
+        private const ActiveUniformType FloatMat3x2 = (ActiveUniformType)0x8B67;
 #else
-        public const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
+        private const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
+        private const ActiveUniformType FloatMat3x2 = ActiveUniformType.FloatMat3x2;
 #endif
 
         private LoggerResult reflectionResult = new LoggerResult();
@@ -741,7 +743,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat2:
                     return 4;
                 case ActiveUniformType.FloatMat2x3:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                     return 6;
                 case ActiveUniformType.FloatMat2x4:
                 case ActiveUniformType.FloatMat4x2:
@@ -830,7 +832,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat4:
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:
@@ -900,7 +902,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat4:
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:

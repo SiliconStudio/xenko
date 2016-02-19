@@ -28,6 +28,7 @@ using OpenTK.Platform.iPhoneOS;
 using OpenTK.Graphics.ES30;
 using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using FramebufferAttachmentObjectType = OpenTK.Graphics.ES30.All;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
 #else
@@ -67,7 +68,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal int defaultVAO;
 
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         DebugProc debugCallbackInstance = DebugCallback;
+#endif
 
         private const GraphicsPlatform GraphicPlatform =
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -573,8 +576,18 @@ namespace SiliconStudio.Xenko.Graphics
             // Create and bind default VAO
             if (HasVAO)
             {
-                defaultVAO = GL.GenVertexArray();
-                GL.BindVertexArray(defaultVAO);
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                if (IsOpenGLES2)
+                {
+                    OpenTK.Graphics.ES20.GL.Oes.GenVertexArrays(1, out defaultVAO);
+                    OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(defaultVAO);
+                }
+                else
+#endif
+                {
+                    GL.GenVertexArrays(1, out defaultVAO);
+                    GL.BindVertexArray(defaultVAO);
+                }
             }
         }
 
@@ -650,7 +663,9 @@ namespace SiliconStudio.Xenko.Graphics
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {
                 creationFlags |= GraphicsContextFlags.Debug;
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                 GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+#endif
             }
 
             // set default values
@@ -758,12 +773,15 @@ namespace SiliconStudio.Xenko.Graphics
     #endif
             deviceCreationWindowInfo = windowInfo;
             deviceCreationContext = new GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
+#endif
+
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                 GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+#endif
             }
             GraphicsContext.CurrentContext.MakeCurrent(null);
-#endif
 
             // Restore main context
             graphicsContext.MakeCurrent(windowInfo);
@@ -772,6 +790,7 @@ namespace SiliconStudio.Xenko.Graphics
             DefaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
         }
 
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userparam)
         {
             if (severity == DebugSeverity.DebugSeverityHigh)
@@ -780,6 +799,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Log.Error("[GL] {0}; {1}; {2}; {3}; {4}", source, type, id, severity, msg);
             }
         }
+#endif
 
         protected void DestroyPlatformDevice()
         {
