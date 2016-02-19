@@ -3,7 +3,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Represents a <see cref="RenderObject"/> from a specific view.
     /// </summary>
-    struct ViewObjectNode
+    public struct ViewObjectNode
     {
         /// <summary>
         /// Access underlying RenderObject.

@@ -609,6 +609,19 @@ namespace SiliconStudio.Assets.Diff
             DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, IdentifiableHelper.GetId, DiffNode);
         }
 
+        private Guid GetSafeGuidForCollectionItem(object instance, int index, Func<object, Guid> idGetter)
+        {
+            // If the instance is null, we still need a guid, so we are generating one based on the index from the collection
+            // If null values is put at the same index for base/asset1/asset2, they will be matching
+            // If not a merge my not generate optimal merge with nulls
+            // In general, null items in collections that maybe mergeable should be avoided
+            if (instance == null)
+            {
+                return new Guid(index, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+            return idGetter(instance);
+        }
+
         private void DiffCollectionByIdsGeneric(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node, Func<object, Guid> idGetter, Func<DataVisitNode, DataVisitNode, DataVisitNode, Diff3Node> diff3Getter)
         {
             var baseItems = baseNode != null ? baseNode.Items ?? EmptyNodes : EmptyNodes;
@@ -621,7 +634,7 @@ namespace SiliconStudio.Assets.Diff
             for (int i = 0; i < baseItems.Count; i++)
             {
                 var item = baseItems[i];
-                var id = idGetter(item.Instance);
+                var id = GetSafeGuidForCollectionItem(item.Instance, i, idGetter);
                 Diff3CollectionByIdItem entry;
                 items.TryGetValue(id, out entry);
                 entry.BaseIndex = i;
@@ -630,7 +643,7 @@ namespace SiliconStudio.Assets.Diff
             for (int i = 0; i < asset1Items.Count; i++)
             {
                 var item = asset1Items[i];
-                var id = idGetter(item.Instance);
+                var id = GetSafeGuidForCollectionItem(item.Instance, i, idGetter);
                 Diff3CollectionByIdItem entry;
                 items.TryGetValue(id, out entry);
                 entry.Asset1Index = i;
@@ -639,7 +652,7 @@ namespace SiliconStudio.Assets.Diff
             for (int i = 0; i < asset2Items.Count; i++)
             {
                 var item = asset2Items[i];
-                var id = idGetter(item.Instance);
+                var id = GetSafeGuidForCollectionItem(item.Instance, i, idGetter);
                 Diff3CollectionByIdItem entry;
                 items.TryGetValue(id, out entry);
                 entry.Asset2Index = i;

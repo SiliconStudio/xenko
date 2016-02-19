@@ -18,11 +18,13 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
         private ConstantBufferOffsetReference matrixTransform;
 
+        /// <inheritdoc/>
         public override bool SupportsRenderObject(RenderObject renderObject)
         {
             return renderObject is RenderSkybox;
         }
 
+        /// <inheritdoc/>
         public override void Initialize()
         {
             base.Initialize();
@@ -34,6 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Initialize();
         }
 
+        /// <inheritdoc/>
         public override void Extract()
         {
             base.Extract();
@@ -41,6 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Extract();
         }
 
+        /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl()
         {
             var renderEffects = GetData(RenderEffectKey);
@@ -60,21 +64,22 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         continue;
 
                     var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
-                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, parameters.GetResourceSlow(SkyboxKeys.Shader));
+                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, parameters.Get(SkyboxKeys.Shader));
                 }
             }
 
             transformRenderFeature.PrepareEffectPermutations();
         }
 
-        public override void Prepare(RenderContext context)
+        /// <inheritdoc/>
+        public override unsafe void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
-            for (int renderNodeIndex = 0; renderNodeIndex < renderNodes.Count; renderNodeIndex++)
+            for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
-                var renderNode = renderNodes[renderNodeIndex];
+                var renderNode = RenderNodes[renderNodeIndex];
 
                 var renderSkybox = (RenderSkybox)renderNode.RenderObject;
                 var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
@@ -103,8 +108,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                     parameters.UpdateLayout(parameterCollectionLayout);
 
-                    renderSkybox.RotationParameter = parameters.GetValueParameter(SkyboxKeys.Rotation);
-                    renderSkybox.SkyMatrixParameter = parameters.GetValueParameter(SkyboxKeys.SkyMatrix);
+                    renderSkybox.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
+                    renderSkybox.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
 
                     // TODO: Cache that
                     renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder, renderEffect.Effect.Bytecode, "PerLighting");
@@ -138,14 +143,15 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // Set resource bindings in PerLighting resource set
                 for (int resourceSlot = 0; resourceSlot < descriptorLayoutBuilder.ElementCount; ++resourceSlot)
                 {
-                    descriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
+                    descriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerLighting cbuffer
                 if (renderSkybox.Resources.ConstantBuffer.Size > 0)
                 {
                     var mappedCB = renderSkybox.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, renderSkybox.Resources.ConstantBuffer.Size);
+                    fixed (byte* dataValues = parameters.DataValues)
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, renderSkybox.Resources.ConstantBuffer.Size);
                 }
             }
 

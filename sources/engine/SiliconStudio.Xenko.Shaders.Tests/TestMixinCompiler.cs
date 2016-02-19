@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var context = new MaterialGeneratorContext { FindAsset = reference => fakeAsset };
             var result = MaterialGenerator.Generate(new MaterialDescriptor { Attributes = materialAsset.Attributes, Layers = materialAsset.Layers }, context, "TestMaterial");
 
-            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.GetResourceSlow(MaterialKeys.PixelStageSurfaceShaders));
+            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
             compilerParameters.Set(LightingKeys.DirectLightGroups, new List<ShaderSource> { directionalLightGroup });
             //compilerParameters.Set(LightingKeys.CastShadows, false);

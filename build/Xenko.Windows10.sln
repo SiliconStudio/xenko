@@ -107,6 +107,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{
 		..\Xenko.xkpkg = ..\Xenko.xkpkg
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{7662CECF-2A3D-4DBA-AB3D-77FD8536E7A3}"
+	ProjectSection(SolutionItems) = preProject
+		..\sources\shared\SharedAssemblyInfo.cs = ..\sources\shared\SharedAssemblyInfo.cs
+		..\Xenko.xkpkg = ..\Xenko.xkpkg
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine.NextGen", "..\sources\engine\SiliconStudio.Xenko.Engine.NextGen\SiliconStudio.Xenko.Engine.NextGen.csproj", "{C4846692-213E-4043-8434-4C70521A098D}"
 EndProject
 Global

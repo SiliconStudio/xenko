@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class ThresholdAlphaCoCKeys
     {
-        public static readonly ParameterKey<float> CoCReference = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> CoCCurrent = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> CoCReference = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> CoCCurrent = ParameterKeys.NewValue<float>();
     }
 }

@@ -9,30 +9,57 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Facility to perform rendering: extract rendering data from scene, determine effects and GPU states, compute and prepare data (i.e. matrices, buffers, etc...) and finally draw it.
+    /// </summary>
     public partial class NextGenRenderSystem
     {
-        // Public registered object management
+        /// <summary>
+        /// List of objects registered in the rendering system.
+        /// </summary>
         public TrackingHashSet<RenderObject> RenderObjects = new TrackingHashSet<RenderObject>();
 
-        // List of render stages (will probably be controlled by graphics compositor)
-        internal TrackingCollection<RenderStage> RenderStages = new TrackingCollection<RenderStage>();
+        // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
+        /// <summary>
+        /// List of render stages.
+        /// </summary>
+        public TrackingCollection<RenderStage> RenderStages { get; } = new TrackingCollection<RenderStage>();
 
         /// <summary>
         /// Frame counter, mostly for internal use.
         /// </summary>
         public int FrameCounter { get; private set; }
 
-        // List of render features
-        public List<RootRenderFeature> RenderFeatures = new List<RootRenderFeature>();
+        /// <summary>
+        /// List of render features
+        /// </summary>
+        public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
-        // Engine entry points
+        /// <summary>
+        /// The graphics device, used to create graphics resources.
+        /// </summary>
         public GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// The effect system, used to compile effects.
+        /// </summary>
         public EffectSystem EffectSystem { get; private set; }
 
-        // Views
+        /// <summary>
+        /// List of views.
+        /// </summary>
         public TrackingCollection<RenderView> Views { get; } = new TrackingCollection<RenderView>();
 
+        // TODO GRAPHICS REFACTOR should grow as needed
+        /// <summary>
+        /// The graphics resource descriptor pool, to fill resources needed for rendering during current frame.
+        /// </summary>
         public DescriptorPool DescriptorPool { get; private set; }
+
+        // TODO GRAPHICS REFACTOR should grow as needed
+        /// <summary>
+        /// The graphics resource buffer pool, to fill buffer data needed for rendering during current frame.
+        /// </summary>
         public BufferPool BufferPool { get; private set; }
 
         public RenderContext RenderContextOld { get; private set; }
@@ -43,6 +70,11 @@ namespace SiliconStudio.Xenko.Rendering
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
         }
 
+        /// <summary>
+        /// Initializes the render system.
+        /// </summary>
+        /// <param name="effectSystem">The effect system.</param>
+        /// <param name="graphicsDevice">The graphics device.</param>
         public void Initialize(EffectSystem effectSystem, GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
@@ -60,6 +92,89 @@ namespace SiliconStudio.Xenko.Rendering
             Views.CollectionChanged += Views_CollectionChanged;
 
             RenderContextOld = RenderContext.GetShared(effectSystem.Services);
+        }
+
+        /// <summary>
+        /// Resets views in their original state. Should be called after all views have been enumerated.
+        /// </summary>
+        public void ResetViews()
+        {
+            // Prepare views
+            for (int index = 0; index < Views.Count; index++)
+            {
+                // Update indices
+                var view = Views[index];
+                view.Index = index;
+
+                // Clear nodes
+                while (view.Features.Count < RenderFeatures.Count)
+                {
+                    view.Features.Add(new RenderViewFeature());
+                }
+
+                for (int i = 0; i < RenderFeatures.Count; i++)
+                {
+                    var renderViewFeature = view.Features[i];
+                    renderViewFeature.RootFeature = RenderFeatures[i];
+
+                    renderViewFeature.RenderNodes.Clear();
+                    renderViewFeature.ViewObjectNodes.Clear();
+                    renderViewFeature.Layouts.Clear();
+                }
+
+                foreach (var renderViewStage in view.RenderStages)
+                {
+                    renderViewStage.RenderNodes.Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset render objects and features. Should be called at beginning of Extract phase.
+        /// </summary>
+        public void Reset()
+        {
+            FrameCounter++;
+
+            // Clear pools
+            BufferPool.Reset();
+            DescriptorPool.Reset();
+
+            // Clear object data
+            foreach (var renderObject in RenderObjects)
+            {
+                renderObject.ObjectNode = ObjectNodeReference.Invalid;
+            }
+
+            // Clear render features node lists
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Reset();
+            }
+        }
+
+        /// <summary>
+        /// Initializes render features. Should be called after all the render features have been set.
+        /// </summary>
+        public void InitializeFeatures()
+        {
+            for (int index = 0; index < RenderFeatures.Count; index++)
+            {
+                var renderFeature = RenderFeatures[index];
+                renderFeature.Index = index;
+                renderFeature.RenderSystem = this;
+                renderFeature.Initialize();
+            }
+        }
+
+        private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    ((RenderStage)e.Item).Index = e.Index;
+                    break;
+            }
         }
 
         private void RenderObjectsCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
@@ -104,80 +219,6 @@ namespace SiliconStudio.Xenko.Rendering
         private void RemoveRenderObject(RenderObject renderObject)
         {
             renderObject.RenderFeature?.RemoveRenderObject(renderObject);
-        }
-
-        public void ResetViews()
-        {
-            // Prepare views
-            for (int index = 0; index < Views.Count; index++)
-            {
-                // Update indices
-                var view = Views[index];
-                view.Index = index;
-
-                // Clear nodes
-                while (view.Features.Count < RenderFeatures.Count)
-                {
-                    view.Features.Add(new RenderViewFeature());
-                }
-
-                for (int i = 0; i < RenderFeatures.Count; i++)
-                {
-                    var renderViewFeature = view.Features[i];
-                    renderViewFeature.RootFeature = RenderFeatures[i];
-
-                    renderViewFeature.RenderNodes.Clear();
-                    renderViewFeature.ViewObjectNodes.Clear();
-                    renderViewFeature.Layouts.Clear();
-                }
-
-                foreach (var renderViewStage in view.RenderStages)
-                {
-                    renderViewStage.RenderNodes.Clear();
-                }
-            }
-        }
-
-        public void Reset()
-        {
-            FrameCounter++;
-
-            // Clear pools
-            BufferPool.Reset();
-            DescriptorPool.Reset();
-
-            // Clear object data
-            foreach (var renderObject in RenderObjects)
-            {
-                renderObject.ObjectNode = ObjectNodeReference.Invalid;
-            }
-
-            // Clear render features node lists
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.Reset();
-            }
-        }
-
-        public void Initialize()
-        {
-            for (int index = 0; index < RenderFeatures.Count; index++)
-            {
-                var renderFeature = RenderFeatures[index];
-                renderFeature.Index = index;
-                renderFeature.RenderSystem = this;
-                renderFeature.Initialize();
-            }
-        }
-
-        private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    ((RenderStage)e.Item).Index = e.Index;
-                    break;
-            }
         }
     }
 }

@@ -1682,7 +1682,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Lights\LightingKeys.cs" />
-    <Compile Include="Rendering\Lights\LightModelRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightProcessor.cs" />
     <Compile Include="Rendering\Lights\LightShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbient.cs">
@@ -2371,12 +2370,9 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\TessellationPermutation.cs" />
-    <Compile Include="Rendering\ParameterPath.cs" />
     <Compile Include="Engine\Design\EntityComponentProperty.cs" />
     <Compile Include="Engine\Design\EntityComponentPropertyType.cs" />
     <Compile Include="Engine\Design\ParameterContainerExtensions.cs" />
-    <Compile Include="Rendering\GraphicsResizeContext.cs" />
-    <Compile Include="Rendering\GraphicsResizeExtensions.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Animations\AnimationProcessor.cs" />
     <Compile Include="Engine\Processors\TransformProcessor.cs" />

@@ -292,13 +292,13 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         // TODO: move this method to an extension method
-        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
+        public ObjectParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
-            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            var keyResolved = (ObjectParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
         {
             if (sampler == null) throw new ArgumentNullException("sampler");
 
@@ -358,7 +358,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Current.StreamInitializers[stage].Add(streamInitilizerSource);
         }
 
-        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
+        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             Current.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
@@ -368,7 +368,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Current.SetStream(stage, stream, streamType, shaderSource);
         }
 
-        public void SetStream(string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
+        public void SetStream(string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
@@ -424,7 +424,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public MaterialShadingModelCollection ShadingModels { get; set; }
 
-            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
+            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
             {
                 if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
                 if (computeNode == null)

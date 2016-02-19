@@ -7,6 +7,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public class EffectMeshDataPermutation
     {
-        public static ParameterKey<Mesh> Key = ParameterKeys.New<Mesh>();
+        public static ObjectParameterKey<Mesh> Key = ParameterKeys.NewObject<Mesh>();
     }
 }

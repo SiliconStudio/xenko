@@ -3,7 +3,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Represents a <see cref="RenderObject"/> and allows to attach properties every frame.
     /// </summary>
-    struct ObjectNode
+    public struct ObjectNode
     {
         /// <summary>
         /// Access underlying RenderObject.

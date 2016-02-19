@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ImageScalerShaderKeys
     {
-        public static readonly ParameterKey<Color4> Color = ParameterKeys.New<Color4>();
-        public static readonly ParameterKey<float> IsOnlyChannelRed = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<Color4> Color = ParameterKeys.NewValue<Color4>();
+        public static readonly ValueParameterKey<float> IsOnlyChannelRed = ParameterKeys.NewValue<float>();
     }
 }

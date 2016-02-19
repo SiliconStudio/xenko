@@ -25,20 +25,22 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    internal partial class EffectProgram
+    class EffectProgram : GraphicsResourceBase
     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
-        public const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
+        private const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
+        private const ActiveUniformType FloatMat3x2 = (ActiveUniformType)0x8B67;
 #else
-        public const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
+        private const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
+        private const ActiveUniformType FloatMat3x2 = ActiveUniformType.FloatMat3x2;
 #endif
 
         private LoggerResult reflectionResult = new LoggerResult();
 
         private readonly EffectBytecode effectBytecode;
 
-        private EffectInputSignature inputSignature;
+        public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // Fake cbuffer emulation binding
@@ -64,28 +66,17 @@ namespace SiliconStudio.Xenko.Graphics
                 TextureUnit = textureUnit;
             }
         }
-        
+
+        internal EffectReflection Reflection;
+
         internal List<Texture> Textures = new List<Texture>();
 
-        private EffectProgram(GraphicsDevice device, EffectBytecode bytecode)
-            : base(device)
+        internal EffectProgram(GraphicsDevice device, EffectBytecode bytecode) : base(device)
         {
             effectBytecode = bytecode;
 
-            // make a copy of the effect's reflection before modifying it.
-            Reflection = new EffectReflection
-            {
-                // The members that are not modified and can be shallowly copied.
-                SamplerStates = effectBytecode.Reflection.SamplerStates,
-                ShaderStreamOutputDeclarations = effectBytecode.Reflection.ShaderStreamOutputDeclarations,
-                StreamOutputRasterizedStream = effectBytecode.Reflection.StreamOutputRasterizedStream,
-                StreamOutputStrides = effectBytecode.Reflection.StreamOutputStrides,
-
-                // The members that are modified and should be deeply copied.
-                ConstantBuffers = effectBytecode.Reflection.ConstantBuffers.Select(cb => cb.Clone()).ToList(),
-                ResourceBindings = new List<EffectParameterResourceData>(effectBytecode.Reflection.ResourceBindings),
-            };
-
+            // TODO OPENGL currently we modify the reflection info; need to find a better way to deal with that
+            Reflection = effectBytecode.Reflection;
             CreateShaders();
         }
 
@@ -103,10 +94,6 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         case ShaderStage.Vertex:
                             shaderStage = ShaderType.VertexShader;
-                            // We can't use VS only, since various attributes might get optimized when linked with a specific PS
-                            // Maybe we should unify signature after checking attributes
-                            //inputSignature = EffectInputSignature.GetOrCreateLayout(new EffectInputSignature(shader.Id, shader.Data));
-                            inputSignature = new EffectInputSignature(shader.Id, shader.Data);
                             break;
                         case ShaderStage.Pixel:
                             shaderStage = ShaderType.FragmentShader;
@@ -153,7 +140,7 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new InvalidOperationException("Error while linking GLSL shaders.\n" + infoLog);
                 }
 
-                if (inputSignature.Attributes.Count == 0) // the shader wasn't analyzed yet
+                if (Attributes.Count == 0) // the shader wasn't analyzed yet // TODO Is it possible?
                 {
                     // Build attributes list for shader signature
                     int activeAttribCount;
@@ -169,7 +156,7 @@ namespace SiliconStudio.Xenko.Graphics
 #else
                         var attribIndex = GL.GetAttribLocation(resourceId, attribName);
 #endif
-                        inputSignature.Attributes.Add(attribName, attribIndex);
+                        Attributes.Add(attribName, attribIndex);
                     }
                 }
 
@@ -186,11 +173,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Console.WriteLine(message);
             if (reflectionResult.HasErrors)
                 throw new Exception(reflectionResult.Messages.Select(x=>x.ToString()).Aggregate((x,y)=>x+"\n"+y));
-        }
-
-        public EffectInputSignature InputSignature
-        {
-            get { return inputSignature; }
         }
 
         /// <inheritdoc/>
@@ -212,16 +194,6 @@ namespace SiliconStudio.Xenko.Graphics
             resourceId = 0;
 
             base.Destroy();
-        }
-
-        public void Apply(GraphicsDevice device)
-        {
-#if DEBUG
-            device.EnsureContextActive();
-#endif
-
-            device.effectProgram = this;
-            device.BindProgram(ResourceId);
         }
 
         /// <summary>
@@ -375,7 +347,7 @@ namespace SiliconStudio.Xenko.Graphics
             //TODO: (?) non texture/buffer uniform outside of a block
             {
                 // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
-                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1 };
+                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1, SlotCount = 1 };
                 Reflection.ResourceBindings.Add(noSampler);
 
                 int activeUniformCount;
@@ -771,7 +743,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat2:
                     return 4;
                 case ActiveUniformType.FloatMat2x3:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                     return 6;
                 case ActiveUniformType.FloatMat2x4:
                 case ActiveUniformType.FloatMat4x2:
@@ -860,7 +832,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat4:
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:
@@ -930,7 +902,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat4:
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:

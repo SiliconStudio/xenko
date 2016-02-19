@@ -22,6 +22,7 @@ namespace SiliconStudio.Quantum
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
         private GraphNode rootNode;
         private Guid rootGuid;
+        private NodeFactoryDelegate currentNodeFactory;
 
         public DefaultNodeBuilder(NodeContainer nodeContainer)
         {
@@ -39,9 +40,6 @@ namespace SiliconStudio.Quantum
 
         /// <inheritdoc/>
         public IContentFactory ContentFactory { get; set; } = new DefaultContentFactory();
-
-        /// <inheritdoc/>
-        public Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; } = (name, content, guid) => new GraphNode(name, content, guid);
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
@@ -62,14 +60,16 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode Build(object obj, Guid guid)
+        public IGraphNode Build(object obj, Guid guid, NodeFactoryDelegate nodeFactory)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (nodeFactory == null) throw new ArgumentNullException(nameof(nodeFactory));
             Reset();
             rootGuid = guid;
             var typeDescriptor = TypeDescriptorFactory.Find(obj.GetType());
+            currentNodeFactory = nodeFactory;
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
-
+            currentNodeFactory = null;
             return rootNode;
         }
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Quantum
                 IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
                                                 : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type), shouldProcessReference);
                 currentDescriptor = content.Descriptor;
-                rootNode = (GraphNode)NodeFactory(currentDescriptor.Type.Name, content, rootGuid);
+                rootNode = (GraphNode)currentNodeFactory(currentDescriptor.Type.Name, content, rootGuid);
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -127,7 +127,7 @@ namespace SiliconStudio.Quantum
                 throw new NotSupportedException("Collections that do not have indexer accessors are not supported in Quantum.");
 
             // Don't visit items unless they are primitive or enumerable (collections within collections)
-            if (IsPrimitiveType(descriptor.ElementType, false) || IsCollection(descriptor.ElementType))
+            if (IsCollection(descriptor.ElementType))
             {
                 base.VisitCollection(collection, descriptor);
             }
@@ -140,7 +140,7 @@ namespace SiliconStudio.Quantum
                 throw new InvalidOperationException("The type of dictionary key must be a primary type.");
 
             // Don't visit items unless they are primitive or enumerable (collections within collections)
-            if (IsPrimitiveType(descriptor.ValueType, false) || IsCollection(descriptor.ValueType))
+            if (IsCollection(descriptor.ValueType))
             {
                 base.VisitDictionary(dictionary, descriptor);
             }
@@ -209,7 +209,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             GraphNode containerNode = GetContextNode();
             IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
-            var node = (GraphNode)NodeFactory(member.Name, content, Guid.NewGuid());
+            var node = (GraphNode)currentNodeFactory(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
             if (content.IsReference)
@@ -239,7 +239,7 @@ namespace SiliconStudio.Quantum
             var valueType = GetElementValueType(descriptor);
 
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || !IsPrimitiveType(valueType, false))
+            if (valueType == null || !IsPrimitiveType(valueType))
                 return Reference.CreateReference(value, type, Reference.NotInCollection);
 
             return null;
@@ -265,7 +265,7 @@ namespace SiliconStudio.Quantum
             return typeof(ICollection).IsAssignableFrom(type);
         }
 
-        private bool IsPrimitiveType(Type type, bool includeAdditionalPrimitiveTypes = true)
+        private bool IsPrimitiveType(Type type)
         {
             if (type == null)
                 return false;
@@ -273,7 +273,7 @@ namespace SiliconStudio.Quantum
             if (type.IsNullable())
                 type = Nullable.GetUnderlyingType(type);
 
-            return type.IsPrimitive || type == typeof(string) || type.IsEnum || (includeAdditionalPrimitiveTypes && PrimitiveTypes.Any(x => x.IsAssignableFrom(type)));
+            return type.IsPrimitive || type == typeof(string) || type.IsEnum || PrimitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
 
         private static Type GetElementValueType(ITypeDescriptor descriptor)

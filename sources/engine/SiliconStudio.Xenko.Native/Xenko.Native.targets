@@ -154,4 +154,16 @@
     <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86_64\libxenkonative.so&quot; &quot;$(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\x86_64\libNativePath.a&quot; -L&quot;$(ANDROID_NDK_PATH)\platforms\android-21\arch-x86_64\usr\lib64&quot; $(SiliconStudioXenkoNativeAndroidGCC)" />
   </Target>
 
+  <Target Name="CompileNativeClang_Linux" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Build">
+    <MakeDir Directories="$(SiliconStudioXenkoSdkBinDir)\x86;$(SiliconStudioXenkoSdkBinDir)\x64;"/>
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-linux-gnu" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so&quot; $(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')" />
+
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i386-linux-gnu" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_i386 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so&quot; $(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')" />
+  </Target>
+
+  <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean">
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so" />
+  </Target>
 </Project>

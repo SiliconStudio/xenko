@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public static partial class LightSkyboxShaderKeys
     {
-        public static readonly ParameterKey<Matrix> SkyMatrix = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<float> Intensity = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<Matrix> SkyMatrix = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<float> Intensity = ParameterKeys.NewValue<float>();
     }
 }

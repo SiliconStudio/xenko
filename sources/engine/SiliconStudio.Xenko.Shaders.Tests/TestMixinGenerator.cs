@@ -188,9 +188,9 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             mixin.CheckMixin("A", "B", "C", "C1", "C3");
         }
 
-        public static ParameterKey<int> PropertyInt = ParameterKeys.New<int>();
-        public static ParameterKey<ShaderMixinParameters> PropertySub = ParameterKeys.New<ShaderMixinParameters>();
-        public static ParameterKey<ShaderMixinParameters[]> PropertySubs = ParameterKeys.New<ShaderMixinParameters[]>();
+        public static ValueParameterKey<int> PropertyInt = ParameterKeys.NewValue<int>();
+        public static PermutationParameterKey<ShaderMixinParameters> PropertySub = ParameterKeys.NewPermutation<ShaderMixinParameters>();
+        public static PermutationParameterKey<ShaderMixinParameters[]> PropertySubs = ParameterKeys.NewPermutation<ShaderMixinParameters[]>();
 
         [Test]
         public void TestShaderParametersSerialization()

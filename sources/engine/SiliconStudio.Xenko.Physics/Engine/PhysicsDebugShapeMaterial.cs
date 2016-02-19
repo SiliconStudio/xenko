@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
@@ -21,10 +24,10 @@ namespace SiliconStudio.Xenko.Physics
             });
 
             // set the color to the material
-            material.Parameters.SetValueSlow(MaterialKeys.DiffuseValue, new Color4(color).ToColorSpace(device.ColorSpace));
+            material.Parameters.Set(MaterialKeys.DiffuseValue, new Color4(color).ToColorSpace(device.ColorSpace));
 
-            material.Parameters.SetValueSlow(MaterialKeys.EmissiveIntensity, intensity);
-            material.Parameters.SetValueSlow(MaterialKeys.EmissiveValue, new Color4(color).ToColorSpace(device.ColorSpace));
+            material.Parameters.Set(MaterialKeys.EmissiveIntensity, intensity);
+            material.Parameters.Set(MaterialKeys.EmissiveValue, new Color4(color).ToColorSpace(device.ColorSpace));
 
             return material;
         }

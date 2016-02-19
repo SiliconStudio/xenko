@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     public class DynamicEffectInstance : EffectInstance
     {
         // Parameter keys used for effect permutation
-        private KeyValuePair<ParameterKey, object>[] effectParameterKeys;
+        //private KeyValuePair<ParameterKey, object>[] effectParameterKeys;
 
         private string effectName;
         private EffectSystem effectSystem;
@@ -33,48 +33,19 @@ namespace SiliconStudio.Xenko.Rendering
             this.effectSystem = services.GetSafeServiceAs<EffectSystem>();
         }
 
-        /// <summary>
-        /// Sets a value that will impact effect permutation (used in .xkfx file).
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="parameterKey"></param>
-        /// <param name="value"></param>
-        public void SetPermutationValue<T>(ParameterKey<T> parameterKey, T value)
-        {
-            // Look for existing entries
-            if (effectParameterKeys != null)
-            {
-                for (int i = 0; i < effectParameterKeys.Length; ++i)
-                {
-                    if (effectParameterKeys[i].Key == parameterKey)
-                    {
-                        if (effectParameterKeys[i].Value != (object)value)
-                        {
-                            effectParameterKeys[i] = new KeyValuePair<ParameterKey, object>(parameterKey, value);
-                            effectDirty = true;
-                        }
-                        return;
-                    }
-                }
-            }
-
-            // It's a new key, let's add it
-            Array.Resize(ref effectParameterKeys, (effectParameterKeys?.Length ?? 0) + 1);
-            effectParameterKeys[effectParameterKeys.Length - 1] = new KeyValuePair<ParameterKey, object>(parameterKey, value);
-            effectDirty = true;
-        }
-
         protected override void ChooseEffect(GraphicsDevice graphicsDevice)
         {
             // TODO: Free previous descriptor sets and layouts?
 
             // Looks like the effect changed, it needs a recompilation
             var compilerParameters = new CompilerParameters();
-            if (effectParameterKeys != null)
+            foreach (var effectParameterKey in Parameters.ParameterKeyInfos)
             {
-                foreach (var effectParameterKey in effectParameterKeys)
+                // TODO GRAPHICS REFACTOR we currently copy Object and Permutation keys (instead of Permutation keys only)
+                if (effectParameterKey.BindingSlot != -1)
                 {
-                    compilerParameters.SetObject(effectParameterKey.Key, effectParameterKey.Value);
+                    // TODO GRAPHICS REFACTOR avoid direct access, esp. since permutation values might be separated from Objects at some point
+                    compilerParameters.SetObject(effectParameterKey.Key, Parameters.ObjectValues[effectParameterKey.BindingSlot]);
                 }
             }
 

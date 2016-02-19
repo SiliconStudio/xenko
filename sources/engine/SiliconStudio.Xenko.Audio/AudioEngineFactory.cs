@@ -23,6 +23,14 @@ namespace SiliconStudio.Xenko.Audio
 #else
             return new AudioEngineDesktop();
 #endif
+#elif SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_XENKO_SOUND_SDL
+            return new AudioEngineSDL();
+#else
+            return null;
+#endif
+#else
+            return null;
 #endif
         }
     }

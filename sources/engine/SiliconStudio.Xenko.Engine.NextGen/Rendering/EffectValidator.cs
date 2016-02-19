@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         [RemoveInitLocals]
-        public void ValidateParameter<T>(ParameterKey<T> key, T value)
+        public void ValidateParameter<T>(PermutationParameterKey<T> key, T value)
         {
             // Check if value was existing and/or same
             var index = effectValuesValidated++;

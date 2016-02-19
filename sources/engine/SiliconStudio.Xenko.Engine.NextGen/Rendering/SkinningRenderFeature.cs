@@ -123,13 +123,12 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        /// <param name="context"></param>
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderContext context)
         {
             var renderModelObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
 
-            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).renderNodes)
+            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
                 var blendMatricesOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(blendMatrices);
                 if (blendMatricesOffset == -1)

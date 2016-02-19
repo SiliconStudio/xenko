@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -16,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         private MutablePipelineState pipelineState = new MutablePipelineState();
         private bool pipelineStateDirty = true;
-        private BlendStateDescription blendState = new BlendStateDescription(Blend.One, Blend.Zero);
+        private BlendStateDescription blendState = BlendStateDescription.Default;
 
         public BlendStateDescription BlendState
         {
@@ -61,31 +62,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
         }
 
         /// <summary>
-        /// Optional shared parameters. This list must be setup before calling <see cref="Initialize"/>.
-        /// </summary>
-        [DataMemberIgnore]
-        public List<ParameterCollection> SharedParameterCollections { get { throw new InvalidOperationException(); } }
-
-        /// <summary>
-        /// Gets the parameter collections used by this effect.
-        /// </summary>
-        /// <value>The parameter collections.</value>
-        [DataMemberIgnore]
-        public List<ParameterCollection> ParameterCollections
-        {
-            get
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        /// <summary>
         /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
         /// </summary>
         protected override void SetDefaultParameters()
         {
             // TODO: Do not use slow version
-            Parameters.SetResourceSlow(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
+            Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
         protected override void PreDrawCore(RenderDrawContext context)
@@ -111,8 +93,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (i < TexturingKeys.DefaultTextures.Count)
                 {
                     var texturingKeys = texture.Dimension == TextureDimension.TextureCube ? TexturingKeys.TextureCubes : TexturingKeys.DefaultTextures;
-                    // TODO: Do not use slow version
-                    Parameters.SetResourceSlow(texturingKeys[i], texture);
+                    // TODO GRAPHICS REFACTOR Do not use slow version
+                    Parameters.Set(texturingKeys[i], texture);
+                    Parameters.Set(TexturingKeys.TexturesTexelSize[i], new Vector2(1.0f / texture.ViewWidth, 1.0f / texture.ViewHeight));
                 }
                 else
                 {
@@ -123,10 +106,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            if (pipelineStateDirty)
+            if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty)
             {
-                EffectInstance.UpdateEffect(GraphicsDevice);
-
                 pipelineState.State.SetDefaults();
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;

@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Copy Entity.World to PerDraw cbuffer
             // TODO: Have a PerObject cbuffer?
-            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).renderNodes)
+            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
                 var worldOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(this.world);
                 if (worldOffset == -1)
