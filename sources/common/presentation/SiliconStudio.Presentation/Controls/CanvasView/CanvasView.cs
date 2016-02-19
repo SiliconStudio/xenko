@@ -173,7 +173,7 @@ namespace SiliconStudio.Presentation.Controls
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Make sure InvalidateArrange is called when the canvas is invalidated
-            IsCanvasValid = false;
+            IsCanvasValid = true;
             InvalidateCanvas();
         }
 
