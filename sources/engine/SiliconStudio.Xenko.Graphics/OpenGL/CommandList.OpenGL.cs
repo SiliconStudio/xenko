@@ -277,7 +277,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Disable(EnableCap.Blend);
             GL.ColorMask(true, true, true, true);
             currentPipelineState.DepthStencilState.Apply(0);
-            currentPipelineState.RasterizerState.Apply();
+            currentPipelineState.RasterizerState.Apply(GraphicsDevice.HasDepthClamp);
 
             // Set default render targets
             SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);

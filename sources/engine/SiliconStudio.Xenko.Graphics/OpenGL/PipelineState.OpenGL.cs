@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (BlendState != previousPipeline.BlendState)
                 BlendState.Apply(previousPipeline.BlendState);
             if (RasterizerState != previousPipeline.RasterizerState)
-                RasterizerState.Apply();
+                RasterizerState.Apply(GraphicsDevice.HasDepthClamp);
             if (DepthStencilState != previousPipeline.DepthStencilState)
                 DepthStencilState.Apply(0); // TODO GRAPHICS REFACTOR stencil reference support
         }
