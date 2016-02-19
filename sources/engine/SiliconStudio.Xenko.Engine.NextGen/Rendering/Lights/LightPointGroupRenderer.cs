@@ -109,9 +109,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(colorsKey, lightColors);
-                parameters.Set(positionsKey, lightPositions);
-                parameters.Set(invSquareRadiusKey, invSquareRadius);
+                parameters.Set(colorsKey, Count, ref lightColors[0]);
+                parameters.Set(positionsKey, Count, ref lightPositions[0]);
+                parameters.Set(invSquareRadiusKey, Count, ref invSquareRadius[0]);
             }
         }
     }
