@@ -49,11 +49,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
             SetupScene();
 
-            int cubeWidth = 16;
+            int cubeWidth = 8;
 
-            var skybox = Asset.Load<Skybox>("Skybox");
-            var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
-            Scene.Entities.Add(skyboxEntity);
+            //var skybox = Asset.Load<Skybox>("Skybox");
+            //var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
+            //Scene.Entities.Add(skyboxEntity);
 
             //var backgroundTexture = Asset.Load<Texture>("XenkoBackground");
             //var backgroundEntity = new Entity { new BackgroundComponent { Texture = backgroundTexture } };

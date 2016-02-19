@@ -51,7 +51,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestImageEffect</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Engine.NextGen.RenderArchitectureApp</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -162,6 +162,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="NextGen\CustomGame.cs" />
+    <Compile Include="NextGen\RenderArchitectureApp.cs" />
+    <Compile Include="NextGen\TestCamera.cs" />
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
