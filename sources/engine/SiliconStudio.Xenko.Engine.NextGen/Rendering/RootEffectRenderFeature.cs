@@ -332,6 +332,19 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // PerView resources/cbuffer
                     var viewLayout = renderEffectReflection.PerViewLayout;
+
+                    if (viewLayout.Entries?.Length <= view.Index)
+                    {
+                        var oldEntries = viewLayout.Entries;
+                        viewLayout.Entries = new ResourceGroupEntry[RenderSystem.Views.Count];
+
+                        for (int index = 0; index < oldEntries.Length; index++)
+                            viewLayout.Entries[index] = oldEntries[index];
+
+                        for (int index = oldEntries.Length; index < viewLayout.Entries.Length; index++)
+                            viewLayout.Entries[index].Resources = new ResourceGroup();
+                    }
+
                     if (viewLayout.Entries[view.Index].MarkAsUsed(RenderSystem))
                     {
                         NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);

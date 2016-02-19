@@ -141,7 +141,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public override void Extract()
         {
             // Initialize shadow map renderer
-            // TODO GRAPHICS REFACTOR: Move depth readback to shadow stage (and out of PostRenderers)
             //if (!isShadowMapRendererSetUp)
             //{
             //    // TODO: Shadow mapping is currently disabled in new render system
@@ -200,6 +199,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
 
                     var renderMesh = (RenderMesh)renderPerViewNode.RenderObject;
+
+                    if (!renderMesh.Material.Material.IsLightDependent)
+                        continue;
+
                     var staticObjectNode = renderMesh.StaticObjectNode;
 
                     for (int i = 0; i < effectSlotCount; ++i)

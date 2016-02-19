@@ -605,6 +605,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     var shadingModel = shadingModelKeyPair.Key;
                     if (shadingModel.IsLightDependent)
                     {
+                        context.Material.IsLightDependent = true;
+
                         if (mixinSource == null)
                         {
                             mixinSource = new ShaderMixinSource();
