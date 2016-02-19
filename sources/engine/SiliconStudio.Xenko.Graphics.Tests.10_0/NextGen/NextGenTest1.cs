@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -9,6 +10,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Tests;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
 using SiliconStudio.Xenko.Rendering.Composers;
@@ -18,7 +20,7 @@ using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine.NextGen
 {
-    public class CustomGame : Game
+    public class NextGenTest1 : GraphicTestGameBase
     {
         private TestCamera camera;
         protected Scene Scene;
@@ -79,15 +81,15 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                 }
             }
 
-            var spriteSheet = Asset.Load<SpriteSheet>("SpriteSheet");
-            var spriteEntity = new Entity
-            {
-                new SpriteComponent
-                {
-                    SpriteProvider = new SpriteFromSheet { Sheet = spriteSheet },
-                }
-            };
-            Scene.Entities.Add(spriteEntity);
+            //var spriteSheet = Asset.Load<SpriteSheet>("SpriteSheet");
+            //var spriteEntity = new Entity
+            //{
+            //    new SpriteComponent
+            //    {
+            //        SpriteProvider = new SpriteFromSheet { Sheet = spriteSheet },
+            //    }
+            //};
+            //Scene.Entities.Add(spriteEntity);
 
             camera.Position = new Vector3(35.0f, 5.5f, 22.0f);
             camera.SetTarget(Scene.Entities.Last(), true);
@@ -132,6 +134,24 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             camera = new TestCamera();
             CameraComponent = camera.Camera;
             Script.Add(camera);
+        }
+
+        static void Main(string[] args)
+        {
+            // Profiler.EnableAll();
+            using (var game = new NextGenTest1())
+            {
+                game.Run();
+            }
+        }
+
+        /// <summary>
+        /// Run the test
+        /// </summary>
+        [Test]
+        public void RunNextGenTest()
+        {
+            RunGameTest(new NextGenTest1());
         }
     }
 }
