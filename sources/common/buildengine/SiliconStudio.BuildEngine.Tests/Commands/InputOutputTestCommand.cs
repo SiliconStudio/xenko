@@ -36,10 +36,10 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
         }
     }
 
-    public class InputOutputCommand : IndexFileCommand
+    public sealed class InputOutputTestCommand : IndexFileCommand
     {
         /// <inheritdoc/>
-        public override string Title { get { return "InputOutputCommand " + Source + " > " + OutputUrl; } }
+        public override string Title { get { return "InputOutputTestCommand " + Source + " > " + OutputUrl; } }
 
         public int Delay = 0;
 
@@ -128,7 +128,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         public override string ToString()
         {
-            return "InputOutputCommand " + Source + " > " + OutputUrl;
+            return "InputOutputTestCommand " + Source + " > " + OutputUrl;
         }
 
     }
