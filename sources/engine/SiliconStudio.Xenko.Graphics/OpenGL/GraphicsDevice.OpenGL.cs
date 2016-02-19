@@ -579,12 +579,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (HasVAO)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (IsOpenGLES2)
-                {
-                    OpenTK.Graphics.ES20.GL.Oes.GenVertexArrays(1, out defaultVAO);
-                    OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(defaultVAO);
-                }
-                else
+                if (!IsOpenGLES2)
 #endif
                 {
                     GL.GenVertexArrays(1, out defaultVAO);

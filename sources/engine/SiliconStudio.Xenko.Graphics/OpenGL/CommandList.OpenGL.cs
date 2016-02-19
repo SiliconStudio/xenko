@@ -787,7 +787,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             int vertexBufferSlot = -1;
             var vertexBufferView = default(VertexBufferView);
-            int vertexBufferResource = 0;
+            Buffer vertexBuffer = null;
+            var vertexBufferBase = IntPtr.Zero;
 
             // Setup vertex buffers and vertex attributes
             foreach (var vertexAttrib in newPipelineState.VertexAttribs)
@@ -796,12 +797,18 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     vertexBufferSlot = vertexAttrib.VertexBufferSlot;
                     vertexBufferView = vertexBuffers[vertexBufferSlot];
-                    vertexBufferResource = vertexBufferView.Buffer != null ? vertexBufferView.Buffer.ResourceId : 0;
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferResource);
+                    vertexBuffer = vertexBufferView.Buffer;
+                    if (vertexBuffer != null)
+                    {
+                        var vertexBufferResource = vertexBufferView.Buffer.ResourceId;
+                        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferResource);
+
+                        vertexBufferBase = vertexBufferView.Buffer.StagingData;
+                    }
                 }
 
                 var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
-                if (vertexBufferResource == 0)
+                if (vertexBuffer == null)
                 {
                     // No VB bound, turn off this attribute
                     enabledVertexAttribArrays &= ~vertexAttribMask;
@@ -815,10 +822,10 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (vertexAttrib.IsInteger && !vertexAttrib.Normalized)
-                    GL.VertexAttribIPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, (VertexAttribIntegerType)vertexAttrib.Type, vertexBufferView.Stride, (IntPtr)vertexBufferView.Offset + vertexAttrib.Offset);
+                    GL.VertexAttribIPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, (VertexAttribIntegerType)vertexAttrib.Type, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
                 else
 #endif
-                    GL.VertexAttribPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, vertexAttrib.Type, vertexAttrib.Normalized, vertexBufferView.Stride, (IntPtr)vertexBufferView.Offset + vertexAttrib.Offset);
+                    GL.VertexAttribPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, vertexAttrib.Type, vertexAttrib.Normalized, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
             }
 
             // Resources
@@ -1187,6 +1194,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
         {
+            indexBufferOffset = buffer.StagingData;
             indexBuffer = new IndexBufferView(buffer, offset, is32bits);
         }
 
