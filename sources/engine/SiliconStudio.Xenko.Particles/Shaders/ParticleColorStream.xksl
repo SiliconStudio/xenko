@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SiliconStudio.Xenko.Rendering
+{        
+    // This is a sample class for plugging into the Shader input for ComputeColor computations
+    class ParticleColorStream : ParticleColor
+    {
+        // -------------------------------------
+        // uniforms
+        // -------------------------------------        
+        stage stream float4 Color : COLOR;
+
+        override float4 Compute()
+        {
+            return streams.Color;
+        }
+    };
+}

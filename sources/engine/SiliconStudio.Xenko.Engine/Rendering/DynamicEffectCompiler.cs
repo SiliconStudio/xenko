@@ -216,6 +216,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return;
             }
 
+            // TODO It throws an exception here when the compilation fails!
             var compiledEffect = effect.WaitForResult();
 
             UpdateEffect(effectInstance, compiledEffect, usedParameters, passParameters);
