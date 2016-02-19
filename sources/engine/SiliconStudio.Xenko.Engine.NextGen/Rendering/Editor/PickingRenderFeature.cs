@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderObjectInfo = RootRenderFeature.GetData(renderObjectInfoKey);
 
-            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).renderNodes)
+            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
                 var pickingDataOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(this.pickingData);
                 if (pickingDataOffset == -1)

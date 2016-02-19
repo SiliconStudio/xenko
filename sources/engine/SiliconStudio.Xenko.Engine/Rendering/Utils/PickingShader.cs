@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class PickingShaderKeys
     {
-        public static readonly ParameterKey<Vector3> PickingData = ParameterKeys.New<Vector3>();
+        public static readonly ValueParameterKey<Vector3> PickingData = ParameterKeys.NewValue<Vector3>();
     }
 }
