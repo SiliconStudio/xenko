@@ -9,9 +9,17 @@ using SiliconStudio.Xenko.Shaders;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using BeginMode = OpenTK.Graphics.ES30.BeginMode;
+#else
+using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
+#endif
+using DebugSourceExternal = OpenTK.Graphics.ES30.All;
 #else
 using OpenTK.Graphics.OpenGL;
+using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
 #endif
 
 // TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
@@ -81,8 +89,8 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
             // Device with no background loading context: check if some loading is pending
-            if (AsyncPendingTaskWaiting)
-                ExecutePendingTasks();
+            if (GraphicsDevice.AsyncPendingTaskWaiting)
+                GraphicsDevice.ExecutePendingTasks();
 #endif
 
             var clearFBO = GraphicsDevice.FindOrCreateFBO(depthStencilBuffer);
@@ -423,7 +431,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
             GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
-            GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
+            GL.DrawArrays((BeginMode)PrimitiveTypeGl.TriangleStrip, 0, 4);
             GL.DisableVertexAttribArray(0);
             GL.UseProgram(boundProgram);
 
@@ -504,7 +512,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
             PreDraw();
 
-            GL.DrawArrays(newPipelineState.PrimitiveType, startVertex, vertexCount);
+            GL.DrawArrays((BeginMode)newPipelineState.PrimitiveType, startVertex, vertexCount);
 
             GraphicsDevice.FrameTriangleCount += (uint)vertexCount;
             GraphicsDevice.FrameDrawCalls++;
@@ -538,7 +546,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if(baseVertexLocation != 0)
                 throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
-            GL.DrawElements(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBufferOffset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
+            GL.DrawElements((BeginMode)newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBufferOffset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
 #else
             GL.DrawElementsBaseVertex(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBufferOffset + (startIndexLocation * indexBuffer.ElementSize), baseVertexLocation);
 #endif
@@ -646,14 +654,18 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void BeginProfile(Color profileColor, string name)
         {
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
             if (GraphicsDevice.ProfileEnabled)
                 GL.PushDebugGroup(DebugSourceExternal.DebugSourceApplication, 1, -1, name);
+#endif
         }
 
         public void EndProfile()
         {
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
             if (GraphicsDevice.ProfileEnabled)
                 GL.PopDebugGroup();
+#endif
         }
 
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
@@ -759,8 +771,8 @@ namespace SiliconStudio.Xenko.Graphics
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
             // Device with no background loading context: check if some loading is pending
-            if (AsyncPendingTaskWaiting)
-                ExecutePendingTasks();
+            if (GraphicsDevice.AsyncPendingTaskWaiting)
+                GraphicsDevice.ExecutePendingTasks();
 #endif
             // Bind program
             var program = newPipelineState.EffectProgram.ResourceId;
@@ -862,12 +874,12 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             unsafe
             {
-                fixed(byte* boundUniforms = effectProgram.BoundUniforms)
+                fixed(byte* boundUniforms = newPipelineState.EffectProgram.BoundUniforms)
                 {
                     if (constantBuffer != null)
                     {
                         var constantBufferData = constantBuffer.StagingData;
-                        foreach (var uniform in effectProgram.Uniforms)
+                        foreach (var uniform in newPipelineState.EffectProgram.Uniforms)
                         {
                             var firstUniformIndex = uniform.UniformIndex;
                             var lastUniformIndex = firstUniformIndex + uniform.Count;
@@ -1194,7 +1206,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // TODO: Check all non-empty viewports are identical and match what is active in FBO!
-            UpdateViewport(currentState.Viewports[0]);
+            UpdateViewport(viewports[0]);
 #else
             UpdateViewports();
 #endif

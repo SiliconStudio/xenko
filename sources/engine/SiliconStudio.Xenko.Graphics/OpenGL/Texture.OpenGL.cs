@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
 #endif
@@ -267,7 +268,7 @@ namespace SiliconStudio.Xenko.Graphics
                                 }
                                 else
                                 {
-                                    GL.TexImage2D(dataSetTarget, i, internalFormat, width, height, 0, format, type, data);
+                                    GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat, width, height, 0, format, type, data);
                                 }
                             }
                             else if (setSize == 3)
