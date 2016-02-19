@@ -775,18 +775,20 @@ namespace SiliconStudio.Xenko.Graphics
     #endif
             deviceCreationWindowInfo = windowInfo;
             deviceCreationContext = new GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
-#endif
 
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
-            {
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
-#endif
-            }
             GraphicsContext.CurrentContext.MakeCurrent(null);
+#endif
 
             // Restore main context
             graphicsContext.MakeCurrent(windowInfo);
+
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+            // Setup GL debug log callback
+            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            {
+                GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+            }
+#endif
 
             // Create default OpenGL State objects
             DefaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
