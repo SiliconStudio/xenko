@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
-        public Action<RenderObject> ComputeRenderStages;
+        public List<RenderStageSelector> RenderStageSelectors { get; } = new List<RenderStageSelector>();
 
         /// <summary>
         /// Decide whether a <see cref="RenderObject"/> is supported by this <see cref="RootRenderFeature"/>.
@@ -149,7 +149,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Determine which render stages are activated for this object
             renderObject.ActiveRenderStages = new ActiveRenderStage[renderSystem.RenderStages.Count];
-            ComputeRenderStages?.Invoke(renderObject);
+
+            foreach (var renderStageSelector in RenderStageSelectors)
+                renderStageSelector.Process(renderObject);
 
             // Add to render object
             RenderObjects.Add(renderObject);
