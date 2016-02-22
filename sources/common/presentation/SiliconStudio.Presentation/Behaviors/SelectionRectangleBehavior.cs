@@ -34,6 +34,8 @@ namespace SiliconStudio.Presentation.Behaviors
 
             SelectionRectangleStyleProperty =
                 DependencyProperty.Register(nameof(SelectionRectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior), new PropertyMetadata(SelectionRectangleDefaultStyle));
+
+            AttachOnEveryLoadedEventProperty.OverrideMetadata(typeof(SelectionRectangleBehavior), new PropertyMetadata(true));
         }
 
         public static Style SelectionRectangleDefaultStyle { get; }
