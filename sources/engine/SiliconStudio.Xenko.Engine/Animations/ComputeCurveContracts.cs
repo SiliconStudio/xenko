@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
+    #region Vector4
     /// <summary>
     /// Sampler container for Vector4 data type
     /// </summary>
@@ -13,10 +14,165 @@ namespace SiliconStudio.Xenko.Animations
     [Display("Sampler Vector4")]
     public class ComputeCurveSamplerVector4 : ComputeCurveSampler<Vector4>
     {
+        public ComputeCurveSamplerVector4()
+        {
+            curve = new ComputeAnimationCurveVector4();
+        }
+
         /// <inheritdoc/>
         public override void Linear(ref Vector4 value1, ref Vector4 value2, float t, out Vector4 result)
         {
             Interpolator.Vector4.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Constant vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeConstCurveVector4")]
+    [Display("Constant")]
+    public class ComputeConstCurveVector4 : ComputeConstCurve<Vector4> { }
+
+    /// <summary>
+    /// Constant vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveVector4")]
+    [Display("Animation")]
+    public class ComputeAnimationCurveVector4 : ComputeAnimationCurve<Vector4>
+    {
+        /// <inheritdoc/>
+        public override void Cubic(ref Vector4 value1, ref Vector4 value2, ref Vector4 value3, ref Vector4 value4, float t, out Vector4 result)
+        {
+            Interpolator.Vector4.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Vector4 value1, ref Vector4 value2, float t, out Vector4 result)
+        {
+            Interpolator.Vector4.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Binary operator vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeBinaryCurveVector4")]
+    [Display("Binary Operation")]
+    public class ComputeBinaryCurveVector4 : ComputeBinaryCurve<Vector4>
+    {
+        /// <inheritdoc/>
+        protected override Vector4 Add(Vector4 a, Vector4 b)
+        {
+            return a + b;
+        }
+
+        /// <inheritdoc/>
+        protected override Vector4 Subtract(Vector4 a, Vector4 b)
+        {
+            return a - b;
+        }
+
+        /// <inheritdoc/>
+        protected override Vector4 Multiply(Vector4 a, Vector4 b)
+        {
+            return a * b;
+        }
+    }
+
+    #endregion
+
+    #region Vector3
+    /// <summary>
+    /// Sampler container for Vector3 data type
+    /// </summary>
+    [DataContract("ComputeCurveSamplerVector3")]
+    [Display("Sampler Vector3")]
+    public class ComputeCurveSamplerVector3 : ComputeCurveSampler<Vector3>
+    {
+        public ComputeCurveSamplerVector3()
+        {
+            curve = new ComputeAnimationCurveVector3();
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Vector3 value1, ref Vector3 value2, float t, out Vector3 result)
+        {
+            Interpolator.Vector3.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Constant vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeConstCurveVector3")]
+    [Display("Constant")]
+    public class ComputeConstCurveVector3 : ComputeConstCurve<Vector3> { }
+
+    /// <summary>
+    /// Constant vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveVector3")]
+    [Display("Animation")]
+    public class ComputeAnimationCurveVector3 : ComputeAnimationCurve<Vector3>
+    {
+        /// <inheritdoc/>
+        public override void Cubic(ref Vector3 value1, ref Vector3 value2, ref Vector3 value3, ref Vector3 value4, float t, out Vector3 result)
+        {
+            Interpolator.Vector3.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Vector3 value1, ref Vector3 value2, float t, out Vector3 result)
+        {
+            Interpolator.Vector3.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Binary operator vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeBinaryCurveVector3")]
+    [Display("Binary Operation")]
+    public class ComputeBinaryCurveVector3 : ComputeBinaryCurve<Vector3>
+    {
+        /// <inheritdoc/>
+        protected override Vector3 Add(Vector3 a, Vector3 b)
+        {
+            return a + b;
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 Subtract(Vector3 a, Vector3 b)
+        {
+            return a - b;
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 Multiply(Vector3 a, Vector3 b)
+        {
+            return a * b;
+        }
+    }
+
+    #endregion
+
+    #region Float
+    /// <summary>
+    /// Sampler container for float data type
+    /// </summary>
+    [DataContract("ComputeCurveSamplerFloat")]
+    [Display("Sampler Float")]
+    public class ComputeCurveSamplerFloat : ComputeCurveSampler<float>
+    {
+        public ComputeCurveSamplerFloat()
+        {
+            curve = new ComputeAnimationCurveFloat();
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref float value1, ref float value2, float t, out float result)
+        {
+            result = value1 + (value2 - value1) * t;
         }
     }
 
@@ -73,57 +229,81 @@ namespace SiliconStudio.Xenko.Animations
         }
     }
 
-    /// <summary>
-    /// Constant vector4 value for the IComputeCurve interface
-    /// </summary>
-    [DataContract("ComputeConstCurveVector4")]
-    [Display("Constant")]
-    public class ComputeConstCurveVector4 : ComputeConstCurve<Vector4> { }
+    #endregion
 
+    #region Quaternion
     /// <summary>
-    /// Constant vector4 value for the IComputeCurve interface
+    /// Sampler container for Quaternion data type
     /// </summary>
-    [DataContract("ComputeAnimationCurveVector4")]
-    [Display("Animation")]
-    public class ComputeAnimationCurveVector4 : ComputeAnimationCurve<Vector4>
+    [DataContract("ComputeCurveSamplerQuaternion")]
+    [Display("Sampler Quaternion")]
+    public class ComputeCurveSamplerQuaternion : ComputeCurveSampler<Quaternion>
     {
-        /// <inheritdoc/>
-        public override void Cubic(ref Vector4 value1, ref Vector4 value2, ref Vector4 value3, ref Vector4 value4, float t, out Vector4 result)
+        public ComputeCurveSamplerQuaternion()
         {
-            Interpolator.Vector4.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+            curve = new ComputeAnimationCurveQuaternion();
         }
 
         /// <inheritdoc/>
-        public override void Linear(ref Vector4 value1, ref Vector4 value2, float t, out Vector4 result)
+        public override void Linear(ref Quaternion value1, ref Quaternion value2, float t, out Quaternion result)
         {
-            Interpolator.Vector4.Linear(ref value1, ref value2, t, out result);
+            Interpolator.Quaternion.SphericalLinear(ref value1, ref value2, t, out result);
         }
     }
 
     /// <summary>
-    /// Binary operator vector4 value for the IComputeCurve interface
+    /// Constant Quaternion value for the IComputeCurve interface
     /// </summary>
-    [DataContract("ComputeBinaryCurveVector4")]
-    [Display("Binary Operation")]
-    public class ComputeBinaryCurveVector4 : ComputeBinaryCurve<Vector4>
+    [DataContract("ComputeConstCurveQuaternion")]
+    [Display("Constant")]
+    public class ComputeConstCurveQuaternion : ComputeConstCurve<Quaternion> { }
+
+    /// <summary>
+    /// Constant Quaternion value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveQuaternion")]
+    [Display("Animation")]
+    public class ComputeAnimationCurveQuaternion : ComputeAnimationCurve<Quaternion>
     {
         /// <inheritdoc/>
-        protected override Vector4 Add(Vector4 a, Vector4 b)
+        public override void Cubic(ref Quaternion value1, ref Quaternion value2, ref Quaternion value3, ref Quaternion value4, float t, out Quaternion result)
+        {
+            Interpolator.Quaternion.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Quaternion value1, ref Quaternion value2, float t, out Quaternion result)
+        {
+            Interpolator.Quaternion.SphericalLinear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Binary operator Quaternion value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeBinaryCurveQuaternion")]
+    [Display("Binary Operation")]
+    public class ComputeBinaryCurveQuaternion : ComputeBinaryCurve<Quaternion>
+    {
+        /// <inheritdoc/>
+        protected override Quaternion Add(Quaternion a, Quaternion b)
         {
             return a + b;
         }
 
         /// <inheritdoc/>
-        protected override Vector4 Subtract(Vector4 a, Vector4 b)
+        protected override Quaternion Subtract(Quaternion a, Quaternion b)
         {
             return a - b;
         }
 
         /// <inheritdoc/>
-        protected override Vector4 Multiply(Vector4 a, Vector4 b)
+        protected override Quaternion Multiply(Quaternion a, Quaternion b)
         {
             return a * b;
         }
     }
+
+    #endregion
 
 }

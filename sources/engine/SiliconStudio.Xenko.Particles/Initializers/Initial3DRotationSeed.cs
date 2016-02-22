@@ -35,8 +35,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
                 var randomRotation = Quaternion.Slerp(RotationQuaternionMin, RotationQuaternionMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
                 
-                // Results in errors ("small" quaternion) when interpolation -90 to +90 degree rotations, but they are not rotated anyway
-                //randomRotation.Normalize();
+                // Results in errors ("small" quaternion) when interpolation -90 to +90 degree rotations, so we have to normalize it
+                randomRotation.Normalize();
             
                 (*((Quaternion*)particle[rotField])) = randomRotation * WorldRotation;
 

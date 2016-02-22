@@ -380,8 +380,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
             // Updating the emitter forces the creation of a default spawner (100 particles per second)
             emitter.Update(dt, dummyParticleSystem);
 
-            var gravity = new UpdaterGravity();
-            emitter.Updaters.Add(gravity);
+            var forceField = new UpdaterForceField();
+            emitter.Updaters.Add(forceField);
 
             var positionSeed = new InitialPositionSeed();
             emitter.Initializers.Add(positionSeed);
@@ -399,7 +399,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 totalTime += dt;
             }
 
-            emitter.Updaters.Remove(gravity);
+            emitter.Updaters.Remove(forceField);
 
             // Simulate 10 seconds
             while (totalTime < 10)
@@ -417,7 +417,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 totalTime += dt;
             }
 
-            emitter.Updaters.Add(gravity);
+            emitter.Updaters.Add(forceField);
             emitter.Initializers.Add(positionSeed);
 
             // Simulate 10 seconds
