@@ -162,6 +162,7 @@
       <Link>app_data\SiliconStudio.Xenko.Assets.Tests\TX-Factory_Ground.dds</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="materials\testConstantValueKey.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
