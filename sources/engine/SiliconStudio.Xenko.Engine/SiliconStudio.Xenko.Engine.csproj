@@ -270,6 +270,7 @@
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\RenderFeature.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
+    <Compile Include="Rendering\RenderObject.cs" />
     <Compile Include="Rendering\RenderStage.cs" />
     <Compile Include="Rendering\RenderStageSelector.cs" />
     <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />

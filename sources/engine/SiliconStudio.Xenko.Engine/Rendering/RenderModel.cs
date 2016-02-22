@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -18,42 +17,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             EffectName = effectName;
         }
-    }
-
-    /// <summary>
-    /// Describes something that can be rendered by a <see cref="RootRenderFeature"/>.
-    /// </summary>
-    public abstract class RenderObject
-    {
-        private EntityGroup renderGroups;
-
-        /// <summary>
-        /// Defines which render groups this object belongs to. Note that this is evaluated only at insertion time.
-        /// Dynamic changes are not implemented yet.
-        /// </summary>
-        public EntityGroup RenderGroups
-        {
-            get { return renderGroups; }
-            set
-            {
-                // TODO GRAPHICS REFACTOR implement dynamic render groups changes
-                if (RenderFeature != null)
-                    throw new NotImplementedException();
-
-                renderGroups = value;
-            }
-        }
-
-        // Kept in cache to quickly know if RenderPerFrameNode was already generated
-        public RootRenderFeature RenderFeature;
-        public ObjectNodeReference ObjectNode;
-
-        public StaticObjectNodeReference StaticObjectNode;
-
-        public ActiveRenderStage[] ActiveRenderStages;
-
-        // TODO: Switch to a "StaticPropertyContainer" that will be optimized by assembly processor
-        //public PropertyContainer Tags;
     }
 
     /// <summary>
