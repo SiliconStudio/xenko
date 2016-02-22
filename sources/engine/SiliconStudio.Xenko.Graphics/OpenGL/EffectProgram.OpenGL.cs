@@ -501,17 +501,14 @@ namespace SiliconStudio.Xenko.Graphics
         private void AddUniform(EffectReflection effectReflection, int uniformSize, int uniformCount, string uniformName, ActiveUniformType uniformType)
         {
             // OpenGL ES 2 is adding uniform for each cbuffer member, so we need to remove array and struct indexers
-            if (GraphicsDevice.IsOpenGLES2)
+            // clean the name
+            if (uniformName.Contains("."))
             {
-                // clean the name
-                if (uniformName.Contains("."))
-                {
-                    uniformName = uniformName.Substring(0, uniformName.IndexOf('.'));
-                }
-                if (uniformName.Contains("["))
-                {
-                    uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
-                }
+                uniformName = uniformName.Substring(0, uniformName.IndexOf('.'));
+            }
+            if (uniformName.Contains("["))
+            {
+                uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
             }
 
             // check that this uniform is in a constant buffer
