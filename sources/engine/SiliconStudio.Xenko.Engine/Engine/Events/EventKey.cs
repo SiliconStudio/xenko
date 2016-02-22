@@ -8,16 +8,23 @@ namespace SiliconStudio.Xenko.Engine.Events
 {
     public class EventKey<T>
     {
-        private readonly BroadcastBlock<T> broadcastBlock = new BroadcastBlock<T>(null);
-
         internal IDisposable Connect(ITargetBlock<T> target)
         {
-            return broadcastBlock.LinkTo(target);
+            return BroadcastBlock.LinkTo(target);
         }
 
+        /// <summary>
+        /// Broadcasts the event data to all the receivers
+        /// </summary>
+        /// <param name="data"></param>
         public void Broadcast(T data)
         {
-            broadcastBlock.Post(data);
+            BroadcastBlock.Post(data);
         }
+
+        /// <summary>
+        /// Exposes the Tasks.Dataflow object, useful in the case of custom usage
+        /// </summary>
+        public BroadcastBlock<T> BroadcastBlock { get; } = new BroadcastBlock<T>(null);
     }
 }
