@@ -21,10 +21,10 @@ namespace SiliconStudio.Xenko.Graphics
         internal BufferTarget bufferTarget;
         internal BufferUsageHint bufferUsageHint;
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
         internal IntPtr StagingData { get; set; }
-#else
+
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal PixelFormatGl glPixelFormat;
         internal PixelInternalFormat internalFormat;
         internal PixelType type;
@@ -92,15 +92,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             if ((ViewFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
-                if (GraphicsDevice.IsOpenGLES2)
-                    StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
-                else
-#endif
-                {
-                    bufferTarget = BufferTarget.UniformBuffer;
-                }
+                bufferTarget = BufferTarget.UniformBuffer;
+
+                // Special case: ConstantBuffer are stored CPU side
+                StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
             }
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
@@ -133,13 +128,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc/>
         protected override void Destroy()
         {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (StagingData != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(StagingData);
                 StagingData = IntPtr.Zero;
             }
-#endif
 
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
