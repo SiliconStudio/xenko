@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
@@ -953,7 +954,10 @@ namespace SiliconStudio.Xenko.Games
             if (deviceRecreate)
                 OnDeviceReset(this, EventArgs.Empty);
 
-            GraphicsDevice.ShaderProfile = ShaderProfile;
+
+            // Use the shader profile returned by the GraphicsDeviceInformation otherwise use the one coming from the GameSettings
+            // NOTE: If the GraphicsDevice has rewritten the ShaderProfile, we need to pickup this one (specially for INTEL device)
+            GraphicsDevice.ShaderProfile = newInfo.ShaderProfile.HasValue ? newInfo.ShaderProfile : ShaderProfile;
 
             // TODO HANDLE Device Resetting/Reset/Lost
             //GraphicsDevice.DeviceResetting += GraphicsDevice_DeviceResetting;

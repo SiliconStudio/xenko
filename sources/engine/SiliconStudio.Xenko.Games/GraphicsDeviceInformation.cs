@@ -91,6 +91,11 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
+        /// Gets or sets the shader profile. If null, it will use the graphics profile from the game settings.
+        /// </summary>
+        public GraphicsProfile? ShaderProfile { get; set; }
+
+        /// <summary>
         /// Gets or sets the presentation parameters.
         /// </summary>
         /// <value>The presentation parameters.</value>
