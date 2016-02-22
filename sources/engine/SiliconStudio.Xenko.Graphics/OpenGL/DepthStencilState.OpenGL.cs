@@ -4,8 +4,8 @@
 using System;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using CullFaceMode = OpenTK.Graphics.ES30.StencilFace;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using StencilFace = OpenTK.Graphics.ES30.CullFaceMode;
 #endif
 #else
 using OpenTK.Graphics.OpenGL;
@@ -13,85 +13,147 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+    struct DepthStencilBoundState
+    {
+        // Depth
+        public bool DepthBufferEnable;
+        public bool DepthBufferWriteEnable;
+        public DepthFunction DepthFunction;
+
+        // Stencil
+        public bool StencilEnable;
+        public byte StencilWriteMask;
+        public byte StencilMask;
+
+        public StencilFaceState Faces;
+    }
+
+    struct StencilFaceState
+    {
+        public StencilFunction FrontFaceStencilFunction;
+        public StencilOp FrontFaceDepthFailOp;
+        public StencilOp FrontFaceFailOp;
+        public StencilOp FrontFacePassOp;
+
+        public StencilFunction BackFaceStencilFunction;
+        public StencilOp BackFaceDepthFailOp;
+        public StencilOp BackFaceFailOp;
+        public StencilOp BackFacePassOp;
+
+        public bool Equals(StencilFaceState other)
+        {
+            return FrontFaceStencilFunction == other.FrontFaceStencilFunction && FrontFaceDepthFailOp == other.FrontFaceDepthFailOp && FrontFaceFailOp == other.FrontFaceFailOp && FrontFacePassOp == other.FrontFacePassOp && BackFaceStencilFunction == other.BackFaceStencilFunction && BackFaceDepthFailOp == other.BackFaceDepthFailOp && BackFaceFailOp == other.BackFaceFailOp && BackFacePassOp == other.BackFacePassOp;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is StencilFaceState && Equals((StencilFaceState)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int)FrontFaceStencilFunction;
+                hashCode = (hashCode*397) ^ (int)FrontFaceDepthFailOp;
+                hashCode = (hashCode*397) ^ (int)FrontFaceFailOp;
+                hashCode = (hashCode*397) ^ (int)FrontFacePassOp;
+                hashCode = (hashCode*397) ^ (int)BackFaceStencilFunction;
+                hashCode = (hashCode*397) ^ (int)BackFaceDepthFailOp;
+                hashCode = (hashCode*397) ^ (int)BackFaceFailOp;
+                hashCode = (hashCode*397) ^ (int)BackFacePassOp;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(StencilFaceState left, StencilFaceState right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(StencilFaceState left, StencilFaceState right)
+        {
+            return !left.Equals(right);
+        }
+    }
+
     public class DepthStencilState
     {
-        internal bool DepthBufferWriteEnable;
-
-        private bool depthBufferEnable;
-        private bool stencilEnable;
-        private byte stencilWriteMask;
-        private byte stencilMask;
-
-        private DepthFunction depthFunction;
-
-        private StencilFunction frontFaceStencilFunction;
-        private StencilOp frontFaceDepthFailOp;
-        private StencilOp frontFaceFailOp;
-        private StencilOp frontFacePassOp;
-
-        private StencilFunction backFaceStencilFunction;
-        private StencilOp backFaceDepthFailOp;
-        private StencilOp backFaceFailOp;
-        private StencilOp backFacePassOp;
-
-        private int stencilReference;
+        DepthStencilBoundState state;
 
         internal DepthStencilState(DepthStencilStateDescription depthStencilStateDescription, bool hasDepthStencilBuffer)
         {
-            depthBufferEnable = depthStencilStateDescription.DepthBufferEnable;
-            DepthBufferWriteEnable = depthStencilStateDescription.DepthBufferWriteEnable && hasDepthStencilBuffer;
+            state.DepthBufferEnable = depthStencilStateDescription.DepthBufferEnable;
+            state.DepthBufferWriteEnable = depthStencilStateDescription.DepthBufferWriteEnable && hasDepthStencilBuffer;
 
-            stencilEnable = depthStencilStateDescription.StencilEnable;
-            stencilMask = depthStencilStateDescription.StencilMask;
-            stencilWriteMask = depthStencilStateDescription.StencilWriteMask;
+            state.StencilEnable = depthStencilStateDescription.StencilEnable;
+            state.StencilMask = depthStencilStateDescription.StencilMask;
+            state.StencilWriteMask = depthStencilStateDescription.StencilWriteMask;
 
-            depthFunction = depthStencilStateDescription.DepthBufferFunction.ToOpenGLDepthFunction();
+            state.DepthFunction = depthStencilStateDescription.DepthBufferFunction.ToOpenGLDepthFunction();
 
-            frontFaceStencilFunction = depthStencilStateDescription.FrontFace.StencilFunction.ToOpenGLStencilFunction();
-            frontFaceDepthFailOp = depthStencilStateDescription.FrontFace.StencilDepthBufferFail.ToOpenGL();
-            frontFaceFailOp = depthStencilStateDescription.FrontFace.StencilFail.ToOpenGL();
-            frontFacePassOp = depthStencilStateDescription.FrontFace.StencilPass.ToOpenGL();
+            state.Faces.FrontFaceStencilFunction = depthStencilStateDescription.FrontFace.StencilFunction.ToOpenGLStencilFunction();
+            state.Faces.FrontFaceDepthFailOp = depthStencilStateDescription.FrontFace.StencilDepthBufferFail.ToOpenGL();
+            state.Faces.FrontFaceFailOp = depthStencilStateDescription.FrontFace.StencilFail.ToOpenGL();
+            state.Faces.FrontFacePassOp = depthStencilStateDescription.FrontFace.StencilPass.ToOpenGL();
 
-            backFaceStencilFunction = depthStencilStateDescription.BackFace.StencilFunction.ToOpenGLStencilFunction();
-            backFaceDepthFailOp = depthStencilStateDescription.BackFace.StencilDepthBufferFail.ToOpenGL();
-            backFaceFailOp = depthStencilStateDescription.BackFace.StencilFail.ToOpenGL();
-            backFacePassOp = depthStencilStateDescription.BackFace.StencilPass.ToOpenGL();
+            state.Faces.BackFaceStencilFunction = depthStencilStateDescription.BackFace.StencilFunction.ToOpenGLStencilFunction();
+            state.Faces.BackFaceDepthFailOp = depthStencilStateDescription.BackFace.StencilDepthBufferFail.ToOpenGL();
+            state.Faces.BackFaceFailOp = depthStencilStateDescription.BackFace.StencilFail.ToOpenGL();
+            state.Faces.BackFacePassOp = depthStencilStateDescription.BackFace.StencilPass.ToOpenGL();
         }
 
-        public void Apply(int stencilReference)
+        public void Apply(CommandList commandList)
         {
-            if (depthBufferEnable)
+            if (commandList.DepthStencilBoundState.DepthBufferEnable != state.DepthBufferEnable)
             {
-                GL.Enable(EnableCap.DepthTest);
-                GL.DepthFunc(depthFunction);
-            }
-            else
-            {
-                GL.Disable(EnableCap.DepthTest);
+                commandList.DepthStencilBoundState.DepthBufferEnable = state.DepthBufferEnable;
+
+                if (state.DepthBufferEnable)
+                    GL.Enable(EnableCap.DepthTest);
+                else
+                    GL.Disable(EnableCap.DepthTest);
             }
 
-            GL.DepthMask(DepthBufferWriteEnable);
-
-            if (stencilEnable)
+            if (state.DepthBufferEnable && commandList.DepthStencilBoundState.DepthFunction != state.DepthFunction)
             {
-                GL.Enable(EnableCap.StencilTest);
-                GL.StencilMask(stencilMask);
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-                GL.StencilFuncSeparate(StencilFace.Front, frontFaceStencilFunction, stencilReference, stencilWriteMask); // set both faces
-                GL.StencilFuncSeparate(StencilFace.Back, backFaceStencilFunction, stencilReference, stencilWriteMask); // override back face
-                GL.StencilOpSeparate(StencilFace.Front, frontFaceDepthFailOp, frontFaceFailOp, frontFacePassOp);
-                GL.StencilOpSeparate(StencilFace.Back, backFaceDepthFailOp, backFaceFailOp, backFacePassOp);
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                GL.StencilFuncSeparate(CullFaceMode.Front, frontFaceStencilFunction, stencilReference, stencilWriteMask);
-                GL.StencilFuncSeparate(CullFaceMode.Back, backFaceStencilFunction, stencilReference, stencilWriteMask);
-                GL.StencilOpSeparate(CullFaceMode.Front, frontFaceDepthFailOp, frontFaceFailOp, frontFacePassOp);
-                GL.StencilOpSeparate(CullFaceMode.Back, backFaceDepthFailOp, backFaceFailOp, backFacePassOp);
-#endif
+                commandList.DepthStencilBoundState.DepthFunction = state.DepthFunction;
+                GL.DepthFunc(state.DepthFunction);
             }
-            else
+
+            if (commandList.DepthStencilBoundState.DepthBufferWriteEnable != state.DepthBufferWriteEnable)
             {
-                GL.Disable(EnableCap.StencilTest);
+                commandList.DepthStencilBoundState.DepthBufferWriteEnable = state.DepthBufferWriteEnable;
+                GL.DepthMask(state.DepthBufferWriteEnable);
+            }
+
+            if (commandList.DepthStencilBoundState.StencilEnable != state.StencilEnable)
+            {
+                commandList.DepthStencilBoundState.StencilEnable = state.StencilEnable;
+
+                if (state.StencilEnable)
+                    GL.Enable(EnableCap.StencilTest);
+                else
+                    GL.Disable(EnableCap.StencilTest);
+            }
+
+            if (state.StencilEnable && commandList.DepthStencilBoundState.StencilWriteMask != state.StencilWriteMask)
+            {
+                commandList.DepthStencilBoundState.StencilWriteMask = state.StencilWriteMask;
+                GL.StencilMask(state.StencilWriteMask);
+            }
+
+            // TODO: Properly handle stencil reference
+            if (state.StencilEnable && (commandList.DepthStencilBoundState.Faces != state.Faces || commandList.NewStencilReference != commandList.BoundStencilReference))
+            {
+                commandList.DepthStencilBoundState.Faces = state.Faces;
+                commandList.BoundStencilReference = commandList.NewStencilReference;
+
+                GL.StencilFuncSeparate(StencilFace.Front, state.Faces.FrontFaceStencilFunction, commandList.BoundStencilReference, state.StencilWriteMask); // set both faces
+                GL.StencilFuncSeparate(StencilFace.Back, state.Faces.BackFaceStencilFunction, commandList.BoundStencilReference, state.StencilWriteMask); // override back face
+                GL.StencilOpSeparate(StencilFace.Front, state.Faces.FrontFaceDepthFailOp, state.Faces.FrontFaceFailOp, state.Faces.FrontFacePassOp);
+                GL.StencilOpSeparate(StencilFace.Back, state.Faces.BackFaceDepthFailOp, state.Faces.BackFaceFailOp, state.Faces.BackFacePassOp);
             }
         }
     }

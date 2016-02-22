@@ -44,14 +44,21 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal uint enabledVertexAttribArrays;
         private int boundProgram = 0;
-        private int boundStencilReference;
-        private bool vaoDirty = true;
+
+        internal int BoundStencilReference;
+        internal int NewStencilReference;
+
+        private bool vboDirty = true;
+
         private Texture boundDepthStencilBuffer;
         private Texture[] boundRenderTargets = new Texture[MaxBoundRenderTargets];
         private Texture[] boundTextures = new Texture[64];
         private Texture[] textures = new Texture[64];
         private SamplerState[] samplerStates = new SamplerState[64];
         internal bool hasRenderTarget, hasDepthStencilBuffer;
+
+        internal DepthStencilBoundState DepthStencilBoundState;
+        internal RasterizerBoundState RasterizerBoundState;
 
         private Buffer[] constantBuffers = new Buffer[64];
 
@@ -78,6 +85,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         public CommandList(GraphicsDevice device) : base(device)
         {
+            // Default state
+            DepthStencilBoundState.DepthBufferWriteEnable = true;
+            DepthStencilBoundState.StencilWriteMask = 0xFF;
+            RasterizerBoundState.FrontFaceDirection = FrontFaceDirection.Ccw;
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            RasterizerBoundState.PolygonMode = FillMode.Solid;
+#endif
+
             ClearState();
         }
 
@@ -104,7 +119,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ClearStencil(stencil);
 
             // Check if we need to change depth mask
-            var currentDepthMask = currentPipelineState.DepthStencilState.DepthBufferWriteEnable;
+            var currentDepthMask = DepthStencilBoundState.DepthBufferWriteEnable;
 
             if (!currentDepthMask)
                 GL.DepthMask(true);
@@ -276,8 +291,8 @@ namespace SiliconStudio.Xenko.Graphics
             //currentPipelineState.BlendState.Apply();
             GL.Disable(EnableCap.Blend);
             GL.ColorMask(true, true, true, true);
-            currentPipelineState.DepthStencilState.Apply(0);
-            currentPipelineState.RasterizerState.Apply(GraphicsDevice.HasDepthClamp);
+            currentPipelineState.DepthStencilState.Apply(this);
+            currentPipelineState.RasterizerState.Apply(this);
 
             // Set default render targets
             SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
@@ -425,7 +440,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             sourceTexture.BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
 
-            vaoDirty = true;
+            vboDirty = true;
             enabledVertexAttribArrays |= 1 << 0;
             GL.EnableVertexAttribArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -798,11 +813,13 @@ namespace SiliconStudio.Xenko.Graphics
             var vertexBufferBase = IntPtr.Zero;
 
             // TODO OPENGL compare newPipelineState.VertexAttribs directly
-            if (newPipelineState != currentPipelineState)
-                vaoDirty = true;
+            if (newPipelineState.VertexAttribs != currentPipelineState.VertexAttribs)
+            {
+                vboDirty = true;
+            }
 
             // Setup vertex buffers and vertex attributes
-            if (vaoDirty)
+            if (vboDirty)
             {
                 foreach (var vertexAttrib in newPipelineState.VertexAttribs)
                 {
@@ -847,7 +864,7 @@ namespace SiliconStudio.Xenko.Graphics
                         GL.VertexAttribPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, vertexAttrib.Type, vertexAttrib.Normalized, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
                 }
 
-                vaoDirty = false;
+                vboDirty = false;
             }
 
             // Resources
@@ -872,7 +889,7 @@ namespace SiliconStudio.Xenko.Graphics
                     bool samplerStateChanged = samplerState != boundSamplerState;
 
                     // TODO: Lazy update for texture
-                    //if (textureChanged || samplerStateChanged)
+                    if (textureChanged || samplerStateChanged)
                     {
                         if (activeTexture != textureInfo.TextureUnit)
                         {
@@ -881,14 +898,14 @@ namespace SiliconStudio.Xenko.Graphics
                         }
 
                         // Lazy update for texture
-                        //if (textureChanged)
+                        if (textureChanged)
                         {
                             boundTextures[textureInfo.TextureUnit] = texture;
                             GL.BindTexture(texture.Target, texture.resourceId);
                         }
 
                         // Lazy update for sampler state
-                        //if (samplerStateChanged)
+                        if (samplerStateChanged)
                         {
                             samplerState.Apply(hasMipmap, boundSamplerState, texture.Target);
                             texture.BoundSamplerState = samplerState;
@@ -1209,7 +1226,7 @@ namespace SiliconStudio.Xenko.Graphics
             var newVertexBuffer = new VertexBufferView(buffer, offset, stride);
             if (vertexBuffers[index] != newVertexBuffer)
             {
-                vaoDirty = true;
+                vboDirty = true;
                 vertexBuffers[index] = newVertexBuffer;
             }
         }
@@ -1219,7 +1236,7 @@ namespace SiliconStudio.Xenko.Graphics
             var newIndexBuffer = new IndexBufferView(buffer, offset, is32bits);
             if (indexBuffer != newIndexBuffer)
             {
-                vaoDirty = true;
+                // Setup index buffer
                 indexBuffer = newIndexBuffer;
             }
         }
@@ -1232,8 +1249,18 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        public void SetStencilReference(int stencilReference)
+        {
+            BoundStencilReference = stencilReference;
+        }
+
         private void SetViewportImpl()
         {
+            if (!viewportDirty)
+                return;
+
+            viewportDirty = false;
+
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
 #endif
