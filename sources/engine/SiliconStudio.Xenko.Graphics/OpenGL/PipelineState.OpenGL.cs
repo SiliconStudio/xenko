@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Core.Extensions;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         // Caches
         private static GraphicsCache<EffectBytecode, EffectBytecode, EffectProgram> effectProgramCache;
+        private static GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]> vertexAttribsCache;
 
         internal readonly BlendState BlendState;
         internal readonly DepthStencilState DepthStencilState;
@@ -37,6 +39,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (effectProgramCache == null)
             {
                 effectProgramCache = new GraphicsCache<EffectBytecode, EffectBytecode, EffectProgram>(source => source, source => new EffectProgram(graphicsDevice, source));
+                vertexAttribsCache = new GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]>(source => new VertexAttribsKey(source), source => source);
             }
 
             // Store states
@@ -76,7 +79,7 @@ namespace SiliconStudio.Xenko.Graphics
                         inputElement.AlignedByteOffset));
                 }
 
-                VertexAttribs = vertexAttribs.ToArray();
+                VertexAttribs = vertexAttribsCache.Instantiate(vertexAttribs.ToArray());
             }
         }
 
@@ -86,9 +89,9 @@ namespace SiliconStudio.Xenko.Graphics
             if (BlendState != previousPipeline.BlendState)
                 BlendState.Apply(previousPipeline.BlendState);
             if (RasterizerState != previousPipeline.RasterizerState)
-                RasterizerState.Apply(GraphicsDevice.HasDepthClamp);
-            if (DepthStencilState != previousPipeline.DepthStencilState)
-                DepthStencilState.Apply(0); // TODO GRAPHICS REFACTOR stencil reference support
+                RasterizerState.Apply(commandList);
+            if (DepthStencilState != previousPipeline.DepthStencilState || commandList.NewStencilReference != commandList.BoundStencilReference)
+                DepthStencilState.Apply(commandList);
         }
 
         protected override void DestroyImpl()
@@ -97,6 +100,47 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (EffectProgram != null)
                 effectProgramCache.Release(EffectProgram);
+
+            if (VertexAttribs != null)
+                vertexAttribsCache.Release(VertexAttribs);
+        }
+
+        struct VertexAttribsKey
+        {
+            public VertexAttrib[] Attribs;
+            public int Hash;
+
+            public VertexAttribsKey(VertexAttrib[] attribs)
+            {
+                Attribs = attribs;
+                Hash = ArrayExtensions.ComputeHash(attribs);
+            }
+
+            public bool Equals(VertexAttribsKey other)
+            {
+                return Hash == other.Hash && ArrayExtensions.ArraysEqual(Attribs, other.Attribs);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is VertexAttribsKey && Equals((VertexAttribsKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return Hash;
+            }
+
+            public static bool operator ==(VertexAttribsKey left, VertexAttribsKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(VertexAttribsKey left, VertexAttribsKey right)
+            {
+                return !left.Equals(right);
+            }
         }
 
         // Small helper to cache SharpDX graphics objects

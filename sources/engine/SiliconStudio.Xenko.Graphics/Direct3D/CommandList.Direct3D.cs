@@ -149,6 +149,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         private unsafe void SetViewportImpl()
         {
+            if (!viewportDirty)
+                return;
+
+            viewportDirty = false;
+
             fixed (Viewport* viewportsPtr = viewports)
             {
                 nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, renderTargetCount > 0 ? renderTargetCount : 1);
