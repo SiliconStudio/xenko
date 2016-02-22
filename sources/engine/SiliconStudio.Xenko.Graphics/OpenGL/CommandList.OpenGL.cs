@@ -680,14 +680,14 @@ namespace SiliconStudio.Xenko.Graphics
                 if (lengthInBytes == 0)
                     lengthInBytes = buffer.Description.SizeInBytes;
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (buffer.StagingData != IntPtr.Zero)
                 {
                     // Specific case for constant buffers
-                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes,
-                        lengthInBytes);
+                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes, lengthInBytes);
                 }
-                
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                // OpenGL ES 2 needs Staging Data
                 if (GraphicsDevice.IsOpenGLES2)
                     throw new NotImplementedException();
 #endif
@@ -698,12 +698,19 @@ namespace SiliconStudio.Xenko.Graphics
                 GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (mapMode != MapMode.WriteDiscard && mapMode != MapMode.WriteNoOverwrite)
-                    mapResult = GL.MapBuffer(buffer.bufferTarget, mapMode.ToOpenGL());
-                else
+                //if (mapMode != MapMode.WriteDiscard && mapMode != MapMode.WriteNoOverwrite)
+                //    mapResult = GL.MapBuffer(buffer.bufferTarget, mapMode.ToOpenGL());
+                //else
 #endif
                 {
-                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
+                    // Orphan the buffer (let driver knows we don't need it anymore)
+                    if (mapMode == MapMode.WriteDiscard)
+                    {
+                        doNotWait = true;
+                        GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, IntPtr.Zero, buffer.bufferUsageHint);
+                    }
+
+                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (doNotWait ? BufferAccessMask.MapUnsynchronizedBit : 0));
                 }
 
                 return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = 0, RowPitch = 0 });
@@ -725,13 +732,12 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (GraphicsDevice.IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
                     {
-                        return new MappedResource(resource, subResourceIndex,
-                            new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
+                        return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
                     }
                     else
 #endif
                     {
-                        return MapTexture(texture, BufferTarget.PixelPackBuffer, mapMode, subResourceIndex, offsetInBytes, lengthInBytes);
+                        return MapTexture(texture, BufferTarget.PixelPackBuffer, subResourceIndex, mapMode, doNotWait, offsetInBytes, lengthInBytes);
                     }
                 }
                 else if (mapMode == MapMode.WriteDiscard)
@@ -743,19 +749,19 @@ namespace SiliconStudio.Xenko.Graphics
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
                         throw new NotSupportedException("Only dynamic texture can be mapped.");
 
-                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, mapMode, subResourceIndex, offsetInBytes, lengthInBytes);
+                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, subResourceIndex, mapMode, doNotWait, offsetInBytes, lengthInBytes);
                 }
             }
 
             throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
         }
 
-        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
+        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, int subResourceIndex, MapMode mapMode, bool doNotWait, int offsetInBytes, int lengthInBytes)
         {
             GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             
-            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
+            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (doNotWait ? BufferAccessMask.MapUnsynchronizedBit : 0));
             GL.BindBuffer(pixelPackUnpack, 0);
 #else
             offsetInBytes = 0;
@@ -1304,10 +1310,13 @@ namespace SiliconStudio.Xenko.Graphics
                 if (buffer != null)
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (GraphicsDevice.IsOpenGLES2)
+                    if (GraphicsDevice.IsOpenGLES2 || buffer.StagingData != IntPtr.Zero)
+#else
+                    if (buffer.StagingData != IntPtr.Zero)
+#endif
                     {
                         // Only buffer with StagingData (fake cbuffer) could be mapped
-                        if (buffer.StagingData == null)
+                        if (buffer.StagingData == IntPtr.Zero)
                             throw new InvalidOperationException();
 
                         // Is it a real buffer? (fake cbuffer have no real GPU counter-part in OpenGL ES 2.0
@@ -1319,7 +1328,6 @@ namespace SiliconStudio.Xenko.Graphics
                         }
                     }
                     else
-#endif
                     {
                         //UnbindVertexArrayObject();
                         GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
