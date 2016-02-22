@@ -45,12 +45,12 @@ namespace SiliconStudio.Xenko.Graphics
         internal uint enabledVertexAttribArrays;
         private int boundProgram = 0;
         private int boundStencilReference;
+        private bool vaoDirty = true;
         private Texture boundDepthStencilBuffer;
         private Texture[] boundRenderTargets = new Texture[MaxBoundRenderTargets];
         private Texture[] boundTextures = new Texture[64];
         private Texture[] textures = new Texture[64];
         private SamplerState[] samplerStates = new SamplerState[64];
-        private IntPtr indexBufferOffset;
         internal bool hasRenderTarget, hasDepthStencilBuffer;
 
         private Buffer[] constantBuffers = new Buffer[64];
@@ -425,6 +425,8 @@ namespace SiliconStudio.Xenko.Graphics
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             sourceTexture.BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
 
+            vaoDirty = true;
+            enabledVertexAttribArrays |= 1 << 0;
             GL.EnableVertexAttribArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, GraphicsDevice.SquareVertices);
@@ -432,7 +434,6 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
             GL.DrawArrays((BeginMode)PrimitiveTypeGl.TriangleStrip, 0, 4);
-            GL.DisableVertexAttribArray(0);
             GL.UseProgram(boundProgram);
 
             // Restore context
@@ -546,9 +547,9 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if(baseVertexLocation != 0)
                 throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
-            GL.DrawElements((BeginMode)newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBufferOffset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
+            GL.DrawElements((BeginMode)newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
 #else
-            GL.DrawElementsBaseVertex(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBufferOffset + (startIndexLocation * indexBuffer.ElementSize), baseVertexLocation);
+            GL.DrawElementsBaseVertex(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + (startIndexLocation * indexBuffer.ElementSize), baseVertexLocation);
 #endif
 
             GraphicsDevice.FrameDrawCalls++;
@@ -796,42 +797,57 @@ namespace SiliconStudio.Xenko.Graphics
             Buffer vertexBuffer = null;
             var vertexBufferBase = IntPtr.Zero;
 
+            // TODO OPENGL compare newPipelineState.VertexAttribs directly
+            if (newPipelineState != currentPipelineState)
+                vaoDirty = true;
+
             // Setup vertex buffers and vertex attributes
-            foreach (var vertexAttrib in newPipelineState.VertexAttribs)
+            if (vaoDirty)
             {
-                if (vertexAttrib.VertexBufferSlot != vertexBufferSlot)
+                foreach (var vertexAttrib in newPipelineState.VertexAttribs)
                 {
-                    vertexBufferSlot = vertexAttrib.VertexBufferSlot;
-                    vertexBufferView = vertexBuffers[vertexBufferSlot];
-                    vertexBuffer = vertexBufferView.Buffer;
-                    if (vertexBuffer != null)
+                    if (vertexAttrib.VertexBufferSlot != vertexBufferSlot)
                     {
-                        var vertexBufferResource = vertexBufferView.Buffer.ResourceId;
-                        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferResource);
+                        vertexBufferSlot = vertexAttrib.VertexBufferSlot;
+                        vertexBufferView = vertexBuffers[vertexBufferSlot];
+                        vertexBuffer = vertexBufferView.Buffer;
+                        if (vertexBuffer != null)
+                        {
+                            var vertexBufferResource = vertexBufferView.Buffer.ResourceId;
+                            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferResource);
 
-                        vertexBufferBase = vertexBufferView.Buffer.StagingData;
+                            vertexBufferBase = vertexBufferView.Buffer.StagingData;
+                        }
                     }
-                }
 
-                var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
-                if (vertexBuffer == null)
-                {
-                    // No VB bound, turn off this attribute
-                    enabledVertexAttribArrays &= ~vertexAttribMask;
-                    GL.DisableVertexAttribArray(vertexAttrib.AttributeIndex);
-                    continue;
-                }
+                    var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
+                    if (vertexBuffer == null)
+                    {
+                        // No VB bound, turn off this attribute
+                        if ((enabledVertexAttribArrays & vertexAttribMask) != 0)
+                        {
+                            enabledVertexAttribArrays &= ~vertexAttribMask;
+                            GL.DisableVertexAttribArray(vertexAttrib.AttributeIndex);
+                        }
+                        continue;
+                    }
 
-                // Enable this attribute if not previously enabled
-                enabledVertexAttribArrays |= vertexAttribMask;
-                GL.EnableVertexAttribArray(vertexAttrib.AttributeIndex);
+                    // Enable this attribute if not previously enabled
+                    if ((enabledVertexAttribArrays & vertexAttribMask) == 0)
+                    {
+                        enabledVertexAttribArrays |= vertexAttribMask;
+                        GL.EnableVertexAttribArray(vertexAttrib.AttributeIndex);
+                    }
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (vertexAttrib.IsInteger && !vertexAttrib.Normalized)
-                    GL.VertexAttribIPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, (VertexAttribIntegerType)vertexAttrib.Type, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
-                else
+                    if (vertexAttrib.IsInteger && !vertexAttrib.Normalized)
+                        GL.VertexAttribIPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, (VertexAttribIntegerType)vertexAttrib.Type, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
+                    else
 #endif
-                    GL.VertexAttribPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, vertexAttrib.Type, vertexAttrib.Normalized, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
+                        GL.VertexAttribPointer(vertexAttrib.AttributeIndex, vertexAttrib.Size, vertexAttrib.Type, vertexAttrib.Normalized, vertexBufferView.Stride, vertexBufferBase + vertexBufferView.Offset + vertexAttrib.Offset);
+                }
+
+                vaoDirty = false;
             }
 
             // Resources
@@ -993,15 +1009,10 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            // TODO: Dirty flags on both constant buffer content and if constant buffer changed
-            if (GraphicsDevice.IsOpenGLES2)
+            if (constantBuffers[slot] != buffer)
             {
+                // TODO OPENGL if OpenGL ES 2, might be good to have some dirty flags to explain if cbuffer changed
                 constantBuffers[slot] = buffer;
-            }
-            else
-#endif
-            {
                 GL.BindBufferBase(BufferRangeTarget.UniformBuffer, slot, buffer != null ? buffer.resourceId : 0);
             }
         }
@@ -1195,13 +1206,22 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
         {
-            vertexBuffers[index] = new VertexBufferView(buffer, offset, stride);
+            var newVertexBuffer = new VertexBufferView(buffer, offset, stride);
+            if (vertexBuffers[index] != newVertexBuffer)
+            {
+                vaoDirty = true;
+                vertexBuffers[index] = newVertexBuffer;
+            }
         }
 
         public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
         {
-            indexBufferOffset = buffer.StagingData;
-            indexBuffer = new IndexBufferView(buffer, offset, is32bits);
+            var newIndexBuffer = new IndexBufferView(buffer, offset, is32bits);
+            if (indexBuffer != newIndexBuffer)
+            {
+                vaoDirty = true;
+                indexBuffer = newIndexBuffer;
+            }
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
@@ -1481,6 +1501,16 @@ namespace SiliconStudio.Xenko.Graphics
                 Offset = offset;
                 Stride = stride;
             }
+
+            public static bool operator ==(VertexBufferView left, VertexBufferView right)
+            {
+                return Equals(left.Buffer, right.Buffer) && left.Offset == right.Offset && left.Stride == right.Stride;
+            }
+
+            public static bool operator !=(VertexBufferView left, VertexBufferView right)
+            {
+                return !(left == right);
+            }
         }
 
         struct IndexBufferView
@@ -1496,6 +1526,16 @@ namespace SiliconStudio.Xenko.Graphics
                 Offset = offset;
                 Type = is32Bits ? DrawElementsType.UnsignedInt : DrawElementsType.UnsignedShort;
                 ElementSize = is32Bits ? 4 : 2;
+            }
+
+            public static bool operator ==(IndexBufferView left, IndexBufferView right)
+            {
+                return Equals(left.Buffer, right.Buffer) && left.Offset == right.Offset && left.Type == right.Type && left.ElementSize == right.ElementSize;
+            }
+
+            public static bool operator !=(IndexBufferView left, IndexBufferView right)
+            {
+                return !(left == right);
             }
         }
     }
