@@ -7,6 +7,7 @@ namespace SiliconStudio.Xenko.Rendering
     public class RenderStage
     {
         public string Name { get; }
+        public string EffectSlotName { get; }
         public EffectPermutationSlot EffectSlot { get; set; }
 
         /// <summary>
@@ -14,9 +15,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public int Index = -1;
 
-        public RenderStage(string name)
+        public RenderStage(string name, string effectSlotName)
         {
             Name = name;
+            EffectSlotName = effectSlotName;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -17,12 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public partial class NextGenRenderSystem
     {
-        internal RenderStage mainRenderStage = new RenderStage("Main");
-        internal RenderStage transparentRenderStage = new RenderStage("Main");
-        internal RenderStage gbufferRenderStage = new RenderStage("GBuffer");
-        internal RenderStage shadowmapRenderStage = new RenderStage("ShadowMapCaster");
-        internal RenderStage pickingRenderStage = new RenderStage("Picking");
-
         // Render stages
         internal ForwardLightingRenderFeature forwardLightingRenderFeature;
 
@@ -179,6 +174,13 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override string ModelEffect { get; set; }
 
+        public RenderStage MainRenderStage { get; set; }
+        public RenderStage TransparentRenderStage { get; set; }
+        public RenderStage GBufferRenderStage { get; set; }
+        public RenderStage ShadowMapRenderStage { get; set; }
+        public RenderStage PickingRenderStage { get; set; }
+
+
         public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
@@ -190,6 +192,18 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem = Services.GetServiceAs<NextGenRenderSystem>();
             RenderContext = new RenderContext(Services);
 
+            // TODO GRAPHICS REFACTOR how to properly look for stages?
+            if (MainRenderStage == null)
+                MainRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "Main");
+            if (TransparentRenderStage == null)
+                TransparentRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "Transparent");
+            if (GBufferRenderStage == null)
+                GBufferRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "GBuffer");
+            if (ShadowMapRenderStage == null)
+                ShadowMapRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "ShadowMapCaster");
+            if (PickingRenderStage == null)
+                PickingRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "Picking");
+
             // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
             sceneInstance.Processors.Add(new NextGenModelProcessor());
@@ -198,7 +212,7 @@ namespace SiliconStudio.Xenko.Rendering
             sceneInstance.Processors.Add(new NextGenSkyboxProcessor());
 
             // Describe views
-            mainRenderView = new RenderView { RenderStages = { RenderSystem.mainRenderStage, RenderSystem.transparentRenderStage, RenderSystem.gbufferRenderStage, RenderSystem.pickingRenderStage } };
+            mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage, GBufferRenderStage, PickingRenderStage } };
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
             mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
@@ -217,7 +231,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R11G11B10_Float));
                 context.CommandList.Clear(gbuffer, Color4.Black);
                 context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, gbuffer);
-                Draw(RenderSystem, context, mainRenderView, RenderSystem.gbufferRenderStage);
+                Draw(RenderSystem, context, mainRenderView, GBufferRenderStage);
 
                 context.PopRenderTargets();
             }
@@ -241,7 +255,7 @@ namespace SiliconStudio.Xenko.Rendering
                         shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
                         context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                        Draw(RenderSystem, context, shadowmapRenderView, RenderSystem.shadowmapRenderStage);
+                        Draw(RenderSystem, context, shadowmapRenderView, ShadowMapRenderStage);
                     }
                 }
 
@@ -249,7 +263,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
-            Draw(RenderSystem, context, mainRenderView, RenderSystem.mainRenderStage);
+            Draw(RenderSystem, context, mainRenderView, MainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
 
             // Depth readback
@@ -274,7 +288,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R32G32B32A32_SInt));
                 context.CommandList.Clear(pickingRenderTarget, Color.Transparent);
                 context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, pickingRenderTarget);
-                Draw(RenderSystem, context, mainRenderView, RenderSystem.pickingRenderStage);
+                Draw(RenderSystem, context, mainRenderView, PickingRenderStage);
 
                 context.PopRenderTargets();
 
