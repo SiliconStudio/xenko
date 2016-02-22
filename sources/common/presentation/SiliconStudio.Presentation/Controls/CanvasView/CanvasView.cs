@@ -149,10 +149,11 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="updateData"></param>
         public void InvalidateCanvas(bool updateData = true)
         {
-            if (renderer == null || Model == null || !IsCanvasValid)
-                return;
-
+            // always updates the model
             UpdateModel(updateData);
+
+            if (renderer == null || !IsCanvasValid)
+                return;
 
             IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
