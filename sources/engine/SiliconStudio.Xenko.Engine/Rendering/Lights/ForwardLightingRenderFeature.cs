@@ -140,6 +140,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void Extract()
         {
+            // TODO GRAPHICS REFACTOR part of this should probably happen in a PreCollect phase (need to know shadow lights and add views early)
             // Initialize shadow map renderer
             //if (!isShadowMapRendererSetUp)
             //{

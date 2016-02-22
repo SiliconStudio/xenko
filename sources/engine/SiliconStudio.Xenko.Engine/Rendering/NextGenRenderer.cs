@@ -102,14 +102,6 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.PrepareDataArrays();
             }
 
-            // Generate and execute extract jobs
-            foreach (var renderFeature in RenderFeatures)
-            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.Extract();
-            }
-
             // Reset view specific render context data
             ResetViews();
 
@@ -148,6 +140,14 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // TODO: Sort RenderStage.RenderNodes
+            }
+
+            // Generate and execute extract jobs
+            foreach (var renderFeature in RenderFeatures)
+            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.Extract();
             }
 
             // Ensure size of all other data arrays
