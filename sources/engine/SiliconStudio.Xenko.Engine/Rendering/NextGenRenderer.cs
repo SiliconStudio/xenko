@@ -163,6 +163,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
     }
 
+
     [DataContract("NextGenRenderer")]
     public class NextGenRenderer : CameraRendererMode
     {
@@ -187,101 +188,6 @@ namespace SiliconStudio.Xenko.Rendering
             base.InitializeCore();
 
             RenderSystem = Services.GetServiceAs<NextGenRenderSystem>();
-            if (RenderSystem == null)
-            {
-                RenderSystem = new NextGenRenderSystem(Services);
-
-                RenderSystem.Initialize(EffectSystem, GraphicsDevice);
-
-                // Setup stage targets
-                RenderSystem.mainRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
-                RenderSystem.transparentRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
-                RenderSystem.gbufferRenderStage.Output = new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
-                RenderSystem.shadowmapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
-
-                RenderSystem.RenderStages.Add(RenderSystem.mainRenderStage);
-                RenderSystem.RenderStages.Add(RenderSystem.transparentRenderStage);
-                RenderSystem.RenderStages.Add(RenderSystem.gbufferRenderStage);
-                RenderSystem.RenderStages.Add(RenderSystem.shadowmapRenderStage);
-                RenderSystem.RenderStages.Add(RenderSystem.pickingRenderStage);
-
-                var meshRenderFeature = new MeshRenderFeature
-                {
-                    RenderFeatures =
-                    {
-                        new TransformRenderFeature(),
-                        //new SkinningRenderFeature(),
-                        new MaterialRenderFeature(),
-                        (RenderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = RenderSystem.shadowmapRenderStage }),
-                        new PickingRenderFeature(),
-                    },
-                };
-
-                meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-                {
-                    if (renderNode.RenderStage == RenderSystem.shadowmapRenderStage)
-                    {
-                        pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
-                    }
-                };
-
-                meshRenderFeature.ComputeRenderStages += (renderObject) =>
-                {
-                    var renderMesh = (RenderMesh)renderObject;
-
-                    // Main or transparent pass
-                    if (renderMesh.Material.Material.HasTransparency)
-                    {
-                        renderMesh.ActiveRenderStages[RenderSystem.transparentRenderStage.Index] = new ActiveRenderStage("TestEffect");
-                    }
-                    else
-                    {
-                        renderMesh.ActiveRenderStages[RenderSystem.mainRenderStage.Index] = new ActiveRenderStage("TestEffect");
-
-                        // Also enable shadow and gbuffer rendering if activated
-                        if (Shadows && renderMesh.Material.IsShadowCaster)
-                            renderMesh.ActiveRenderStages[RenderSystem.shadowmapRenderStage.Index] = new ActiveRenderStage("TestEffect.ShadowMapCaster");
-
-                        if (GBuffer)
-                            renderMesh.ActiveRenderStages[RenderSystem.gbufferRenderStage.Index] = new ActiveRenderStage("TestEffect.GBuffer");
-                    }
-
-                    if (Picking)
-                        renderMesh.ActiveRenderStages[RenderSystem.pickingRenderStage.Index] = new ActiveRenderStage("TestEffect.Picking");
-                };
-
-                var spriteRenderFeature = new SpriteRenderFeature();
-                spriteRenderFeature.ComputeRenderStages += renderObject =>
-                {
-                    var renderSprite = (RenderSprite)renderObject;
-
-                    if (renderSprite.SpriteComponent.CurrentSprite.IsTransparent)
-                        renderSprite.ActiveRenderStages[RenderSystem.transparentRenderStage.Index] = new ActiveRenderStage("Test");
-                    else
-                        renderSprite.ActiveRenderStages[RenderSystem.mainRenderStage.Index] = new ActiveRenderStage("Test");
-                };
-
-                var skyboxRenderFeature = new SkyboxRenderFeature();
-                skyboxRenderFeature.ComputeRenderStages += renderObject =>
-                {
-                    renderObject.ActiveRenderStages[RenderSystem.mainRenderStage.Index] = new ActiveRenderStage("SkyboxEffect");
-                };
-
-                var backgroundFeature = new BackgroundRenderFeature();
-                backgroundFeature.ComputeRenderStages += renderObject =>
-                {
-                    renderObject.ActiveRenderStages[RenderSystem.mainRenderStage.Index] = new ActiveRenderStage("Test");
-                };
-
-                // Register top level renderers
-                RenderSystem.RenderFeatures.Add(meshRenderFeature);
-                RenderSystem.RenderFeatures.Add(spriteRenderFeature);
-                RenderSystem.RenderFeatures.Add(skyboxRenderFeature);
-                RenderSystem.RenderFeatures.Add(backgroundFeature);
-
-                RenderSystem.InitializeFeatures();
-            }
-
             RenderContext = new RenderContext(Services);
 
             // Attach model processor (which will register meshes to render system)

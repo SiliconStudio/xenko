@@ -67,6 +67,7 @@ namespace SiliconStudio.Xenko.Rendering
         public NextGenRenderSystem(IServiceRegistry registry)
         {
             registry.AddService(typeof(NextGenRenderSystem), this);
+            EffectSystem = registry.GetSafeServiceAs<EffectSystem>();
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
         }
 
@@ -75,10 +76,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="effectSystem">The effect system.</param>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public void Initialize(EffectSystem effectSystem, GraphicsDevice graphicsDevice)
+        public void Initialize(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            EffectSystem = effectSystem;
 
             DescriptorPool = DescriptorPool.New(graphicsDevice, new[]
             {
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering
             RenderObjects.CollectionChanged += RenderObjectsCollectionChanged;
             Views.CollectionChanged += Views_CollectionChanged;
 
-            RenderContextOld = RenderContext.GetShared(effectSystem.Services);
+            RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
         }
 
         /// <summary>

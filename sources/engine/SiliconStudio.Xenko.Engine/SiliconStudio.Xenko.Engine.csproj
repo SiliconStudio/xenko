@@ -249,6 +249,7 @@
     <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
     <Compile Include="Rendering\MeshRenderFeature.cs" />
+    <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
     <Compile Include="Rendering\NextGenModelProcessor.cs" />
@@ -270,12 +271,14 @@
     <Compile Include="Rendering\RenderFeature.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\RenderStage.cs" />
+    <Compile Include="Rendering\RenderStageSelector.cs" />
     <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />
     <Compile Include="Rendering\RenderView.cs" />
     <Compile Include="Rendering\RenderViewFeature.cs" />
     <Compile Include="Rendering\RenderViewFeatureStage.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
@@ -286,6 +289,7 @@
     <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
+    <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
@@ -293,9 +297,11 @@
     <Compile Include="Rendering\Sprites\NextGenSpriteProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\SpriteTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\SubRenderFeature.cs" />
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
+    <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\Utils\Picking.cs">
       <DependentUpon>Picking.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
