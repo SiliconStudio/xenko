@@ -115,8 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     var renderFeature = renderObject.RenderFeature;
 
-                    var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
-                    viewFeature.ViewObjectNodes.Add(renderViewNode);
+                    var renderViewNode = ViewObjectNodeReference.Invalid;
 
                     // Collect object
                     // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
@@ -128,6 +127,13 @@ namespace SiliconStudio.Xenko.Rendering
                         var renderStageIndex = renderViewStage.RenderStage.Index;
                         if (!activeRenderStages[renderStageIndex].Active)
                             continue;
+
+                        // First time this object is created in this view, let's create the view object node
+                        if (renderViewNode == ViewObjectNodeReference.Invalid)
+                        {
+                            renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
+                            viewFeature.ViewObjectNodes.Add(renderViewNode);
+                        }
 
                         var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
 
