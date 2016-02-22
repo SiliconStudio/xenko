@@ -137,18 +137,25 @@ namespace SiliconStudio.Xenko.Engine
 
                 renderSystem.Initialize(GraphicsDevice);
 
+                var mainRenderStage = new RenderStage("Main", "Main");
+                var transparentRenderStage = new RenderStage("Transparent", "Main");
+                var gbufferRenderStage = new RenderStage("GBuffer", "GBuffer");
+                var shadowmapRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster");
+                var pickingRenderStage = new RenderStage("Picking", "Picking");
+
                 // Setup stage targets
-                renderSystem.mainRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
-                renderSystem.transparentRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
-                renderSystem.gbufferRenderStage.Output = new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
-                renderSystem.shadowmapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
+                mainRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+                transparentRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+                gbufferRenderStage.Output = new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+                shadowmapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
 
-                renderSystem.RenderStages.Add(renderSystem.mainRenderStage);
-                renderSystem.RenderStages.Add(renderSystem.transparentRenderStage);
-                renderSystem.RenderStages.Add(renderSystem.gbufferRenderStage);
-                renderSystem.RenderStages.Add(renderSystem.shadowmapRenderStage);
-                renderSystem.RenderStages.Add(renderSystem.pickingRenderStage);
+                renderSystem.RenderStages.Add(mainRenderStage);
+                renderSystem.RenderStages.Add(transparentRenderStage);
+                renderSystem.RenderStages.Add(gbufferRenderStage);
+                renderSystem.RenderStages.Add(shadowmapRenderStage);
+                renderSystem.RenderStages.Add(pickingRenderStage);
 
+                // TODO GRAPHICS REFACTOR should be part of graphics compositor configuration
                 var meshRenderFeature = new MeshRenderFeature
                 {
                     RenderFeatures =
@@ -156,14 +163,14 @@ namespace SiliconStudio.Xenko.Engine
                         new TransformRenderFeature(),
                         //new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
-                        (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = renderSystem.shadowmapRenderStage }),
+                        (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = shadowmapRenderStage }),
                         new PickingRenderFeature(),
                     },
                 };
 
                 meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
                 {
-                    if (renderNode.RenderStage == renderSystem.shadowmapRenderStage)
+                    if (renderNode.RenderStage == shadowmapRenderStage)
                     {
                         pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
                     }
@@ -172,8 +179,8 @@ namespace SiliconStudio.Xenko.Engine
                 meshRenderFeature.RenderStageSelectors.Add(new MeshTransparentRenderStageSelector
                 {
                     EffectName = "TestEffect",
-                    MainRenderStage = renderSystem.mainRenderStage,
-                    TransparentRenderStage = renderSystem.transparentRenderStage,
+                    MainRenderStage = mainRenderStage,
+                    TransparentRenderStage = transparentRenderStage,
                 });
 
                 if (shadows)
@@ -181,7 +188,7 @@ namespace SiliconStudio.Xenko.Engine
                     meshRenderFeature.RenderStageSelectors.Add(new ShadowMapRenderStageSelector
                     {
                         EffectName = "TestEffect.ShadowMapCaster",
-                        ShadowMapRenderStage = renderSystem.shadowmapRenderStage,
+                        ShadowMapRenderStage = shadowmapRenderStage,
                     });
                 }
 
@@ -190,7 +197,7 @@ namespace SiliconStudio.Xenko.Engine
                     meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
                     {
                         EffectName = "TestEffect.Picking",
-                        RenderStage = renderSystem.pickingRenderStage,
+                        RenderStage = pickingRenderStage,
                     });
                 }
 
@@ -198,21 +205,21 @@ namespace SiliconStudio.Xenko.Engine
                 spriteRenderFeature.RenderStageSelectors.Add(new SpriteTransparentRenderStageSelector
                 {
                     EffectName = "Test",
-                    MainRenderStage = renderSystem.mainRenderStage,
-                    TransparentRenderStage = renderSystem.transparentRenderStage,
+                    MainRenderStage = mainRenderStage,
+                    TransparentRenderStage = transparentRenderStage,
                 });
 
                 var skyboxRenderFeature = new SkyboxRenderFeature();
                 skyboxRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
                 {
-                    RenderStage = renderSystem.mainRenderStage,
+                    RenderStage = mainRenderStage,
                     EffectName = "SkyboxEffect",
                 });
 
                 var backgroundFeature = new BackgroundRenderFeature();
                 backgroundFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
                 {
-                    RenderStage = renderSystem.mainRenderStage,
+                    RenderStage = mainRenderStage,
                     EffectName = "Test",
                 });
 
