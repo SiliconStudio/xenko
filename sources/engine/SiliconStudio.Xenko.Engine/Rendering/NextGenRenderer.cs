@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Background;
 using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Editor;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -161,6 +164,44 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.PrepareDataArrays();
             }
         }
+
+        public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
+        {
+            // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
+
+            // Look for the RenderViewStage corresponding to this RenderView | RenderStage combination
+            RenderViewStage renderViewStage = null;
+            foreach (var currentRenderViewStage in renderView.RenderStages)
+            {
+                if (currentRenderViewStage.RenderStage == renderStage)
+                {
+                    renderViewStage = currentRenderViewStage;
+                    break;
+                }
+            }
+
+            if (renderViewStage == null)
+            {
+                throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
+            }
+
+            // Generate and execute draw jobs
+            var renderNodes = renderViewStage.RenderNodes;
+            int currentStart, currentEnd;
+
+            for (currentStart = 0; currentStart < renderNodes.Count; currentStart = currentEnd)
+            {
+                var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
+                currentEnd = currentStart + 1;
+                while (currentEnd < renderNodes.Count && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                {
+                    currentEnd++;
+                }
+
+                // Divide into task chunks for parallelism
+                currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
+            }
+        }
     }
 
     [DataContract("NextGenRenderer")]
@@ -239,14 +280,14 @@ namespace SiliconStudio.Xenko.Rendering
                         renderMesh.ActiveRenderStages[RenderSystem.mainRenderStage.Index] = new ActiveRenderStage("TestEffect");
 
                         // Also enable shadow and gbuffer rendering if activated
-                        if (Shadows && renderMesh.Material.IsShadowCaster)
+                        if (/*Shadows && */renderMesh.Material.IsShadowCaster)
                             renderMesh.ActiveRenderStages[RenderSystem.shadowmapRenderStage.Index] = new ActiveRenderStage("TestEffect.ShadowMapCaster");
 
                         if (GBuffer)
                             renderMesh.ActiveRenderStages[RenderSystem.gbufferRenderStage.Index] = new ActiveRenderStage("TestEffect.GBuffer");
                     }
 
-                    if (Picking)
+                    //if (Picking)
                         renderMesh.ActiveRenderStages[RenderSystem.pickingRenderStage.Index] = new ActiveRenderStage("TestEffect.Picking");
                 };
 
@@ -311,7 +352,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R11G11B10_Float));
                 context.CommandList.Clear(gbuffer, Color4.Black);
                 context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, gbuffer);
-                Draw(RenderSystem, context, mainRenderView, RenderSystem.gbufferRenderStage);
+                RenderSystem.Draw(context, mainRenderView, RenderSystem.gbufferRenderStage);
 
                 context.PopRenderTargets();
             }
@@ -335,7 +376,7 @@ namespace SiliconStudio.Xenko.Rendering
                         shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
                         context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                        Draw(RenderSystem, context, shadowmapRenderView, RenderSystem.shadowmapRenderStage);
+                        RenderSystem.Draw(context, shadowmapRenderView, RenderSystem.shadowmapRenderStage);
                     }
                 }
 
@@ -343,7 +384,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
-            Draw(RenderSystem, context, mainRenderView, RenderSystem.mainRenderStage);
+            RenderSystem.Draw(context, mainRenderView, RenderSystem.mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
 
             // Depth readback
@@ -359,32 +400,50 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 if (pickingReadback == null)
                 {
-                    pickingReadback = new ImageReadback<Int4>();
-                    pickingTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R32G32B32A32_SInt, TextureFlags.None, 1, GraphicsResourceUsage.Staging);
+                    pickingReadback = ToLoadAndUnload(new ImageReadback<Vector4> { FrameDelayCount = 4 });
+                    pickingTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R32G32B32A32_Float, TextureFlags.None, 1, GraphicsResourceUsage.Staging).DisposeBy(this);
                 }
+                var inputManager = Context.Services.GetServiceAs<InputManager>();
 
+                // TODO: Use RenderFrame
+                var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(PickingTargetSize, PickingTargetSize, PixelFormat.R32G32B32A32_Float));
+                var pickingDepthStencil = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(PickingTargetSize, PickingTargetSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil));
+
+                // Render the picking stage using the current view
                 context.PushRenderTargets();
+                { 
+                    context.CommandList.Clear(pickingRenderTarget, Color.Transparent);
+                    context.CommandList.Clear(pickingDepthStencil, DepthStencilClearOptions.DepthBuffer);
 
-                var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R32G32B32A32_SInt));
-                context.CommandList.Clear(pickingRenderTarget, Color.Transparent);
-                context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, pickingRenderTarget);
-                Draw(RenderSystem, context, mainRenderView, RenderSystem.pickingRenderStage);
-
+                    context.CommandList.SetDepthAndRenderTarget(pickingDepthStencil, pickingRenderTarget);
+                    RenderSystem.Draw(context, mainRenderView, RenderSystem.pickingRenderStage);
+                }
                 context.PopRenderTargets();
 
-                var mousePosition = Vector2.One / 2;
-                CopyPicking(context, pickingRenderTarget, mousePosition);
-
+                // Copy the correct texel and read it back
+                // TODO: We could just render the scene to the single texel being picked
+                CopyPicking(context, pickingRenderTarget, inputManager.MousePosition);
                 pickingReadback.SetInput(pickingTexture);
                 pickingReadback.Draw(context);
 
-                // TODO: Move to extract phase
+                // Result should be used during extract phase
                 if (pickingReadback.IsResultAvailable)
                 {
-                    PickingResult = pickingReadback.Result[0];
+                    var encodedResult = pickingReadback.Result[0];
+                    unsafe
+                    {
+                        pickingResult = *(Int3*)&encodedResult;
+                    }
                 }
             }
         }
+
+        private const int PickingTargetSize = 512;
+
+        private Int3 pickingResult;
+        private readonly Dictionary<int, Entity> idToEntity = new Dictionary<int, Entity>();
+        private ImageReadback<Vector4> pickingReadback;
+        private Texture pickingTexture;
 
         private void CopyPicking(RenderDrawContext context, Texture pickingRenderTarget, Vector2 mousePosition)
         {
@@ -402,47 +461,71 @@ namespace SiliconStudio.Xenko.Rendering
             context.CommandList.CopyRegion(pickingRenderTarget, 0, region, pickingTexture, 0);
         }
 
-        [DataMemberIgnore]
-        public static Int4 PickingResult; 
-        private ImageReadback<Int4> pickingReadback;
-        private Texture pickingTexture;
-
-        public static void Draw(NextGenRenderSystem renderSystem, RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
+        /// <summary>
+        /// Cache all the components ids in the <see cref="idToEntity"/> dictionary.
+        /// </summary>
+        /// <param name="componentBase">the component to tag recursively.</param>
+        /// <param name="isRecursive">indicate if cache should be built recursively</param>
+        public void CacheComponentsId(ComponentBase componentBase, bool isRecursive)
         {
-            // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
-
-            // Look for the RenderViewStage corresponding to this RenderView | RenderStage combination
-            RenderViewStage renderViewStage = null;
-            foreach (var currentRenderViewStage in renderView.RenderStages)
+            var scene = componentBase as Scene;
+            if (scene != null && isRecursive)
             {
-                if (currentRenderViewStage.RenderStage == renderStage)
+                foreach (var entity in scene.Entities)
+                    CacheComponentsId(entity, true);
+            }
+            else
+            {
+                var entity = componentBase as Entity;
+                if (entity != null)
                 {
-                    renderViewStage = currentRenderViewStage;
-                    break;
+                    foreach (var component in entity.Components)
+                        idToEntity[RuntimeIdHelper.ToRuntimeId(component)] = entity;
+
+                    if (isRecursive)
+                    {
+                        foreach (var child in entity.Transform.Children)
+                            CacheComponentsId(child.Entity, true);
+                    }
                 }
             }
+        }
 
-            if (renderViewStage == null)
+        /// <summary>
+        /// Uncache all the components ids in the <see cref="idToEntity"/> dictionary.
+        /// </summary>
+        /// <param name="entity">the entity to tag recursively.</param>
+        /// <param name="isReccursive">indicate if cache should be built recursively</param>
+        public void UncacheComponentsId(Entity entity, bool isReccursive)
+        {
+            foreach (var component in entity.Components)
             {
-                throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
+                var runtimeId = RuntimeIdHelper.ToRuntimeId(component);
+                if (idToEntity.ContainsKey(runtimeId))
+                    idToEntity.Remove(runtimeId);
             }
 
-            // Generate and execute draw jobs
-            var renderNodes = renderViewStage.RenderNodes;
-            int currentStart, currentEnd;
-
-            for (currentStart = 0; currentStart < renderNodes.Count; currentStart = currentEnd)
+            if (isReccursive)
             {
-                var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
-                currentEnd = currentStart + 1;
-                while (currentEnd < renderNodes.Count && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
-                {
-                    currentEnd++;
-                }
-
-                // Divide into task chunks for parallelism
-                currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
+                foreach (var child in entity.Transform.Children)
+                    UncacheComponentsId(child.Entity, true);
             }
+        }
+        /// <summary>
+        /// Gets the entity at the provided screen position
+        /// </summary>
+        /// <returns></returns>
+        public EntityPickingResult Pick()
+        {
+            var result = new EntityPickingResult
+            {
+                ComponentId = pickingResult.X,
+                MeshNodeIndex = pickingResult.Y,
+                MaterialIndex = pickingResult.Z
+            };
+            result.Entity = idToEntity.ContainsKey(result.ComponentId) ? idToEntity[result.ComponentId] : null;
+            Debug.WriteLine(result);
+            return result;
         }
     }
 }
