@@ -12,6 +12,12 @@ namespace SiliconStudio.Xenko.Engine.Events
     {
         private readonly IDisposable link;
 
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly DataflowBlockOptions CapacityOptions = new DataflowBlockOptions
+        {
+            BoundedCapacity = 1
+        };
+
         /// <summary>
         /// Creates an event receiver, ready to receive broadcasts from the key
         /// </summary>
@@ -21,10 +27,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         {
             if (buffered)
             {
-                BufferBlock = new BufferBlock<T>(new DataflowBlockOptions
-                {
-                    BoundedCapacity = 1
-                });
+                BufferBlock = new BufferBlock<T>(CapacityOptions);
             }
             else
             {
