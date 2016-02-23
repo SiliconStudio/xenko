@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             base.Initialize();
 
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
-            renderViewObjectInfoKey = RootRenderFeature.CreateViewObjectKey<LightParametersPermutationEntry>();
+            renderViewObjectInfoKey = RootRenderFeature.RenderData.CreateViewObjectKey<LightParametersPermutationEntry>();
 
             perLightingDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerLighting");
         }
@@ -180,9 +180,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void PrepareEffectPermutations()
         {
-            var renderEffects = RootRenderFeature.GetData(renderEffectKey);
+            var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
-            var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
+            var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
             foreach (var view in RenderSystem.Views)
             {
@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override unsafe void Prepare(RenderContext context)
         {
-            var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
+            var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
             foreach (var lightParameterEntry in lightParameterEntries)
             {

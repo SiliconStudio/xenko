@@ -18,10 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public NextGenSpriteProcessor()
             : base(typeof(TransformComponent))
         {
-            Sprites = new List<RenderSprite>();
         }
-
-        public List<RenderSprite> Sprites { get; private set; }
 
         protected internal override void OnSystemAdd()
         {
@@ -30,13 +27,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         public override void Draw(RenderContext gameTime)
         {
-            Sprites.Clear();
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
-                if (spriteStateKeyPair.Value.SpriteComponent.Enabled)
-                {
-                    Sprites.Add(spriteStateKeyPair.Value);
-                }
+                spriteStateKeyPair.Value.Enabled = spriteStateKeyPair.Value.SpriteComponent.Enabled;
             }
         }
 

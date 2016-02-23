@@ -75,7 +75,7 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public ViewObjectPropertyKey<T> CreateViewObjectKey<T>(ViewObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
@@ -168,7 +168,7 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public ObjectPropertyKey<T> CreateObjectKey<T>(ObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
@@ -261,7 +261,7 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public RenderPropertyKey<T> CreateRenderKey<T>(RenderPropertyDefinition<T> definition = null, int multiplier = 1)
         {
@@ -354,7 +354,7 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public EffectObjectPropertyKey<T> CreateEffectObjectKey<T>(EffectObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
@@ -447,7 +447,7 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public ViewPropertyKey<T> CreateViewKey<T>(ViewPropertyDefinition<T> definition = null, int multiplier = 1)
         {
@@ -540,7 +540,7 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public StaticObjectPropertyKey<T> CreateStaticObjectKey<T>(StaticObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {

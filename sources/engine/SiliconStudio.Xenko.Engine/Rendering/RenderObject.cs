@@ -1,4 +1,5 @@
 using System;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -32,10 +33,15 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        public bool Enabled = true;
+
+        public BoundingBoxExt BoundingBox;
+
         // Kept in cache to quickly know if RenderPerFrameNode was already generated
         public RootRenderFeature RenderFeature;
         public ObjectNodeReference ObjectNode;
 
+        public StaticObjectNodeReference StaticCommonObjectNode;
         public StaticObjectNodeReference StaticObjectNode;
 
         public ActiveRenderStage[] ActiveRenderStages;

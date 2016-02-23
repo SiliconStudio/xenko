@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
         public <#=type#>PropertyKey<T> Create<#=type#>Key<T>(<#=type#>PropertyDefinition<T> definition = null, int multiplier = 1)
         {

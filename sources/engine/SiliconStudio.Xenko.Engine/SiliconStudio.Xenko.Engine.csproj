@@ -265,10 +265,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\RenderDataHolder.cs" />
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\RenderFeature.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\RenderObject.cs" />
+    <Compile Include="Rendering\RenderObjectCollection.cs" />
     <Compile Include="Rendering\RenderStage.cs" />
     <Compile Include="Rendering\RenderStageSelector.cs" />
     <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />

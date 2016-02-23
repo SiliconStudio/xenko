@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <inheritdoc/>
         public override void PrepareEffectPermutations()
         {
-            var renderEffects = RootRenderFeature.GetData(renderEffectKey);
+            var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
             // Collect materials

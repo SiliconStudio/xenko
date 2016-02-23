@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -16,8 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
         private List<ObjectNode> objectNodes = new List<ObjectNode>();
 
         // storage for properties (struct of arrays)
-        private Dictionary<object, int> dataArraysByDefinition = new Dictionary<object, int>();
-        private FastListStruct<DataArray> dataArrays = new FastListStruct<DataArray>(8);
+        public RenderDataHolder RenderData;
 
         // Index that will be used for collections such as RenderView.RenderNodes and RenderView.ViewObjectNodes
         public int Index { get; internal set; }
@@ -41,6 +39,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
         public List<RenderStageSelector> RenderStageSelectors { get; } = new List<RenderStageSelector>();
+
+        protected RootRenderFeature()
+        {
+            RenderData.Initialize();
+        }
 
         /// <summary>
         /// Decide whether a <see cref="RenderObject"/> is supported by this <see cref="RootRenderFeature"/>.
@@ -153,6 +156,19 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var renderStageSelector in RenderStageSelectors)
                 renderStageSelector.Process(renderObject);
 
+            // Compute render stage mask
+            var renderStageMask = renderSystem.RenderData.GetData(renderSystem.RenderStageMaskKey);
+            var renderStageMaskMultiplier = (renderSystem.RenderStages.Count + NextGenRenderSystem.RenderStageMaskSizePerEntry - 1) / NextGenRenderSystem.RenderStageMaskSizePerEntry;
+            var renderStageMaskNode = renderObject.StaticCommonObjectNode * renderStageMaskMultiplier;
+
+            for (int index = 0; index < renderObject.ActiveRenderStages.Length; index++)
+            {
+                // TODO: Could easily be optimized to read and set value only once per uint
+                var activeRenderStage = renderObject.ActiveRenderStages[index];
+                if (activeRenderStage.Active)
+                    renderStageMask[renderStageMaskNode + (index / NextGenRenderSystem.RenderStageMaskSizePerEntry)] |= 1U << (index % NextGenRenderSystem.RenderStageMaskSizePerEntry);
+            }
+
             // Add to render object
             RenderObjects.Add(renderObject);
 
@@ -167,12 +183,8 @@ namespace SiliconStudio.Xenko.Rendering
             var orderedRenderNodeIndex = renderObject.StaticObjectNode.Index;
             renderObject.StaticObjectNode = StaticObjectNodeReference.Invalid;
 
-            // TODO: SwapRemove each items in dataArrays (using Array.Copy and Array.Clear?)
-            for (int i = 0; i < dataArrays.Count; ++i)
-            {
-                var dataArray = dataArrays[i];
-                RemoveRenderObjectFromDataArray(dataArray, orderedRenderNodeIndex);
-            }
+            // SwapRemove each items in dataArrays
+            RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, RenderObjects.Count - 1);
 
             // Remove entry from ordered node index
             RenderObjects.SwapRemoveAt(orderedRenderNodeIndex);
@@ -187,15 +199,6 @@ namespace SiliconStudio.Xenko.Rendering
             renderObject.RenderFeature = null;
         }
 
-        protected virtual void RemoveRenderObjectFromDataArray(DataArray dataArray, int removedIndex)
-        {
-            if (dataArray.Info.Type == DataType.StaticObject)
-            {
-                // SwapRemove StaticObject info for this object
-                dataArray.Info.SwapRemoveItem(dataArray.Array, removedIndex, RenderObjects.Count - 1);
-            }
-        }
-
         public virtual void Reset()
         {
             // Clear nodes
@@ -207,13 +210,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void PrepareDataArrays()
         {
-            for (int i = 0; i < dataArrays.Count; ++i)
-            {
-                var dataArrayInfo = dataArrays[i].Info;
-                var expectedSize = ComputeDataArrayExpectedSize(dataArrayInfo.Type);
-
-                dataArrayInfo.EnsureSize(ref dataArrays.Items[i].Array, expectedSize);
-            }
+            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
         }
 
         protected virtual int ComputeDataArrayExpectedSize(DataType type)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -49,13 +50,22 @@ namespace SiliconStudio.Xenko.Rendering
             var modelViewHierarchy = modelComponent.Skeleton;
             var nodeTransformations = modelViewHierarchy.NodeTransformations;
 
+            // TODO GRAPHICS REFACTOR compute bounding box either by Mesh, or switch to future VisibilityObject system to deal with complete models)
+            var boundingBox = new BoundingBoxExt(modelComponent.BoundingBox);
+
             foreach (var renderMesh in renderModel.Meshes)
             {
                 var mesh = renderMesh.Mesh;
 
-                // Copy world matrix
-                var nodeIndex = mesh.NodeIndex;
-                renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
+                renderMesh.Enabled = modelComponent.Enabled;
+
+                if (renderMesh.Enabled)
+                {
+                    // Copy world matrix
+                    var nodeIndex = mesh.NodeIndex;
+                    renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
+                    renderMesh.BoundingBox = boundingBox;
+                }
             }
         }
 
