@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal void Apply(CommandList commandList, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
+        public void Apply(CommandList commandList, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
         {
             if (resourceGroupBindings.Length == 0)
                 return;

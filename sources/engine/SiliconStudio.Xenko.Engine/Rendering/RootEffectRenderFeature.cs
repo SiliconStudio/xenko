@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Compute the index of first descriptor set stored in <see cref="ResourceGroupPool"/>.
         /// </summary>
-        internal int ComputeResourceGroupOffset(RenderNodeReference renderNode)
+        protected internal int ComputeResourceGroupOffset(RenderNodeReference renderNode)
         {
             return renderNode.Index * effectDescriptorSetSlots.Count;
         }
