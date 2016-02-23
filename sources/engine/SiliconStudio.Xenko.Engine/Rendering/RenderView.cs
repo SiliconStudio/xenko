@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// List of render nodes. It might cover multiple RenderStage and RootRenderFeature. RenderStages contains RenderStage range information.
         /// Used mostly for sorting and rendering.
         /// </summary>
-        internal readonly List<RenderNodeFeatureReference> RenderNodes = new List<RenderNodeFeatureReference>();
+        public readonly List<RenderNodeFeatureReference> RenderNodes = new List<RenderNodeFeatureReference>();
 
         public RenderViewStage(RenderStage renderStage)
         {

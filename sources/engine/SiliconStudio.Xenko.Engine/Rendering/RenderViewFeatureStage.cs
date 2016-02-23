@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    internal struct RenderNodeFeatureReference
+    public struct RenderNodeFeatureReference
     {
         public readonly RootRenderFeature RootRenderFeature;
         public readonly RenderNodeReference RenderNode;

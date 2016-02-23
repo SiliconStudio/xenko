@@ -207,7 +207,7 @@
         /// </summary>
 		public static readonly RenderNodeReference Invalid = new RenderNodeReference(-1);
 
-        internal RenderNodeReference(int index)
+        public RenderNodeReference(int index)
         {
             Index = index;
         }
@@ -567,7 +567,7 @@
             Data = data;
         }
 
-        internal T this[StaticEffectObjectNodeReference index]
+        public T this[StaticEffectObjectNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -615,7 +615,7 @@
 
 	partial class RootRenderFeature
 	{
-        internal StaticEffectObjectPropertyKey<T> CreateStaticEffectObjectKey<T>(StaticEffectObjectPropertyDefinition<T> definition = null)
+        protected internal StaticEffectObjectPropertyKey<T> CreateStaticEffectObjectKey<T>(StaticEffectObjectPropertyDefinition<T> definition = null)
         {
             if (definition != null)
             {
@@ -631,7 +631,7 @@
             return new StaticEffectObjectPropertyKey<T>(dataArraysIndex);
         }
 
-		internal StaticEffectObjectPropertyData<T> GetData<T>(StaticEffectObjectPropertyKey<T> key)
+		protected internal StaticEffectObjectPropertyData<T> GetData<T>(StaticEffectObjectPropertyKey<T> key)
         {
             return new StaticEffectObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
