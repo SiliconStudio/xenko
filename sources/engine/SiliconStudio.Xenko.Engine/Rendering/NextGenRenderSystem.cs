@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
@@ -14,8 +15,10 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Facility to perform rendering: extract rendering data from scene, determine effects and GPU states, compute and prepare data (i.e. matrices, buffers, etc...) and finally draw it.
     /// </summary>
-    public partial class NextGenRenderSystem
+    public partial class NextGenRenderSystem : ComponentBase, IGameSystemBase
     {
+        private readonly IServiceRegistry registry;
+
         /// <summary>
         /// Stores render data.
         /// </summary>
@@ -74,13 +77,26 @@ namespace SiliconStudio.Xenko.Rendering
 
         public RenderContext RenderContextOld { get; private set; }
 
+        /// <summary>
+        /// Gets the services registry.
+        /// </summary>
+        /// <value>The services registry.</value>
+        public IServiceRegistry Services
+        {
+            get
+            {
+                return registry;
+            }
+        }
+
         public NextGenRenderSystem(IServiceRegistry registry)
         {
+            this.registry = registry;
+
             RenderData.Initialize();
             RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
 
             registry.AddService(typeof(NextGenRenderSystem), this);
-            EffectSystem = registry.GetSafeServiceAs<EffectSystem>();
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
         }
 
@@ -89,22 +105,29 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="effectSystem">The effect system.</param>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public void Initialize(GraphicsDevice graphicsDevice)
+        public void Initialize()
         {
-            GraphicsDevice = graphicsDevice;
+            // Get graphics device service
+            var graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-            DescriptorPool = DescriptorPool.New(graphicsDevice, new[]
-            {
-                new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
-            });
-
-            BufferPool = BufferPool.New(graphicsDevice, 32 * 1024 * 1024);
+            EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
 
             // Be notified when a RenderObject is added or removed
             RenderObjects = new RenderObjectCollection(this);
             Views.CollectionChanged += Views_CollectionChanged;
 
-            RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
+            graphicsDeviceService.DeviceCreated += (sender, args) =>
+            {
+                GraphicsDevice = graphicsDeviceService.GraphicsDevice;
+                RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
+
+                DescriptorPool = DescriptorPool.New(GraphicsDevice, new[]
+                {
+                    new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
+                });
+
+                BufferPool = BufferPool.New(GraphicsDevice, 32 * 1024 * 1024);
+            };
         }
 
         /// <summary>
