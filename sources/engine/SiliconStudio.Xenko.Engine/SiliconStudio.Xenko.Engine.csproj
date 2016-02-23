@@ -259,8 +259,6 @@
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
-    <Compile Include="Rendering\Nodes\StaticObjectNodeReference.cs" />
-    <Compile Include="Rendering\Nodes\ViewNodeReference.cs" />
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
     <Compile Include="Rendering\Properties.cs">
       <DependentUpon>Properties.tt</DependentUpon>

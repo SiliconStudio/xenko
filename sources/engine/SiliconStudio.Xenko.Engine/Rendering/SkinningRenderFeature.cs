@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class SkinningRenderFeature : SubRenderFeature
     {
-        private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private ObjectPropertyKey<RenderModelFrameInfo> renderModelObjectInfoKey;
 
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderMesh = (RenderMesh)renderObject;
 
