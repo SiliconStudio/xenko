@@ -157,13 +157,13 @@ namespace SiliconStudio.Xenko.Assets
             return key;
         }
 
-        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
+        public ObjectParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
-            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            var keyResolved = (ObjectParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
         {
             if (sampler == null) throw new ArgumentNullException("sampler");
 
