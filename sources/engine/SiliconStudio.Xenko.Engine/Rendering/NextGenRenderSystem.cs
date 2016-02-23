@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
@@ -15,9 +17,17 @@ namespace SiliconStudio.Xenko.Rendering
     public partial class NextGenRenderSystem
     {
         /// <summary>
+        /// Stores render data.
+        /// </summary>
+        public RenderDataHolder RenderData;
+
+        public StaticObjectPropertyKey<uint> RenderStageMaskKey;
+        public const int RenderStageMaskSizePerEntry = 32; // 32 bits per uint
+
+        /// <summary>
         /// List of objects registered in the rendering system.
         /// </summary>
-        public TrackingHashSet<RenderObject> RenderObjects = new TrackingHashSet<RenderObject>();
+        public RenderObjectCollection RenderObjects;
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -66,6 +76,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         public NextGenRenderSystem(IServiceRegistry registry)
         {
+            RenderData.Initialize();
+            RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+
             registry.AddService(typeof(NextGenRenderSystem), this);
             EffectSystem = registry.GetSafeServiceAs<EffectSystem>();
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
@@ -88,7 +101,7 @@ namespace SiliconStudio.Xenko.Rendering
             BufferPool = BufferPool.New(graphicsDevice, 32 * 1024 * 1024);
 
             // Be notified when a RenderObject is added or removed
-            RenderObjects.CollectionChanged += RenderObjectsCollectionChanged;
+            RenderObjects = new RenderObjectCollection(this);
             Views.CollectionChanged += Views_CollectionChanged;
 
             RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
@@ -105,6 +118,8 @@ namespace SiliconStudio.Xenko.Rendering
                 // Update indices
                 var view = Views[index];
                 view.Index = index;
+
+                view.RenderObjects.Clear();
 
                 // Clear nodes
                 while (view.Features.Count < RenderFeatures.Count)
@@ -167,28 +182,38 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        private void PrepareDataArrays()
+        {
+            // Ensure size for data arrays
+            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
+
+            // Also do it for each render feature
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.PrepareDataArrays();
+            }
+        }
+
+        protected int ComputeDataArrayExpectedSize(DataType type)
+        {
+            switch (type)
+            {
+                case DataType.StaticObject:
+                    return RenderObjects.Count;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
                     ((RenderStage)e.Item).Index = e.Index;
+                    // Make sure mask is big enough
+                    RenderData.ChangeDataMultiplier(RenderStageMaskKey, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
                     break;
-            }
-        }
-
-        private void RenderObjectsCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    AddRenderObject((RenderObject)e.Item);
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    RemoveRenderObject((RenderObject)e.OldItem);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -202,8 +227,15 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void AddRenderObject(RenderObject renderObject)
+        internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
         {
+            renderObject.StaticCommonObjectNode = new StaticObjectNodeReference(renderObjects.Count);
+
+            renderObjects.Add(renderObject);
+            
+            // Resize arrays to accomodate for new data
+            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
+
             // Determine which RenderFeatures is responsible for this object
             foreach (var renderFeature in RenderFeatures)
             {
@@ -216,9 +248,28 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RemoveRenderObject(RenderObject renderObject)
+        internal bool RemoveRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
         {
-            renderObject.RenderFeature?.RemoveRenderObject(renderObject);
+            // Get and clear ordered node index
+            var orderedRenderNodeIndex = renderObject.StaticObjectNode.Index;
+            if (renderObject.StaticCommonObjectNode == StaticObjectNodeReference.Invalid)
+                return false;
+
+            renderObject.StaticCommonObjectNode = StaticObjectNodeReference.Invalid;
+
+            // SwapRemove each items in dataArrays
+            RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, RenderObjects.Count - 1);
+
+            // Remove entry from ordered node index
+            renderObjects.SwapRemoveAt(orderedRenderNodeIndex);
+
+            // If last item was moved, update its index
+            if (orderedRenderNodeIndex < RenderObjects.Count)
+            {
+                renderObjects[orderedRenderNodeIndex].StaticCommonObjectNode = new StaticObjectNodeReference(orderedRenderNodeIndex);
+            }
+
+            return true;
         }
     }
 }

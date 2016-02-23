@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl()
         {
-            var renderEffects = GetData(RenderEffectKey);
+            var renderEffects = RenderData.GetData(RenderEffectKey);
 
             foreach (var renderObject in RenderObjects)
             {

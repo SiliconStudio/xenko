@@ -61,6 +61,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             renderView.View = renderView.Camera.ViewMatrix;
             renderView.Projection = renderView.Camera.ProjectionMatrix;
+
+            Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
         }
 
         private void Prepare(RenderDrawContext context)
@@ -89,33 +91,91 @@ namespace SiliconStudio.Xenko.Rendering
             // Reset render context data
             Reset();
 
-            // Create object nodes
-            foreach (var renderObject in RenderObjects)
-            {
-                var renderFeature = renderObject.RenderFeature;
-                renderFeature.GetOrCreateObjectNode(renderObject);
-            }
-
-            // Ensure size of data arrays per objects
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.PrepareDataArrays();
-            }
-
             // Reset view specific render context data
             ResetViews();
 
-            // Collect objects to render (later we will also cull/filter them)
+            // Collect objects, and perform frustum culling
+            // TODO GRAPHICS REFACTOR Create "VisibilityObject" (could contain multiple RenderNode) and separate frustum culling from RenderSystem
+            // TODO GRAPHICS REFACTOR optimization: maybe we could process all views at once (swap loop between per object and per view)
+            var viewRenderStageMask = new uint[(RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry];
             foreach (var view in Views)
             {
-                // TODO: Culling & filtering
+                // Prepare culling mask
+                foreach (var renderViewStage in view.RenderStages)
+                {
+                    var renderStageIndex = renderViewStage.RenderStage.Index;
+                    viewRenderStageMask[renderStageIndex / RenderStageMaskSizePerEntry] |= 1U << (renderStageIndex % RenderStageMaskSizePerEntry);
+                }
+
+                // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
+                // TODO GRAPHICS REFACTOR frustum culling is currently hardcoded (cf previous TODO, we should make this more modular and move it out of here)
+                var frustum = new BoundingFrustum(ref view.ViewProjection);
+                var cullingMode = view.SceneCameraRenderer.CullingMode;
+
+                // Process objects
                 foreach (var renderObject in RenderObjects)
                 {
-                    var viewFeature = view.Features[renderObject.RenderFeature.Index];
+                    // Skip not enabled objects
+                    if (!renderObject.Enabled)
+                        continue;
 
+                    var renderStageMask = RenderData.GetData(RenderStageMaskKey);
+                    var renderStageMaskMultiplier = (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry;
+                    var renderStageMaskNode = renderObject.StaticCommonObjectNode * renderStageMaskMultiplier;
+
+                    // Determine if this render object belongs to this view
+                    bool renderStageMatch = false;
+                    unsafe
+                    {
+                        fixed (uint* viewRenderStageMaskStart = viewRenderStageMask)
+                        fixed (uint* objectRenderStageMaskStart = renderStageMask.Data)
+                        {
+                            var viewRenderStageMaskPtr = viewRenderStageMaskStart;
+                            var objectRenderStageMaskPtr = objectRenderStageMaskStart + renderStageMaskNode.Index;
+                            for (int i = 0; i < viewRenderStageMask.Length; ++i)
+                            {
+                                if ((*viewRenderStageMaskPtr++ & *objectRenderStageMaskPtr++) != 0)
+                                {
+                                    renderStageMatch = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Object not part of this view because no render stages in this objects are visible in this view
+                    if (!renderStageMatch)
+                        continue;
+
+                    // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                    // Compute transformed AABB (by world)
+                    if (cullingMode == CameraCullingMode.Frustum
+                        && renderObject.BoundingBox.Extent != Vector3.Zero
+                        && !frustum.Contains(ref renderObject.BoundingBox))
+                    {
+                        continue;
+                    }
+
+                    // Add object to list of visible objects
+                    // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
+                    view.RenderObjects.Add(renderObject);
+                }
+            }
+
+            // Create nodes for objects to render
+            foreach (var view in Views)
+            {
+                foreach (var renderObject in view.RenderObjects)
+                {
                     var renderFeature = renderObject.RenderFeature;
+                    var viewFeature = view.Features[renderFeature.Index];
 
-                    var renderViewNode = ViewObjectNodeReference.Invalid;
+                    // Create object node
+                    renderFeature.GetOrCreateObjectNode(renderObject);
+
+                    // Let's create the view object node
+                    var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
+                    viewFeature.ViewObjectNodes.Add(renderViewNode);
 
                     // Collect object
                     // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
@@ -127,13 +187,6 @@ namespace SiliconStudio.Xenko.Rendering
                         var renderStageIndex = renderViewStage.RenderStage.Index;
                         if (!activeRenderStages[renderStageIndex].Active)
                             continue;
-
-                        // First time this object is created in this view, let's create the view object node
-                        if (renderViewNode == ViewObjectNodeReference.Invalid)
-                        {
-                            renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
-                            viewFeature.ViewObjectNodes.Add(renderViewNode);
-                        }
 
                         var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
 
@@ -148,6 +201,9 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO: Sort RenderStage.RenderNodes
             }
 
+            // Ensure size of data arrays per objects
+            PrepareDataArrays();
+
             // Generate and execute extract jobs
             foreach (var renderFeature in RenderFeatures)
             // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
@@ -157,10 +213,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Ensure size of all other data arrays
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.PrepareDataArrays();
-            }
+            PrepareDataArrays();
         }
     }
 

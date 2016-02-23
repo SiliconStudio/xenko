@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.Initialize();
 
             // Create RenderEffectKey
-            RenderEffectKey = CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
+            RenderEffectKey = RenderData.CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
 
             // TODO: Assign weights so that PerDraw is always last? (we usually most custom user ones to be between PerView and PerDraw)
             perFrameDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerFrame");
@@ -191,7 +191,7 @@ namespace SiliconStudio.Xenko.Rendering
                 effectPermutationSlots.Add(effectName, slot);
 
                 // Add render effect slot
-                ChangeDataMultiplier(RenderEffectKey, EffectPermutationSlotCount);
+                RenderData.ChangeDataMultiplier(RenderEffectKey, EffectPermutationSlotCount);
             }
 
             return new EffectPermutationSlot(slot);
@@ -211,7 +211,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.PrepareEffectPermutations();
 
             // TODO: Temporary until we have a better system for handling permutations
-            var renderEffects = GetData(RenderEffectKey);
+            var renderEffects = RenderData.GetData(RenderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
 
             foreach (var view in RenderSystem.Views)
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Rendering
                 Array.Resize(ref ResourceGroupPool, expectedDescriptorSetPoolSize);
 
             // Allocate PerFrame, PerView and PerDraw resource groups and constant buffers
-            var renderEffects = GetData(RenderEffectKey);
+            var renderEffects = RenderData.GetData(RenderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
             foreach (var view in RenderSystem.Views)
             {
