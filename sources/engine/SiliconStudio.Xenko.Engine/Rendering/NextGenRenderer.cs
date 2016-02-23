@@ -274,16 +274,28 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override string ModelEffect { get; set; }
 
-        public RenderStage MainRenderStage { get; set; }
-        public RenderStage TransparentRenderStage { get; set; }
-        public RenderStage GBufferRenderStage { get; set; }
-        public RenderStage ShadowMapRenderStage { get; set; }
-        public RenderStage PickingRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
+        //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage PickingRenderStage { get; set; }
 
 
         public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
+
+        protected RenderStage GetOrCreateRenderStage(string name, string effectSlotName, RenderOutputDescription defaultOutput)
+        {
+            var renderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == name);
+            if (renderStage != null)
+                return renderStage;
+
+            renderStage = new RenderStage(name, effectSlotName) { Output = defaultOutput };
+            RenderSystem.RenderStages.Add(renderStage);
+
+            return renderStage;
+        }
 
         protected override void InitializeCore()
         {
@@ -292,17 +304,93 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem = Services.GetServiceAs<NextGenRenderSystem>();
             RenderContext = new RenderContext(Services);
 
-            // TODO GRAPHICS REFACTOR how to properly look for stages?
+            // Create render stages that don't exist yet
             if (MainRenderStage == null)
-                MainRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "Main");
+                MainRenderStage = GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (TransparentRenderStage == null)
-                TransparentRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "Transparent");
-            if (GBufferRenderStage == null)
-                GBufferRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "GBuffer");
+                TransparentRenderStage = GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            //if (GBufferRenderStage == null)
+            //    GBufferRenderStage = GetOrCreateRenderStage("GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (ShadowMapRenderStage == null)
-                ShadowMapRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "ShadowMapCaster");
+                ShadowMapRenderStage = GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
             if (PickingRenderStage == null)
-                PickingRenderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == "Picking");
+                PickingRenderStage = GetOrCreateRenderStage("Picking", "Picking", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+
+            // TODO GRAPHICS REFACTOR should be part of graphics compositor configuration
+            var meshRenderFeature = new MeshRenderFeature
+            {
+                RenderFeatures =
+                    {
+                        new TransformRenderFeature(),
+                        //new SkinningRenderFeature(),
+                        new MaterialRenderFeature(),
+                        (RenderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = ShadowMapRenderStage }),
+                        new PickingRenderFeature(),
+                    },
+            };
+
+            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            {
+                if (renderNode.RenderStage == ShadowMapRenderStage)
+                {
+                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+                }
+            };
+
+            meshRenderFeature.RenderStageSelectors.Add(new MeshTransparentRenderStageSelector
+            {
+                EffectName = "TestEffect",
+                MainRenderStage = MainRenderStage,
+                TransparentRenderStage = TransparentRenderStage,
+            });
+
+            if (Shadows)
+            {
+                meshRenderFeature.RenderStageSelectors.Add(new ShadowMapRenderStageSelector
+                {
+                    EffectName = "TestEffect.ShadowMapCaster",
+                    ShadowMapRenderStage = ShadowMapRenderStage,
+                });
+            }
+
+            if (Picking)
+            {
+                meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+                {
+                    EffectName = "TestEffect.Picking",
+                    RenderStage = PickingRenderStage,
+                });
+            }
+
+            var spriteRenderFeature = new SpriteRenderFeature();
+            spriteRenderFeature.RenderStageSelectors.Add(new SpriteTransparentRenderStageSelector
+            {
+                EffectName = "Test",
+                MainRenderStage = MainRenderStage,
+                TransparentRenderStage = TransparentRenderStage,
+            });
+
+            var skyboxRenderFeature = new SkyboxRenderFeature();
+            skyboxRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+            {
+                RenderStage = MainRenderStage,
+                EffectName = "SkyboxEffect",
+            });
+
+            var backgroundFeature = new BackgroundRenderFeature();
+            backgroundFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+            {
+                RenderStage = MainRenderStage,
+                EffectName = "Test",
+            });
+
+            // Register top level renderers
+            RenderSystem.RenderFeatures.Add(meshRenderFeature);
+            RenderSystem.RenderFeatures.Add(spriteRenderFeature);
+            RenderSystem.RenderFeatures.Add(skyboxRenderFeature);
+            RenderSystem.RenderFeatures.Add(backgroundFeature);
+
+            RenderSystem.InitializeFeatures();
 
             // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
@@ -312,7 +400,7 @@ namespace SiliconStudio.Xenko.Rendering
             sceneInstance.Processors.Add(new NextGenSkyboxProcessor());
 
             // Describe views
-            mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage, GBufferRenderStage, PickingRenderStage } };
+            mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage, /*GBufferRenderStage,*/ PickingRenderStage } };
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
             mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
@@ -324,17 +412,17 @@ namespace SiliconStudio.Xenko.Rendering
             var currentViewport = context.CommandList.Viewport;
 
             // GBuffer
-            if (GBuffer)
-            {
-                context.PushRenderTargets();
-
-                var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R11G11B10_Float));
-                context.CommandList.Clear(gbuffer, Color4.Black);
-                context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, gbuffer);
-                RenderSystem.Draw(context, mainRenderView, GBufferRenderStage);
-
-                context.PopRenderTargets();
-            }
+            //if (GBuffer)
+            //{
+            //    context.PushRenderTargets();
+            //
+            //    var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, GBufferRenderStage.Output.RenderTargetFormat0));
+            //    context.CommandList.Clear(gbuffer, Color4.Black);
+            //    context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, gbuffer);
+            //    RenderSystem.Draw(context, mainRenderView, GBufferRenderStage);
+            //
+            //    context.PopRenderTargets();
+            //}
 
             // Shadow maps
             if (Shadows)
@@ -380,13 +468,13 @@ namespace SiliconStudio.Xenko.Rendering
                 if (pickingReadback == null)
                 {
                     pickingReadback = ToLoadAndUnload(new ImageReadback<Vector4> { FrameDelayCount = 4 });
-                    pickingTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R32G32B32A32_Float, TextureFlags.None, 1, GraphicsResourceUsage.Staging).DisposeBy(this);
+                    pickingTexture = Texture.New2D(GraphicsDevice, 1, 1, PickingRenderStage.Output.RenderTargetFormat0, TextureFlags.None, 1, GraphicsResourceUsage.Staging).DisposeBy(this);
                 }
                 var inputManager = Context.Services.GetServiceAs<InputManager>();
 
                 // TODO: Use RenderFrame
-                var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(PickingTargetSize, PickingTargetSize, PixelFormat.R32G32B32A32_Float));
-                var pickingDepthStencil = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(PickingTargetSize, PickingTargetSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil));
+                var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(PickingTargetSize, PickingTargetSize, PickingRenderStage.Output.RenderTargetFormat0));
+                var pickingDepthStencil = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(PickingTargetSize, PickingTargetSize, PickingRenderStage.Output.DepthStencilFormat, TextureFlags.DepthStencil));
 
                 // Render the picking stage using the current view
                 context.PushRenderTargets();
