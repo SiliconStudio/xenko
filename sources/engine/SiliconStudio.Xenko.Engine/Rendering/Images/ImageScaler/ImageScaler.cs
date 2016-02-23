@@ -35,11 +35,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return !MathUtil.IsZero(Parameters.GetValueSlow(ImageScalerShaderKeys.IsOnlyChannelRed));
+                return !MathUtil.IsZero(Parameters.Get(ImageScalerShaderKeys.IsOnlyChannelRed));
             }
             set
             {
-                Parameters.SetValueSlow(ImageScalerShaderKeys.IsOnlyChannelRed, value ? 1.0f : 0.0f);
+                Parameters.Set(ImageScalerShaderKeys.IsOnlyChannelRed, value ? 1.0f : 0.0f);
             }
         }
 
@@ -51,11 +51,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetResourceSlow(TexturingKeys.Sampler);
+                return Parameters.Get(TexturingKeys.Sampler);
             }
             set
             {
-                Parameters.SetResourceSlow(TexturingKeys.Sampler, value);
+                Parameters.Set(TexturingKeys.Sampler, value);
             }
         }
 
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.UpdateParameters();
 
             // Use actual ColorSpace
-            Parameters.SetValueSlow(ImageScalerShaderKeys.Color, Color.ToColorSpace(GraphicsDevice.ColorSpace));
+            Parameters.Set(ImageScalerShaderKeys.Color, Color.ToColorSpace(GraphicsDevice.ColorSpace));
         }
     }
 }

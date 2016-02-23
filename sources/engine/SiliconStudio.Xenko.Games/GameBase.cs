@@ -443,6 +443,7 @@ namespace SiliconStudio.Xenko.Games
                 Context.RequestedBackBufferFormat = graphicsDeviceManagerImpl.PreferredBackBufferFormat;
                 Context.RequestedDepthStencilFormat = graphicsDeviceManagerImpl.PreferredDepthStencilFormat;
                 Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
+                Context.DeviceCreationFlags = graphicsDeviceManagerImpl.DeviceCreationFlags;
 
                 gamePlatform.Run(Context);
 

@@ -7,7 +7,6 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-
     public interface ILightShadowRenderer
     {
         /// <summary>
@@ -27,5 +26,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         LightShadowType GetShadowType(LightShadowMap lightShadowMap);
 
         ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
+
+        void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+
+        void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
     }
 }

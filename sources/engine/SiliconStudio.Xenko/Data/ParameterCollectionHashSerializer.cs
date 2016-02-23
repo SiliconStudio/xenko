@@ -17,11 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.Data
         {
             foreach (var parameter in parameterCollection.InternalValues)
             {
-                if (parameterCollection.IsValueOwner(parameter.Value))
-                {
-                    parameterKeySerializer.Serialize(parameter.Key, stream);
-                    parameter.Value.SerializeHash(stream);
-                }
+                parameterKeySerializer.Serialize(parameter.Key, stream);
+                parameter.Value.SerializeHash(stream);
             }
         }
     }

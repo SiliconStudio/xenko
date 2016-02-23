@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </remarks>
     public class CoCMapBlur : ImageEffect
     {
-        private ImageEffect cocBlurEffect;
+        private ImageEffectShader cocBlurEffect;
 
         private float radius;
 
@@ -81,14 +81,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var originalTexture = GetSafeInput(0);
             var outputTexture = GetSafeOutput(0);
 
-            cocBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.Count, tapCount);
-            cocBlurEffect.Parameters.SetValueSlow(CoCMapBlurShaderKeys.Radius, radius);
-            cocBlurEffect.Parameters.SetValueSlow(CoCMapBlurShaderKeys.OffsetsWeights, tapWeights);
+            cocBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.Radius, radius);
+            cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.OffsetsWeights, tapWeights);
             var tapNumber = 2 * tapCount - 1;
 
             // Blur in one direction
             var blurAngle = 0f;
-            cocBlurEffect.Parameters.SetValueSlow(CoCMapBlurShaderKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var firstBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             cocBlurEffect.SetInput(0, originalTexture);
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Second blur pass to ouput the final result
             blurAngle = MathUtil.PiOverTwo;
-            cocBlurEffect.Parameters.SetValueSlow(CoCMapBlurShaderKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             cocBlurEffect.SetInput(0, firstBlurTexture);
             cocBlurEffect.SetOutput(outputTexture);

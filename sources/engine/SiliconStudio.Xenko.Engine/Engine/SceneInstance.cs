@@ -138,8 +138,8 @@ namespace SiliconStudio.Xenko.Engine
             // Update global time
             var gameTime = context.RenderContext.Time;
             // TODO GRAPHICS REFACTOR
-            context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
-            context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
 
             try
             {

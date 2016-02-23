@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     [DataContract]public partial class SphericalHarmonicsParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> HarmonicsOrder = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> HarmonicsOrder = ParameterKeys.NewPermutation<int>();
     };
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -12,8 +13,10 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataSerializer(typeof(NextGenParameterCollection.Serializer))]
     [DataSerializerGlobal(null, typeof(FastList<ParameterKeyInfo>))]
-    public class NextGenParameterCollection : IDisposable
+    public class NextGenParameterCollection
     {
+        private static readonly byte[] EmptyData = new byte[0];
+
         private FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos;
 
         // TODO: Switch to FastListStruct (for serialization)
@@ -22,53 +25,45 @@ namespace SiliconStudio.Xenko.Rendering
         // Constants and resources
         // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
         //   However, maybe ref locals would make this not needed anymore?
-        public IntPtr DataValues;
-        public int DataValuesSize;
-        public object[] ResourceValues;
+        public byte[] DataValues = EmptyData;
+        public object[] ObjectValues;
+
+        public int PermutationCounter;
+
+        public IEnumerable<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
 
-        public void Dispose()
+        /// <summary>
+        /// Gets an accessor to get and set objects more quickly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterKey"></param>
+        /// <returns></returns>
+        public ObjectParameterAccessor<T> GetAccessor<T>(ObjectParameterKey<T> parameterKey)
         {
-            if (DataValues != IntPtr.Zero)
-            {
-                Marshal.FreeHGlobal(DataValues);
-                DataValues = IntPtr.Zero;
-            }
+            return GetObjectParameterHelper(parameterKey, false);
         }
 
-        public ResourceParameter<T> GetResourceParameter<T>(ParameterKey<T> parameterKey) where T : class
+        /// <summary>
+        /// Gets an accessor to get and set permutations more quickly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterKey"></param>
+        /// <returns></returns>
+        public PermutationParameter<T> GetAccessor<T>(PermutationParameterKey<T> parameterKey)
         {
-            // Find existing first
-            for (int i = 0; i < parameterKeyInfos.Count; ++i)
-            {
-                if (parameterKeyInfos[i].Key == parameterKey)
-                {
-                    return new ResourceParameter<T>(i);
-                }
-            }
-
-            // Check layout if it exists
-            if (layoutParameterKeyInfos.Count > 0)
-            {
-                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
-                {
-                    if (layoutParameterKeyInfo.Key == parameterKey)
-                    {
-                        parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
-                    }
-                }
-            }
-
-            // Create info entry
-            var resourceValuesSize = ResourceValues?.Length ?? 0;
-            Array.Resize(ref ResourceValues, resourceValuesSize + 1);
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, resourceValuesSize));
-            return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
+            // Remap it as PermutationParameter
+            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey, true).Index);
         }
 
-        public ValueParameter<T> GetValueParameter<T>(ParameterKey<T> parameterKey, int elementCount = 1) where T : struct
+        /// <summary>
+        /// Gets an accessor to get and set blittable values more quickly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterKey"></param>
+        /// <returns></returns>
+        public unsafe ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -100,108 +95,131 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Create offset entry
             var result = new ValueParameter<T>(parameterKeyInfos.Count);
-            var memberOffset = DataValuesSize;
+            var memberOffset = DataValues.Length;
             parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
 
             // We append at the end; resize array to accomodate new data
-            DataValuesSize += totalSize;
-            DataValues = DataValues != IntPtr.Zero
-                ? Marshal.ReAllocHGlobal(DataValues, (IntPtr)DataValuesSize)
-                : Marshal.AllocHGlobal((IntPtr)DataValuesSize);
+            Array.Resize(ref DataValues, DataValues.Length + totalSize);
 
             // Initialize default value
             if (parameterKey.DefaultValueMetadata != null)
             {
-                parameterKey.DefaultValueMetadata.WriteBuffer(DataValues + memberOffset, 16);
+                fixed (byte* dataValues = DataValues)
+                    parameterKey.DefaultValueMetadata.WriteBuffer((IntPtr)dataValues + memberOffset, 16);
             }
 
             return result;
         }
 
-        [Obsolete]
-        public ValueParameter<T> GetValueParameterArray<T>(ParameterKey<T[]> parameterKey, int elementCount = 1) where T : struct
+        /// <summary>
+        /// Gets pointer to directly copy blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public unsafe IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
         {
-            // Find existing first
-            for (int i = 0; i < parameterKeyInfos.Count; ++i)
-            {
-                if (parameterKeyInfos[i].Key == parameterKey)
-                {
-                    return new ValueParameter<T>(i);
-                }
-            }
-
-            // Check layout if it exists
-            if (layoutParameterKeyInfos.Count > 0)
-            {
-                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
-                {
-                    if (layoutParameterKeyInfo.Key == parameterKey)
-                    {
-                        parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return new ValueParameter<T>(parameterKeyInfos.Count - 1);
-                    }
-                }
-            }
-
-            // Compute size
-            var elementSize = parameterKey.Size;
-            var totalSize = elementSize;
-            if (elementCount > 1)
-                totalSize += (elementSize + 15) / 16 * 16 * (elementCount - 1);
-
-            // Create offset entry
-            var result = new ValueParameter<T>(parameterKeyInfos.Count);
-            var memberOffset = DataValuesSize;
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
-
-            // We append at the end; resize array to accomodate new data
-            DataValuesSize += totalSize;
-            DataValues = DataValues != IntPtr.Zero
-                ? Marshal.ReAllocHGlobal(DataValues, (IntPtr)DataValuesSize)
-                : Marshal.AllocHGlobal((IntPtr)DataValuesSize);
-
-            // Initialize default value
-            if (parameterKey.DefaultValueMetadata != null)
-            {
-                parameterKey.DefaultValueMetadata.WriteBuffer(DataValues + memberOffset, 16);
-            }
-
-            return result;
+            fixed (byte* dataValues = DataValues)
+                return (IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset;
         }
 
-        public IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
+        /// <summary>
+        /// Sets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ObjectParameterKey<T> parameter, T value)
         {
-            return DataValues + parameterKeyInfos[parameter.Index].Offset;
+            Set(GetAccessor(parameter), value);
         }
 
-        public void SetResourceSlow<T>(ParameterKey<T> parameter, T value) where T : class
+        /// <summary>
+        /// Gets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(ObjectParameterKey<T> parameter)
         {
-            Set(GetResourceParameter(parameter), value);
+            return Get(GetAccessor(parameter));
         }
 
-        public T GetResourceSlow<T>(ParameterKey<T> parameter) where T : class
+        /// <summary>
+        /// Sets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(PermutationParameterKey<T> parameter, T value)
         {
-            return Get(GetResourceParameter(parameter));
+            Set(GetAccessor(parameter), value);
         }
 
-        public void SetValueSlow<T>(ParameterKey<T> parameter, T value) where T : struct
+        /// <summary>
+        /// Gets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(PermutationParameterKey<T> parameter)
         {
-            Set(GetValueParameter(parameter), value);
+            return Get(GetAccessor(parameter));
         }
 
-        public void SetValueSlow<T>(ParameterKey<T> parameter, T[] values) where T : struct
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, T value) where T : struct
         {
-            Set(GetValueParameter(parameter, values.Length), values);
+            Set(GetAccessor(parameter), value);
         }
 
-        public T GetValueSlow<T>(ParameterKey<T> parameter) where T : struct
+        /// <summary>
+        /// Sets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="values"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, T[] values) where T : struct
         {
-            return Get(GetValueParameter(parameter));
+            Set(GetAccessor(parameter, values.Length), values.Length, ref values[0]);
         }
 
-        public T[] GetValuesSlow<T>(ParameterKey<T> key) where T : struct
+        /// <summary>
+        /// Sets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="values"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, int count, ref T firstValue) where T : struct
         {
-            var parameter = GetValueParameter(key);
+            Set(GetAccessor(parameter, count), count, ref firstValue);
+        }
+
+        /// <summary>
+        /// Gets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(ValueParameterKey<T> parameter) where T : struct
+        {
+            return Get(GetAccessor(parameter));
+        }
+
+        /// <summary>
+        /// Gets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T[] GetValues<T>(ValueParameterKey<T> key) where T : struct
+        {
+            var parameter = GetAccessor(key);
             var data = GetValuePointer(parameter);
 
             // Align to float4
@@ -217,47 +235,113 @@ namespace SiliconStudio.Xenko.Rendering
             return values;
         }
 
-        public void Set<T>(ValueParameter<T> parameter, T value) where T : struct
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public unsafe void Set<T>(ValueParameter<T> parameter, T value) where T : struct
         {
-            Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
+            fixed (byte* dataValues = DataValues)
+                Utilities.Write((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
-        public void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public unsafe void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
         {
-            Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
+            fixed (byte* dataValues = DataValues)
+                Utilities.Write((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
-        public void Set<T>(ValueParameter<T> parameter, T[] values) where T : struct
+        /// <summary>
+        /// Sets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="values"></param>
+        public void Set<T>(ValueParameter<T> parameter, int count, ref T firstValue) where T : struct
         {
             var data = GetValuePointer(parameter);
 
             // Align to float4
             var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
             var elementCount = (parameterKeyInfos[parameter.Index].Size + stride) / stride;
-            if (values.Length > elementCount)
+            if (count > elementCount)
             {
                 throw new IndexOutOfRangeException();
             }
-            for (int i = 0; i < values.Length; ++i)
+
+            var value = Interop.Pin(ref firstValue);
+            for (int i = 0; i < count; ++i)
             {
-                Utilities.Write(data, ref values[i]);
+                Utilities.Write(data, ref value);
                 data += stride;
+
+                value = Interop.IncrementPinned(value);
             }
         }
 
-        public void Set<T>(ResourceParameter<T> parameter, T value) where T : class
+        /// <summary>
+        /// Sets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(PermutationParameter<T> parameter, T value)
         {
-            ResourceValues[parameterKeyInfos[parameter.Index].BindingSlot] = value;
+            PermutationCounter++;
+            ObjectValues[parameterKeyInfos[parameter.Index].BindingSlot] = value;
         }
 
-        public T Get<T>(ValueParameter<T> parameter) where T : struct
+        /// <summary>
+        /// Sets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterAccessor"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ObjectParameterAccessor<T> parameterAccessor, T value)
         {
-            return Utilities.Read<T>(DataValues + parameterKeyInfos[parameter.Index].Offset);
+            ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot] = value;
         }
 
-        public T Get<T>(ResourceParameter<T> parameter) where T : class
+        /// <summary>
+        /// Gets a value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public unsafe T Get<T>(ValueParameter<T> parameter) where T : struct
         {
-            return (T)ResourceValues[parameterKeyInfos[parameter.Index].BindingSlot];
+            fixed (byte* dataValues = DataValues)
+                return Utilities.Read<T>((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset);
+        }
+
+        /// <summary>
+        /// Gets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(PermutationParameter<T> parameter)
+        {
+            return (T)ObjectValues[parameterKeyInfos[parameter.Index].BindingSlot];
+        }
+
+        /// <summary>
+        /// Gets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterAccessor"></param>
+        /// <returns></returns>
+        public T Get<T>(ObjectParameterAccessor<T> parameterAccessor)
+        {
+            return (T)ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot];
         }
 
         public void Remove<T>(ParameterKey<T> key)
@@ -272,6 +356,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <summary>
+        /// Determines whether current collection contains a value for this key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool ContainsKey(ParameterKey key)
         {
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -293,7 +382,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="bufferSize"></param>
         /// <param name="constantBuffers"></param>
         /// <param name="descriptorSetLayouts"></param>
-        public void UpdateLayout(NextGenParameterCollectionLayout layout)
+        public unsafe void UpdateLayout(NextGenParameterCollectionLayout layout)
         {
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
@@ -345,7 +434,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
             
-            var newDataValues = Marshal.AllocHGlobal(bufferSize);
+            var newDataValues = new byte[bufferSize];
             var newResourceValues = new object[resourceCount];
 
             // Update default values
@@ -359,7 +448,8 @@ namespace SiliconStudio.Xenko.Rendering
                     var defaultValueMetadata = layoutParameterKeyInfo.Key?.DefaultValueMetadata;
                     if (defaultValueMetadata != null)
                     {
-                        defaultValueMetadata.WriteBuffer(newDataValues + bufferOffset + layoutParameterKeyInfo.Offset, 16);
+                        fixed (byte* newDataValuesPtr = newDataValues)
+                            defaultValueMetadata.WriteBuffer((IntPtr)newDataValuesPtr + bufferOffset + layoutParameterKeyInfo.Offset, 16);
                     }
                 }
             }
@@ -373,22 +463,63 @@ namespace SiliconStudio.Xenko.Rendering
                 if (newParameterKeyInfo.Offset != -1)
                 {
                     // It's data
-                    Utilities.CopyMemory(newDataValues + newParameterKeyInfo.Offset, DataValues + parameterKeyInfo.Offset, newParameterKeyInfo.Size);
+                    fixed (byte* dataValues = DataValues)
+                    fixed (byte* newDataValuesPtr = newDataValues)
+                        Utilities.CopyMemory((IntPtr)newDataValuesPtr + newParameterKeyInfo.Offset, (IntPtr)dataValues + parameterKeyInfo.Offset, newParameterKeyInfo.Size);
                 }
                 else if (newParameterKeyInfo.BindingSlot != -1)
                 {
                     // It's a resource
-                    newResourceValues[newParameterKeyInfo.BindingSlot] = ResourceValues[parameterKeyInfo.BindingSlot];
+                    newResourceValues[newParameterKeyInfo.BindingSlot] = ObjectValues[parameterKeyInfo.BindingSlot];
                 }
             }
 
             // Update new content
             parameterKeyInfos = newParameterKeyInfos;
 
-            Marshal.FreeHGlobal(DataValues);
             DataValues = newDataValues;
-            DataValuesSize = bufferSize;
-            ResourceValues = newResourceValues;
+            ObjectValues = newResourceValues;
+        }
+
+        private ObjectParameterAccessor<T> GetObjectParameterHelper<T>(ParameterKey<T> parameterKey, bool permutation)
+        {
+            // Find existing first
+            for (int i = 0; i < parameterKeyInfos.Count; ++i)
+            {
+                if (parameterKeyInfos[i].Key == parameterKey)
+                {
+                    return new ObjectParameterAccessor<T>(i);
+                }
+            }
+
+            if (permutation)
+                PermutationCounter++;
+
+            // Check layout if it exists
+            if (layoutParameterKeyInfos.Count > 0)
+            {
+                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                {
+                    if (layoutParameterKeyInfo.Key == parameterKey)
+                    {
+                        parameterKeyInfos.Add(layoutParameterKeyInfo);
+                        return new ObjectParameterAccessor<T>(parameterKeyInfos.Count - 1);
+                    }
+                }
+            }
+
+            // Create info entry
+            var resourceValuesSize = ObjectValues?.Length ?? 0;
+            Array.Resize(ref ObjectValues, resourceValuesSize + 1);
+            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, resourceValuesSize));
+
+            // Initialize default value
+            if (parameterKey.DefaultValueMetadata != null)
+            {
+                ObjectValues[resourceValuesSize] = parameterKey.DefaultValueMetadata.GetDefaultValue();
+            }
+
+            return new ObjectParameterAccessor<T>(parameterKeyInfos.Count - 1);
         }
 
         public class Serializer : ClassDataSerializer<NextGenParameterCollection>
@@ -396,19 +527,136 @@ namespace SiliconStudio.Xenko.Rendering
             public override void Serialize(ref NextGenParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
             {
                 stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
-                stream.Serialize(ref parameterCollection.ResourceValues, mode);
-                stream.Serialize(ref parameterCollection.DataValuesSize, mode);
-
-                if (parameterCollection.DataValuesSize > 0)
-                {
-                    // If deserializing, allocate if necessary
-                    if (mode == ArchiveMode.Deserialize)
-                        parameterCollection.DataValues = Marshal.AllocHGlobal(parameterCollection.DataValuesSize);
-
-                    stream.Serialize(parameterCollection.DataValues, parameterCollection.DataValuesSize);
-                }
+                stream.SerializeExtended(ref parameterCollection.ObjectValues, mode);
+                stream.Serialize(ref parameterCollection.DataValues, mode);
             }
         }
 
+        public struct CompositionCopier
+        {
+            List<CopyRange> ranges;
+            NextGenParameterCollection destination;
+
+            /// <summary>
+            /// Copies data from source to destination according to previously compiled layout.
+            /// </summary>
+            /// <param name="source"></param>
+            public unsafe void Copy(NextGenParameterCollection source)
+            {
+                foreach (var range in ranges)
+                {
+                    if (range.IsResource)
+                    {
+                        for (int i = 0; i < range.Size; ++i)
+                        {
+                            destination.ObjectValues[range.DestStart + i] = source.ObjectValues[range.SourceStart + i];
+                        }
+                    }
+                    else if (range.IsData)
+                    {
+                        fixed (byte* destDataValues = destination.DataValues)
+                        fixed (byte* sourceDataValues = source.DataValues)
+                            Utilities.CopyMemory((IntPtr)destDataValues + range.DestStart, (IntPtr)sourceDataValues + range.SourceStart, range.Size);
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Compute copy operations. Assumes destination layout is sequential.
+            /// </summary>
+            /// <param name="dest"></param>
+            /// <param name="source"></param>
+            /// <param name="keyRoot"></param>
+            public void Compute(NextGenParameterCollection dest, NextGenParameterCollection source, string keyRoot)
+            {
+                ranges = new List<CopyRange>();
+                destination = dest;
+                var sourceLayout = new NextGenParameterCollectionLayout();
+
+                // Helper structures to try to keep range contiguous and have as few copy operations as possible (note: there can be some padding)
+                var currentDataRange = new CopyRange { IsData = true, DestStart = -1 };
+                var currentResourceRange = new CopyRange { IsResource = true, DestStart = -1 };
+
+                // Iterate over each variable in dest, and if they match keyRoot, create the equivalent layout in source
+                foreach (var parameterKeyInfo in dest.layoutParameterKeyInfos)
+                {
+                    bool isResource = parameterKeyInfo.BindingSlot != -1;
+                    bool isData = parameterKeyInfo.Offset != -1;
+
+                    if (parameterKeyInfo.Key.Name.EndsWith(keyRoot))
+                    {
+                        // That's a match
+
+                        var subkeyName = parameterKeyInfo.Key.Name.Substring(0, parameterKeyInfo.Key.Name.Length - keyRoot.Length);
+                        var subkey = ParameterKeys.FindByName(subkeyName);
+
+                        if (isData)
+                        {
+                            // First time since range reset, let's setup destination offset
+                            if (currentDataRange.DestStart == -1)
+                                currentDataRange.DestStart = parameterKeyInfo.Offset;
+
+                            // Might be some empty space (padding)
+                            currentDataRange.Size = parameterKeyInfo.Offset - currentDataRange.DestStart;
+
+                            sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size, parameterKeyInfo.Size));
+
+                            currentDataRange.Size += parameterKeyInfo.Size;
+                        }
+                        else if (isResource)
+                        {
+                            // First time since range reset, let's setup destination offset
+                            if (currentResourceRange.DestStart == -1)
+                                currentResourceRange.DestStart = parameterKeyInfo.BindingSlot;
+
+                            // Might be some empty space (padding) (probably unlikely for resources...)
+                            currentResourceRange.Size = parameterKeyInfo.BindingSlot - currentResourceRange.DestStart;
+
+                            sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size));
+
+                            currentResourceRange.Size += parameterKeyInfo.Size;
+                        }
+                    }
+                    else
+                    {
+                        // Found one item not part of the range, let's finish it
+                        if (isData)
+                            FlushRangeIfNecessary(ref currentDataRange);
+                        else if (isResource)
+                            FlushRangeIfNecessary(ref currentResourceRange);
+                    }
+                }
+
+                // Finish ranges
+                FlushRangeIfNecessary(ref currentDataRange);
+                FlushRangeIfNecessary(ref currentResourceRange);
+
+                // Update sizes
+                sourceLayout.BufferSize = currentDataRange.SourceStart;
+                sourceLayout.ResourceCount = currentResourceRange.SourceStart;
+
+                source.UpdateLayout(sourceLayout);
+            }
+
+            private void FlushRangeIfNecessary(ref CopyRange currentRange)
+            {
+                if (currentRange.Size > 0)
+                {
+                    ranges.Add(currentRange);
+                    currentRange.SourceStart += currentRange.Size;
+                    currentRange.DestStart = -1;
+                    currentRange.Size = 0;
+                }
+            }
+
+            struct CopyRange
+            {
+                public bool IsResource;
+                public bool IsData;
+                public int SourceStart;
+                public int DestStart;
+                public int Size;
+            }
+        }
     }
 }

@@ -218,11 +218,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             else
             {
                 // Try to avoid shader permutations, by putting UV scaling/offset in shader parameters
-                var textureScale = (ParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureScale);
-                var textureOffset = (ParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureOffset);
+                var textureScale = (ValueParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureScale);
+                var textureOffset = (ValueParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureOffset);
 
-                context.Parameters.SetValueSlow(textureScale, scale);
-                context.Parameters.SetValueSlow(textureOffset, Offset);
+                context.Parameters.Set(textureScale, scale);
+                context.Parameters.Set(textureOffset, Offset);
 
                 if (context.IsNotPixelStage)
                 {

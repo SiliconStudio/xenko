@@ -169,8 +169,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Xenko.Assimp.Translation", "..\sources\tools\SiliconStudio.Xenko.Assimp.Translation\SiliconStudio.Xenko.Assimp.Translation.vcxproj", "{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core", "..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj", "{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Mathematics", "..\sources\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj", "{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -178,8 +176,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Mathemat
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Serialization", "..\sources\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj", "{5210FB81-B807-49BB-AF0D-31FB6A83A572}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Quantum", "..\sources\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj", "{1D4210BD-FA51-4709-951B-50647617F97E}"
 EndProject
@@ -209,8 +205,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.ActionStack", "..\sources\common\presentation\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj", "{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets", "..\sources\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj", "{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets.Tests", "..\sources\assets\SiliconStudio.Assets.Tests\SiliconStudio.Assets.Tests.csproj", "{3E7B5D96-CF71-41EE-8CF0-70D090873390}"
 EndProject
@@ -361,11 +355,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{
 		..\Xenko.xkpkg = ..\Xenko.xkpkg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine.NextGen", "..\sources\engine\SiliconStudio.Xenko.Engine.NextGen\SiliconStudio.Xenko.Engine.NextGen.csproj", "{C4846692-213E-4043-8434-4C70521A098D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests.Windows.csproj", "{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}"
 	ProjectSection(ProjectDependencies) = postProject
 		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
@@ -376,8 +365,8 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
@@ -2269,30 +2258,6 @@ Global
 		{370ADF53-DFFA-461E-B72A-1302C0A0DE00}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{370ADF53-DFFA-461E-B72A-1302C0A0DE00}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{370ADF53-DFFA-461E-B72A-1302C0A0DE00}.Testing|Win32.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|Win32.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|Win32.Build.0 = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|Win32.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|Win32.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|Win32.Build.0 = Release|Any CPU
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -2422,7 +2387,6 @@ Global
 		{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 		{370ADF53-DFFA-461E-B72A-1302C0A0DE00} = {4C142567-C42B-40F5-B092-798882190209}
-		{C4846692-213E-4043-8434-4C70521A098D} = {4C142567-C42B-40F5-B092-798882190209}
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

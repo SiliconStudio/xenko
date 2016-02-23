@@ -59,23 +59,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             if (PremultiplyAlpha)
                 color = Color4.PremultiplyAlpha(color);
             
-            if (key is ParameterKey<Color4>)
+            if (key is ValueParameterKey<Color4>)
             {
-                context.Parameters.SetValueSlow((ParameterKey<Color4>)key, color);
+                context.Parameters.Set((ValueParameterKey<Color4>)key, color);
             }
-            else if (key is ParameterKey<Vector4>)
+            else if (key is ValueParameterKey<Vector4>)
             {
-                context.Parameters.SetValueSlow((ParameterKey<Vector4>)key, color);
+                context.Parameters.Set((ValueParameterKey<Vector4>)key, color);
             }
-            else if (key is ParameterKey<Color3>)
+            else if (key is ValueParameterKey<Color3>)
             {
                 
-                context.Parameters.SetValueSlow((ParameterKey<Color3>)key, (Color3)color);
+                context.Parameters.Set((ValueParameterKey<Color3>)key, (Color3)color);
             }
-            else if (key is ParameterKey<Vector3>)
+            else if (key is ValueParameterKey<Vector3>)
             {
 
-                context.Parameters.SetValueSlow((ParameterKey<Vector3>)key, (Vector3)color);
+                context.Parameters.Set((ValueParameterKey<Vector3>)key, (Vector3)color);
             }
             else
             {

@@ -9,5 +9,6 @@
 
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
+    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">OPENTK</SiliconStudioUI>
   </PropertyGroup>
 </Project>

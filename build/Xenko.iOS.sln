@@ -136,8 +136,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{
 		..\Xenko.xkpkg = ..\Xenko.xkpkg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine.NextGen", "..\sources\engine\SiliconStudio.Xenko.Engine.NextGen\SiliconStudio.Xenko.Engine.NextGen.csproj", "{C4846692-213E-4043-8434-4C70521A098D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles.Tests.iOS", "..\sources\engine\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests.iOS.csproj", "{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}"
 EndProject
 Global
@@ -145,8 +143,8 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
@@ -810,22 +808,6 @@ Global
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|iPhone.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|iPhone.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|iPhone.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|iPhone.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|iPhone.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.AppStore|iPhoneSimulator.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{C4846692-213E-4043-8434-4C70521A098D}.Testing|iPhoneSimulator.Build.0 = Release|Any CPU
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}.AppStore|iPhone.ActiveCfg = Release|iPhone
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}.AppStore|iPhone.Build.0 = Release|iPhone
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}.AppStore|iPhone.Deploy.0 = Release|iPhone
@@ -883,7 +865,6 @@ Global
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
-		{C4846692-213E-4043-8434-4C70521A098D} = {4C142567-C42B-40F5-B092-798882190209}
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

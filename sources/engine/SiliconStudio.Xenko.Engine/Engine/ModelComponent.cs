@@ -40,7 +40,6 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="model">The model.</param>
         public ModelComponent(Model model)
         {
-            Parameters = new ParameterCollection();
             Model = model;
             IsShadowCaster = true;
             IsShadowReceiver = true;
@@ -119,13 +118,6 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(true)]
         [Display("Receive Shadows?")]
         public bool IsShadowReceiver { get; set; }
-
-        /// <summary>
-        /// Gets the parameters used to render this mesh.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; }
 
         /// <summary>
         /// Gets the bounding box in world space.

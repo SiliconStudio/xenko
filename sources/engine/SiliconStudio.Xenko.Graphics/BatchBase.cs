@@ -82,8 +82,8 @@ namespace SiliconStudio.Xenko.Graphics
         protected DepthStencilStateDescription? DepthStencilState;
         protected int StencilReferenceValue;
         protected SpriteSortMode SortMode;
-        private ResourceParameter<Texture>? textureUpdater;
-        private ResourceParameter<SamplerState>? samplerUpdater;
+        private ObjectParameterAccessor<Texture>? textureUpdater;
+        private ObjectParameterAccessor<SamplerState>? samplerUpdater;
 
         private int[] sortIndices;
         private ElementInfo[] sortedDraws;
@@ -93,8 +93,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly int vertexStructSize;
         private readonly int indexStructSize;
-
-        private readonly ParameterCollection parameters;
 
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
@@ -138,8 +136,6 @@ namespace SiliconStudio.Xenko.Graphics
             indexStructSize = indexSize;
             vertexStructSize = vertexDeclaration.CalculateSize();
 
-            parameters = new ParameterCollection();
-            
             // Creates the vertex buffer (shared by within a device context).
             ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect.Effect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }
@@ -184,15 +180,15 @@ namespace SiliconStudio.Xenko.Graphics
 
             textureUpdater = null;
             if (Effect.Effect.HasParameter(TexturingKeys.Texture0))
-                textureUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.Texture0);
+                textureUpdater = Effect.Parameters.GetAccessor(TexturingKeys.Texture0);
             if (Effect.Effect.HasParameter(TexturingKeys.TextureCube0))
-                textureUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.TextureCube0);
+                textureUpdater = Effect.Parameters.GetAccessor(TexturingKeys.TextureCube0);
             if (Effect.Effect.HasParameter(TexturingKeys.Texture3D0))
-                textureUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.Texture3D0);
+                textureUpdater = Effect.Parameters.GetAccessor(TexturingKeys.Texture3D0);
 
             samplerUpdater = null;
             if (Effect.Effect.HasParameter(TexturingKeys.Sampler))
-                samplerUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.Sampler);
+                samplerUpdater = Effect.Parameters.GetAccessor(TexturingKeys.Sampler);
 
             // Immediate mode, then prepare for rendering here instead of End()
             if (sessionSortMode == SpriteSortMode.Immediate)
