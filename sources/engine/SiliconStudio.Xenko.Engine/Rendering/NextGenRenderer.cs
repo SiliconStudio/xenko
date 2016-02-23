@@ -5,6 +5,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Background;
@@ -258,7 +259,6 @@ namespace SiliconStudio.Xenko.Rendering
         }
     }
 
-
     [DataContract("NextGenRenderer")]
     public class NextGenRenderer : CameraRendererMode
     {
@@ -285,18 +285,6 @@ namespace SiliconStudio.Xenko.Rendering
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
 
-        protected RenderStage GetOrCreateRenderStage(string name, string effectSlotName, RenderOutputDescription defaultOutput)
-        {
-            var renderStage = RenderSystem.RenderStages.FirstOrDefault(x => x.Name == name);
-            if (renderStage != null)
-                return renderStage;
-
-            renderStage = new RenderStage(name, effectSlotName) { Output = defaultOutput };
-            RenderSystem.RenderStages.Add(renderStage);
-
-            return renderStage;
-        }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -304,111 +292,44 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem = Services.GetServiceAs<NextGenRenderSystem>();
             RenderContext = new RenderContext(Services);
 
-            // Create render stages that don't exist yet
+            // Create mandatory render stages that don't exist yet
             if (MainRenderStage == null)
-                MainRenderStage = GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (TransparentRenderStage == null)
-                TransparentRenderStage = GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+
+            // Create optional render stages that don't exist yet
             //if (GBufferRenderStage == null)
-            //    GBufferRenderStage = GetOrCreateRenderStage("GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            if (ShadowMapRenderStage == null)
-                ShadowMapRenderStage = GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
-            if (PickingRenderStage == null)
-                PickingRenderStage = GetOrCreateRenderStage("Picking", "Picking", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+            //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (Shadows && ShadowMapRenderStage == null)
+                ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+            if (Picking && PickingRenderStage == null)
+                PickingRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Picking", "Picking", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
-            // TODO GRAPHICS REFACTOR should be part of graphics compositor configuration
-            var meshRenderFeature = new MeshRenderFeature
-            {
-                RenderFeatures =
-                    {
-                        new TransformRenderFeature(),
-                        //new SkinningRenderFeature(),
-                        new MaterialRenderFeature(),
-                        (RenderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = ShadowMapRenderStage }),
-                        new PickingRenderFeature(),
-                    },
-            };
-
-            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-            {
-                if (renderNode.RenderStage == ShadowMapRenderStage)
-                {
-                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
-                }
-            };
-
-            meshRenderFeature.RenderStageSelectors.Add(new MeshTransparentRenderStageSelector
-            {
-                EffectName = "TestEffect",
-                MainRenderStage = MainRenderStage,
-                TransparentRenderStage = TransparentRenderStage,
-            });
-
-            if (Shadows)
-            {
-                meshRenderFeature.RenderStageSelectors.Add(new ShadowMapRenderStageSelector
-                {
-                    EffectName = "TestEffect.ShadowMapCaster",
-                    ShadowMapRenderStage = ShadowMapRenderStage,
-                });
-            }
-
-            if (Picking)
-            {
-                meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-                {
-                    EffectName = "TestEffect.Picking",
-                    RenderStage = PickingRenderStage,
-                });
-            }
-
-            var spriteRenderFeature = new SpriteRenderFeature();
-            spriteRenderFeature.RenderStageSelectors.Add(new SpriteTransparentRenderStageSelector
-            {
-                EffectName = "Test",
-                MainRenderStage = MainRenderStage,
-                TransparentRenderStage = TransparentRenderStage,
-            });
-
-            var skyboxRenderFeature = new SkyboxRenderFeature();
-            skyboxRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-            {
-                RenderStage = MainRenderStage,
-                EffectName = "SkyboxEffect",
-            });
-
-            var backgroundFeature = new BackgroundRenderFeature();
-            backgroundFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-            {
-                RenderStage = MainRenderStage,
-                EffectName = "Test",
-            });
-
-            // Register top level renderers
-            RenderSystem.RenderFeatures.Add(meshRenderFeature);
-            RenderSystem.RenderFeatures.Add(spriteRenderFeature);
-            RenderSystem.RenderFeatures.Add(skyboxRenderFeature);
-            RenderSystem.RenderFeatures.Add(backgroundFeature);
-
-            RenderSystem.InitializeFeatures();
-
-            // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
-            sceneInstance.Processors.Add(new NextGenModelProcessor());
-            sceneInstance.Processors.Add(new NextGenSpriteProcessor());
-            sceneInstance.Processors.Add(new NextGenBackgroundProcessor());
-            sceneInstance.Processors.Add(new NextGenSkyboxProcessor());
 
             // Describe views
-            mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage, /*GBufferRenderStage,*/ PickingRenderStage } };
+            mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage } };
+            if (ShadowMapRenderStage != null)
+                mainRenderView.RenderStages.Add(ShadowMapRenderStage);
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
             mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
             RenderSystem.Views.Add(mainRenderView);
         }
 
+        protected override IEntityComponentRenderer CreateRendererCore(EntityComponentRendererType rendererType)
+        {
+            var result = base.CreateRendererCore(rendererType);
+            result.Initialize(Context);
+            result.SetupPipeline(RenderSystem);
+            return result;
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
+            base.DrawCore(context);
+
             var currentViewport = context.CommandList.Viewport;
 
             // GBuffer

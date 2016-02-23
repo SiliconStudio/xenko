@@ -134,11 +134,11 @@ namespace SiliconStudio.Xenko.Rendering
                     componentTypeToRenderer[componentType] = renderer;
                 }
 
-                batchRenderer.Add(renderer);
+                //batchRenderer.Add(renderer);
             }
 
             // Call the batch renderer
-            batchRenderer.Draw(context);
+            //batchRenderer.Draw(context);
         }
 
         protected override void Destroy()

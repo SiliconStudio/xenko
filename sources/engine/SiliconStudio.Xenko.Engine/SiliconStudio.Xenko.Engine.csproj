@@ -119,6 +119,7 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
+    <Compile Include="Rendering\Background\BackgroundComponentRenderer.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
     <Compile Include="Rendering\MeshRenderFeature.cs" />
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
+    <Compile Include="Rendering\ModelComponentRenderer.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
     <Compile Include="Rendering\NextGenModelProcessor.cs" />
@@ -293,9 +295,11 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
+    <Compile Include="Rendering\Skyboxes\BackgroundComponentRenderer.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\SpriteComponentRenderer.cs" />
     <Compile Include="Rendering\Sprites\NextGenSpriteProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />

@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render features
         /// </summary>
-        public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
+        public TrackingCollection<RootRenderFeature> RenderFeatures { get; } = new TrackingCollection<RootRenderFeature>();
 
         /// <summary>
         /// The graphics device, used to create graphics resources.
@@ -81,13 +81,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets the services registry.
         /// </summary>
         /// <value>The services registry.</value>
-        public IServiceRegistry Services
-        {
-            get
-            {
-                return registry;
-            }
-        }
+        public IServiceRegistry Services => registry;
 
         public NextGenRenderSystem(IServiceRegistry registry)
         {
@@ -98,6 +92,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             registry.AddService(typeof(NextGenRenderSystem), this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
+            RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
 
         /// <summary>
@@ -191,20 +186,6 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        /// <summary>
-        /// Initializes render features. Should be called after all the render features have been set.
-        /// </summary>
-        public void InitializeFeatures()
-        {
-            for (int index = 0; index < RenderFeatures.Count; index++)
-            {
-                var renderFeature = RenderFeatures[index];
-                renderFeature.Index = index;
-                renderFeature.RenderSystem = this;
-                renderFeature.Initialize();
-            }
-        }
-
         private void PrepareDataArrays()
         {
             // Ensure size for data arrays
@@ -237,6 +218,22 @@ namespace SiliconStudio.Xenko.Rendering
                     // Make sure mask is big enough
                     RenderData.ChangeDataMultiplier(RenderStageMaskKey, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
                     break;
+            }
+        }
+
+        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var renderFeature = (RootRenderFeature)e.Item;
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    renderFeature.Index = e.Index;
+                    renderFeature.RenderSystem = this;
+                    renderFeature.Initialize();
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    throw new NotImplementedException();
             }
         }
 
