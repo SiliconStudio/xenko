@@ -108,6 +108,16 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
                     context.Mixin(mixin, "Picking");
                     return;
                 }
+                if (context.ChildEffectName == "WireFrame")
+                {
+                    context.Mixin(mixin, "WireFrame");
+                    return;
+                }
+                if (context.ChildEffectName == "Highlight")
+                {
+                    context.Mixin(mixin, "Highlight");
+                    return;
+                }
             }
 
             [ModuleInitializer]
@@ -115,6 +125,40 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
 
             {
                 ShaderMixinManager.Register("TestEffect", new TestEffect());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class WireFrame  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "MaterialFrontBackBlendShader", context.GetParam(MaterialFrontBackBlendShaderKeys.UseNormalBackFace));
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("WireFrame", new WireFrame());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class Highlight  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "HighlightShader");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("Highlight", new Highlight());
             }
         }
     }

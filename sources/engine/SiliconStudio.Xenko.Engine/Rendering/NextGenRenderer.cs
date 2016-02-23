@@ -24,7 +24,9 @@ namespace SiliconStudio.Xenko.Rendering
         internal RenderStage transparentRenderStage = new RenderStage("Main");
         internal RenderStage gbufferRenderStage = new RenderStage("GBuffer");
         internal RenderStage shadowmapRenderStage = new RenderStage("ShadowMapCaster");
+
         internal RenderStage pickingRenderStage = new RenderStage("Picking");
+        internal RenderStage wireFrameRenderStage = new RenderStage("WireFrame");
 
         // Render stages
         internal ForwardLightingRenderFeature forwardLightingRenderFeature;
@@ -245,16 +247,18 @@ namespace SiliconStudio.Xenko.Rendering
                 RenderSystem.RenderStages.Add(RenderSystem.gbufferRenderStage);
                 RenderSystem.RenderStages.Add(RenderSystem.shadowmapRenderStage);
                 RenderSystem.RenderStages.Add(RenderSystem.pickingRenderStage);
+                RenderSystem.RenderStages.Add(RenderSystem.wireFrameRenderStage);
 
                 var meshRenderFeature = new MeshRenderFeature
                 {
                     RenderFeatures =
                     {
                         new TransformRenderFeature(),
-                        //new SkinningRenderFeature(),
+                        new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
                         (RenderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = RenderSystem.shadowmapRenderStage }),
                         new PickingRenderFeature(),
+                        new WireFrameRenderFeature()
                     },
                 };
 
@@ -263,6 +267,11 @@ namespace SiliconStudio.Xenko.Rendering
                     if (renderNode.RenderStage == RenderSystem.shadowmapRenderStage)
                     {
                         pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+                    }
+                    else if (renderNode.RenderStage == RenderSystem.wireFrameRenderStage)
+                    {
+                        pipelineState.RasterizerState = GraphicsDevice.RasterizerStates.WireFrame;
+                        pipelineState.BlendState = GraphicsDevice.BlendStates.AlphaBlend;
                     }
                 };
 
@@ -289,6 +298,8 @@ namespace SiliconStudio.Xenko.Rendering
 
                     //if (Picking)
                         renderMesh.ActiveRenderStages[RenderSystem.pickingRenderStage.Index] = new ActiveRenderStage("TestEffect.Picking");
+
+                    renderMesh.ActiveRenderStages[RenderSystem.wireFrameRenderStage.Index] = new ActiveRenderStage("TestEffect.WireFrame");
                 };
 
                 var spriteRenderFeature = new SpriteRenderFeature();
@@ -333,7 +344,18 @@ namespace SiliconStudio.Xenko.Rendering
             sceneInstance.Processors.Add(new NextGenSkyboxProcessor());
 
             // Describe views
-            mainRenderView = new RenderView { RenderStages = { RenderSystem.mainRenderStage, RenderSystem.transparentRenderStage, RenderSystem.gbufferRenderStage, RenderSystem.pickingRenderStage } };
+            mainRenderView = new RenderView
+            {
+                RenderStages =
+                {
+                    RenderSystem.mainRenderStage,
+                    RenderSystem.transparentRenderStage,
+                    RenderSystem.gbufferRenderStage,
+                    RenderSystem.pickingRenderStage,
+                    RenderSystem.wireFrameRenderStage,
+                }
+            };
+
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
             mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
@@ -386,6 +408,8 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             RenderSystem.Draw(context, mainRenderView, RenderSystem.mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
+
+            //RenderSystem.Draw(context, mainRenderView, RenderSystem.wireFrameRenderStage);
 
             // Depth readback
             //if (Shadows)
