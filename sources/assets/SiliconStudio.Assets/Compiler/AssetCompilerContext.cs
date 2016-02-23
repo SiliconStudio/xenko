@@ -19,6 +19,11 @@ namespace SiliconStudio.Assets.Compiler
         public string Profile { get; set; }
 
         /// <summary>
+        /// Gets or sets the build configuration (Debug, Release, AppStore, Testing)
+        /// </summary>
+        public string BuildConfiguration { get; set; }
+
+        /// <summary>
         /// Gets or sets the target platform for compiler is being used for.
         /// </summary>
         /// <value>The platform.</value>
