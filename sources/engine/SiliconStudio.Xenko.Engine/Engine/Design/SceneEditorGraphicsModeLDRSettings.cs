@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Engine.Design
             return false;
         }
 
-        public override PostProcessingEffects GetSceneEditorPostProcessingEffects()
+        public override PostProcessingEffects GetEditorPostProcessingEffects()
         {
             return null; // By default, no processing effets.
         }
