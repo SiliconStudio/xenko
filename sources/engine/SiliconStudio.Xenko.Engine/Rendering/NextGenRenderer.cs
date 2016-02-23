@@ -310,8 +310,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Describe views
             mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage } };
-            if (ShadowMapRenderStage != null)
-                mainRenderView.RenderStages.Add(ShadowMapRenderStage);
+            if (PickingRenderStage != null)
+                mainRenderView.RenderStages.Add(PickingRenderStage);
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
             mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
