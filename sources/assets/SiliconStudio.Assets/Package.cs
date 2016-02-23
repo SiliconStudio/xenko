@@ -513,8 +513,21 @@ namespace SiliconStudio.Assets
                                 //check if the item is already there, this is possible when saving the first time when creating from a template
                                 if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
                                 {
-                                    project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", codeFile.ToWindowsPath());
-                                    //todo None case needs Generator and LastGenOutput properties support! (eg xksl)
+                                    var generatorAsset = sourceCodeAsset as ProjectCodeGeneratorAsset;
+                                    if (generatorAsset != null)
+                                    {
+                                        project.AddItem("None", codeFile.ToWindowsPath(), 
+                                            new List<KeyValuePair<string, string>>
+                                            {
+                                                new KeyValuePair<string, string>("Generator", generatorAsset.Generator)
+                                            });
+
+                                        generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs";
+                                    }
+                                    else
+                                    {
+                                        project.AddItem("Compile", codeFile.ToWindowsPath());
+                                    }                                
                                 }
 
                                 asset.SourceProject = projectFullPath;
@@ -1041,6 +1054,12 @@ namespace SiliconStudio.Assets
                     projectSourceCodeAsset.ProjectInclude = projectInclude;
                     projectSourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath);
                 }
+
+                var generatorAsset = asset as ProjectCodeGeneratorAsset;
+                if (generatorAsset != null)
+                {
+                    generatorAsset.GeneratedAbsolutePath = new UFile(sourceCodeAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs"; //we generate only .cs so far
+                }
             }
 
             return asset;
@@ -1233,8 +1252,8 @@ namespace SiliconStudio.Assets
                         // If this kind of file an asset file?
                         var ext = fileUPath.GetFileExtension();
 
-                        //make sure to add default shaders
-                        if (ext == ".xksl" && package.IsSystem)
+                        //make sure to add default shaders in this case, since we don't have a csproj for them
+                        if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && package.IsSystem)
                         {
                             listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
                             continue;

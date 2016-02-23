@@ -51,7 +51,7 @@ namespace SiliconStudio.Assets
         /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
         /// </summary>
         /// <param name="stream"></param>
-        public void Save(Stream stream)
+        public virtual void Save(Stream stream)
         {
             // If the text was not loaded in memory, just copy the stream from input to output
             if (text == null)
