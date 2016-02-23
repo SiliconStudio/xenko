@@ -1232,6 +1232,14 @@ namespace SiliconStudio.Assets
 
                         // If this kind of file an asset file?
                         var ext = fileUPath.GetFileExtension();
+
+                        //make sure to add default shaders
+                        if (ext == ".xksl" && package.IsSystem)
+                        {
+                            listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
+                            continue;
+                        }
+
                         if (!AssetRegistry.IsAssetFileExtension(ext) || AssetRegistry.IsProjectSourceCodeAssetFileExtension(ext)) //project source code assets follow the csproj pipeline
                         {
                             continue;
