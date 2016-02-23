@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 for (int i = 0; i < EffectPermutationSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(EffectPermutationSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * EffectPermutationSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderSkybox = (RenderSkybox)renderObject;
 

@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (dataArray.Info.Type == DataType.StaticObject)
             {
                 // SwapRemove StaticObject info for this object
-                dataArray.Info.SwapRemoveItems(dataArray.Array, removedIndex, RenderObjects.Count - 1, 1);
+                dataArray.Info.SwapRemoveItem(dataArray.Array, removedIndex, RenderObjects.Count - 1);
             }
         }
 

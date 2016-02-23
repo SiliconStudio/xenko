@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private EffectDescriptorSetReference perLightingDescriptorSetSlot;
 
@@ -208,7 +208,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     for (int i = 0; i < effectSlotCount; ++i)
                     {
-                        var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                        var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                         var renderEffect = renderEffects[staticEffectObjectNode];
 
                         // Skip effects not used during this frame
