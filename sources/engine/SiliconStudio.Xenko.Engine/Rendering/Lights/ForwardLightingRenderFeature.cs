@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public ShadowMapRenderer ShadowMapRenderer { get; private set; }
 
-        public RenderStage ShadowmapRenderStage { get; set; }
+        public RenderStage ShadowMapRenderStage { get; set; }
 
         static ForwardLightingRenderFeature()
         {
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             //    if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
             //        && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
             //    {
-            //        ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
+            //        ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowMapRenderStage);
             //        ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
             //        ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
             //    }
