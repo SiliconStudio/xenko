@@ -154,6 +154,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
+    <Compile Include="Rendering\Editor\EntityPickingResult.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
