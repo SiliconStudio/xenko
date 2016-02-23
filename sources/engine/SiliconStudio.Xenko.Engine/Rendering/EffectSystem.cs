@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Setup shader compiler settings from a compilation mode. 
             // TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
-            if (Game != null)
+            if (Game != null && (((Game)Game).Settings != null))
             {
                 Setup(((Game)Game).Settings.CompilationMode);
             }
