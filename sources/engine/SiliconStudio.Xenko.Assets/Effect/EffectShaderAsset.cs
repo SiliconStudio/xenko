@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
     [AssetCompiler(typeof(EffectShaderAssetCompiler))]
     [Display(90, "Effect Shader")]
-    public sealed class EffectShaderAsset : SourceCodeAsset
+    public sealed class EffectShaderAsset : ProjectSourceCodeAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="EffectLibraryAsset"/>.
