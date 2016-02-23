@@ -117,26 +117,12 @@ namespace SiliconStudio.Xenko.Engine
             // Renders the scene
             var renderDrawContext = new RenderDrawContext(Services, renderContext, Game.GraphicsCommandList);
 
-            // Initialize render system (first time)
-            InitializeRenderSystem();
-
             // Extract and prepare phase
             var renderSystem = Services.GetServiceAs<NextGenRenderSystem>();
             renderSystem.ExtractAndPrepare(renderDrawContext);
 
             // Render phase
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);
-        }
-
-        public void InitializeRenderSystem()
-        {
-            var renderSystem = Services.GetServiceAs<NextGenRenderSystem>();
-            if (renderSystem == null)
-            {
-                renderSystem = new NextGenRenderSystem(Services);
-
-                renderSystem.Initialize(GraphicsDevice);
-            }
         }
     }
 }
