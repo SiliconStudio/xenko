@@ -6,9 +6,13 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+    /// <summary>
+    /// Performs resource bindings and primitive-based rendering. See <see cref="The+GraphicsDevice+class"/> to learn more about the class.
+    /// </summary>
     public partial class CommandList : GraphicsResourceBase
     {
         private const int MaxRenderTargetCount = 8;
+        private bool viewportDirty = false;
 
         private Viewport[] viewports = new Viewport[MaxRenderTargetCount];
 
@@ -146,7 +150,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         public void SetViewport(int index, Viewport value)
         {
-            viewports[index] = value;
+            if (viewports[index] != value)
+            {
+                viewportDirty = true;
+                viewports[index] = value;
+            }
         }
 
         /// <summary>
@@ -157,7 +165,11 @@ namespace SiliconStudio.Xenko.Graphics
         {
             for (int i = 0; i < values.Length; i++)
             {
-                viewports[i] = values[i];
+                if (viewports[i] != values[i])
+                {
+                    viewportDirty = true;
+                    viewports[i] = values[i];
+                }
             }
         }
 

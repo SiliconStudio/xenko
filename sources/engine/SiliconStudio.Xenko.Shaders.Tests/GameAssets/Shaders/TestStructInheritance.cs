@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class TestStructInheritanceKeys
     {
-        public static readonly ParameterKey<myStruct> member = ParameterKeys.New<myStruct>();
+        public static readonly ValueParameterKey<myStruct> member = ParameterKeys.NewValue<myStruct>();
     }
 }

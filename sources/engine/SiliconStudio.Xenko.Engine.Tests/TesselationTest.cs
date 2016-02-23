@@ -92,8 +92,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
-            LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
+            // TODO GRAPHICS REFACTOR
+            throw new System.NotImplementedException();
+            //LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
+            //GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
             ChangeModel(0);
             SetWireframe(true);
@@ -120,7 +122,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 return;
 
             spriteBatch.Begin(GraphicsCommandList);
-            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.GetValueSlow(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
+            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();
         }
@@ -165,8 +167,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             if(currentMaterial == null)
                 return;
 
-            var oldValue = currentMaterial.Parameters.GetValueSlow(TessellationKeys.DesiredTriangleSize);
-            currentMaterial.Parameters.SetValueSlow(TessellationKeys.DesiredTriangleSize, oldValue + f);
+            var oldValue = currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize);
+            currentMaterial.Parameters.Set(TessellationKeys.DesiredTriangleSize, oldValue + f);
         }
 
         private void ChangeModel(int offset)

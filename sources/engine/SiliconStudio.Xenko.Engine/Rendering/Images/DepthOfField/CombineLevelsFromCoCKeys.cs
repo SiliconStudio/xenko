@@ -10,6 +10,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     public static class CombineLevelsFromCoCKeys
     {
-        public static readonly ParameterKey<int> LevelCount = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> LevelCount = ParameterKeys.NewPermutation<int>();
     }
 }

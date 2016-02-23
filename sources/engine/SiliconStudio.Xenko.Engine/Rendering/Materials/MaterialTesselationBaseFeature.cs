@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.AddStreamInitializer(MaterialShaderStage.Domain, "MaterialTessellationStream");
 
             // set the desired triangle size desired for this material
-            context.Parameters.SetValueSlow(TessellationKeys.DesiredTriangleSize, TriangleSize);
+            context.Parameters.Set(TessellationKeys.DesiredTriangleSize, TriangleSize);
 
             // set the tessellation method and callback to add Displacement/Normal average shaders.
             if (AdjacentEdgeAverage && !context.Tags.Get(HasFinalCallback))
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public void AddAdjacentEdgeAverageShaders(MaterialShaderStage stage, MaterialGeneratorContext context)
         {
-            var tessellationShader = context.Parameters.GetResourceSlow(MaterialKeys.TessellationShader) as ShaderMixinSource;
+            var tessellationShader = context.Parameters.Get(MaterialKeys.TessellationShader) as ShaderMixinSource;
             if(tessellationShader == null)
                 return;
 
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public void AddAdjacentEdgeAverageMacros(MaterialShaderStage stage, MaterialGeneratorContext context)
         {
-            var tessellationShader = context.Parameters.GetResourceSlow(MaterialKeys.TessellationShader) as ShaderMixinSource;
+            var tessellationShader = context.Parameters.Get(MaterialKeys.TessellationShader) as ShaderMixinSource;
             if(tessellationShader == null)
                 return;
 

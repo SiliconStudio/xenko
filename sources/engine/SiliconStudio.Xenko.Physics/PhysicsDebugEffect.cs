@@ -13,12 +13,12 @@ namespace SiliconStudio.Xenko.Physics
     {
         private static EffectBytecode bytecode;
 
-        private readonly ParameterCollection parameters;
+        private readonly NextGenParameterCollection parameters;
 
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode)))
         {
-            parameters = new ParameterCollection();
+            parameters = new NextGenParameterCollection();
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;
@@ -63,6 +63,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public void Apply()
         {
+            // TODO GRAPHICS REFACTOR
             //Apply(parameters);
             throw new NotImplementedException();
         }

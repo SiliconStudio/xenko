@@ -983,14 +983,14 @@ private:
   //                  case sizeof(double):
   //                      {
 		//					auto value = *((double*)pProp->mData);
-//							ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1);
+//							ValueParameterKey<float>^ key = gcnew ValueParameterKey<float>(propertyName, 1);
   //                          finalMaterial->SetParameter(key, (float)value);
   //                      }
   //                      break;
   //                  case 3*sizeof(double):
   //                      {
   //                          auto value = (double*)pProp->mData;
-//                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1);
+//                            ValueParameterKey<Vector3>^ key = gcnew ValueParameterKey<Vector3>(propertyName, 1);
   //                          finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
   //                      }
   //                      break;
@@ -1049,7 +1049,7 @@ private:
 		hasSpecPower = (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, specPower) && specPower > 0);
 		if(pMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS && opacity < 1.0)
 		{
-			finalMaterial->Parameters->Set(MaterialKeys::HasTransparency, true);
+			//finalMaterial->Parameters->Set(MaterialKeys::HasTransparency, true);
 			hasOpacity = true;
 		}
 

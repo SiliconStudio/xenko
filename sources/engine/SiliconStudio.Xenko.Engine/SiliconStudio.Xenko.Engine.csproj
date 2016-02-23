@@ -200,8 +200,112 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
-    <Compile Include="Rendering\RenderDrawContext.cs" />
+    <Compile Include="Effects\GBuffer.cs">
+      <DependentUpon>GBuffer.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Effects\GBufferShader.cs">
+      <DependentUpon>GBufferShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Effects\TestEffect.cs">
+      <DependentUpon>TestEffect.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Effects\TestShader.cs">
+      <DependentUpon>TestShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Effects\WhiteAmbient.cs">
+      <DependentUpon>WhiteAmbient.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Background\BackgroundProcessor.cs" />
+    <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
+    <Compile Include="Rendering\Background\RenderBackground.cs" />
+    <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
+    <Compile Include="Rendering\DataArrayInfo.cs" />
+    <Compile Include="Rendering\Editor\PickingRenderFeature.cs" />
+    <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
+    <Compile Include="Rendering\EffectPermutationSlot.cs" />
+    <Compile Include="Rendering\EffectValidator.cs" />
+    <Compile Include="Rendering\INextGenEntityComponentRenderer.cs" />
+    <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
+    <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
+    <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
+    <Compile Include="Rendering\Lights\LightDirectionalGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightGroupRendererBase.cs" />
+    <Compile Include="Rendering\Lights\LightPointGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightShaderGroup.cs" />
+    <Compile Include="Rendering\Lights\LightSkyboxRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
+    <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
+    <Compile Include="Rendering\MeshRenderFeature.cs" />
+    <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
+    <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
+    <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
+    <Compile Include="Rendering\NextGenModelProcessor.cs" />
+    <Compile Include="Rendering\NextGenRenderContext.cs" />
+    <Compile Include="Rendering\NextGenRenderer.cs" />
+    <Compile Include="Rendering\NextGenRenderSystem.cs" />
+    <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
+    <Compile Include="Rendering\Nodes\ObjectNode.cs" />
+    <Compile Include="Rendering\Nodes\RenderNode.cs" />
+    <Compile Include="Rendering\Nodes\StaticObjectNodeReference.cs" />
+    <Compile Include="Rendering\Nodes\ViewNodeReference.cs" />
+    <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
+    <Compile Include="Rendering\Properties.cs">
+      <DependentUpon>Properties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\RenderEffect.cs" />
+    <Compile Include="Rendering\RenderFeature.cs" />
+    <Compile Include="Rendering\RenderModel.cs" />
+    <Compile Include="Rendering\RenderObject.cs" />
+    <Compile Include="Rendering\RenderStage.cs" />
+    <Compile Include="Rendering\RenderStageSelector.cs" />
+    <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />
+    <Compile Include="Rendering\RenderView.cs" />
+    <Compile Include="Rendering\RenderViewFeature.cs" />
+    <Compile Include="Rendering\RenderViewFeatureStage.cs" />
+    <Compile Include="Rendering\RootEffectRenderFeature.cs" />
+    <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
+    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCascadeInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCascadeLevel.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
+    <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
+    <Compile Include="Rendering\SkinningRenderFeature.cs" />
+    <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\NextGenSpriteProcessor.cs" />
+    <Compile Include="Rendering\Sprites\RenderSprite.cs" />
+    <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\SpriteTransparentRenderStageSelector.cs" />
+    <Compile Include="Rendering\SubRenderFeature.cs" />
+    <Compile Include="Rendering\TransformRenderFeature.cs" />
+    <Compile Include="Rendering\RenderDrawContext.cs" />
+    <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\Utils\Picking.cs">
       <DependentUpon>Picking.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -247,7 +351,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Rendering\Lights\LightPointGroup.cs">
       <DependentUpon>LightPointGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1581,7 +1684,6 @@
     <Compile Include="Rendering\Lights\LightAmbient.cs" />
     <Compile Include="Rendering\Colors\ColorRgbProvider.cs" />
     <Compile Include="Engine\LightComponent.cs" />
-    <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
     <Compile Include="Rendering\Lights\LightDirectional.cs" />
     <Compile Include="Rendering\Lights\LightDirectionalGroup.cs">
       <DependentUpon>LightDirectionalGroup.xksl</DependentUpon>
@@ -1590,7 +1692,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Lights\LightingKeys.cs" />
-    <Compile Include="Rendering\Lights\LightModelRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightProcessor.cs" />
     <Compile Include="Rendering\Lights\LightShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbient.cs">
@@ -2017,7 +2118,6 @@
     </Compile>
     <Compile Include="Rendering\Skyboxes\Skybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxBackground.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxComponentRenderer.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxEffect.cs">
       <DependentUpon>SkyboxEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2025,7 +2125,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Skyboxes\SkyboxKeys.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxShader.cs">
       <DependentUpon>SkyboxShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2279,12 +2378,9 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\TessellationPermutation.cs" />
-    <Compile Include="Rendering\ParameterPath.cs" />
     <Compile Include="Engine\Design\EntityComponentProperty.cs" />
     <Compile Include="Engine\Design\EntityComponentPropertyType.cs" />
     <Compile Include="Engine\Design\ParameterContainerExtensions.cs" />
-    <Compile Include="Rendering\GraphicsResizeContext.cs" />
-    <Compile Include="Rendering\GraphicsResizeExtensions.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Animations\AnimationProcessor.cs" />
     <Compile Include="Engine\Processors\TransformProcessor.cs" />
@@ -3279,6 +3375,26 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
     </None>
+    <None Include="Effects\GBuffer.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Effects\GBufferShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferShader.cs</LastGenOutput>
+    </None>
+    <None Include="Effects\TestEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>TestEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Effects\TestShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>TestShader.cs</LastGenOutput>
+    </None>
+    <None Include="Effects\WhiteAmbient.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>WhiteAmbient.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Utils\Picking.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Picking.cs</LastGenOutput>
@@ -3597,6 +3713,12 @@
       <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Rendering\Properties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Properties.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">

@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (AdjacentEdgeAverage)
                 tessellationShader.Mixins.Add(new ShaderClassSource("TessellationAE4", "PositionWS"));
 
-            context.Parameters.SetResourceSlow(MaterialKeys.TessellationShader, tessellationShader);
+            context.Parameters.Set(MaterialKeys.TessellationShader, tessellationShader);
         }
     }
 }

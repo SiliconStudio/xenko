@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
                     ViewFrustumRemap = true,
-                    FlipRenderTargetFlag = "XenkoFlipRendertarget",
+                    FlipRenderTarget = true,
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3
                 };

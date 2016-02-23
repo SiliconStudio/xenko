@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private Int2 screenSize = new Int2(1200, 900);
 
-        private DrawEffect computeShaderEffect;
+        private ComputeEffectShader computeShaderEffect;
         private RenderContext drawEffectContext;
 
         public TestComputeShader()
@@ -73,9 +73,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
 
-            computeShaderEffect.Parameters.SetValueSlow(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
-            computeShaderEffect.Parameters.SetResourceSlow(ComputeShaderTestKeys.input, inputTexture);
-            computeShaderEffect.Parameters.SetResourceSlow(ComputeShaderTestKeys.output, outputTexture);
+            computeShaderEffect.Parameters.Set(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
+            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.input, inputTexture);
+            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.output, outputTexture);
             computeShaderEffect.Draw(renderDrawContext);
 
             if (displayedTexture == null || spriteBatch == null)

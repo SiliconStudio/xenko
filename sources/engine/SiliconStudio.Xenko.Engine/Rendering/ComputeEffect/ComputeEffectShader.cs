@@ -18,11 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         private bool pipelineStateDirty = true;
 
         public ComputeEffectShader(RenderContext context)
-            : this(context, null)
-        {
-        }
-
-        public ComputeEffectShader(RenderContext context, params ParameterCollection[] sharedParameterCollections)
             : base(context, null)
         {
             // Setup the effect compiler
@@ -82,9 +77,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;
 
-            EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
-            EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
-            Parameters.SetValueSlow(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
+            Parameters.Set(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
+            Parameters.Set(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
+            Parameters.Set(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
 
             if (pipelineStateDirty)
             {

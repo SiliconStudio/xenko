@@ -24,6 +24,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 {
@@ -32,6 +33,11 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
     /// </summary>
     public class GeometricPrimitive<T> : ComponentBase where T : struct, IVertex
     {
+        /// <summary>
+        /// The pipeline state.
+        /// </summary>
+        public readonly MutablePipelineState PipelineState = new MutablePipelineState();
+
         /// <summary>
         /// The index buffer used by this geometric primitive.
         /// </summary>
@@ -97,14 +103,25 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             // TODO: A better alternative would be to store recreation parameters so that we can reuse procedural code.
             VertexBuffer = Buffer.Vertex.New(graphicsDevice, vertices).RecreateWith(vertices).DisposeBy(this);
             VertexBufferBinding = new VertexBufferBinding(VertexBuffer, new T().GetLayout(), vertices.Length);
+
+            PipelineState.State.SetDefaults();
+            PipelineState.State.InputElements = VertexBufferBinding.Declaration.CreateInputElements();
+            PipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
         }
 
         /// <summary>
         /// Draws this <see cref="GeometricPrimitive" />.
         /// </summary>
         /// <param name="commandList">The command list.</param>
-        public void Draw(CommandList commandList)
+        public void Draw(CommandList commandList, EffectInstance effectInstance)
         {
+            // Update pipeline state
+            PipelineState.State.RootSignature = effectInstance.RootSignature;
+            PipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
+            PipelineState.State.Output.CaptureState(commandList);
+            PipelineState.Update(GraphicsDevice);
+            commandList.SetPipelineState(PipelineState.CurrentState);
+
             // Setup the Vertex Buffer
             commandList.SetIndexBuffer(IndexBuffer, 0, IsIndex32Bits);
             commandList.SetVertexBuffer(0, VertexBuffer, 0, VertexBufferBinding.Stride);

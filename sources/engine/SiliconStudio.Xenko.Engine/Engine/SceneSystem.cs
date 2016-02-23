@@ -6,7 +6,15 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Background;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Shadows;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
+using SiliconStudio.Xenko.Rendering.Sprites;
+using ShaderMixins = SiliconStudio.Xenko.Rendering.ShaderMixins;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -108,7 +116,121 @@ namespace SiliconStudio.Xenko.Engine
 
             // Renders the scene
             var renderDrawContext = new RenderDrawContext(Services, renderContext, Game.GraphicsCommandList);
+
+            // Initialize render system (first time)
+            InitializeRenderSystem(false, true);
+
+            // Extract and prepare phase
+            var renderSystem = Services.GetServiceAs<NextGenRenderSystem>();
+            renderSystem.ExtractAndPrepare(renderDrawContext);
+
+            // Render phase
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);
+        }
+
+        public void InitializeRenderSystem(bool shadows, bool picking)
+        {
+            var renderSystem = Services.GetServiceAs<NextGenRenderSystem>();
+            if (renderSystem == null)
+            {
+                renderSystem = new NextGenRenderSystem(Services);
+
+                renderSystem.Initialize(GraphicsDevice);
+
+                var mainRenderStage = new RenderStage("Main", "Main");
+                var transparentRenderStage = new RenderStage("Transparent", "Main");
+                var gbufferRenderStage = new RenderStage("GBuffer", "GBuffer");
+                var shadowmapRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster");
+                var pickingRenderStage = new RenderStage("Picking", "Picking");
+
+                // Setup stage targets
+                mainRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+                transparentRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+                gbufferRenderStage.Output = new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+                shadowmapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
+
+                renderSystem.RenderStages.Add(mainRenderStage);
+                renderSystem.RenderStages.Add(transparentRenderStage);
+                renderSystem.RenderStages.Add(gbufferRenderStage);
+                renderSystem.RenderStages.Add(shadowmapRenderStage);
+                renderSystem.RenderStages.Add(pickingRenderStage);
+
+                // TODO GRAPHICS REFACTOR should be part of graphics compositor configuration
+                var meshRenderFeature = new MeshRenderFeature
+                {
+                    RenderFeatures =
+                    {
+                        new TransformRenderFeature(),
+                        //new SkinningRenderFeature(),
+                        new MaterialRenderFeature(),
+                        (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = shadowmapRenderStage }),
+                        new PickingRenderFeature(),
+                    },
+                };
+
+                meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+                {
+                    if (renderNode.RenderStage == shadowmapRenderStage)
+                    {
+                        pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+                    }
+                };
+
+                meshRenderFeature.RenderStageSelectors.Add(new MeshTransparentRenderStageSelector
+                {
+                    EffectName = "TestEffect",
+                    MainRenderStage = mainRenderStage,
+                    TransparentRenderStage = transparentRenderStage,
+                });
+
+                if (shadows)
+                {
+                    meshRenderFeature.RenderStageSelectors.Add(new ShadowMapRenderStageSelector
+                    {
+                        EffectName = "TestEffect.ShadowMapCaster",
+                        ShadowMapRenderStage = shadowmapRenderStage,
+                    });
+                }
+
+                if (picking)
+                {
+                    meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+                    {
+                        EffectName = "TestEffect.Picking",
+                        RenderStage = pickingRenderStage,
+                    });
+                }
+
+                var spriteRenderFeature = new SpriteRenderFeature();
+                spriteRenderFeature.RenderStageSelectors.Add(new SpriteTransparentRenderStageSelector
+                {
+                    EffectName = "Test",
+                    MainRenderStage = mainRenderStage,
+                    TransparentRenderStage = transparentRenderStage,
+                });
+
+                var skyboxRenderFeature = new SkyboxRenderFeature();
+                skyboxRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+                {
+                    RenderStage = mainRenderStage,
+                    EffectName = "SkyboxEffect",
+                });
+
+                var backgroundFeature = new BackgroundRenderFeature();
+                backgroundFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+                {
+                    RenderStage = mainRenderStage,
+                    EffectName = "Test",
+                });
+
+                // Register top level renderers
+                renderSystem.RenderFeatures.Add(meshRenderFeature);
+                renderSystem.RenderFeatures.Add(spriteRenderFeature);
+                renderSystem.RenderFeatures.Add(skyboxRenderFeature);
+                renderSystem.RenderFeatures.Add(backgroundFeature);
+
+                renderSystem.InitializeFeatures();
+            }
         }
     }
 }

@@ -61,7 +61,13 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
+    - 0a657835-0b2f-4ba6-9f52-01b3dceb3737:XenkoBackground
     - 12fde36c-d5d6-4ead-b472-5d088d319b8c:BasicMaterial
+    - 30f8ca08-885b-417c-9d49-c0d315b2b3ec:Material1
     - 7e5ae8dc-6417-40b8-a3d6-4f019fd7cc28:HdrTexture
+    - 879181e4-ed39-495f-8f1d-e586e650cc82:Model
     - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
     - b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene
+    - bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+    - d4f60fa6-e081-4266-a774-10a7771cdf13:Material2
+    - f0bb4e18-b761-4e65-b1d5-f59b52cfef0f:SpriteSheet

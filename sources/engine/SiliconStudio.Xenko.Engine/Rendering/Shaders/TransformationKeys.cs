@@ -11,23 +11,18 @@ namespace SiliconStudio.Xenko.Rendering
     {
         static TransformationKeys()
         {
-            View = ParameterKeys.New(Matrix.Identity);
-            Projection = ParameterKeys.New(Matrix.Identity);
-            World = ParameterKeys.New(Matrix.Identity);
-            WorldView = ParameterKeys.New(Matrix.Identity);
-            WorldViewProjection = ParameterKeys.New(Matrix.Identity);
-            WorldInverse = ParameterKeys.New(Matrix.Identity);
-            WorldInverseTranspose = ParameterKeys.New(Matrix.Identity);
-            ViewInverse = ParameterKeys.New(Matrix.Identity);
-            ProjectionInverse = ParameterKeys.New(Matrix.Identity);
-            WorldViewInverse = ParameterKeys.New(Matrix.Identity);
-            WorldScale = ParameterKeys.New(Vector3.One);
+            View = ParameterKeys.NewValue(Matrix.Identity);
+            Projection = ParameterKeys.NewValue(Matrix.Identity);
+            World = ParameterKeys.NewValue(Matrix.Identity);
+            WorldView = ParameterKeys.NewValue(Matrix.Identity);
+            WorldViewProjection = ParameterKeys.NewValue(Matrix.Identity);
+            WorldInverse = ParameterKeys.NewValue(Matrix.Identity);
+            WorldInverseTranspose = ParameterKeys.NewValue(Matrix.Identity);
+            ViewInverse = ParameterKeys.NewValue(Matrix.Identity);
+            ProjectionInverse = ParameterKeys.NewValue(Matrix.Identity);
+            WorldViewInverse = ParameterKeys.NewValue(Matrix.Identity);
+            WorldScale = ParameterKeys.NewValue(Vector3.One);
         }
-
-        /// <summary>
-        /// Projection frustum planes.
-        /// </summary>
-        public static readonly ParameterKey<Plane[]> ProjectionFrustumPlanes = ParameterKeys.New<Plane[]>();
 
         // TODO GRAPHICS REFACTOR
         ///// <summary>

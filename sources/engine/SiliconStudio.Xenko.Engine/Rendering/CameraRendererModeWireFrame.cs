@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO GRAPHICS REFACTOR
             //modelComponentAndPickingRenderer = new ModelComponentAndPickingRenderer();
-            //RendererOverrides.Add(typeof(ModelComponent), modelComponentAndPickingRenderer);
+            //RendererOverrides.Add(typeof(ModelComponent).GetTypeInfo(), modelComponentAndPickingRenderer);
 
             FrontColor = new Color3(0, 1.0f, 0.0f);
             BackColor = new Color3(0, 0.5f, 0.0f);

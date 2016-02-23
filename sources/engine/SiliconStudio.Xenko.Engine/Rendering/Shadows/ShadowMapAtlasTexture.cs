@@ -45,7 +45,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public void Clear()
         {
             packer.Clear();
-            clearNeeded = false;
         }
 
         public bool Insert(int width, int height, ref Rectangle bestRectangle)
@@ -69,6 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 // TODO GRAPHICS REFACTOR
                 commandList.Clear(Texture, DepthStencilClearOptions.DepthBuffer);
+                clearNeeded = false;
             }
         }
     }

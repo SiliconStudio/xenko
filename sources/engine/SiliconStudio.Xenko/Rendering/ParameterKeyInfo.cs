@@ -41,5 +41,10 @@ namespace SiliconStudio.Xenko.Rendering
             Offset = -1;
             Size = 1;
         }
+
+        public override string ToString()
+        {
+            return $"{Key} ({(BindingSlot != -1 ? "BindingSlot " + BindingSlot : "Offset " + Offset)}, Size {Size})";
+        }
     }
 }

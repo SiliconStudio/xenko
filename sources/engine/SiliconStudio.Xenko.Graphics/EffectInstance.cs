@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Store current effect
         protected Effect effect;
-        protected bool effectDirty = true;
+        protected int permutationCounter = -1;
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;
@@ -46,20 +46,23 @@ namespace SiliconStudio.Xenko.Rendering
 
         public NextGenParameterCollection Parameters { get; }
 
-        protected override void Destroy()
+        /// <summary>
+        /// Compiles or recompiles the effect if necesssary.
+        /// </summary>
+        /// <param name="graphicsDevice"></param>
+        /// <returns>True if the effect was recompiled, false otherwise.</returns>
+        public bool UpdateEffect(GraphicsDevice graphicsDevice)
         {
-            base.Destroy();
-
-            Parameters.Dispose();
-        }
-
-        public void UpdateEffect(GraphicsDevice graphicsDevice)
-        {
-            if (effectDirty)
+            if (permutationCounter != Parameters.PermutationCounter)
             {
-                effectDirty = false;
+                permutationCounter = Parameters.PermutationCounter;
 
+                var oldEffect = effect;
                 ChooseEffect(graphicsDevice);
+
+                // Early exit: same effect, and already initialized
+                if (oldEffect == effect && descriptorReflection != null)
+                    return false;
 
                 // Update reflection and rearrange buffers/resources
                 var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
@@ -99,14 +102,18 @@ namespace SiliconStudio.Xenko.Rendering
                 // Update parameters layout to match what this effect expect
                 Parameters.UpdateLayout(parameterCollectionLayout);
                 constantBufferTotalSize = parameterCollectionLayout.BufferSize;
+
+                return true;
             }
+
+            return false;
         }
 
         protected virtual void ChooseEffect(GraphicsDevice graphicsDevice)
         {
         }
 
-        public void Apply(CommandList commandList)
+        public unsafe void Apply(CommandList commandList)
         {
             UpdateEffect(commandList.GraphicsDevice);
 
@@ -128,7 +135,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Set resources
-            if (Parameters.ResourceValues != null)
+            if (Parameters.ObjectValues != null)
             {
                 var descriptorStartSlot = 0;
                 var bufferStartOffset = 0;
@@ -140,14 +147,15 @@ namespace SiliconStudio.Xenko.Rendering
 
                     for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
                     {
-                        descriptorSet.SetValue(resourceSlot, Parameters.ResourceValues[descriptorStartSlot + resourceSlot]);
+                        descriptorSet.SetValue(resourceSlot, Parameters.ObjectValues[descriptorStartSlot + resourceSlot]);
                     }
 
                     descriptorStartSlot += layout.ElementCount;
 
                     if (resourceGroup.ConstantBuffer.Size > 0)
                     {
-                        Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, Parameters.DataValues + bufferStartOffset, resourceGroup.ConstantBuffer.Size);
+                        fixed (byte* dataValues = Parameters.DataValues)
+                            Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, (IntPtr)dataValues + bufferStartOffset, resourceGroup.ConstantBuffer.Size);
                         bufferStartOffset += resourceGroup.ConstantBuffer.Size;
                     }
                 }

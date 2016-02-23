@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public partial class LightSkyboxShaderKeys
     {
-        public static readonly ParameterKey<ShaderSource> LightDiffuseColor = ParameterKeys.New<ShaderSource>();
-        public static readonly ParameterKey<ShaderSource> LightSpecularColor = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> LightDiffuseColor = ParameterKeys.NewPermutation<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> LightSpecularColor = ParameterKeys.NewPermutation<ShaderSource>();
     }
 }

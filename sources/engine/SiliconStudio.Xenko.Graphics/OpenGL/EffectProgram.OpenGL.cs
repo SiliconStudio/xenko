@@ -25,20 +25,22 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    internal partial class EffectProgram
+    class EffectProgram : GraphicsResourceBase
     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
-        public const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
+        private const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
+        private const ActiveUniformType FloatMat3x2 = (ActiveUniformType)0x8B67;
 #else
-        public const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
+        private const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
+        private const ActiveUniformType FloatMat3x2 = ActiveUniformType.FloatMat3x2;
 #endif
 
         private LoggerResult reflectionResult = new LoggerResult();
 
         private readonly EffectBytecode effectBytecode;
 
-        private EffectInputSignature inputSignature;
+        public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // Fake cbuffer emulation binding
@@ -46,10 +48,15 @@ namespace SiliconStudio.Xenko.Graphics
         {
             public ActiveUniformType Type;
             public int UniformIndex;
+            public int ConstantBufferSlot;
             public int Offset;
             public int Count;
             public int CompareSize;
         }
+
+        // Start offsets for cbuffer
+        private static readonly int[] EmptyConstantBufferOffsets = new int[] { 0 };
+        internal int[] ConstantBufferOffsets = EmptyConstantBufferOffsets;
 
         internal byte[] BoundUniforms;
         internal List<Uniform> Uniforms = new List<Uniform>();
@@ -64,28 +71,17 @@ namespace SiliconStudio.Xenko.Graphics
                 TextureUnit = textureUnit;
             }
         }
-        
+
+        internal EffectReflection Reflection;
+
         internal List<Texture> Textures = new List<Texture>();
 
-        private EffectProgram(GraphicsDevice device, EffectBytecode bytecode)
-            : base(device)
+        internal EffectProgram(GraphicsDevice device, EffectBytecode bytecode) : base(device)
         {
             effectBytecode = bytecode;
 
-            // make a copy of the effect's reflection before modifying it.
-            Reflection = new EffectReflection
-            {
-                // The members that are not modified and can be shallowly copied.
-                SamplerStates = effectBytecode.Reflection.SamplerStates,
-                ShaderStreamOutputDeclarations = effectBytecode.Reflection.ShaderStreamOutputDeclarations,
-                StreamOutputRasterizedStream = effectBytecode.Reflection.StreamOutputRasterizedStream,
-                StreamOutputStrides = effectBytecode.Reflection.StreamOutputStrides,
-
-                // The members that are modified and should be deeply copied.
-                ConstantBuffers = effectBytecode.Reflection.ConstantBuffers.Select(cb => cb.Clone()).ToList(),
-                ResourceBindings = new List<EffectParameterResourceData>(effectBytecode.Reflection.ResourceBindings),
-            };
-
+            // TODO OPENGL currently we modify the reflection info; need to find a better way to deal with that
+            Reflection = effectBytecode.Reflection;
             CreateShaders();
         }
 
@@ -103,10 +99,6 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         case ShaderStage.Vertex:
                             shaderStage = ShaderType.VertexShader;
-                            // We can't use VS only, since various attributes might get optimized when linked with a specific PS
-                            // Maybe we should unify signature after checking attributes
-                            //inputSignature = EffectInputSignature.GetOrCreateLayout(new EffectInputSignature(shader.Id, shader.Data));
-                            inputSignature = new EffectInputSignature(shader.Id, shader.Data);
                             break;
                         case ShaderStage.Pixel:
                             shaderStage = ShaderType.FragmentShader;
@@ -153,7 +145,7 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new InvalidOperationException("Error while linking GLSL shaders.\n" + infoLog);
                 }
 
-                if (inputSignature.Attributes.Count == 0) // the shader wasn't analyzed yet
+                if (Attributes.Count == 0) // the shader wasn't analyzed yet // TODO Is it possible?
                 {
                     // Build attributes list for shader signature
                     int activeAttribCount;
@@ -169,7 +161,7 @@ namespace SiliconStudio.Xenko.Graphics
 #else
                         var attribIndex = GL.GetAttribLocation(resourceId, attribName);
 #endif
-                        inputSignature.Attributes.Add(attribName, attribIndex);
+                        Attributes.Add(attribName, attribIndex);
                     }
                 }
 
@@ -177,7 +169,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Allocate a buffer that can cache all the bound parameters
-                BoundUniforms = new byte[Reflection.ConstantBuffers[0].Size];
+                BoundUniforms = new byte[ConstantBufferOffsets[ConstantBufferOffsets.Length - 1]];
 #endif
             }
 
@@ -186,11 +178,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Console.WriteLine(message);
             if (reflectionResult.HasErrors)
                 throw new Exception(reflectionResult.Messages.Select(x=>x.ToString()).Aggregate((x,y)=>x+"\n"+y));
-        }
-
-        public EffectInputSignature InputSignature
-        {
-            get { return inputSignature; }
         }
 
         /// <inheritdoc/>
@@ -212,16 +199,6 @@ namespace SiliconStudio.Xenko.Graphics
             resourceId = 0;
 
             base.Destroy();
-        }
-
-        public void Apply(GraphicsDevice device)
-        {
-#if DEBUG
-            device.EnsureContextActive();
-#endif
-
-            device.effectProgram = this;
-            device.BindProgram(ResourceId);
         }
 
         /// <summary>
@@ -375,7 +352,7 @@ namespace SiliconStudio.Xenko.Graphics
             //TODO: (?) non texture/buffer uniform outside of a block
             {
                 // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
-                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1 };
+                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1, SlotCount = 1 };
                 Reflection.ResourceBindings.Add(noSampler);
 
                 int activeUniformCount;
@@ -383,106 +360,6 @@ namespace SiliconStudio.Xenko.Graphics
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 var uniformTypes = new int[activeUniformCount];
                 GL.GetActiveUniforms(resourceId, activeUniformCount, Enumerable.Range(0, activeUniformCount).ToArray(), ActiveUniformParameter.UniformType, uniformTypes);
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (GraphicsDevice.IsOpenGLES2)
-                {
-                    // Register global "fake" cbuffer
-                    //var constantBuffer = new ShaderReflectionConstantBuffer
-                    //    {
-                    //        Name = "$Globals",
-                    //        Variables = new List<ShaderReflectionVariable>(),
-                    //        Type = ConstantBufferType.ConstantBuffer
-                    //    };
-                    //shaderReflection.ConstantBuffers.Add(constantBuffer);
-                    //shaderReflection.BoundResources.Add(new InputBindingDescription { BindPoint = 0, BindCount = 1, Name = constantBuffer.Name, Type = ShaderInputType.ConstantBuffer });
-
-                    // reset the size of the constant buffers
-                    foreach (var constantBuffer in effectReflection.ConstantBuffers)
-                        constantBuffer.Size = 0;
-
-                    // set the state of the constant buffers
-                    foreach (var constantBuffer in effectReflection.ConstantBuffers)
-                        constantBuffer.Stage = stage;
-                    for (int i = 0; i < effectReflection.ResourceBindings.Count; i++)
-                    {
-                        if (effectReflection.ResourceBindings[i].Param.Class != EffectParameterClass.ConstantBuffer)
-                            continue;
-
-                        var globalConstantBufferCopy = effectReflection.ResourceBindings[i];
-                        globalConstantBufferCopy.Stage = stage;
-                        effectReflection.ResourceBindings[i] = globalConstantBufferCopy;
-                    }
-
-                    //Create a Globals constant buffer if necessary
-                    var globalConstantBufferDescriptionIndex = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
-                    var globalConstantBufferIndex = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
-                    if (globalConstantBufferDescriptionIndex == -1 && globalConstantBufferIndex == -1)
-                    {
-                        var newConstantBufferDescription = new ShaderConstantBufferDescription
-                        {
-                            Name = "Globals",
-                            Stage = stage,
-                            Type = ConstantBufferType.ConstantBuffer,
-                            Size = 0,
-                            Members = new EffectParameterValueData[0],
-                        };
-                        var newConstantBuffer = new EffectParameterResourceData
-                        {
-                            Stage = stage,
-                            SlotStart = 0,
-                            SlotCount = 1,
-                            Param = { RawName = "Globals", KeyName = "Globals", Type = EffectParameterType.ConstantBuffer, Class = EffectParameterClass.ConstantBuffer }
-                        };
-
-                        effectReflection.ConstantBuffers.Add(newConstantBufferDescription);
-                        effectReflection.ResourceBindings.Add(newConstantBuffer);
-
-                        globalConstantBufferDescriptionIndex = effectReflection.ConstantBuffers.Count - 1;
-                        globalConstantBufferIndex = effectReflection.ResourceBindings.Count - 1;
-                    }
-
-                    // Merge all the variables in the Globals constant buffer
-                    if (globalConstantBufferDescriptionIndex != -1 && globalConstantBufferIndex != -1)
-                    {
-                        var globalConstantBufferDescription = effectReflection.ConstantBuffers[globalConstantBufferDescriptionIndex];
-                        for (int cstDescrIndex = 0; cstDescrIndex < effectReflection.ConstantBuffers.Count; ++cstDescrIndex)
-                        {
-                            if (cstDescrIndex == globalConstantBufferDescriptionIndex)
-                                continue;
-
-                            var currentConstantBufferDescription = effectReflection.ConstantBuffers[cstDescrIndex];
-
-                            globalConstantBufferDescription.Members = ArrayExtensions.Concat(
-                                globalConstantBufferDescription.Members, currentConstantBufferDescription.Members);
-
-                            effectReflection.ResourceBindings.RemoveAll(x => x.Param.RawName == currentConstantBufferDescription.Name);
-                        }
-
-                        // only keep the active uniforms
-                        globalConstantBufferDescription.Members =
-                            globalConstantBufferDescription.Members.Where(x => GL.GetUniformLocation(resourceId,
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                            new StringBuilder(x.Param.RawName)
-#else
-                                x.Param.RawName
-#endif
-                                ) >= 0).ToArray();
-
-                        // remove all the constant buffers and their resource bindings except the Globals one
-                        effectReflection.ConstantBuffers.Clear();
-                        effectReflection.ConstantBuffers.Add(globalConstantBufferDescription);
-                    }
-                    else if (globalConstantBufferDescriptionIndex != -1 && globalConstantBufferIndex == -1)
-                    {
-                        reflectionResult.Error("Globals constant buffer has a description and no resource binding");
-                    }
-                    else if (globalConstantBufferDescriptionIndex == -1 && globalConstantBufferIndex != -1)
-                    {
-                        reflectionResult.Error("Globals constant buffer has a description and no resource binding");
-                    }
-                }
 #endif
 
                 int textureUnitCount = 0;
@@ -501,8 +378,6 @@ namespace SiliconStudio.Xenko.Graphics
                     int length;
                     GL.GetActiveUniform(resourceId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
                     var uniformName = sb.ToString();
-                    //int uniformSize;
-                    //GL.GetActiveUniform(resourceId, activeUniformIndex, out uniformSize, ActiveUniformType.Float);
 #endif
 
                     switch (uniformType)
@@ -551,11 +426,7 @@ namespace SiliconStudio.Xenko.Graphics
                         case ActiveUniformType.Sampler3D: // TODO: remove Texture3D that is not available in OpenGL ES 2
                         case ActiveUniformType.SamplerCube:
                         case ActiveUniformType.Sampler2DShadow:
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                            var uniformIndex = GL.GetUniformLocation(resourceId, new StringBuilder(uniformName));
-#else
                             var uniformIndex = GL.GetUniformLocation(resourceId, uniformName);
-#endif
 
                             // Temporary way to scan which texture and sampler created this texture_sampler variable (to fix with new HLSL2GLSL converter)
 
@@ -627,9 +498,9 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-
         private void AddUniform(EffectReflection effectReflection, int uniformSize, int uniformCount, string uniformName, ActiveUniformType uniformType)
         {
+            // OpenGL ES 2 is adding uniform for each cbuffer member, so we need to remove array and struct indexers
             // clean the name
             if (uniformName.Contains("."))
             {
@@ -640,88 +511,87 @@ namespace SiliconStudio.Xenko.Graphics
                 uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
             }
 
+            // check that this uniform is in a constant buffer
+            int indexOfUniform = -1;
+            ShaderConstantBufferDescription constantBufferDescription = null;
+            foreach (var currentConstantBuffer in effectReflection.ConstantBuffers)
+            {
+                for (int index = 0; index < currentConstantBuffer.Members.Length; index++)
+                {
+                    var member = currentConstantBuffer.Members[index];
+                    if (member.Param.RawName.Equals(uniformName))
+                    {
+                        indexOfUniform = index;
+                        constantBufferDescription = currentConstantBuffer;
+                        break;
+                    }
+                }
+                if (constantBufferDescription != null)
+                    break;
+            }
+
+            if (constantBufferDescription == null)
+            {
+                throw new Exception("The uniform value " + uniformName + " is defined outside of a uniform block, which is not supported by the engine.");
+            }
+
             if (GraphicsDevice.IsOpenGLES2)
             {
-                var indexOfConstantBufferDescription = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
-                var indexOfConstantBuffer = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
-
-                if (indexOfConstantBufferDescription == -1 || indexOfConstantBuffer == -1)
+                var indexOfConstantBuffer = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == constantBufferDescription.Name);
+                if (indexOfConstantBuffer == -1)
                 {
                     reflectionResult.Error("Unable to find uniform [{0}] in any constant buffer", uniformName);
                     return;
                 }
 
-                var constantBufferDescription = effectReflection.ConstantBuffers[indexOfConstantBufferDescription];
+                //var constantBufferDescription = effectReflection.ConstantBuffers[indexOfConstantBufferDescription];
                 var constantBuffer = effectReflection.ResourceBindings[indexOfConstantBuffer];
 
-                var elementSize = uniformSize;
+                // First time we encounter this cbuffer?
+                if (constantBuffer.SlotStart == -1)
+                {
+                    constantBuffer.SlotStart = ConstantBufferOffsets.Length - 1;
+
+                    // Find next cbuffer slot
+                    Array.Resize(ref ConstantBufferOffsets, ConstantBufferOffsets.Length + 1);
+
+                    effectReflection.ResourceBindings[indexOfConstantBuffer] = constantBuffer;
+
+                    ConstantBufferOffsets[constantBuffer.SlotStart + 1] = ConstantBufferOffsets[constantBuffer.SlotStart] + constantBufferDescription.Size;
+                }
+
+                //var elementSize = uniformSize;
 
                 // For array, each element is rounded to register size
-                if (uniformSize%16 != 0 && uniformCount > 1)
-                {
-                    constantBufferDescription.Size = (constantBufferDescription.Size + 15)/16*16;
-                    uniformSize = (uniformSize + 15)/16*16;
-                }
+                //if (uniformSize%16 != 0 && uniformCount > 1)
+                //{
+                //    constantBufferDescription.Size = (constantBufferDescription.Size + 15)/16*16;
+                //    uniformSize = (uniformSize + 15)/16*16;
+                //}
 
                 // Check if it can fits in the same register, otherwise starts at the next one
-                if (uniformCount == 1 && constantBufferDescription.Size/16 != (constantBufferDescription.Size + uniformSize - 1)/16)
-                    constantBufferDescription.Size = (constantBufferDescription.Size + 15)/16*16;
+                //if (uniformCount == 1 && constantBufferDescription.Size/16 != (constantBufferDescription.Size + uniformSize - 1)/16)
+                //    constantBufferDescription.Size = (constantBufferDescription.Size + 15)/16*16;
 
-                var indexOfUniform = -1;
-                for (var tentativeIndex = 0; tentativeIndex < constantBufferDescription.Members.Length; ++tentativeIndex)
-                {
-                    if (constantBufferDescription.Members[tentativeIndex].Param.RawName == uniformName)
-                    {
-                        indexOfUniform = tentativeIndex;
-                        break;
-                    }
-                }
-
+                // Check type
                 var variable = constantBufferDescription.Members[indexOfUniform];
-
-                variable.Param.Type = GetTypeFromActiveUniformType(uniformType);
-                //variable.SourceOffset = variableIndexGroup.Offset;
-                variable.Offset = constantBufferDescription.Size;
-                variable.Count = uniformCount;
-                variable.Size = uniformSize*uniformCount;
-
-                constantBufferDescription.Type = ConstantBufferType.ConstantBuffer;
-
-                constantBuffer.SlotStart = 0;
-
-                constantBufferDescription.Members[indexOfUniform] = variable;
-                effectReflection.ResourceBindings[indexOfConstantBuffer] = constantBuffer;
+                if (variable.Param.Type != GetTypeFromActiveUniformType(uniformType))
+                    throw new InvalidOperationException($"Uniform [{uniformName}] type [{variable.Param.Type}] doesn't match OpenGL shader expected type [{GetTypeFromActiveUniformType(uniformType)}]");
 
                 // No need to compare last element padding.
                 // TODO: In case of float1/float2 arrays (rare) it is quite non-optimal to do a CompareMemory
-                var compareSize = uniformSize*(uniformCount - 1) + elementSize;
+                //variable.Size = uniformSize * (uniformCount - 1) + elementSize;
+                //constantBufferDescription.Members[indexOfUniform] = variable;
 
                 Uniforms.Add(new Uniform
                 {
                     Type = uniformType,
                     Count = uniformCount,
-                    CompareSize = compareSize,
-                    Offset = constantBufferDescription.Size,
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                    UniformIndex = GL.GetUniformLocation(resourceId, new StringBuilder(uniformName))
-#else
+                    CompareSize = variable.Size,
+                    ConstantBufferSlot = constantBuffer.SlotStart,
+                    Offset = variable.Offset,
                     UniformIndex = GL.GetUniformLocation(resourceId, uniformName)
-#endif
                 });
-                constantBufferDescription.Size += uniformSize*uniformCount;
-            }
-            else
-            {
-                // check that this uniform is in a constant buffer
-                foreach (var constantBuffer in effectReflection.ConstantBuffers)
-                {
-                    foreach (var member in constantBuffer.Members)
-                    {
-                        if (member.Param.RawName.Equals(uniformName))
-                            return;
-                    }
-                }
-                throw new Exception("The uniform value " + uniformName + " is defined outside of a uniform block in OpenGL ES 3, which is not supported by the engine.");
             }
         }
 #endif
@@ -771,7 +641,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat2:
                     return 4;
                 case ActiveUniformType.FloatMat2x3:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                     return 6;
                 case ActiveUniformType.FloatMat2x4:
                 case ActiveUniformType.FloatMat4x2:
@@ -860,7 +730,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat4:
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:
@@ -930,7 +800,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case ActiveUniformType.FloatMat4:
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
-                case ActiveUniformType.FloatMat3x2:
+                case FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:

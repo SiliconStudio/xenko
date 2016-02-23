@@ -50,6 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 foreach(var colorTransform in context.GetParam(ColorTransformGroupKeys.Transforms))
 
                 {
+                    context.PushParameters(colorTransform.Parameters);
 
                     {
                         var __mixinToCompose__ = "ColorTransformCompose";
@@ -58,6 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
+                    context.PopParameters();
                 }
             }
 

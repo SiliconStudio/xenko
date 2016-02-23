@@ -77,8 +77,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 return;
             }
         
-            brightPassFilter.Parameters.SetValueSlow(BrightFilterShaderKeys.BrightPassThreshold, Threshold);
-            brightPassFilter.Parameters.SetValueSlow(BrightFilterShaderKeys.ColorModulator, Color.ToColorSpace(GraphicsDevice.ColorSpace));
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.BrightPassThreshold, Threshold);
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.ColorModulator, Color.ToColorSpace(GraphicsDevice.ColorSpace));
             
             brightPassFilter.SetInput(input);
             brightPassFilter.SetOutput(output);
