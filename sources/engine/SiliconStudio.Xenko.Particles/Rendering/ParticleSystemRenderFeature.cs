@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 {
     public class ParticleSystemRenderFeature : RootEffectRenderFeature
     {
-        private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
@@ -25,6 +25,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         // Material alive during this frame
         private readonly HashSet<ParticleMaterialInfo> allMaterialInfos = new HashSet<ParticleMaterialInfo>();
         private readonly List<ParticleMaterialInfo> activeMaterialInfos = new List<ParticleMaterialInfo>();
+
+        public override Type SupportedRenderObjectType => typeof(RenderParticleEmitter);
 
         private class ParticleMaterialInfo
         {
@@ -49,11 +51,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             {
                 Material = material;
             }
-        }
-
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderParticleEmitter;
         }
 
         public override void Initialize()
@@ -193,7 +190,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         public override void PrepareEffectPermutations()
         {
-            var renderEffects = GetData(renderEffectKey);
+            var renderEffects = RenderData.GetData(renderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
 
             // Collect materials
@@ -205,7 +202,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderParticleEmitter = (RenderParticleEmitter)renderObject;
 
