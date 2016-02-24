@@ -17,9 +17,14 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public DataType Type { get; }
 
-        protected DataArrayInfo(DataType type)
+        public int Multiplier { get; protected set; }
+
+        public int ElementCount { get; protected set; }
+
+        protected DataArrayInfo(DataType type, int multiplier)
         {
             Type = type;
+            Multiplier = multiplier;
         }
 
         /// <summary>
@@ -35,40 +40,83 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="array"></param>
         /// <param name="sourceStart"></param>
         /// <param name="destStart"></param>
-        /// <param name="length"></param>
-        public abstract void SwapRemoveItems(Array array, int sourceStart, int destStart, int length);
+        public abstract void SwapRemoveItem(Array array, int sourceStart, int destStart);
+
+        /// <summary>
+        /// Change number of elements per entry.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="newMultiplier"></param>
+        public abstract void ChangeMutiplier(ref Array array, int multiplier);
     }
 
     class DataArrayInfo<T> : DataArrayInfo
     {
-        public DataArrayInfo(DataType type) : base(type)
+        public DataArrayInfo(DataType type, int multiplier = 1) : base(type, multiplier)
         {
         }
 
         public override void EnsureSize(ref Array array, int size)
         {
+            ElementCount = size;
+
+            var totalSize = size * Multiplier;
+
             // TODO: we should probably shrink down if not used anymore during many frames)
+            // TODO should we clear values if references?
             // Array has proper size already
-            if (size == 0 || (array != null && size <= array.Length))
+            if (totalSize == 0 || (array != null && totalSize <= array.Length))
                 return;
 
             var arrayT = (T[])array;
-            Array.Resize(ref arrayT, size);
+            Array.Resize(ref arrayT, totalSize);
             array = arrayT;
         }
 
-        public override void SwapRemoveItems(Array array, int sourceStart, int destStart, int length)
+        public override void SwapRemoveItem(Array array, int sourceStart, int destStart)
         {
             var arrayT = (T[])array;
 
+            destStart *= Multiplier;
+            sourceStart *= Multiplier;
+
             if (sourceStart != destStart)
             {
-                for (int i = 0; i < length; ++i)
+                for (int i = 0; i < Multiplier; ++i)
                     arrayT[destStart + i] = arrayT[sourceStart + i];
             }
 
-            for (int i = 0; i < length; ++i)
+            for (int i = 0; i < Multiplier; ++i)
                 arrayT[sourceStart + i] = default(T);
+        }
+
+        public override void ChangeMutiplier(ref Array array, int multiplier)
+        {
+            if (multiplier == Multiplier)
+                return;
+
+            var oldMultiplier = Multiplier;
+            Multiplier = multiplier;
+
+            // Zero size, we can keep old array as is
+            // TODO should we clear values if references?
+            if (multiplier == 0 || ElementCount == 0)
+                return;
+
+            var newArray = new T[ElementCount * multiplier];
+            var arrayT = (T[])array;
+
+            var valuesToCopyPerElement = Math.Min(multiplier, oldMultiplier);
+
+            for (int i = 0, arrayIndex = 0, newArrayIndex = 0; i < ElementCount; ++i, arrayIndex += oldMultiplier - valuesToCopyPerElement, newArrayIndex += multiplier - valuesToCopyPerElement)
+            {
+                for (int j = 0; j < valuesToCopyPerElement; ++j)
+                {
+                    newArray[newArrayIndex++] = arrayT[arrayIndex++];
+                }
+            }
+
+            array = newArray;
         }
     }
 }

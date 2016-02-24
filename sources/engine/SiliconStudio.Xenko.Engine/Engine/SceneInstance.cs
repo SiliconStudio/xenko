@@ -31,6 +31,8 @@ namespace SiliconStudio.Xenko.Engine
         private Scene previousScene;
         private Scene scene;
 
+        public VisibilityGroup VisibilityGroup { get; }
+
         /// <summary>
         /// Occurs when the scene changed from a scene child component.
         /// </summary>
@@ -58,6 +60,7 @@ namespace SiliconStudio.Xenko.Engine
             if (services == null) throw new ArgumentNullException("services");
 
             ExecutionMode = executionMode;
+            VisibilityGroup = new VisibilityGroup(services);
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
             ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
@@ -149,6 +152,8 @@ namespace SiliconStudio.Xenko.Engine
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 commandList.ClearState();
 
+                var renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+
                 // Draw the main scene using the current compositor (or the provided override)
                 var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
@@ -159,6 +164,35 @@ namespace SiliconStudio.Xenko.Engine
                     using (context.RenderContext.PushTagAndRestore(Current, this))
                     using (context.RenderContext.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
+                        graphicsCompositor.BeforeExtract(context.RenderContext);
+
+                        // Update current camera to render view
+                        foreach (var mainRenderView in renderSystem.Views)
+                        {
+                            if (mainRenderView.GetType() == typeof(RenderView))
+                            {
+                                renderSystem.UpdateCameraToRenderView(context, mainRenderView);
+                            }
+                        }
+
+                        // Reset render context data
+                        renderSystem.Reset();
+
+                        // Reset view specific render context data
+                        renderSystem.ResetViews();
+
+                        // Collect
+                        // TODO GRAPHICS REFACTOR choose which views to collect
+                        VisibilityGroup.Views.Clear();
+                        VisibilityGroup.Views.AddRange(renderSystem.Views);
+                        VisibilityGroup.Collect();
+
+                        // Extract
+                        renderSystem.Extract(context);
+
+                        // Prepare
+                        renderSystem.Prepare(context);
+
                         graphicsCompositor.Draw(context);
                     }
                 }

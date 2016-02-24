@@ -8,46 +8,39 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class NextGenSpriteProcessor : EntityProcessor<SpriteComponent, RenderSprite>
+    internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, RenderSprite>
     {
-        private NextGenRenderSystem renderSystem;
+        private VisibilityGroup visibilityGroup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NextGenSpriteProcessor"/> class.
+        /// Initializes a new instance of the <see cref="SpriteRenderProcessor"/> class.
         /// </summary>
-        public NextGenSpriteProcessor()
+        public SpriteRenderProcessor()
             : base(typeof(TransformComponent))
         {
-            Sprites = new List<RenderSprite>();
         }
-
-        public List<RenderSprite> Sprites { get; private set; }
 
         protected internal override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         public override void Draw(RenderContext gameTime)
         {
-            Sprites.Clear();
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
-                if (spriteStateKeyPair.Value.SpriteComponent.Enabled)
-                {
-                    Sprites.Add(spriteStateKeyPair.Value);
-                }
+                spriteStateKeyPair.Value.Enabled = spriteStateKeyPair.Value.SpriteComponent.Enabled;
             }
         }
 
         protected override void OnEntityComponentAdding(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
         {
-            renderSystem.RenderObjects.Add(data);
+            visibilityGroup.RenderObjects.Add(data);
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
         {
-            renderSystem.RenderObjects.Remove(data);
+            visibilityGroup.RenderObjects.Remove(data);
         }
 
         protected override RenderSprite GenerateComponentData(Entity entity, SpriteComponent spriteComponent)

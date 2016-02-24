@@ -116,12 +116,14 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
-    <Compile Include="Engine\Processors\ModelProcessor.cs" />
+    <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
+    <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
+    <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
@@ -157,6 +159,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
+    <Compile Include="Rendering\Editor\EntityPickingResult.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -183,6 +186,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Rendering\INextGenRenderer.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -230,7 +234,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Background\BackgroundProcessor.cs" />
+    <Compile Include="Rendering\Background\BackgroundRenderProcessor.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
     <Compile Include="Rendering\Background\RenderBackground.cs" />
     <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
@@ -239,7 +243,7 @@
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\EffectValidator.cs" />
-    <Compile Include="Rendering\INextGenEntityComponentRenderer.cs" />
+    <Compile Include="Rendering\IPipelinePlugin.cs" />
     <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
     <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
@@ -253,27 +257,26 @@
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
     <Compile Include="Rendering\MeshRenderFeature.cs" />
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
-    <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
-    <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
-    <Compile Include="Rendering\NextGenModelProcessor.cs" />
+    <Compile Include="Rendering\MeshPipelinePlugin.cs" />
+    <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\NextGenRenderer.cs" />
     <Compile Include="Rendering\NextGenRenderSystem.cs" />
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
-    <Compile Include="Rendering\Nodes\StaticObjectNodeReference.cs" />
-    <Compile Include="Rendering\Nodes\ViewNodeReference.cs" />
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
     <Compile Include="Rendering\Properties.cs">
       <DependentUpon>Properties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\RenderDataHolder.cs" />
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\RenderFeature.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\RenderObject.cs" />
+    <Compile Include="Rendering\RenderObjectCollection.cs" />
     <Compile Include="Rendering\RenderStage.cs" />
     <Compile Include="Rendering\RenderStageSelector.cs" />
     <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />
@@ -295,10 +298,12 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxPipelinePlugin.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
-    <Compile Include="Rendering\Sprites\NextGenSpriteProcessor.cs" />
+    <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
+    <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
     <Compile Include="Rendering\Sprites\SpriteTransparentRenderStageSelector.cs" />
@@ -318,6 +323,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\VisibilityGroup.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -2308,7 +2314,6 @@
     <Compile Include="Extensions\SplitExtensions.cs" />
     <Compile Include="Extensions\TransformExtensions.cs" />
     <Compile Include="Animations\KeyFrameData.cs" />
-    <Compile Include="Rendering\BackgroundComponentRenderer.cs" />
     <Compile Include="Rendering\CameraComponentRenderer.cs" />
     <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\MaterialAssetKeys.cs" />
@@ -2354,7 +2359,6 @@
     <Compile Include="Engine\SceneSystem.cs" />
     <Compile Include="Engine\Game.cs" />
     <Compile Include="Rendering\Fonts\GameFontSystem.cs" />
-    <Compile Include="Rendering\Sprites\SpriteProcessor.cs" />
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Engine\Network\RouterClient.cs" />

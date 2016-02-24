@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void Initialize()
         {
-            renderObjectInfoKey = RootRenderFeature.CreateObjectKey<RenderObjectInfo>();
+            renderObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderObjectInfo>();
 
             pickingData = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(PickingShaderKeys.PickingData.Name);
         }
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void Extract()
         {
-            var modelObjectInfo = RootRenderFeature.GetData(renderObjectInfoKey);
+            var modelObjectInfo = RootRenderFeature.RenderData.GetData(renderObjectInfoKey);
 
             foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
             {
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public unsafe override void Prepare(RenderContext context)
         {
-            var renderObjectInfo = RootRenderFeature.GetData(renderObjectInfoKey);
+            var renderObjectInfo = RootRenderFeature.RenderData.GetData(renderObjectInfoKey);
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {

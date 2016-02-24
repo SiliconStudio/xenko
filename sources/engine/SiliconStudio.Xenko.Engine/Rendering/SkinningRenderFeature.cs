@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class SkinningRenderFeature : SubRenderFeature
     {
-        private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private ObjectPropertyKey<RenderModelFrameInfo> renderModelObjectInfoKey;
 
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void Initialize()
         {
-            renderModelObjectInfoKey = RootRenderFeature.CreateObjectKey<RenderModelFrameInfo>();
+            renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderModelFrameInfo>();
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
 
             blendMatrices = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationSkinningKeys.BlendMatrixArray.Name);
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void PrepareEffectPermutations()
         {
-            var renderEffects = RootRenderFeature.GetData(renderEffectKey);
+            var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
             foreach (var renderObject in RootRenderFeature.RenderObjects)
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderMesh = (RenderMesh)renderObject;
 
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void Extract()
         {
-            var renderModelObjectInfo = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
             nodeInfos.Clear();
 
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override unsafe void Prepare(RenderContext context)
         {
-            var renderModelObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {

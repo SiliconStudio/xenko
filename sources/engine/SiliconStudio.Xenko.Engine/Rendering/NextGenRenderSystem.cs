@@ -1,23 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
+using System.Reflection;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Facility to perform rendering: extract rendering data from scene, determine effects and GPU states, compute and prepare data (i.e. matrices, buffers, etc...) and finally draw it.
     /// </summary>
-    public partial class NextGenRenderSystem
+    public partial class NextGenRenderSystem : ComponentBase, IGameSystemBase
     {
-        /// <summary>
-        /// List of objects registered in the rendering system.
-        /// </summary>
-        public TrackingHashSet<RenderObject> RenderObjects = new TrackingHashSet<RenderObject>();
+        private readonly IServiceRegistry registry;
+        private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
+        private readonly Dictionary<Type, IPipelinePlugin> pipelinePlugins = new Dictionary<Type, IPipelinePlugin>();
+        private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -33,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render features
         /// </summary>
-        public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
+        public TrackingCollection<RootRenderFeature> RenderFeatures { get; } = new TrackingCollection<RootRenderFeature>();
 
         /// <summary>
         /// The graphics device, used to create graphics resources.
@@ -64,11 +67,21 @@ namespace SiliconStudio.Xenko.Rendering
 
         public RenderContext RenderContextOld { get; private set; }
 
+        public event Action RenderStageSelectorsChanged;
+
+        /// <summary>
+        /// Gets the services registry.
+        /// </summary>
+        /// <value>The services registry.</value>
+        public IServiceRegistry Services => registry;
+
         public NextGenRenderSystem(IServiceRegistry registry)
         {
+            this.registry = registry;
+
             registry.AddService(typeof(NextGenRenderSystem), this);
-            EffectSystem = registry.GetSafeServiceAs<EffectSystem>();
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
+            RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
 
         /// <summary>
@@ -76,22 +89,28 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="effectSystem">The effect system.</param>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public void Initialize(GraphicsDevice graphicsDevice)
+        public void Initialize()
         {
-            GraphicsDevice = graphicsDevice;
+            // Get graphics device service
+            var graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-            DescriptorPool = DescriptorPool.New(graphicsDevice, new[]
-            {
-                new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
-            });
-
-            BufferPool = BufferPool.New(graphicsDevice, 32 * 1024 * 1024);
+            EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
 
             // Be notified when a RenderObject is added or removed
-            RenderObjects.CollectionChanged += RenderObjectsCollectionChanged;
             Views.CollectionChanged += Views_CollectionChanged;
 
-            RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
+            graphicsDeviceService.DeviceCreated += (sender, args) =>
+            {
+                GraphicsDevice = graphicsDeviceService.GraphicsDevice;
+                RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
+
+                DescriptorPool = DescriptorPool.New(GraphicsDevice, new[]
+                {
+                    new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
+                });
+
+                BufferPool = BufferPool.New(GraphicsDevice, 32 * 1024 * 1024);
+            };
         }
 
         /// <summary>
@@ -105,6 +124,8 @@ namespace SiliconStudio.Xenko.Rendering
                 // Update indices
                 var view = Views[index];
                 view.Index = index;
+
+                view.RenderObjects.Clear();
 
                 // Clear nodes
                 while (view.Features.Count < RenderFeatures.Count)
@@ -140,12 +161,6 @@ namespace SiliconStudio.Xenko.Rendering
             BufferPool.Reset();
             DescriptorPool.Reset();
 
-            // Clear object data
-            foreach (var renderObject in RenderObjects)
-            {
-                renderObject.ObjectNode = ObjectNodeReference.Invalid;
-            }
-
             // Clear render features node lists
             foreach (var renderFeature in RenderFeatures)
             {
@@ -153,17 +168,12 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        /// <summary>
-        /// Initializes render features. Should be called after all the render features have been set.
-        /// </summary>
-        public void InitializeFeatures()
+        private void PrepareDataArrays()
         {
-            for (int index = 0; index < RenderFeatures.Count; index++)
+            // Also do it for each render feature
+            foreach (var renderFeature in RenderFeatures)
             {
-                var renderFeature = RenderFeatures[index];
-                renderFeature.Index = index;
-                renderFeature.RenderSystem = this;
-                renderFeature.Initialize();
+                renderFeature.PrepareDataArrays();
             }
         }
 
@@ -177,19 +187,29 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderObjectsCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
+            var renderFeature = (RootRenderFeature)e.Item;
+
             switch (e.Action)
             {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    AddRenderObject((RenderObject)e.Item);
+                case NotifyCollectionChangedAction.Add:
+                    renderFeature.Index = e.Index;
+                    renderFeature.RenderSystem = this;
+                    renderFeature.Initialize();
+
+                    renderFeature.RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
+
+                    renderFeaturesByType.Add(renderFeature.SupportedRenderObjectType, renderFeature);
                     break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    RemoveRenderObject((RenderObject)e.OldItem);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                case NotifyCollectionChangedAction.Remove:
+                    throw new NotImplementedException();
             }
+        }
+
+        private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            RenderStageSelectorsChanged?.Invoke();
         }
 
         private void Views_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
@@ -202,23 +222,67 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void AddRenderObject(RenderObject renderObject)
+        public void AddRenderObject(RenderObject renderObject)
         {
-            // Determine which RenderFeatures is responsible for this object
-            foreach (var renderFeature in RenderFeatures)
+            RootRenderFeature renderFeature;
+
+            if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
             {
-                // Find matching render feature
-                if (renderFeature.SupportsRenderObject(renderObject))
+                // Found it
+                renderFeature.AddRenderObject(renderObject);
+            }
+            else
+            {
+                // New type without render feature, let's do auto pipeline setup
+                if (InstantiateDefaultPipelinePlugin(renderObject.GetType()))
                 {
-                    renderFeature.AddRenderObject(this, renderObject);
-                    break;
+                    // Try again, after pipeline plugin setup
+                    if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
+                    {
+                        renderFeature.AddRenderObject(renderObject);
+                    }
                 }
             }
         }
 
-        private void RemoveRenderObject(RenderObject renderObject)
+        private bool InstantiateDefaultPipelinePlugin(Type renderObjectType)
         {
-            renderObject.RenderFeature?.RemoveRenderObject(renderObject);
+            // Already processed
+            if (!renderObjectsDefaultPipelinePlugins.Add(renderObjectType))
+                return false;
+
+            var autoPipelineAttribute = renderObjectType.GetTypeInfo().GetCustomAttribute<DefaultPipelinePluginAttribute>();
+            if (autoPipelineAttribute != null)
+            {
+                GetPipelinePlugin(autoPipelineAttribute.PipelinePluginType, true);
+                return true;
+            }
+
+            return false;
+        }
+
+        public T GetPipelinePlugin<T>(bool createIfNecessary)
+        {
+            return (T)GetPipelinePlugin(typeof(T), createIfNecessary);
+        }
+
+        private IPipelinePlugin GetPipelinePlugin(Type pipelinePluginType, bool createIfNecessary)
+        {
+            IPipelinePlugin pipelinePlugin;
+            if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin) && createIfNecessary)
+            {
+                pipelinePlugin = (IPipelinePlugin)Activator.CreateInstance(pipelinePluginType);
+                pipelinePlugins.Add(pipelinePluginType, pipelinePlugin);
+                pipelinePlugin.SetupPipeline(RenderContextOld, this);
+            }
+
+            return pipelinePlugin;
+        }
+
+        public void RemoveRenderObject(RenderObject renderObject)
+        {
+            var renderFeature = renderObject.RenderFeature;
+            renderFeature?.RemoveRenderObject(renderObject);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     public class MaterialRenderFeature : SubRenderFeature
     {
-        private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <inheritdoc/>
         public override void PrepareEffectPermutations()
         {
-            var renderEffects = RootRenderFeature.GetData(renderEffectKey);
+            var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
             // Collect materials
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderMesh = (RenderMesh)renderObject;
 

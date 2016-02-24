@@ -16,8 +16,7 @@ namespace SiliconStudio.Xenko.Rendering
         private List<ObjectNode> objectNodes = new List<ObjectNode>();
 
         // storage for properties (struct of arrays)
-        private Dictionary<object, int> dataArraysByDefinition = new Dictionary<object, int>();
-        private FastListStruct<DataArray> dataArrays = new FastListStruct<DataArray>(8);
+        public RenderDataHolder RenderData;
 
         // Index that will be used for collections such as RenderView.RenderNodes and RenderView.ViewObjectNodes
         public int Index { get; internal set; }
@@ -40,14 +39,20 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
-        public List<RenderStageSelector> RenderStageSelectors { get; } = new List<RenderStageSelector>();
+        public TrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new TrackingCollection<RenderStageSelector>();
+
+        protected RootRenderFeature()
+        {
+            RenderData.Initialize();
+            //RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
+        }
 
         /// <summary>
         /// Decide whether a <see cref="RenderObject"/> is supported by this <see cref="RootRenderFeature"/>.
         /// </summary>
         /// <param name="renderObject">The <see cref="RenderObject"/> to test.</param>
         /// <returns>True if this type of object is supported, false otherwise.</returns>
-        public abstract bool SupportsRenderObject(RenderObject renderObject);
+        public abstract Type SupportedRenderObjectType { get; }
 
         /// <summary>
         /// Gets the render node from its reference.
@@ -140,18 +145,12 @@ namespace SiliconStudio.Xenko.Rendering
 
         }
 
-        internal void AddRenderObject(NextGenRenderSystem renderSystem, RenderObject renderObject)
+        internal void AddRenderObject(RenderObject renderObject)
         {
             renderObject.RenderFeature = this;
 
             // Generate static data ID
             renderObject.StaticObjectNode = new StaticObjectNodeReference(RenderObjects.Count);
-
-            // Determine which render stages are activated for this object
-            renderObject.ActiveRenderStages = new ActiveRenderStage[renderSystem.RenderStages.Count];
-
-            foreach (var renderStageSelector in RenderStageSelectors)
-                renderStageSelector.Process(renderObject);
 
             // Add to render object
             RenderObjects.Add(renderObject);
@@ -167,12 +166,8 @@ namespace SiliconStudio.Xenko.Rendering
             var orderedRenderNodeIndex = renderObject.StaticObjectNode.Index;
             renderObject.StaticObjectNode = StaticObjectNodeReference.Invalid;
 
-            // TODO: SwapRemove each items in dataArrays (using Array.Copy and Array.Clear?)
-            for (int i = 0; i < dataArrays.Count; ++i)
-            {
-                var dataArray = dataArrays[i];
-                RemoveRenderObjectFromDataArray(dataArray, orderedRenderNodeIndex);
-            }
+            // SwapRemove each items in dataArrays
+            RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, RenderObjects.Count - 1);
 
             // Remove entry from ordered node index
             RenderObjects.SwapRemoveAt(orderedRenderNodeIndex);
@@ -187,15 +182,6 @@ namespace SiliconStudio.Xenko.Rendering
             renderObject.RenderFeature = null;
         }
 
-        protected virtual void RemoveRenderObjectFromDataArray(DataArray dataArray, int removedIndex)
-        {
-            if (dataArray.Info.Type == DataType.StaticObject)
-            {
-                // SwapRemove StaticObject info for this object
-                dataArray.Info.SwapRemoveItems(dataArray.Array, removedIndex, RenderObjects.Count - 1, 1);
-            }
-        }
-
         public virtual void Reset()
         {
             // Clear nodes
@@ -207,13 +193,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void PrepareDataArrays()
         {
-            for (int i = 0; i < dataArrays.Count; ++i)
-            {
-                var dataArrayInfo = dataArrays[i].Info;
-                var expectedSize = ComputeDataArrayExpectedSize(dataArrayInfo.Type);
-
-                dataArrayInfo.EnsureSize(ref dataArrays.Items[i].Array, expectedSize);
-            }
+            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
         }
 
         protected virtual int ComputeDataArrayExpectedSize(DataType type)
@@ -234,5 +214,11 @@ namespace SiliconStudio.Xenko.Rendering
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        //private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        //{
+        //    if (RenderObjects.Count > 0)
+        //        NeedActiveRenderStageReevaluation = true;
+        //}
     }
 }

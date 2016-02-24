@@ -40,6 +40,13 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(true)]
         public bool ResetGraphicsStates { get; set; }
 
+        /// <param name="context"></param>
+        /// <inheritdoc/>
+        public virtual void BeforeExtract(RenderContext context)
+        {
+            EnsureContext(context);
+        }
+
         /// <summary>
         /// Gets the current output <see cref="RenderFrame"/> output.
         /// </summary>

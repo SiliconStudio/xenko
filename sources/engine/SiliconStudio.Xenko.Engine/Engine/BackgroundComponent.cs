@@ -8,7 +8,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Background;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -17,8 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("BackgroundComponent")]
     [Display("Background", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
-    [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
+    [DefaultEntityComponentProcessor(typeof(BackgroundRenderProcessor))]
     [ComponentOrder(9600)]
     public sealed class BackgroundComponent : ActivableEntityComponent
     {
