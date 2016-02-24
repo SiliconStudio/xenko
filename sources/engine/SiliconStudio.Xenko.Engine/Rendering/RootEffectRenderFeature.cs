@@ -35,6 +35,8 @@ namespace SiliconStudio.Xenko.Rendering
         private EffectDescriptorSetReference perViewDescriptorSetSlot;
         private EffectDescriptorSetReference perDrawDescriptorSetSlot;
 
+        private EffectPermutationSlot[] effectSlots = null;
+
         public List<EffectObjectNode> EffectObjectNodes { get; } = new List<EffectObjectNode>();
 
         public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
@@ -82,10 +84,14 @@ namespace SiliconStudio.Xenko.Rendering
             perViewDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerView");
             perDrawDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerDraw");
 
+            RenderSystem.RenderStages.CollectionChanged += RenderStages_CollectionChanged;
+
             // Create effect slots
-            foreach (var renderStage in RenderSystem.RenderStages)
+            Array.Resize(ref effectSlots, RenderSystem.RenderStages.Count);
+            for (int index = 0; index < RenderSystem.RenderStages.Count; index++)
             {
-                renderStage.EffectSlot = CreateEffectPermutationSlot(renderStage.Name);
+                var renderStage = RenderSystem.RenderStages[index];
+                effectSlots[index] = CreateEffectPermutationSlot(renderStage.EffectSlotName);
             }
         }
 
@@ -224,7 +230,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Get RenderEffect
                     var staticObjectNode = renderObject.StaticObjectNode;
-                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + renderNode.RenderStage.EffectSlot.Index;
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + effectSlots[renderNode.RenderStage.Index].Index;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Create it (first time)
@@ -328,7 +334,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Get RenderEffect
                     var staticObjectNode = renderObject.StaticObjectNode;
-                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + renderNode.RenderStage.EffectSlot.Index;
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + effectSlots[renderNode.RenderStage.Index].Index;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderEffectReflection = renderEffects[staticEffectObjectNode].Reflection;
 
@@ -570,6 +576,22 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             return base.ComputeDataArrayExpectedSize(type);
+        }
+
+        private void RenderStages_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        {
+            var renderStage = (RenderStage)e.Item;
+
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    Array.Resize(ref effectSlots, RenderSystem.RenderStages.Count);
+                    effectSlots[e.Index] = CreateEffectPermutationSlot(renderStage.EffectSlotName);
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    // TODO GRAPHICS REFACTOR support removal of render stages
+                    throw new NotImplementedException();
+            }
         }
 
         struct ConstantBufferOffsetDefinition
