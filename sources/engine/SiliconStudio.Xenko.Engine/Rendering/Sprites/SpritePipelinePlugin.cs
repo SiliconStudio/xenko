@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
-    public class SpritePipelineRenderer : IPipelineRenderer
+    public class SpritePipelinePlugin : IPipelinePlugin
     {
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {

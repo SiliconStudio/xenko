@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
-    public class BackgroundPipelineRenderer : IPipelineRenderer
+    public class BackgroundPipelinePlugin : IPipelinePlugin
     {
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {

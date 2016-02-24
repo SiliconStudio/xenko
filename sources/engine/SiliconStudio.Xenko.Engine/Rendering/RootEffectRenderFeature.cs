@@ -142,8 +142,8 @@ namespace SiliconStudio.Xenko.Rendering
                 var resourceGroupLayout = effect.Value.PerDrawLayout;
 
                 // Ensure there is enough space
-                if (resourceGroupLayout.ConstantBufferOffsets == null || resourceGroupLayout.ConstantBufferOffsets.Length < viewCBufferOffsetSlots.Count)
-                    Array.Resize(ref resourceGroupLayout.ConstantBufferOffsets, viewCBufferOffsetSlots.Count);
+                if (resourceGroupLayout.ConstantBufferOffsets == null || resourceGroupLayout.ConstantBufferOffsets.Length < drawCBufferOffsetSlots.Count)
+                    Array.Resize(ref resourceGroupLayout.ConstantBufferOffsets, drawCBufferOffsetSlots.Count);
 
                 ResolveCBufferOffset(resourceGroupLayout, slotReference.Index, variable);
             }

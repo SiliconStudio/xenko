@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private readonly IServiceRegistry registry;
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
+        private readonly Dictionary<Type, IPipelinePlugin> pipelinePlugins = new Dictionary<Type, IPipelinePlugin>();
+        private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -64,6 +66,8 @@ namespace SiliconStudio.Xenko.Rendering
         public BufferPool BufferPool { get; private set; }
 
         public RenderContext RenderContextOld { get; private set; }
+
+        public event Action RenderStageSelectorsChanged;
 
         /// <summary>
         /// Gets the services registry.
@@ -194,11 +198,18 @@ namespace SiliconStudio.Xenko.Rendering
                     renderFeature.RenderSystem = this;
                     renderFeature.Initialize();
 
+                    renderFeature.RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
+
                     renderFeaturesByType.Add(renderFeature.SupportedRenderObjectType, renderFeature);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     throw new NotImplementedException();
             }
+        }
+
+        private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            RenderStageSelectorsChanged?.Invoke();
         }
 
         private void Views_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
@@ -223,20 +234,49 @@ namespace SiliconStudio.Xenko.Rendering
             else
             {
                 // New type without render feature, let's do auto pipeline setup
-                var typeInfo = renderObject.GetType().GetTypeInfo();
-                var autoPipelineAttribute = typeInfo.GetCustomAttribute<PipelineRendererAttribute>();
-                if (autoPipelineAttribute != null)
+                if (InstantiateDefaultPipelinePlugin(renderObject.GetType()))
                 {
-                    var renderer = (IPipelineRenderer)Activator.CreateInstance(autoPipelineAttribute.RendererType);
-                    renderer.SetupPipeline(RenderContextOld, this);
-
-                    // Try again, after pipeline setup
+                    // Try again, after pipeline plugin setup
                     if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
                     {
                         renderFeature.AddRenderObject(renderObject);
                     }
                 }
             }
+        }
+
+        private bool InstantiateDefaultPipelinePlugin(Type renderObjectType)
+        {
+            // Already processed
+            if (!renderObjectsDefaultPipelinePlugins.Add(renderObjectType))
+                return false;
+
+            var autoPipelineAttribute = renderObjectType.GetTypeInfo().GetCustomAttribute<DefaultPipelinePluginAttribute>();
+            if (autoPipelineAttribute != null)
+            {
+                GetPipelinePlugin(autoPipelineAttribute.PipelinePluginType, true);
+                return true;
+            }
+
+            return false;
+        }
+
+        public T GetPipelinePlugin<T>(bool createIfNecessary)
+        {
+            return (T)GetPipelinePlugin(typeof(T), createIfNecessary);
+        }
+
+        private IPipelinePlugin GetPipelinePlugin(Type pipelinePluginType, bool createIfNecessary)
+        {
+            IPipelinePlugin pipelinePlugin;
+            if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin) && createIfNecessary)
+            {
+                pipelinePlugin = (IPipelinePlugin)Activator.CreateInstance(pipelinePluginType);
+                pipelinePlugins.Add(pipelinePluginType, pipelinePlugin);
+                pipelinePlugin.SetupPipeline(RenderContextOld, this);
+            }
+
+            return pipelinePlugin;
         }
 
         public void RemoveRenderObject(RenderObject renderObject)

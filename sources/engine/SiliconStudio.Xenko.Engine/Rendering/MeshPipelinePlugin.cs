@@ -10,17 +10,13 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class ModelPipelineRenderer : IPipelineRenderer
+    public class MeshPipelinePlugin : IPipelinePlugin
     {
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
             var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             var transparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-
-            // Optional render stages
-            var shadowMapRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "ShadowMapCaster");
-            var pickingRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "Picking");
 
             var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault();
             if (meshRenderFeature == null)
@@ -32,8 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
                         new TransformRenderFeature(),
                         //new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
-                        (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowMapRenderStage = shadowMapRenderStage }),
-                        new PickingRenderFeature(),
+                        (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature()),
                     },
                 };
 
@@ -48,40 +43,48 @@ namespace SiliconStudio.Xenko.Rendering
                 // Register renderer
                 renderSystem.RenderFeatures.Add(meshRenderFeature);
             }
+        }
+    }
 
-            // TODO GRAPHICS REFACTOR protect against multiple executions?
+    public class PickingMeshPipelinePlugin : IPipelinePlugin
+    {
+        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        {
+            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
+            var pickingRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "Picking");
 
-            // Shadow maps (if enabled)
-            if (shadowMapRenderStage != null)
+            meshRenderFeature.RenderFeatures.Add(new PickingRenderFeature());
+            meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
             {
-                meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-                {
-                    if (renderNode.RenderStage == shadowMapRenderStage)
-                    {
-                        pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
-                    }
-                };
+                EffectName = "TestEffect.Picking",
+                RenderStage = pickingRenderStage,
+            });
+        }
+    }
 
-                meshRenderFeature.RenderStageSelectors.Add(new ShadowMapRenderStageSelector
-                {
-                    EffectName = "TestEffect.ShadowMapCaster",
-                    ShadowMapRenderStage = shadowMapRenderStage,
-                });
-            }
+    public class ShadowMeshPipelinePlugin : IPipelinePlugin
+    {
+        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        {
+            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
+            var shadowMapRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "ShadowMapCaster");
 
-            // Picking (if enabled)
-            if (pickingRenderStage != null)
+            var forwardLightingRenderFeature = meshRenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().First();
+            forwardLightingRenderFeature.ShadowMapRenderStage = shadowMapRenderStage;
+
+            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
-                meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+                if (renderNode.RenderStage == shadowMapRenderStage)
                 {
-                    EffectName = "TestEffect.Picking",
-                    RenderStage = pickingRenderStage,
-                });
-            }
+                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+                }
+            };
 
-            // Register model processor
-            //var sceneInstance = SceneInstance.GetCurrent(Context);
-            //sceneInstance.Processors.Add(new NextGenModelProcessor());
+            meshRenderFeature.RenderStageSelectors.Add(new ShadowMapRenderStageSelector
+            {
+                EffectName = "TestEffect.ShadowMapCaster",
+                ShadowMapRenderStage = shadowMapRenderStage,
+            });
         }
     }
 }

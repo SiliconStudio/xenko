@@ -1,6 +1,6 @@
 ﻿namespace SiliconStudio.Xenko.Rendering
 {
-    public interface IPipelineRenderer
+    public interface IPipelinePlugin
     {
         void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem);
     }

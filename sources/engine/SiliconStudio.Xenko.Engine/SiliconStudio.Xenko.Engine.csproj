@@ -119,8 +119,8 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
-    <Compile Include="Rendering\PipelineRendererAttribute.cs" />
-    <Compile Include="Rendering\Background\BackgroundPipelineRenderer.cs" />
+    <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
+    <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
@@ -240,7 +240,7 @@
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\EffectValidator.cs" />
-    <Compile Include="Rendering\IPipelineRenderer.cs" />
+    <Compile Include="Rendering\IPipelinePlugin.cs" />
     <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
     <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
@@ -254,7 +254,7 @@
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
     <Compile Include="Rendering\MeshRenderFeature.cs" />
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
-    <Compile Include="Rendering\ModelPipelineRenderer.cs" />
+    <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\NextGenRenderer.cs" />
@@ -295,11 +295,11 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxPipelineRenderer.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxPipelinePlugin.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
-    <Compile Include="Rendering\Sprites\SpritePipelineRenderer.cs" />
+    <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
