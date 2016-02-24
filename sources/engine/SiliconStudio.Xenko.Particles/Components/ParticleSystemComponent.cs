@@ -14,7 +14,6 @@ namespace SiliconStudio.Xenko.Particles.Components
     /// </summary>
     [DataContract("ParticleSystemComponent")]
     [Display("Particle System", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(ParticleSystemComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(ParticleSystemProcessor))]
     [ComponentOrder(10200)]
     public sealed class ParticleSystemComponent : ActivableEntityComponent

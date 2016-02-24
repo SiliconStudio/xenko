@@ -11,9 +11,9 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     // conditional streams - may or may not be present depending on existing particle fields
     // -------------------------------------
-//    stage stream float4 Color : COLOR;
-    nointerpolation stage stream float Lifetime     : BATCH_LIFETIME;
-    nointerpolation stage stream float RandomSeed   : BATCH_RANDOMSEED; // Ideally should be uint. Note! The xksl doesn't support nointerpolation, so cast the float as int before using it
+    //stage stream float4 Color : COLOR;
+    nointerpolation stage stream float Lifetime : BATCH_LIFETIME;
+    nointerpolation stage stream float RandomSeed : BATCH_RANDOMSEED; // Ideally should be uint. Note! The xksl doesn't support nointerpolation, so cast the float as int before using it
 
     // -------------------------------------
     // uniforms
@@ -22,13 +22,18 @@ class ParticleBase : ShaderBase, Texturing
     // !When a bigger structure (float4) follow a smaller structure (float) the binding seems off
     // Declare the uniforms in the order float4x4 > float4 > float > uint
 
-    // A general transformation matrix
-    stage float4x4 MatrixTransform;
+    cbuffer PerView
+    {
+        stage float4x4 MatrixTransform;
+    }
 
-    stage float4 ColorScale;
+    cbuffer PerMaterial
+    {
+        stage float4 ColorScale;
 
-    // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
-    stage float AlphaAdditive;
+        // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
+        stage float AlphaAdditive;
+    }
             
     // -------------------------------------
     // VertexShader
@@ -58,11 +63,9 @@ class ParticleBase : ShaderBase, Texturing
         //return ColorScale * particleColor.Compute();
     }
 
-    
-
-    /////////////////////////////////////////////////////////////////
+    // -------------------------------------
     // Randomness
-    /////////////////////////////////////////////////////////////////
+    // -------------------------------------
 
     //stage float4 GenerateRandomColor()
     //{
@@ -76,8 +79,8 @@ class ParticleBase : ShaderBase, Texturing
     //  Because we can't pass uint as vertex input, we use a float and cast it twice to prevent interpolation errors.
     //  Also, casting a huge uint value to float causes underflow, so we limit the input value to 0 .. 0xFFFF (the masking is done on the CPU side)
 
-    static const float  GelfondConst = 23.1406926327792690;            // e to the power of Pi = (-1) to the power of -i
-    static const float  GelfondSchneiderConst = 2.6651441426902251;    // 2 to the power of sqrt(2)
+    static const float  GelfondConst = 23.1406926327792690; // e to the power of Pi = (-1) to the power of -i
+    static const float  GelfondSchneiderConst = 2.6651441426902251; // 2 to the power of sqrt(2)
     static const float2 Gelfond = float2(GelfondConst, GelfondSchneiderConst);
     static const float  Numerator = 123456789;
 
@@ -93,6 +96,4 @@ class ParticleBase : ShaderBase, Texturing
 
         return frac(fmod(Numerator, 1e-7 + 256.f * dotProduct));
     }
-
-    /////////////////////////////////////////////////////////////////
 };
