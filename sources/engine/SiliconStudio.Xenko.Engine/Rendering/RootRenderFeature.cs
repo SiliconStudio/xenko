@@ -44,7 +44,6 @@ namespace SiliconStudio.Xenko.Rendering
         protected RootRenderFeature()
         {
             RenderData.Initialize();
-            //RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
         }
 
         /// <summary>
@@ -214,11 +213,5 @@ namespace SiliconStudio.Xenko.Rendering
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        //private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        //{
-        //    if (RenderObjects.Count > 0)
-        //        NeedActiveRenderStageReevaluation = true;
-        //}
     }
 }
