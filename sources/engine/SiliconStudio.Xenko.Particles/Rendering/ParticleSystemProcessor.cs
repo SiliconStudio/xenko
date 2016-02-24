@@ -9,14 +9,14 @@ namespace SiliconStudio.Xenko.Particles.Rendering
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    public class NextGenParticleSystemProcessor : EntityProcessor<ParticleSystemComponent, RenderParticleSystem>
+    public class ParticleSystemRenderProcessor : EntityProcessor<ParticleSystemComponent, RenderParticleSystem>
     {
         private VisibilityGroup visibilityGroup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NextGenParticleSystemProcessor"/> class.
+        /// Initializes a new instance of the <see cref="ParticleSystemRenderProcessor"/> class.
         /// </summary>
-        public NextGenParticleSystemProcessor()
+        public ParticleSystemRenderProcessor()
             : base(typeof(TransformComponent))
         {
         }

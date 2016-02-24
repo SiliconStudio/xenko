@@ -9,12 +9,12 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Particles.Components
 {
-    class ParticleSystemProcessor : EntityProcessor<ParticleSystemComponent, ParticleSystemProcessor.ParticleSystemComponentState>
+    class ParticleSystemSimulationProcessor : EntityProcessor<ParticleSystemComponent, ParticleSystemSimulationProcessor.ParticleSystemComponentState>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParticleSystemProcessor"/> class.
+        /// Initializes a new instance of the <see cref="ParticleSystemSimulationProcessor"/> class.
         /// </summary>
-        public ParticleSystemProcessor()
+        public ParticleSystemSimulationProcessor()
             : base(typeof(TransformComponent))  //  Only list the additional required components
         {
             ParticleSystems = new List<ParticleSystemComponentState>();
