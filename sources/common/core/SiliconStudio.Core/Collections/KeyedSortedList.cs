@@ -154,7 +154,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         bool ICollection<T>.Remove(T item)
         {
-            throw new NotSupportedException($"{GetType().Name} does not support ICollection<T>.Remove.");
+            return Items.Remove(item);
         }
 
         /// <inheritdoc/>
@@ -184,10 +184,15 @@ namespace SiliconStudio.Core.Collections
             return Items.IndexOf(item);
         }
 
-        /// <inheritdoc/>
-        public void RemoveAt(int index)
+//        /// <inheritdoc/>
+//        public void RemoveAt(int index)
+//        {
+//            Items.RemoveAt(index);
+//        }
+
+        public void Remove(T item)
         {
-            Items.RemoveAt(index);
+            Items.Remove(item);
         }
 
         /// <inheritdoc/>

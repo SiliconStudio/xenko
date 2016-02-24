@@ -21,6 +21,7 @@ namespace SiliconStudio.Core.Reflection
         private readonly Action<object, object> CollectionAddFunction;
         private readonly Action<object, int, object> CollectionInsertFunction;
         private readonly Action<object, int> CollectionRemoveAtFunction;
+        private readonly Action<object, object> CollectionRemoveFunction;
         private readonly Action<object> CollectionClearFunction;
 
         /// <summary>
@@ -59,6 +60,8 @@ namespace SiliconStudio.Core.Reflection
             // implements ICollection<T> 
             if (!typeSupported && itype != null)
             {
+                var remove = itype.GetMethod(nameof(ICollection<object>.Remove), new[] { ElementType });
+                CollectionRemoveFunction = (obj, value) => remove.Invoke(obj, new[] { value });
                 var add = itype.GetMethod(nameof(ICollection<object>.Add), new[] {ElementType});
                 CollectionAddFunction = (obj, value) => add.Invoke(obj, new[] {value});
                 var clear = itype.GetMethod(nameof(ICollection<object>.Clear), Type.EmptyTypes);
@@ -135,6 +138,12 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <value><c>true</c> if this instance has RemoveAt; otherwise, <c>false</c>.</value>
         public bool HasRemoveAt => CollectionRemoveAtFunction != null;
+
+        /// <summary>
+        /// Gets a value indicating whether this collection type has Remove method.
+        /// </summary>
+        /// <value><c>true</c> if this instance has Remove; otherwise, <c>false</c>.</value>
+        public bool HasRemove => CollectionRemoveFunction != null;
 
         /// <summary>
         /// Gets a value indicating whether this collection type has valid indexer accessors.
@@ -217,6 +226,16 @@ namespace SiliconStudio.Core.Reflection
         public void RemoveAt(object collection, int index)
         {
             CollectionRemoveAtFunction(collection, index);
+        }
+
+        /// <summary>
+        /// Removes the item from the collections of the same type.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="item"></param>
+        public void Remove(object collection, object item)
+        {
+            CollectionRemoveFunction(collection, item);
         }
 
         /// <summary>
