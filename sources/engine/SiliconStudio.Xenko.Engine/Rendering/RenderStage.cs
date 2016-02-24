@@ -8,7 +8,6 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public string Name { get; }
         public string EffectSlotName { get; }
-        public EffectPermutationSlot EffectSlot { get; set; }
 
         /// <summary>
         /// Index in <see cref="RootRenderFeature.RenderStages"/>.
@@ -29,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override string ToString()
         {
-            return $"{Name} (EffectSlot {EffectSlot.Index}:{EffectSlotName})";
+            return Name;
         }
     }
 }
