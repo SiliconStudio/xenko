@@ -13,6 +13,7 @@ namespace SiliconStudio.Quantum.ActionStack
         protected readonly IContent Content;
         protected object Index;
         protected object PreviousValue;
+        protected object NewValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentValueChangedActionItem"/> class.
@@ -22,13 +23,15 @@ namespace SiliconStudio.Quantum.ActionStack
         /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="index">The index of the change if the change occurred on an item of a collection. <c>null</c> otherwise.</param>
         /// <param name="previousValue">The previous value of the content (or the item if the change occurred on an item of a collection).</param>
+        /// <param name="newValue">The new value of the content</param>
         /// <param name="dirtiables">The dirtiable objects associated to this action item.</param>
-        public ContentValueChangedActionItem(string name, IContent content, ContentChangeType changeType, object index, object previousValue, IEnumerable<IDirtiable> dirtiables)
+        public ContentValueChangedActionItem(string name, IContent content, ContentChangeType changeType, object index, object previousValue, object newValue, IEnumerable<IDirtiable> dirtiables)
             : base(name, dirtiables)
         {
             Content = content;
             ChangeType = changeType;
             PreviousValue = previousValue;
+            NewValue = newValue;
             Index = index;
         }
 
@@ -39,38 +42,47 @@ namespace SiliconStudio.Quantum.ActionStack
         {
             Index = null;
             PreviousValue = null;
+            NewValue = null;
         }
 
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            switch (ChangeType)
-            {
-                case ContentChangeType.ValueChange:
-                    var previousValue = Content.Retrieve(Index);
-                    Content.Update(PreviousValue, Index);
-                    PreviousValue = previousValue;
-                    break;
-                case ContentChangeType.CollectionAdd:
-                    PreviousValue = Content.Retrieve(Index);
-                    Content.Remove(Index, PreviousValue);
-                    ChangeType = ContentChangeType.CollectionRemove;
-                    break;
-                case ContentChangeType.CollectionRemove:
-                    Content.Add(Index, PreviousValue);
-                    PreviousValue = null;
-                    ChangeType = ContentChangeType.CollectionAdd;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            ApplyUndo(PreviousValue, NewValue, ChangeType);
         }
 
         /// <inheritdoc/>
         protected override void RedoAction()
         {
-            // Once we have un-done, the previous value is updated so Redo is just Undoing the Undo
-            UndoAction();
+            ContentChangeType changeType = ChangeType;
+            switch (ChangeType)
+            {
+                case ContentChangeType.CollectionAdd:
+                    changeType = ContentChangeType.CollectionRemove;
+                    break;
+                case ContentChangeType.CollectionRemove:
+                    changeType = ContentChangeType.CollectionAdd;
+                    break;
+            }
+            ApplyUndo(NewValue, PreviousValue, changeType);
+        }
+
+        protected void ApplyUndo(object oldValue, object newValue, ContentChangeType type)
+        {
+            switch (type)
+            {
+                case ContentChangeType.ValueChange:
+                    Content.Update(oldValue, Index);
+                    break;
+                case ContentChangeType.CollectionAdd:
+                    Content.Remove(Index, newValue);
+                    break;
+                case ContentChangeType.CollectionRemove:
+                    Content.Add(Index, oldValue);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
