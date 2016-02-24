@@ -10,17 +10,17 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class ModelComponentRenderer : EntityComponentRendererBase
+    public class ModelPipelineRenderer : IPipelineRenderer
     {
-        public override void SetupPipeline(NextGenRenderSystem renderSystem)
+        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
-            var mainRenderStage = GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            var transparentRenderStage = GetOrCreateRenderStage(renderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             // Optional render stages
-            var shadowMapRenderStage = GetRenderStage(renderSystem, "ShadowMapCaster");
-            var pickingRenderStage = GetRenderStage(renderSystem, "Picking");
+            var shadowMapRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "ShadowMapCaster");
+            var pickingRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "Picking");
 
             var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault();
             if (meshRenderFeature == null)

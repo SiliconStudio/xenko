@@ -7,12 +7,12 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
-    public class SkyboxComponentRenderer : EntityComponentRendererBase
+    public class SkyboxPipelineRenderer : IPipelineRenderer
     {
-        public override void SetupPipeline(NextGenRenderSystem renderSystem)
+        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
-            var mainRenderStage = GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             var skyboxRenderFeature = renderSystem.RenderFeatures.OfType<SkyboxRenderFeature>().FirstOrDefault();
             if (skyboxRenderFeature == null)

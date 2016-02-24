@@ -19,10 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         private ConstantBufferOffsetReference matrixTransform;
 
         /// <inheritdoc/>
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderSkybox;
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderSkybox);
 
         /// <inheritdoc/>
         public override void Initialize()

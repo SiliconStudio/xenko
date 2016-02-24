@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         private SceneInstance currentSceneInstance;
         private ChildSceneProcessor childSceneProcessor;
+        private NextGenRenderSystem renderSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
@@ -58,6 +59,42 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             base.Destroy();
+        }
+
+        protected override void InitializeCore()
+        {
+            base.InitializeCore();
+
+            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+        }
+
+        public override void BeforeExtract(RenderContext context)
+        {
+            base.BeforeExtract(context);
+
+            if (ChildScene == null || !ChildScene.Enabled)
+            {
+                return;
+            }
+
+            currentSceneInstance = SceneInstance.GetCurrent(Context);
+
+            childSceneProcessor = childSceneProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
+
+            if (childSceneProcessor == null)
+            {
+                return;
+            }
+
+            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
+            if (sceneInstance != null)
+            {
+                // Collect
+                // TODO GRAPHICS REFACTOR choose which views to collect
+                sceneInstance.VisibilityGroup.Views.Clear();
+                sceneInstance.VisibilityGroup.Views.AddRange(renderSystem.Views);
+                sceneInstance.VisibilityGroup.Collect();
+            }
         }
 
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)

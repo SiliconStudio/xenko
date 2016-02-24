@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// </summary>
     public class SkyboxRenderProcessor : EntityProcessor<SkyboxComponent, RenderSkybox>
     {
-        private NextGenRenderSystem renderSystem;
+        private VisibilityGroup visibilityGroup;
 
         /// <summary>
         /// Gets the active skybox background.
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
         protected internal override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         protected override RenderSkybox GenerateComponentData(Entity entity, SkyboxComponent component)
@@ -55,9 +55,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             if (ActiveSkybox != previousSkybox)
             {
                 if (previousSkybox != null)
-                    renderSystem.RenderObjects.Remove(previousSkybox);
+                    visibilityGroup.RenderObjects.Remove(previousSkybox);
                 if (ActiveSkybox != null)
-                    renderSystem.RenderObjects.Add(ActiveSkybox);
+                    visibilityGroup.RenderObjects.Add(ActiveSkybox);
             }
         }
     }

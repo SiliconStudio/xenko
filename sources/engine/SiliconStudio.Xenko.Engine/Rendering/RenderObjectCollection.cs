@@ -9,17 +9,17 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class RenderObjectCollection : ICollection<RenderObject>
     {
-        private readonly NextGenRenderSystem renderSystem;
+        private readonly VisibilityGroup visibilityGroup;
         private readonly List<RenderObject> items = new List<RenderObject>();
 
-        internal RenderObjectCollection(NextGenRenderSystem renderSystem)
+        internal RenderObjectCollection(VisibilityGroup visibilityGroup)
         {
-            this.renderSystem = renderSystem;
+            this.visibilityGroup = visibilityGroup;
         }
 
         public void Add(RenderObject renderObject)
         {
-            renderSystem.AddRenderObject(items, renderObject);
+            visibilityGroup.AddRenderObject(items, renderObject);
         }
 
         public void Clear()
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool Remove(RenderObject renderObject)
         {
-            return renderSystem.RemoveRenderObject(items, renderObject);
+            return visibilityGroup.RemoveRenderObject(items, renderObject);
         }
 
         public int Count => items.Count;

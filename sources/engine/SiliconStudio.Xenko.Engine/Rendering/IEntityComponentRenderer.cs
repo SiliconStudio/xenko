@@ -33,7 +33,5 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="fromIndex">From index.</param>
         /// <param name="toIndex">To index.</param>
         void Draw(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
-
-        void SetupPipeline(NextGenRenderSystem renderSystem);
     }
 }
