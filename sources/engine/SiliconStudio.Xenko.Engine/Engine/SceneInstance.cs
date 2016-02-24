@@ -175,17 +175,11 @@ namespace SiliconStudio.Xenko.Engine
                             }
                         }
 
-                        // Reset render context data
-                        renderSystem.Reset();
-
-                        // Reset view specific render context data
-                        renderSystem.ResetViews();
-
                         // Collect
                         // TODO GRAPHICS REFACTOR choose which views to collect
-                        VisibilityGroup.Views.Clear();
                         VisibilityGroup.Views.AddRange(renderSystem.Views);
                         VisibilityGroup.Collect();
+                        VisibilityGroup.Views.Clear();
 
                         // Extract
                         renderSystem.Extract(context);
@@ -194,6 +188,9 @@ namespace SiliconStudio.Xenko.Engine
                         renderSystem.Prepare(context);
 
                         graphicsCompositor.Draw(context);
+
+                        // Reset render context data
+                        renderSystem.Reset();
                     }
                 }
             }

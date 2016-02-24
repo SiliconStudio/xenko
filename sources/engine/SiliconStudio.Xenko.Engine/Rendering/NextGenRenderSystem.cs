@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Frame counter, mostly for internal use.
         /// </summary>
-        public int FrameCounter { get; private set; }
+        public int FrameCounter { get; private set; } = 1;
 
         /// <summary>
         /// List of render features
@@ -114,43 +114,6 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Resets views in their original state. Should be called after all views have been enumerated.
-        /// </summary>
-        public void ResetViews()
-        {
-            // Prepare views
-            for (int index = 0; index < Views.Count; index++)
-            {
-                // Update indices
-                var view = Views[index];
-                view.Index = index;
-
-                view.RenderObjects.Clear();
-
-                // Clear nodes
-                while (view.Features.Count < RenderFeatures.Count)
-                {
-                    view.Features.Add(new RenderViewFeature());
-                }
-
-                for (int i = 0; i < RenderFeatures.Count; i++)
-                {
-                    var renderViewFeature = view.Features[i];
-                    renderViewFeature.RootFeature = RenderFeatures[i];
-
-                    renderViewFeature.RenderNodes.Clear();
-                    renderViewFeature.ViewObjectNodes.Clear();
-                    renderViewFeature.Layouts.Clear();
-                }
-
-                foreach (var renderViewStage in view.RenderStages)
-                {
-                    renderViewStage.RenderNodes.Clear();
-                }
-            }
-        }
-
-        /// <summary>
         /// Reset render objects and features. Should be called at beginning of Extract phase.
         /// </summary>
         public void Reset()
@@ -165,6 +128,25 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.Reset();
+            }
+
+            // Clear views
+            foreach (var view in Views)
+            {
+                // Clear nodes
+                view.RenderObjects.Clear();
+
+                foreach (var renderViewFeature in view.Features)
+                {
+                    renderViewFeature.RenderNodes.Clear();
+                    renderViewFeature.ViewObjectNodes.Clear();
+                    renderViewFeature.Layouts.Clear();
+                }
+
+                foreach (var renderViewStage in view.RenderStages)
+                {
+                    renderViewStage.RenderNodes.Clear();
+                }
             }
         }
 
