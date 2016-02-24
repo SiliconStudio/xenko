@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Sets the name of the effect or shader which the material will use
         /// </summary>
         [DataMemberIgnore]
-        protected abstract string EffectName { get; set; }
+        public abstract string EffectName { get; protected set; }
 
         /// <summary>
         /// Prepares the material for drawing the current frame with the current <see cref="ParticleVertexBuilder"/> and <see cref="ParticleSorter"/>
