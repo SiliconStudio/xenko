@@ -29,6 +29,19 @@ namespace SiliconStudio.Xenko.Rendering
             return renderModel;
         }
 
+        protected override void OnEntityComponentRemoved(Entity entity, ModelComponent component, RenderModel renderModel)
+        {
+            // Remove old meshes
+            if (renderModel.Meshes != null)
+            {
+                foreach (var renderMesh in renderModel.Meshes)
+                {
+                    // Unregister from render system
+                    visibilityGroup.RenderObjects.Remove(renderMesh);
+                }
+            }
+        }
+
         public override void Draw(RenderContext context)
         {
             base.Draw(context);

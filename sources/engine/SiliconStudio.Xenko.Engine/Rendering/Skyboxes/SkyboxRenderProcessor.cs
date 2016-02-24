@@ -26,6 +26,15 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
+        protected internal override void OnSystemRemove()
+        {
+            if (ActiveSkybox != null)
+            {
+                visibilityGroup.RenderObjects.Remove(ActiveSkybox);
+                ActiveSkybox = null;
+            }
+        }
+
         protected override RenderSkybox GenerateComponentData(Entity entity, SkyboxComponent component)
         {
             return new RenderSkybox();
