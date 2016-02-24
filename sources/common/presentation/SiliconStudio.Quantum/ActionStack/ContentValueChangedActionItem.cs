@@ -53,7 +53,7 @@ namespace SiliconStudio.Quantum.ActionStack
                     break;
                 case ContentChangeType.CollectionAdd:
                     PreviousValue = Content.Retrieve(Index);
-                    Content.Remove(Index);
+                    Content.Remove(Index, PreviousValue);
                     ChangeType = ContentChangeType.CollectionRemove;
                     break;
                 case ContentChangeType.CollectionRemove:
