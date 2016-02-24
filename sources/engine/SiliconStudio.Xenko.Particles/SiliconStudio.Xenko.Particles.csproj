@@ -43,8 +43,10 @@
     <Compile Include="Module.cs" />
     <Compile Include="ParticleLocator.cs" />
     <Compile Include="ParticleSystemSettings.cs" />
+    <Compile Include="Rendering\ParticleEmitterPipelinePlugin.cs" />
+    <Compile Include="Rendering\ParticleEmitterTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\ParticleSystemProcessor.cs" />
-    <Compile Include="Rendering\ParticleSystemRenderFeature.cs" />
+    <Compile Include="Rendering\ParticleEmitterRenderFeature.cs" />
     <Compile Include="Rendering\RenderParticleEmitter.cs" />
     <Compile Include="Rendering\RenderParticleSystem.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.Direct3D11.Level_9_1.cs" />

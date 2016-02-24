@@ -14,7 +14,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Particles.Rendering
 {
-    public class ParticleSystemRenderFeature : RootEffectRenderFeature
+    public class ParticleEmitterRenderFeature : RootEffectRenderFeature
     {
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
