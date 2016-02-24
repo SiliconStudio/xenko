@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IL;
 using SiliconStudio.Xenko.Rendering;
 
@@ -57,6 +58,33 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        // TODO GRAPHICS REFACTOR hopefully temporary until we figure out a better way
+        [RemoveInitLocals]
+        public void ValidateListParameter<T>(PermutationParameterKey<List<T>> key, List<T> value)
+        {
+            // Check if value was existing and/or same
+            var index = effectValuesValidated++;
+            if (index < EffectValues.Count)
+            {
+                var currentEffectValue = EffectValues.Items[index];
+                if (currentEffectValue.Key == key && ArrayExtensions.ArraysEqual((List<T>)currentEffectValue.Value, value))
+                {
+                    // Everything same, let's keep going
+                    return;
+                }
+
+                // Something was different, let's replace item and clear end of list
+                EffectValues[index] = new EffectParameterEntry(key, value);
+                EffectValues.Count = effectValuesValidated;
+                effectChanged = true;
+            }
+            else
+            {
+                EffectValues.Add(new EffectParameterEntry(key, value));
+                effectChanged = true;
+            }
+        }
+
         public bool EndEffectValidation()
         {
             if (effectValuesValidated < EffectValues.Count)
@@ -78,6 +106,11 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 Key = key;
                 Value = value;
+            }
+
+            public override string ToString()
+            {
+                return $"[{Key}, {Value}]";
             }
         }
     }

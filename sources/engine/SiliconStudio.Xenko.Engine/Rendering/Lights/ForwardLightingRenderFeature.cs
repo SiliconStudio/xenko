@@ -222,8 +222,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         if (renderObjectInfo == null)
                             continue;
 
-                        renderEffect.EffectValidator.ValidateParameter(LightingKeys.DirectLightGroups, renderObjectInfo.ShaderPermutationEntry.DirectLightShaders);
-                        renderEffect.EffectValidator.ValidateParameter(LightingKeys.EnvironmentLights, renderObjectInfo.ShaderPermutationEntry.EnvironmentLightShaders);
+                        renderEffect.EffectValidator.ValidateListParameter(LightingKeys.DirectLightGroups, renderObjectInfo.ShaderPermutationEntry.DirectLightShaders);
+                        renderEffect.EffectValidator.ValidateListParameter(LightingKeys.EnvironmentLights, renderObjectInfo.ShaderPermutationEntry.EnvironmentLightShaders);
                     }
                 }
             }
