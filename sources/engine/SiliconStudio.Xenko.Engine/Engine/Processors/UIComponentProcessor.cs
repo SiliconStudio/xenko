@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public List<UIComponentState> UIRoots { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
+        /// Initializes a new instance of the <see cref="UIComponentProcessor"/> class.
         /// </summary>
         public UIComponentProcessor()
             : base(typeof(TransformComponent))

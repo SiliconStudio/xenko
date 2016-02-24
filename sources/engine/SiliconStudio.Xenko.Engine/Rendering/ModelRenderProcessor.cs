@@ -6,13 +6,13 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class NextGenModelProcessor : EntityProcessor<ModelComponent, RenderModel>
+    public class ModelRenderProcessor : EntityProcessor<ModelComponent, RenderModel>
     {
         private NextGenRenderSystem renderSystem;
 
         public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
 
-        public NextGenModelProcessor() : base(typeof(TransformComponent))
+        public ModelRenderProcessor() : base(typeof(TransformComponent))
         {
         }
 

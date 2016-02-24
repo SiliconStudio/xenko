@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -13,6 +14,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private List<ViewObjectNode> viewObjectNodes = new List<ViewObjectNode>();
         private List<ObjectNode> objectNodes = new List<ObjectNode>();
+
+        internal bool NeedActiveRenderStageReevaluation;
 
         // storage for properties (struct of arrays)
         public RenderDataHolder RenderData;
@@ -38,11 +41,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
-        public List<RenderStageSelector> RenderStageSelectors { get; } = new List<RenderStageSelector>();
+        public TrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new TrackingCollection<RenderStageSelector>();
 
         protected RootRenderFeature()
         {
             RenderData.Initialize();
+            RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
         }
 
         /// <summary>
@@ -143,36 +147,42 @@ namespace SiliconStudio.Xenko.Rendering
 
         }
 
-        internal void AddRenderObject(NextGenRenderSystem renderSystem, RenderObject renderObject)
+        internal void AddRenderObject(RenderObject renderObject)
         {
             renderObject.RenderFeature = this;
 
             // Generate static data ID
             renderObject.StaticObjectNode = new StaticObjectNodeReference(RenderObjects.Count);
 
+            // Build list of which render stages are active
+            ReevaluateActiveRenderStages(renderObject);
+
+            // Add to render object
+            RenderObjects.Add(renderObject);
+
+            OnAddRenderObject(renderObject);
+        }
+
+        internal void ReevaluateActiveRenderStages(RenderObject renderObject)
+        {
             // Determine which render stages are activated for this object
-            renderObject.ActiveRenderStages = new ActiveRenderStage[renderSystem.RenderStages.Count];
+            renderObject.ActiveRenderStages = new ActiveRenderStage[RenderSystem.RenderStages.Count];
 
             foreach (var renderStageSelector in RenderStageSelectors)
                 renderStageSelector.Process(renderObject);
 
             // Compute render stage mask
-            var renderStageMask = renderSystem.RenderData.GetData(renderSystem.RenderStageMaskKey);
-            var renderStageMaskMultiplier = (renderSystem.RenderStages.Count + NextGenRenderSystem.RenderStageMaskSizePerEntry - 1) / NextGenRenderSystem.RenderStageMaskSizePerEntry;
-            var renderStageMaskNode = renderObject.StaticCommonObjectNode * renderStageMaskMultiplier;
+            var renderStageMask = RenderSystem.RenderData.GetData(RenderSystem.RenderStageMaskKey);
+            var renderStageMaskMultiplier = (RenderSystem.RenderStages.Count + NextGenRenderSystem.RenderStageMaskSizePerEntry - 1)/NextGenRenderSystem.RenderStageMaskSizePerEntry;
+            var renderStageMaskNode = renderObject.StaticCommonObjectNode*renderStageMaskMultiplier;
 
             for (int index = 0; index < renderObject.ActiveRenderStages.Length; index++)
             {
                 // TODO: Could easily be optimized to read and set value only once per uint
                 var activeRenderStage = renderObject.ActiveRenderStages[index];
                 if (activeRenderStage.Active)
-                    renderStageMask[renderStageMaskNode + (index / NextGenRenderSystem.RenderStageMaskSizePerEntry)] |= 1U << (index % NextGenRenderSystem.RenderStageMaskSizePerEntry);
+                    renderStageMask[renderStageMaskNode + (index/NextGenRenderSystem.RenderStageMaskSizePerEntry)] |= 1U << (index%NextGenRenderSystem.RenderStageMaskSizePerEntry);
             }
-
-            // Add to render object
-            RenderObjects.Add(renderObject);
-
-            OnAddRenderObject(renderObject);
         }
 
         internal void RemoveRenderObject(RenderObject renderObject)
@@ -213,6 +223,19 @@ namespace SiliconStudio.Xenko.Rendering
             RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
         }
 
+        internal void ReevaluateActiveRenderStages()
+        {
+            if (!NeedActiveRenderStageReevaluation)
+                return;
+
+            NeedActiveRenderStageReevaluation = false;
+
+            foreach (var renderObject in RenderObjects)
+            {
+                ReevaluateActiveRenderStages(renderObject);
+            }
+        }
+
         protected virtual int ComputeDataArrayExpectedSize(DataType type)
         {
             switch (type)
@@ -230,6 +253,12 @@ namespace SiliconStudio.Xenko.Rendering
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            if (RenderObjects.Count > 0)
+                NeedActiveRenderStageReevaluation = true;
         }
     }
 }

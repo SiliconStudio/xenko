@@ -113,7 +113,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
-    <Compile Include="Engine\Processors\ModelProcessor.cs" />
+    <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
@@ -182,6 +182,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Rendering\INextGenRenderer.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -229,7 +230,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Background\BackgroundProcessor.cs" />
+    <Compile Include="Rendering\Background\BackgroundRenderProcessor.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
     <Compile Include="Rendering\Background\RenderBackground.cs" />
     <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
@@ -255,7 +256,7 @@
     <Compile Include="Rendering\ModelComponentRenderer.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
-    <Compile Include="Rendering\NextGenModelProcessor.cs" />
+    <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\NextGenRenderer.cs" />
     <Compile Include="Rendering\NextGenRenderSystem.cs" />
@@ -297,10 +298,10 @@
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
     <Compile Include="Rendering\Skyboxes\BackgroundComponentRenderer.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
     <Compile Include="Rendering\Sprites\SpriteComponentRenderer.cs" />
-    <Compile Include="Rendering\Sprites\NextGenSpriteProcessor.cs" />
+    <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
     <Compile Include="Rendering\Sprites\SpriteTransparentRenderStageSelector.cs" />
@@ -2310,7 +2311,6 @@
     <Compile Include="Extensions\SplitExtensions.cs" />
     <Compile Include="Extensions\TransformExtensions.cs" />
     <Compile Include="Animations\KeyFrameData.cs" />
-    <Compile Include="Rendering\BackgroundComponentRenderer.cs" />
     <Compile Include="Rendering\CameraComponentRenderer.cs" />
     <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\MaterialAssetKeys.cs" />
@@ -2356,7 +2356,6 @@
     <Compile Include="Engine\SceneSystem.cs" />
     <Compile Include="Engine\Game.cs" />
     <Compile Include="Rendering\Fonts\GameFontSystem.cs" />
-    <Compile Include="Rendering\Sprites\SpriteProcessor.cs" />
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Engine\Network\RouterClient.cs" />

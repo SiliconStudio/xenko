@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("SkyboxComponent")]
     [Display("Skybox", Expand = ExpandRule.Once)]  // More important than lights, as usually the Skybox is associated with a light
     [DefaultEntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
-    //[DefaultEntityComponentProcessor(typeof(SkyboxProcessor))]
+    [DefaultEntityComponentProcessor(typeof(SkyboxRenderProcessor))]
     [ComponentOrder(11500)]
     public sealed class SkyboxComponent : ActivableEntityComponent
     {

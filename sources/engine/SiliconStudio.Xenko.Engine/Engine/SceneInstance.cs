@@ -149,6 +149,8 @@ namespace SiliconStudio.Xenko.Engine
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 commandList.ClearState();
 
+                var renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+
                 // Draw the main scene using the current compositor (or the provided override)
                 var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
@@ -159,6 +161,10 @@ namespace SiliconStudio.Xenko.Engine
                     using (context.RenderContext.PushTagAndRestore(Current, this))
                     using (context.RenderContext.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
+                        graphicsCompositor.BeforeExtract(context.RenderContext);
+
+                        renderSystem.ExtractAndPrepare(context);
+
                         graphicsCompositor.Draw(context);
                     }
                 }

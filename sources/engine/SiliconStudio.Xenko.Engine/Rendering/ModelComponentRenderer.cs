@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Linq;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -21,9 +22,12 @@ namespace SiliconStudio.Xenko.Rendering
             var shadowMapRenderStage = GetRenderStage(renderSystem, "ShadowMapCaster");
             var pickingRenderStage = GetRenderStage(renderSystem, "Picking");
 
-            var meshRenderFeature = new MeshRenderFeature
+            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault();
+            if (meshRenderFeature == null)
             {
-                RenderFeatures =
+                meshRenderFeature = new MeshRenderFeature
+                {
+                    RenderFeatures =
                     {
                         new TransformRenderFeature(),
                         //new SkinningRenderFeature(),
@@ -31,15 +35,21 @@ namespace SiliconStudio.Xenko.Rendering
                         (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowMapRenderStage = shadowMapRenderStage }),
                         new PickingRenderFeature(),
                     },
-            };
+                };
 
-            // Set default stage selector
-            meshRenderFeature.RenderStageSelectors.Add(new MeshTransparentRenderStageSelector
-            {
-                EffectName = "TestEffect",
-                MainRenderStage = mainRenderStage,
-                TransparentRenderStage = transparentRenderStage,
-            });
+                // Set default stage selector
+                meshRenderFeature.RenderStageSelectors.Add(new MeshTransparentRenderStageSelector
+                {
+                    EffectName = "TestEffect",
+                    MainRenderStage = mainRenderStage,
+                    TransparentRenderStage = transparentRenderStage,
+                });
+
+                // Register renderer
+                renderSystem.RenderFeatures.Add(meshRenderFeature);
+            }
+
+            // TODO GRAPHICS REFACTOR protect against multiple executions?
 
             // Shadow maps (if enabled)
             if (shadowMapRenderStage != null)
@@ -69,12 +79,9 @@ namespace SiliconStudio.Xenko.Rendering
                 });
             }
 
-            // Register renderer
-            renderSystem.RenderFeatures.Add(meshRenderFeature);
-
             // Register model processor
-            var sceneInstance = SceneInstance.GetCurrent(Context);
-            sceneInstance.Processors.Add(new NextGenModelProcessor());
+            //var sceneInstance = SceneInstance.GetCurrent(Context);
+            //sceneInstance.Processors.Add(new NextGenModelProcessor());
         }
     }
 }

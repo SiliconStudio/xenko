@@ -36,6 +36,12 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
+            // Update active render stages
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.ReevaluateActiveRenderStages();
+            }
+
             // Extract data from the scene
             Extract(context);
 
@@ -326,10 +332,19 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
+        public override void BeforeExtract(RenderContext context)
+        {
+            base.BeforeExtract(context);
+
+            // Setup new entity component renderers (might affect render stages, etc...)
+            InitializeEntityComponentRenderers(context);
+
+            // TODO: Collect shadow map views
+            //RenderSystem.forwardLightingRenderFeature...
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
-            base.DrawCore(context);
-
             var currentViewport = context.CommandList.Viewport;
 
             // GBuffer
