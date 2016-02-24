@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Engine.Events
     public class EventReceiver<T> : IDisposable
     {
         private readonly IDisposable link;
+        internal readonly BufferBlock<T> BufferBlock;
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly DataflowBlockOptions CapacityOptions = new DataflowBlockOptions
@@ -25,16 +26,8 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <param name="buffered">If we want to process things in a deferred way buffering might become necessary, in that case set this parameter to true</param>
         public EventReceiver(EventKey<T> key, bool buffered = false)
         {
-            if (buffered)
-            {
-                BufferBlock = new BufferBlock<T>(CapacityOptions);
-            }
-            else
-            {
-                BufferBlock = new BufferBlock<T>();
-            }
-
-            link = key.Connect(BufferBlock);
+            BufferBlock = buffered ? new BufferBlock<T>(CapacityOptions) : new BufferBlock<T>();
+            link = key.Connect(this);
         }
 
         /// <summary>
@@ -80,11 +73,6 @@ namespace SiliconStudio.Xenko.Engine.Events
         public void Dispose()
         {
             link.Dispose();
-        }
-
-        /// <summary>
-        /// Exposes the Tasks.Dataflow object, in the case of custom usage
-        /// </summary>
-        public BufferBlock<T> BufferBlock { get; }
+        }     
     }
 }
