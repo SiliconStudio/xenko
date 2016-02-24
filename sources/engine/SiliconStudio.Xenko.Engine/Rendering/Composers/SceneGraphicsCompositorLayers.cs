@@ -65,6 +65,18 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.Unload();
         }
 
+        public void BeforeExtract(RenderContext context)
+        {
+            using (context.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
+            {
+                // Draw the layers
+                Layers.BeforeExtract(context);
+
+                // Draw the master track
+                Master.BeforeExtract(context);
+            }
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
             using (context.RenderContext.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))

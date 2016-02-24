@@ -8,14 +8,14 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class NextGenSpriteProcessor : EntityProcessor<SpriteComponent, RenderSprite>
+    internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, RenderSprite>
     {
         private NextGenRenderSystem renderSystem;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NextGenSpriteProcessor"/> class.
+        /// Initializes a new instance of the <see cref="SpriteRenderProcessor"/> class.
         /// </summary>
-        public NextGenSpriteProcessor()
+        public SpriteRenderProcessor()
             : base(typeof(TransformComponent))
         {
         }

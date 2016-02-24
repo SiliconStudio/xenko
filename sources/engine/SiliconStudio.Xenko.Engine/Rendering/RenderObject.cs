@@ -41,8 +41,8 @@ namespace SiliconStudio.Xenko.Rendering
         public RootRenderFeature RenderFeature;
         public ObjectNodeReference ObjectNode;
 
-        public StaticObjectNodeReference StaticCommonObjectNode;
-        public StaticObjectNodeReference StaticObjectNode;
+        public StaticObjectNodeReference StaticCommonObjectNode = StaticObjectNodeReference.Invalid;
+        public StaticObjectNodeReference StaticObjectNode = StaticObjectNodeReference.Invalid;
 
         public ActiveRenderStage[] ActiveRenderStages;
 

@@ -90,12 +90,33 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public SafeList<IGraphicsRenderer> PostRenderers { get; private set; }
 
+        public override void BeforeExtract(RenderContext context)
+        {
+            base.BeforeExtract(context);
+
+            // Early exit if some properties are null
+            if (Mode == null)
+            {
+                return;
+            }
+
+            // Gets the current camera state from the slot
+            var camera = context.GetCameraFromSlot(Camera);
+
+            // Draw this camera.
+            using (context.PushTagAndRestore(Current, this))
+            using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
+            {
+                Mode.BeforeExtract(context);
+            }
+        }
+
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
             // Early exit if some properties are null
             if (Mode == null)
             {
-                return;
+                return; 
             }
 
             // Gets the current camera state from the slot

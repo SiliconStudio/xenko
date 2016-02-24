@@ -217,6 +217,14 @@ namespace SiliconStudio.Xenko.Rendering
                     ((RenderStage)e.Item).Index = e.Index;
                     // Make sure mask is big enough
                     RenderData.ChangeDataMultiplier(RenderStageMaskKey, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+
+                    // Everything will need reevaluation
+                    foreach (var renderFeature in RenderFeatures)
+                    {
+                        if (renderFeature.RenderObjects.Count > 0)
+                            renderFeature.NeedActiveRenderStageReevaluation = true;
+                    }
+
                     break;
             }
         }
@@ -249,6 +257,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
         {
+            if (renderObject.StaticCommonObjectNode != StaticObjectNodeReference.Invalid)
+                return;
+
             renderObject.StaticCommonObjectNode = new StaticObjectNodeReference(renderObjects.Count);
 
             renderObjects.Add(renderObject);
@@ -262,7 +273,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // Find matching render feature
                 if (renderFeature.SupportsRenderObject(renderObject))
                 {
-                    renderFeature.AddRenderObject(this, renderObject);
+                    renderFeature.AddRenderObject(renderObject);
                     break;
                 }
             }
