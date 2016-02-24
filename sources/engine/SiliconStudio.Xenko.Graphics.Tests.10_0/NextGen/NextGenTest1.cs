@@ -11,10 +11,17 @@ using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Tests;
+using SiliconStudio.Xenko.Particles;
+using SiliconStudio.Xenko.Particles.Components;
+using SiliconStudio.Xenko.Particles.Initializers;
+using SiliconStudio.Xenko.Particles.Materials;
+using SiliconStudio.Xenko.Particles.ShapeBuilders;
+using SiliconStudio.Xenko.Particles.Spawners;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
 using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
@@ -61,25 +68,53 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //var backgroundEntity = new Entity { new BackgroundComponent { Texture = backgroundTexture } };
             //Scene.Entities.Add(backgroundEntity);
 
-            for (int i = 0; i < cubeWidth; ++i)
+            var particleEntity = new Entity
             {
-                for (int j = 0; j < cubeWidth; ++j)
+                new ParticleSystemComponent
                 {
-                    for (int k = 0; k < cubeWidth; ++k)
+                    ParticleSystem =
                     {
-                        var position = new Vector3((i - cubeWidth / 2) * 1.4f, (j - cubeWidth / 2) * 1.4f, (k - cubeWidth / 2) * 1.4f);
-                        var material = (k/4)%2 == 0 ? material1 : material2;
-                        var isShadowReceiver = (k / 2) % 2 == 0;
-
-                        var entity = new Entity
+                        Emitters =
                         {
-                            new ModelComponent { Model = model, Materials = { material }, IsShadowReceiver = isShadowReceiver },
-                        };
-                        entity.Transform.Position = position;
-                        Scene.Entities.Add(entity);
+                            new ParticleEmitter
+                            {
+                                MaxParticlesOverride = 0,
+                                ParticleMinLifetime = 1.5f,
+                                ParticleMaxLifetime = 2.0f,
+                                ShapeBuilder = new ShapeBuilderQuad(),
+                                Material = new ParticleMaterialComputeColor
+                                {
+                                    ComputeColor = new ComputeColor(Color.Red)
+                                },
+                                Spawners = { new SpawnerPerSecond { SpawnCount = 10 } },
+                                Initializers = { new InitialSizeSeed(), new InitialPositionSeed(), new Initial3DRotationSeed() },
+
+                            }
+                        }
                     }
                 }
-            }
+            };
+            Scene.Entities.Add(particleEntity);
+
+            //for (int i = 0; i < cubeWidth; ++i)
+            //{
+            //    for (int j = 0; j < cubeWidth; ++j)
+            //    {
+            //        for (int k = 0; k < cubeWidth; ++k)
+            //        {
+            //            var position = new Vector3((i - cubeWidth / 2) * 1.4f, (j - cubeWidth / 2) * 1.4f, (k - cubeWidth / 2) * 1.4f);
+            //            var material = (k/4)%2 == 0 ? material1 : material2;
+            //            var isShadowReceiver = (k / 2) % 2 == 0;
+
+            //            var entity = new Entity
+            //            {
+            //                new ModelComponent { Model = model, Materials = { material }, IsShadowReceiver = isShadowReceiver },
+            //            };
+            //            entity.Transform.Position = position;
+            //            Scene.Entities.Add(entity);
+            //        }
+            //    }
+            //}
 
             //var spriteSheet = Asset.Load<SpriteSheet>("SpriteSheet");
             //var spriteEntity = new Entity
