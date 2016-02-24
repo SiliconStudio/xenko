@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
     /// </summary>
     public class BackgroundRenderProcessor : EntityProcessor<BackgroundComponent, RenderBackground>
     {
-        private NextGenRenderSystem renderSystem;
+        private VisibilityGroup visibilityGroup;
 
         /// <summary>
         /// Gets the active background.
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         protected internal override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
@@ -54,9 +54,9 @@ namespace SiliconStudio.Xenko.Rendering.Background
             if (ActiveBackground != previousBackground)
             {
                 if (previousBackground != null)
-                    renderSystem.RenderObjects.Remove(previousBackground);
+                    visibilityGroup.RenderObjects.Remove(previousBackground);
                 if (ActiveBackground != null)
-                    renderSystem.RenderObjects.Add(ActiveBackground);
+                    visibilityGroup.RenderObjects.Add(ActiveBackground);
             }
         }
     }

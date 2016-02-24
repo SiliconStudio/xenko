@@ -25,31 +25,7 @@ namespace SiliconStudio.Xenko.Rendering
         // Render stages
         internal ForwardLightingRenderFeature forwardLightingRenderFeature;
 
-        public void ExtractAndPrepare(RenderDrawContext context)
-        {
-            // Update current camera to render view
-            foreach (var mainRenderView in Views)
-            {
-                if (mainRenderView.GetType() == typeof(RenderView))
-                {
-                    UpdateCameraToRenderView(context, mainRenderView);
-                }
-            }
-
-            // Update active render stages
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.ReevaluateActiveRenderStages();
-            }
-
-            // Extract data from the scene
-            Extract(context);
-
-            // Perform most of computations
-            Prepare(context);
-        }
-
-        private void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
+        public void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
         {
             renderView.Camera = renderView.SceneCameraSlotCollection.GetCamera(renderView.SceneCameraRenderer.Camera);
 
@@ -75,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering
             Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
         }
 
-        private void Prepare(RenderDrawContext context)
+        public void Prepare(RenderDrawContext context)
         {
             // Sync point: after extract, before prepare (game simulation could resume now)
 
@@ -96,82 +72,8 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void Extract(RenderDrawContext context)
+        public void Extract(RenderDrawContext context)
         {
-            // Reset render context data
-            Reset();
-
-            // Reset view specific render context data
-            ResetViews();
-
-            // Collect objects, and perform frustum culling
-            // TODO GRAPHICS REFACTOR Create "VisibilityObject" (could contain multiple RenderNode) and separate frustum culling from RenderSystem
-            // TODO GRAPHICS REFACTOR optimization: maybe we could process all views at once (swap loop between per object and per view)
-            var viewRenderStageMask = new uint[(RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry];
-            foreach (var view in Views)
-            {
-                // Prepare culling mask
-                foreach (var renderViewStage in view.RenderStages)
-                {
-                    var renderStageIndex = renderViewStage.RenderStage.Index;
-                    viewRenderStageMask[renderStageIndex / RenderStageMaskSizePerEntry] |= 1U << (renderStageIndex % RenderStageMaskSizePerEntry);
-                }
-
-                // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
-                // TODO GRAPHICS REFACTOR frustum culling is currently hardcoded (cf previous TODO, we should make this more modular and move it out of here)
-                var frustum = new BoundingFrustum(ref view.ViewProjection);
-                var cullingMode = view.SceneCameraRenderer.CullingMode;
-
-                // Process objects
-                foreach (var renderObject in RenderObjects)
-                {
-                    // Skip not enabled objects
-                    if (!renderObject.Enabled)
-                        continue;
-
-                    var renderStageMask = RenderData.GetData(RenderStageMaskKey);
-                    var renderStageMaskMultiplier = (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry;
-                    var renderStageMaskNode = renderObject.StaticCommonObjectNode * renderStageMaskMultiplier;
-
-                    // Determine if this render object belongs to this view
-                    bool renderStageMatch = false;
-                    unsafe
-                    {
-                        fixed (uint* viewRenderStageMaskStart = viewRenderStageMask)
-                        fixed (uint* objectRenderStageMaskStart = renderStageMask.Data)
-                        {
-                            var viewRenderStageMaskPtr = viewRenderStageMaskStart;
-                            var objectRenderStageMaskPtr = objectRenderStageMaskStart + renderStageMaskNode.Index;
-                            for (int i = 0; i < viewRenderStageMask.Length; ++i)
-                            {
-                                if ((*viewRenderStageMaskPtr++ & *objectRenderStageMaskPtr++) != 0)
-                                {
-                                    renderStageMatch = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    // Object not part of this view because no render stages in this objects are visible in this view
-                    if (!renderStageMatch)
-                        continue;
-
-                    // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                    // Compute transformed AABB (by world)
-                    if (cullingMode == CameraCullingMode.Frustum
-                        && renderObject.BoundingBox.Extent != Vector3.Zero
-                        && !frustum.Contains(ref renderObject.BoundingBox))
-                    {
-                        continue;
-                    }
-
-                    // Add object to list of visible objects
-                    // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
-                    view.RenderObjects.Add(renderObject);
-                }
-            }
-
             // Create nodes for objects to render
             foreach (var view in Views)
             {
@@ -323,21 +225,10 @@ namespace SiliconStudio.Xenko.Rendering
             mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
             RenderSystem.Views.Add(mainRenderView);
         }
-
-        protected override IEntityComponentRenderer CreateRendererCore(EntityComponentRendererType rendererType)
-        {
-            var result = base.CreateRendererCore(rendererType);
-            result.Initialize(Context);
-            result.SetupPipeline(RenderSystem);
-            return result;
-        }
-
+        
         public override void BeforeExtract(RenderContext context)
         {
             base.BeforeExtract(context);
-
-            // Setup new entity component renderers (might affect render stages, etc...)
-            InitializeEntityComponentRenderers(context);
 
             // TODO: Collect shadow map views
             //RenderSystem.forwardLightingRenderFeature...

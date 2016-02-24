@@ -71,10 +71,6 @@ namespace SiliconStudio.Xenko.Rendering
             
         }
 
-        public virtual void SetupPipeline(NextGenRenderSystem renderSystem)
-        {
-        }
-
         public static RenderStage GetRenderStage(NextGenRenderSystem renderSystem, string name)
         {
             return renderSystem.RenderStages.FirstOrDefault(x => x.Name == name);

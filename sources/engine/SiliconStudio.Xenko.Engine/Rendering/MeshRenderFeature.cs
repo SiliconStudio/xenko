@@ -14,10 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
         public List<SubRenderFeature> RenderFeatures = new List<SubRenderFeature>();
 
         /// <inheritdoc/>
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderMesh;
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderMesh);
 
         /// <inheritdoc/>
         public override void Initialize()

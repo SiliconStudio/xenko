@@ -17,7 +17,6 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("BackgroundComponent")]
     [Display("Background", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(BackgroundRenderProcessor))]
     [ComponentOrder(9600)]
     public sealed class BackgroundComponent : ActivableEntityComponent

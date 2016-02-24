@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("ModelComponent")]
     [Display("Model", Expand = ExpandRule.Once)]
     // TODO GRAPHICS REFACTOR
-    [DefaultEntityComponentRenderer(typeof(ModelComponentRenderer))]
+    //[DefaultEntityComponentRenderer(typeof(ModelComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelTransformProcessor))]
     [DefaultEntityComponentProcessor(typeof(ModelRenderProcessor))]
     [ComponentOrder(11000)]

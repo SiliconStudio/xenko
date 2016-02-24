@@ -15,8 +15,6 @@ namespace SiliconStudio.Xenko.Rendering
         private List<ViewObjectNode> viewObjectNodes = new List<ViewObjectNode>();
         private List<ObjectNode> objectNodes = new List<ObjectNode>();
 
-        internal bool NeedActiveRenderStageReevaluation;
-
         // storage for properties (struct of arrays)
         public RenderDataHolder RenderData;
 
@@ -46,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering
         protected RootRenderFeature()
         {
             RenderData.Initialize();
-            RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
+            //RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="renderObject">The <see cref="RenderObject"/> to test.</param>
         /// <returns>True if this type of object is supported, false otherwise.</returns>
-        public abstract bool SupportsRenderObject(RenderObject renderObject);
+        public abstract Type SupportedRenderObjectType { get; }
 
         /// <summary>
         /// Gets the render node from its reference.
@@ -154,35 +152,10 @@ namespace SiliconStudio.Xenko.Rendering
             // Generate static data ID
             renderObject.StaticObjectNode = new StaticObjectNodeReference(RenderObjects.Count);
 
-            // Build list of which render stages are active
-            ReevaluateActiveRenderStages(renderObject);
-
             // Add to render object
             RenderObjects.Add(renderObject);
 
             OnAddRenderObject(renderObject);
-        }
-
-        internal void ReevaluateActiveRenderStages(RenderObject renderObject)
-        {
-            // Determine which render stages are activated for this object
-            renderObject.ActiveRenderStages = new ActiveRenderStage[RenderSystem.RenderStages.Count];
-
-            foreach (var renderStageSelector in RenderStageSelectors)
-                renderStageSelector.Process(renderObject);
-
-            // Compute render stage mask
-            var renderStageMask = RenderSystem.RenderData.GetData(RenderSystem.RenderStageMaskKey);
-            var renderStageMaskMultiplier = (RenderSystem.RenderStages.Count + NextGenRenderSystem.RenderStageMaskSizePerEntry - 1)/NextGenRenderSystem.RenderStageMaskSizePerEntry;
-            var renderStageMaskNode = renderObject.StaticCommonObjectNode*renderStageMaskMultiplier;
-
-            for (int index = 0; index < renderObject.ActiveRenderStages.Length; index++)
-            {
-                // TODO: Could easily be optimized to read and set value only once per uint
-                var activeRenderStage = renderObject.ActiveRenderStages[index];
-                if (activeRenderStage.Active)
-                    renderStageMask[renderStageMaskNode + (index/NextGenRenderSystem.RenderStageMaskSizePerEntry)] |= 1U << (index%NextGenRenderSystem.RenderStageMaskSizePerEntry);
-            }
         }
 
         internal void RemoveRenderObject(RenderObject renderObject)
@@ -223,19 +196,6 @@ namespace SiliconStudio.Xenko.Rendering
             RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
         }
 
-        internal void ReevaluateActiveRenderStages()
-        {
-            if (!NeedActiveRenderStageReevaluation)
-                return;
-
-            NeedActiveRenderStageReevaluation = false;
-
-            foreach (var renderObject in RenderObjects)
-            {
-                ReevaluateActiveRenderStages(renderObject);
-            }
-        }
-
         protected virtual int ComputeDataArrayExpectedSize(DataType type)
         {
             switch (type)
@@ -255,10 +215,10 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
-            if (RenderObjects.Count > 0)
-                NeedActiveRenderStageReevaluation = true;
-        }
+        //private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        //{
+        //    if (RenderObjects.Count > 0)
+        //        NeedActiveRenderStageReevaluation = true;
+        //}
     }
 }

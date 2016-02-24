@@ -3,6 +3,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
+    [PipelineRenderer(typeof(SkyboxPipelineRenderer))]
     public class RenderSkybox : RenderObject
     {
         public Skybox Skybox;

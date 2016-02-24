@@ -3,6 +3,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
+    [PipelineRenderer(typeof(BackgroundPipelineRenderer))]
     public class RenderBackground : RenderObject
     {
         public Texture Texture;

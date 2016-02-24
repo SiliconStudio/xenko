@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
+using System.Reflection;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -18,19 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
     public partial class NextGenRenderSystem : ComponentBase, IGameSystemBase
     {
         private readonly IServiceRegistry registry;
-
-        /// <summary>
-        /// Stores render data.
-        /// </summary>
-        public RenderDataHolder RenderData;
-
-        public StaticObjectPropertyKey<uint> RenderStageMaskKey;
-        public const int RenderStageMaskSizePerEntry = 32; // 32 bits per uint
-
-        /// <summary>
-        /// List of objects registered in the rendering system.
-        /// </summary>
-        public RenderObjectCollection RenderObjects;
+        private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -87,9 +75,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             this.registry = registry;
 
-            RenderData.Initialize();
-            RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
-
             registry.AddService(typeof(NextGenRenderSystem), this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
@@ -108,7 +93,6 @@ namespace SiliconStudio.Xenko.Rendering
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
 
             // Be notified when a RenderObject is added or removed
-            RenderObjects = new RenderObjectCollection(this);
             Views.CollectionChanged += Views_CollectionChanged;
 
             graphicsDeviceService.DeviceCreated += (sender, args) =>
@@ -173,12 +157,6 @@ namespace SiliconStudio.Xenko.Rendering
             BufferPool.Reset();
             DescriptorPool.Reset();
 
-            // Clear object data
-            foreach (var renderObject in RenderObjects)
-            {
-                renderObject.ObjectNode = ObjectNodeReference.Invalid;
-            }
-
             // Clear render features node lists
             foreach (var renderFeature in RenderFeatures)
             {
@@ -188,24 +166,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void PrepareDataArrays()
         {
-            // Ensure size for data arrays
-            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
-
             // Also do it for each render feature
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.PrepareDataArrays();
-            }
-        }
-
-        protected int ComputeDataArrayExpectedSize(DataType type)
-        {
-            switch (type)
-            {
-                case DataType.StaticObject:
-                    return RenderObjects.Count;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -215,16 +179,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 case NotifyCollectionChangedAction.Add:
                     ((RenderStage)e.Item).Index = e.Index;
-                    // Make sure mask is big enough
-                    RenderData.ChangeDataMultiplier(RenderStageMaskKey, (RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
-
-                    // Everything will need reevaluation
-                    foreach (var renderFeature in RenderFeatures)
-                    {
-                        if (renderFeature.RenderObjects.Count > 0)
-                            renderFeature.NeedActiveRenderStageReevaluation = true;
-                    }
-
                     break;
             }
         }
@@ -239,6 +193,8 @@ namespace SiliconStudio.Xenko.Rendering
                     renderFeature.Index = e.Index;
                     renderFeature.RenderSystem = this;
                     renderFeature.Initialize();
+
+                    renderFeaturesByType.Add(renderFeature.SupportedRenderObjectType, renderFeature);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     throw new NotImplementedException();
@@ -255,52 +211,38 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
+        public void AddRenderObject(RenderObject renderObject)
         {
-            if (renderObject.StaticCommonObjectNode != StaticObjectNodeReference.Invalid)
-                return;
+            RootRenderFeature renderFeature;
 
-            renderObject.StaticCommonObjectNode = new StaticObjectNodeReference(renderObjects.Count);
-
-            renderObjects.Add(renderObject);
-            
-            // Resize arrays to accomodate for new data
-            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
-
-            // Determine which RenderFeatures is responsible for this object
-            foreach (var renderFeature in RenderFeatures)
+            if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
             {
-                // Find matching render feature
-                if (renderFeature.SupportsRenderObject(renderObject))
+                // Found it
+                renderFeature.AddRenderObject(renderObject);
+            }
+            else
+            {
+                // New type without render feature, let's do auto pipeline setup
+                var typeInfo = renderObject.GetType().GetTypeInfo();
+                var autoPipelineAttribute = typeInfo.GetCustomAttribute<PipelineRendererAttribute>();
+                if (autoPipelineAttribute != null)
                 {
-                    renderFeature.AddRenderObject(renderObject);
-                    break;
+                    var renderer = (IPipelineRenderer)Activator.CreateInstance(autoPipelineAttribute.RendererType);
+                    renderer.SetupPipeline(RenderContextOld, this);
+
+                    // Try again, after pipeline setup
+                    if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
+                    {
+                        renderFeature.AddRenderObject(renderObject);
+                    }
                 }
             }
         }
 
-        internal bool RemoveRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
+        public void RemoveRenderObject(RenderObject renderObject)
         {
-            // Get and clear ordered node index
-            var orderedRenderNodeIndex = renderObject.StaticObjectNode.Index;
-            if (renderObject.StaticCommonObjectNode == StaticObjectNodeReference.Invalid)
-                return false;
-
-            renderObject.StaticCommonObjectNode = StaticObjectNodeReference.Invalid;
-
-            // SwapRemove each items in dataArrays
-            RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, RenderObjects.Count - 1);
-
-            // Remove entry from ordered node index
-            renderObjects.SwapRemoveAt(orderedRenderNodeIndex);
-
-            // If last item was moved, update its index
-            if (orderedRenderNodeIndex < RenderObjects.Count)
-            {
-                renderObjects[orderedRenderNodeIndex].StaticCommonObjectNode = new StaticObjectNodeReference(orderedRenderNodeIndex);
-            }
-
-            return true;
+            var renderFeature = renderObject.RenderFeature;
+            renderFeature?.RemoveRenderObject(renderObject);
         }
     }
 }

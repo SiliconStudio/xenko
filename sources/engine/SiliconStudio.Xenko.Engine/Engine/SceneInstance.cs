@@ -31,6 +31,8 @@ namespace SiliconStudio.Xenko.Engine
         private Scene previousScene;
         private Scene scene;
 
+        public VisibilityGroup VisibilityGroup { get; }
+
         /// <summary>
         /// Occurs when the scene changed from a scene child component.
         /// </summary>
@@ -58,6 +60,7 @@ namespace SiliconStudio.Xenko.Engine
             if (services == null) throw new ArgumentNullException("services");
 
             ExecutionMode = executionMode;
+            VisibilityGroup = new VisibilityGroup(services);
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
             ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
@@ -163,7 +166,32 @@ namespace SiliconStudio.Xenko.Engine
                     {
                         graphicsCompositor.BeforeExtract(context.RenderContext);
 
-                        renderSystem.ExtractAndPrepare(context);
+                        // Update current camera to render view
+                        foreach (var mainRenderView in renderSystem.Views)
+                        {
+                            if (mainRenderView.GetType() == typeof(RenderView))
+                            {
+                                renderSystem.UpdateCameraToRenderView(context, mainRenderView);
+                            }
+                        }
+
+                        // Reset render context data
+                        renderSystem.Reset();
+
+                        // Reset view specific render context data
+                        renderSystem.ResetViews();
+
+                        // Collect
+                        // TODO GRAPHICS REFACTOR choose which views to collect
+                        VisibilityGroup.Views.Clear();
+                        VisibilityGroup.Views.AddRange(renderSystem.Views);
+                        VisibilityGroup.Collect();
+
+                        // Extract
+                        renderSystem.Extract(context);
+
+                        // Prepare
+                        renderSystem.Prepare(context);
 
                         graphicsCompositor.Draw(context);
                     }
