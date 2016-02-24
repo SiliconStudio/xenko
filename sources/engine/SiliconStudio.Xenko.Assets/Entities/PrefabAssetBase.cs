@@ -10,12 +10,12 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="EntityGroupAsset"/>)
+    /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract()]
-    public abstract class EntityGroupAssetBase : AssetComposite
+    public abstract class PrefabAssetBase : AssetComposite
     {
-        protected EntityGroupAssetBase()
+        protected PrefabAssetBase()
         {
             Hierarchy = new EntityHierarchyData();
         }
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override Asset CreateChildAsset(string location)
         {
-            var newAsset = (EntityGroupAssetBase)base.CreateChildAsset(location);
+            var newAsset = (PrefabAssetBase)base.CreateChildAsset(location);
 
             // CAUTION: We need to re-add entities to the list as we are going to change their ids
             // (and the Hierarchy.Entities list is ordered by Id, so they should not be changed after the entity has been added)
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="assetPartBase">The entity asset to be used as a part (must be created directly from <see cref="CreateChildAsset"/>)</param>
         /// <param name="rootEntityId">An optional entity id to attach the part to it. If null, the part will be attached to the root entities of this instance</param>
-        public void AddPart(EntityGroupAssetBase assetPartBase, Guid? rootEntityId = null)
+        public void AddPart(PrefabAssetBase assetPartBase, Guid? rootEntityId = null)
         {
             AddPartCore(assetPartBase);
 
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
         {
-            var entityMerge = new EntityGroupAssetMerge((EntityGroupAssetBase)baseAsset, this, (EntityGroupAssetBase)newBase, newBaseParts);
+            var entityMerge = new PrefabAssetMerge((PrefabAssetBase)baseAsset, this, (PrefabAssetBase)newBase, newBaseParts);
             return entityMerge.Merge();
         }
 
@@ -122,14 +122,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="baseParts">The list of baseParts to use. If null, use the parts from this instance directly.</param>
         /// <returns>A mapping between a base asset and the list of instance actually used for inherited parts by composition</returns>
-        public Dictionary<EntityGroupAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
+        public Dictionary<PrefabAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
         {
             if (baseParts == null)
             {
                 baseParts = BaseParts;
             }
 
-            var mapBaseToInstanceIds = new Dictionary<EntityGroupAssetBase, List<Guid>>();
+            var mapBaseToInstanceIds = new Dictionary<PrefabAssetBase, List<Guid>>();
             if (baseParts == null)
             {
                 return mapBaseToInstanceIds;
@@ -144,21 +144,21 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // - for each entity in the hierarchy of this instance
             //   - Check if the entity has a <baseId> and a <basePartInstanceId>
             //   - If yes, the entity is coming from a base part
-            //       - Find which AssetBase (actually EntityGroupAssetBase), is containing the <basePartInstanceId>
+            //       - Find which AssetBase (actually PrefabAssetBase), is containing the <basePartInstanceId>
             //       - We can then associate 
-            var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityGroupAssetBase>();
+            var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, PrefabAssetBase>();
             foreach (var entityIt in Hierarchy.Entities)
             {
                 if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
                 {
                     var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
-                    EntityGroupAssetBase existingAssetBase;
+                    PrefabAssetBase existingAssetBase;
                     if (!mapBasePartInstanceIdToBasePart.TryGetValue(basePartInstanceId, out existingAssetBase))
                     {
                         var baseId = entityIt.Design.BaseId.Value;
                         foreach (var basePart in baseParts)
                         {
-                            var assetBase = (EntityGroupAssetBase)basePart.Asset;
+                            var assetBase = (PrefabAssetBase)basePart.Asset;
                             if (assetBase.ContainsPart(baseId))
                             {
                                 existingAssetBase = assetBase;

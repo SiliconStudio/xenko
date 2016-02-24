@@ -13,9 +13,9 @@ using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public static class EntityGroupAssetOperations
+    public static class PrefabAssetOperations
     {
-        public static EntityGroupAssetBase ExtractSceneClone(EntityGroupAssetBase source, Guid sourceRootEntity)
+        public static PrefabAssetBase ExtractSceneClone(PrefabAssetBase source, Guid sourceRootEntity)
         {
             if (source == null) throw new ArgumentNullException("source");
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             source.Hierarchy = null;
 
             // clone asset without hierarchy
-            var clonedAsset = (EntityGroupAssetBase)AssetCloner.Clone(source);
+            var clonedAsset = (PrefabAssetBase)AssetCloner.Clone(source);
             clonedAsset.Hierarchy = clonedHierarchy;
 
             // revert the source hierarchy
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityGroupAssetBase source, Guid sourceRootEntity)
+        public static EntityHierarchyData ImportScene(UFile sourceUrl, PrefabAssetBase source, Guid sourceRootEntity)
         {
             if (source == null) throw new ArgumentNullException("source");
 
