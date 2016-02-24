@@ -4,55 +4,65 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Particles.Components;
 using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Rendering.Particles
+namespace SiliconStudio.Xenko.Particles.Rendering
 {
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class NextGenSpriteProcessor : EntityProcessor<ParticleSystemComponent>
+    public class NextGenParticleSystemProcessor : EntityProcessor<ParticleSystemComponent, RenderParticleSystem>
     {
         private NextGenRenderSystem renderSystem;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NextGenSpriteProcessor"/> class.
+        /// Initializes a new instance of the <see cref="NextGenParticleSystemProcessor"/> class.
         /// </summary>
-        public NextGenSpriteProcessor()
+        public NextGenParticleSystemProcessor()
             : base(typeof(TransformComponent))
         {
-            ParticleSystems = new List<RenderParticleSystem>();
         }
 
-        public List<RenderParticleSystem> ParticleSystems { get; private set; }
-
-        protected internal override void OnSystemAdd()
+        protected override void OnSystemAdd()
         {
             renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
         }
 
         public override void Draw(RenderContext gameTime)
         {
-            ParticleSystems.Clear();
-            foreach (var particleSystemStateKeyPair in ComponentDatas)
+            foreach (var componentData in ComponentDatas)
             {
-                if (particleSystemStateKeyPair.Value.ParticleSystemComponent.Enabled)
+                if (componentData.Value.ParticleSystemComponent.Enabled)
                 {
-                    ParticleSystems.Add(particleSystemStateKeyPair.Value);
+                    // Update render objects
                 }
             }
         }
 
-        protected override void OnEntityComponentAdding(Entity entity, ParticleSystemComponent spriteComponent, RenderParticleSystem data)
+        protected override void OnEntityComponentAdding(Entity entity, ParticleSystemComponent particleSystemComponent, RenderParticleSystem renderParticleSystem)
         {
-            foreach (var particleEmitter in spriteComponent.ParticleSystem.Emitters)
+            // TODO GRAPHICS REFACTOR: Handle enabled emitters (in visibility system)
+
+            var emitters = particleSystemComponent.ParticleSystem.Emitters;
+            var emitterCount = emitters.Count;
+            var renderEmitters = new RenderParticleEmitter[emitterCount];
+
+            for (int index = 0; index < emitterCount; index++)
             {
-                
+                renderSystem.RenderObjects.Add(new RenderParticleEmitter
+                {
+                    ParticleEmitter = emitters[index],
+                    RenderParticleSystem = renderParticleSystem,
+                });
             }
-            renderSystem.RenderObjects.Add(data);
+
+            renderParticleSystem.Emitters = renderEmitters;
         }
 
-        protected override void OnEntityComponentRemoved(Entity entity, ParticleSystemComponent spriteComponent, RenderParticleSystem data)
+        protected override void OnEntityComponentRemoved(Entity entity, ParticleSystemComponent particleSystemComponent, RenderParticleSystem renderParticleSystem)
         {
-            renderSystem.RenderObjects.Remove(data);
+            foreach (var emitter in renderParticleSystem.Emitters)
+            {
+                renderSystem.RenderObjects.Remove(emitter);
+            }
         }
 
         protected override RenderParticleSystem GenerateComponentData(Entity entity, ParticleSystemComponent particleSystemComponent)

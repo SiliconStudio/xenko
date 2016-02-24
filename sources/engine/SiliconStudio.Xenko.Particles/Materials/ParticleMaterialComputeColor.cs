@@ -32,8 +32,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         // TODO Part of the graphics improvement XK-3052
         private ShaderSource shaderSource;
 
-
-
         [DataMemberIgnore]
         protected override string EffectName { get; set; } = "ParticleEffect";
 
@@ -67,12 +65,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Force texcoords")]
         public bool ForceTexCoords { get; set; } = false;
 
-
-
         /// <inheritdoc />
         protected override void InitializeCore(RenderContext context)
         {
             base.InitializeCore(context);
+
+            shaderGeneratorContext = new ShaderGeneratorContext(context.GraphicsDevice) { Parameters = Parameters };
 
             UpdateShaders(context.GraphicsDevice);
         }
@@ -89,37 +87,17 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 return;
             shadersUpdateCounter = 10;
 
-            // TODO Part of the graphics improvement XK-3052
-            // Weird bug? If the shaderGeneratorContext.Parameters stay the same the particles disappear
-            if (shaderGeneratorContext != null)
-            {
-                ParameterCollections.Remove(shaderGeneratorContext.Parameters);
-                shaderGeneratorContext = null;
-            }
-
-            if (shaderGeneratorContext == null)
-            {
-                shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice);
-                ParameterCollections.Add(shaderGeneratorContext.Parameters);
-            }
-
-            shaderGeneratorContext.Parameters.Clear();
-
             if (ComputeColor != null)
             {
                 // Don't forget to set the proper color space!
                 shaderGeneratorContext.ColorSpace = graphicsDevice.ColorSpace;
 
-                var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
+                shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Core.Mathematics.Color.White));
 
-                shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
+                Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
 
-                // Check if shader code has changed
-                if (!shaderBaseColor.Equals(shaderSource))
-                {
-                    shaderSource = shaderBaseColor;
-                    VertexLayoutHasChanged = true;
-                }
+                // TODO: Is this necessary?
+                HasVertexLayoutChanged = true;
             }
         }
 
@@ -170,12 +148,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         }
 
-        /// <inheritdoc />
-        public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
+        public override void ValidateEffect(RenderContext context, EffectValidator effectValidator)
         {
-            base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
-            
-            UpdateShaders(graphicsDevice);
+            //UpdateShaders(context.GraphicsDevice);
+            effectValidator.ValidateParameter(ParticleBaseKeys.BaseColor, shaderSource);
         }
 
         /// <inheritdoc />
@@ -200,6 +176,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // Since the particles don't have their own color field, set the default color to white
             var color = 0xFFFFFFFF;
 
+            // TODO: for loop. Remove IEnumerable from sorter
             foreach (var particle in sorter)
             {
                 vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));

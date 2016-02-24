@@ -1,15 +1,14 @@
 ﻿using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Xenko.Particles.Components;
 
-namespace SiliconStudio.Xenko.Rendering.Particles
+namespace SiliconStudio.Xenko.Particles.Rendering
 {
-    public class RenderParticleSystem : RenderObject
+    public class RenderParticleSystem
     {
         public ParticleSystemComponent ParticleSystemComponent;
 
-        public ParticleEmitter ParticleEmitter;
-
         public TransformComponent TransformComponent;
+
+        public RenderParticleEmitter[] Emitters;
     }
 }
