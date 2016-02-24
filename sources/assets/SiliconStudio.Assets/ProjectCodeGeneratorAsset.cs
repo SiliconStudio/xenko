@@ -10,5 +10,8 @@ namespace SiliconStudio.Assets
 
         [Display(Browsable = false)]
         public string GeneratedAbsolutePath { get; set; }
+
+        [Display(Browsable = false)]
+        public string GeneratedInclude { get; set; }
     }
 }

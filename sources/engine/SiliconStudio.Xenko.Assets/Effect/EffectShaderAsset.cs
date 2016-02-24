@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -35,7 +36,8 @@ namespace SiliconStudio.Xenko.Assets.Effect
         {
             base.Save(stream);
 
-            if (Text.IsNullOrEmpty()) return;
+            //make sure we got some text
+            if (Text == null) Text = "";
 
             //generate the .cs files
             // Always output a result into the file
