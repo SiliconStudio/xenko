@@ -23,7 +23,7 @@
     <Compile Include="BoundingShapes\BoundingSphereStatic.cs" />
     <Compile Include="Components\ParticleSystemComponent.cs" />
     <Compile Include="Components\ParticleSystemControl.cs" />
-    <Compile Include="Components\ParticleSystemProcessor.cs" />
+    <Compile Include="Components\ParticleSystemSimulationProcessor.cs" />
     <Compile Include="Components\StateControl.cs" />
     <Compile Include="DebugDraw\DebugDrawShape.cs" />
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
