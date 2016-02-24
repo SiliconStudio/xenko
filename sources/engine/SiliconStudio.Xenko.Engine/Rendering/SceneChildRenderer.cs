@@ -91,9 +91,9 @@ namespace SiliconStudio.Xenko.Engine
             {
                 // Collect
                 // TODO GRAPHICS REFACTOR choose which views to collect
-                sceneInstance.VisibilityGroup.Views.Clear();
                 sceneInstance.VisibilityGroup.Views.AddRange(renderSystem.Views);
                 sceneInstance.VisibilityGroup.Collect();
+                sceneInstance.VisibilityGroup.Views.Clear();
             }
         }
 

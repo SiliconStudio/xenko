@@ -74,6 +74,26 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void Extract(RenderDrawContext context)
         {
+            // Prepare views
+            for (int index = 0; index < Views.Count; index++)
+            {
+                // Update indices
+                var view = Views[index];
+                view.Index = index;
+
+                // Create missing RenderViewFeature
+                while (view.Features.Count < RenderFeatures.Count)
+                {
+                    view.Features.Add(new RenderViewFeature());
+                }
+
+                for (int i = 0; i < RenderFeatures.Count; i++)
+                {
+                    var renderViewFeature = view.Features[i];
+                    renderViewFeature.RootFeature = RenderFeatures[i];
+                }
+            }
+
             // Create nodes for objects to render
             foreach (var view in Views)
             {
