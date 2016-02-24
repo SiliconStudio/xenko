@@ -510,34 +510,44 @@ namespace SiliconStudio.Assets
                                     vsProjs.Add(projectFullPath, project);
                                 }
 
-                                //check if the item is already there, this is possible when saving the first time when creating from a template
-                                if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
-                                {
-                                    var generatorAsset = sourceCodeAsset as ProjectCodeGeneratorAsset;
-                                    if (generatorAsset != null)
-                                    {
-                                        project.AddItem("None", codeFile.ToWindowsPath(), 
-                                            new List<KeyValuePair<string, string>>
-                                            {
-                                                new KeyValuePair<string, string>("Generator", generatorAsset.Generator)
-                                            });
-
-                                        generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs";
-                                    }
-                                    else
-                                    {
-                                        project.AddItem("Compile", codeFile.ToWindowsPath());
-                                    }                                
-                                }
-
                                 asset.SourceProject = projectFullPath;
                                 asset.SourceFolder = RootDirectory.GetFullDirectory();
                                 sourceCodeAsset.ProjectInclude = codeFile;
                                 sourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath.ToWindowsPath());
                                 sourceCodeAsset.AbsoluteSourceLocation = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
                                 sourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
-
                                 assetPath = sourceCodeAsset.AbsoluteSourceLocation;
+
+                                //check if the item is already there, this is possible when saving the first time when creating from a template
+                                if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
+                                {
+                                    var generatorAsset = sourceCodeAsset as ProjectCodeGeneratorAsset;
+                                    if (generatorAsset != null)
+                                    {
+                                        generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs";
+                                        generatorAsset.GeneratedInclude = new UFile(generatorAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs";
+
+                                        project.AddItem("None", codeFile.ToWindowsPath(), 
+                                            new List<KeyValuePair<string, string>>
+                                            {
+                                                new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
+                                                new KeyValuePair<string, string>("LastGenOutput", new UFile(generatorAsset.GeneratedInclude).GetFileNameWithExtension())
+                                            });
+
+                                        project.AddItem("Compile", new UFile(generatorAsset.GeneratedInclude).ToWindowsPath(),
+                                            new List<KeyValuePair<string, string>>
+                                            {
+                                                new KeyValuePair<string, string>("AutoGen", "True"),
+                                                new KeyValuePair<string, string>("DesignTime", "True"),
+                                                new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
+                                                new KeyValuePair<string, string>("DependentUpon", new UFile(generatorAsset.ProjectInclude).GetFileNameWithExtension())
+                                            });
+                                    }
+                                    else
+                                    {
+                                        project.AddItem("Compile", codeFile.ToWindowsPath());
+                                    }                                
+                                }
                             }
 
                             // Notifies the dependency manager that an asset with the specified path is being saved
