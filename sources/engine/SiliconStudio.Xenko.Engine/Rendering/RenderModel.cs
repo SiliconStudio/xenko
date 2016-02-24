@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Used by <see cref="MeshRenderFeature"/> to render a <see cref="Mesh"/>.
     /// </summary>
-    [PipelineRenderer(typeof(ModelPipelineRenderer))]
+    [DefaultPipelinePlugin(typeof(MeshPipelinePlugin))]
     public class RenderMesh : RenderObject
     {
         public RenderModel RenderModel;

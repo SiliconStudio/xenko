@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
-    public class SkyboxPipelineRenderer : IPipelineRenderer
+    public class SkyboxPipelinePlugin : IPipelinePlugin
     {
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {

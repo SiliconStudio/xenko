@@ -2,7 +2,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
-    [PipelineRenderer(typeof(SpritePipelineRenderer))]
+    [DefaultPipelinePlugin(typeof(SpritePipelinePlugin))]
     public class RenderSprite : RenderObject
     {
         public SpriteComponent SpriteComponent;

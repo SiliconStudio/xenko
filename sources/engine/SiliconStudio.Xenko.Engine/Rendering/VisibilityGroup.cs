@@ -43,7 +43,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Create RenderStageMask key, and keep track of number of RenderStages.Count for future resizing
             RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+
             RenderSystem.RenderStages.CollectionChanged += RenderStages_CollectionChanged;
+            RenderSystem.RenderStageSelectorsChanged += RenderSystem_RenderStageSelectorsChanged;
         }
 
         public void Collect()
@@ -217,6 +219,13 @@ namespace SiliconStudio.Xenko.Rendering
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void RenderSystem_RenderStageSelectorsChanged()
+        {
+            // Everything will need reevaluation
+            // TODO GRAPHICS REFACTOR optimization: only reprocess object with the given RenderFeature?
+            NeedActiveRenderStageReevaluation = true;
         }
 
         private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
