@@ -26,6 +26,15 @@ namespace SiliconStudio.Xenko.Rendering.Background
             visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
+        protected internal override void OnSystemRemove()
+        {
+            if (ActiveBackground != null)
+            {
+                visibilityGroup.RenderObjects.Remove(ActiveBackground);
+                ActiveBackground = null;
+            }
+        }
+
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
         {
             return new RenderBackground();

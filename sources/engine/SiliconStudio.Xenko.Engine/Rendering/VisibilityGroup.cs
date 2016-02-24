@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem.RemoveRenderObject(renderObject);
 
             // Get and clear ordered node index
-            var orderedRenderNodeIndex = renderObject.StaticObjectNode.Index;
+            var orderedRenderNodeIndex = renderObject.StaticCommonObjectNode.Index;
             if (renderObject.StaticCommonObjectNode == StaticObjectNodeReference.Invalid)
                 return false;
 
