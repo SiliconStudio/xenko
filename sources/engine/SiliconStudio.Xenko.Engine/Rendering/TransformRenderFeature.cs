@@ -32,8 +32,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void Initialize()
         {
-            renderModelObjectInfoKey = RootRenderFeature.CreateObjectKey<RenderModelFrameInfo>();
-            renderModelViewInfoKey = RootRenderFeature.CreateViewObjectKey<RenderModelViewInfo>();
+            renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderModelFrameInfo>();
+            renderModelViewInfoKey = RootRenderFeature.RenderData.CreateViewObjectKey<RenderModelViewInfo>();
 
             view = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(TransformationKeys.View.Name);
             world = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationKeys.World.Name);
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void Extract()
         {
-            var renderModelObjectInfo = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
             foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
             {
@@ -60,15 +60,13 @@ namespace SiliconStudio.Xenko.Rendering
         public unsafe override void Prepare(RenderContext context)
         {
             // Compute WorldView, WorldViewProj
-            var renderModelObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
-            var renderModelViewInfoData = RootRenderFeature.GetData(renderModelViewInfoKey);
+            var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
+            var renderModelViewInfoData = RootRenderFeature.RenderData.GetData(renderModelViewInfoKey);
 
             for (int index = 0; index < RenderSystem.Views.Count; index++)
             {
                 var view = RenderSystem.Views[index];
                 var viewFeature = view.Features[RootRenderFeature.Index];
-
-                Matrix.Multiply(ref view.View, ref view.Projection, out view.ViewProjection);
 
                 // Compute WorldView and WorldViewProjection
                 foreach (var renderPerViewNodeReference in viewFeature.ViewObjectNodes)

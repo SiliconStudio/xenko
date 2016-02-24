@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
@@ -11,18 +12,17 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class MeshRenderFeature : RootEffectRenderFeature
     {
-        public List<SubRenderFeature> RenderFeatures = new List<SubRenderFeature>();
+        public TrackingCollection<SubRenderFeature> RenderFeatures = new TrackingCollection<SubRenderFeature>();
 
         /// <inheritdoc/>
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderMesh;
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderMesh);
 
         /// <inheritdoc/>
         public override void Initialize()
         {
             base.Initialize();
+
+            RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
 
             foreach (var renderFeature in RenderFeatures)
             {
@@ -135,6 +135,22 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     commandList.DrawIndexed(drawData.DrawCount, drawData.StartLocation);
                 }
+            }
+        }
+
+        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var renderFeature = (SubRenderFeature)e.Item;
+
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    renderFeature.AttachRootRenderFeature(this);
+                    renderFeature.Initialize();
+                    break;
+                default:
+                    // TODO implement removal of features
+                    throw new NotImplementedException();
             }
         }
     }

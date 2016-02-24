@@ -26,5 +26,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         [DataMemberIgnore]
         public RenderOutputDescription Output;
+
+        public override string ToString()
+        {
+            return $"{Name} (EffectSlot {EffectSlot.Index}:{EffectSlotName})";
+        }
     }
 }

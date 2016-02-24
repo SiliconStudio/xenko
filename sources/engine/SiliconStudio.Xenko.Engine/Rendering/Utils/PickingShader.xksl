@@ -7,15 +7,12 @@
     {
         cbuffer PerDraw
         {
-            stage int3 PickingData;
+            stage float4 PickingData;
         }
 
         stage override void PSMain()
         {
-            streams.ColorTarget = int4(PickingData, 0);
-            //streams.ColorTarget = PickingData.x;
-            //streams.ColorTarget1 = PickingData.y;
-            //streams.ColorTarget2 = PickingData.z;
+            streams.ColorTarget = PickingData;
         }
     };
 }

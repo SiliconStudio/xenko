@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private StaticEffectObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private EffectDescriptorSetReference perLightingDescriptorSetSlot;
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public ShadowMapRenderer ShadowMapRenderer { get; private set; }
 
-        public RenderStage ShadowmapRenderStage { get; set; }
+        public RenderStage ShadowMapRenderStage { get; set; }
 
         static ForwardLightingRenderFeature()
         {
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             base.Initialize();
 
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
-            renderViewObjectInfoKey = RootRenderFeature.CreateViewObjectKey<LightParametersPermutationEntry>();
+            renderViewObjectInfoKey = RootRenderFeature.RenderData.CreateViewObjectKey<LightParametersPermutationEntry>();
 
             perLightingDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerLighting");
         }
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             //    if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
             //        && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
             //    {
-            //        ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
+            //        ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowMapRenderStage);
             //        ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
             //        ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
             //    }
@@ -180,9 +180,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void PrepareEffectPermutations()
         {
-            var renderEffects = RootRenderFeature.GetData(renderEffectKey);
+            var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
-            var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
+            var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
             foreach (var view in RenderSystem.Views)
             {
@@ -208,7 +208,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     for (int i = 0; i < effectSlotCount; ++i)
                     {
-                        var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                        var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                         var renderEffect = renderEffects[staticEffectObjectNode];
 
                         // Skip effects not used during this frame
@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override unsafe void Prepare(RenderContext context)
         {
-            var renderViewObjectInfoData = RootRenderFeature.GetData(renderViewObjectInfoKey);
+            var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
             foreach (var lightParameterEntry in lightParameterEntries)
             {

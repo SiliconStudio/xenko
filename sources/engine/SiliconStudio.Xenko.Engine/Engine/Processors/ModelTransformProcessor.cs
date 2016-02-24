@@ -14,12 +14,12 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor for <see cref="ModelComponent"/>.
     /// </summary>
-    public class ModelProcessor : EntityProcessor<ModelComponent, ModelProcessor.ModelTransformationInfo>
+    public class ModelTransformProcessor : EntityProcessor<ModelComponent, ModelTransformProcessor.ModelTransformationInfo>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelProcessor"/> class.
+        /// Initializes a new instance of the <see cref="ModelTransformProcessor"/> class.
         /// </summary>
-        public ModelProcessor()
+        public ModelTransformProcessor()
             : base(typeof(TransformComponent))
         {
         }

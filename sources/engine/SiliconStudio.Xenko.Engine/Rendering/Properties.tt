@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-<# var nodeTypes = new[] { "ViewObject", "Object", "Render", "EffectObject", "View", "EffectView", "StaticObject", "StaticEffectObject" }; #>
+<# var nodeTypes = new[] { "ViewObject", "Object", "Render", "EffectObject", "View", "StaticObject" }; #>
 namespace SiliconStudio.Xenko.Rendering
 {
     public enum DataType
@@ -59,6 +59,16 @@ namespace SiliconStudio.Xenko.Rendering
             Index = index;
         }
 
+        public static <#=type#>NodeReference operator +(<#=type#>NodeReference value, int offset)
+        {
+            return new <#=type#>NodeReference(value.Index + offset);
+        }
+
+        public static <#=type#>NodeReference operator *(<#=type#>NodeReference value, int multiplyFactor)
+        {
+            return new <#=type#>NodeReference(value.Index * multiplyFactor);
+        }
+
         public static bool operator ==(<#=type#>NodeReference a, <#=type#>NodeReference b)
         {
             return a.Index == b.Index;
@@ -70,9 +80,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal <#=type#>PropertyKey<T> Create<#=type#>Key<T>(<#=type#>PropertyDefinition<T> definition = null)
+        public <#=type#>PropertyKey<T> Create<#=type#>Key<T>(<#=type#>PropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -84,13 +94,18 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.<#=type#>)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.<#=type#>, multiplier)));
             return new <#=type#>PropertyKey<T>(dataArraysIndex);
         }
 
-		internal <#=type#>PropertyData<T> GetData<T>(<#=type#>PropertyKey<T> key)
+		public <#=type#>PropertyData<T> GetData<T>(<#=type#>PropertyKey<T> key)
         {
             return new <#=type#>PropertyData<T>((T[])dataArrays[key.Index].Array);
+        }
+
+        public void ChangeDataMultiplier<T>(<#=type#>PropertyKey<T> key, int multiplier)
+        {
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
 <# } #>

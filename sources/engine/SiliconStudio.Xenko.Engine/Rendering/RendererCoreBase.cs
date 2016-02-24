@@ -233,14 +233,7 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new ArgumentNullException("context");
             }
 
-            if (Context == null)
-            {
-                Initialize(context.RenderContext);
-            }
-            else if (Context != context.RenderContext)
-            {
-                throw new InvalidOperationException("Cannot use a different context between Load and Draw");
-            }
+            EnsureContext(context.RenderContext);
 
             if (Name != null && Profiling)
             {
@@ -251,6 +244,18 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Allow scoped allocation RenderTargets
             isInDrawCore = true;
+        }
+
+        protected void EnsureContext(RenderContext context)
+        {
+            if (Context == null)
+            {
+                Initialize(context);
+            }
+            else if (Context != context)
+            {
+                throw new InvalidOperationException("Cannot use a different context between Load and Draw");
+            }
         }
 
         protected void PostDrawCoreInternal(RenderDrawContext context)

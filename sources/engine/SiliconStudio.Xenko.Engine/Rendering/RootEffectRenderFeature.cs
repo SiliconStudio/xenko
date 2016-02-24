@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Key to store extra info for each effect instantiation of each object.
         /// </summary>
-        public StaticEffectObjectPropertyKey<RenderEffect> RenderEffectKey;
+        public StaticObjectPropertyKey<RenderEffect> RenderEffectKey;
 
         // TODO: Proper interface to register effects
         /// <summary>
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.Initialize();
 
             // Create RenderEffectKey
-            RenderEffectKey = CreateStaticEffectObjectKey<RenderEffect>();
+            RenderEffectKey = RenderData.CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
 
             // TODO: Assign weights so that PerDraw is always last? (we usually most custom user ones to be between PerView and PerDraw)
             perFrameDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerFrame");
@@ -142,8 +142,8 @@ namespace SiliconStudio.Xenko.Rendering
                 var resourceGroupLayout = effect.Value.PerDrawLayout;
 
                 // Ensure there is enough space
-                if (resourceGroupLayout.ConstantBufferOffsets == null || resourceGroupLayout.ConstantBufferOffsets.Length < viewCBufferOffsetSlots.Count)
-                    Array.Resize(ref resourceGroupLayout.ConstantBufferOffsets, viewCBufferOffsetSlots.Count);
+                if (resourceGroupLayout.ConstantBufferOffsets == null || resourceGroupLayout.ConstantBufferOffsets.Length < drawCBufferOffsetSlots.Count)
+                    Array.Resize(ref resourceGroupLayout.ConstantBufferOffsets, drawCBufferOffsetSlots.Count);
 
                 ResolveCBufferOffset(resourceGroupLayout, slotReference.Index, variable);
             }
@@ -189,6 +189,9 @@ namespace SiliconStudio.Xenko.Rendering
 
                 slot = effectPermutationSlots.Count;
                 effectPermutationSlots.Add(effectName, slot);
+
+                // Add render effect slot
+                RenderData.ChangeDataMultiplier(RenderEffectKey, EffectPermutationSlotCount);
             }
 
             return new EffectPermutationSlot(slot);
@@ -208,7 +211,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.PrepareEffectPermutations();
 
             // TODO: Temporary until we have a better system for handling permutations
-            var renderEffects = GetData(RenderEffectKey);
+            var renderEffects = RenderData.GetData(RenderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
 
             foreach (var view in RenderSystem.Views)
@@ -221,7 +224,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Get RenderEffect
                     var staticObjectNode = renderObject.StaticObjectNode;
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, renderNode.RenderStage.EffectSlot.Index);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + renderNode.RenderStage.EffectSlot.Index;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Create it (first time)
@@ -251,7 +254,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Skip if not used or nothing changed
@@ -313,7 +316,7 @@ namespace SiliconStudio.Xenko.Rendering
                 Array.Resize(ref ResourceGroupPool, expectedDescriptorSetPoolSize);
 
             // Allocate PerFrame, PerView and PerDraw resource groups and constant buffers
-            var renderEffects = GetData(RenderEffectKey);
+            var renderEffects = RenderData.GetData(RenderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
             foreach (var view in RenderSystem.Views)
             {
@@ -325,7 +328,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Get RenderEffect
                     var staticObjectNode = renderObject.StaticObjectNode;
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(effectSlotCount, renderNode.RenderStage.EffectSlot.Index);
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + renderNode.RenderStage.EffectSlot.Index;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderEffectReflection = renderEffects[staticEffectObjectNode].Reflection;
 
@@ -564,24 +567,9 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 case DataType.EffectObject:
                     return EffectObjectNodes.Count;
-                case DataType.EffectView:
-                    return base.ComputeDataArrayExpectedSize(DataType.View) * EffectPermutationSlotCount;
-                case DataType.StaticEffectObject:
-                    return base.ComputeDataArrayExpectedSize(DataType.StaticObject) * EffectPermutationSlotCount;
             }
 
             return base.ComputeDataArrayExpectedSize(type);
-        }
-
-        protected override void RemoveRenderObjectFromDataArray(DataArray dataArray, int removedIndex)
-        {
-            if (dataArray.Info.Type == DataType.StaticEffectObject)
-            {
-                // SwapRemove all the items related to this RenderObject (count: EffectPermutationSlotCount)
-                dataArray.Info.SwapRemoveItems(dataArray.Array, removedIndex, (RenderObjects.Count - 1) * EffectPermutationSlotCount, EffectPermutationSlotCount);
-            }
-
-            base.RemoveRenderObjectFromDataArray(dataArray, removedIndex);
         }
 
         struct ConstantBufferOffsetDefinition

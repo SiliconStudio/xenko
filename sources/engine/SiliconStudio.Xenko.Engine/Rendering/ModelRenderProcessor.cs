@@ -1,23 +1,24 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class NextGenModelProcessor : EntityProcessor<ModelComponent, RenderModel>
+    public class ModelRenderProcessor : EntityProcessor<ModelComponent, RenderModel>
     {
-        private NextGenRenderSystem renderSystem;
+        private VisibilityGroup visibilityGroup;
 
         public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
 
-        public NextGenModelProcessor() : base(typeof(TransformComponent))
+        public ModelRenderProcessor() : base(typeof(TransformComponent))
         {
         }
 
         protected internal override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
@@ -26,6 +27,19 @@ namespace SiliconStudio.Xenko.Rendering
             var renderModel = new RenderModel(modelComponent);
 
             return renderModel;
+        }
+
+        protected override void OnEntityComponentRemoved(Entity entity, ModelComponent component, RenderModel renderModel)
+        {
+            // Remove old meshes
+            if (renderModel.Meshes != null)
+            {
+                foreach (var renderMesh in renderModel.Meshes)
+                {
+                    // Unregister from render system
+                    visibilityGroup.RenderObjects.Remove(renderMesh);
+                }
+            }
         }
 
         public override void Draw(RenderContext context)
@@ -49,13 +63,22 @@ namespace SiliconStudio.Xenko.Rendering
             var modelViewHierarchy = modelComponent.Skeleton;
             var nodeTransformations = modelViewHierarchy.NodeTransformations;
 
+            // TODO GRAPHICS REFACTOR compute bounding box either by Mesh, or switch to future VisibilityObject system to deal with complete models)
+            var boundingBox = new BoundingBoxExt(modelComponent.BoundingBox);
+
             foreach (var renderMesh in renderModel.Meshes)
             {
                 var mesh = renderMesh.Mesh;
 
-                // Copy world matrix
-                var nodeIndex = mesh.NodeIndex;
-                renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
+                renderMesh.Enabled = modelComponent.Enabled;
+
+                if (renderMesh.Enabled)
+                {
+                    // Copy world matrix
+                    var nodeIndex = mesh.NodeIndex;
+                    renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
+                    renderMesh.BoundingBox = boundingBox;
+                }
             }
         }
 
@@ -72,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering
                 foreach (var renderMesh in renderModel.Meshes)
                 {
                     // Unregister from render system
-                    renderSystem.RenderObjects.Remove(renderMesh);
+                    visibilityGroup.RenderObjects.Remove(renderMesh);
                 }
             }
 
@@ -101,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Update and register with render system
             foreach (var renderMesh in renderMeshes)
             {
-                renderSystem.RenderObjects.Add(renderMesh);
+                visibilityGroup.RenderObjects.Add(renderMesh);
             }
         }
     }

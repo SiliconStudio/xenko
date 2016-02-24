@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public NextGenRenderSystem RenderSystem { get; set; }
 
-        private readonly RenderStage shadowmapRenderStage;
+        private readonly RenderStage shadowMapRenderStage;
 
         private readonly List<RenderView> shadowRenderViews = new List<RenderView>();
 
@@ -37,10 +37,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private const float ReferenceShadowSize = 1024;
 
-        public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowmapRenderStage)
+        public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowMapRenderStage)
         {
             RenderSystem = renderSystem;
-            this.shadowmapRenderStage = shadowmapRenderStage;
+            this.shadowMapRenderStage = shadowMapRenderStage;
 
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         // TODO GRAPHICS REFACTOR reuse views
                         var shadowRenderView = new ShadowMapRenderView
                         {
-                            RenderStages = { shadowmapRenderStage },
+                            RenderStages = { shadowMapRenderStage },
                             RenderView = renderViewData.Key,
                             ShadowMapTexture = shadowMapTexture,
                             Rectangle = shadowMapTexture.GetRectangle(cascadeIndex)
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // TODO: handle FilterType texture creation here
                 // TODO: This does not work for Omni lights
 
-                var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, shadowMapRenderStage.Output.DepthStencilFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
                 currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
                 atlases.Add(currentAtlas);
 

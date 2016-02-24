@@ -7,9 +7,7 @@
         Render,
         EffectObject,
         View,
-        EffectView,
         StaticObject,
-        StaticEffectObject,
     }
 
     public struct ViewObjectPropertyData<T>
@@ -56,6 +54,16 @@
             Index = index;
         }
 
+        public static ViewObjectNodeReference operator +(ViewObjectNodeReference value, int offset)
+        {
+            return new ViewObjectNodeReference(value.Index + offset);
+        }
+
+        public static ViewObjectNodeReference operator *(ViewObjectNodeReference value, int multiplyFactor)
+        {
+            return new ViewObjectNodeReference(value.Index * multiplyFactor);
+        }
+
         public static bool operator ==(ViewObjectNodeReference a, ViewObjectNodeReference b)
         {
             return a.Index == b.Index;
@@ -67,9 +75,9 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal ViewObjectPropertyKey<T> CreateViewObjectKey<T>(ViewObjectPropertyDefinition<T> definition = null)
+        public ViewObjectPropertyKey<T> CreateViewObjectKey<T>(ViewObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -81,13 +89,18 @@
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.ViewObject)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.ViewObject, multiplier)));
             return new ViewObjectPropertyKey<T>(dataArraysIndex);
         }
 
-		internal ViewObjectPropertyData<T> GetData<T>(ViewObjectPropertyKey<T> key)
+		public ViewObjectPropertyData<T> GetData<T>(ViewObjectPropertyKey<T> key)
         {
             return new ViewObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
+        }
+
+        public void ChangeDataMultiplier<T>(ViewObjectPropertyKey<T> key, int multiplier)
+        {
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
     public struct ObjectPropertyData<T>
@@ -134,6 +147,16 @@
             Index = index;
         }
 
+        public static ObjectNodeReference operator +(ObjectNodeReference value, int offset)
+        {
+            return new ObjectNodeReference(value.Index + offset);
+        }
+
+        public static ObjectNodeReference operator *(ObjectNodeReference value, int multiplyFactor)
+        {
+            return new ObjectNodeReference(value.Index * multiplyFactor);
+        }
+
         public static bool operator ==(ObjectNodeReference a, ObjectNodeReference b)
         {
             return a.Index == b.Index;
@@ -145,9 +168,9 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal ObjectPropertyKey<T> CreateObjectKey<T>(ObjectPropertyDefinition<T> definition = null)
+        public ObjectPropertyKey<T> CreateObjectKey<T>(ObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -159,13 +182,18 @@
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.Object)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.Object, multiplier)));
             return new ObjectPropertyKey<T>(dataArraysIndex);
         }
 
-		internal ObjectPropertyData<T> GetData<T>(ObjectPropertyKey<T> key)
+		public ObjectPropertyData<T> GetData<T>(ObjectPropertyKey<T> key)
         {
             return new ObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
+        }
+
+        public void ChangeDataMultiplier<T>(ObjectPropertyKey<T> key, int multiplier)
+        {
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
     public struct RenderPropertyData<T>
@@ -207,9 +235,19 @@
         /// </summary>
 		public static readonly RenderNodeReference Invalid = new RenderNodeReference(-1);
 
-        public RenderNodeReference(int index)
+        internal RenderNodeReference(int index)
         {
             Index = index;
+        }
+
+        public static RenderNodeReference operator +(RenderNodeReference value, int offset)
+        {
+            return new RenderNodeReference(value.Index + offset);
+        }
+
+        public static RenderNodeReference operator *(RenderNodeReference value, int multiplyFactor)
+        {
+            return new RenderNodeReference(value.Index * multiplyFactor);
         }
 
         public static bool operator ==(RenderNodeReference a, RenderNodeReference b)
@@ -223,9 +261,9 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal RenderPropertyKey<T> CreateRenderKey<T>(RenderPropertyDefinition<T> definition = null)
+        public RenderPropertyKey<T> CreateRenderKey<T>(RenderPropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -237,13 +275,18 @@
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.Render)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.Render, multiplier)));
             return new RenderPropertyKey<T>(dataArraysIndex);
         }
 
-		internal RenderPropertyData<T> GetData<T>(RenderPropertyKey<T> key)
+		public RenderPropertyData<T> GetData<T>(RenderPropertyKey<T> key)
         {
             return new RenderPropertyData<T>((T[])dataArrays[key.Index].Array);
+        }
+
+        public void ChangeDataMultiplier<T>(RenderPropertyKey<T> key, int multiplier)
+        {
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
     public struct EffectObjectPropertyData<T>
@@ -290,6 +333,16 @@
             Index = index;
         }
 
+        public static EffectObjectNodeReference operator +(EffectObjectNodeReference value, int offset)
+        {
+            return new EffectObjectNodeReference(value.Index + offset);
+        }
+
+        public static EffectObjectNodeReference operator *(EffectObjectNodeReference value, int multiplyFactor)
+        {
+            return new EffectObjectNodeReference(value.Index * multiplyFactor);
+        }
+
         public static bool operator ==(EffectObjectNodeReference a, EffectObjectNodeReference b)
         {
             return a.Index == b.Index;
@@ -301,9 +354,9 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal EffectObjectPropertyKey<T> CreateEffectObjectKey<T>(EffectObjectPropertyDefinition<T> definition = null)
+        public EffectObjectPropertyKey<T> CreateEffectObjectKey<T>(EffectObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -315,13 +368,18 @@
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.EffectObject)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.EffectObject, multiplier)));
             return new EffectObjectPropertyKey<T>(dataArraysIndex);
         }
 
-		internal EffectObjectPropertyData<T> GetData<T>(EffectObjectPropertyKey<T> key)
+		public EffectObjectPropertyData<T> GetData<T>(EffectObjectPropertyKey<T> key)
         {
             return new EffectObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
+        }
+
+        public void ChangeDataMultiplier<T>(EffectObjectPropertyKey<T> key, int multiplier)
+        {
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
     public struct ViewPropertyData<T>
@@ -368,6 +426,16 @@
             Index = index;
         }
 
+        public static ViewNodeReference operator +(ViewNodeReference value, int offset)
+        {
+            return new ViewNodeReference(value.Index + offset);
+        }
+
+        public static ViewNodeReference operator *(ViewNodeReference value, int multiplyFactor)
+        {
+            return new ViewNodeReference(value.Index * multiplyFactor);
+        }
+
         public static bool operator ==(ViewNodeReference a, ViewNodeReference b)
         {
             return a.Index == b.Index;
@@ -379,9 +447,9 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal ViewPropertyKey<T> CreateViewKey<T>(ViewPropertyDefinition<T> definition = null)
+        public ViewPropertyKey<T> CreateViewKey<T>(ViewPropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -393,91 +461,18 @@
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.View)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.View, multiplier)));
             return new ViewPropertyKey<T>(dataArraysIndex);
         }
 
-		internal ViewPropertyData<T> GetData<T>(ViewPropertyKey<T> key)
+		public ViewPropertyData<T> GetData<T>(ViewPropertyKey<T> key)
         {
             return new ViewPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
-	}
-    public struct EffectViewPropertyData<T>
-    {
-        internal T[] Data;
 
-        internal EffectViewPropertyData(T[] data)
+        public void ChangeDataMultiplier<T>(ViewPropertyKey<T> key, int multiplier)
         {
-            Data = data;
-        }
-
-        internal T this[EffectViewNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
-    }
-
-	public struct EffectViewPropertyKey<T>
-    {
-        internal readonly int Index;
-
-        internal EffectViewPropertyKey(int index)
-        {
-            Index = index;
-        }
-    }
-
-	public class EffectViewPropertyDefinition<T>
-    {
-    }
-
-	public partial struct EffectViewNodeReference
-    {
-        internal readonly int Index;
-
-        /// <summary>
-        /// Invalid slot.
-        /// </summary>
-		public static readonly EffectViewNodeReference Invalid = new EffectViewNodeReference(-1);
-
-        internal EffectViewNodeReference(int index)
-        {
-            Index = index;
-        }
-
-        public static bool operator ==(EffectViewNodeReference a, EffectViewNodeReference b)
-        {
-            return a.Index == b.Index;
-        }
-
-		public static bool operator !=(EffectViewNodeReference a, EffectViewNodeReference b)
-        {
-            return a.Index != b.Index;
-        }
-    }
-
-	partial class RootRenderFeature
-	{
-        internal EffectViewPropertyKey<T> CreateEffectViewKey<T>(EffectViewPropertyDefinition<T> definition = null)
-        {
-            if (definition != null)
-            {
-                int existingIndex;
-                if (dataArraysByDefinition.TryGetValue(definition, out existingIndex))
-                    return new EffectViewPropertyKey<T>(existingIndex);
-
-                dataArraysByDefinition.Add(definition, dataArrays.Count);
-            }
-
-            var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.EffectView)));
-            return new EffectViewPropertyKey<T>(dataArraysIndex);
-        }
-
-		internal EffectViewPropertyData<T> GetData<T>(EffectViewPropertyKey<T> key)
-        {
-            return new EffectViewPropertyData<T>((T[])dataArrays[key.Index].Array);
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
     public struct StaticObjectPropertyData<T>
@@ -524,6 +519,16 @@
             Index = index;
         }
 
+        public static StaticObjectNodeReference operator +(StaticObjectNodeReference value, int offset)
+        {
+            return new StaticObjectNodeReference(value.Index + offset);
+        }
+
+        public static StaticObjectNodeReference operator *(StaticObjectNodeReference value, int multiplyFactor)
+        {
+            return new StaticObjectNodeReference(value.Index * multiplyFactor);
+        }
+
         public static bool operator ==(StaticObjectNodeReference a, StaticObjectNodeReference b)
         {
             return a.Index == b.Index;
@@ -535,9 +540,9 @@
         }
     }
 
-	partial class RootRenderFeature
+	partial struct RenderDataHolder
 	{
-        internal StaticObjectPropertyKey<T> CreateStaticObjectKey<T>(StaticObjectPropertyDefinition<T> definition = null)
+        public StaticObjectPropertyKey<T> CreateStaticObjectKey<T>(StaticObjectPropertyDefinition<T> definition = null, int multiplier = 1)
         {
             if (definition != null)
             {
@@ -549,91 +554,18 @@
             }
 
             var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.StaticObject)));
+			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.StaticObject, multiplier)));
             return new StaticObjectPropertyKey<T>(dataArraysIndex);
         }
 
-		internal StaticObjectPropertyData<T> GetData<T>(StaticObjectPropertyKey<T> key)
+		public StaticObjectPropertyData<T> GetData<T>(StaticObjectPropertyKey<T> key)
         {
             return new StaticObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
-	}
-    public struct StaticEffectObjectPropertyData<T>
-    {
-        internal T[] Data;
 
-        internal StaticEffectObjectPropertyData(T[] data)
+        public void ChangeDataMultiplier<T>(StaticObjectPropertyKey<T> key, int multiplier)
         {
-            Data = data;
-        }
-
-        public T this[StaticEffectObjectNodeReference index]
-        {
-            get { return Data[index.Index]; }
-            set { Data[index.Index] = value; }
-        }
-    }
-
-	public struct StaticEffectObjectPropertyKey<T>
-    {
-        internal readonly int Index;
-
-        internal StaticEffectObjectPropertyKey(int index)
-        {
-            Index = index;
-        }
-    }
-
-	public class StaticEffectObjectPropertyDefinition<T>
-    {
-    }
-
-	public partial struct StaticEffectObjectNodeReference
-    {
-        internal readonly int Index;
-
-        /// <summary>
-        /// Invalid slot.
-        /// </summary>
-		public static readonly StaticEffectObjectNodeReference Invalid = new StaticEffectObjectNodeReference(-1);
-
-        internal StaticEffectObjectNodeReference(int index)
-        {
-            Index = index;
-        }
-
-        public static bool operator ==(StaticEffectObjectNodeReference a, StaticEffectObjectNodeReference b)
-        {
-            return a.Index == b.Index;
-        }
-
-		public static bool operator !=(StaticEffectObjectNodeReference a, StaticEffectObjectNodeReference b)
-        {
-            return a.Index != b.Index;
-        }
-    }
-
-	partial class RootRenderFeature
-	{
-        protected internal StaticEffectObjectPropertyKey<T> CreateStaticEffectObjectKey<T>(StaticEffectObjectPropertyDefinition<T> definition = null)
-        {
-            if (definition != null)
-            {
-                int existingIndex;
-                if (dataArraysByDefinition.TryGetValue(definition, out existingIndex))
-                    return new StaticEffectObjectPropertyKey<T>(existingIndex);
-
-                dataArraysByDefinition.Add(definition, dataArrays.Count);
-            }
-
-            var dataArraysIndex = dataArrays.Count;
-			dataArrays.Add(new DataArray(new DataArrayInfo<T>(DataType.StaticEffectObject)));
-            return new StaticEffectObjectPropertyKey<T>(dataArraysIndex);
-        }
-
-		protected internal StaticEffectObjectPropertyData<T> GetData<T>(StaticEffectObjectPropertyKey<T> key)
-        {
-            return new StaticEffectObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
+            dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
         }
 	}
 }

@@ -2,8 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.Linq;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -60,8 +61,31 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected abstract void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);
+        protected virtual void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            
+        }
 
-        protected abstract void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
+        protected virtual void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        {
+            
+        }
+
+        public static RenderStage GetRenderStage(NextGenRenderSystem renderSystem, string name)
+        {
+            return renderSystem.RenderStages.FirstOrDefault(x => x.Name == name);
+        }
+
+        public static RenderStage GetOrCreateRenderStage(NextGenRenderSystem renderSystem, string name, string effectSlotName, RenderOutputDescription defaultOutput)
+        {
+            var renderStage = renderSystem.RenderStages.FirstOrDefault(x => x.Name == name);
+            if (renderStage != null)
+                return renderStage;
+
+            renderStage = new RenderStage(name, effectSlotName) { Output = defaultOutput };
+            renderSystem.RenderStages.Add(renderStage);
+
+            return renderStage;
+        }
     }
 }

@@ -16,10 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
         private SpriteBatch spriteBatch;
         private EffectInstance backgroundEffect;
 
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderBackground;
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderBackground);
 
         public override void Initialize()
         {

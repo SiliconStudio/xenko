@@ -19,10 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         private ConstantBufferOffsetReference matrixTransform;
 
         /// <inheritdoc/>
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderSkybox;
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderSkybox);
 
         /// <inheritdoc/>
         public override void Initialize()
@@ -47,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl()
         {
-            var renderEffects = GetData(RenderEffectKey);
+            var renderEffects = RenderData.GetData(RenderEffectKey);
 
             foreach (var renderObject in RenderObjects)
             {
@@ -55,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 for (int i = 0; i < EffectPermutationSlotCount; ++i)
                 {
-                    var staticEffectObjectNode = staticObjectNode.CreateEffectReference(EffectPermutationSlotCount, i);
+                    var staticEffectObjectNode = staticObjectNode * EffectPermutationSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
                     var renderSkybox = (RenderSkybox)renderObject;
 

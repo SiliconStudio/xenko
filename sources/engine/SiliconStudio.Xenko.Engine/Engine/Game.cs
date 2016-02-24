@@ -83,6 +83,11 @@ namespace SiliconStudio.Xenko.Engine
         public EffectSystem EffectSystem { get; private set; }
 
         /// <summary>
+        /// Gets the render system.
+        /// </summary>
+        public NextGenRenderSystem RenderSystem { get; private set; }
+
+        /// <summary>
         /// Gets the audio system.
         /// </summary>
         /// <value>The audio.</value>
@@ -293,6 +298,10 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(EffectSystem);
 
             GameSystems.Add(SceneSystem);
+
+            // Setup render system
+            RenderSystem = new NextGenRenderSystem(Services);
+            GameSystems.Add(RenderSystem);
 
             // TODO: data-driven?
             Asset.Serializer.RegisterSerializer(new ImageSerializer());

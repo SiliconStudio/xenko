@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// A graphics layer.
     /// </summary>
     [DataContract("SceneGraphicsLayer")]
-    public class SceneGraphicsLayer : RendererBase, IEnumerable
+    public class SceneGraphicsLayer : RendererBase, IEnumerable, INextGenRenderer
     {
         private IGraphicsLayerOutput output;
 
@@ -114,6 +114,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             }
 
             base.Unload();
+        }
+
+        public void BeforeExtract(RenderContext context)
+        {
+            Renderers.BeforeExtract(context);
         }
 
         protected override void DrawCore(RenderDrawContext context)

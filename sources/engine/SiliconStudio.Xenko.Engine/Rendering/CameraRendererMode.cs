@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Defines the type of rendering (Forward, Deferred...etc.)
     /// </summary>
     [DataContract("CameraRendererMode")]
-    public abstract class CameraRendererMode : RendererBase
+    public abstract class CameraRendererMode : RendererBase, INextGenRenderer
     {
         // TODO: Where should we put this key?
         public static readonly PropertyKey<EntityComponentRendererTypeCollection> RendererTypesKey = new PropertyKey<EntityComponentRendererTypeCollection>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
@@ -86,21 +86,36 @@ namespace SiliconStudio.Xenko.Rendering
             return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
         }
 
+        /// <param name="context"></param>
+        /// <inheritdoc/>
+        public virtual void BeforeExtract(RenderContext context)
+        {
+            EnsureContext(context);
+        }
+
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
         /// </summary>
         /// <param name="context">The context.</param>
         protected override void DrawCore(RenderDrawContext context)
         {
+            InitializeEntityComponentRenderers(context.RenderContext);
+
+            // Call the batch renderer
+            //batchRenderer.Draw(context);
+        }
+
+        protected void InitializeEntityComponentRenderers(RenderContext context)
+        {
             // Pre-create all batchRenderer
             // TODO: We should handle cases where we are removing components types to improve performance
-            var rendererTypes = context.RenderContext.Tags.GetSafe(RendererTypesKey);
+            var rendererTypes = context.Tags.GetSafe(RendererTypesKey);
 
             // Gets the renderer types
             sortedRendererTypes.Clear();
             sortedRendererTypes.AddRange(rendererTypes);
             sortedRendererTypes.Sort();
-            
+
             // clear current renderer batching
             batchRenderer.Clear();
 
@@ -126,7 +141,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // check in existing default renderer
                 if (renderer == null)
                     componentTypeToRenderer.TryGetValue(componentType, out renderer);
-                
+
                 // create the default renderer if not existing
                 if (renderer == null)
                 {
@@ -134,11 +149,8 @@ namespace SiliconStudio.Xenko.Rendering
                     componentTypeToRenderer[componentType] = renderer;
                 }
 
-                batchRenderer.Add(renderer);
+                //batchRenderer.Add(renderer);
             }
-
-            // Call the batch renderer
-            batchRenderer.Draw(context);
         }
 
         protected override void Destroy()

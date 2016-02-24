@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -12,10 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     {
         private Sprite3DBatch sprite3DBatch;
 
-        public override bool SupportsRenderObject(RenderObject renderObject)
-        {
-            return renderObject is RenderSprite;
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderSprite);
 
         public override void Initialize()
         {

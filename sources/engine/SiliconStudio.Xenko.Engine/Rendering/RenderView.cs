@@ -41,6 +41,11 @@ namespace SiliconStudio.Xenko.Rendering
         public List<RenderViewStage> RenderStages = new List<RenderViewStage>();
 
         /// <summary>
+        /// List of visible render objects.
+        /// </summary>
+        public List<RenderObject> RenderObjects = new List<RenderObject>();
+
+        /// <summary>
         /// The camera for this view. 
         /// </summary>
         public CameraComponent Camera;
