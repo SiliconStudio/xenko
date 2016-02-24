@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
     /// </summary>
     public class NextGenParticleSystemProcessor : EntityProcessor<ParticleSystemComponent, RenderParticleSystem>
     {
-        private NextGenRenderSystem renderSystem;
+        private VisibilityGroup visibilityGroup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NextGenParticleSystemProcessor"/> class.
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         protected override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         public override void Draw(RenderContext gameTime)
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             for (int index = 0; index < emitterCount; index++)
             {
-                renderSystem.RenderObjects.Add(new RenderParticleEmitter
+                visibilityGroup.RenderObjects.Add(new RenderParticleEmitter
                 {
                     ParticleEmitter = emitters[index],
                     RenderParticleSystem = renderParticleSystem,
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             foreach (var emitter in renderParticleSystem.Emitters)
             {
-                renderSystem.RenderObjects.Remove(emitter);
+                visibilityGroup.RenderObjects.Remove(emitter);
             }
         }
 
