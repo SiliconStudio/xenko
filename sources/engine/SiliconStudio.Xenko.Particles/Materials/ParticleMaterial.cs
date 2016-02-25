@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             HasVertexLayoutChanged = false;
         }
 
-        public virtual void ValidateEffect(RenderContext context, EffectValidator effectValidator)
+        public virtual void ValidateEffect(RenderContext context, ref EffectValidator effectValidator)
         {
         }
 

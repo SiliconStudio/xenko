@@ -40,11 +40,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             // PerMaterial
             public ResourceGroup Resources;
             public int ResourceCount;
-
-            public Buffer ConstantBuffer;
             public ShaderConstantBufferDescription ConstantBufferReflection;
 
-            public PermutationParameter<ShaderSource> BaseColor;
             public RenderEffect RenderEffect;
 
             public ParticleMaterialInfo(ParticleMaterial material)
@@ -105,6 +102,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 if (materialInfo.PerMaterialLayout == null)
                 {
                     var renderEffect = materialInfo.RenderEffect;
+
                     var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerMaterial");
 
                     var parameterCollectionLayout = new NextGenParameterCollectionLayout();
@@ -152,18 +150,20 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var renderNode = RenderNodes[renderNodeIndex];
-                var renderMesh = (RenderMesh)renderNode.RenderObject;
+                var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
 
                 // Collect materials and create associated MaterialInfo (includes reflection) first time
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
                 // Need to offer some protection if this invariant is violated (or support it if it can actually happen in real scenario)
-                var material = renderMesh.Material.Material;
+                var material = renderParticleEmitter.ParticleEmitter.Material;
                 var materialInfo = (ParticleMaterialInfo)material.RenderData;
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
             }
 
+            // Per view
+            // TODO: Transform sub render feature?
             for (int index = 0; index < RenderSystem.Views.Count; index++)
             {
                 var view = RenderSystem.Views[index];
@@ -188,8 +188,10 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
         }
 
-        public override void PrepareEffectPermutations()
+        public override void PrepareEffectPermutationsImpl()
         {
+            base.PrepareEffectPermutationsImpl();
+
             var renderEffects = RenderData.GetData(renderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
 
@@ -230,9 +232,16 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                     }
 
                     // TODO: Iterate PermuatationParameters automatically?
-                    material.ValidateEffect(RenderSystem.RenderContextOld, renderEffect.EffectValidator);
+                    material.ValidateEffect(RenderSystem.RenderContextOld, ref renderEffect.EffectValidator);
                 }
             }
+        }
+
+        protected override void InvalidateEffectPermutation(RenderObject renderObject, RenderEffect renderEffect)
+        {
+            var renderParticleEmitter = (RenderParticleEmitter)renderObject;
+            var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleEmitter.Material.RenderData;
+            materialInfo.PerMaterialLayout = null;
         }
 
         protected override void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
@@ -253,7 +262,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
 
-            for (var index = startIndex; index <= endIndex; index++)
+            for (var index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
                 var renderNode = GetRenderNode(renderNodeReference);

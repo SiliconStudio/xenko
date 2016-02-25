@@ -292,7 +292,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             RenderSystem.Draw(context, mainRenderView, MainRenderStage);
-            //Draw(RenderContext, mainRenderView, transparentRenderStage);
+            RenderSystem.Draw(context, mainRenderView, TransparentRenderStage);
 
             // Depth readback
             //if (Shadows)
