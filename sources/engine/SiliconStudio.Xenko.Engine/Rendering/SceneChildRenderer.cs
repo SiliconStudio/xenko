@@ -43,6 +43,12 @@ namespace SiliconStudio.Xenko.Engine
         public ChildSceneComponent ChildScene { get; set; }
 
         /// <summary>
+        /// Gets the render system used with this pipeline.
+        /// </summary>
+        [DataMemberIgnore]
+        public NextGenRenderSystem RenderSystem { get; } = new NextGenRenderSystem();
+
+        /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
         /// </summary>
         /// <value>The graphics compositor override.</value>
@@ -60,34 +66,11 @@ namespace SiliconStudio.Xenko.Engine
             base.Destroy();
         }
 
-        public override void BeforeExtract(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.BeforeExtract(context);
+            base.InitializeCore();
 
-            if (ChildScene == null || !ChildScene.Enabled)
-            {
-                return;
-            }
-
-            currentSceneInstance = SceneInstance.GetCurrent(Context);
-
-            childSceneProcessor = childSceneProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
-
-            if (childSceneProcessor == null)
-            {
-                return;
-            }
-
-            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
-            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-            if (sceneInstance != null)
-            {
-                // Collect
-                // TODO GRAPHICS REFACTOR choose which views to collect
-                //sceneInstance.VisibilityGroup.Views.AddRange(renderSystem.Views);
-                //sceneInstance.VisibilityGroup.Collect(EntityGroupMask.All); // TODO GRAPHICS REFACTOR where to get that from? add it to SceneChildRenderer?
-                //sceneInstance.VisibilityGroup.Views.Clear();
-            }
+            RenderSystem.Initialize(Context);
         }
 
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)
@@ -109,7 +92,7 @@ namespace SiliconStudio.Xenko.Engine
             SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
             if (sceneInstance != null)
             {
-                //sceneInstance.Draw(context, output, GraphicsCompositorOverride);
+                sceneInstance.Draw(context, output, GraphicsCompositorOverride);
             }
         }
     }
