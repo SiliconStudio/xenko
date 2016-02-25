@@ -10,6 +10,10 @@ namespace SiliconStudio.Presentation.Behaviors
         MouseDown,
         MouseUp,
         MouseMove,
+        MouseLeftButtonDown,
+        MouseLeftButtonUp,
+        MouseRightButtonDown,
+        MouseRightButtonUp,
         PreviewMouseDown,
         PreviewMouseUp,
         PreviewMouseMove,
@@ -82,6 +86,18 @@ namespace SiliconStudio.Presentation.Behaviors
                 case MouseEventType.MouseMove:
                     AssociatedObject.MouseMove += MouseMoveHandler;
                     break;
+                case MouseEventType.MouseLeftButtonDown:
+                    AssociatedObject.MouseLeftButtonDown += MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseLeftButtonUp:
+                    AssociatedObject.MouseLeftButtonUp += MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonDown:
+                    AssociatedObject.MouseRightButtonDown += MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonUp:
+                    AssociatedObject.MouseRightButtonUp += MouseMoveHandler;
+                    break;
                 case MouseEventType.PreviewMouseDown:
                     AssociatedObject.PreviewMouseDown += MouseButtonHandler;
                     break;
@@ -118,6 +134,18 @@ namespace SiliconStudio.Presentation.Behaviors
                     break;
                 case MouseEventType.MouseMove:
                     AssociatedObject.MouseMove -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseLeftButtonDown:
+                    AssociatedObject.MouseLeftButtonDown -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseLeftButtonUp:
+                    AssociatedObject.MouseLeftButtonUp -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonDown:
+                    AssociatedObject.MouseRightButtonDown -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonUp:
+                    AssociatedObject.MouseRightButtonUp -= MouseMoveHandler;
                     break;
                 case MouseEventType.PreviewMouseDown:
                     AssociatedObject.PreviewMouseDown -= MouseButtonHandler;
