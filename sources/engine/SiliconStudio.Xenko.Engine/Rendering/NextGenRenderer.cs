@@ -268,14 +268,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             var sceneInstance = SceneInstance.GetCurrent(Context);
             var sceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
-
-            // Collect
-            // TODO GRAPHICS REFACTOR choose which views to collect
-            var visibilityGroup = Context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
-
-            visibilityGroup.Views.AddRange(RenderSystem.Views);
-            visibilityGroup.Collect(sceneCameraRenderer.CullingMask);
-            visibilityGroup.Views.Clear();
         }
 
         protected override void DrawCore(RenderDrawContext context)

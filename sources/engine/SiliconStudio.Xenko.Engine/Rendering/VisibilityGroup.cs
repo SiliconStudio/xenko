@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem.RenderStageSelectorsChanged += RenderSystem_RenderStageSelectorsChanged;
         }
 
-        public void Collect(EntityGroupMask entityGroups)
+        public void Collect()
         {
             // Check if active render stages need reevaluation for those render objects
             ReevaluateActiveRenderStages();
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering
                 foreach (var renderObject in RenderObjects)
                 {
                     // Skip not enabled objects
-                    if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & entityGroups) == 0)
+                    if (!renderObject.Enabled)
                         continue;
 
                     var renderStageMask = RenderData.GetData(RenderStageMaskKey);
