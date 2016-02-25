@@ -7,6 +7,8 @@ using System.IO;
 using System.Text;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
@@ -17,12 +19,6 @@ namespace SiliconStudio.Assets
     [DataContract("SourceCodeAsset")]
     public abstract class SourceCodeAsset : Asset
     {
-        private string text;
-
-        protected SourceCodeAsset()
-        {
-        }
-
         /// <summary>
         /// Gets or sets the absolute source location of this asset on the disk.
         /// </summary>
@@ -35,17 +31,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The sourcecode text.</value>
         [DataMemberIgnore]
-        public string Text
-        {
-            get
-            {
-                return text ?? (text = Load()); // Lazy loading
-            }
-            set
-            {
-                text = value;
-            }
-        }
+        public string Text { get; set; }
 
         /// <summary>
         /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
@@ -53,34 +39,25 @@ namespace SiliconStudio.Assets
         /// <param name="stream"></param>
         public virtual void Save(Stream stream)
         {
-            // If the text was not loaded in memory, just copy the stream from input to output
-            if (text == null)
+            if (Text.IsNullOrEmpty())
             {
-                if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(AbsoluteSourceLocation))
-                {
-                    using (var inputStream = new FileStream(AbsoluteSourceLocation, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        inputStream.CopyTo(stream);
-                    }
-                }
+                Text = Load() ?? "";
             }
-            else
-            { 
-                // Otherwise save the text direcly
-                var buffer = Encoding.UTF8.GetBytes(Text);
-                stream.Write(buffer, 0, buffer.Length);
-            }
+
+            var buffer = Encoding.UTF8.GetBytes(Text);
+            stream.Write(buffer, 0, buffer.Length);
         }
 
         /// <summary>
         /// Loads the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
         /// </summary>
-        private string Load()
+        protected string Load()
         {
-            if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(AbsoluteSourceLocation))
+            if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(new UFile(AbsoluteSourceLocation).ToWindowsPath()))
             {
                 return File.ReadAllText(AbsoluteSourceLocation);
             }
+
             return null;
         }
 

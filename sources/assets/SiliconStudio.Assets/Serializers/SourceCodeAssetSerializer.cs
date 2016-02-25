@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Mime;
 using System.Text;
 
 using SiliconStudio.Core.Diagnostics;
@@ -16,8 +17,13 @@ namespace SiliconStudio.Assets.Serializers
         public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
         {
             aliasOccurred = false;
+
             var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
+
+            var reader = new StreamReader(stream, Encoding.UTF8);
+            asset.Text = reader.ReadToEnd();
+
             return asset;
         }
 
