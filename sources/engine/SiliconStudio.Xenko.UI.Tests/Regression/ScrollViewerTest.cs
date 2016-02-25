@@ -38,19 +38,19 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var Sprites = Asset.Load<SpriteSheet>("UIImages");
+            var Sprites = Content.Load<SpriteSheet>("UIImages");
 
-            var img1 = new ImageElement { Name = "UV 1 stack panel", Source = new Sprite(Asset.Load<Texture>("uv")) };
-            var img2 = new ImageElement { Name = "UV 2 stack panel", Source = new Sprite(Asset.Load<Texture>("uv")) };
-            img3 = new ImageElement { Name = "UV 3 stack panel", Source = new Sprite(Asset.Load<Texture>("uv")) };
+            var img1 = new ImageElement { Name = "UV 1 stack panel", Source = new Sprite(Content.Load<Texture>("uv")) };
+            var img2 = new ImageElement { Name = "UV 2 stack panel", Source = new Sprite(Content.Load<Texture>("uv")) };
+            img3 = new ImageElement { Name = "UV 3 stack panel", Source = new Sprite(Content.Load<Texture>("uv")) };
 
             stackPanel = new StackPanel { Orientation = Orientation.Vertical };
             stackPanel.Children.Add(img1);
             stackPanel.Children.Add(img2);
             stackPanel.Children.Add(img3);
 
-            var img4 = new ImageElement { Name = "UV grid", Source = new Sprite(Asset.Load<Texture>("uv")) };
-            var img5 = new ImageElement { Name = "UV grid 2", Source = new Sprite(Asset.Load<Texture>("uv")) };
+            var img4 = new ImageElement { Name = "UV grid", Source = new Sprite(Content.Load<Texture>("uv")) };
+            var img5 = new ImageElement { Name = "UV grid 2", Source = new Sprite(Content.Load<Texture>("uv")) };
             var img6 = new ImageElement { Name = "Game screen grid", Source = Sprites["GameScreen"] };
 
             img4.DependencyProperties.Set(GridBase.ColumnPropertyKey, 0);

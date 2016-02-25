@@ -377,7 +377,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
                         // Load an image from a file and dispose it.
                         Texture texture;
-                        using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                        using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
                             texture = Texture.Load(device, inStream);
                             
                         var tempStream = new MemoryStream();
@@ -385,7 +385,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         tempStream.Position = 0;
                         texture.Dispose();
 
-                        using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                        using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
                         using (var originalImage = Image.Load(inStream))
                         {
                             using (var textureImage = Image.Load(tempStream))
@@ -428,7 +428,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         
                         // Load an image from a file and dispose it.
                         Texture texture;
-                        using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                        using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
                             texture = Texture.Load(device, inStream, loadAsSRGB: true);
                         
                         game.GraphicsDevice.SetBlendState(game.GraphicsDevice.BlendStates.AlphaBlend);

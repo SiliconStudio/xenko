@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
 
                 var prefab = Create(AssetParameters);
                 foreach (var rootEntity in AssetParameters.Hierarchy.RootEntities)

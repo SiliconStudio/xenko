@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         {
             // Save and change serializer selector to the optimized one
             var previousSerializerSelector = stream.Context.SerializerSelector;
-            stream.Context.SerializerSelector = context.AssetManager.Serializer.LowLevelSerializerSelectorWithReuse;
+            stream.Context.SerializerSelector = context.ContentManager.Serializer.LowLevelSerializerSelectorWithReuse;
 
             // Serialize
             base.Serialize(context, stream, obj);

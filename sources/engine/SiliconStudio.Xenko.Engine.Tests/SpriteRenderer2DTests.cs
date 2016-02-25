@@ -50,10 +50,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             await base.LoadContent();
 
-            var debugSheet = Asset.Load<SpriteSheet>("DebugSpriteSheet");
+            var debugSheet = Content.Load<SpriteSheet>("DebugSpriteSheet");
 
             // current frame test
-            animatedBall = CreateSpriteEntity(Asset.Load<SpriteSheet>("BallSprite1"), "sphere1");
+            animatedBall = CreateSpriteEntity(Content.Load<SpriteSheet>("BallSprite1"), "sphere1");
             animatedBall.Transform.Position = new Vector3(75, 75, 0);
 
             // normal reference one

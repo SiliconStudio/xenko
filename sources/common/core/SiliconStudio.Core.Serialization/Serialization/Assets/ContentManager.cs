@@ -17,9 +17,9 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// <summary>
     /// Loads and saves assets.
     /// </summary>
-    public sealed partial class AssetManager : IAssetManager
+    public sealed partial class ContentManager : IAssetManager
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger("AssetManager");
+        private static readonly Logger Log = GlobalLogger.GetLogger("ContentManager");
 
         public static DatabaseFileProvider FileProvider
         {
@@ -48,17 +48,17 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </summary>
         internal readonly Dictionary<object, AssetReference> LoadedAssetReferences = new Dictionary<object, AssetReference>();
 
-        public AssetManager() : this(null)
+        public ContentManager() : this(null)
         {
         }
 
-        public AssetManager(IServiceRegistry services)
+        public ContentManager(IServiceRegistry services)
         {
             Serializer = new AssetSerializer();
             if (services != null)
             {
                 services.AddService(typeof(IAssetManager), this);
-                services.AddService(typeof(AssetManager), this);
+                services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
             }
         }
@@ -149,7 +149,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="obj">The object.</param>
         /// <param name="settings">The settings.</param>
         /// <returns>True if it could be reloaded, false otherwise.</returns>
-        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
+        /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
         public bool Reload(object obj, AssetManagerLoaderSettings settings = null)
         {
             if (settings == null)
@@ -256,14 +256,14 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// Unloads the specified asset.
         /// </summary>
         /// <param name="obj">The object to unload.</param>
-        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
+        /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
         public void Unload(object obj)
         {
             lock (LoadedAssetUrls)
             {
                 AssetReference assetReference;
                 if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
-                    throw new InvalidOperationException("Asset not loaded through this AssetManager.");
+                    throw new InvalidOperationException("Content not loaded through this ContentManager.");
 
                 // Release reference
                 DecrementReference(assetReference, true);
@@ -274,7 +274,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// Unloads the asset at the specified URL.
         /// </summary>
         /// <param name="url">The URL.</param>
-        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
+        /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
         public void Unload(string url)
         {
             lock (LoadedAssetUrls)
@@ -282,7 +282,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 // Try to find already loaded object
                 AssetReference assetReference;
                 if (!LoadedAssetUrls.TryGetValue(url, out assetReference))
-                    throw new InvalidOperationException("Asset not loaded through this AssetManager.");
+                    throw new InvalidOperationException("Content not loaded through this ContentManager.");
                 
                 // Release reference
                 DecrementReference(assetReference, true);

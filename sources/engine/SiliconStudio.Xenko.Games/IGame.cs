@@ -59,10 +59,10 @@ namespace SiliconStudio.Xenko.Games
         TimerTick PlayTime { get; }
 
         /// <summary>
-        /// Gets or sets the <see cref="AssetManager"/>.
+        /// Gets or sets the <see cref="ContentManager"/>.
         /// </summary>
         /// <value>The content manager.</value>
-        AssetManager Asset { get; }
+        ContentManager Content { get; }
 
         /// <summary>
         /// Gets the game components registered by this game.
