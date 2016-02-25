@@ -1,14 +1,17 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    // TODO GRAPHICS REFACTOR remove this class
     /// <summary>
     /// A component can be integrated into the rendering pipeline automatically if it defines 
     /// a <see cref="DefaultEntityComponentRendererAttribute"/> on its class definition.
     /// </summary>
+    [Obsolete]
     public interface IEntityComponentRenderer : IEntityComponentRendererCore
     {
         /// <summary>

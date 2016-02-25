@@ -8,6 +8,8 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     //TODO this whole renderer is not optimized at all! batching is wrong and depth calculation should be done differently
+    // TODO GRAPHICS REFACTOR rewrite this
+    [Obsolete]
     public class SpriteStudioRenderer : EntityComponentRendererBase
     {
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available

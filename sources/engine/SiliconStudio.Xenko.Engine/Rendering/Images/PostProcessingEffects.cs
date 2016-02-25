@@ -231,8 +231,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var camera = context.RenderContext.GetCameraFromSlot(Camera);
             if (camera != null)
             {
+                // TODO GRAPHICS REFACTOR check if this is still necessary
                 // Update the parameters for this post effect
-                CameraComponentRenderer.UpdateParameters(context, camera);
+                //CameraComponentRenderer.UpdateParameters(context, camera);
             }
 
             if (!Enabled)

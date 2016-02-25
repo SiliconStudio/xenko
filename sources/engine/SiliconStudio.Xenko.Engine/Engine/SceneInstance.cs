@@ -62,8 +62,6 @@ namespace SiliconStudio.Xenko.Engine
             ExecutionMode = executionMode;
             VisibilityGroup = new VisibilityGroup(services);
             Scene = sceneEntityRoot;
-            RendererTypes = new EntityComponentRendererTypeCollection();
-            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
             Load();
         }
 
@@ -87,12 +85,6 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
         }
-
-        /// <summary>
-        /// Gets the component renderers.
-        /// </summary>
-        /// <value>The renderers.</value>
-        private EntityComponentRendererTypeCollection RendererTypes { get; set; }
 
         protected override void Destroy()
         {
@@ -162,7 +154,6 @@ namespace SiliconStudio.Xenko.Engine
                     using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, toFrame))
                     using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
                     using (context.RenderContext.PushTagAndRestore(Current, this))
-                    using (context.RenderContext.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
                         graphicsCompositor.BeforeExtract(context.RenderContext);
 
@@ -240,7 +231,6 @@ namespace SiliconStudio.Xenko.Engine
         private void Load()
         {
             previousScene = Scene;
-            RendererTypes.Clear();
 
             OnSceneChanged();
 
@@ -256,9 +246,6 @@ namespace SiliconStudio.Xenko.Engine
 
             // Listen to future changes in Scene.Entities
             Scene.Entities.CollectionChanged += Entities_CollectionChanged;
-
-            // TODO: RendererTypes could be done outside this instance.
-            HandleRendererTypes();
         }
 
         private void Entities_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
@@ -271,32 +258,6 @@ namespace SiliconStudio.Xenko.Engine
                 case NotifyCollectionChangedAction.Remove:
                     Remove((Entity)e.Item);
                     break;
-            }
-        }
-
-        private void HandleRendererTypes()
-        {
-            foreach (var componentType in ComponentTypes)
-            {
-                EntitySystemOnComponentTypeAdded(null, componentType);
-            }
-
-            // Make sure that we always have a camera component registered
-            RendererTypes.Add(new EntityComponentRendererType(typeof(CameraComponent).GetTypeInfo(), typeof(CameraComponentRenderer), int.MinValue));
-        }
-
-        private void EntitySystemOnComponentTypeAdded(object sender, TypeInfo type)
-        {
-            var rendererTypeAttribute = type.GetCustomAttribute<DefaultEntityComponentRendererAttribute>();
-            if (rendererTypeAttribute == null)
-            {
-                return;
-            }
-            var renderType = AssemblyRegistry.GetType(rendererTypeAttribute.TypeName);
-            if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && x.GetParameters().Length == 0))
-            {
-                var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
-                RendererTypes.Add(entityComponentRendererType);
             }
         }
 

@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A renderable item used by <see cref="IEntityComponentRenderer"/>
     /// </summary>
+    [Obsolete]
     [StructLayout(LayoutKind.Sequential)]
     [DebuggerDisplay("{Renderer} Depth: {RealDepth}")]
     public struct RenderItem
