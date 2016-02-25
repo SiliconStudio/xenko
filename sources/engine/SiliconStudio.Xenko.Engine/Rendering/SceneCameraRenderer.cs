@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMember(20)]
         public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
+        // TODO GRAPHICS REFACTOR should we mark this obsolete? should we hide this from editor?
         /// <summary>
         /// Gets or sets the culling mask.
         /// </summary>

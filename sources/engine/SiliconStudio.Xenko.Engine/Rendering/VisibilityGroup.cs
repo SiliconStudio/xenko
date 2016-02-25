@@ -79,11 +79,16 @@ namespace SiliconStudio.Xenko.Rendering
                 var frustum = new BoundingFrustum(ref view.ViewProjection);
                 var cullingMode = view.SceneCameraRenderer.CullingMode;
 
+                // TODO GRAPHICS REFACTOR we currently forward SceneCameraRenderer.CullingMask
+                // Note sure this is really a good mechanism long term (it forces to recreate multiple time the same view, instead of using RenderStage + selectors or a similar mechanism)
+                // This is still supported so that existing gizmo code kept working with new graphics refactor. Might be reconsidered at some point.
+                var cullingMask = view.SceneCameraRenderer.CullingMask;
+
                 // Process objects
                 foreach (var renderObject in RenderObjects)
                 {
                     // Skip not enabled objects
-                    if (!renderObject.Enabled)
+                    if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
                         continue;
 
                     var renderStageMask = RenderData.GetData(RenderStageMaskKey);
