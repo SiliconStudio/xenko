@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            var target = RenderSystem.RenderContextOld.Tags.GetSafe(RenderFrame.Current);
+            var target = context.RenderContext.Tags.GetSafe(RenderFrame.Current);
             var graphicsDevice = context.GraphicsDevice;
             var destination = new RectangleF(0, 0, 1, 1);
 

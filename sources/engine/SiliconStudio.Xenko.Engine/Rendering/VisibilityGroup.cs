@@ -36,9 +36,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public RenderObjectCollection RenderObjects { get; }
 
-        public VisibilityGroup(IServiceRegistry registry)
+        public VisibilityGroup(NextGenRenderSystem renderSystem)
         {
-            RenderSystem = registry.GetSafeServiceAs<NextGenRenderSystem>();
+            RenderSystem = renderSystem;
             RenderObjects = new RenderObjectCollection(this);
             RenderData.Initialize();
 

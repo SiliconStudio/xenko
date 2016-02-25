@@ -6,19 +6,14 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class ModelRenderProcessor : EntityProcessor<ModelComponent, RenderModel>
+    public class ModelRenderProcessor : EntityProcessor<ModelComponent, RenderModel>, IEntityComponentRenderProcessor
     {
-        private VisibilityGroup visibilityGroup;
-
         public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
+
+        public VisibilityGroup VisibilityGroup { get; set; }
 
         public ModelRenderProcessor() : base(typeof(TransformComponent))
         {
-        }
-
-        protected internal override void OnSystemAdd()
-        {
-            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
@@ -37,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering
                 foreach (var renderMesh in renderModel.Meshes)
                 {
                     // Unregister from render system
-                    visibilityGroup.RenderObjects.Remove(renderMesh);
+                    VisibilityGroup.RenderObjects.Remove(renderMesh);
                 }
             }
         }
@@ -96,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering
                 foreach (var renderMesh in renderModel.Meshes)
                 {
                     // Unregister from render system
-                    visibilityGroup.RenderObjects.Remove(renderMesh);
+                    VisibilityGroup.RenderObjects.Remove(renderMesh);
                 }
             }
 
@@ -125,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Update and register with render system
             foreach (var renderMesh in renderMeshes)
             {
-                visibilityGroup.RenderObjects.Add(renderMesh);
+                VisibilityGroup.RenderObjects.Add(renderMesh);
             }
         }
     }
