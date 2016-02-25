@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,10 +10,19 @@ using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
-    public class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<ListBox>
+    public sealed class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<ListBox>
     {
         public static readonly DependencyProperty CanvasProperty =
             DependencyProperty.Register(nameof(Canvas), typeof(Canvas), typeof(SelectionRectangleBehavior), new PropertyMetadata(OnCanvasChanged));
+
+        public static readonly DependencyProperty AdditiveModifiersProperty =
+            DependencyProperty.Register(nameof(AdditiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Shift));
+
+        public static readonly DependencyProperty DefaultModifiersProperty =
+            DependencyProperty.Register(nameof(DefaultModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.None));
+
+        public static readonly DependencyProperty SubtractiveModifiersProperty =
+            DependencyProperty.Register(nameof(SubtractiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Control));
 
         public static readonly DependencyProperty SelectionRectangleStyleProperty;
 
@@ -38,6 +48,12 @@ namespace SiliconStudio.Presentation.Behaviors
         public static Style SelectionRectangleDefaultStyle { get; }
 
         public Canvas Canvas { get { return (Canvas)GetValue(CanvasProperty); } set { SetValue(CanvasProperty, value); } }
+
+        public ModifierKeys AdditiveModifiers { get { return (ModifierKeys)GetValue(AdditiveModifiersProperty); } set { SetValue(AdditiveModifiersProperty, value); } }
+
+        public ModifierKeys DefaultModifiers { get { return (ModifierKeys)GetValue(DefaultModifiersProperty); } set { SetValue(DefaultModifiersProperty, value); } }
+
+        public ModifierKeys SubtractiveModifiers { get { return (ModifierKeys)GetValue(SubtractiveModifiersProperty); } set { SetValue(SubtractiveModifiersProperty, value); } }
 
         public Style SelectionRectangleStyle { get { return (Style)GetValue(SelectionRectangleStyleProperty); } set { SetValue(SelectionRectangleStyleProperty, value); } }
 
@@ -70,7 +86,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Left)
+            if (!AreModifiersValid() || e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -83,7 +99,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (e.MouseDevice.LeftButton != MouseButtonState.Pressed)
+            if (!AreModifiersValid() || e.MouseDevice.LeftButton != MouseButtonState.Pressed)
             {
                 Cancel();
                 return;
@@ -103,8 +119,6 @@ namespace SiliconStudio.Presentation.Behaviors
                 if (dragDistance > DragThreshold*DragThreshold)
                 {
                     IsDragging = true;
-                    // clear selection immediately when starting drag selection.
-                    AssociatedObject.SelectedItems.Clear();
                     InitDragSelectionRect(originPoint, curMouseDownPoint);
                 }
                 e.Handled = true;
@@ -113,7 +127,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Left)
+            if (!AreModifiersValid() || e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -221,9 +235,12 @@ namespace SiliconStudio.Presentation.Behaviors
             var width = selectionRectangle.Width;
             var height = selectionRectangle.Height;
             var dragRect = new Rect(x, y, width, height);
-            
-            // Clear the current selection.
-            AssociatedObject.SelectedItems.Clear();
+
+            if (HasDefaultModifiers())
+            {
+                // Clear the current selection.
+                AssociatedObject.SelectedItems.Clear(); 
+            }
             
             // Find and select all the list box items.
             foreach (var item in AssociatedObject.Items)
@@ -233,7 +250,16 @@ namespace SiliconStudio.Presentation.Behaviors
                     continue;
 
                 var bounds = GetBounds(container);
-                if (dragRect.IntersectsWith(bounds))
+                if (!dragRect.IntersectsWith(bounds))
+                    continue;
+
+                var isItemSelected = AssociatedObject.SelectedItems.Contains(item);
+                var isSubstractive = HasSubstractiveModifiers();
+                if (isSubstractive && isItemSelected)
+                {
+                    AssociatedObject.SelectedItems.Remove(item);
+                }
+                else if (!isSubstractive && !isItemSelected)
                 {
                     AssociatedObject.SelectedItems.Add(item);
                 }
@@ -257,6 +283,30 @@ namespace SiliconStudio.Presentation.Behaviors
                 return null;
 
             return VisualTreeHelper.GetChild(itemsPresenter, 0) as Panel;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool AreModifiersValid()
+        {
+            return HasAdditiveModifiers() || HasDefaultModifiers() || HasSubstractiveModifiers();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool HasAdditiveModifiers()
+        {
+            return AdditiveModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(AdditiveModifiers);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool HasDefaultModifiers()
+        {
+            return DefaultModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(DefaultModifiers);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool HasSubstractiveModifiers()
+        {
+            return SubtractiveModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(SubtractiveModifiers);
         }
     }
 }
