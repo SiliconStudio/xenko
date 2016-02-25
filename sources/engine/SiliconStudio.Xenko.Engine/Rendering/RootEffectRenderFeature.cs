@@ -267,6 +267,8 @@ namespace SiliconStudio.Xenko.Rendering
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem) || renderEffect.EffectValidator.EndEffectValidation())
                         continue;
 
+                    InvalidateEffectPermutation(renderObject, renderEffect);
+
                     foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
                     {
                         compilerParameters.SetObject(effectValue.Key, effectValue.Value);
@@ -307,6 +309,13 @@ namespace SiliconStudio.Xenko.Rendering
                     compilerParameters.Clear();
                 }
             }
+        }
+
+        /// <summary>
+        /// Implemented by subclasses to reset effect dependent data.
+        /// </summary>
+        protected virtual void InvalidateEffectPermutation(RenderObject renderObject, RenderEffect renderEffect)
+        {
         }
 
         /// <inheritdoc/>
