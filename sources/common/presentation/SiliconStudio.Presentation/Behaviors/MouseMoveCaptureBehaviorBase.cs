@@ -8,6 +8,12 @@ namespace SiliconStudio.Presentation.Behaviors
         where TElement : UIElement
     {
         /// <summary>
+        /// Identifies the <see cref="IsEnabled"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(true, IsEnabledChanged));
+        
+        /// <summary>
         /// Identifies the <see cref="IsInProgress"/> dependency property key.
         /// </summary>
         public static readonly DependencyPropertyKey IsInProgressPropertyKey =
@@ -17,12 +23,23 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
         private static readonly DependencyProperty IsInProgressProperty = IsInProgressPropertyKey.DependencyProperty;
+
+        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
         
         /// <summary>
         /// True if an operation is in progress, False otherwise.
         /// </summary>
         public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } protected set { SetValue(IsInProgressPropertyKey, value); } }
-        
+
+        private static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (MouseMoveCaptureBehaviorBase<TElement>)d;
+            if ((bool)e.NewValue != true)
+            {
+                behavior.Cancel();
+            }
+        }
+
         protected void Cancel()
         {
             if (!IsInProgress)
@@ -72,7 +89,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (IsInProgress)
+            if (!IsEnabled || IsInProgress)
                 return;
 
             OnMouseDown(e);
@@ -80,7 +97,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void MouseMove(object sender, MouseEventArgs e)
         {
-            if (!IsInProgress)
+            if (!IsEnabled || !IsInProgress)
                 return;
 
             OnMouseMove(e);
@@ -88,7 +105,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (!AssociatedObject.IsMouseCaptured || !IsInProgress)
+            if (!IsEnabled || !IsInProgress || !AssociatedObject.IsMouseCaptured)
                 return;
 
             OnMouseUp(e);

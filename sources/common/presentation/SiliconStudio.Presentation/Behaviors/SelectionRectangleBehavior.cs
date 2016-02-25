@@ -14,9 +14,6 @@ namespace SiliconStudio.Presentation.Behaviors
         public static readonly DependencyProperty CanvasProperty =
             DependencyProperty.Register(nameof(Canvas), typeof(Canvas), typeof(SelectionRectangleBehavior), new PropertyMetadata(OnCanvasChanged));
 
-        public static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(SelectionRectangleBehavior), new PropertyMetadata(true));
-
         public static readonly DependencyProperty SelectionRectangleStyleProperty;
 
         private Point originPoint;
@@ -41,8 +38,6 @@ namespace SiliconStudio.Presentation.Behaviors
         public static Style SelectionRectangleDefaultStyle { get; }
 
         public Canvas Canvas { get { return (Canvas)GetValue(CanvasProperty); } set { SetValue(CanvasProperty, value); } }
-
-        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
 
         public Style SelectionRectangleStyle { get { return (Style)GetValue(SelectionRectangleStyleProperty); } set { SetValue(SelectionRectangleStyleProperty, value); } }
 
@@ -75,7 +70,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (!IsEnabled || e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -88,7 +83,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (!IsEnabled || e.MouseDevice.LeftButton != MouseButtonState.Pressed)
+            if (e.MouseDevice.LeftButton != MouseButtonState.Pressed)
             {
                 Cancel();
                 return;
@@ -118,7 +113,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (!IsEnabled || e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
