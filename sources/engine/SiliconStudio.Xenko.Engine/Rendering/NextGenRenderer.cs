@@ -265,6 +265,15 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO: Collect shadow map views
             //RenderSystem.forwardLightingRenderFeature...
+
+            var sceneInstance = SceneInstance.GetCurrent(Context);
+            var sceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
+
+            // Collect
+            // TODO GRAPHICS REFACTOR choose which views to collect
+            sceneInstance.VisibilityGroup.Views.AddRange(RenderSystem.Views);
+            sceneInstance.VisibilityGroup.Collect(sceneCameraRenderer.CullingMask);
+            sceneInstance.VisibilityGroup.Views.Clear();
         }
 
         protected override void DrawCore(RenderDrawContext context)

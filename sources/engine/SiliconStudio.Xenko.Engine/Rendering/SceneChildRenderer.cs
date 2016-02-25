@@ -87,12 +87,13 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
+            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
             if (sceneInstance != null)
             {
                 // Collect
                 // TODO GRAPHICS REFACTOR choose which views to collect
                 sceneInstance.VisibilityGroup.Views.AddRange(renderSystem.Views);
-                sceneInstance.VisibilityGroup.Collect();
+                sceneInstance.VisibilityGroup.Collect(EntityGroupMask.All); // TODO GRAPHICS REFACTOR where to get that from? add it to SceneChildRenderer?
                 sceneInstance.VisibilityGroup.Views.Clear();
             }
         }

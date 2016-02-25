@@ -14,26 +14,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract class RenderObject
     {
-        private EntityGroup renderGroup;
-
-        /// <summary>
-        /// Defines which render groups this object belongs to. Note that this is evaluated only at insertion time.
-        /// Dynamic changes are not implemented yet.
-        /// </summary>
-        public EntityGroup RenderGroup
-        {
-            get { return renderGroup; }
-            set
-            {
-                // TODO GRAPHICS REFACTOR implement dynamic render groups changes
-                if (RenderFeature != null)
-                    throw new NotImplementedException();
-
-                renderGroup = value;
-            }
-        }
-
         public bool Enabled = true;
+        public EntityGroup RenderGroup;
 
         public BoundingBoxExt BoundingBox;
 
