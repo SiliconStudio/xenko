@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -30,14 +31,23 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// </summary>
         public const string FileExtension = ".xksl;.pdxsl";
 
+        public static Regex Regex = new Regex("class\\s+\\w+");
+
         public override string Generator { get; set; } = "XenkoShaderKeyGenerator";
 
         public override void Save(Stream stream)
         {
-            base.Save(stream);
+            if (Text.IsNullOrEmpty())
+            {
+                Text = Load() ?? "";
+            }
 
-            //make sure we got some text
-            if (Text == null) Text = "";
+            //regex the class name if it has changed
+            var className = new UFile(AbsoluteSourceLocation).GetFileName();
+            Text = Regex.Replace(Text, $"class {className}");
+
+            var buffer = Encoding.UTF8.GetBytes(Text);
+            stream.Write(buffer, 0, buffer.Length);
 
             //generate the .cs files
             // Always output a result into the file
