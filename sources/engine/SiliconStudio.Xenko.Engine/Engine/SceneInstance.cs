@@ -76,7 +76,6 @@ namespace SiliconStudio.Xenko.Engine
             VisibilityGroups = new TrackingCollection<VisibilityGroup>();
             VisibilityGroups.CollectionChanged += VisibilityGroups_CollectionChanged;
             Scene = sceneEntityRoot;
-            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
             Load();
         }
 
@@ -279,6 +278,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void HandleRendererTypes()
         {
+            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
             foreach (var componentType in ComponentTypes)
             {
                 EntitySystemOnComponentTypeAdded(null, componentType);
