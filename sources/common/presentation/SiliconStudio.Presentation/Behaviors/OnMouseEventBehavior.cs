@@ -37,6 +37,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         public static readonly DependencyProperty HandleEventProperty = DependencyProperty.Register(nameof(HandleEvent), typeof(bool), typeof(OnMouseEventBehavior));
 
+        /// <summary>
+        /// Identifies the <see cref="Modifiers"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ModifiersProperty =
+               DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys), typeof(OnMouseEventBehavior), new PropertyMetadata(ModifierKeys.None));
+
         public MouseEventType EventType { get { return (MouseEventType)GetValue(EventTypeProperty); } set { SetValue(EventTypeProperty, value); } }
 
         /// <summary>
@@ -48,6 +54,13 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Gets or sets whether to set the event as handled.
         /// </summary>
         public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
+
+        public ModifierKeys Modifiers { get { return (ModifierKeys)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
+
+        protected bool HasModifiers()
+        {
+            return Modifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(Modifiers);
+        }
 
         protected override void OnAttached()
         {
@@ -173,11 +186,17 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void MouseButtonHandler(object sender, MouseButtonEventArgs e)
         {
+            if (!HasModifiers())
+                return;
+
             MouseMoveHandler(sender, e);
         }
 
         private void MouseMoveHandler(object sender, MouseEventArgs e)
         {
+            if (!HasModifiers())
+                return;
+
             if (HandleEvent)
             {
                 e.Handled = true;
