@@ -45,7 +45,7 @@
     <Compile Include="ParticleSystemSettings.cs" />
     <Compile Include="Rendering\ParticleEmitterPipelinePlugin.cs" />
     <Compile Include="Rendering\ParticleEmitterTransparentRenderStageSelector.cs" />
-    <Compile Include="Rendering\ParticleSystemProcessor.cs" />
+    <Compile Include="Rendering\ParticleSystemRenderProcessor.cs" />
     <Compile Include="Rendering\ParticleEmitterRenderFeature.cs" />
     <Compile Include="Rendering\RenderParticleEmitter.cs" />
     <Compile Include="Rendering\RenderParticleSystem.cs" />
