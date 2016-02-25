@@ -20,7 +20,19 @@ namespace SiliconStudio.Presentation.ValueConverters
                 return null;
 
             var engine = (XamlMarkdown)parameter ?? defaultMarkdown.Value;
-            return engine.Transform(value.ToString());
+            if (engine == null)
+                return null;
+
+            try
+            {
+                var text = value.ToString();
+                return engine.Transform(text);
+            }
+            catch (ArgumentException) { }
+            catch (FormatException) { }
+            catch (InvalidOperationException) { }
+
+            return null;
         }
 
         private readonly Lazy<XamlMarkdown> defaultMarkdown = new Lazy<XamlMarkdown>(() => new XamlMarkdown());
