@@ -78,6 +78,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var nodeIndex = mesh.NodeIndex;
                     renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
                     renderMesh.BoundingBox = boundingBox;
+                    renderMesh.RenderGroup = modelComponent.Entity.Group;
                 }
             }
         }
