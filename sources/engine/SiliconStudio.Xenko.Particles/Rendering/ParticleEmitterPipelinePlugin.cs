@@ -23,6 +23,16 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                     TransparentRenderStage = transparentRenderStage,
                 });
 
+                particleEmitterRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+                {
+                    var renderParticleEmitter = (RenderParticleEmitter)renderObject;
+                    //renderParticleEmitter.ParticleEmitter.Material;
+                    
+                    pipelineState.BlendState = context.GraphicsDevice.BlendStates.AlphaBlend;
+                    pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.DepthRead;
+                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.Back);
+                };
+
                 // Register top level renderers
                 // TODO GRAPHICS REFACTOR protect against multiple executions?
                 renderSystem.RenderFeatures.Add(particleEmitterRenderFeature);

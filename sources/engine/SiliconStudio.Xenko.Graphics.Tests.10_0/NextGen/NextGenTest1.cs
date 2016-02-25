@@ -12,6 +12,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Tests;
 using SiliconStudio.Xenko.Particles;
+using SiliconStudio.Xenko.Particles.BoundingShapes;
 using SiliconStudio.Xenko.Particles.Components;
 using SiliconStudio.Xenko.Particles.Initializers;
 using SiliconStudio.Xenko.Particles.Materials;
@@ -81,7 +82,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                                 MaxParticlesOverride = 0,
                                 ParticleMinLifetime = 1.5f,
                                 ParticleMaxLifetime = 2.0f,
-                                ShapeBuilder = new ShapeBuilderQuad(),
+                                ShapeBuilder = new ShapeBuilderBillboard(),
                                 Material = new ParticleMaterialComputeColor
                                 {
                                     ComputeColor = new ComputeColor(Color.Red)
@@ -126,7 +127,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //};
             //Scene.Entities.Add(spriteEntity);
 
-            camera.Position = new Vector3(35.0f, 5.5f, 22.0f);
+            camera.Position = new Vector3(35.0f, 5.5f, 22.0f) / 3;
             camera.SetTarget(Scene.Entities.Last(), true);
 
             return base.LoadContent();
