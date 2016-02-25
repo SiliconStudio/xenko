@@ -8,9 +8,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, RenderSprite>
+    internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, RenderSprite>, IEntityComponentRenderProcessor
     {
-        private VisibilityGroup visibilityGroup;
+        public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteRenderProcessor"/> class.
@@ -18,11 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public SpriteRenderProcessor()
             : base(typeof(TransformComponent))
         {
-        }
-
-        protected internal override void OnSystemAdd()
-        {
-            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         public override void Draw(RenderContext gameTime)
@@ -35,12 +30,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         protected override void OnEntityComponentAdding(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
         {
-            visibilityGroup.RenderObjects.Add(data);
+            VisibilityGroup.RenderObjects.Add(data);
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
         {
-            visibilityGroup.RenderObjects.Remove(data);
+            VisibilityGroup.RenderObjects.Remove(data);
         }
 
         protected override RenderSprite GenerateComponentData(Entity entity, SpriteComponent spriteComponent)

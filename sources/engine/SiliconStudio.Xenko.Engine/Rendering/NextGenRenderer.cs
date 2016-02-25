@@ -217,7 +217,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             base.InitializeCore();
 
-            RenderSystem = Services.GetServiceAs<NextGenRenderSystem>();
+            RenderSystem = Context.Tags.Get(SceneInstance.CurrentRenderSystem);
             RenderContext = new RenderContext(Services);
 
             // Create mandatory render stages that don't exist yet
@@ -241,8 +241,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (PickingRenderStage != null)
                 mainRenderView.RenderStages.Add(PickingRenderStage);
             mainRenderView.SceneInstance = sceneInstance;
-            mainRenderView.SceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
-            mainRenderView.SceneCameraSlotCollection = RenderSystem.RenderContextOld.Tags.Get(SceneCameraSlotCollection.Current);
+            mainRenderView.SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
+            mainRenderView.SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current);
             RenderSystem.Views.Add(mainRenderView);
         }
         
@@ -267,13 +267,15 @@ namespace SiliconStudio.Xenko.Rendering
             //RenderSystem.forwardLightingRenderFeature...
 
             var sceneInstance = SceneInstance.GetCurrent(Context);
-            var sceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
+            var sceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
 
             // Collect
             // TODO GRAPHICS REFACTOR choose which views to collect
-            sceneInstance.VisibilityGroup.Views.AddRange(RenderSystem.Views);
-            sceneInstance.VisibilityGroup.Collect(sceneCameraRenderer.CullingMask);
-            sceneInstance.VisibilityGroup.Views.Clear();
+            var visibilityGroup = Context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
+
+            visibilityGroup.Views.AddRange(RenderSystem.Views);
+            visibilityGroup.Collect(sceneCameraRenderer.CullingMask);
+            visibilityGroup.Views.Clear();
         }
 
         protected override void DrawCore(RenderDrawContext context)

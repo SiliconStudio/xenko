@@ -2,10 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine.Design;
@@ -28,10 +30,21 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public static readonly PropertyKey<SceneInstance> Current = new PropertyKey<SceneInstance>("SceneInstance.Current", typeof(SceneInstance));
 
+        /// <summary>
+        /// A property key to get the current render system from the <see cref="RenderContext.Tags"/>.
+        /// </summary>
+        public static readonly PropertyKey<NextGenRenderSystem> CurrentRenderSystem = new PropertyKey<NextGenRenderSystem>("SceneInstance.CurrentRenderSystem", typeof(SceneInstance));
+
+        /// <summary>
+        /// A property key to get the current visibility group from the <see cref="RenderContext.Tags"/>.
+        /// </summary>
+        public static readonly PropertyKey<VisibilityGroup> CurrentVisibilityGroup = new PropertyKey<VisibilityGroup>("SceneInstance.CurrentVisibilityGroup", typeof(SceneInstance));
+
+        private readonly Dictionary<TypeInfo, Type> registeredRenderProcessorTypes = new Dictionary<TypeInfo, Type>();
         private Scene previousScene;
         private Scene scene;
 
-        public VisibilityGroup VisibilityGroup { get; }
+        public TrackingCollection<VisibilityGroup> VisibilityGroups { get; }
 
         /// <summary>
         /// Occurs when the scene changed from a scene child component.
@@ -60,8 +73,10 @@ namespace SiliconStudio.Xenko.Engine
             if (services == null) throw new ArgumentNullException("services");
 
             ExecutionMode = executionMode;
-            VisibilityGroup = new VisibilityGroup(services);
+            VisibilityGroups = new TrackingCollection<VisibilityGroup>();
+            VisibilityGroups.CollectionChanged += VisibilityGroups_CollectionChanged;
             Scene = sceneEntityRoot;
+            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
             Load();
         }
 
@@ -115,7 +130,7 @@ namespace SiliconStudio.Xenko.Engine
         /// or
         /// toFrame
         /// </exception>
-        public void Draw(RenderDrawContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
+        public void Draw(RenderDrawContext context, RenderFrame toFrame)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (toFrame == null) throw new ArgumentNullException("toFrame");
@@ -144,10 +159,9 @@ namespace SiliconStudio.Xenko.Engine
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 commandList.ClearState();
 
-                var renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
-
                 // Draw the main scene using the current compositor (or the provided override)
-                var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
+                var graphicsCompositor = Scene.Settings.GraphicsCompositor;
+
                 if (graphicsCompositor != null)
                 {
                     // Push context (pop after using)
@@ -155,27 +169,7 @@ namespace SiliconStudio.Xenko.Engine
                     using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
                     using (context.RenderContext.PushTagAndRestore(Current, this))
                     {
-                        graphicsCompositor.BeforeExtract(context.RenderContext);
-
-                        // Update current camera to render view
-                        foreach (var mainRenderView in renderSystem.Views)
-                        {
-                            if (mainRenderView.GetType() == typeof(RenderView))
-                            {
-                                renderSystem.UpdateCameraToRenderView(context, mainRenderView);
-                            }
-                        }
-
-                        // Extract
-                        renderSystem.Extract(context);
-
-                        // Prepare
-                        renderSystem.Prepare(context);
-
                         graphicsCompositor.Draw(context);
-
-                        // Reset render context data
-                        renderSystem.Reset();
                     }
                 }
             }
@@ -190,6 +184,26 @@ namespace SiliconStudio.Xenko.Engine
                     commandList.End();
                 }
             }
+        }
+
+        public VisibilityGroup GetOrCreateVisibilityGroup(NextGenRenderSystem renderSystem)
+        {
+            // Find if it exists
+            VisibilityGroup visibilityGroup = null;
+            foreach (var currentVisibilityGroup in VisibilityGroups)
+            {
+                if (currentVisibilityGroup.RenderSystem == renderSystem)
+                {
+                    visibilityGroup = currentVisibilityGroup;
+                    break;
+                }
+            }
+
+            // If first time, let's create and register it
+            if (visibilityGroup == null)
+                VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(renderSystem));
+
+            return visibilityGroup;
         }
 
         /// <summary>
@@ -246,6 +260,8 @@ namespace SiliconStudio.Xenko.Engine
 
             // Listen to future changes in Scene.Entities
             Scene.Entities.CollectionChanged += Entities_CollectionChanged;
+
+            HandleRendererTypes();
         }
 
         private void Entities_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
@@ -259,6 +275,65 @@ namespace SiliconStudio.Xenko.Engine
                     Remove((Entity)e.Item);
                     break;
             }
+        }
+
+        private void HandleRendererTypes()
+        {
+            foreach (var componentType in ComponentTypes)
+            {
+                EntitySystemOnComponentTypeAdded(null, componentType);
+            }
+        }
+
+        private void VisibilityGroups_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var visibilityGroup = (VisibilityGroup)e.Item;
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (var registeredRenderProcessorType in registeredRenderProcessorTypes)
+                    {
+                        CreateRenderProcessor(registeredRenderProcessorType.Value, visibilityGroup);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    // TODO GRAPHICS REFACTOR
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void EntitySystemOnComponentTypeAdded(object sender, TypeInfo type)
+        {
+            var rendererTypeAttributes = type.GetCustomAttributes<DefaultEntityComponentRendererAttribute>();
+            foreach (var rendererTypeAttribute in rendererTypeAttributes)
+            {
+                var processorType = AssemblyRegistry.GetType(rendererTypeAttribute.TypeName);
+                if (processorType == null || !typeof(IEntityComponentRenderProcessor).GetTypeInfo().IsAssignableFrom(processorType.GetTypeInfo()))
+                {
+                    continue;
+                }
+
+                registeredRenderProcessorTypes.Add(type, processorType);
+
+                // Create a render processor for each visibility group
+                foreach (var visibilityGroup in VisibilityGroups)
+                {
+                    CreateRenderProcessor(processorType, visibilityGroup);
+                }
+            }
+        }
+
+        private void CreateRenderProcessor(Type processorType, VisibilityGroup visibilityGroup)
+        {
+            // Create
+            var processor = (EntityProcessor)Activator.CreateInstance(processorType);
+
+            // Set visibility group
+            ((IEntityComponentRenderProcessor)processor).VisibilityGroup = visibilityGroup;
+
+            // Add processor
+            Processors.Add(processor);
         }
 
         private void OnSceneChanged()

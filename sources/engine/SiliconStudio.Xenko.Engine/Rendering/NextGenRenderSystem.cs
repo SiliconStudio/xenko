@@ -15,12 +15,12 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Facility to perform rendering: extract rendering data from scene, determine effects and GPU states, compute and prepare data (i.e. matrices, buffers, etc...) and finally draw it.
     /// </summary>
-    public partial class NextGenRenderSystem : ComponentBase, IGameSystemBase
+    public partial class NextGenRenderSystem : ComponentBase
     {
-        private readonly IServiceRegistry registry;
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly Dictionary<Type, IPipelinePlugin> pipelinePlugins = new Dictionary<Type, IPipelinePlugin>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
+        private IServiceRegistry registry;
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -75,11 +75,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The services registry.</value>
         public IServiceRegistry Services => registry;
 
-        public NextGenRenderSystem(IServiceRegistry registry)
+        public NextGenRenderSystem()
         {
-            this.registry = registry;
-
-            registry.AddService(typeof(NextGenRenderSystem), this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
@@ -89,8 +86,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="effectSystem">The effect system.</param>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public void Initialize()
+        public void Initialize(RenderContext context)
         {
+            registry = context.Services;
+
             // Get graphics device service
             var graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
@@ -99,18 +98,15 @@ namespace SiliconStudio.Xenko.Rendering
             // Be notified when a RenderObject is added or removed
             Views.CollectionChanged += Views_CollectionChanged;
 
-            graphicsDeviceService.DeviceCreated += (sender, args) =>
+            GraphicsDevice = graphicsDeviceService.GraphicsDevice;
+            RenderContextOld = context;
+
+            DescriptorPool = DescriptorPool.New(GraphicsDevice, new[]
             {
-                GraphicsDevice = graphicsDeviceService.GraphicsDevice;
-                RenderContextOld = RenderContext.GetShared(EffectSystem.Services);
+                new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
+            });
 
-                DescriptorPool = DescriptorPool.New(GraphicsDevice, new[]
-                {
-                    new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
-                });
-
-                BufferPool = BufferPool.New(GraphicsDevice, 32 * 1024 * 1024);
-            };
+            BufferPool = BufferPool.New(GraphicsDevice, 32 * 1024 * 1024);
         }
 
         /// <summary>

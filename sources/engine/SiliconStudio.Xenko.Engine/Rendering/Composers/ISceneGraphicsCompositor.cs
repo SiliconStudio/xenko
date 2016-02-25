@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// <summary>
     /// Defines the common interface for a graphics composer responsible to compose the scene to a final render target.
     /// </summary>
-    public interface ISceneGraphicsCompositor : IGraphicsRenderer, INextGenRenderer
+    public interface ISceneGraphicsCompositor : IGraphicsRenderer
     {
     }
 }
