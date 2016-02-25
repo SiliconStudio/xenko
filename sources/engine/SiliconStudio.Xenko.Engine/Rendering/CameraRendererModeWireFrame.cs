@@ -31,9 +31,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             ModelEffect = WireFrameEffect;
 
+            // TODO GRAPHICS REFACTOR
             // Render only CameraComponent and ModelComponent
-            RenderComponentTypes.Add(typeof(CameraComponent).GetTypeInfo());
-            RenderComponentTypes.Add(typeof(ModelComponent).GetTypeInfo());
+            //RenderComponentTypes.Add(typeof(CameraComponent).GetTypeInfo());
+            //RenderComponentTypes.Add(typeof(ModelComponent).GetTypeInfo());
 
             // TODO GRAPHICS REFACTOR
             //modelComponentAndPickingRenderer = new ModelComponentAndPickingRenderer();

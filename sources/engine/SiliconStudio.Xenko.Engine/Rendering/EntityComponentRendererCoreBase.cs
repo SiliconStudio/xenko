@@ -5,6 +5,7 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    // TODO GRAPHICS REFACTOR remove this class
     /// <summary>
     /// A default implementation for a <see cref="IEntityComponentRenderer"/>.
     /// </summary>

@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
-            using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
+            using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 Mode.BeforeExtract(context);
             }
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Draw this camera.
             using (context.RenderContext.PushTagAndRestore(Current, this))
-            using (context.RenderContext.PushTagAndRestore(CameraComponentRenderer.Current, camera))
+            using (context.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 // Run all pre-renderers
                 foreach (var renderer in PreRenderers)

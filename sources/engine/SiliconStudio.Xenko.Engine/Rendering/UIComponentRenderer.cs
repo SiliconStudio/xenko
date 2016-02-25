@@ -17,9 +17,11 @@ using SiliconStudio.Xenko.UI.Renderers;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    // TODO GRAPHICS REFACTOR rewrite this
     /// <summary>
     /// The renderer in charge of drawing the UI.
     /// </summary>
+    [Obsolete]
     public class UIComponentRenderer : EntityComponentRendererBase, IRendererManager
     {
         private IGame game;
@@ -96,7 +98,7 @@ namespace SiliconStudio.Xenko.Rendering
                 else
                 {
                     Vector4 projectedPosition;
-                    var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    var cameraComponent = context.Tags.Get(CameraComponentRendererExtensions.Current);
                     if (cameraComponent == null)
                         continue;
 
@@ -175,7 +177,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 else
                 {
-                    var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    var cameraComponent = context.Tags.Get(CameraComponentRendererExtensions.Current);
                     viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
                 

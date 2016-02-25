@@ -474,7 +474,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSubtract.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\EntityComponentRendererBatch.cs" />
     <Compile Include="Rendering\EntityComponentRendererCoreBase.cs" />
     <Compile Include="Rendering\GraphicsRendererCollectionBase.cs" />
     <Compile Include="Rendering\IEntityComponentRendererCore.cs" />
@@ -570,7 +569,6 @@
     <Compile Include="Rendering\Materials\MaterialTransparencyAdditiveFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyCutoffFeature.cs" />
     <Compile Include="Rendering\Materials\XenkoTessellationMethod.cs" />
-    <Compile Include="Rendering\EntityComponentRendererTypeCollection.cs" />
     <Compile Include="Engine\EntityTransformExtensions.cs" />
     <Compile Include="Rendering\BRDF\BRDFMicrofacet.cs">
       <DependentUpon>BRDFMicrofacet.xksl</DependentUpon>
@@ -2311,7 +2309,6 @@
     <Compile Include="Extensions\SplitExtensions.cs" />
     <Compile Include="Extensions\TransformExtensions.cs" />
     <Compile Include="Animations\KeyFrameData.cs" />
-    <Compile Include="Rendering\CameraComponentRenderer.cs" />
     <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\MaterialAssetKeys.cs" />
     <Compile Include="Rendering\MeshBoneDefinition.cs" />
