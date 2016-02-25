@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Serialization.Assets;
+
 namespace SiliconStudio.Core.Serialization
 {
     public enum ContentReferenceState
@@ -16,7 +19,7 @@ namespace SiliconStudio.Core.Serialization
 
         /// <summary>
         /// Data reference has been set to a new value by the user.
-        /// It will be changed to <see cref="Loaded"/> as soon as it has been written by the <see cref="Assets.AssetManager"/>.
+        /// It will be changed to <see cref="Loaded"/> as soon as it has been written by the <see cref="ContentManager"/>.
         /// </summary>
         Modified = 5,
     }

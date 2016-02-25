@@ -145,9 +145,9 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         {
             sounds = new List<SoundEffect>
                 {
-                    game.Asset.Load<SoundEffect>("EffectBip"),
-                    game.Asset.Load<SoundEffect>("EffectToneA"),
-                    game.Asset.Load<SoundEffect>("EffectToneA"),
+                    game.Content.Load<SoundEffect>("EffectBip"),
+                    game.Content.Load<SoundEffect>("EffectToneA"),
+                    game.Content.Load<SoundEffect>("EffectToneA"),
                 };
 
             emitComps[0].AttachSoundEffect(sounds[0]);
@@ -431,7 +431,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             if (loopCount == 0)
             {
                 // start the sound music in background.
-                var music = game.Asset.Load<SoundMusic>("MusicFishLampMp3");
+                var music = game.Content.Load<SoundMusic>("MusicFishLampMp3");
                 music.Play();
             }
             // here we should hear the mp3.
@@ -472,7 +472,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             game.Audio.AddListener(listComps[0]);
 
-            sounds.Add(game.Asset.Load<SoundEffect>("EffectToneE"));
+            sounds.Add(game.Content.Load<SoundEffect>("EffectToneE"));
             emitComps[0].AttachSoundEffect(sounds[3]);
             soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[3]));
         }

@@ -17,11 +17,11 @@ namespace SiliconStudio.Xenko.Engine.Tests
             PerformTest(game =>
             {
                 var entity = new Entity { Transform = { Position = new Vector3(100.0f, 0.0f, 0.0f) } };
-                game.Asset.Save("EntityAssets/Entity", entity);
+                game.Content.Save("EntityAssets/Entity", entity);
 
                 GC.Collect();
 
-                var entity2 = game.Asset.Load<Entity>("EntityAssets/Entity");
+                var entity2 = game.Content.Load<Entity>("EntityAssets/Entity");
                 Assert.AreEqual(entity.Transform.Position, entity2.Transform.Position);
             });
         }

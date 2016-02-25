@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("Prefab")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Prefab>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Prefab>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Prefab>), Profile = "Content")]
     public class Prefab : ComponentBase
     {
         /// <summary>

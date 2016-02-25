@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("Scene")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Content")]
     public sealed class Scene : Prefab
     {
         /// <summary>
