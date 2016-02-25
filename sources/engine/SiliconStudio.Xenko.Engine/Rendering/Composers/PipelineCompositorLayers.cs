@@ -46,6 +46,12 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     }
                 }
 
+                // Collect
+                // TODO GRAPHICS REFACTOR choose which views to collect
+                visibilityGroup.Views.AddRange(RenderSystem.Views);
+                visibilityGroup.Collect();
+                visibilityGroup.Views.Clear();
+
                 // Extract
                 RenderSystem.Extract(context);
 
