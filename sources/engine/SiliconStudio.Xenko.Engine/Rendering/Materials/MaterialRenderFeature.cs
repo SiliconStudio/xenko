@@ -22,8 +22,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
         // Material alive during this frame
-        private HashSet<MaterialInfo> allMaterialInfos = new HashSet<MaterialInfo>();
-        private List<MaterialInfo> activeMaterialInfos = new List<MaterialInfo>();
+        private readonly HashSet<MaterialInfo> allMaterialInfos = new HashSet<MaterialInfo>();
+        private readonly List<MaterialInfo> activeMaterialInfos = new List<MaterialInfo>();
 
         /// <summary>
         /// Custom extra info that we want to store per material.
@@ -40,8 +40,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // PerMaterial
             public ResourceGroup Resources;
             public int ResourceCount;
-
-            public Buffer ConstantBuffer;
             public ShaderConstantBufferDescription ConstantBufferReflection;
 
             public PermutationParameter<ShaderSource> PixelStageSurfaceShaders;
