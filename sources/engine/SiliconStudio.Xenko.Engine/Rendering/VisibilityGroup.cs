@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering
                         continue;
 
                     var renderStageMask = RenderData.GetData(RenderStageMaskKey);
-                    var renderStageMaskNode = renderObject.StaticCommonObjectNode * stageMaskMultiplier;
+                    var renderStageMaskNode = renderObject.VisibilityObjectNode * stageMaskMultiplier;
 
                     // Determine if this render object belongs to this view
                     bool renderStageMatch = false;
@@ -131,10 +131,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
         {
-            if (renderObject.StaticCommonObjectNode != StaticObjectNodeReference.Invalid)
+            if (renderObject.VisibilityObjectNode != StaticObjectNodeReference.Invalid)
                 return;
 
-            renderObject.StaticCommonObjectNode = new StaticObjectNodeReference(renderObjects.Count);
+            renderObject.VisibilityObjectNode = new StaticObjectNodeReference(renderObjects.Count);
 
             renderObjects.Add(renderObject);
 
@@ -151,11 +151,11 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem.RemoveRenderObject(renderObject);
 
             // Get and clear ordered node index
-            var orderedRenderNodeIndex = renderObject.StaticCommonObjectNode.Index;
-            if (renderObject.StaticCommonObjectNode == StaticObjectNodeReference.Invalid)
+            var orderedRenderNodeIndex = renderObject.VisibilityObjectNode.Index;
+            if (renderObject.VisibilityObjectNode == StaticObjectNodeReference.Invalid)
                 return false;
 
-            renderObject.StaticCommonObjectNode = StaticObjectNodeReference.Invalid;
+            renderObject.VisibilityObjectNode = StaticObjectNodeReference.Invalid;
 
             // SwapRemove each items in dataArrays
             RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, RenderObjects.Count - 1);
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Rendering
             // If last item was moved, update its index
             if (orderedRenderNodeIndex < RenderObjects.Count)
             {
-                renderObjects[orderedRenderNodeIndex].StaticCommonObjectNode = new StaticObjectNodeReference(orderedRenderNodeIndex);
+                renderObjects[orderedRenderNodeIndex].VisibilityObjectNode = new StaticObjectNodeReference(orderedRenderNodeIndex);
             }
 
             return true;
@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Compute render stage mask
             var renderStageMask = RenderData.GetData(RenderStageMaskKey);
             var renderStageMaskMultiplier = (RenderSystem.RenderStages.Count + VisibilityGroup.RenderStageMaskSizePerEntry - 1) / VisibilityGroup.RenderStageMaskSizePerEntry;
-            var renderStageMaskNode = renderObject.StaticCommonObjectNode * renderStageMaskMultiplier;
+            var renderStageMaskNode = renderObject.VisibilityObjectNode * renderStageMaskMultiplier;
 
             for (int index = 0; index < renderObject.ActiveRenderStages.Length; index++)
             {
