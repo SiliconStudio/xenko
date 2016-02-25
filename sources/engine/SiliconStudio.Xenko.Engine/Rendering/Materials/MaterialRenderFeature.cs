@@ -33,6 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public Material Material;
 
             public int LastFrameUsed;
+            public NextGenRenderSystem LastRenderSystemUsed;
 
             // Any matching effect
             public ResourceGroupLayout PerMaterialLayout;
@@ -104,9 +105,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         materialInfo.RenderEffect = renderEffect;
                     }
 
-                    if (materialInfo.LastFrameUsed != RenderSystem.FrameCounter)
+                    if (materialInfo.LastFrameUsed != RenderSystem.FrameCounter
+                        || materialInfo.LastRenderSystemUsed != RenderSystem)
                     {
                         // Add this material to a list of material used during this frame
+                        materialInfo.LastRenderSystemUsed = RenderSystem;
                         materialInfo.LastFrameUsed = RenderSystem.FrameCounter;
                         activeMaterialInfos.Add(materialInfo);
                     }
