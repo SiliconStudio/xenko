@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Gets or sets the thickness limit for "balanced" line drawing.
         /// </summary>
-        public double BalancedLineDrawingThicknessLimit { get; set; }
+        public double BalancedLineDrawingThicknessLimit { get; set; } = 3.5;
 
         public Canvas Canvas { get; }
 
