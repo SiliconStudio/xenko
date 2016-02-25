@@ -8,6 +8,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -62,6 +63,40 @@ namespace SiliconStudio.Xenko.Rendering
             Services.AddService(typeof(EffectSystem), this);
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether shader must be compiled with debug info.
+        /// </summary>
+        public bool CompilationDebugInfo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optimization level when compiling shaders. 0: no optimization, 2: full optimizations
+        /// </summary>
+        public int CompilationOptimizationLevel { get; set; }
+
+        /// <summary>
+        /// Initialize the property <see cref="CompilationDebugInfo"/> level and <see cref="CompilationOptimizationLevel"/> from a compilation mode.
+        /// </summary>
+        /// <param name="compilationMode">The compilation mode</param>
+        public void Setup(CompilationMode compilationMode)
+        {
+            switch (compilationMode)
+            {
+                case CompilationMode.Debug:
+                case CompilationMode.Testing:
+                    CompilationDebugInfo = true;
+                    CompilationOptimizationLevel = 0;
+                    break;
+                case CompilationMode.Release:
+                    CompilationDebugInfo = true;
+                    CompilationOptimizationLevel = 1;
+                    break;
+                case CompilationMode.AppStore:
+                    CompilationDebugInfo = false;
+                    CompilationOptimizationLevel = 2;
+                    break;
+            }
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -77,6 +112,13 @@ namespace SiliconStudio.Xenko.Rendering
             directoryWatcher.Modified += FileModifiedEvent;
             // TODO: xkfx too
 #endif
+
+            // Setup shader compiler settings from a compilation mode. 
+            // TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
+            if (Game != null && (((Game)Game).Settings != null))
+            {
+                Setup(((Game)Game).Settings.CompilationMode);
+            }
 
             // Make sure default compiler is created (local if possible otherwise none) if nothing else was explicitely set/requested (i.e. by GameSettings)
             if (Compiler == null)
@@ -153,6 +195,16 @@ namespace SiliconStudio.Xenko.Rendering
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
+
+            // Setup compilation parameters
+            if (!compilerParameters.ContainsKey(CompilerParameters.DebugKey))
+            {
+                compilerParameters.Debug = CompilationDebugInfo;
+            }
+            if (!compilerParameters.ContainsKey(CompilerParameters.OptimizationLevelKey))
+            {
+                compilerParameters.OptimizationLevel = CompilationOptimizationLevel;
+            }
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);
