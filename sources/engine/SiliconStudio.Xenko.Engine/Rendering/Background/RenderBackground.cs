@@ -8,9 +8,5 @@ namespace SiliconStudio.Xenko.Rendering.Background
     {
         public Texture Texture;
         public float Intensity;
-
-        // Used internally by renderer
-        internal ResourceGroupLayout ResourceGroupLayout;
-        internal ResourceGroup Resources;
     }
 }
