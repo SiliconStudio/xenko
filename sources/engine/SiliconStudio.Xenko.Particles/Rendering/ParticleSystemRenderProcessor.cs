@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using SiliconStudio.Core;
-using SiliconStudio.Xenko.Engine;
+﻿using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Particles.Components;
 using SiliconStudio.Xenko.Rendering;
 
