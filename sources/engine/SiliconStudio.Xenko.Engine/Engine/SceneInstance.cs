@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Engine
         /// or
         /// toFrame
         /// </exception>
-        public void Draw(RenderDrawContext context, RenderFrame toFrame)
+        public void Draw(RenderDrawContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (toFrame == null) throw new ArgumentNullException("toFrame");
@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Engine
                 commandList.ClearState();
 
                 // Draw the main scene using the current compositor (or the provided override)
-                var graphicsCompositor = Scene.Settings.GraphicsCompositor;
+                var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
 
                 if (graphicsCompositor != null)
                 {
