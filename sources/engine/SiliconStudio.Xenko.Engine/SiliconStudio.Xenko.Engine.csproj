@@ -119,6 +119,11 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
+    <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
+    <Compile Include="Rendering\Composers\NextGenSceneGraphicsCompositor.cs" />
+    <Compile Include="Rendering\Composers\Pipeline.cs" />
+    <Compile Include="Rendering\Composers\PipelineCollection.cs" />
+    <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
     <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
     <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />

@@ -25,20 +25,10 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         private TestCamera camera;
         protected Scene Scene;
         protected Entity Camera = new Entity();
-        private SceneGraphicsCompositorLayers graphicsCompositor;
+        private NextGenSceneGraphicsCompositor graphicsCompositor;
 
         private Model model;
         private Material material1, material2;
-
-        protected CameraComponent CameraComponent
-        {
-            get { return Camera.Get<CameraComponent>(); }
-            set
-            {
-                Camera.Add(value);
-                graphicsCompositor.Cameras[0] = value;
-            }
-        }
 
         protected override Task LoadContent()
         {
@@ -49,7 +39,12 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             material1 = Asset.Load<Material>("Material1");
             material2 = Asset.Load<Material>("Material2");
 
+            camera = new TestCamera();
+            Camera.Add(camera.Camera);
+
             SetupScene();
+
+            Script.Add(camera);
 
             int cubeWidth = 8;
 
@@ -99,17 +94,23 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         private void SetupScene()
         {
-            graphicsCompositor = new SceneGraphicsCompositorLayers
+            graphicsCompositor = new NextGenSceneGraphicsCompositor
             {
                 Cameras = { Camera.Get<CameraComponent>() },
-                Master =
+                Pipelines =
                 {
-                    Renderers =
+                    new Pipeline
                     {
-                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
-                        new SceneCameraRenderer { Mode = new NextGenRenderer { Name = "Camera renderer", ModelEffect = "TestEffect" } },
-                    }
+                        Master =
+                        {
+                            Renderers =
+                            {
+                                new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
+                                //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
+                                new SceneCameraRenderer { Mode = new NextGenRenderer { Name = "Camera renderer", ModelEffect = "TestEffect" } },
+                            }
+                        }
+                    },
                 }
             };
 
@@ -130,10 +131,6 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //Scene.Entities.Add(directionalLight2);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
-
-            camera = new TestCamera();
-            CameraComponent = camera.Camera;
-            Script.Add(camera);
         }
 
         static void Main(string[] args)
