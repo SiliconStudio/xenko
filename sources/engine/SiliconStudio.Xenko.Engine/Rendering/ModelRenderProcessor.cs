@@ -60,6 +60,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO GRAPHICS REFACTOR compute bounding box either by Mesh, or switch to future VisibilityObject system to deal with complete models)
             var boundingBox = new BoundingBoxExt(modelComponent.BoundingBox);
+            var modelComponentMaterials = modelComponent.Materials;
+            var modelMaterials = renderModel.ModelComponent.Model.Materials;
 
             foreach (var renderMesh in renderModel.Meshes)
             {
@@ -69,6 +71,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                 if (renderMesh.Enabled)
                 {
+                    // Update material
+                    var materialIndex = mesh.MaterialIndex;
+                    renderMesh.Material = modelComponentMaterials.GetItemOrNull(materialIndex)  // Check ModelComponent.Materials first
+                                                ?? modelMaterials.GetItemOrNull(materialIndex); // Otherwise, fallback to Model.Materials
+
                     // Copy world matrix
                     var nodeIndex = mesh.NodeIndex;
                     renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
