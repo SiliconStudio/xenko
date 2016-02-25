@@ -20,8 +20,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [DataContract("ParticleMaterial")]
     public abstract class ParticleMaterial
     {
+        [DataMemberIgnore]
         public readonly NextGenParameterCollection Parameters = new NextGenParameterCollection();
 
+        [DataMemberIgnore]
         public object RenderData;
 
         /// <summary>
