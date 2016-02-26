@@ -82,8 +82,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Gets the <see cref="ContentManager"/>.
         /// </summary>
+        [DataMemberIgnore]
         [Obsolete("Use Content property instead when accessing the ContentManager")]
-        public ContentManager Asset => Content;
+        protected ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the graphics device.
