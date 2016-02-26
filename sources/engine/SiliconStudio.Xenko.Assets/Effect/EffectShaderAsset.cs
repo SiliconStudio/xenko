@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using SiliconStudio.Assets;
@@ -37,11 +35,6 @@ namespace SiliconStudio.Xenko.Assets.Effect
 
         public override void Save(Stream stream)
         {
-            if (Text.IsNullOrEmpty())
-            {
-                Text = Load() ?? "";
-            }
-
             //regex the class name if it has changed
             var className = new UFile(AbsoluteSourceLocation).GetFileName();
             Text = Regex.Replace(Text, $"class {className}");
