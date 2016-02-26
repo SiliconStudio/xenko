@@ -11,18 +11,13 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [DataContract("EffectCompositorAsset")]
     [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
     [Display(95, "Effect Compositor")]
-    public sealed class EffectCompositorAsset : SourceCodeAsset
+    public sealed class EffectCompositorAsset : ProjectCodeGeneratorAsset
     {
         /// <summary>
-        /// The default file extension used by the <see cref="EffectLibraryAsset"/>.
+        /// The default file extension used by the <see cref="EffectCompositorAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkfx;.pdxfx";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EffectLibraryAsset"/> class.
-        /// </summary>
-        public EffectCompositorAsset()
-        {
-        }
+        public override string Generator { get; set; } = "XenkoShaderKeyGenerator";
     }
 }
