@@ -61,8 +61,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
         public EntityDesign()
+            : this(null)
         {
-            Design = new EntityDesignData();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
+        public EntityDesign(Entity entity)
+            : this(entity, new EntityDesignData())
+        {
         }
 
         /// <summary>
@@ -133,7 +141,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         
             protected override void RemoveItem(int index)
             {
-                var item = items[index];
+                //var item = Items[index];
                 base.RemoveItem(index);
                 //item.Container = null;
             }

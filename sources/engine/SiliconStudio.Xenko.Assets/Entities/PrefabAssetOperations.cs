@@ -3,13 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Diff;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -17,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     {
         public static PrefabAssetBase ExtractSceneClone(PrefabAssetBase source, Guid sourceRootEntity)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             // Note: Instead of copying the whole asset (with its potentially big hierarchy), we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
 
@@ -68,9 +63,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        public static EntityHierarchyData ImportScene(UFile sourceUrl, PrefabAssetBase source, Guid sourceRootEntity)
+        public static EntityHierarchyData ImportScene(PrefabAssetBase source, Guid sourceRootEntity)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             // Extract the scene starting from given root
             var newAsset = ExtractSceneClone(source, sourceRootEntity);

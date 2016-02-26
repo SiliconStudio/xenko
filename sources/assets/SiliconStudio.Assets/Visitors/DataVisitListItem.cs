@@ -31,14 +31,6 @@ namespace SiliconStudio.Assets.Visitors
             this.index = index;
         }
 
-        public IList List
-        {
-            get
-            {
-                return (IList)(Parent != null ? Parent.Instance : null);
-            }
-        }
-
         public CollectionDescriptor Descriptor
         {
             get
