@@ -207,11 +207,15 @@ namespace SiliconStudio.Xenko.Rendering
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage PickingRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage WireFrameRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage HighlightRenderStage { get; set; }
 
-
+        public bool Default { get; set; } = true;
         public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
+        public bool WireFrame { get; set; } = false;
+        public bool Highlight { get; set; } = false;
 
         protected override void InitializeCore()
         {
@@ -220,26 +224,45 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem = Context.Tags.Get(SceneInstance.CurrentRenderSystem);
             RenderContext = new RenderContext(Services);
 
-            // Create mandatory render stages that don't exist yet
-            if (MainRenderStage == null)
-                MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            if (TransparentRenderStage == null)
-                TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (Default)
+            {
+                // Create mandatory render stages that don't exist yet
+                if (MainRenderStage == null)
+                    MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                if (TransparentRenderStage == null)
+                    TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
-            // Create optional render stages that don't exist yet
-            //if (GBufferRenderStage == null)
-            //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            if (Shadows && ShadowMapRenderStage == null)
-                ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                // Create optional render stages that don't exist yet
+                //if (GBufferRenderStage == null)
+                //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                if (Shadows && ShadowMapRenderStage == null)
+                    ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+            }
             if (Picking && PickingRenderStage == null)
                 PickingRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Picking", "Picking", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+            if (WireFrame && WireFrameRenderStage == null)
+                WireFrameRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+            if (Highlight && HighlightRenderStage == null)
+                HighlightRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Highlight", "Highlight", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
             var sceneInstance = SceneInstance.GetCurrent(Context);
 
             // Describe views
-            mainRenderView = new RenderView { RenderStages = { MainRenderStage, TransparentRenderStage } };
+            mainRenderView = new RenderView();
+
+            if (Default)
+            {
+                mainRenderView.RenderStages.Add(MainRenderStage);
+                mainRenderView.RenderStages.Add(TransparentRenderStage);
+            }
+
             if (PickingRenderStage != null)
                 mainRenderView.RenderStages.Add(PickingRenderStage);
+            if (WireFrameRenderStage != null)
+                mainRenderView.RenderStages.Add(WireFrameRenderStage);
+            if (HighlightRenderStage != null)
+                mainRenderView.RenderStages.Add(HighlightRenderStage);
+
             mainRenderView.SceneInstance = sceneInstance;
             mainRenderView.SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
             mainRenderView.SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current);
@@ -261,6 +284,16 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // If MeshPipelinePlugin exists and we have picking, let's enable PickingMeshPipelinePlugin
                 RenderSystem.GetPipelinePlugin<PickingMeshPipelinePlugin>(true);
+            }
+            if (WireFrame && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
+            {
+                // If MeshPipelinePlugin exists and we have wire frame, let's enable WireFrameRenderFeature
+                RenderSystem.GetPipelinePlugin<WireFrameMeshPipelinePlugin>(true);
+            }
+            if (Highlight && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
+            {
+                // If MeshPipelinePlugin exists and we have wire frame, let's enable WireFrameRenderFeature
+                RenderSystem.GetPipelinePlugin<HighlightMeshPipelinePlugin>(true);
             }
 
             // TODO: Collect shadow map views
@@ -313,9 +346,12 @@ namespace SiliconStudio.Xenko.Rendering
                 context.PopRenderTargets();
             }
 
-            // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
-            RenderSystem.Draw(context, mainRenderView, MainRenderStage);
-            //Draw(RenderContext, mainRenderView, transparentRenderStage);
+            if (Default)
+            {
+                // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
+                RenderSystem.Draw(context, mainRenderView, MainRenderStage);
+                //Draw(RenderContext, mainRenderView, transparentRenderStage);
+            }
 
             // Depth readback
             //if (Shadows)
@@ -324,6 +360,20 @@ namespace SiliconStudio.Xenko.Rendering
             //    {
             //    }
             //}
+
+            // Material/mesh highlighting
+            if (Highlight)
+            {
+                RenderSystem.Draw(context, mainRenderView, HighlightRenderStage);
+            }
+
+            // Wire frame
+            if (WireFrame)
+            {
+                var renderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+                context.CommandList.Clear(renderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer);
+                RenderSystem.Draw(context, mainRenderView, WireFrameRenderStage);
+            }
 
             // Picking
             if (Picking)

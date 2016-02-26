@@ -26,21 +26,21 @@ namespace SiliconStudio.Xenko.Rendering
             DirectReferenceColor = new Color4(1.0f, 0.35f, 0.25f, 0.8f);
             IndirectReferenceColor = new Color4(1.0f, 0.65f, 0.60f, 0.8f);
 
-            renderModelObjectInfoKey = RootRenderFeature.CreateObjectKey<Color4>();
+            renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<Color4>();
 
-            color = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(MaterialFrontBackBlendShaderKeys.ColorFront.Name);
+            color = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(HighlightShaderKeys.HighlightColor.Name);
         }
 
         public override void Extract()
         {
-            var renderModelObjectInfo = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
             foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
             {
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
-                var renderMesh = objectNode.RenderObject as RenderMesh;
+                var renderMesh = (RenderMesh)objectNode.RenderObject;
 
-                Color4 color = Color.Transparent;
+                Color4 color = DirectReferenceColor;
                 //if ()
                 //{
                 //    color = DirectReferenceColor;
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public unsafe override void Prepare(RenderContext context)
         {
-            var renderModelObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
+            var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
