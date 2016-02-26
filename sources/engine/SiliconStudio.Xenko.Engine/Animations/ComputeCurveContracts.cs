@@ -27,14 +27,14 @@ namespace SiliconStudio.Xenko.Animations
     }
 
     /// <summary>
-    /// Constant vector4 value for the IComputeCurve interface
+    /// Constant Vector4 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeConstCurveVector4")]
     [Display("Constant")]
     public class ComputeConstCurveVector4 : ComputeConstCurve<Vector4> { }
 
     /// <summary>
-    /// Constant vector4 value for the IComputeCurve interface
+    /// Constant Vector4 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector4")]
     [Display("Animation")]
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Animations
     }
 
     /// <summary>
-    /// Binary operator vector4 value for the IComputeCurve interface
+    /// Binary operator Vector4 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeBinaryCurveVector4")]
     [Display("Binary Operation")]
@@ -102,14 +102,14 @@ namespace SiliconStudio.Xenko.Animations
     }
 
     /// <summary>
-    /// Constant vector4 value for the IComputeCurve interface
+    /// Constant Vector3 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeConstCurveVector3")]
     [Display("Constant")]
     public class ComputeConstCurveVector3 : ComputeConstCurve<Vector3> { }
 
     /// <summary>
-    /// Constant vector4 value for the IComputeCurve interface
+    /// Constant Vector3 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector3")]
     [Display("Animation")]
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Animations
     }
 
     /// <summary>
-    /// Binary operator vector4 value for the IComputeCurve interface
+    /// Binary operator Vector3 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeBinaryCurveVector3")]
     [Display("Binary Operation")]
@@ -149,6 +149,81 @@ namespace SiliconStudio.Xenko.Animations
 
         /// <inheritdoc/>
         protected override Vector3 Multiply(Vector3 a, Vector3 b)
+        {
+            return a * b;
+        }
+    }
+
+    #endregion
+
+    #region Vector2
+    /// <summary>
+    /// Sampler container for Vector2 data type
+    /// </summary>
+    [DataContract("ComputeCurveSamplerVector2")]
+    [Display("Sampler Vector2")]
+    public class ComputeCurveSamplerVector2 : ComputeCurveSampler<Vector2>
+    {
+        public ComputeCurveSamplerVector2()
+        {
+            curve = new ComputeAnimationCurveVector2();
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Vector2 value1, ref Vector2 value2, float t, out Vector2 result)
+        {
+            Interpolator.Vector2.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Constant Vector2 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeConstCurveVector2")]
+    [Display("Constant")]
+    public class ComputeConstCurveVector2 : ComputeConstCurve<Vector2> { }
+
+    /// <summary>
+    /// Constant Vector2 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveVector2")]
+    [Display("Animation")]
+    public class ComputeAnimationCurveVector2 : ComputeAnimationCurve<Vector2>
+    {
+        /// <inheritdoc/>
+        public override void Cubic(ref Vector2 value1, ref Vector2 value2, ref Vector2 value3, ref Vector2 value4, float t, out Vector2 result)
+        {
+            Interpolator.Vector2.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Vector2 value1, ref Vector2 value2, float t, out Vector2 result)
+        {
+            Interpolator.Vector2.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Binary operator Vector2 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeBinaryCurveVector2")]
+    [Display("Binary Operation")]
+    public class ComputeBinaryCurveVector2 : ComputeBinaryCurve<Vector2>
+    {
+        /// <inheritdoc/>
+        protected override Vector2 Add(Vector2 a, Vector2 b)
+        {
+            return a + b;
+        }
+
+        /// <inheritdoc/>
+        protected override Vector2 Subtract(Vector2 a, Vector2 b)
+        {
+            return a - b;
+        }
+
+        /// <inheritdoc/>
+        protected override Vector2 Multiply(Vector2 a, Vector2 b)
         {
             return a * b;
         }
