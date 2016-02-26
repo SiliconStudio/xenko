@@ -29,16 +29,19 @@ SOFTWARE.
 */
 #endregion
 
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
+
+    using WindowsPoint = System.Windows.Point;
+
     [TemplatePart(Name = HorizontalLinePartName, Type = typeof(Line))]
     [TemplatePart(Name = VerticalLinePartName, Type = typeof(Line))]
     public class TrackerControl : Control
@@ -81,7 +84,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="Position"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PositionProperty =
-            DependencyProperty.Register(nameof(Position), typeof(Point), typeof(TrackerControl), new PropertyMetadata(new Point(), OnPositionChanged));
+            DependencyProperty.Register(nameof(Position), typeof(WindowsPoint), typeof(TrackerControl), new PropertyMetadata(new WindowsPoint(), OnPositionChanged));
 
         /// <summary>
         /// Identifies the <see cref="TrackMouse"/> dependency property.
@@ -112,7 +115,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public Thickness LineThickness { get { return (Thickness)GetValue(LineThicknessProperty); } set { SetValue(LineThicknessProperty, value); } }
 
-        public Point Position { get { return (Point)GetValue(PositionProperty); } set { SetValue(PositionProperty, value); } }
+        public WindowsPoint Position { get { return (WindowsPoint)GetValue(PositionProperty); } set { SetValue(PositionProperty, value); } }
 
         public bool TrackMouse { get { return (bool)GetValue(TrackMouseProperty); } set { SetValue(TrackMouseProperty, value); } }
         
@@ -182,6 +185,7 @@ namespace SiliconStudio.Presentation.Controls
                 {
                     horizontalLine.X1 = lineExtents.Left;
                     horizontalLine.X2 = lineExtents.Right;
+                    pos.Y = MathUtil.Clamp(pos.Y, lineExtents.Top, lineExtents.Bottom);
                 }
                 else
                 {
@@ -199,13 +203,13 @@ namespace SiliconStudio.Presentation.Controls
                 {
                     verticalLine.Y1 = lineExtents.Top;
                     verticalLine.Y2 = lineExtents.Bottom;
+                    pos.X = MathUtil.Clamp(pos.X, lineExtents.Left, lineExtents.Right);
                 }
                 else
                 {
                     verticalLine.Y1 = 0;
                     verticalLine.Y2 = height;
                 }
-
                 verticalLine.X1 = pos.X;
                 verticalLine.X2 = pos.X;
             }
