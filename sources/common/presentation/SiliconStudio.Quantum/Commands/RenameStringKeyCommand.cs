@@ -35,9 +35,9 @@ namespace SiliconStudio.Quantum.Commands
         {
             var oldName = (string)index;
             var newName = (string)parameter;
-            var removedObject = content.Retrieve(oldName);
-            content.Remove(oldName);
-            content.Add(newName, removedObject);
+            var renamedObject = content.Retrieve(oldName);
+            content.Remove(oldName, renamedObject);
+            content.Add(newName, renamedObject);
             return null;
         }
     }

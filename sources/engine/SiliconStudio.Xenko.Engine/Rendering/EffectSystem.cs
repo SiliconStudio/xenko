@@ -242,7 +242,7 @@ namespace SiliconStudio.Xenko.Rendering
             lock (cachedEffects)
             {
                 if (!isInitialized)
-                    throw new InvalidOperationException("EffectSystem has been disposed. This Effect compilation has been cancelled.");
+                    throw new ObjectDisposedException(nameof(EffectSystem), "EffectSystem has been disposed. This Effect compilation has been cancelled.");
 
                 var usedParameters = compilerResult.UsedParameters;
 
