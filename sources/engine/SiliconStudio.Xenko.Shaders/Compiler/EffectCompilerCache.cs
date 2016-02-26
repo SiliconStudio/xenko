@@ -17,7 +17,7 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler
 {
-    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
+    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters);
 
     /// <summary>
     /// Checks if an effect has already been compiled in its cache before deferring to a real <see cref="IEffectCompiler"/>.
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, EffectCompilerParameters? effectCompilerParameters)
         {
             var database = (FileProvider ?? AssetManager.FileProvider) as DatabaseFileProvider;
             if (database == null)
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Compile the mixin in a Task
                 if (CompileEffectAsynchronously)
                 {
-                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, compilerParameters) : TaskScheduler.Default);
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, effectCompilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, effectCompilerParameters) : TaskScheduler.Default);
 
                     compilingShaders.Add(mixinObjectId, resultTask);
 
@@ -147,12 +147,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
                 else
                 {
-                    return CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
+                    return CompileBytecode(mixin, effectCompilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
                 }
             }
         }
 
-        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
+        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
         {
             // Open the database for writing
             var log = new LoggerResult();
