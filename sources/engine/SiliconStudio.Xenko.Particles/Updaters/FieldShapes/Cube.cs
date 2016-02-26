@@ -112,47 +112,47 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             inverseRotation.Rotate(ref particlePosition);
             particlePosition /= fieldSize;
 
-            var maxX = Math.Abs(particlePosition.X);
-            var maxY = Math.Abs(particlePosition.Y);
-            var maxZ = Math.Abs(particlePosition.Z);
+            var isOutside = (Math.Abs(particlePosition.X) > halfSideX) || (Math.Abs(particlePosition.Y) > halfSideY) || (Math.Abs(particlePosition.Z) > halfSideZ);
 
-            bool isInside;
+            var surfaceX = (particlePosition.X >= 0) ? halfSideX : -halfSideX;
+            var surfaceY = (particlePosition.Y >= 0) ? halfSideY : -halfSideY;
+            var surfaceZ = (particlePosition.Z >= 0) ? halfSideZ : -halfSideZ;
 
-            if ((maxX / halfSideX >= maxY / halfSideY) && (maxX / halfSideX >= maxZ / halfSideZ))
+            var distX = Math.Abs(particlePosition.X - surfaceX);
+            var distY = Math.Abs(particlePosition.Y - surfaceY);
+            var distZ = Math.Abs(particlePosition.Z - surfaceZ);
+
+            surfacePoint = particlePosition;
+
+            if ((distX <= distY) && (distX <= distZ))
             {
                 // Biggest distance is on the X axis
-                surfacePoint = particlePosition * (halfSideX / maxX);
+                surfacePoint.X = surfaceX;
                 surfaceNormal = new Vector3(surfacePoint.X, 0, 0);
-                isInside = (maxX <= halfSideX);
             }
-
             else
-            if (maxY / halfSideY >= maxZ / halfSideZ)
+            if ((distY <= distZ))
             {
                 // Biggest distance is on the Y axis
-                surfacePoint = particlePosition * (halfSideY / maxY);
+                surfacePoint.Y = surfaceY;
                 surfaceNormal = new Vector3(0, surfacePoint.Y, 0);
-                isInside = (maxY <= halfSideY);
             }
-
             else
             {
                 // Biggest distance is on the Z axis
-                surfacePoint = particlePosition * (halfSideZ / maxZ);
+                surfacePoint.Z = surfaceZ;
                 surfaceNormal = new Vector3(0, 0, surfacePoint.Z);
-                isInside = (maxZ <= halfSideZ);
             }
 
             // Fix the surface point and normal to world space
             fieldRotation.Rotate(ref surfaceNormal);
-            surfaceNormal *= fieldSize;
             surfaceNormal.Normalize();
 
             fieldRotation.Rotate(ref surfacePoint);
             surfacePoint *= fieldSize;
             surfacePoint += fieldPosition;
 
-            return isInside;
+            return !isOutside;
         }
 
     }
