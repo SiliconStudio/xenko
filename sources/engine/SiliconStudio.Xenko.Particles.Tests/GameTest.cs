@@ -23,7 +23,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
         //  Please update the version number every time there is a breaking change to the particle engine and write down what has been changed
 //        const int ParticleTestVersion = 1;  // Initial tests
 //        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
-        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
+//        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
+        const int ParticleTestVersion = 4;  // Changed the default size for billboards, hexagons and quads (previous visual tests are broken)
 
         // Local screenshots
         private readonly string xenkoDir;
