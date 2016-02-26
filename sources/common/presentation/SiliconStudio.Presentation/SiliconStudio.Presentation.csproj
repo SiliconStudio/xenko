@@ -68,6 +68,7 @@
     <Compile Include="Commands\UtilityCommands.cs" />
     <Compile Include="Controls\CanvasView\CanvasView.cs" />
     <Compile Include="Controls\CanvasView\ICanvasViewItem.cs" />
+    <Compile Include="Controls\CanvasView\TrackerControl.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />
