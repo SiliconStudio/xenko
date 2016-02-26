@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets
 
         static AssetCloner()
         {
-            ClonerSelector = new SerializerSelector(true, "Default", "Asset", "AssetClone");
+            ClonerSelector = new SerializerSelector(true, "Default", "Content", "AssetClone");
         }
 
         /// <summary>
