@@ -163,6 +163,8 @@
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\Editor\EntityPickingResult.cs" />
     <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
+    <Compile Include="Rendering\Editor\HightlightRenderFeature.cs" />
+    <Compile Include="Rendering\Editor\WireFrameRenderFeature.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -314,6 +316,16 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Utils\HightlightShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>HightlightShader.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\Utils\HightlightShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>HightlightShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Utils\Picking.cs">
       <DependentUpon>Picking.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>

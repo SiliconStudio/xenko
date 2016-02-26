@@ -16,11 +16,8 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public static partial class MaterialFrontBackBlendShaderKeys
+    public static partial class HighlightShaderKeys
     {
-        public static readonly ValueParameterKey<Color3> ColorFront = ParameterKeys.NewValue<Color3>();
-        public static readonly ValueParameterKey<float> ColorBlend = ParameterKeys.NewValue<float>();
-        public static readonly ValueParameterKey<Color3> ColorBack = ParameterKeys.NewValue<Color3>();
-        public static readonly ValueParameterKey<float> AlphaBlend = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Vector4> HighlightColor = ParameterKeys.NewValue<Vector4>();
     }
 }

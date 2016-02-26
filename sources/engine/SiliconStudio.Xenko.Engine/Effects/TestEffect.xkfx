@@ -76,5 +76,19 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
         mixin child GBuffer;
         mixin child ShadowMapCaster;
         mixin child Picking;
+        mixin child WireFrame;
+        mixin child Highlight;
+    }
+
+    shader WireFrame
+    {
+        using params MaterialFrontBackBlendShaderKeys;
+
+        mixin MaterialFrontBackBlendShader<MaterialFrontBackBlendShaderKeys.UseNormalBackFace>;
+    }
+
+    shader Highlight
+    {
+        mixin HighlightShader;
     }
 }
