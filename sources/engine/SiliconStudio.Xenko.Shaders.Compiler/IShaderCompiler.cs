@@ -9,6 +9,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     internal class ShaderBytecodeResult : LoggerResult
     {
         public ShaderBytecode Bytecode { get; set; }
+
+        public string DisassembleText { get; set; }
     }
 
     internal interface IShaderCompiler

@@ -71,6 +71,7 @@
     <Compile Include="Effects\EffectParameterExtensions.cs" />
     <Compile Include="Effects\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\ParameterCollectionGroup.cs" />
+    <Compile Include="CompilationMode.cs" />
     <Compile Include="Graphics\ColorExtensions.cs" />
     <Compile Include="Graphics\ColorSpace.cs" />
     <Compile Include="Graphics\CompareFunction.cs" />

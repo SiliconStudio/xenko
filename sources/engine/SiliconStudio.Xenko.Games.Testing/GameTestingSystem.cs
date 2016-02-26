@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Games.Testing
             {
                 drawActions.Enqueue(() =>
                 {
-                    SaveTexture(game.GraphicsDevice.BackBuffer, request.Filename);
+                    SaveTexture(game.GraphicsDevice.Presenter.BackBuffer, request.Filename);
                 });
             });
 
