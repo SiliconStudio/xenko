@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum.Commands
         public sealed override Task<IActionItem> Execute(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             var actionItem = CreateActionItem(content, index, parameter, dirtiables);
-            return actionItem?.Do() ?? false ? Task.FromResult<IActionItem>(actionItem) : null;
+            return Task.FromResult<IActionItem>(actionItem?.Do() ?? false ? actionItem : null);
         }
 
         protected abstract NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
