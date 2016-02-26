@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public static readonly PropertyKey<VisibilityGroup> CurrentVisibilityGroup = new PropertyKey<VisibilityGroup>("SceneInstance.CurrentVisibilityGroup", typeof(SceneInstance));
 
-        private readonly Dictionary<TypeInfo, Type> registeredRenderProcessorTypes = new Dictionary<TypeInfo, Type>();
+        private readonly Dictionary<TypeInfo, RegisteredRenderProcessors> registeredRenderProcessorTypes = new Dictionary<TypeInfo, RegisteredRenderProcessors>();
         private Scene previousScene;
         private Scene scene;
 
@@ -238,6 +238,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 previousScene.Entities.CollectionChanged -= Entities_CollectionChanged;
             }
+            RemoveRendererTypes();
             base.Reset();
         }
 
@@ -278,11 +279,25 @@ namespace SiliconStudio.Xenko.Engine
 
         private void HandleRendererTypes()
         {
-            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
             foreach (var componentType in ComponentTypes)
             {
                 EntitySystemOnComponentTypeAdded(null, componentType);
             }
+            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
+        }
+
+        private void RemoveRendererTypes()
+        {
+            // Unregister render processors
+            ComponentTypeAdded -= EntitySystemOnComponentTypeAdded;
+            foreach (var renderProcessors in registeredRenderProcessorTypes)
+            {
+                foreach (var renderProcessorInstance in renderProcessors.Value.Instances)
+                {
+                    Processors.Remove(renderProcessorInstance.Value);
+                }
+            }
+            registeredRenderProcessorTypes.Clear();
         }
 
         private void VisibilityGroups_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
@@ -298,8 +313,22 @@ namespace SiliconStudio.Xenko.Engine
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    // TODO GRAPHICS REFACTOR
-                    throw new NotImplementedException();
+                    foreach (var registeredRenderProcessorType in registeredRenderProcessorTypes)
+                    {
+                        // Remove matching entries
+                        var instances = registeredRenderProcessorType.Value.Instances;
+                        for (int i = 0; i < instances.Count; ++i)
+                        {
+                            var registeredProcessorInstance = instances[i];
+                            if (registeredProcessorInstance.Key == visibilityGroup)
+                            {
+                                Processors.Remove(registeredProcessorInstance.Value);
+                                instances.RemoveAt(i);
+                                break;
+                            }
+                        }
+                    }
+                    break;
             }
         }
 
@@ -314,32 +343,46 @@ namespace SiliconStudio.Xenko.Engine
                     continue;
                 }
 
-                registeredRenderProcessorTypes.Add(type, processorType);
+                var registeredProcessors = new RegisteredRenderProcessors(processorType, VisibilityGroups.Count);
+                registeredRenderProcessorTypes.Add(type, registeredProcessors);
 
                 // Create a render processor for each visibility group
                 foreach (var visibilityGroup in VisibilityGroups)
                 {
-                    CreateRenderProcessor(processorType, visibilityGroup);
+                    CreateRenderProcessor(registeredProcessors, visibilityGroup);
                 }
             }
         }
 
-        private void CreateRenderProcessor(Type processorType, VisibilityGroup visibilityGroup)
+        private void CreateRenderProcessor(RegisteredRenderProcessors registeredRenderProcessor, VisibilityGroup visibilityGroup)
         {
             // Create
-            var processor = (EntityProcessor)Activator.CreateInstance(processorType);
+            var processor = (EntityProcessor)Activator.CreateInstance(registeredRenderProcessor.Type);
 
             // Set visibility group
             ((IEntityComponentRenderProcessor)processor).VisibilityGroup = visibilityGroup;
 
             // Add processor
             Processors.Add(processor);
+            registeredRenderProcessor.Instances.Add(new KeyValuePair<VisibilityGroup, EntityProcessor>(visibilityGroup, processor));
         }
 
         private void OnSceneChanged()
         {
             EventHandler<EventArgs> handler = SceneChanged;
             if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        class RegisteredRenderProcessors
+        {
+            public Type Type;
+            public FastListStruct<KeyValuePair<VisibilityGroup, EntityProcessor>> Instances;
+
+            public RegisteredRenderProcessors(Type type, int instanceCount)
+            {
+                Type = type;
+                Instances = new FastListStruct<KeyValuePair<VisibilityGroup, EntityProcessor>>(instanceCount);
+            }
         }
     }
 }
