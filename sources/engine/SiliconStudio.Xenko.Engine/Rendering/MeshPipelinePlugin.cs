@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -58,6 +59,58 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 EffectName = "TestEffect.Picking",
                 RenderStage = pickingRenderStage,
+            });
+        }
+    }
+
+    public class WireFrameMeshPipelinePlugin : IPipelinePlugin
+    {
+        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        {
+            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
+            var wireFrameRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "WireFrame");
+
+            meshRenderFeature.RenderFeatures.Add(new WireFrameRenderFeature());
+
+            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            {
+                if (renderNode.RenderStage == wireFrameRenderStage)
+                {
+                    pipelineState.BlendState = context.GraphicsDevice.BlendStates.AlphaBlend;
+                    pipelineState.RasterizerState = context.GraphicsDevice.RasterizerStates.WireFrame;
+                }
+            };
+
+            meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+            {
+                EffectName = "TestEffect.WireFrame",
+                RenderStage = wireFrameRenderStage,
+            });
+        }
+    }
+
+    public class HighlightMeshPipelinePlugin : IPipelinePlugin
+    {
+        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        {
+            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
+            var highlightRenderFeature = EntityComponentRendererBase.GetRenderStage(renderSystem, "Highlight");
+
+            meshRenderFeature.RenderFeatures.Add(new HighlightRenderFeature());
+
+            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            {
+                if (renderNode.RenderStage == highlightRenderFeature)
+                {
+                    pipelineState.BlendState = context.GraphicsDevice.BlendStates.AlphaBlend;
+                    pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.DepthRead;
+                }
+            };
+
+            meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+            {
+                EffectName = "TestEffect.Highlight",
+                RenderStage = highlightRenderFeature,
             });
         }
     }

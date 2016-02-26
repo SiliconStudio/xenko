@@ -163,7 +163,7 @@
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\Editor\EntityPickingResult.cs" />
     <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
-    <Compile Include="Rendering\Editor\HightlightRenderFeature.cs" />
+    <Compile Include="Rendering\Editor\HighlightRenderFeature.cs" />
     <Compile Include="Rendering\Editor\WireFrameRenderFeature.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
@@ -316,15 +316,15 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
-    <None Include="Rendering\Utils\HightlightShader.xksl">
+    <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>HightlightShader.cs</LastGenOutput>
+      <LastGenOutput>HighlightShader.cs</LastGenOutput>
     </None>
-    <Compile Include="Rendering\Utils\HightlightShader.cs">
+    <Compile Include="Rendering\Utils\HighlightShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>HightlightShader.xksl</DependentUpon>
+      <DependentUpon>HighlightShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Utils\Picking.cs">
       <DependentUpon>Picking.xkfx</DependentUpon>
