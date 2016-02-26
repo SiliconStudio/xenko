@@ -396,6 +396,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (renderEffect.PipelineState == null)
                     {
                         var pipelineState = MutablePipeline.State;
+                        pipelineState.SetDefaults();
 
                         // Effect
                         pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
