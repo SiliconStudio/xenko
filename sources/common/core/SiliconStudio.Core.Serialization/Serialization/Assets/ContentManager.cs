@@ -80,7 +80,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
             lock (LoadedAssetUrls)
             {
-                using (var profile = Profiler.Begin(AssetProfilingKeys.AssetSave))
+                using (var profile = Profiler.Begin(ContentProfilingKeys.ContentSave))
                 {
                     SerializeObject(url, asset, true);
                 }
@@ -136,7 +136,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
             lock (LoadedAssetUrls)
             {
-                using (var profile = Profiler.Begin(AssetProfilingKeys.AssetLoad, url))
+                using (var profile = Profiler.Begin(ContentProfilingKeys.ContentLoad, url))
                 {
                     return DeserializeObject(url, type, null, settings);
                 }
@@ -163,7 +163,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 var url = assetReference.Url;
 
-                using (var profile = Profiler.Begin(AssetProfilingKeys.AssetReload, url))
+                using (var profile = Profiler.Begin(ContentProfilingKeys.ContentReload, url))
                 {
                     DeserializeObject(url, obj.GetType(), obj, settings);
                 }
