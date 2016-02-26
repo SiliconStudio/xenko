@@ -19,6 +19,8 @@ namespace SiliconStudio.Assets
     [DataContract("SourceCodeAsset")]
     public abstract class SourceCodeAsset : Asset
     {
+        private string text;
+
         /// <summary>
         /// Gets or sets the absolute source location of this asset on the disk.
         /// </summary>
@@ -30,8 +32,23 @@ namespace SiliconStudio.Assets
         /// Gets the sourcecode text.
         /// </summary>
         /// <value>The sourcecode text.</value>
-        [DataMemberIgnore]
-        public string Text { get; set; }
+        [Display(Browsable = false)]
+        public string Text
+        {
+            get
+            {
+                if (text.IsNullOrEmpty())
+                {
+                    text = Load() ?? "";
+                }
+
+                return text;
+            }
+            set
+            {
+                text = value;
+            }
+        }
 
         /// <summary>
         /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
@@ -39,11 +56,6 @@ namespace SiliconStudio.Assets
         /// <param name="stream"></param>
         public virtual void Save(Stream stream)
         {
-            if (Text.IsNullOrEmpty())
-            {
-                Text = Load() ?? "";
-            }
-
             var buffer = Encoding.UTF8.GetBytes(Text);
             stream.Write(buffer, 0, buffer.Length);
         }
@@ -51,9 +63,9 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Loads the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
         /// </summary>
-        protected string Load()
+        private string Load()
         {
-            if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(new UFile(AbsoluteSourceLocation).ToWindowsPath()))
+            if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(AbsoluteSourceLocation))
             {
                 return File.ReadAllText(AbsoluteSourceLocation);
             }
