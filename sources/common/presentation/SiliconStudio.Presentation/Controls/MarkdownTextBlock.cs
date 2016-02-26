@@ -126,7 +126,15 @@ namespace SiliconStudio.Presentation.Controls
 
         private FlowDocument ProcessText()
         {
-            return GetMarkdown().Transform(Text ?? "*Nothing to display*");
+            try
+            {
+                return GetMarkdown().Transform(Text ?? "*Nothing to display*");
+            }
+            catch (ArgumentException) { }
+            catch (FormatException) { }
+            catch (InvalidOperationException) { }
+
+            return null;
         }
     }
 }

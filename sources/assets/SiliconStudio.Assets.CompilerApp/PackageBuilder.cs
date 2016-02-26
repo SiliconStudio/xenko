@@ -119,7 +119,8 @@ namespace SiliconStudio.Assets.CompilerApp
                 context = new AssetCompilerContext
                 {
                     Profile = builderOptions.BuildProfile,
-                    Platform = builderOptions.Platform
+                    Platform = builderOptions.Platform,
+                    BuildConfiguration =  builderOptions.ProjectConfiguration
                 };
                 context.SetGameSettingsAsset(gameSettingsAsset);
 

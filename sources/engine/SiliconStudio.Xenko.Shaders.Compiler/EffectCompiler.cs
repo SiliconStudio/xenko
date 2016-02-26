@@ -255,6 +255,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                 stageStringBuilder.AppendLine("@G    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
+                if (result.DisassembleText != null)
+                {
+                    stageStringBuilder.Append(result.DisassembleText);
+                }
 #endif
                 // -------------------------------------------------------
 

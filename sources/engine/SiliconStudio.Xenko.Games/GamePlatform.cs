@@ -272,31 +272,47 @@ namespace SiliconStudio.Xenko.Games
                 }
 
                 var preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile;
+                var shaderProfiles = new GraphicsProfile?[preferredParameters.PreferredGraphicsProfile.Length];
 
                 // INTEL workaround: it seems Intel driver doesn't support properly feature level 9.x. Fallback to 10.
                 if (graphicsAdapter.VendorId == 0x8086)
-                    preferredGraphicsProfiles = preferredGraphicsProfiles.Select(x => x < GraphicsProfile.Level_10_0 ? GraphicsProfile.Level_10_0 : x).ToArray();
+                {
+                    // Make a copy
+                    preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile.ToArray();
+
+                    for (int i = 0; i < preferredGraphicsProfiles.Length; i++)
+                    {
+                        if (preferredGraphicsProfiles[i] < GraphicsProfile.Level_10_0)
+                        {
+                            // Force to use a specific shader profile
+                            shaderProfiles[i] = GraphicsProfile.Level_10_0;
+                            preferredGraphicsProfiles[i] = GraphicsProfile.Level_10_0;
+                        }
+                    }
+                }
 
                 // Iterate on each preferred graphics profile
-                foreach (var featureLevel in preferredGraphicsProfiles)
+                for (int index = 0; index < preferredGraphicsProfiles.Length; index++)
                 {
-                    // Check if this profile is supported.
+                    var featureLevel = preferredGraphicsProfiles[index];
+// Check if this profile is supported.
                     if (graphicsAdapter.IsProfileSupported(featureLevel))
                     {
                         var deviceInfo = new GraphicsDeviceInformation
+                        {
+                            Adapter = graphicsAdapter,
+                            GraphicsProfile = featureLevel,
+                            ShaderProfile = shaderProfiles[index],
+                            PresentationParameters =
                             {
-                                Adapter = graphicsAdapter,
-                                GraphicsProfile = featureLevel,
-                                PresentationParameters =
-                                    {
-                                        MultiSampleCount = MSAALevel.None,
-                                        IsFullScreen = preferredParameters.IsFullScreen,
-                                        PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
-                                        PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
-                                        DeviceWindowHandle = MainWindow.NativeWindow,
-                                        ColorSpace = preferredParameters.ColorSpace
-                                    }
-                            };
+                                MultiSampleCount = MSAALevel.None,
+                                IsFullScreen = preferredParameters.IsFullScreen,
+                                PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
+                                PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
+                                DeviceWindowHandle = MainWindow.NativeWindow,
+                                ColorSpace = preferredParameters.ColorSpace
+                            }
+                        };
 
                         var preferredMode = new DisplayMode(preferredParameters.PreferredBackBufferFormat,
                             preferredParameters.PreferredBackBufferWidth,

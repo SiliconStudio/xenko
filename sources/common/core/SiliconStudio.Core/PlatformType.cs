@@ -54,9 +54,11 @@ namespace SiliconStudio.Core
         /// </summary>
         Windows10,
 
+#if SILICONSTUDIO_RUNTIME_CORECLR
         /// <summary>
         /// The Linux OS.
         /// </summary>
         Linux,
+#endif
     }
 }

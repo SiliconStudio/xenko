@@ -29,6 +29,11 @@ namespace SiliconStudio.Xenko.Engine.Design
         public string DefaultSceneUrl { get; set; }
 
         /// <summary>
+        /// Gets or sets the compilation mode used.
+        /// </summary>
+        public CompilationMode CompilationMode { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether effect compile should be allowed, and if yes, should it be done locally (if possible) or remotely?
         /// </summary>
         public EffectCompilationMode EffectCompilation { get; set; }
