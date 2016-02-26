@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX;
 using SharpDX.D3DCompiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Storage;
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
         public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, ShaderMixinParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
         {
             var isDebug = compilerParameters.Get(CompilerParameters.DebugKey);
+            var optimLevel = compilerParameters.Get(CompilerParameters.OptimizationLevelKey);
             var profile = compilerParameters.Get(CompilerParameters.GraphicsProfileKey);
             
             var shaderModel = ShaderStageToString(stage) + "_" + ShaderProfileFromGraphicsProfile(profile);
@@ -27,9 +29,23 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             var shaderFlags = ShaderFlags.None;
             if (isDebug)
             {
-                shaderFlags = ShaderFlags.OptimizationLevel0 | ShaderFlags.Debug;
+                shaderFlags = ShaderFlags.Debug;
             }
-
+            switch (optimLevel)
+            {
+                case 0:
+                    shaderFlags |= ShaderFlags.OptimizationLevel0;
+                    break;
+                case 1:
+                    shaderFlags |= ShaderFlags.OptimizationLevel1;
+                    break;
+                case 2:
+                    shaderFlags |= ShaderFlags.OptimizationLevel2;
+                    break;
+                case 3:
+                    shaderFlags |= ShaderFlags.OptimizationLevel3;
+                    break;
+            }
             SharpDX.Configuration.ThrowOnShaderCompileError = false;
 
             // Compile using D3DCompiler
@@ -44,6 +60,15 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             }
             else
             {
+                // TODO: Make this optional
+                try
+                {
+                    byteCodeResult.DisassembleText = compilationResult.Bytecode.Disassemble();
+                }
+                catch (SharpDXException)
+                {
+                }
+
                 // As effect bytecode binary can changed when having debug infos (with d3dcompiler_47), we are calculating a bytecodeId on the stripped version
                 var rawData = compilationResult.Bytecode.Strip(StripFlags.CompilerStripDebugInformation | StripFlags.CompilerStripReflectionData);
                 var bytecodeId = ObjectId.FromBytes(rawData);

@@ -254,6 +254,10 @@
     <Setter Property="PagePadding" Value="2,0" />
     <Setter Property="TextAlignment" Value="Left" />
   </Style>
+  <Style TargetType="{x:Type Inline}" x:Key="{x:Static local:XamlMarkdown.CodeStyleKey}">
+    <Setter Property="FontFamily" Value="Courier New, Consolas" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading1StyleKey}">
     <!-- note: in HTML4, default H1 font size is 2em (see http://www.w3.org/TR/CSS21/sample.html) -->
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=2}" />
