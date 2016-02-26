@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -58,8 +58,10 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.Android:
                 case PlatformType.iOS:
                     return GraphicsPlatform.OpenGLES;
+#if SILICONSTUDIO_RUNTIME_CORECLR
                 case PlatformType.Linux:
                     return GraphicsPlatform.OpenGL;
+#endif
                 default:
                     throw new ArgumentOutOfRangeException();
             }
