@@ -27,7 +27,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
-    public class  GraphicsDeviceInformation
+    public class  GraphicsDeviceInformation : IEquatable<GraphicsDeviceInformation>
     {
         #region Fields
 
@@ -91,6 +91,11 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
+        /// Gets or sets the shader profile. If null, it will use the graphics profile from the game settings.
+        /// </summary>
+        public GraphicsProfile? ShaderProfile { get; set; }
+
+        /// <summary>
         /// Gets or sets the presentation parameters.
         /// </summary>
         /// <value>The presentation parameters.</value>
@@ -118,35 +123,41 @@ namespace SiliconStudio.Xenko.Games
 
         #region Public Methods and Operators
 
-        /// <summary>Returns a value that indicates whether the current instance is equal to a specified object.</summary>
-        /// <param name="obj">The Object to compare with the current GraphicsDeviceInformation.</param>
-        public override bool Equals(object obj)
+        public bool Equals(GraphicsDeviceInformation other)
         {
-            var information = obj as GraphicsDeviceInformation;
-            if (information == null)
-            {
-                return false;
-            }
-
-            if (!Equals(information.adapter, adapter))
-            {
-                return false;
-            }
-
-            if (information.graphicsProfile != this.graphicsProfile)
-            {
-                return false;
-            }
-
-            return information.PresentationParameters == this.PresentationParameters;
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(adapter, other.adapter) && graphicsProfile == other.graphicsProfile && Equals(presentationParameters, other.presentationParameters) && ShaderProfile == other.ShaderProfile;
         }
 
-        /// <summary>Gets the hash code for this object.</summary>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GraphicsDeviceInformation)obj);
+        }
+
         public override int GetHashCode()
         {
-            return graphicsProfile.GetHashCode()
-                   ^ (adapter == null ? 0 : adapter.GetHashCode())
-                   ^ presentationParameters.GetHashCode();
+            unchecked
+            {
+                var hashCode = (adapter != null ? adapter.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (int)graphicsProfile;
+                hashCode = (hashCode*397) ^ (presentationParameters != null ? presentationParameters.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ ShaderProfile.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(GraphicsDeviceInformation left, GraphicsDeviceInformation right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(GraphicsDeviceInformation left, GraphicsDeviceInformation right)
+        {
+            return !Equals(left, right);
         }
 
         /// <summary>
@@ -155,7 +166,9 @@ namespace SiliconStudio.Xenko.Games
         /// <returns>A new copy-instance of this GraphicsDeviceInformation.</returns>
         public GraphicsDeviceInformation Clone()
         {
-            return new GraphicsDeviceInformation { Adapter = Adapter, GraphicsProfile = GraphicsProfile, PresentationParameters = PresentationParameters.Clone() };
+            var newValue = (GraphicsDeviceInformation)MemberwiseClone();
+            newValue.PresentationParameters = PresentationParameters.Clone();
+            return newValue;
         }
 
         #endregion

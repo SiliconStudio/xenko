@@ -149,7 +149,7 @@ namespace SiliconStudio.Presentation
 
         private Style TryFindStyle(object resourceKey)
         {
-            return (resourcesProvider?.TryFindResource(resourceKey) ?? Application.Current?.TryFindResource(DocumentStyleKey)) as Style;
+            return resourcesProvider?.TryFindResource(resourceKey) as Style;
         }
 
         public FlowDocument Transform(string text)
@@ -161,7 +161,12 @@ namespace SiliconStudio.Presentation
             var document = Create<FlowDocument, Block>(RunBlockGamut(text));
             if (DocumentStyle != null)
             {
-                document.Style = DocumentStyle;
+                // Try applying the style
+                try
+                {
+                    document.Style = DocumentStyle;
+                }
+                catch (InvalidOperationException) { }
             }
             return document;
         }
@@ -425,7 +430,12 @@ namespace SiliconStudio.Presentation
             }
             if (ImageStyle != null)
             {
-                image.Style = ImageStyle;
+                // Try applying the style
+                try
+                {
+                    image.Style = ImageStyle;
+                }
+                catch (InvalidOperationException) { }
             }
             return new InlineUIContainer(image);
         }
@@ -478,8 +488,7 @@ namespace SiliconStudio.Presentation
 
             var header = match.Groups[1].Value;
             var level = match.Groups[2].Value.StartsWith("=") ? 1 : 2;
-
-            //TODO: Style the paragraph based on the header level
+            
             return CreateHeader(level, RunSpanGamut(header.Trim()));
         }
 
@@ -499,36 +508,41 @@ namespace SiliconStudio.Presentation
 
             var block = Create<Paragraph, Inline>(content);
 
-            switch (level)
+            try
             {
-                case 1:
-                    if (Heading1Style != null)
-                    {
-                        block.Style = Heading1Style;
-                    }
-                    break;
+                // Try applying the style
+                switch (level)
+                {
+                    case 1:
+                        if (Heading1Style != null)
+                        {
+                            block.Style = Heading1Style;
+                        }
+                        break;
 
-                case 2:
-                    if (Heading2Style != null)
-                    {
-                        block.Style = Heading2Style;
-                    }
-                    break;
+                    case 2:
+                        if (Heading2Style != null)
+                        {
+                            block.Style = Heading2Style;
+                        }
+                        break;
 
-                case 3:
-                    if (Heading3Style != null)
-                    {
-                        block.Style = Heading3Style;
-                    }
-                    break;
+                    case 3:
+                        if (Heading3Style != null)
+                        {
+                            block.Style = Heading3Style;
+                        }
+                        break;
 
-                case 4:
-                    if (Heading4Style != null)
-                    {
-                        block.Style = Heading4Style;
-                    }
-                    break;
+                    case 4:
+                        if (Heading4Style != null)
+                        {
+                            block.Style = Heading4Style;
+                        }
+                        break;
+                }
             }
+            catch (InvalidOperationException) { }
 
             return block;
         }
@@ -749,7 +763,12 @@ namespace SiliconStudio.Presentation
             var result = new Run(span);
             if (CodeStyle != null)
             {
-                result.Style = CodeStyle;
+                // Try applying the style
+                try
+                {
+                    result.Style = CodeStyle;
+                }
+                catch (InvalidOperationException) { }
             }
 
             return result;
