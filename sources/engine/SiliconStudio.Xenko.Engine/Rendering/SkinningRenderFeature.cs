@@ -1,3 +1,4 @@
+using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -16,6 +17,9 @@ namespace SiliconStudio.Xenko.Rendering
         private ConstantBufferOffsetReference blendMatrices;
 
         private readonly FastList<NodeFrameInfo> nodeInfos = new FastList<NodeFrameInfo>();
+
+        // Good number for low profiles?
+        public int MaxBones { get; set; } = 56;
 
         struct NodeFrameInfo
         {
@@ -66,9 +70,12 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
-                        //renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningMaxBones));
+
+                        var skinningBones = renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones);
+                        if (skinningBones > MaxBones)
+                            throw new NotImplementedException("Too many bones");
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, MaxBones);
                     }
                 }
             }
