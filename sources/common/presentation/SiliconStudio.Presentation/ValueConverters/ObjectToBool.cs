@@ -14,8 +14,6 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null && value.GetType().IsValueType)
-                return true;
             return value != null;
         }
     }
