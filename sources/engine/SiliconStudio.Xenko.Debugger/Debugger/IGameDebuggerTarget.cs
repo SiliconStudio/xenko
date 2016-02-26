@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         void GameStop();
         #endregion
 
-        #region Content
+        #region Assets
         #endregion
     }
 }

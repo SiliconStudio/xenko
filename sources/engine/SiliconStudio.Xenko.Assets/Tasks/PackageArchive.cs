@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     NewFile(@"deps\AssemblyProcessor\*.dll", @"deps/AssemblyProcessor"),
                     NewFile($@"Bin\{mainPlatformDirectory}\ios-tcprelay\*.py",$@"Bin\{mainPlatformDirectory}\ios-tcprelay"),
                     NewFile(@"Targets\*.targets", "Targets"),
-                    NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Assets.Editor.pdb;Bin\**\SiliconStudio.Xenko.Content.Presentation.pdb;Bin\**\SiliconStudio.Xenko.GameStudio*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
+                    NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Assets.Editor.pdb;Bin\**\SiliconStudio.Xenko.Assets.Presentation.pdb;Bin\**\SiliconStudio.Xenko.GameStudio*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
                 };
 
             // Handle Assets
