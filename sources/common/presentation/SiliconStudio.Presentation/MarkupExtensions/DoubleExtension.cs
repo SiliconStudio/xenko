@@ -20,4 +20,22 @@ namespace SiliconStudio.Presentation.MarkupExtensions
             return Value;
         }
     }
+
+    [MarkupExtensionReturnType(typeof(double))]
+    public sealed class MaxDoubleValueExtension : MarkupExtension
+    {
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return double.MaxValue;
+        }
+    }
+
+    [MarkupExtensionReturnType(typeof(double))]
+    public sealed class MinDoubleValueExtension : MarkupExtension
+    {
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return double.MinValue;
+        }
+    }
 }
