@@ -264,7 +264,7 @@
     <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
-    <Compile Include="Rendering\NextGenRenderer.cs" />
+    <Compile Include="Rendering\CameraRendererModeForward.cs" />
     <Compile Include="Rendering\NextGenRenderSystem.cs" />
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
@@ -1352,7 +1352,7 @@
     <Compile Include="Rendering\SceneEffectRenderer.cs" />
     <Compile Include="Rendering\SceneRendererBase.cs" />
     <Compile Include="Rendering\SceneRendererCollection.cs" />
-    <Compile Include="Rendering\CameraRendererModeForward.cs" />
+    <Compile Include="Rendering\CameraRendererModeForwardOld.cs" />
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
