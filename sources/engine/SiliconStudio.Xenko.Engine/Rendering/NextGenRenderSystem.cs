@@ -101,6 +101,11 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsDevice = graphicsDeviceService.GraphicsDevice;
             RenderContextOld = context;
 
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Initialize(RenderContextOld);
+            }
+
             DescriptorPool = DescriptorPool.New(GraphicsDevice, new[]
             {
                 new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
@@ -174,7 +179,9 @@ namespace SiliconStudio.Xenko.Rendering
                 case NotifyCollectionChangedAction.Add:
                     renderFeature.Index = e.Index;
                     renderFeature.RenderSystem = this;
-                    renderFeature.Initialize();
+
+                    if (RenderContextOld != null)
+                        renderFeature.Initialize(RenderContextOld);
 
                     renderFeature.RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
 

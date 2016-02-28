@@ -26,8 +26,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly Dictionary<ObjectId, DescriptorSetLayout> createdDescriptorSetLayouts = new Dictionary<ObjectId, DescriptorSetLayout>();
 
-        private readonly List<ConstantBufferOffsetDefinition> viewCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
         private readonly List<ConstantBufferOffsetDefinition> frameCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
+        private readonly List<ConstantBufferOffsetDefinition> viewCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
         private readonly List<ConstantBufferOffsetDefinition> drawCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
 
         // Common slots
@@ -38,6 +38,10 @@ namespace SiliconStudio.Xenko.Rendering
         private EffectPermutationSlot[] effectSlots = null;
 
         public List<EffectObjectNode> EffectObjectNodes { get; } = new List<EffectObjectNode>();
+
+        public delegate Effect ComputeFallbackEffectDelegate(RenderObject renderObject, RenderEffect renderEffect, RenderEffectState renderEffectState);
+
+        public ComputeFallbackEffectDelegate ComputeFallbackEffect { get; set; }
 
         public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
 
@@ -72,9 +76,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             // Create RenderEffectKey
             RenderEffectKey = RenderData.CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
@@ -113,6 +117,27 @@ namespace SiliconStudio.Xenko.Rendering
             // Otherwise creates it
             effectDescriptorSetSlots.Add(name);
             return new EffectDescriptorSetReference(effectDescriptorSetSlots.Count - 1);
+        }
+
+        public ConstantBufferOffsetReference CreateFrameCBufferOffsetSlot(string variable)
+        {
+            // TODO: Handle duplicates, and allow removal
+            var slotReference = new ConstantBufferOffsetReference(frameCBufferOffsetSlots.Count);
+            frameCBufferOffsetSlots.Add(new ConstantBufferOffsetDefinition(variable));
+
+            // Update existing instantiated buffers
+            foreach (var frameResourceLayoutEntry in frameResourceLayouts)
+            {
+                var resourceGroupLayout = frameResourceLayoutEntry.Value;
+
+                // Ensure there is enough space
+                if (resourceGroupLayout.ConstantBufferOffsets == null || resourceGroupLayout.ConstantBufferOffsets.Length < frameCBufferOffsetSlots.Count)
+                    Array.Resize(ref resourceGroupLayout.ConstantBufferOffsets, frameCBufferOffsetSlots.Count);
+
+                ResolveCBufferOffset(resourceGroupLayout, slotReference.Index, variable);
+            }
+
+            return slotReference;
         }
 
         public ConstantBufferOffsetReference CreateViewCBufferOffsetSlot(string variable)
@@ -263,48 +288,122 @@ namespace SiliconStudio.Xenko.Rendering
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
-                    // Skip if not used or nothing changed
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem) || renderEffect.EffectValidator.EndEffectValidation())
+                    // Skip if not used
+                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
+                    // Skip if nothing changed
+                    Effect effect;
+                    if (renderEffect.EffectValidator.EndEffectValidation())
                     {
-                        compilerParameters.SetObject(effectValue.Key, effectValue.Value);
+                        // Still, let's check if there is a pending effect compiling
+                        var pendingEffect = renderEffect.PendingEffect;
+                        if (pendingEffect == null || !pendingEffect.IsCompleted)
+                            continue;
+
+                        renderEffect.ClearFallbackParameters();
+                        if (pendingEffect.IsFaulted)
+                        {
+                            renderEffect.State = RenderEffectState.Error;
+                            renderEffect.FallbackParameters = new NextGenParameterCollection();
+                            effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
+                        }
+                        else
+                        {
+                            renderEffect.State = RenderEffectState.Normal;
+                            effect = pendingEffect.Result;
+                        }
+                        renderEffect.PendingEffect = null;
+                    }
+                    else
+                    {
+                        // Reset pending effect, as it is now obsolete anyway
+                        renderEffect.PendingEffect = null;
+
+                        foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
+                        {
+                            compilerParameters.SetObject(effectValue.Key, effectValue.Value);
+                        }
+
+                        var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectName, compilerParameters);
+                        compilerParameters.Clear();
+
+                        effect = asyncEffect.Result;
+                        if (effect == null)
+                        {
+                            // Effect still compiling, let's find if there is a fallback
+                            renderEffect.ClearFallbackParameters();
+                            renderEffect.FallbackParameters = new NextGenParameterCollection();
+                            effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
+                            if (effect != null)
+                            {
+                                // Use the fallback for now
+                                renderEffect.PendingEffect = asyncEffect.Task;
+                                renderEffect.State = RenderEffectState.Compiling;
+                            }
+                            else
+                            {
+                                // No fallback effect, let's block until effect is compiled
+                                effect = asyncEffect.WaitForResult();
+                            }
+                        }
                     }
 
-                    var effect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectName, compilerParameters).WaitForResult();
-
-                    RenderEffectReflection renderEffectReflection;
-                    if (!InstantiatedEffects.TryGetValue(effect, out renderEffectReflection))
+                    if (effect != null)
                     {
-                        renderEffectReflection = new RenderEffectReflection();
+                        RenderEffectReflection renderEffectReflection;
+                        if (!InstantiatedEffects.TryGetValue(effect, out renderEffectReflection))
+                        {
+                            renderEffectReflection = new RenderEffectReflection();
 
-                        // Build root signature automatically from reflection
-                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots, "PerFrame");
-                        renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
-                        renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
+                            // Build root signature automatically from reflection
+                            renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots, "PerFrame");
+                            renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
+                            renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
-                        // Prepare well-known descriptor set layouts
-                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
-                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
-                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
+                            // Prepare well-known descriptor set layouts
+                            renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
+                            renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
+                            renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
 
-                        InstantiatedEffects.Add(effect, renderEffectReflection);
+                            InstantiatedEffects.Add(effect, renderEffectReflection);
 
-                        // Notify a new effect has been compiled
-                        EffectCompiled?.Invoke(RenderSystem, effect, renderEffectReflection);
+                            // Notify a new effect has been compiled
+                            EffectCompiled?.Invoke(RenderSystem, effect, renderEffectReflection);
+                        }
+
+                        // Setup fallback parameters
+                        if (renderEffect.State != RenderEffectState.Normal && renderEffectReflection.FallbackUpdaterLayout == null)
+                        {
+                            // Process all "non standard" layouts
+                            var layoutMapping = new int[renderEffectReflection.DescriptorReflection.Layouts.Count - 3];
+                            var layouts = new DescriptorSetLayoutBuilder[renderEffectReflection.DescriptorReflection.Layouts.Count - 3];
+                            int layoutMappingIndex = 0;
+                            for (int index = 0; index < renderEffectReflection.DescriptorReflection.Layouts.Count; index++)
+                            {
+                                var layout = renderEffectReflection.DescriptorReflection.Layouts[index];
+
+                                // Skip well-known layouts (already handled)
+                                if (layout.Name == "PerDraw" || layout.Name == "PerFrame" || layout.Name == "PerView")
+                                    continue;
+
+                                layouts[layoutMappingIndex] = layout.Layout;
+                                layoutMapping[layoutMappingIndex++] = index;
+                            }
+
+                            renderEffectReflection.FallbackUpdaterLayout = new EffectParameterUpdaterLayout(RenderSystem.GraphicsDevice, effect, layouts);
+                            renderEffectReflection.FallbackResourceGroupMapping = layoutMapping;
+                        }
+
+                        // Update effect
+                        renderEffect.Effect = effect;
+                        renderEffect.Reflection = renderEffectReflection;
+
+                        // Invalidate pipeline state (new effect)
+                        renderEffect.PipelineState = null;
+
+                        renderEffects[staticEffectObjectNode] = renderEffect;
                     }
-
-                    // Update effect
-                    renderEffect.Effect = effect;
-                    renderEffect.Reflection = renderEffectReflection;
-
-                    // Invalidate pipeline state (new effect)
-                    renderEffect.PipelineState = null;
-
-                    renderEffects[staticEffectObjectNode] = renderEffect;
-
-                    compilerParameters.Clear();
                 }
             }
         }
@@ -336,7 +435,12 @@ namespace SiliconStudio.Xenko.Rendering
                     var staticObjectNode = renderObject.StaticObjectNode;
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + effectSlots[renderNode.RenderStage.Index].Index;
                     var renderEffect = renderEffects[staticEffectObjectNode];
-                    var renderEffectReflection = renderEffects[staticEffectObjectNode].Reflection;
+
+                    // Not compiled yet?
+                    if (renderEffect.Effect == null)
+                        continue;
+
+                    var renderEffectReflection = renderEffect.Reflection;
 
                     // PerView resources/cbuffer
                     var viewLayout = renderEffectReflection.PerViewLayout;
@@ -390,6 +494,24 @@ namespace SiliconStudio.Xenko.Rendering
                     ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = frameLayout?.Entry.Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
+
+                    // Create resource group for everything else in case of fallback effects
+                    if (renderEffect.State != RenderEffectState.Normal)
+                    {
+                        if (renderEffect.FallbackParameterUpdater.ResourceGroups == null)
+                        {
+                            // First time
+                            renderEffect.FallbackParameterUpdater = new EffectParameterUpdater(renderEffect.Reflection.FallbackUpdaterLayout, renderEffect.FallbackParameters);
+                        }
+
+                        renderEffect.FallbackParameterUpdater.Update(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, renderEffect.FallbackParameters);
+
+                        var fallbackResourceGroupMapping = renderEffect.Reflection.FallbackResourceGroupMapping;
+                        for (int i = 0; i < fallbackResourceGroupMapping.Length; ++i)
+                        {
+                            ResourceGroupPool[descriptorSetPoolOffset + fallbackResourceGroupMapping[i]] = renderEffect.FallbackParameterUpdater.ResourceGroups[i];
+                        }
+                    }
 
                     // Compile pipeline state object (if first time or need change)
                     // TODO GRAPHICS REFACTOR how to invalidate if we want to change some state? (setting to null should be fine)

@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Rendering
         public DescriptorSetLayout DescriptorSetLayout;
         public int ConstantBufferSize;
         public ShaderConstantBufferDescription ConstantBufferReflection;
+        public ObjectId Hash;
         public ObjectId ConstantBufferHash;
 
         public static ResourceGroupLayout New(GraphicsDevice graphicsDevice, DescriptorSetLayoutBuilder descriptorSetLayoutBuilder, EffectBytecode effectBytecode, string cbufferName)
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 DescriptorSetLayout = DescriptorSetLayout.New(graphicsDevice, descriptorSetLayoutBuilder),
                 ConstantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == cbufferName),
+                Hash = descriptorSetLayoutBuilder.Hash,
             };
 
             if (result.ConstantBufferReflection != null)
