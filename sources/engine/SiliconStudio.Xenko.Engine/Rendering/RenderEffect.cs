@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -12,6 +13,11 @@ namespace SiliconStudio.Xenko.Rendering
 
         public int LastFrameUsed { get; private set; }
 
+        /// <summary>
+        /// Describes what state the effect is in (compiling, error, etc..)
+        /// </summary>
+        public RenderEffectState State;
+
         public Effect Effect;
         public RenderEffectReflection Reflection;
 
@@ -24,6 +30,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// Validates if effect needs to be compiled or recompiled.
         /// </summary>
         public EffectValidator EffectValidator;
+
+        /// <summary>
+        /// Pending effect being compiled.
+        /// </summary>
+        public Task<Effect> PendingEffect;
+
+        public EffectParameterUpdater FallbackParameterUpdater;
+        public NextGenParameterCollection FallbackParameters;
 
         public RenderEffect(string effectName)
         {
@@ -48,6 +62,12 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return LastFrameUsed == renderSystem.FrameCounter;
         }
+
+        public void ClearFallbackParameters()
+        {
+            FallbackParameterUpdater = default(EffectParameterUpdater);
+            FallbackParameters = null;
+        }
     }
 
 
@@ -65,11 +85,12 @@ namespace SiliconStudio.Xenko.Rendering
         // PerFrame
         public ResourceGroup PerFrameResources;
 
-        // TODO: Should be stored in a per-effect property
-        public ResourceGroupLayout PerLightingLayout;
-
         public ResourceGroupBufferUploader BufferUploader;
 
         public EffectDescriptorSetReflection DescriptorReflection;
+
+        // Used only for fallback effect
+        public EffectParameterUpdaterLayout FallbackUpdaterLayout;
+        public int[] FallbackResourceGroupMapping;
     }
 }

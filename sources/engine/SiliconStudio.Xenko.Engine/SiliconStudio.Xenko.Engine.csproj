@@ -190,6 +190,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Rendering\INextGenRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -344,7 +345,7 @@
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Engine\UIComponent.cs" />
-    <Compile Include="Rendering\FallbackEffectType.cs" />
+    <Compile Include="Rendering\RenderEffectState.cs" />
     <Compile Include="Rendering\CameraRendererModeWireFrame.cs" />
     <Compile Include="Rendering\EntityComponentRendererEventArgs.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMax.cs" />

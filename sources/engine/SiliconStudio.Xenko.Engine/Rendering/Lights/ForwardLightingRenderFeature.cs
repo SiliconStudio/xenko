@@ -127,9 +127,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
         }
 
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
             renderViewObjectInfoKey = RootRenderFeature.RenderData.CreateViewObjectKey<LightParametersPermutationEntry>();
@@ -234,59 +234,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
-            foreach (var lightParameterEntry in lightParameterEntries)
-            {
-                var lightShadersPermutation = lightParameterEntry.Value.ShaderPermutationEntry;
-                var parameters = lightParameterEntry.Value.Parameters;
-
-                // Create layout for new light shader permutations
-                if (lightShadersPermutation.PerLightingLayout == null)
-                {
-                    var renderEffect = lightShadersPermutation.RenderEffect;
-                    var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
-
-                    var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new NextGenParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(descriptorLayout);
-                    lightShadersPermutation.ResourceCount = parameterCollectionLayout.ResourceCount;
-
-                    // First time?
-                    // Find lighting cbuffer
-                    var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
-
-                    // Process cbuffer (if any)
-                    if (lightingConstantBuffer != null)
-                    {
-                        lightShadersPermutation.ConstantBufferReflection = lightingConstantBuffer;
-                        parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
-                    }
-
-                    lightShadersPermutation.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
-                }
-
-                // Assign layout to new parameter permutations
-                if (!parameters.HasLayout)
-                {
-                    // TODO GRAPHICS REFACTOR should we recompute or store the parameter layout?
-                    parameters.UpdateLayout(lightShadersPermutation.ParameterCollectionLayout);
-                }
-
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
-
-                // Set resource bindings in PerLighting resource set
-                for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
-                {
-                    lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
-                }
-
-                // Process PerMaterial cbuffer
-                if (lightShadersPermutation.ConstantBufferReflection != null)
-                {
-                    var mappedCB = lightShadersPermutation.Resources.ConstantBuffer.Data;
-                    fixed (byte* dataValues = parameters.DataValues)
-                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
-                }
-            }
-
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
             for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
             {
@@ -296,9 +243,73 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 if (renderViewObjectInfo == null)
                     continue;
-                
+
+                // Ignore fallback effects
+                if (renderNode.RenderEffect.State != RenderEffectState.Normal)
+                    continue;
+
+                PrepareLightParameterEntry(renderViewObjectInfo, renderNode.RenderEffect);
+
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderViewObjectInfo.ShaderPermutationEntry.Resources;
+            }
+        }
+
+        private unsafe void PrepareLightParameterEntry(LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
+        {
+            var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
+
+            // Create layout for new light shader permutations
+            if (lightShadersPermutation.PerLightingLayout == null)
+            {
+                var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
+
+                var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new NextGenParameterCollectionLayout();
+                parameterCollectionLayout.ProcessResources(descriptorLayout);
+                lightShadersPermutation.ResourceCount = parameterCollectionLayout.ResourceCount;
+
+                // First time?
+                // Find lighting cbuffer
+                var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
+
+                // Process cbuffer (if any)
+                if (lightingConstantBuffer != null)
+                {
+                    lightShadersPermutation.ConstantBufferReflection = lightingConstantBuffer;
+                    parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
+                }
+
+                lightShadersPermutation.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
+            }
+
+            // Assign layout to new parameter permutations
+            var parameters = lightParameterEntry.Parameters;
+            if (!parameters.HasLayout)
+            {
+                // TODO GRAPHICS REFACTOR should we recompute or store the parameter layout?
+                parameters.UpdateLayout(lightShadersPermutation.ParameterCollectionLayout);
+            }
+
+            // Do we need to allocate resources?
+            if (lightParameterEntry.LastFrameUsed == RenderSystem.FrameCounter)
+                return;
+
+            lightParameterEntry.LastFrameUsed = RenderSystem.FrameCounter;
+
+            NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
+
+            // Set resource bindings in PerLighting resource set
+            for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
+            {
+                lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
+            }
+
+            // Process PerMaterial cbuffer
+            if (lightShadersPermutation.ConstantBufferReflection != null)
+            {
+                var mappedCB = lightShadersPermutation.Resources.ConstantBuffer.Data;
+                fixed (byte* dataValues = parameters.DataValues)
+                    Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
             }
         }
 
@@ -834,6 +845,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 DirectLightGroupDatas.Clear();
                 EnvironmentLightDatas.Clear();
             }
+
+            public int LastFrameUsed;
 
             public readonly LightShaderPermutationEntry ShaderPermutationEntry;
 

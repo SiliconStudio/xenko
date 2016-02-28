@@ -22,15 +22,15 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public override Type SupportedRenderObjectType => typeof(RenderSkybox);
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             perLightingDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerLighting");
             matrixTransform = CreateDrawCBufferOffsetSlot(SpriteBaseKeys.MatrixTransform.Name);
 
             transformRenderFeature.AttachRootRenderFeature(this);
-            transformRenderFeature.Initialize();
+            transformRenderFeature.Initialize(Context);
         }
 
         /// <inheritdoc/>

@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
             renderObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderObjectInfo>();
 

@@ -2,8 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering
 {
-    public enum FallbackEffectType
+    /// <summary>
+    /// Describes the state of a <see cref="RenderEffect"/>.
+    /// </summary>
+    public enum RenderEffectState
     {
+        /// <summary>
+        /// The effect is in normal state.
+        /// </summary>
+        Normal = 0,
+
         /// <summary>
         /// The effect is being asynchrounously compiled.
         /// </summary>
