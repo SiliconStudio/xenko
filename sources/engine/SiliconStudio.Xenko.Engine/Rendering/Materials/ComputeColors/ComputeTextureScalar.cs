@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 
         public override ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            return FallbackValue.GenerateShaderSource(context, baseKeys);
+            return FallbackValue?.GenerateShaderSource(context, baseKeys);
         }
     }
 }
