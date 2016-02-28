@@ -143,6 +143,8 @@
     <Compile Include="DescriptorTypeCount.cs" />
     <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
     <Compile Include="EffectInstance.cs" />
+    <Compile Include="EffectParameterUpdater.cs" />
+    <Compile Include="EffectParameterUpdaterLayout.cs" />
     <Compile Include="InputClassification.cs" />
     <Compile Include="InputElementDescription.cs" />
     <Compile Include="MutablePipelineState.cs" />
