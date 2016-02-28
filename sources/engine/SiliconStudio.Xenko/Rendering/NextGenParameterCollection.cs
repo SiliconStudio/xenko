@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns></returns>
         public ObjectParameterAccessor<T> GetAccessor<T>(ObjectParameterKey<T> parameterKey)
         {
-            return GetObjectParameterHelper(parameterKey, false);
+            return new ObjectParameterAccessor<T>(GetObjectParameterHelper(parameterKey));
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering
         public PermutationParameter<T> GetAccessor<T>(PermutationParameterKey<T> parameterKey)
         {
             // Remap it as PermutationParameter
-            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey, true).Index);
+            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey));
         }
 
         /// <summary>
@@ -63,14 +63,19 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameterKey"></param>
         /// <returns></returns>
-        public unsafe ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
+        public ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
+        {
+            return new ValueParameter<T>(GetValueAccessorHelper(parameterKey, elementCount));
+        }
+
+        private unsafe int GetValueAccessorHelper(ParameterKey parameterKey, int elementCount = 1)
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
                 if (parameterKeyInfos[i].Key == parameterKey)
                 {
-                    return new ValueParameter<T>(i);
+                    return i;
                 }
             }
 
@@ -82,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (layoutParameterKeyInfo.Key == parameterKey)
                     {
                         parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return new ValueParameter<T>(parameterKeyInfos.Count - 1);
+                        return parameterKeyInfos.Count - 1;
                     }
                 }
             }
@@ -94,7 +99,7 @@ namespace SiliconStudio.Xenko.Rendering
                 totalSize += (elementSize + 15) / 16 * 16 * (elementCount - 1);
 
             // Create offset entry
-            var result = new ValueParameter<T>(parameterKeyInfos.Count);
+            var result = parameterKeyInfos.Count;
             var memberOffset = DataValues.Length;
             parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
 
@@ -481,18 +486,18 @@ namespace SiliconStudio.Xenko.Rendering
             ObjectValues = newResourceValues;
         }
 
-        private ObjectParameterAccessor<T> GetObjectParameterHelper<T>(ParameterKey<T> parameterKey, bool permutation)
+        private int GetObjectParameterHelper(ParameterKey parameterKey)
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
                 if (parameterKeyInfos[i].Key == parameterKey)
                 {
-                    return new ObjectParameterAccessor<T>(i);
+                    return i;
                 }
             }
 
-            if (permutation)
+            if (parameterKey.Type == ParameterKeyType.Permutation)
                 PermutationCounter++;
 
             // Check layout if it exists
@@ -503,7 +508,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (layoutParameterKeyInfo.Key == parameterKey)
                     {
                         parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return new ObjectParameterAccessor<T>(parameterKeyInfos.Count - 1);
+                        return parameterKeyInfos.Count - 1;
                     }
                 }
             }
@@ -519,7 +524,7 @@ namespace SiliconStudio.Xenko.Rendering
                 ObjectValues[resourceValuesSize] = parameterKey.DefaultValueMetadata.GetDefaultValue();
             }
 
-            return new ObjectParameterAccessor<T>(parameterKeyInfos.Count - 1);
+            return parameterKeyInfos.Count - 1;
         }
 
         public class Serializer : ClassDataSerializer<NextGenParameterCollection>
