@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                             Renderers =
                             {
                                 new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                                new SceneCameraRenderer { Mode = new CameraRendererModeForward { ModelEffect = "MultipleRenderTargetsEffect" }, Output = multipleRenderFrames}, 
+                                new SceneCameraRenderer { Mode = new CameraRendererModeForwardOld { ModelEffect = "MultipleRenderTargetsEffect" }, Output = multipleRenderFrames}, 
                                 new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
                                 new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
                             }
