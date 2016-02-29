@@ -18,16 +18,16 @@ namespace SiliconStudio.Xenko.Rendering
         public override Type SupportedRenderObjectType => typeof(RenderMesh);
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
 
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.AttachRootRenderFeature(this);
-                renderFeature.Initialize();
+                renderFeature.Initialize(Context);
             }
         }
 
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                     renderFeature.AttachRootRenderFeature(this);
-                    renderFeature.Initialize();
+                    renderFeature.Initialize(Context);
                     break;
                 default:
                     // TODO implement removal of features

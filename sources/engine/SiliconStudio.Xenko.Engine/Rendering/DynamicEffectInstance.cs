@@ -41,8 +41,7 @@ namespace SiliconStudio.Xenko.Rendering
             var compilerParameters = new CompilerParameters();
             foreach (var effectParameterKey in Parameters.ParameterKeyInfos)
             {
-                // TODO GRAPHICS REFACTOR we currently copy Object and Permutation keys (instead of Permutation keys only)
-                if (effectParameterKey.BindingSlot != -1)
+                if (effectParameterKey.Key.Type == ParameterKeyType.Permutation)
                 {
                     // TODO GRAPHICS REFACTOR avoid direct access, esp. since permutation values might be separated from Objects at some point
                     compilerParameters.SetObject(effectParameterKey.Key, Parameters.ObjectValues[effectParameterKey.BindingSlot]);

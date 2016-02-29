@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -20,16 +19,14 @@ namespace SiliconStudio.Xenko.Rendering
         // Parameter keys for shader values
         private int constantBufferTotalSize;
 
-        // Descriptor sets
-        private ResourceGroupLayout[] resourceGroupLayouts;
-        private ResourceGroup[] resourceGroups;
-
         // Store current effect
         protected Effect effect;
         protected int permutationCounter = -1;
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;
+
+        private EffectParameterUpdater parameterUpdater;
 
         private EffectDescriptorSetReflection descriptorReflection;
 
@@ -65,43 +62,21 @@ namespace SiliconStudio.Xenko.Rendering
                     return false;
 
                 // Update reflection and rearrange buffers/resources
-                var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
-                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts, "Globals");
+                var layoutNames = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
+                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layoutNames, "Globals");
+
                 RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);
+
                 bufferUploader.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
 
-                // Process constant buffers
-                var parameterCollectionLayout = new NextGenParameterCollectionLayout();
-                for (int layoutIndex = 0; layoutIndex < descriptorReflection.Layouts.Count; layoutIndex++)
-                {
-                    var layout = descriptorReflection.Layouts[layoutIndex].Layout;
-
-                    parameterCollectionLayout.ProcessResources(layout);
-
-                    for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex)
-                    {
-                        var layoutEntry = layout.Entries[entryIndex];
-                        if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
-                        {
-                            var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
-                            parameterCollectionLayout.ProcessConstantBuffer(constantBuffer);
-                        }
-                    }
-                }
-
-                resourceGroups = new ResourceGroup[descriptorReflection.Layouts.Count];
-                resourceGroupLayouts = new ResourceGroupLayout[descriptorReflection.Layouts.Count];
+                // Create parameter updater
+                var layouts = new DescriptorSetLayoutBuilder[descriptorReflection.Layouts.Count];
                 for (int i = 0; i < descriptorReflection.Layouts.Count; ++i)
-                {
-                    var name = descriptorReflection.Layouts[i].Name;
-                    var layout = descriptorReflection.Layouts[i].Layout;
-                    resourceGroupLayouts[i] = ResourceGroupLayout.New(graphicsDevice, layout, effect.Bytecode, name);
-                    resourceGroups[i] = new ResourceGroup();
-                }
+                    layouts[i] = descriptorReflection.Layouts[i].Layout;
+                var parameterUpdaterLayout = new EffectParameterUpdaterLayout(graphicsDevice, effect, layouts);
+                parameterUpdater = new EffectParameterUpdater(parameterUpdaterLayout, Parameters);
 
-                // Update parameters layout to match what this effect expect
-                Parameters.UpdateLayout(parameterCollectionLayout);
-                constantBufferTotalSize = parameterCollectionLayout.BufferSize;
+                constantBufferTotalSize = parameterUpdaterLayout.ParameterCollectionLayout.BufferSize;
 
                 return true;
             }
@@ -128,38 +103,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             var bufferPool = BufferPool.New(commandList.GraphicsDevice, constantBufferTotalSize);
 
-            // Instantiate descriptor sets
-            for (int i = 0; i < resourceGroups.Length; ++i)
-            {
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(commandList.GraphicsDevice, descriptorPool, bufferPool, resourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
-            }
+            parameterUpdater.Update(commandList.GraphicsDevice, descriptorPool, bufferPool, Parameters);
 
-            // Set resources
-            if (Parameters.ObjectValues != null)
-            {
-                var descriptorStartSlot = 0;
-                var bufferStartOffset = 0;
-                for (int layoutIndex = 0; layoutIndex < descriptorReflection.Layouts.Count; layoutIndex++)
-                {
-                    var resourceGroup = resourceGroups[layoutIndex];
-                    var descriptorSet = resourceGroup.DescriptorSet;
-                    var layout = descriptorReflection.Layouts[layoutIndex].Layout;
-
-                    for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
-                    {
-                        descriptorSet.SetValue(resourceSlot, Parameters.ObjectValues[descriptorStartSlot + resourceSlot]);
-                    }
-
-                    descriptorStartSlot += layout.ElementCount;
-
-                    if (resourceGroup.ConstantBuffer.Size > 0)
-                    {
-                        fixed (byte* dataValues = Parameters.DataValues)
-                            Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, (IntPtr)dataValues + bufferStartOffset, resourceGroup.ConstantBuffer.Size);
-                        bufferStartOffset += resourceGroup.ConstantBuffer.Size;
-                    }
-                }
-            }
+            var resourceGroups = parameterUpdater.ResourceGroups;
 
             // Update cbuffer
             bufferUploader.Apply(commandList, resourceGroups, 0);

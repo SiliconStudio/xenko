@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         public override Type SupportedRenderObjectType => typeof(RenderBackground);
 
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             backgroundEffect = new EffectInstance(new Effect(RenderSystem.GraphicsDevice, BackgroundEffect.Bytecode) { Name = "BackgroundEffect" });
             spriteBatch = new SpriteBatch(RenderSystem.GraphicsDevice) { VirtualResolution = new Vector3(1) };

@@ -1,19 +1,55 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Entry-point for implementing rendering feature.
     /// </summary>
-    public abstract class RenderFeature
+    public abstract class RenderFeature : ComponentBase, IGraphicsRendererCore
     {
+        protected RenderContext Context { get; private set; }
+
         public NextGenRenderSystem RenderSystem { get; internal set; }
+
+        public bool Initialized { get; private set; }
+
+        public bool Faulted { get; private set; }
+
+        public bool Enabled { get { return true; } set { throw new NotImplementedException(); } }
+
+        public void Initialize(RenderContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+
+            if (Context != null)
+                throw new InvalidOperationException("RenderFeature already initialized");
+
+            Context = context;
+
+            try
+            {
+                InitializeCore();
+            }
+            catch (Exception)
+            {
+                Faulted = true;
+            }
+
+            Initialized = true;
+
+            // Notify that a particular renderer has been initialized.
+            context.OnRendererInitialized(this);
+        }
 
         /// <summary>
         /// Initializes this instance.
         /// Query for specific cbuffer (either new one, like PerMaterial, or parts of an existing one, like PerObject=>Skinning)
         /// </summary>
-        public virtual void Initialize()
+        protected virtual void InitializeCore()
         {
         }
 

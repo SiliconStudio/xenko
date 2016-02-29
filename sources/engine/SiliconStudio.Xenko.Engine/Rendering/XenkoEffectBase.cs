@@ -61,10 +61,6 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 if (context.GetParam(MaterialKeys.HasSkinningPosition))
                 {
-                    if (context.GetParam(MaterialKeys.SkinningBones) > context.GetParam(MaterialKeys.SkinningMaxBones))
-                    {
-                        context.SetParam(MaterialKeys.SkinningMaxBones, context.GetParam(MaterialKeys.SkinningBones));
-                    }
                     mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialKeys.SkinningMaxBones));
                     context.Mixin(mixin, "TransformationSkinning");
                     if (context.GetParam(MaterialKeys.HasSkinningNormal))
