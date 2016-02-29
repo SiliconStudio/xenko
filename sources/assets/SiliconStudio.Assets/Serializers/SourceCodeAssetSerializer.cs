@@ -1,7 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -16,8 +16,13 @@ namespace SiliconStudio.Assets.Serializers
         public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
         {
             aliasOccurred = false;
+
             var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
+
+            var reader = new StreamReader(stream, Encoding.UTF8);
+            asset.Text = reader.ReadToEnd();
+
             return asset;
         }
 
