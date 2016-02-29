@@ -210,7 +210,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore] public RenderStage WireFrameRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage HighlightRenderStage { get; set; }
 
-        public bool Default { get; set; } = true;
         public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
@@ -224,20 +223,17 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem = Context.Tags.Get(SceneInstance.CurrentRenderSystem);
             RenderContext = new RenderContext(Services);
 
-            if (Default)
-            {
-                // Create mandatory render stages that don't exist yet
-                if (MainRenderStage == null)
-                    MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-                if (TransparentRenderStage == null)
-                    TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            // Create mandatory render stages that don't exist yet
+            if (MainRenderStage == null)
+                MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (TransparentRenderStage == null)
+                TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
-                // Create optional render stages that don't exist yet
-                //if (GBufferRenderStage == null)
-                //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-                if (Shadows && ShadowMapRenderStage == null)
-                    ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
-            }
+            // Create optional render stages that don't exist yet
+            //if (GBufferRenderStage == null)
+            //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (Shadows && ShadowMapRenderStage == null)
+                ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
             if (Picking && PickingRenderStage == null)
                 PickingRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Picking", "Picking", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
             if (WireFrame && WireFrameRenderStage == null)
@@ -250,11 +246,8 @@ namespace SiliconStudio.Xenko.Rendering
             // Describe views
             mainRenderView = new RenderView();
 
-            if (Default)
-            {
-                mainRenderView.RenderStages.Add(MainRenderStage);
-                mainRenderView.RenderStages.Add(TransparentRenderStage);
-            }
+            mainRenderView.RenderStages.Add(MainRenderStage);
+            mainRenderView.RenderStages.Add(TransparentRenderStage);
 
             if (PickingRenderStage != null)
                 mainRenderView.RenderStages.Add(PickingRenderStage);
@@ -346,12 +339,8 @@ namespace SiliconStudio.Xenko.Rendering
                 context.PopRenderTargets();
             }
 
-            if (Default)
-            {
-                // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
-                RenderSystem.Draw(context, mainRenderView, MainRenderStage);
-                //Draw(RenderContext, mainRenderView, transparentRenderStage);
-            }
+            RenderSystem.Draw(context, mainRenderView, MainRenderStage);
+            RenderSystem.Draw(context, mainRenderView, TransparentRenderStage);
 
             // Depth readback
             //if (Shadows)
@@ -504,7 +493,6 @@ namespace SiliconStudio.Xenko.Rendering
                 MaterialIndex = pickingResult.Z
             };
             result.Entity = idToEntity.ContainsKey(result.ComponentId) ? idToEntity[result.ComponentId] : null;
-            Debug.WriteLine(result);
             return result;
         }
     }
