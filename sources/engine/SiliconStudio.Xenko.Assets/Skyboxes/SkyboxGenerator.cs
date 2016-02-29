@@ -20,7 +20,7 @@ using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
-    public class SkyboxGeneratorContext : ShaderGeneratorContextBase, IDisposable
+    public class SkyboxGeneratorContext : ShaderGeneratorContext, IDisposable
     {
         public SkyboxGeneratorContext()
         {

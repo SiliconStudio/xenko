@@ -1,0 +1,15 @@
+!Texture
+Id: 5db82541-de6d-491f-a0fc-46627c50eebd
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../data/tests/Particles/GradientHorizontal.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: d9707132-612b-4711-9af0-6468676de266
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
