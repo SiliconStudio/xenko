@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         public override Type SupportedRenderObjectType => typeof(RenderSprite);
 
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
         }

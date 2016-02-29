@@ -1,3 +1,4 @@
+using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -17,6 +18,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly FastList<NodeFrameInfo> nodeInfos = new FastList<NodeFrameInfo>();
 
+        // Good number for low profiles?
+        public int MaxBones { get; set; } = 56;
+
         struct NodeFrameInfo
         {
             // Copied during Extract
@@ -33,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
             renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderModelFrameInfo>();
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
@@ -66,9 +70,12 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
-                        //renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningMaxBones));
+
+                        var skinningBones = renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones);
+                        if (skinningBones > MaxBones)
+                            throw new NotImplementedException("Too many bones");
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, MaxBones);
                     }
                 }
             }

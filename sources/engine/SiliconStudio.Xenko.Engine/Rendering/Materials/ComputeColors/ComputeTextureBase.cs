@@ -167,7 +167,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             if (!Enabled || Texture == null) // generate shader from default value when the texture is null or disabled
-                return GenerateShaderFromFallbackValue(context, baseKeys);
+            {
+                var fallbackValue = GenerateShaderFromFallbackValue(context, baseKeys);
+                if (fallbackValue != null)
+                    return fallbackValue;
+            }
 
             // generate shader from the texture
             // TODO: Use a generated UsedTexcoordIndex when backing textures

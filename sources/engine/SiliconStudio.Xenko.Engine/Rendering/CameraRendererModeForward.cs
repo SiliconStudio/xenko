@@ -266,32 +266,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             base.BeforeExtract(context);
 
-            // Make sure required plugins are instantiated
-            // TODO GRAPHICS REFACTOR this system is temporary; probably want to make it more descriptive
-            if (Shadows && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                // If MeshPipelinePlugin exists and we have shadows, let's enable ShadowMeshPipelinePlugin
-                RenderSystem.GetPipelinePlugin<ShadowMeshPipelinePlugin>(true);
-            }
-            if (Picking && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                // If MeshPipelinePlugin exists and we have picking, let's enable PickingMeshPipelinePlugin
-                RenderSystem.GetPipelinePlugin<PickingMeshPipelinePlugin>(true);
-            }
-            if (WireFrame && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                // If MeshPipelinePlugin exists and we have wire frame, let's enable WireFrameRenderFeature
-                RenderSystem.GetPipelinePlugin<WireFrameMeshPipelinePlugin>(true);
-            }
-            if (Highlight && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                // If MeshPipelinePlugin exists and we have wire frame, let's enable WireFrameRenderFeature
-                RenderSystem.GetPipelinePlugin<HighlightMeshPipelinePlugin>(true);
-            }
-
-            // TODO: Collect shadow map views
-            //RenderSystem.forwardLightingRenderFeature...
-
             var sceneInstance = SceneInstance.GetCurrent(Context);
             var sceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
         }

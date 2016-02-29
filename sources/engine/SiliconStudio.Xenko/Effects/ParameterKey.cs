@@ -41,6 +41,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public int Length { get; private set; }
 
+        public ParameterKeyType Type { get; protected set; }
+
         public abstract int Size { get; }
 
         internal void SetName(string name)
@@ -177,6 +179,13 @@ namespace SiliconStudio.Xenko.Rendering
         internal abstract ParameterCollection.InternalValue CreateInternalValue();
     }
 
+    public enum ParameterKeyType
+    {
+        Value,
+        Object,
+        Permutation,
+    }
+
     /// <summary>
     /// Key of an gereric effect parameter.
     /// </summary>
@@ -195,23 +204,26 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="name">The name.</param>
         /// <param name="length">The length.</param>
         /// <param name="metadata">The metadata.</param>
-        protected ParameterKey(string name, int length, PropertyKeyMetadata metadata)
-            : this(name, length, new []{ metadata })
+        protected ParameterKey(ParameterKeyType type, string name, int length, PropertyKeyMetadata metadata)
+            : this(type, name, length, new []{ metadata })
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="name">The name.</param>
         /// <param name="length">The length.</param>
         /// <param name="metadatas">The metadatas.</param>
-        protected ParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas)
+        protected ParameterKey(ParameterKeyType type, string name, int length = 1, params PropertyKeyMetadata[] metadatas)
             : base(typeof(T), name, length, metadatas.Length > 0 ? metadatas : new PropertyKeyMetadata[]{ new ParameterKeyValueMetadata<T>() })
         {
+            Type = type;
         }
 
         [DataMemberIgnore]
@@ -261,11 +273,11 @@ namespace SiliconStudio.Xenko.Rendering
     [DataSerializer(typeof(ValueParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
     public sealed class ValueParameterKey<T> : ParameterKey<T> where T : struct
     {
-        public ValueParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(name, length, metadata)
+        public ValueParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(ParameterKeyType.Value, name, length, metadata)
         {
         }
 
-        public ValueParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(name, length, metadatas)
+        public ValueParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Value, name, length, metadatas)
         {
         }
     }
@@ -277,11 +289,11 @@ namespace SiliconStudio.Xenko.Rendering
     [DataSerializer(typeof(ObjectParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
     public sealed class ObjectParameterKey<T> : ParameterKey<T>
     {
-        public ObjectParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(name, length, metadata)
+        public ObjectParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(ParameterKeyType.Object, name, length, metadata)
         {
         }
 
-        public ObjectParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(name, length, metadatas)
+        public ObjectParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Object, name, length, metadatas)
         {
         }
     }
@@ -293,11 +305,11 @@ namespace SiliconStudio.Xenko.Rendering
     [DataSerializer(typeof(PermutationParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
     public sealed class PermutationParameterKey<T> : ParameterKey<T>
     {
-        public PermutationParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(name, length, metadata)
+        public PermutationParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(ParameterKeyType.Permutation, name, length, metadata)
         {
         }
 
-        public PermutationParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(name, length, metadatas)
+        public PermutationParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Permutation, name, length, metadatas)
         {
         }
     }

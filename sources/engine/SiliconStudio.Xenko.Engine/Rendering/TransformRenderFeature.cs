@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
         private ObjectPropertyKey<RenderModelFrameInfo> renderModelObjectInfoKey;
         private ViewObjectPropertyKey<RenderModelViewInfo> renderModelViewInfoKey;
 
+        private ConstantBufferOffsetReference time; // TODO: Move this at a more global level so that it applies on everything? (i.e. RootEffectRenderFeature)
         private ConstantBufferOffsetReference view;
         private ConstantBufferOffsetReference world;
 
@@ -30,11 +31,12 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
             renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderModelFrameInfo>();
             renderModelViewInfoKey = RootRenderFeature.RenderData.CreateViewObjectKey<RenderModelViewInfo>();
 
+            time = ((RootEffectRenderFeature)RootRenderFeature).CreateFrameCBufferOffsetSlot(GlobalKeys.Time.Name);
             view = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(TransformationKeys.View.Name);
             world = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationKeys.World.Name);
         }
@@ -63,6 +65,23 @@ namespace SiliconStudio.Xenko.Rendering
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
             var renderModelViewInfoData = RootRenderFeature.RenderData.GetData(renderModelViewInfoKey);
 
+            // Update PerFrame (time)
+            // TODO Move that to RootEffectRenderFeature?
+            foreach (var frameLayout in ((RootEffectRenderFeature)RootRenderFeature).FrameLayouts)
+            {
+                var timeOffset = frameLayout.GetConstantBufferOffset(time);
+                if (timeOffset == -1)
+                    continue;
+
+                var resourceGroup = frameLayout.Entry.Resources;
+                var mappedCB = resourceGroup.ConstantBuffer.Data;
+
+                var perFrameTime = (PerFrameTime*)((byte*)mappedCB + timeOffset);
+                perFrameTime->Time = (float)Context.Time.Total.TotalSeconds;
+                perFrameTime->TimeStep = (float)Context.Time.Elapsed.TotalSeconds;
+            }
+
+            // Update PerView (View, Proj, etc...)
             for (int index = 0; index < RenderSystem.Views.Count; index++)
             {
                 var view = RenderSystem.Views[index];
@@ -106,6 +125,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
+            // Update PerDraw (World, WorldViewProj, etc...)
             // Copy Entity.World to PerDraw cbuffer
             // TODO: Have a PerObject cbuffer?
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
@@ -136,6 +156,13 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO GRAPHICS REFACTOR avoid cbuffer read
                 perDraw->EyeMS = new Vector4(perDraw->WorldViewInverse.M41, perDraw->WorldViewInverse.M42, perDraw->WorldViewInverse.M43, 1.0f);
             }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct PerFrameTime
+        {
+            public float Time;
+            public float TimeStep;
         }
 
         [StructLayout(LayoutKind.Sequential)]

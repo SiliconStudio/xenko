@@ -31,6 +31,7 @@
     <Compile Include="Compiler\CompilerResults.cs" />
     <Compile Include="Compiler\CompilerParameters.cs" />
     <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
+    <Compile Include="Compiler\EffectCompilerParameters.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />
     <Compile Include="Compiler\EffectPriorityScheduler.cs" />
     <Compile Include="Compiler\TaskOrResult.cs" />
