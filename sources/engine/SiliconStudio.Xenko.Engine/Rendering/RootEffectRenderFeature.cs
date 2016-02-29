@@ -311,7 +311,7 @@ namespace SiliconStudio.Xenko.Rendering
                         if (pendingEffect.IsFaulted)
                         {
                             renderEffect.State = RenderEffectState.Error;
-                            renderEffect.FallbackParameters = new NextGenParameterCollection();
+                            renderEffect.FallbackParameters = new ParameterCollection();
                             effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
                         }
                         else
@@ -339,7 +339,7 @@ namespace SiliconStudio.Xenko.Rendering
                         {
                             // Effect still compiling, let's find if there is a fallback
                             renderEffect.ClearFallbackParameters();
-                            renderEffect.FallbackParameters = new NextGenParameterCollection();
+                            renderEffect.FallbackParameters = new ParameterCollection();
                             effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
                             if (effect != null)
                             {

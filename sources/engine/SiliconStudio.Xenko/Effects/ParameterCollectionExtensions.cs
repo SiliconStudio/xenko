@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public static class ParameterCollectionExtensions
     {
-        public static string ToStringPermutationsDetailed(this NextGenParameterCollection parameterCollection)
+        public static string ToStringPermutationsDetailed(this ParameterCollection parameterCollection)
         {
             var builder = new StringBuilder();
 

@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 renderEffect.EffectValidator.ValidateParameter(lightSpecularColorKey, lightSpecularColorShader);
             }
 
-            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 // global parameters
                 parameters.Set(intensityKey, intensity);

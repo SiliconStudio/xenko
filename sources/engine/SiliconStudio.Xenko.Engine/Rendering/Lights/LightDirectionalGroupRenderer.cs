@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightColors[Count] = light.Color;
             }
 
-            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
                 parameters.Set(directionsKey, Count, ref lightDirections[0]);

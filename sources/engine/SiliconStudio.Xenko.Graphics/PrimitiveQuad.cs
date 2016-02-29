@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the parameters used.
         /// </summary>
         /// <value>The parameters.</value>
-        public NextGenParameterCollection Parameters => simpleEffect.Parameters;
+        public ParameterCollection Parameters => simpleEffect.Parameters;
 
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.

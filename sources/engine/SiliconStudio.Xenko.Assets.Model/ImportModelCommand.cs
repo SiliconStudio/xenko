@@ -181,7 +181,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <param name="parameters0">The first ParameterCollection.</param>
         /// <param name="parameters1">The second ParameterCollection.</param>
         /// <returns>True if the collections are the same, false otherwise.</returns>
-        private unsafe static bool IsSubsetOf(NextGenParameterCollection parameters0, NextGenParameterCollection parameters1)
+        private unsafe static bool IsSubsetOf(ParameterCollection parameters0, ParameterCollection parameters1)
         {
             foreach (var parameterKeyInfo in parameters0.ParameterKeyInfos)
             {

@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 if (!parameters.HasLayout)
                 {
-                    var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    var parameterCollectionLayout = new ParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayoutBuilder);
 
                     // Find material cbuffer

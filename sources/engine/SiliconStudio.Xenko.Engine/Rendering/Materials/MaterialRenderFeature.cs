@@ -172,7 +172,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        private unsafe void UpdateMaterial(RenderThreadContext context, MaterialInfo materialInfo, RenderEffect renderEffect, NextGenParameterCollection materialParameters)
+        private unsafe void UpdateMaterial(RenderThreadContext context, MaterialInfo materialInfo, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
             if (materialInfo.LastFrameUsed == RenderSystem.FrameCounter
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerMaterial");
 
-                var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                var parameterCollectionLayout = new ParameterCollectionLayout();
                 parameterCollectionLayout.ProcessResources(descriptorLayout);
                 materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
 

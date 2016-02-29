@@ -30,10 +30,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         private EffectDescriptorSetReflection descriptorReflection;
 
-        public EffectInstance(Effect effect, NextGenParameterCollection parameters = null)
+        public EffectInstance(Effect effect, ParameterCollection parameters = null)
         {
             this.effect = effect;
-            Parameters = parameters ?? new NextGenParameterCollection();
+            Parameters = parameters ?? new ParameterCollection();
         }
 
         public Effect Effect => effect;
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering
         public EffectDescriptorSetReflection DescriptorReflection => descriptorReflection;
         public RootSignature RootSignature { get; private set; }
 
-        public NextGenParameterCollection Parameters { get; }
+        public ParameterCollection Parameters { get; }
 
         /// <summary>
         /// Compiles or recompiles the effect if necesssary.

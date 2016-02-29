@@ -9,9 +9,9 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public static class NextGenParameterCollectionLayoutExtensions
+    public static class ParameterCollectionLayoutExtensions
     {
-        public static void ProcessResources(this NextGenParameterCollectionLayout parameterCollectionLayout, DescriptorSetLayoutBuilder layout)
+        public static void ProcessResources(this ParameterCollectionLayout parameterCollectionLayout, DescriptorSetLayoutBuilder layout)
         {
             foreach (var layoutEntry in layout.Entries)
             {
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public static void ProcessConstantBuffer(this NextGenParameterCollectionLayout parameterCollectionLayout, ShaderConstantBufferDescription constantBuffer)
+        public static void ProcessConstantBuffer(this ParameterCollectionLayout parameterCollectionLayout, ShaderConstantBufferDescription constantBuffer)
         {
             foreach (var member in constantBuffer.Members)
             {

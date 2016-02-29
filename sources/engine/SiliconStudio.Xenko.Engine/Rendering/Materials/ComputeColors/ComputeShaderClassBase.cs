@@ -192,9 +192,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 
 
 
-        public NextGenParameterCollection GetParameters(object context)
+        public ParameterCollection GetParameters(object context)
         {
-            var collection = new NextGenParameterCollection();
+            var collection = new ParameterCollection();
 
             if (MixinReference != null)
             {
@@ -354,7 +354,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// <param name="key">The key of the variable.</param>
         /// <param name="value"></param>
         /// <param name="collection"></param>
-        private void AddToCollection<TValue>(ParameterKey key, TValue value, NextGenParameterCollection collection) where TValue : struct
+        private void AddToCollection<TValue>(ParameterKey key, TValue value, ParameterCollection collection) where TValue : struct
         {
             var pk = key as ValueParameterKey<TValue>;
             if (pk != null)

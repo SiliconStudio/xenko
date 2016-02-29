@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
         public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
-            NextGenParameterCollection usedParameters;
+            ParameterCollection usedParameters;
             return LoadEffect(effectName, compilerParameters, out usedParameters);
         }
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="usedParameters">The used parameters.</param>
         /// <returns>A new instance of an effect.</returns>
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out NextGenParameterCollection usedParameters)
+        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out ParameterCollection usedParameters)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");

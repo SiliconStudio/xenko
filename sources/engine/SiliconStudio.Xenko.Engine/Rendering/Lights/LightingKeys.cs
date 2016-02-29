@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering
        
         private static readonly ShaderSourceCollection DefaultAmbientLighting = new ShaderSourceCollection() { new ShaderClassSource("LightSimpleAmbient"), };
 
-        public static void EnableFixedAmbientLight(NextGenParameterCollection parameters, bool enable)
+        public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
         {
             if (parameters == null) throw new ArgumentNullException("parameters");
             // TODO GRAPHICS REFACTOR

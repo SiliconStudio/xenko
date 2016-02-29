@@ -161,7 +161,7 @@
     <Compile Include="Font\StaticSpriteFontSerializer.cs" />
     <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
-    <Compile Include="NextGenParameterCollectionLayoutExtensions.cs" />
+    <Compile Include="ParameterCollectionLayoutExtensions.cs" />
     <Compile Include="PipelineState.cs" />
     <Compile Include="Data\BufferData.cs" />
     <Compile Include="Data\GraphicsSerializerExtensions.cs" />

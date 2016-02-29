@@ -5,7 +5,7 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class NextGenParameterCollectionLayout
+    public class ParameterCollectionLayout
     {
         public FastList<ParameterKeyInfo> LayoutParameterKeyInfos = new FastList<ParameterKeyInfo>();
         public int ResourceCount;

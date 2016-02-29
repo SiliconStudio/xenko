@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     /// Parameters used for compilation.
     /// </summary>
     [DataContract]
-    public sealed class CompilerParameters : NextGenParameterCollection
+    public sealed class CompilerParameters : ParameterCollection
     {
         /// <summary>
         /// The compiler platform type.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
         }
 
-        public CompilerParameters(NextGenParameterCollection parameterCollection) : base(parameterCollection)
+        public CompilerParameters(ParameterCollection parameterCollection) : base(parameterCollection)
         {
         }
 

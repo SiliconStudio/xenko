@@ -13,12 +13,12 @@ namespace SiliconStudio.Xenko.Physics
     {
         private static EffectBytecode bytecode;
 
-        private readonly NextGenParameterCollection parameters;
+        private readonly ParameterCollection parameters;
 
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode)))
         {
-            parameters = new NextGenParameterCollection();
+            parameters = new ParameterCollection();
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;

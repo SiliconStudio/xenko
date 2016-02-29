@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Helper class to update several <see cref="ResourceGroup"/> from a <see cref="NextGenParameterCollection"/>.
+    /// Helper class to update several <see cref="ResourceGroup"/> from a <see cref="ParameterCollection"/>.
     /// </summary>
     public struct EffectParameterUpdater
     {
@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ResourceGroup[] ResourceGroups => resourceGroups;
 
-        public EffectParameterUpdater(EffectParameterUpdaterLayout updaterLayout, NextGenParameterCollection parameters) : this()
+        public EffectParameterUpdater(EffectParameterUpdaterLayout updaterLayout, ParameterCollection parameters) : this()
         {
             this.updaterLayout = updaterLayout;
 
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering
             parameters.UpdateLayout(updaterLayout.ParameterCollectionLayout);
         }
 
-        public unsafe void Update(GraphicsDevice graphicsDevice, ResourceGroupAllocator resourceGroupAllocator, NextGenParameterCollection parameters)
+        public unsafe void Update(GraphicsDevice graphicsDevice, ResourceGroupAllocator resourceGroupAllocator, ParameterCollection parameters)
         {
             // Instantiate descriptor sets
             for (int i = 0; i < resourceGroups.Length; ++i)

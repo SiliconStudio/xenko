@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
         private string effectName;
         private EffectSystem effectSystem;
 
-        public DynamicEffectInstance(string effectName, NextGenParameterCollection parameters = null) : base(null, parameters)
+        public DynamicEffectInstance(string effectName, ParameterCollection parameters = null) : base(null, parameters)
         {
             this.effectName = effectName;
         }

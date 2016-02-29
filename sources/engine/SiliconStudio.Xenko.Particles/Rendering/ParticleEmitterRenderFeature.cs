@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                     var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerMaterial");
 
-                    var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    var parameterCollectionLayout = new ParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayout);
                     materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
 

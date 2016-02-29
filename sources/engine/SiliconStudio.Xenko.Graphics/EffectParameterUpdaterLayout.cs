@@ -5,14 +5,14 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Defines a layout used by <see cref="EffectParameterUpdater"/> to update several <see cref="ResourceGroup"/> from a <see cref="NextGenParameterCollection"/>.
+    /// Defines a layout used by <see cref="EffectParameterUpdater"/> to update several <see cref="ResourceGroup"/> from a <see cref="ParameterCollection"/>.
     /// </summary>
     public class EffectParameterUpdaterLayout
     {
         internal ResourceGroupLayout[] ResourceGroupLayouts;
 
         internal DescriptorSetLayoutBuilder[] Layouts;
-        internal NextGenParameterCollectionLayout ParameterCollectionLayout = new NextGenParameterCollectionLayout();
+        internal ParameterCollectionLayout ParameterCollectionLayout = new ParameterCollectionLayout();
 
         public EffectParameterUpdaterLayout(GraphicsDevice graphicsDevice, Effect effect, DescriptorSetLayoutBuilder[] layouts)
         {
