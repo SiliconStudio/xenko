@@ -138,6 +138,8 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
                 surfacePoint = roundSurface;
 
                 surfaceNormal = surfacePoint;
+                surfaceNormal.X /= fieldX;
+                surfaceNormal.Z /= fieldZ;
 
                 surfacePoint.Y = particlePosition.Y;
             }
