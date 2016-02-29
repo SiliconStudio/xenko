@@ -95,6 +95,9 @@ namespace SiliconStudio.Xenko.Graphics
         internal Dictionary<int, float> KerningMap;
 
         private FontSystem fontSystem;
+        private GlyphAction<InternalDrawCommand> internalDrawGlyphAction;
+        private GlyphAction<InternalUIDrawCommand> internalUIDrawGlyphAction;
+        private GlyphAction<Vector2> measureStringGlyphAction;
 
         /// <summary>
         /// The swizzle mode to use when drawing the sprite font.
@@ -127,6 +130,9 @@ namespace SiliconStudio.Xenko.Graphics
         
         internal SpriteFont()
         {
+            internalDrawGlyphAction = InternalDrawGlyph;
+            internalUIDrawGlyphAction = InternalUIDrawGlyph;
+            measureStringGlyphAction = MeasureStringGlyph;
         }
 
         protected override void Destroy()
@@ -200,7 +206,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Draw each character in turn.
-            ForEachGlyph(commandList, ref text, ref drawCommand.FontSize, InternalDrawGlyph, ref drawCommand, alignment, true);
+            ForEachGlyph(commandList, ref text, ref drawCommand.FontSize, internalDrawGlyphAction, ref drawCommand, alignment, true);
         }        
         
         /// <summary>
@@ -247,7 +253,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var fontSize = new Vector2(drawCommand.FontSize * drawCommand.FontScale.Y); // we don't want to have letters with non uniform ratio
             var scaledSize = new Vector2(drawCommand.Size.X * drawCommand.FontScale.X, drawCommand.Size.Y * drawCommand.FontScale.Y);
-            ForEachGlyph(commandList, ref text, ref fontSize, InternalUIDrawGlyph, ref drawCommand, drawCommand.Alignment, true, scaledSize);
+            ForEachGlyph(commandList, ref text, ref fontSize, internalUIDrawGlyphAction, ref drawCommand, drawCommand.Alignment, true, scaledSize);
         }
 
         internal void InternalUIDrawGlyph(ref InternalUIDrawCommand parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx)
@@ -431,7 +437,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal Vector2 MeasureString(ref StringProxy text, ref Vector2 size)
         {
             var result = Vector2.Zero;
-            ForEachGlyph(null, ref text, ref size, MeasureStringGlyph, ref result, TextAlignment.Left, false); // text size is independent from the text alignment
+            ForEachGlyph(null, ref text, ref size, measureStringGlyphAction, ref result, TextAlignment.Left, false); // text size is independent from the text alignment
             return result;
         }
 
