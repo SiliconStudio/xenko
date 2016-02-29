@@ -53,18 +53,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public TrackingCollection<RenderView> Views { get; } = new TrackingCollection<RenderView>();
 
-        // TODO GRAPHICS REFACTOR should grow as needed
-        /// <summary>
-        /// The graphics resource descriptor pool, to fill resources needed for rendering during current frame.
-        /// </summary>
-        public DescriptorPool DescriptorPool { get; private set; }
-
-        // TODO GRAPHICS REFACTOR should grow as needed
-        /// <summary>
-        /// The graphics resource buffer pool, to fill buffer data needed for rendering during current frame.
-        /// </summary>
-        public BufferPool BufferPool { get; private set; }
-
         public RenderContext RenderContextOld { get; private set; }
 
         public event Action RenderStageSelectorsChanged;
@@ -105,13 +93,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 renderFeature.Initialize(RenderContextOld);
             }
-
-            DescriptorPool = DescriptorPool.New(GraphicsDevice, new[]
-            {
-                new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 80000),
-            });
-
-            BufferPool = BufferPool.New(GraphicsDevice, 32 * 1024 * 1024);
         }
 
         /// <summary>
@@ -120,10 +101,6 @@ namespace SiliconStudio.Xenko.Rendering
         public void Reset()
         {
             FrameCounter++;
-
-            // Clear pools
-            BufferPool.Reset();
-            DescriptorPool.Reset();
 
             // Clear render features node lists
             foreach (var renderFeature in RenderFeatures)

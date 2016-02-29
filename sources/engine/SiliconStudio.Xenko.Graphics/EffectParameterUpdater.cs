@@ -25,12 +25,12 @@ namespace SiliconStudio.Xenko.Rendering
             parameters.UpdateLayout(updaterLayout.ParameterCollectionLayout);
         }
 
-        public unsafe void Update(GraphicsDevice graphicsDevice, DescriptorPool descriptorPool, BufferPool bufferPool, NextGenParameterCollection parameters)
+        public unsafe void Update(GraphicsDevice graphicsDevice, ResourceGroupAllocator resourceGroupAllocator, NextGenParameterCollection parameters)
         {
             // Instantiate descriptor sets
             for (int i = 0; i < resourceGroups.Length; ++i)
             {
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(graphicsDevice, descriptorPool, bufferPool, updaterLayout.ResourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
+                resourceGroupAllocator.PrepareResourceGroup(updaterLayout.ResourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
             }
 
             // Set resources

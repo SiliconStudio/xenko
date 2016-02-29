@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public override void Prepare(RenderThreadContext context)
         {
             base.Prepare(context);
 

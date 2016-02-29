@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderThreadContext context)
         {
             base.Prepare(context);
 
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
+                context.ResourceGroupAllocator.PrepareResourceGroup(renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
                 ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = renderSkybox.Resources;
 
                 var descriptorSet = renderSkybox.Resources.DescriptorSet;

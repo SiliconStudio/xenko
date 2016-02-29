@@ -225,10 +225,7 @@ namespace SiliconStudio.Xenko.Games
         /// <value>The graphics device.</value>
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        /// <summary>
-        /// Gets the current command list.
-        /// </summary>
-        public CommandList GraphicsCommandList { get; set; }
+        public GraphicsContext GraphicsContext { get; private set; }
 
         /// <summary>
         /// Gets or sets the inactive sleep time.
@@ -678,7 +675,18 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Setup default command list
-            GraphicsCommandList = new CommandList(GraphicsDevice);
+            var graphicsCommandList = new CommandList(GraphicsDevice);
+            if (GraphicsContext == null)
+            {
+                GraphicsContext = new GraphicsContext(graphicsCommandList, new ResourceGroupAllocator(GraphicsDevice));
+            }
+            else
+            {
+                // Update command list
+                GraphicsContext.CommandList = graphicsCommandList;
+                // Reset allocator
+                GraphicsContext.ResourceGroupAllocator.Reset();
+            }
 
             return true;
         }
@@ -743,14 +751,15 @@ namespace SiliconStudio.Xenko.Games
             // TODO: Check how we can handle this more cleanly
             if (GraphicsDevice != null && GraphicsDevice.Presenter.BackBuffer != null)
             {
-                GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+                GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             }
         }
 
         /// <summary>Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw.</summary>
         protected virtual void EndDraw(bool present)
         {
-            GraphicsCommandList = null;
+            // Remove main command list
+            GraphicsContext.CommandList = null;
 
             if (graphicsDeviceManager != null)
             {

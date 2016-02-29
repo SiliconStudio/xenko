@@ -75,9 +75,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="texture">The texture.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void Draw(CommandList commandList, Texture texture, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, bool applyEffectStates = false)
         {
-            Draw(commandList, texture, null, Color.White, applyEffectStates);
+            Draw(graphicsContext, texture, null, Color.White, applyEffectStates);
         }
 
         /// <summary>
@@ -88,19 +88,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
-        public void Draw(CommandList commandList, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
         {
             // Make sure that we are using our vertex shader
             simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
             simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture);
             simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(commandList);
+            simpleEffect.Apply(graphicsContext);
 
-            pipelineState.State.Output.CaptureState(commandList);
+            pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
             pipelineState.Update(GraphicsDevice);
-            commandList.SetPipelineState(pipelineState.CurrentState);
+            graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
 
-            Draw(commandList);
+            Draw(graphicsContext.CommandList);
 
             // TODO ADD QUICK UNBIND FOR SRV
             //GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);

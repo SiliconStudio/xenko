@@ -53,22 +53,22 @@ namespace SiliconStudio.Xenko.UI.Renderers
             Batch.End();
 
             // draw a clipping mask 
-            Batch.Begin(context.GraphicsCommandList, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.ColorDisabled, IncreaseStencilValueState, context.StencilTestReferenceValue);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.ColorDisabled, IncreaseStencilValueState, context.StencilTestReferenceValue);
             Batch.DrawRectangle(ref element.WorldMatrixInternal, ref element.RenderSizeInternal, ref blackColor, context.DepthBias);
             Batch.End();
 
             // draw the element it-self with stencil test value of "Context.Value + 1"
-            Batch.Begin(context.GraphicsCommandList, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue + 1);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue + 1);
             Batch.DrawString(scrollingText.Font, scrollingText.TextToDisplay, ref drawCommand);
             Batch.End();
 
             // un-draw the clipping mask
-            Batch.Begin(context.GraphicsCommandList, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.ColorDisabled, DecreaseStencilValueState, context.StencilTestReferenceValue + 1);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.ColorDisabled, DecreaseStencilValueState, context.StencilTestReferenceValue + 1);
             Batch.DrawRectangle(ref element.WorldMatrixInternal, ref element.RenderSizeInternal, ref blackColor, context.DepthBias+2);
             Batch.End();
 
             // restart the Batch session
-            Batch.Begin(context.GraphicsCommandList, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
         }
     }
 }

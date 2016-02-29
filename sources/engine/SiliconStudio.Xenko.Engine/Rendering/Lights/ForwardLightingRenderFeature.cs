@@ -230,7 +230,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderThreadContext context)
         {
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
@@ -248,14 +248,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (renderNode.RenderEffect.State != RenderEffectState.Normal)
                     continue;
 
-                PrepareLightParameterEntry(renderViewObjectInfo, renderNode.RenderEffect);
+                PrepareLightParameterEntry(context, renderViewObjectInfo, renderNode.RenderEffect);
 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderViewObjectInfo.ShaderPermutationEntry.Resources;
             }
         }
 
-        private unsafe void PrepareLightParameterEntry(LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
+        private unsafe void PrepareLightParameterEntry(RenderThreadContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
         {
             var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
 
@@ -296,7 +296,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             lightParameterEntry.LastFrameUsed = RenderSystem.FrameCounter;
 
-            NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
+            context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
 
             // Set resource bindings in PerLighting resource set
             for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
