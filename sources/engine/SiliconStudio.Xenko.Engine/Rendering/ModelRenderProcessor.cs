@@ -73,8 +73,9 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     // Update material
                     var materialIndex = mesh.MaterialIndex;
-                    renderMesh.Material = modelComponentMaterials.GetItemOrNull(materialIndex)  // Check ModelComponent.Materials first
-                                                ?? modelMaterials.GetItemOrNull(materialIndex); // Otherwise, fallback to Model.Materials
+                    var materialOverride = modelComponentMaterials.GetItemOrNull(materialIndex);
+                    var modelMaterialInstance = modelMaterials.GetItemOrNull(materialIndex);
+                    UpdateMaterial(renderMesh, materialOverride, modelMaterialInstance, modelComponent);
 
                     // Copy world matrix
                     var nodeIndex = mesh.NodeIndex;
@@ -82,6 +83,19 @@ namespace SiliconStudio.Xenko.Rendering
                     renderMesh.BoundingBox = boundingBox;
                     renderMesh.RenderGroup = modelComponent.Entity.Group;
                 }
+            }
+        }
+
+        private static void UpdateMaterial(RenderMesh renderMesh, Material materialOverride, MaterialInstance modelMaterialInstance, ModelComponent modelComponent)
+        {
+            renderMesh.Material = materialOverride ?? modelMaterialInstance.Material;
+
+            renderMesh.IsShadowCaster = modelComponent.IsShadowCaster;
+            renderMesh.IsShadowReceiver = modelComponent.IsShadowReceiver;
+            if (modelMaterialInstance != null)
+            {
+                renderMesh.IsShadowCaster = renderMesh.IsShadowCaster && modelMaterialInstance.IsShadowCaster;
+                renderMesh.IsShadowReceiver = renderMesh.IsShadowReceiver && modelMaterialInstance.IsShadowReceiver;
             }
         }
 
@@ -109,16 +123,16 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 var mesh = model.Meshes[index];
 
-                // Update material
                 // TODO: Somehow, if material changed we might need to remove/add object in render system again (to evaluate new render stage subscription)
                 var materialIndex = mesh.MaterialIndex;
                 renderMeshes[index] = new RenderMesh
                 {
                     RenderModel = renderModel,
                     Mesh = mesh,
-                    Material = modelComponent.Materials.GetItemOrNull(materialIndex)  // Check ModelComponent.Materials first
-                                     ?? model.Materials.GetItemOrNull(materialIndex), // Otherwise, fallback to Model.Materials
                 };
+
+                // Update material
+                UpdateMaterial(renderMeshes[index], modelComponent.Materials.GetItemOrNull(materialIndex), model.Materials.GetItemOrNull(materialIndex), modelComponent);
             }
 
             renderModel.Model = model;
