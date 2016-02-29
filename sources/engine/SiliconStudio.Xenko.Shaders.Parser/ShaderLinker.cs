@@ -224,9 +224,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                             parsingResult.Error(XenkoMessageCode.SamplerFieldNotSupported, variable.Span, variable);
                         }
                     }
+
+                    effectReflection.SamplerStates.Add(new EffectSamplerStateBinding(parameterKey.Name, samplerState));
                 }
 
-                effectReflection.SamplerStates.Add(new EffectSamplerStateBinding(parameterKey.Name, samplerState));
                 LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
             else if (variable.Type is TextureType || variable.Type is GenericType)
