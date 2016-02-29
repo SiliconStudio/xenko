@@ -154,20 +154,40 @@ namespace SiliconStudio.Assets.Analysis
             return true;
         }
 
+        private static bool CompareAssets(Asset left, Asset right)
+        {
+            // Computes the hash on the clone (so that we don't have a .Base/.BaseParts in them
+            // TODO: We might want to store the hash in the asset in order to avoid a recompute at load time
+            // (but would require a compute at save time)
+            var baseId = AssetHash.Compute(left);
+            var newBaseCopyId = AssetHash.Compute(right);
+
+            // If the old base and new base are similar (including ids and overrides), we don't need to perform a merge
+            return baseId == newBaseCopyId;
+        }
+
         private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetBase> existingBaseParts)
         {
             // No need to clone existingBaseParts as they are already cloned
             var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
             var newBaseCopy = (Asset)AssetCloner.Clone(existingBase?.Asset);
 
-            // Computes the hash on the clone (so that we don't have a .Base/.BaseParts in them
-            // TODO: We might want to store the hash in the asset in order to avoid a recompute at load time
-            // (but would require a compute at save time)
-            var baseId = AssetHash.Compute(baseCopy);
-            var newBaseCopyId = AssetHash.Compute(newBaseCopy);
+            // Check base parts
+            bool basePartsAreEqual = true;
+            if (item.Asset != null && item.Asset.BaseParts != null)
+            {
+                foreach (var assetBasePart in item.Asset.BaseParts)
+                {
+                    var existingBasePart = existingBaseParts.First(e => e.Id == assetBasePart.Asset.Id);
+                    if (!CompareAssets(assetBasePart.Asset, existingBasePart.Asset))
+                    {
+                        basePartsAreEqual = false;
+                    }
+                }
+            }
 
             // If the old base and new base are similar (including ids and overrides), we don't need to perform a merge
-            if (baseId == newBaseCopyId)
+            if (CompareAssets(baseCopy, newBaseCopy) && basePartsAreEqual)
             {
                 return true;
             }
