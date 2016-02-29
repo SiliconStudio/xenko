@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Games.Testing
 
         private void SaveTexture(Texture texture, string filename)
         {
-            using (var image = texture.GetDataAsImage(Game.GraphicsCommandList))
+            using (var image = texture.GetDataAsImage(Game.GraphicsContext.CommandList))
             {
                 //Send to server and store to disk
                 var imageData = new TestResultImage { CurrentVersion = "1.0", Frame = "0", Image = image, TestName = "" };

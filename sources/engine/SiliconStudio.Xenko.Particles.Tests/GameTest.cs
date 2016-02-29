@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
             var filename = xenkoDir + "\\screenshots\\" + assemblyName + "." + platformName + "_" + testName + "_" + screenShots + ".png";
             screenShots++;
 
-            SaveTexture(GraphicsDevice.BackBuffer, filename);
+            SaveTexture(GraphicsDevice.Presenter.BackBuffer, filename);
         }
 
         protected override void Draw(GameTime gameTime)

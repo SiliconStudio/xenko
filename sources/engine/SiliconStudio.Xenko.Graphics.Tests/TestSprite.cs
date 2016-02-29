@@ -50,11 +50,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             const int spaceSpan = 5;
 
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, GraphicsDevice.BlendStates.AlphaBlend);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, GraphicsDevice.BlendStates.AlphaBlend);
 
             var spriteUvSize = new Vector2(spriteUv.Sprites[0].Region.Width, spriteUv.Sprites[0].Region.Height);
             var spriteSphereSize = new Vector2(spriteSphere.Sprites[0].Region.Width, spriteSphere.Sprites[0].Region.Height);

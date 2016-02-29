@@ -25,6 +25,8 @@ namespace SiliconStudio.Xenko.Graphics
             this.DescriptorStartOffset = pool.Allocate(desc.ElementCount);
         }
 
+        public bool IsValid => DescriptorStartOffset != -1;
+
         /// <summary>
         /// Sets a descriptor.
         /// </summary>

@@ -30,12 +30,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
             Batch.End();
 
             var uiResolution = new Vector3(context.Resolution.X, context.Resolution.Y, 0);
-            Batch.Begin(context.GraphicsCommandList, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, noStencilNoDepth, 0);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, noStencilNoDepth, 0);
             Batch.DrawRectangle(ref identity, ref uiResolution, ref modalElement.OverlayColorInternal, context.DepthBias);
             Batch.End(); // ensure that overlay is written before possible next transparent element.
 
             // restart the image batch session
-            Batch.Begin(context.GraphicsCommandList, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
 
             context.DepthBias += 1;
 

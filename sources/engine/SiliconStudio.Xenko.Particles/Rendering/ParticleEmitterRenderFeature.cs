@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             base.Extract();
         }
 
-        public unsafe override void Prepare(RenderContext context)
+        public unsafe override void Prepare(RenderThreadContext context)
         {
             foreach (var renderObject in RenderObjects)
             {
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                     materialInfo.Resources = new ResourceGroup();
                 }
 
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
+                context.ResourceGroupAllocator.PrepareResourceGroup(materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
 
                 // Set resource bindings in PerMaterial resource set
                 for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)

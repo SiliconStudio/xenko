@@ -70,22 +70,22 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void RenderToTexture()
         {
             // render into texture
-            GraphicsCommandList.Clear(offlineTarget, new Color4(0,0,0,0));
-            GraphicsCommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(depthBuffer, offlineTarget);
+            GraphicsContext.CommandList.Clear(offlineTarget, new Color4(0,0,0,0));
+            GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(depthBuffer, offlineTarget);
 
-            spriteBatch.Begin(GraphicsCommandList);
+            spriteBatch.Begin(GraphicsContext);
             spriteBatch.Draw(uv, new RectangleF(0, 0, OfflineWidth, OfflineHeight), null, Color.White, 0, Vector2.Zero);
             spriteBatch.Draw(spheres[0].Texture, Vector2.Zero, spheres[0].Region, Color.White, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, ImageOrientation.AsIs, 1);
             spriteBatch.DrawString(arial, "Text on Top", new Vector2(75, 75), Color.White, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 2f, TextAlignment.Left);
             spriteBatch.End();
 
             // copy texture on screen
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(GraphicsCommandList);
+            spriteBatch.Begin(GraphicsContext);
             spriteBatch.Draw(offlineTarget, new RectangleF(0, 0, width, height), Color.White);
             spriteBatch.End();
         }

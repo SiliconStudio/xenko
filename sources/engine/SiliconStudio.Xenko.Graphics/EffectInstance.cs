@@ -88,22 +88,15 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
-        public unsafe void Apply(CommandList commandList)
+        public unsafe void Apply(GraphicsContext graphicsContext)
         {
+            var commandList = graphicsContext.CommandList;
+
             UpdateEffect(commandList.GraphicsDevice);
 
             //effect.ApplyProgram(graphicsDevice);
 
-            // Bind resources
-            // TODO: What descriptor pool should we use?
-            var descriptorPool = DescriptorPool.New(commandList.GraphicsDevice, new[]
-            {
-                new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 256),
-            });
-
-            var bufferPool = BufferPool.New(commandList.GraphicsDevice, constantBufferTotalSize);
-
-            parameterUpdater.Update(commandList.GraphicsDevice, descriptorPool, bufferPool, Parameters);
+            parameterUpdater.Update(commandList.GraphicsDevice, graphicsContext.ResourceGroupAllocator, Parameters);
 
             var resourceGroups = parameterUpdater.ResourceGroups;
 
@@ -116,8 +109,6 @@ namespace SiliconStudio.Xenko.Rendering
                 descriptorSets[i] = resourceGroups[i].DescriptorSet;
 
             commandList.SetDescriptorSets(0, descriptorSets);
-
-            descriptorPool.Dispose();
         }
     }
 }
