@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialRotationSeed")]
-    [Display("Initial Rotation by seed")]
+    [Display("Initial Rotation")]
     public class InitialRotationSeed : ParticleInitializer
     {
         public InitialRotationSeed()
@@ -37,11 +37,22 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
-        // Positive value is a clockwise rotation
+        /// <summary>
+        /// Angular rotation in degrees, positive value means clockwise
+        /// </summary>
+        /// <userdoc>
+        /// Angular rotation in degrees, positive value means clockwise
+        /// </userdoc>
         [DataMember(30)]
         [Display("Angle (degrees) min")]
         public float AngularRotationMin
@@ -55,7 +66,12 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
-        // Positive value is a clockwise rotation
+        /// <summary>
+        /// Angular rotation in degrees, positive value means clockwise
+        /// </summary>
+        /// <userdoc>
+        /// Angular rotation in degrees, positive value means clockwise
+        /// </userdoc>
         [DataMember(40)]
         [Display("Angle (degrees) max")]
         public float AngularRotationMax
