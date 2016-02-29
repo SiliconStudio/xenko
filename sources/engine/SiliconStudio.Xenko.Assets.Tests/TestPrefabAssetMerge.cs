@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     }
 
     [TestFixture]
-    public class TestEntityGroupAssetMerge
+    public class TestPrefabAssetMerge
     {
 
         [Test]
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((PrefabAssetBase)AssetCloner.Clone(baseAsset), (PrefabAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             // Both root and entities must be the same
@@ -184,7 +184,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()].Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((PrefabAssetBase)AssetCloner.Clone(baseAsset), (PrefabAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((PrefabAssetBase)AssetCloner.Clone(baseAsset), (PrefabAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -341,7 +341,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNew.Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((PrefabAssetBase)AssetCloner.Clone(baseAsset), (PrefabAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -416,7 +416,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((PrefabAssetBase)AssetCloner.Clone(baseAsset), (PrefabAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);

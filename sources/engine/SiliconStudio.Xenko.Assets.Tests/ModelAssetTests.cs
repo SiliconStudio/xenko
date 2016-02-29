@@ -73,15 +73,15 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 // Create and mount database file system
                 var objDatabase = ObjectDatabase.CreateDefaultDatabase();
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
+                ContentManager.GetFileProvider = () => databaseFileProvider;
 
                 ((PrefabAsset)assetItem.Asset).Hierarchy.Entities[0].Entity.Components.RemoveWhere(x => !(x is TransformComponent));
                 //((PrefabAsset)assetItem.Asset).Data.Entities[1].Components.RemoveWhere(x => x.Key != SiliconStudio.Xenko.Engine.TransformComponent.Key);
 
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 assetManager.Save("Entity1", ((PrefabAsset)assetItem.Asset).Hierarchy);
 
-                assetManager = new AssetManager();
+                assetManager = new ContentManager();
                 var entity = assetManager.Load<Entity>("Entity1");
 
                 var entity2 = entity.Clone();

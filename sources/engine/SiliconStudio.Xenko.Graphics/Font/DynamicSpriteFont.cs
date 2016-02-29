@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
     /// <summary>
     /// A dynamic font. That is a font that generate its character bitmaps at execution.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<DynamicSpriteFont>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<DynamicSpriteFont>), Profile = "Content")]
     [ContentSerializer(typeof(DynamicSpriteFontContentSerializer))]
     [DataSerializer(typeof(DynamicSpriteFontSerializer))]
     internal class DynamicSpriteFont : SpriteFont

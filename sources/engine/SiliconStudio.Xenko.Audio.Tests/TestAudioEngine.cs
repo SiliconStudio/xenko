@@ -53,12 +53,12 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             // Create some SoundEffects
             SoundEffect soundEffect;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 soundEffect = SoundEffect.Load(engine, wavStream);
             }
             SoundEffect dispSoundEffect;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 dispSoundEffect = SoundEffect.Load(engine, wavStream);
             }
@@ -69,8 +69,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
             dispInstance.Dispose();
 
             // Create some SoundMusics.
-            var soundMusic1 = SoundMusic.Load(engine, AssetManager.FileProvider.OpenStream("MusicBip", VirtualFileMode.Open, VirtualFileAccess.Read));
-            var soundMusic2 = SoundMusic.Load(engine, AssetManager.FileProvider.OpenStream("MusicToneA", VirtualFileMode.Open, VirtualFileAccess.Read));
+            var soundMusic1 = SoundMusic.Load(engine, ContentManager.FileProvider.OpenStream("MusicBip", VirtualFileMode.Open, VirtualFileAccess.Read));
+            var soundMusic2 = SoundMusic.Load(engine, ContentManager.FileProvider.OpenStream("MusicToneA", VirtualFileMode.Open, VirtualFileAccess.Read));
             soundMusic2.Dispose();
 
             // Create some dynamicSounds.
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             // create a sound effect
             SoundEffect soundEffect;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
                 soundEffect = SoundEffect.Load(engine, wavStream);
 
             /////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             // create another longer sound effect
             SoundEffect longerSoundEffect;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
                 longerSoundEffect = SoundEffect.Load(engine, wavStream);
 
             ///////////////////////////////////////////////////////////////////////
@@ -203,12 +203,12 @@ namespace SiliconStudio.Xenko.Audio.Tests
             
             // create a sound effect instance
             SoundEffect soundEffect;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
                 soundEffect = SoundEffect.Load(engine, wavStream);
             var wave1Instance = soundEffect.CreateInstance();
 
             // create a music instance
-            var music = SoundMusic.Load(engine, AssetManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
+            var music = SoundMusic.Load(engine, ContentManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
 
             // check state
             engine.PauseAudio();
@@ -223,7 +223,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             // create a new sound effect
             SoundEffect soundEffectStereo;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
                 soundEffectStereo = SoundEffect.Load(engine, wavStream);
 
             // check that a new instance can not be played
@@ -279,12 +279,12 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             // create a sound effect instance
             SoundEffect soundEffect;
-            using (var wavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var wavStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
                 soundEffect = SoundEffect.Load(engine, wavStream);
             var wave1Instance = soundEffect.CreateInstance();
 
             // create a music instance
-            var music = SoundMusic.Load(engine, AssetManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
+            var music = SoundMusic.Load(engine, ContentManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
             
             // check that resume do not play stopped instances
             engine.PauseAudio();

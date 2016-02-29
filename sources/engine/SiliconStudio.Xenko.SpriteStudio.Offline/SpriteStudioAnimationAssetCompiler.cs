@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     return null;
                 }
 
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
 
                 var anim = anims.First(x => x.Name == AssetParameters.AnimationName);
 

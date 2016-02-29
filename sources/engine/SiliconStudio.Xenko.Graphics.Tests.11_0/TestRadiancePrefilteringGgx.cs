@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             skipHighestLevel = radianceFilter.DoNotFilterHighestLevel;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            inputCubemap = Asset.Load<Texture>("CubeMap");
+            inputCubemap = Content.Load<Texture>("CubeMap");
             outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
             outputCubemapNoCompute = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6).DisposeBy(this);
             CreateViews();

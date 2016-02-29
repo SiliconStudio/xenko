@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Tests
 {
     [TestFixture]
-    public class TestEntityGroupAsset
+    public class TestPrefabAsset
     {
         [Test]
         public void TestSerialization()

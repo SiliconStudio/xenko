@@ -31,7 +31,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         public static PropertyKey<ContentSerializerContext> ContentSerializerContextProperty = new PropertyKey<ContentSerializerContext>("ContentSerializerContext", typeof(ContentSerializerContext));
         public static PropertyKey<AttachedReferenceSerialization> SerializeAttachedReferenceProperty = new PropertyKey<AttachedReferenceSerialization>("SerializeAttachedReference", typeof(ContentSerializerContext));
 
-        public AssetManager AssetManager { get; private set; }
+        public ContentManager ContentManager { get; private set; }
         public string Url { get; protected set; }
         public ArchiveMode Mode { get; protected set; }
 
@@ -39,14 +39,14 @@ namespace SiliconStudio.Core.Serialization.Contents
 
         public bool RegenerateUrls { get; set; }
 
-        internal AssetManager.AssetReference AssetReference { get; set; }
+        internal ContentManager.AssetReference AssetReference { get; set; }
         public bool LoadContentReferences { get; set; }
 
-        internal ContentSerializerContext(string url, ArchiveMode mode, AssetManager assetManager)
+        internal ContentSerializerContext(string url, ArchiveMode mode, ContentManager contentManager)
         {
             Url = url;
             Mode = mode;
-            AssetManager = assetManager;
+            ContentManager = contentManager;
             ContentReferences = new List<ContentReference>();
             generatedUrlPrefix = Url + "/gen/";
         }
@@ -118,7 +118,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             if (url == null || (RegenerateUrls && url.StartsWith(generatedUrlPrefix) && !generatedUrlObjects.Contains(content)))
             {
                 // Already registered?
-                if (AssetManager.TryGetAssetUrl(content, out url))
+                if (ContentManager.TryGetAssetUrl(content, out url))
                 {
                     contentReference.Location = url;
                     return;
@@ -140,19 +140,19 @@ namespace SiliconStudio.Core.Serialization.Contents
 
             // Register it
             //if (contentReference.Location != null)
-            //    AssetManager.RegisterAsset(contentReference.Location, contentReference.ObjectValue, serializationType, false);
+            //    ContentManager.RegisterAsset(contentReference.Location, contentReference.ObjectValue, serializationType, false);
         }
 
         public void SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
         {
-            stream.Context.SerializerSelector = AssetManager.Serializer.LowLevelSerializerSelector;
+            stream.Context.SerializerSelector = ContentManager.Serializer.LowLevelSerializerSelector;
             serializer.Serialize(this, stream, objToSerialize);
         }
 
         public void SerializeReferences(SerializationStream stream)
         {
             var references = chunkReferences;
-            stream.Context.SerializerSelector = AssetManager.Serializer.LowLevelSerializerSelector;
+            stream.Context.SerializerSelector = ContentManager.Serializer.LowLevelSerializerSelector;
             stream.Serialize(ref references, Mode);
         }
     }

@@ -29,14 +29,14 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
         protected override Task LoadContent()
         {
-            effect48kHz = Asset.Load<SoundEffect>("Effect48000Hz");
-            effect11kHz = Asset.Load<SoundEffect>("Effect11025Hz");
-            effect22kHz = Asset.Load<SoundEffect>("Effect22050Hz");
-            effect11kHzStereo = Asset.Load<SoundEffect>("Effect11025HzStereo");
-            effect22kHzStereo = Asset.Load<SoundEffect>("Effect22050HzStereo");
+            effect48kHz = Content.Load<SoundEffect>("Effect48000Hz");
+            effect11kHz = Content.Load<SoundEffect>("Effect11025Hz");
+            effect22kHz = Content.Load<SoundEffect>("Effect22050Hz");
+            effect11kHzStereo = Content.Load<SoundEffect>("Effect11025HzStereo");
+            effect22kHzStereo = Content.Load<SoundEffect>("Effect22050HzStereo");
 
-            effectA = Asset.Load<SoundEffect>("EffectToneA");
-            musicA = Asset.Load<SoundMusic>("MusicToneA");
+            effectA = Content.Load<SoundEffect>("EffectToneA");
+            musicA = Content.Load<SoundMusic>("MusicToneA");
 
             return Task.FromResult(true);
         }

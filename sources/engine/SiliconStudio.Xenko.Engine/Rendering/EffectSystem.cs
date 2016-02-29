@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </value>
         public IVirtualFileProvider FileProvider
         {
-            get { return compiler.FileProvider ?? AssetManager.FileProvider; }
+            get { return compiler.FileProvider ?? ContentManager.FileProvider; }
         }
 
         /// <summary>

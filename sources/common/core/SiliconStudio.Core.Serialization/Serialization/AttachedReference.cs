@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Core.Serialization
 {
     /// <summary>
-    /// Stores the object reference information, so that it is easy to work on partially loaded or CPU version of assets with <see cref="Assets.AssetManager"/>.
+    /// Stores the object reference information, so that it is easy to work on partially loaded or CPU version of assets with <see cref="ContentManager"/>.
     /// </summary>
     public class AttachedReference : IContentReference
     {
@@ -20,7 +21,7 @@ namespace SiliconStudio.Core.Serialization
         public Guid Id;
 
         /// <summary>
-        /// If yes, this object won't be recursively saved in a separate chunk by <see cref="Assets.AssetManager"/>.
+        /// If yes, this object won't be recursively saved in a separate chunk by <see cref="ContentManager"/>.
         /// Use this if you only care about the Url reference.
         /// </summary>
         public bool IsProxy;

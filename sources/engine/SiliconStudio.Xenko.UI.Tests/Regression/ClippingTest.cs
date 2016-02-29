@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiGroup = Asset.Load<SpriteSheet>("UIImages");
+            var uiGroup = Content.Load<SpriteSheet>("UIImages");
 
             element4 = new ContentDecorator
             {

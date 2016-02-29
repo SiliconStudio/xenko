@@ -15,29 +15,29 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// <summary>
     /// This class is responsible for merging and handling asset templating for entities (according to base, new base, and new version of the entity)
     /// </summary>
-    internal class EntityGroupAssetMerge
+    internal class PrefabAssetMerge
     {
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> baseEntities;
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> newBaseEntities;
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> newEntities; // specific to this instance, GroupPartKey.PartInstanceId is always Guid.Empty
         private readonly HashSet<Guid> entitiesRemovedInNewBase;
         private readonly HashSet<Guid> entitiesToRemoveFromNew;
-        private readonly EntityGroupAssetBase baseAsset;
-        private readonly EntityGroupAssetBase newAsset;
-        private readonly EntityGroupAssetBase newBaseAsset;
+        private readonly PrefabAssetBase baseAsset;
+        private readonly PrefabAssetBase newAsset;
+        private readonly PrefabAssetBase newBaseAsset;
         private readonly List<AssetBase> newBaseParts;
         private readonly HashSet<Guid> entitiesInHierarchy;
         private readonly List<Guid> rootEntitiesToAdd;
         private MergeResult result;
 
         /// <summary>
-        /// Initialize a new instance of <see cref="EntityGroupAssetMerge"/>
+        /// Initialize a new instance of <see cref="PrefabAssetMerge"/>
         /// </summary>
         /// <param name="baseAsset">The base asset used for merge (can be null).</param>
         /// <param name="newAsset">The new asset (cannot be null)</param>
         /// <param name="newBaseAsset">The new base asset (can be null)</param>
         /// <param name="newBaseParts">The new base parts (can be null)</param>
-        public EntityGroupAssetMerge(EntityGroupAssetBase baseAsset, EntityGroupAssetBase newAsset, EntityGroupAssetBase newBaseAsset, List<AssetBase> newBaseParts)
+        public PrefabAssetMerge(PrefabAssetBase baseAsset, PrefabAssetBase newAsset, PrefabAssetBase newBaseAsset, List<AssetBase> newBaseParts)
         {
             if (newAsset == null) throw new ArgumentNullException(nameof(newAsset));
 
