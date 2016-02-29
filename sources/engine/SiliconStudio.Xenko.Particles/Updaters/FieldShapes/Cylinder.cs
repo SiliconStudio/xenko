@@ -108,29 +108,38 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         {
             particlePosition -= fieldPosition;
             inverseRotation.Rotate(ref particlePosition);
-            particlePosition /= fieldSize;
+//            particlePosition /= fieldSize;
 
             var maxDist = (float)Math.Sqrt(particlePosition.X * particlePosition.X + particlePosition.Z * particlePosition.Z);
 
-            var isOutside = (maxDist > radius) || (Math.Abs(particlePosition.Y) > halfHeight);
+            var fieldX = radius * fieldSize.X;
+            var fieldY = halfHeight * fieldSize.Y;
+            var fieldZ = radius * fieldSize.Z;
 
-            var surfaceY = (particlePosition.Y >= 0) ? halfHeight : -halfHeight;
+            var roundSurface = particlePosition;
+            roundSurface.Y = 0;
+            roundSurface.X /= fieldX;
+            roundSurface.Z /= fieldZ;
+            roundSurface.Normalize();
+            roundSurface.X *= fieldX;
+            roundSurface.Z *= fieldZ;
 
-            var distR = Math.Abs(maxDist - radius) * ((fieldSize.X > fieldSize.Z) ? fieldSize.X : fieldSize.Z);
-            var distY = Math.Abs(particlePosition.Y - surfaceY) * fieldSize.Y;
+            var fieldRadius = roundSurface.Length();
+
+            var isOutside = (maxDist > fieldRadius) || (Math.Abs(particlePosition.Y) > fieldY);
+
+            var surfaceY = (particlePosition.Y >= 0) ? fieldY : -fieldY;
+
+            var distR = Math.Abs(maxDist - fieldRadius);
+            var distY = Math.Abs(particlePosition.Y - surfaceY);
 
             if (distR <= distY)
             {
-                // Biggest distance is on the X axis
-                surfacePoint.X = particlePosition.X;
-                surfacePoint.Y = 0;
-                surfacePoint.Z = particlePosition.Z;
-                surfacePoint.Normalize();
+                surfacePoint = roundSurface;
 
                 surfaceNormal = surfacePoint;
 
-                surfacePoint *= radius;
-                surfacePoint.Y = (isOutside) ? surfaceY : particlePosition.Y;
+                surfacePoint.Y = particlePosition.Y;
             }
             else
             {
@@ -144,14 +153,25 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
                 surfaceNormal = (surfaceY > 0) ? new Vector3(0, 1, 0) : new Vector3(0, -1, 0);
             }
 
+            if (isOutside)
+            {
+                surfacePoint.Y = Math.Min(surfacePoint.Y, fieldY);
+                surfacePoint.Y = Math.Max(surfacePoint.Y, -fieldY);
+
+                if (Math.Abs(surfacePoint.X) > Math.Abs(roundSurface.X))
+                    surfacePoint.X = roundSurface.X;
+
+                if (Math.Abs(surfacePoint.Z) > Math.Abs(roundSurface.Z))
+                    surfacePoint.Z = roundSurface.Z;
+            }
 
             // Fix the surface point and normal to world space
+            surfaceNormal /= fieldSize;
             fieldRotation.Rotate(ref surfaceNormal);
-            surfaceNormal *= fieldSize;
             surfaceNormal.Normalize();
-
+   
             fieldRotation.Rotate(ref surfacePoint);
-            surfacePoint *= fieldSize;
+//            surfacePoint *= fieldSize;
             surfacePoint += fieldPosition;
 
             // Is the point inside the cylinder?
