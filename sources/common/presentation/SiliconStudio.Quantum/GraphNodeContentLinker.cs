@@ -19,7 +19,7 @@ namespace SiliconStudio.Quantum
 
         public delegate bool ReferenceMatchDelegate(ObjectReference sourceReference, ObjectReference targetReferenceMatch);
 
-        public delegate IGraphNode FindTargetDelegate(IGraphNode sourceNode);
+        public delegate IGraphNode FindTargetDelegate(IGraphNode sourceNode, IGraphNode currentTarget);
 
         private struct ContentNodeLink
         {
@@ -54,10 +54,13 @@ namespace SiliconStudio.Quantum
             while (nodes.Count > 0)
             {
                 var node = nodes.Dequeue();
-                if (node.Target == null && findTarget != null)
+                if ( findTarget != null)
                 {
-                    var target = findTarget(node.Source);
-                    node = new ContentNodeLink(node.Source, target);
+                    var target = findTarget(node.Source, node.Target);
+                    if (target != node.Target)
+                    {
+                        node = new ContentNodeLink(node.Source, target);
+                    }
                 }
                 if (node.Target != null)
                 {
