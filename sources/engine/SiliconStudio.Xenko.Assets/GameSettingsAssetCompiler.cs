@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets
                 //    }
                 //}
 
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 assetManager.Save(Url, result);
 
                 return Task.FromResult(ResultStatus.Successful);

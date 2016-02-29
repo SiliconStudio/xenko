@@ -43,7 +43,7 @@
     <Compile Include="Serialization\Assets\AssetManagerException.cs" />
     <Compile Include="Serialization\Assets\AssetManagerLoaderSettings.cs" />
     <Compile Include="Serialization\Assets\AssetManagerStats.cs" />
-    <Compile Include="Serialization\Assets\AssetProfilingKeys.cs" />
+    <Compile Include="Serialization\Assets\ContentProfilingKeys.cs" />
     <Compile Include="Serialization\Assets\AssetManager.AssetReference.cs" />
     <Compile Include="Serialization\Assets\NamespaceDoc.cs" />
     <Compile Include="Serialization\Contents\DataContentSerializerWithReuse.cs" />
@@ -53,7 +53,7 @@
     <Compile Include="IO\ListStore.cs" />
     <Compile Include="IO\Store.cs" />
     <Compile Include="Serialization\Assets\AssetIndexMap.cs" />
-    <Compile Include="Serialization\Assets\AssetManager.cs" />
+    <Compile Include="Serialization\Assets\ContentManager.cs" />
     <Compile Include="Serialization\Assets\AssetOperationParameters.cs" />
     <Compile Include="Serialization\Assets\AssetSerializer.cs" />
     <Compile Include="Serialization\Assets\ChunkHeader.cs" />

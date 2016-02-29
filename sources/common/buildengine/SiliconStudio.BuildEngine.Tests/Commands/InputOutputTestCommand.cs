@@ -73,7 +73,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         protected override async Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
-            var assetManager = new AssetManager();
+            var assetManager = new ContentManager();
             DataContainer result = null;
 
             switch (Source.Type)

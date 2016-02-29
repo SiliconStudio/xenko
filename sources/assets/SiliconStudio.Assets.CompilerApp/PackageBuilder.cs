@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private static void PrepareDatabases()
         {
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
+            ContentManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
         }
 
         private BuildResultCode BuildMaster()
