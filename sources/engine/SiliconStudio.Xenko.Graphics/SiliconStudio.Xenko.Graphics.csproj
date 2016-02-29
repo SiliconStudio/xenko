@@ -153,6 +153,7 @@
     <Compile Include="OpenGL\CommandList.OpenGL.cs" />
     <Compile Include="OpenGL\PipelineState.OpenGL.cs" />
     <Compile Include="ResourceBinder.cs" />
+    <Compile Include="ResourceGroupAllocator.cs" />
     <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
