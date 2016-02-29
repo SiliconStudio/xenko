@@ -25,13 +25,18 @@ namespace SiliconStudio.Xenko.Rendering
         // Constants and resources
         // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
         //   However, maybe ref locals would make this not needed anymore?
+        [DataMemberIgnore]
         public byte[] DataValues = EmptyData;
+        [DataMemberIgnore]
         public object[] ObjectValues;
 
+        [DataMemberIgnore]
         public int PermutationCounter = 1;
 
+        [DataMemberIgnore]
         public FastList<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
+        [DataMemberIgnore]
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
 
         public NextGenParameterCollection()
@@ -405,16 +410,30 @@ namespace SiliconStudio.Xenko.Rendering
             ObjectValues[accessor] = value;
         }
 
-        public void Remove<T>(ParameterKey<T> key)
+        public object GetObject(ParameterKey key)
+        {
+            if (key.Type != ParameterKeyType.Permutation && key.Type != ParameterKeyType.Object)
+                throw new InvalidOperationException("SetObject can only be used for Permutation or Object keys");
+
+            var accessor = GetObjectParameterHelper(key, false);
+            if (accessor == -1)
+                return null;
+
+            return ObjectValues[accessor];
+        }
+
+        public bool Remove(ParameterKey key)
         {
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
                 if (parameterKeyInfos[i].Key == key)
                 {
                     parameterKeyInfos.SwapRemoveAt(i);
-                    return;
+                    return true;
                 }
             }
+
+            return false;
         }
 
         /// <summary>
@@ -553,7 +572,7 @@ namespace SiliconStudio.Xenko.Rendering
             ObjectValues = newResourceValues;
         }
 
-        private int GetObjectParameterHelper(ParameterKey parameterKey, bool createIfNew = true)
+        protected int GetObjectParameterHelper(ParameterKey parameterKey, bool createIfNew = true)
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
