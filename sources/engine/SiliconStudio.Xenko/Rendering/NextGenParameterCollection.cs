@@ -30,9 +30,45 @@ namespace SiliconStudio.Xenko.Rendering
 
         public int PermutationCounter = 1;
 
-        public IEnumerable<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
+        public FastList<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
+
+        public NextGenParameterCollection()
+        {
+        }
+
+        public unsafe NextGenParameterCollection(NextGenParameterCollection parameterCollection)
+        {
+            // Copy layout
+            if (parameterCollection.HasLayout)
+            {
+                layoutParameterKeyInfos = new FastListStruct<ParameterKeyInfo>(parameterCollection.layoutParameterKeyInfos.Count);
+                layoutParameterKeyInfos.AddRange(parameterCollection.layoutParameterKeyInfos);
+            }
+
+            // Copy parameter keys
+            parameterKeyInfos.AddRange(parameterCollection.parameterKeyInfos);
+
+            // Copy objects
+            if (parameterCollection.ObjectValues != null)
+            {
+                ObjectValues = new object[parameterCollection.ObjectValues.Length];
+                for (int i = 0; i < ObjectValues.Length; ++i)
+                    ObjectValues[i] = parameterCollection.ObjectValues[i];
+            }
+
+            // Copy data
+            if (parameterCollection.DataValues != null)
+            {
+                DataValues = new byte[parameterCollection.DataValues.Length];
+                fixed (byte* dataValuesSources = parameterCollection.DataValues)
+                fixed (byte* dataValuesDest = DataValues)
+                {
+                    Utilities.CopyMemory((IntPtr)dataValuesDest, (IntPtr)dataValuesSources, DataValues.Length);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets an accessor to get and set objects more quickly.
@@ -40,9 +76,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameterKey"></param>
         /// <returns></returns>
-        public ObjectParameterAccessor<T> GetAccessor<T>(ObjectParameterKey<T> parameterKey)
+        public ObjectParameterAccessor<T> GetAccessor<T>(ObjectParameterKey<T> parameterKey, bool createIfNew = true)
         {
-            return new ObjectParameterAccessor<T>(GetObjectParameterHelper(parameterKey));
+            return new ObjectParameterAccessor<T>(GetObjectParameterHelper(parameterKey, createIfNew));
         }
 
         /// <summary>
@@ -51,10 +87,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameterKey"></param>
         /// <returns></returns>
-        public PermutationParameter<T> GetAccessor<T>(PermutationParameterKey<T> parameterKey)
+        public PermutationParameter<T> GetAccessor<T>(PermutationParameterKey<T> parameterKey, bool createIfNew = true)
         {
             // Remap it as PermutationParameter
-            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey));
+            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey, createIfNew));
         }
 
         /// <summary>
@@ -145,9 +181,13 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public T Get<T>(ObjectParameterKey<T> parameter)
+        public T Get<T>(ObjectParameterKey<T> parameter, bool createIfNew = false)
         {
-            return Get(GetAccessor(parameter));
+            var accessor = GetAccessor(parameter, createIfNew);
+            if (accessor.Index == -1)
+                return parameter.DefaultValueMetadataT.DefaultValue;
+
+            return Get(GetAccessor(parameter, createIfNew));
         }
 
         /// <summary>
@@ -167,8 +207,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public T Get<T>(PermutationParameterKey<T> parameter)
+        public T Get<T>(PermutationParameterKey<T> parameter, bool createIfNew = false)
         {
+            var accessor = GetAccessor(parameter, createIfNew);
+            if (accessor.Index == -1)
+                return parameter.DefaultValueMetadataT.DefaultValue;
+
             return Get(GetAccessor(parameter));
         }
 
@@ -349,6 +393,18 @@ namespace SiliconStudio.Xenko.Rendering
             return (T)ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot];
         }
 
+        public void SetObject(ParameterKey key, object value)
+        {
+            if (key.Type != ParameterKeyType.Permutation && key.Type != ParameterKeyType.Object)
+                throw new InvalidOperationException("SetObject can only be used for Permutation or Object keys");
+
+            if (key.Type == ParameterKeyType.Permutation)
+                PermutationCounter++;
+
+            var accessor = GetObjectParameterHelper(key);
+            ObjectValues[accessor] = value;
+        }
+
         public void Remove<T>(ParameterKey<T> key)
         {
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -359,6 +415,17 @@ namespace SiliconStudio.Xenko.Rendering
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// Clears the collection, including the layout.
+        /// </summary>
+        public void Clear()
+        {
+            DataValues = null;
+            ObjectValues = null;
+            layoutParameterKeyInfos.Clear();
+            parameterKeyInfos.Clear();
         }
 
         /// <summary>
@@ -486,7 +553,7 @@ namespace SiliconStudio.Xenko.Rendering
             ObjectValues = newResourceValues;
         }
 
-        private int GetObjectParameterHelper(ParameterKey parameterKey)
+        private int GetObjectParameterHelper(ParameterKey parameterKey, bool createIfNew = true)
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -496,6 +563,9 @@ namespace SiliconStudio.Xenko.Rendering
                     return i;
                 }
             }
+
+            if (!createIfNew)
+                return -1;
 
             if (parameterKey.Type == ParameterKeyType.Permutation)
                 PermutationCounter++;

@@ -82,6 +82,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
                 compilerResults.Bytecode = bytecode;
                 compilerResults.UsedParameters = mixinToCompile.UsedParameters;
+                compilerResults.SourceParameters = new CompilerParameters(compilerParameters);
             }
             return compilerResults;
         }

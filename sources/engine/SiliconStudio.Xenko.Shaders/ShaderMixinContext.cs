@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Shaders
     /// </summary>
     public class ShaderMixinContext
     {
-        private readonly ParameterCollection compilerParameters;
+        private readonly NextGenParameterCollection compilerParameters;
         private readonly Stack<object> parameterCollections = new Stack<object>(); // Currently storing object as long as we have both ParameterCollection and NextGenParameterCollection
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
         private readonly Stack<int> compositionIndices = new Stack<int>();
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <exception cref="System.ArgumentNullException">compilerParameters
         /// or
         /// registeredBuilders</exception>
-        public ShaderMixinContext(ShaderMixinSource mixinTree, ParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
+        public ShaderMixinContext(ShaderMixinSource mixinTree, NextGenParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
         {
             if (mixinTree == null) throw new ArgumentNullException("mixinTree");
             if (compilerParameters == null)

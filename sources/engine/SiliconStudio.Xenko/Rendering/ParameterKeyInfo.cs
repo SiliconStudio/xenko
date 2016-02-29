@@ -46,5 +46,38 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return $"{Key} ({(BindingSlot != -1 ? "BindingSlot " + BindingSlot : "Offset " + Offset)}, Size {Size})";
         }
+
+        public bool Equals(ParameterKeyInfo other)
+        {
+            return Key.Equals(other.Key) && Offset == other.Offset && Size == other.Size && BindingSlot == other.BindingSlot;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is ParameterKeyInfo && Equals((ParameterKeyInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Key.GetHashCode();
+                hashCode = (hashCode*397) ^ Offset;
+                hashCode = (hashCode*397) ^ Size;
+                hashCode = (hashCode*397) ^ BindingSlot;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(ParameterKeyInfo left, ParameterKeyInfo right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ParameterKeyInfo left, ParameterKeyInfo right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

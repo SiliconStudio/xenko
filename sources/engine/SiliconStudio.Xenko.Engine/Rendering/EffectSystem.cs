@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
@@ -137,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
         public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
-            ParameterCollection usedParameters;
+            NextGenParameterCollection usedParameters;
             return LoadEffect(effectName, compilerParameters, out usedParameters);
         }
 
@@ -149,7 +151,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="usedParameters">The used parameters.</param>
         /// <returns>A new instance of an effect.</returns>
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out ParameterCollection usedParameters)
+        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out NextGenParameterCollection usedParameters)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
@@ -191,8 +193,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 if (!isInitialized)
                     throw new InvalidOperationException("EffectSystem has been disposed. This Effect compilation has been cancelled.");
-
-                var usedParameters = compilerResult.UsedParameters;
 
                 if (effectBytecodeCompilerResult.CompilationLog.HasErrors)
                 {
@@ -369,14 +369,49 @@ namespace SiliconStudio.Xenko.Rendering
                 if (!earlyCompilerCache.TryGetValue(effectName, out compilerResultsList))
                     return null;
 
-                // TODO: Optimize it so that search is not linear?
-                // Probably not trivial for subset testing
+                // Compiler Parameters are supposed to be created in the same order every time, so we just check if they were created in the same order (ParameterKeyInfos) with same values (ObjectValues)
+                
+                // TODO GRAPHICS REFACTOR we could probably compute a hash for faster lookup
                 foreach (var compiledResults in compilerResultsList)
                 {
-                    if (parameters.Contains(compiledResults.UsedParameters))
+                    var compiledParameters = compiledResults.SourceParameters;
+
+                    var compiledParameterKeyInfos = compiledParameters.ParameterKeyInfos;
+                    var parameterKeyInfos = parameters.ParameterKeyInfos;
+
+                    // Early check
+                    if (parameterKeyInfos.Count != compiledParameterKeyInfos.Count)
+                        continue;
+
+                    for (int index = 0; index < parameterKeyInfos.Count; ++index)
                     {
-                        return compiledResults;
+                        var parameterKeyInfo = parameterKeyInfos[index];
+                        var compiledParameterKeyInfo = compiledParameterKeyInfos[index];
+
+                        if (parameterKeyInfo != compiledParameterKeyInfo)
+                            goto different;
+
+                        // Should not happen in practice (CompilerParameters should only consist of permutation values)
+                        if (parameterKeyInfo.Key.Type != ParameterKeyType.Permutation)
+                            continue;
+
+                        for (int i = 0; i < parameterKeyInfo.Size; ++i)
+                        {
+                            var object1 = parameters.ObjectValues[parameterKeyInfo.BindingSlot + i];
+                            var object2 = compiledParameters.ObjectValues[compiledParameterKeyInfo.BindingSlot + i];
+                            if (object1 == null && object2 == null)
+                                continue;
+                            if ((object1 == null && object2 != null) || (object2 == null && object1 != null))
+                                goto different;
+                            if (!object1.Equals(object2))
+                                goto different;
+                        }
                     }
+
+                    return compiledResults;
+
+                different:
+                    ;
                 }
             }
 
