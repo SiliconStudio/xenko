@@ -14,6 +14,11 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class VisibilityGroup
     {
+        private int stageMaskMultiplier;
+
+        // TODO GRAPHICS REFACTOR not thread-safe
+        private uint[] viewRenderStageMask;
+
         internal bool NeedActiveRenderStageReevaluation;
 
         public readonly StaticObjectPropertyKey<uint> RenderStageMaskKey;
@@ -43,12 +48,14 @@ namespace SiliconStudio.Xenko.Rendering
             RenderData.Initialize(ComputeDataArrayExpectedSize);
 
             // Create RenderStageMask key, and keep track of number of RenderStages.Count for future resizing
-            RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+            RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, stageMaskMultiplier = (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+            Array.Resize(ref viewRenderStageMask, stageMaskMultiplier);
 
             RenderSystem.RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderSystem.RenderStageSelectorsChanged += RenderSystem_RenderStageSelectorsChanged;
         }
 
+        // TODO GRAPHICS REFACTOR not thread-safe
         public void Collect()
         {
             // Check if active render stages need reevaluation for those render objects
@@ -63,8 +70,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Collect objects, and perform frustum culling
             // TODO GRAPHICS REFACTOR Create "VisibilityObject" (could contain multiple RenderNode) and separate frustum culling from RenderSystem
             // TODO GRAPHICS REFACTOR optimization: maybe we could process all views at once (swap loop between per object and per view)
-            var stageMaskMultiplier = (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry;
-            var viewRenderStageMask = new uint[stageMaskMultiplier];
+
             foreach (var view in Views)
             {
                 // Prepare culling mask
@@ -129,6 +135,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Add object to list of visible objects
                     // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
+                    // TODO GRAPHICS REFACTOR not thread-safe
                     view.RenderObjects.Add(renderObject);
                 }
             }
@@ -191,15 +198,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Compute render stage mask
             var renderStageMask = RenderData.GetData(RenderStageMaskKey);
-            var renderStageMaskMultiplier = (RenderSystem.RenderStages.Count + VisibilityGroup.RenderStageMaskSizePerEntry - 1) / VisibilityGroup.RenderStageMaskSizePerEntry;
-            var renderStageMaskNode = renderObject.VisibilityObjectNode * renderStageMaskMultiplier;
+            var renderStageMaskNode = renderObject.VisibilityObjectNode * stageMaskMultiplier;
 
             for (int index = 0; index < renderObject.ActiveRenderStages.Length; index++)
             {
                 // TODO: Could easily be optimized to read and set value only once per uint
                 var activeRenderStage = renderObject.ActiveRenderStages[index];
                 if (activeRenderStage.Active)
-                    renderStageMask[renderStageMaskNode + (index / VisibilityGroup.RenderStageMaskSizePerEntry)] |= 1U << (index % VisibilityGroup.RenderStageMaskSizePerEntry);
+                    renderStageMask[renderStageMaskNode + (index / RenderStageMaskSizePerEntry)] |= 1U << (index % RenderStageMaskSizePerEntry);
             }
         }
 
@@ -240,7 +246,8 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 case NotifyCollectionChangedAction.Add:
                     // Make sure mask is big enough
-                    RenderData.ChangeDataMultiplier(RenderStageMaskKey, (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+                    RenderData.ChangeDataMultiplier(RenderStageMaskKey, stageMaskMultiplier = (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
+                    Array.Resize(ref viewRenderStageMask, stageMaskMultiplier);
 
                     // Everything will need reevaluation
                     NeedActiveRenderStageReevaluation = true;
