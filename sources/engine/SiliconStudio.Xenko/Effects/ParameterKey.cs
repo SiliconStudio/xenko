@@ -176,7 +176,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        internal abstract ParameterCollection.InternalValue CreateInternalValue();
+        internal abstract void SerializeHash(SerializationStream stream, object value);
     }
 
     public enum ParameterKeyType
@@ -192,9 +192,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// <typeparam name="T">Type of the parameter key.</typeparam>
     public abstract class ParameterKey<T> : ParameterKey
     {
+        private static DataSerializer<T> dataSerializer;
         private static bool isValueType = typeof(T).GetTypeInfo().IsValueType;
-        private static bool isValueArrayType = typeof(T).GetTypeInfo().IsArray && typeof(T).GetElementType().GetTypeInfo().IsValueType;
-        private static Type internalValueArrayType = isValueArrayType ? typeof(ParameterCollection.InternalValueArray<>).MakeGenericType(typeof(T).GetElementType()) : null;
 
         public override bool IsValueType
         {
@@ -236,18 +235,15 @@ namespace SiliconStudio.Xenko.Rendering
             return string.Format("{0}", Name);
         }
 
-        internal override ParameterCollection.InternalValue CreateInternalValue()
+        internal override void SerializeHash(SerializationStream stream, object value)
         {
-            if (isValueType)
-                return new ParameterCollection.InternalValue<T>();
-
-            if (isValueArrayType)
+            var currentDataSerializer = dataSerializer;
+            if (currentDataSerializer == null)
             {
-                // Still a slow path for arrays due to generic constraints...
-                return (ParameterCollection.InternalValue)Activator.CreateInstance(internalValueArrayType, Length);
+                dataSerializer = currentDataSerializer = MemberSerializer<T>.Create(stream.Context.SerializerSelector);
             }
 
-            return new ParameterCollection.InternalValueBase<T>();
+            currentDataSerializer.Serialize(ref value, ArchiveMode.Serialize, stream);
         }
 
         protected override void SetupMetadata(PropertyKeyMetadata metadata)

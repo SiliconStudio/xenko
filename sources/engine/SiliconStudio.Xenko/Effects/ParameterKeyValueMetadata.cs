@@ -10,8 +10,6 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public abstract object GetDefaultValue();
 
-        public abstract void SetupDefaultValue(ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies);
-
         public abstract bool WriteBuffer(IntPtr dest, int alignment = 1);
     }
 
@@ -58,11 +56,6 @@ namespace SiliconStudio.Xenko.Rendering
         public override object GetDefaultValue()
         {
             return DefaultValue;
-        }
-
-        public override void SetupDefaultValue(ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies)
-        {
-            parameterCollection.Set((ParameterKey<T>)parameterKey, DefaultValue);
         }
     }
 }
