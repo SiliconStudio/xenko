@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 invSquareRadius[Count] = pointLight.InvSquareRadius;
             }
 
-            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
                 parameters.Set(colorsKey, Count, ref lightColors[0]);

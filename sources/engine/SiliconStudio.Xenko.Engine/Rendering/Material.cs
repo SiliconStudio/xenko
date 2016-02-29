@@ -28,14 +28,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Material()
         {
-            Parameters = new NextGenParameterCollection();
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Material"/> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        public Material(NextGenParameterCollection parameters)
+        public Material(ParameterCollection parameters)
         {
             Parameters = parameters;
         }
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public NextGenParameterCollection Parameters { get; set; }
+        public ParameterCollection Parameters { get; set; }
 
         /// <summary>
         /// Overrides the cullmode for this material.

@@ -15,8 +15,8 @@ namespace SiliconStudio.Xenko.Shaders
     /// </summary>
     public class ShaderMixinContext
     {
-        private readonly NextGenParameterCollection compilerParameters;
-        private readonly Stack<NextGenParameterCollection> parameterCollections = new Stack<NextGenParameterCollection>(); // Currently storing object as long as we have both ParameterCollection and NextGenParameterCollection
+        private readonly ParameterCollection compilerParameters;
+        private readonly Stack<ParameterCollection> parameterCollections = new Stack<ParameterCollection>();
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
         private readonly Stack<int> compositionIndices = new Stack<int>();
         private readonly StringBuilder compositionStringBuilder = new StringBuilder();
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <exception cref="System.ArgumentNullException">compilerParameters
         /// or
         /// registeredBuilders</exception>
-        public ShaderMixinContext(ShaderMixinSource mixinTree, NextGenParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
+        public ShaderMixinContext(ShaderMixinSource mixinTree, ParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
         {
             if (mixinTree == null) throw new ArgumentNullException("mixinTree");
             if (compilerParameters == null)
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Shaders
             this.currentMixinSourceTree = mixinTree;
             this.compilerParameters = compilerParameters;
             this.registeredBuilders = registeredBuilders;
-            this.parameterCollections = new Stack<NextGenParameterCollection>();
+            this.parameterCollections = new Stack<ParameterCollection>();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         /// <typeparam name="T">Type of the parameter collection</typeparam>
         /// <param name="parameterCollection">The property container.</param>
-        public void PushParameters(NextGenParameterCollection parameterCollection)
+        public void PushParameters(ParameterCollection parameterCollection)
         {
             parameterCollections.Push(parameterCollection);
         }
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Shaders
             var globalKey = paramKey;
             var composeKey = GetComposeKey(paramKey);
             var selectedKey = globalKey;
-            NextGenParameterCollection sourceParameters = null;
+            ParameterCollection sourceParameters = null;
 
             // Try first if a composite key with a value is available for the key
             if (composeKey != globalKey)
@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Shaders
             return value;
         }
 
-        private NextGenParameterCollection FindKeyValue<T>(PermutationParameterKey<T> key, out PermutationParameterKey<T> selectedKey)
+        private ParameterCollection FindKeyValue<T>(PermutationParameterKey<T> key, out PermutationParameterKey<T> selectedKey)
         {
             // Try to get a value from registered containers
             selectedKey = null;
@@ -320,12 +320,12 @@ namespace SiliconStudio.Xenko.Shaders
         }
 
         // Helpers, until we get rid of ParameterCollection
-        private void Set<T>(NextGenParameterCollection parameterCollection, PermutationParameterKey<T> key, T value)
+        private void Set<T>(ParameterCollection parameterCollection, PermutationParameterKey<T> key, T value)
         {
             parameterCollection.Set(key, value);
         }
 
-        private T Get<T>(NextGenParameterCollection parameterCollection, PermutationParameterKey<T> key)
+        private T Get<T>(ParameterCollection parameterCollection, PermutationParameterKey<T> key)
         {
             return parameterCollection.Get(key);
         }

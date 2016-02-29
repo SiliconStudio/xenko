@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the parameters applied on the SpriteBatch effect.
         /// </summary>
         /// <value>The parameters.</value>
-        public NextGenParameterCollection Parameters => Effect.Parameters;
+        public ParameterCollection Parameters => Effect.Parameters;
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect.

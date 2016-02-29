@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// properties
         /// </exception>
         /// <exception cref="System.ArgumentException">xkfxEffectName</exception>
-        public static ShaderMixinSource Generate(string xkfxEffectName, NextGenParameterCollection properties)
+        public static ShaderMixinSource Generate(string xkfxEffectName, ParameterCollection properties)
         {
             if (xkfxEffectName == null) throw new ArgumentNullException("xkfxEffectName");
 

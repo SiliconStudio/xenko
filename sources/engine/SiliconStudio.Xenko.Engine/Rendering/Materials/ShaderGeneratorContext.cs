@@ -58,13 +58,13 @@ namespace SiliconStudio.Xenko.Assets
         public ShaderGeneratorContext(GraphicsDevice graphicsDevice = null)
         {
             this.graphicsDevice = graphicsDevice;
-            Parameters = new NextGenParameterCollection();
+            Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>>();
             currentOverrides = new MaterialOverrides();
         }
 
-        public NextGenParameterCollection Parameters { get; set; }
+        public ParameterCollection Parameters { get; set; }
 
         public MaterialOverrides CurrentOverrides
         {

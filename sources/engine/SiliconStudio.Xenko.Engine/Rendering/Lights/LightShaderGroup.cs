@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             Count++;
         }
 
-        public void ApplyParameters(NextGenParameterCollection parameters)
+        public void ApplyParameters(ParameterCollection parameters)
         {
             ApplyParametersInternal(parameters);
             ShadowGroup?.ApplyParameters(parameters);
@@ -95,6 +95,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         protected abstract void AddLightInternal(LightComponent light);
 
-        protected abstract void ApplyParametersInternal(NextGenParameterCollection parameters);
+        protected abstract void ApplyParametersInternal(ParameterCollection parameters);
     }
 }

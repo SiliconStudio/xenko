@@ -11,9 +11,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Manage several effect parameters (resources and data). A specific data and resource layout can be forced (usually by the consuming effect).
     /// </summary>
-    [DataSerializer(typeof(NextGenParameterCollection.Serializer))]
+    [DataSerializer(typeof(ParameterCollection.Serializer))]
     [DataSerializerGlobal(null, typeof(FastList<ParameterKeyInfo>))]
-    public class NextGenParameterCollection
+    public class ParameterCollection
     {
         private static readonly byte[] EmptyData = new byte[0];
 
@@ -39,11 +39,11 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
 
-        public NextGenParameterCollection()
+        public ParameterCollection()
         {
         }
 
-        public unsafe NextGenParameterCollection(NextGenParameterCollection parameterCollection)
+        public unsafe ParameterCollection(ParameterCollection parameterCollection)
         {
             // Copy layout
             if (parameterCollection.HasLayout)
@@ -473,7 +473,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="bufferSize"></param>
         /// <param name="constantBuffers"></param>
         /// <param name="descriptorSetLayouts"></param>
-        public unsafe void UpdateLayout(NextGenParameterCollectionLayout layout)
+        public unsafe void UpdateLayout(ParameterCollectionLayout layout)
         {
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
@@ -616,9 +616,9 @@ namespace SiliconStudio.Xenko.Rendering
             return parameterKeyInfos.Count - 1;
         }
 
-        public class Serializer : ClassDataSerializer<NextGenParameterCollection>
+        public class Serializer : ClassDataSerializer<ParameterCollection>
         {
-            public override void Serialize(ref NextGenParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
+            public override void Serialize(ref ParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
             {
                 stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
                 stream.SerializeExtended(ref parameterCollection.ObjectValues, mode);
@@ -629,13 +629,13 @@ namespace SiliconStudio.Xenko.Rendering
         public struct CompositionCopier
         {
             List<CopyRange> ranges;
-            NextGenParameterCollection destination;
+            ParameterCollection destination;
 
             /// <summary>
             /// Copies data from source to destination according to previously compiled layout.
             /// </summary>
             /// <param name="source"></param>
-            public unsafe void Copy(NextGenParameterCollection source)
+            public unsafe void Copy(ParameterCollection source)
             {
                 foreach (var range in ranges)
                 {
@@ -661,11 +661,11 @@ namespace SiliconStudio.Xenko.Rendering
             /// <param name="dest"></param>
             /// <param name="source"></param>
             /// <param name="keyRoot"></param>
-            public void Compute(NextGenParameterCollection dest, NextGenParameterCollection source, string keyRoot)
+            public void Compute(ParameterCollection dest, ParameterCollection source, string keyRoot)
             {
                 ranges = new List<CopyRange>();
                 destination = dest;
-                var sourceLayout = new NextGenParameterCollectionLayout();
+                var sourceLayout = new ParameterCollectionLayout();
 
                 // Helper structures to try to keep range contiguous and have as few copy operations as possible (note: there can be some padding)
                 var currentDataRange = new CopyRange { IsData = true, DestStart = -1 };

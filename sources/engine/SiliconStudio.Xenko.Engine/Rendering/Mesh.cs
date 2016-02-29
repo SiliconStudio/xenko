@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Mesh()
         {
-            Parameters = new NextGenParameterCollection();
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="meshDraw">The mesh draw.</param>
         /// <param name="parameters">The parameters.</param>
         /// <exception cref="System.ArgumentNullException">parameters</exception>
-        public Mesh(MeshDraw meshDraw, NextGenParameterCollection parameters)
+        public Mesh(MeshDraw meshDraw, ParameterCollection parameters)
         {
             if (meshDraw == null) throw new ArgumentNullException("meshDraw");
             if (parameters == null) throw new ArgumentNullException("parameters");
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public int MaterialIndex { get; set; }
         
-        public NextGenParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters { get; private set; }
         
         /// <summary>
         /// Index of the transformation node in <see cref="Model"/>.

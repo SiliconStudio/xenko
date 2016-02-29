@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         /// <param name="properties">The properties that the mixin will use.</param>
         /// <param name="usedProperties">The properties effectively used by the mixin.</param>
         /// <returns>ShaderMixinSource.</returns>
-        private static ShaderMixinSource GenerateMixin(string mixinName, NextGenParameterCollection properties, out ShaderMixinParameters usedProperties)
+        private static ShaderMixinSource GenerateMixin(string mixinName, ParameterCollection properties, out ShaderMixinParameters usedProperties)
         {
             var mixin = ShaderMixinManager.Generate(mixinName, properties);
 

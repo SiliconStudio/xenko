@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
         public Task<Effect> PendingEffect;
 
         public EffectParameterUpdater FallbackParameterUpdater;
-        public NextGenParameterCollection FallbackParameters;
+        public ParameterCollection FallbackParameters;
 
         public RenderEffect(string effectName)
         {

@@ -14,9 +14,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private readonly RenderContext renderContext;
 
-        private readonly NextGenParameterCollection sharedParameters;
+        private readonly ParameterCollection sharedParameters;
 
-        private readonly NextGenParameterCollection transformParameters;
+        private readonly ParameterCollection transformParameters;
 
         private readonly List<Texture> inputs;
 
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             this.renderContext = renderContext;
             inputs = new List<Texture>();
             sharedParameters = group.Parameters;
-            transformParameters = new NextGenParameterCollection();
+            transformParameters = new ParameterCollection();
         }
 
         public ColorTransformGroup Group
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        public NextGenParameterCollection SharedParameters
+        public ParameterCollection SharedParameters
         {
             get
             {

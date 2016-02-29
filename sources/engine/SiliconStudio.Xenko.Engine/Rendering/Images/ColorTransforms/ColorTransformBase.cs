@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract(Inherited = true)]
     public abstract class ColorTransformBase
     {
-        NextGenParameterCollection.CompositionCopier parameterCompositionCopier;
+        ParameterCollection.CompositionCopier parameterCompositionCopier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorTransformBase" /> class.
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected ColorTransformBase(string colorTransformShader)
         {
             if (colorTransformShader == null) throw new ArgumentNullException("colorTransformShader");
-            Parameters = new NextGenParameterCollection();
+            Parameters = new ParameterCollection();
 
             // Initialize all Parameters with values coming from each ParameterKey
             InitializeProperties();
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>The parameters.</value>
         [DataMemberIgnore]
-        public NextGenParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ColorTransformBase"/> is enabled.
@@ -109,13 +109,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Prepare copy operations for parameters.
         /// </summary>
-        public virtual void PrepareParameters(ColorTransformContext context, NextGenParameterCollection parentCollection, string keyRoot)
+        public virtual void PrepareParameters(ColorTransformContext context, ParameterCollection parentCollection, string keyRoot)
         {
             // Save Group aside
             Group = context.Group;
 
             // Compute associated layout ranges
-            parameterCompositionCopier = new NextGenParameterCollection.CompositionCopier();
+            parameterCompositionCopier = new ParameterCollection.CompositionCopier();
             parameterCompositionCopier.Compute(parentCollection, Parameters, keyRoot);
         }
 

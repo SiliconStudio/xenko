@@ -264,7 +264,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
 
-                var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new NextGenParameterCollectionLayout();
+                var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new ParameterCollectionLayout();
                 parameterCollectionLayout.ProcessResources(descriptorLayout);
                 lightShadersPermutation.ResourceCount = parameterCollectionLayout.ResourceCount;
 
@@ -631,7 +631,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private LightParametersPermutationEntry CreateParametersPermutationEntry(LightShaderPermutationEntry lightShaderPermutationEntry)
         {
-            // TODO GRAPHICS REFACTOR to use Set*() instead of Set*Slow() we would need to pool data by LightShaderPermutationEntry (just like NextGenParameterCollections)
+            // TODO GRAPHICS REFACTOR to use Set*() instead of Set*Slow() we would need to pool data by LightShaderPermutationEntry (just like ParameterCollections)
 
             var parameterCollectionEntry = lightShaderPermutationEntry.ParameterCollectionEntryPool.Add();
             parameterCollectionEntry.Clear();
@@ -801,7 +801,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly RenderEffect RenderEffect;
 
-            public NextGenParameterCollectionLayout ParameterCollectionLayout;
+            public ParameterCollectionLayout ParameterCollectionLayout;
 
             public ResourceGroupLayout PerLightingLayout;
 
@@ -835,7 +835,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public LightParametersPermutationEntry(LightShaderPermutationEntry shaderPermutationEntry)
             {
                 ShaderPermutationEntry = shaderPermutationEntry;
-                Parameters = new NextGenParameterCollection();
+                Parameters = new ParameterCollection();
                 DirectLightGroupDatas = new List<LightShaderGroupData>();
                 EnvironmentLightDatas = new List<LightShaderGroupData>();
             }
@@ -854,7 +854,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly List<LightShaderGroupData> EnvironmentLightDatas;
 
-            public readonly NextGenParameterCollection Parameters;
+            public readonly ParameterCollection Parameters;
 
             public void ApplyEffectPermutations(RenderEffect renderEffect)
             {

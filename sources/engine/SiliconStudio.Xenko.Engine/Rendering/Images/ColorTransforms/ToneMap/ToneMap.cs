@@ -204,7 +204,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        public override void PrepareParameters(ColorTransformContext context, NextGenParameterCollection parentCollection, string keyRoot)
+        public override void PrepareParameters(ColorTransformContext context, ParameterCollection parentCollection, string keyRoot)
         {
             base.PrepareParameters(context, parentCollection, keyRoot);
 

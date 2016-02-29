@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightAngleOffsetAndInvSquareRadius[Count] = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange);
             }
 
-            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
                 parameters.Set(directionsKey, Count, ref lightDirections[0]);

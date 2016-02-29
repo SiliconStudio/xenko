@@ -6,7 +6,7 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Rendering.Data
 {
-    public class ParameterCollectionHashSerializer : ClassDataSerializer<NextGenParameterCollection>, IDataSerializerInitializer
+    public class ParameterCollectionHashSerializer : ClassDataSerializer<ParameterCollection>, IDataSerializerInitializer
     {
         private DataSerializer<ParameterKey> parameterKeySerializer;
 
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Data
             parameterKeySerializer = serializerSelector.GetSerializer<ParameterKey>();
         }
 
-        public override void Serialize(ref NextGenParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref ParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
         {
             foreach (var parameter in parameterCollection.ParameterKeyInfos)
             {

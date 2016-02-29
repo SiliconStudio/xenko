@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Shaders
     /// Parameters used for mixin.
     /// </summary>
     [DataContract]
-    public class ShaderMixinParameters : NextGenParameterCollection, IDictionary<ParameterKey, object>
+    public class ShaderMixinParameters : ParameterCollection, IDictionary<ParameterKey, object>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinParameters"/> class.
