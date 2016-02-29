@@ -235,7 +235,7 @@
         /// </summary>
 		public static readonly RenderNodeReference Invalid = new RenderNodeReference(-1);
 
-        internal RenderNodeReference(int index)
+        public RenderNodeReference(int index)
         {
             Index = index;
         }
@@ -484,7 +484,7 @@
             Data = data;
         }
 
-        internal T this[StaticObjectNodeReference index]
+        public T this[StaticObjectNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }

@@ -70,9 +70,9 @@ namespace SiliconStudio.Xenko.Rendering
         public MaterialDescriptor Descriptor { get; set; }
 
         /// <summary>
-        /// Determines if this material will is affected by lighting.
+        /// Determines if this material is affected by lighting.
         /// </summary>
-        /// <value>The descriptor.</value>
+        /// <value><c>true</c> if this instance affects lighting; otherwise, <c>false</c>.</value>
         public bool IsLightDependent { get; set; }
 
         public object RenderData;
