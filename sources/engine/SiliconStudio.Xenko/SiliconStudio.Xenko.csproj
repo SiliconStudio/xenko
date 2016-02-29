@@ -66,9 +66,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
-    <Compile Include="Data\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
-    <Compile Include="Effects\EffectParameterExtensions.cs" />
     <Compile Include="Effects\ParameterCollectionSerializer.cs" />
     <Compile Include="Graphics\ColorExtensions.cs" />
     <Compile Include="Graphics\ColorSpace.cs" />
@@ -106,7 +104,6 @@
     <Compile Include="Graphics\TextureFilter.cs" />
     <Compile Include="Graphics\WICHelper.cs" />
     <Compile Include="Graphics\WICFlags.cs" />
-    <Compile Include="Effects\ParameterCollection.cs" />
     <Compile Include="Effects\ParameterCollectionExtensions.cs" />
     <Compile Include="Effects\ParameterKey.cs" />
     <Compile Include="Effects\ParameterKeyValueMetadata.cs" />

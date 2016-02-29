@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Shaders
     public class ShaderMixinContext
     {
         private readonly NextGenParameterCollection compilerParameters;
-        private readonly Stack<object> parameterCollections = new Stack<object>(); // Currently storing object as long as we have both ParameterCollection and NextGenParameterCollection
+        private readonly Stack<NextGenParameterCollection> parameterCollections = new Stack<NextGenParameterCollection>(); // Currently storing object as long as we have both ParameterCollection and NextGenParameterCollection
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
         private readonly Stack<int> compositionIndices = new Stack<int>();
         private readonly StringBuilder compositionStringBuilder = new StringBuilder();
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Shaders
             this.currentMixinSourceTree = mixinTree;
             this.compilerParameters = compilerParameters;
             this.registeredBuilders = registeredBuilders;
-            this.parameterCollections = new Stack<object>();
+            this.parameterCollections = new Stack<NextGenParameterCollection>();
         }
 
         /// <summary>
@@ -55,16 +55,6 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         /// <value>The child effect.</value>
         public string ChildEffectName { get; set; }
-
-        /// <summary>
-        /// Pushes the current parameters collection being used.
-        /// </summary>
-        /// <typeparam name="T">Type of the parameter collection</typeparam>
-        /// <param name="parameterCollection">The property container.</param>
-        public void PushParameters(ParameterCollection parameterCollection)
-        {
-            parameterCollections.Push(parameterCollection);
-        }
 
         /// <summary>
         /// Pushes the current parameters collection being used.
@@ -112,7 +102,7 @@ namespace SiliconStudio.Xenko.Shaders
             var globalKey = paramKey;
             var composeKey = GetComposeKey(paramKey);
             var selectedKey = globalKey;
-            object sourceParameters = null;
+            NextGenParameterCollection sourceParameters = null;
 
             // Try first if a composite key with a value is available for the key
             if (composeKey != globalKey)
@@ -145,13 +135,13 @@ namespace SiliconStudio.Xenko.Shaders
             return value;
         }
 
-        private object FindKeyValue<T>(PermutationParameterKey<T> key, out PermutationParameterKey<T> selectedKey)
+        private NextGenParameterCollection FindKeyValue<T>(PermutationParameterKey<T> key, out PermutationParameterKey<T> selectedKey)
         {
             // Try to get a value from registered containers
             selectedKey = null;
             foreach (var parameterCollection in parameterCollections)
             {
-                if (ContainsKey(parameterCollection, key))
+                if (parameterCollection.ContainsKey(key))
                 {
                     selectedKey = key;
                     return parameterCollection;
@@ -330,49 +320,14 @@ namespace SiliconStudio.Xenko.Shaders
         }
 
         // Helpers, until we get rid of ParameterCollection
-        private void Set<T>(object parameterCollection, PermutationParameterKey<T> key, T value)
+        private void Set<T>(NextGenParameterCollection parameterCollection, PermutationParameterKey<T> key, T value)
         {
-            var oldParameterCollection = parameterCollection as ParameterCollection;
-            if (oldParameterCollection != null)
-            {
-                oldParameterCollection.Set(key, value);
-                return;
-            }
-
-            var newParameterCollection = parameterCollection as NextGenParameterCollection;
-            if (newParameterCollection != null)
-            {
-                newParameterCollection.Set(key, value);
-                return;
-            }
-
-            throw new InvalidOperationException();
+            parameterCollection.Set(key, value);
         }
 
-        private T Get<T>(object parameterCollection, PermutationParameterKey<T> key)
+        private T Get<T>(NextGenParameterCollection parameterCollection, PermutationParameterKey<T> key)
         {
-            var oldParameterCollection = parameterCollection as ParameterCollection;
-            if (oldParameterCollection != null)
-                return oldParameterCollection.Get(key);
-
-            var newParameterCollection = parameterCollection as NextGenParameterCollection;
-            if (newParameterCollection != null)
-                return newParameterCollection.Get(key);
-
-            throw new InvalidOperationException();
-        }
-
-        private bool ContainsKey(object parameterCollection, ParameterKey key)
-        {
-            var oldParameterCollection = parameterCollection as ParameterCollection;
-            if (oldParameterCollection != null)
-                return oldParameterCollection.ContainsKey(key);
-
-            var newParameterCollection = parameterCollection as NextGenParameterCollection;
-            if (newParameterCollection != null)
-                return newParameterCollection.ContainsKey(key);
-
-            throw new InvalidOperationException();
+            return parameterCollection.Get(key);
         }
     }
 }
