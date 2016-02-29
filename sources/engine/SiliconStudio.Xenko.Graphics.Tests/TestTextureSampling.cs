@@ -103,9 +103,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void DrawTextureSampling()
         {
             // Clears the screen 
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LightBlue);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LightBlue);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // TODO GRAPHICS REFACTOR
             //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
@@ -117,8 +117,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             {
                 simpleEffect.Parameters.Set(TexturingKeys.Sampler, myDraws[i].Sampler);
                 simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, myDraws[i].Transform);
-                simpleEffect.Apply(GraphicsCommandList);
-                GraphicsCommandList.DrawIndexed(6);
+                simpleEffect.Apply(GraphicsContext);
+                GraphicsContext.CommandList.DrawIndexed(6);
             }
 
             // TODO GRAPHICS REFACTOR

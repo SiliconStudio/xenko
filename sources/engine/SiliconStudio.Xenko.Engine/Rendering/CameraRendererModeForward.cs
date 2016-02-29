@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering
             Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
         }
 
-        public void Prepare(RenderDrawContext context)
+        public void Prepare(RenderThreadContext context)
         {
             // Sync point: after extract, before prepare (game simulation could resume now)
 
@@ -68,11 +68,11 @@ namespace SiliconStudio.Xenko.Rendering
             // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
             {
                 // Divide into task chunks for parallelism
-                renderFeature.Prepare(context.RenderContext);
+                renderFeature.Prepare(context);
             }
         }
 
-        public void Extract(RenderDrawContext context)
+        public void Extract(RenderThreadContext context)
         {
             // Prepare views
             for (int index = 0; index < Views.Count; index++)
@@ -192,8 +192,6 @@ namespace SiliconStudio.Xenko.Rendering
     {
         [DataMemberIgnore]
         public NextGenRenderSystem RenderSystem;
-        [DataMemberIgnore]
-        public RenderContext RenderContext;
 
         // Render views
         private RenderView mainRenderView;
@@ -221,7 +219,6 @@ namespace SiliconStudio.Xenko.Rendering
             base.InitializeCore();
 
             RenderSystem = Context.Tags.Get(SceneInstance.CurrentRenderSystem);
-            RenderContext = new RenderContext(Services);
 
             // Create mandatory render stages that don't exist yet
             if (MainRenderStage == null)

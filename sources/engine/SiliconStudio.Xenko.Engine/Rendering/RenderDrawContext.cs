@@ -5,10 +5,26 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    public class RenderThreadContext : ComponentBase
+    {
+        public RenderContext RenderContext { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ResourceGroup"/> allocator.
+        /// </summary>
+        public ResourceGroupAllocator ResourceGroupAllocator { get; }
+
+        public RenderThreadContext(RenderContext renderContext, ResourceGroupAllocator resourceGroupAllocator)
+        {
+            RenderContext = renderContext;
+            ResourceGroupAllocator = resourceGroupAllocator;
+        }
+    }
+
     /// <summary>
     /// Rendering context used during <see cref="IGraphicsRenderer.Draw"/>.
     /// </summary>
-    public sealed class RenderDrawContext : ComponentBase
+    public sealed class RenderDrawContext : RenderThreadContext
     {
         // States
         private int currentStateIndex = -1;
@@ -16,13 +32,14 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
 
-        public RenderDrawContext(IServiceRegistry services, RenderContext renderContext, CommandList commandList)
+        public RenderDrawContext(IServiceRegistry services, RenderContext renderContext, GraphicsContext graphicsContext)
+            : base(renderContext, graphicsContext.ResourceGroupAllocator)
         {
             if (services == null) throw new ArgumentNullException("services");
 
-            RenderContext = renderContext;
             GraphicsDevice = RenderContext.GraphicsDevice;
-            CommandList = commandList;
+            GraphicsContext = graphicsContext;
+            CommandList = graphicsContext.CommandList;
         }
 
         /// <summary>
@@ -30,9 +47,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public CommandList CommandList { get; private set; }
 
-        public GraphicsDevice GraphicsDevice { get; private set; }
+        public GraphicsContext GraphicsContext { get; private set; }
 
-        public RenderContext RenderContext { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
         /// Pushes render targets and viewport state.

@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             // Draw a full screen quad
-            context.CommandList.DrawQuad(EffectInstance);
+            context.GraphicsContext.DrawQuad(EffectInstance);
         }
     }
 }

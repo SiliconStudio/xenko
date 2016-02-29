@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// The effect used for the current Begin/End session.
         /// </summary>
         protected EffectInstance Effect { get; private set; }
-        protected CommandList CommandList { get; private set; }
+        protected GraphicsContext GraphicsContext { get; private set; }
         protected readonly EffectInstance DefaultEffect;
         protected readonly EffectInstance DefaultEffectSRgb;
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, depthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp).
         /// Passing a null effect selects the default effect shader.
         /// </summary>
-        /// <param name="commandList">The command list to fill.</param>
+        /// <param name="graphicsContext">The graphics context to use.</param>
         /// <param name="effect">The effect to use for this begin/end draw session (default effect if null)</param>
         /// <param name="sessionSortMode">Sprite drawing order used for the Begin/End session.</param>
         /// <param name="sessionBlendState">Blending state used for the Begin/End session</param>
@@ -160,11 +160,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
         /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
-        protected void Begin(CommandList commandList, EffectInstance effect, SpriteSortMode sessionSortMode, BlendStateDescription? sessionBlendState, SamplerState sessionSamplerState, DepthStencilStateDescription? sessionDepthStencilState, RasterizerStateDescription? sessionRasterizerState, int stencilValue)
+        protected void Begin(GraphicsContext graphicsContext, EffectInstance effect, SpriteSortMode sessionSortMode, BlendStateDescription? sessionBlendState, SamplerState sessionSamplerState, DepthStencilStateDescription? sessionDepthStencilState, RasterizerStateDescription? sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
-            CommandList = commandList;
+            GraphicsContext = graphicsContext;
 
             SortMode = sessionSortMode;
             BlendState = sessionBlendState;
@@ -225,16 +225,16 @@ namespace SiliconStudio.Xenko.Graphics
             MutablePipeline.State.RasterizerState = RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack;
             MutablePipeline.State.InputElements = ResourceContext.InputElements;
             MutablePipeline.State.PrimitiveType = PrimitiveType.TriangleList;
-            MutablePipeline.State.Output.CaptureState(CommandList);
+            MutablePipeline.State.Output.CaptureState(GraphicsContext.CommandList);
             MutablePipeline.Update(GraphicsDevice);
 
             // Bind pipeline
-            CommandList.SetPipelineState(MutablePipeline.CurrentState);
+            GraphicsContext.CommandList.SetPipelineState(MutablePipeline.CurrentState);
 
             // Bind VB/IB
-            CommandList.SetVertexBuffer(0, ResourceContext.VertexBufferBinding.Buffer, ResourceContext.VertexBufferBinding.Offset, ResourceContext.VertexBufferBinding.Stride);
+            GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBufferBinding.Buffer, ResourceContext.VertexBufferBinding.Offset, ResourceContext.VertexBufferBinding.Stride);
             if (ResourceContext.IndexBuffer != null)
-                CommandList.SetIndexBuffer(ResourceContext.IndexBufferBinding.Buffer, ResourceContext.IndexBufferBinding.Offset, ResourceContext.IndexBufferBinding.Is32Bit);
+                GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBufferBinding.Buffer, ResourceContext.IndexBufferBinding.Offset, ResourceContext.IndexBufferBinding.Is32Bit);
 
             // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
             if (GraphicsDevice.IsDeferred)
@@ -399,7 +399,7 @@ namespace SiliconStudio.Xenko.Graphics
             // setup in the original BasicEffect.fx shader.
             if (textureUpdater.HasValue)
                 Effect.Parameters.Set(textureUpdater.Value, texture);
-            Effect.Apply(CommandList);
+            Effect.Apply(GraphicsContext);
 
             // Draw the batch of sprites
             DrawBatchPerTextureAndPass(sprites, offset, count);
@@ -476,9 +476,9 @@ namespace SiliconStudio.Xenko.Graphics
                 //else
                 {
                     var mappedIndices = new MappedResource();
-                    var mappedVertices = CommandList.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
+                    var mappedVertices = GraphicsContext.CommandList.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        mappedIndices = CommandList.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
+                        mappedIndices = GraphicsContext.CommandList.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
 
                     var vertexPointer = mappedVertices.DataBox.DataPointer;
                     var indexPointer = mappedIndices.DataBox.DataPointer;
@@ -494,13 +494,13 @@ namespace SiliconStudio.Xenko.Graphics
                         indexPointer += indexStructSize * sprites[spriteIndex].IndexCount;
                     }
 
-                    CommandList.UnmapSubresource(mappedVertices);
+                    GraphicsContext.CommandList.UnmapSubresource(mappedVertices);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        CommandList.UnmapSubresource(mappedIndices);
+                        GraphicsContext.CommandList.UnmapSubresource(mappedIndices);
                 }
 
                 // Draw from the specified index
-                CommandList.DrawIndexed(indexCount, ResourceContext.IndexBufferPosition);
+                GraphicsContext.CommandList.DrawIndexed(indexCount, ResourceContext.IndexBufferPosition);
 
                 // Update position, offset and remaining count
                 ResourceContext.IndexBufferPosition += indexCount;

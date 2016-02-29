@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     {
                         sprite3DBatch.End();
                     }
-                    sprite3DBatch.Begin(context.CommandList, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                    sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
                 previousEffect = currentEffect;

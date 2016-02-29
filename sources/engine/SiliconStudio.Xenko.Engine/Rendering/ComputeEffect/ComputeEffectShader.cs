@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             // Apply the effect
-            EffectInstance.Apply(context.CommandList);
+            EffectInstance.Apply(context.GraphicsContext);
 
             // Draw a full screen quad
             context.CommandList.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);

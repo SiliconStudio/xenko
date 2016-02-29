@@ -37,6 +37,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal int Allocate(int size)
         {
+            if (descriptorAllocationOffset + size > Entries.Length)
+                return -1;
+
             var result = descriptorAllocationOffset;
             descriptorAllocationOffset += size;
             return result;

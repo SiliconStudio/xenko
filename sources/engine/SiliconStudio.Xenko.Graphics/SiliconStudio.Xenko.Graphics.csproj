@@ -145,6 +145,7 @@
     <Compile Include="EffectInstance.cs" />
     <Compile Include="EffectParameterUpdater.cs" />
     <Compile Include="EffectParameterUpdaterLayout.cs" />
+    <Compile Include="GraphicsContext.cs" />
     <Compile Include="InputClassification.cs" />
     <Compile Include="InputElementDescription.cs" />
     <Compile Include="MutablePipelineState.cs" />

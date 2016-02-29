@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Can perform much more work, even while game simulation keeps running.
         /// </summary>
         /// <param name="context"></param>
-        public virtual void Prepare(RenderContext context)
+        public virtual void Prepare(RenderThreadContext context)
         {
         }
 
