@@ -41,6 +41,15 @@ namespace SiliconStudio.Xenko.Rendering
                     TransparentRenderStage = transparentRenderStage,
                 });
 
+                // Default pipeline state
+                meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+                {
+                    if (renderNode.RenderStage == transparentRenderStage)
+                    {
+                        pipelineState.BlendState = context.GraphicsDevice.BlendStates.AlphaBlend;
+                    }
+                };
+
                 // Register renderer
                 renderSystem.RenderFeatures.Add(meshRenderFeature);
             }
