@@ -679,6 +679,7 @@ namespace SiliconStudio.Xenko.Games
             if (GraphicsContext == null)
             {
                 GraphicsContext = new GraphicsContext(graphicsCommandList, new ResourceGroupAllocator(GraphicsDevice));
+                Services.AddService(typeof(GraphicsContext), GraphicsContext);
             }
             else
             {

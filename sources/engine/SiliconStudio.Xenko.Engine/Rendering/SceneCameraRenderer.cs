@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public SceneCameraRenderer()
         {
-            Mode = new CameraRendererModeForwardOld();
+            Mode = new CameraRendererModeForward();
             PreRenderers = new SafeList<IGraphicsRenderer>();
             PostRenderers = new SafeList<IGraphicsRenderer>();
             CullingMask = EntityGroupMask.All;
