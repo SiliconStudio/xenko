@@ -6,7 +6,6 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
-using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -16,6 +15,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract class RootEffectRenderFeature : RootRenderFeature
     {
+        [ThreadStatic]
+        private static CompilerParameters staticCompilerParameters;
+
         // Helper class to build pipeline state
         protected MutablePipelineState MutablePipeline = new MutablePipelineState();
 
@@ -276,7 +278,9 @@ namespace SiliconStudio.Xenko.Rendering
             // Step1: Perform permutations
             PrepareEffectPermutationsImpl();
 
-            var compilerParameters = new CompilerParameters();
+            // CompilerParameters are ThreadStatic
+            if (staticCompilerParameters == null)
+                staticCompilerParameters = new CompilerParameters();
 
             // Step2: Compile effects and update reflection infos (offset, etc...)
             foreach (var renderObject in RenderObjects)
@@ -324,11 +328,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                         foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
                         {
-                            compilerParameters.SetObject(effectValue.Key, effectValue.Value);
+                            staticCompilerParameters.SetObject(effectValue.Key, effectValue.Value);
                         }
 
-                        var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectName, compilerParameters);
-                        compilerParameters.Clear();
+                        var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectName, staticCompilerParameters);
+                        staticCompilerParameters.Clear();
 
                         effect = asyncEffect.Result;
                         if (effect == null)
