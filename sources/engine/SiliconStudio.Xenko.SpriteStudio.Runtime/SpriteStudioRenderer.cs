@@ -34,16 +34,16 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
 
             var blendDesc = new BlendStateDescription(Blend.SourceAlpha, Blend.One);
-            blendDesc.RenderTargets[0].BlendEnable = true;
-            blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.ReverseSubtract;
-            blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.ReverseSubtract;
+            blendDesc.RenderTarget0.BlendEnable = true;
+            blendDesc.RenderTarget0.ColorBlendFunction = BlendFunction.ReverseSubtract;
+            blendDesc.RenderTarget0.AlphaBlendFunction = BlendFunction.ReverseSubtract;
             SubBlendState = blendDesc;
 
             blendDesc = new BlendStateDescription(Blend.DestinationColor, Blend.InverseSourceAlpha);
-            blendDesc.RenderTargets[0].BlendEnable = true;
-            blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.Add;
-            blendDesc.RenderTargets[0].AlphaSourceBlend = Blend.Zero;
-            blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.Add;
+            blendDesc.RenderTarget0.BlendEnable = true;
+            blendDesc.RenderTarget0.ColorBlendFunction = BlendFunction.Add;
+            blendDesc.RenderTarget0.AlphaSourceBlend = Blend.Zero;
+            blendDesc.RenderTarget0.AlphaBlendFunction = BlendFunction.Add;
             MultBlendState = blendDesc;
         }
 

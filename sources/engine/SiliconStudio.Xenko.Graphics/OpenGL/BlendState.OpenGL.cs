@@ -24,34 +24,35 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly uint blendEquationHash;
         private readonly uint blendFuncHash;
 
-        internal BlendState(BlendStateDescription blendStateDescription, bool hasRenderTarget)
+        internal unsafe BlendState(BlendStateDescription blendStateDescription, bool hasRenderTarget)
         {
-            for (int i = 1; i < blendStateDescription.RenderTargets.Length; ++i)
+            var renderTargets = &blendStateDescription.RenderTarget0;
+            for (int i = 1; i < 8; ++i)
             {
-                if (blendStateDescription.RenderTargets[i].BlendEnable || blendStateDescription.RenderTargets[i].ColorWriteChannels != ColorWriteChannels.All)
+                if (renderTargets[i].BlendEnable || renderTargets[i].ColorWriteChannels != ColorWriteChannels.All)
                     throw new NotSupportedException();
             }
 
-            ColorWriteChannels = blendStateDescription.RenderTargets[0].ColorWriteChannels;
+            ColorWriteChannels = blendStateDescription.RenderTarget0.ColorWriteChannels;
             if (!hasRenderTarget)
                 ColorWriteChannels = 0;
 
-            blendEnable = blendStateDescription.RenderTargets[0].BlendEnable;
+            blendEnable = blendStateDescription.RenderTarget0.BlendEnable;
 
-            blendEquationModeColor = ToOpenGL(blendStateDescription.RenderTargets[0].ColorBlendFunction);
-            blendEquationModeAlpha = ToOpenGL(blendStateDescription.RenderTargets[0].AlphaBlendFunction);
-            blendFactorSrcColor = ToOpenGL(blendStateDescription.RenderTargets[0].ColorSourceBlend);
-            blendFactorSrcAlpha = ToOpenGL(blendStateDescription.RenderTargets[0].AlphaSourceBlend);
-            blendFactorDestColor = (BlendingFactorDest)ToOpenGL(blendStateDescription.RenderTargets[0].ColorDestinationBlend);
-            blendFactorDestAlpha = (BlendingFactorDest)ToOpenGL(blendStateDescription.RenderTargets[0].AlphaDestinationBlend);
+            blendEquationModeColor = ToOpenGL(blendStateDescription.RenderTarget0.ColorBlendFunction);
+            blendEquationModeAlpha = ToOpenGL(blendStateDescription.RenderTarget0.AlphaBlendFunction);
+            blendFactorSrcColor = ToOpenGL(blendStateDescription.RenderTarget0.ColorSourceBlend);
+            blendFactorSrcAlpha = ToOpenGL(blendStateDescription.RenderTarget0.AlphaSourceBlend);
+            blendFactorDestColor = (BlendingFactorDest)ToOpenGL(blendStateDescription.RenderTarget0.ColorDestinationBlend);
+            blendFactorDestAlpha = (BlendingFactorDest)ToOpenGL(blendStateDescription.RenderTarget0.AlphaDestinationBlend);
 
-            blendEquationHash = (uint)blendStateDescription.RenderTargets[0].ColorBlendFunction
-                             | ((uint)blendStateDescription.RenderTargets[0].AlphaBlendFunction << 8);
+            blendEquationHash = (uint)blendStateDescription.RenderTarget0.ColorBlendFunction
+                             | ((uint)blendStateDescription.RenderTarget0.AlphaBlendFunction << 8);
 
-            blendFuncHash = (uint)blendStateDescription.RenderTargets[0].ColorSourceBlend
-                         | ((uint)blendStateDescription.RenderTargets[0].AlphaSourceBlend << 8)
-                         | ((uint)blendStateDescription.RenderTargets[0].ColorDestinationBlend << 16)
-                         | ((uint)blendStateDescription.RenderTargets[0].AlphaDestinationBlend << 24);
+            blendFuncHash = (uint)blendStateDescription.RenderTarget0.ColorSourceBlend
+                         | ((uint)blendStateDescription.RenderTarget0.AlphaSourceBlend << 8)
+                         | ((uint)blendStateDescription.RenderTarget0.ColorDestinationBlend << 16)
+                         | ((uint)blendStateDescription.RenderTarget0.AlphaDestinationBlend << 24);
         }
 
         public static BlendEquationMode ToOpenGL(BlendFunction blendFunction)

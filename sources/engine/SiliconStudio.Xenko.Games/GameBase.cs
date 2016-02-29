@@ -675,19 +675,19 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Setup default command list
-            var graphicsCommandList = new CommandList(GraphicsDevice);
             if (GraphicsContext == null)
             {
-                GraphicsContext = new GraphicsContext(graphicsCommandList, new ResourceGroupAllocator(GraphicsDevice));
+                GraphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
                 Services.AddService(typeof(GraphicsContext), GraphicsContext);
             }
             else
             {
-                // Update command list
-                GraphicsContext.CommandList = graphicsCommandList;
                 // Reset allocator
                 GraphicsContext.ResourceGroupAllocator.Reset();
             }
+
+            // Clear states
+            GraphicsContext.CommandList.ClearState();
 
             return true;
         }
@@ -759,9 +759,6 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw.</summary>
         protected virtual void EndDraw(bool present)
         {
-            // Remove main command list
-            GraphicsContext.CommandList = null;
-
             if (graphicsDeviceManager != null)
             {
                 graphicsDeviceManager.EndDraw(present);

@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         private RenderContext renderContext;
         private ResourceGroupAllocator resourceGroupAllocator;
-        private GraphicsContext graphicsContext;
+        private RenderDrawContext renderDrawContext;
 
         /// <summary>
         /// The main render frame of the scene system
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Engine
         protected override void LoadContent()
         {
             var assetManager = Services.GetSafeServiceAs<AssetManager>();
-            graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
+            var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
             // Preload the scene if it exists
             if (InitialSceneUrl != null && assetManager.Exists(InitialSceneUrl))
@@ -84,6 +84,7 @@ namespace SiliconStudio.Xenko.Engine
 
             // Create the drawing context
             renderContext = RenderContext.GetShared(Services);
+            renderDrawContext = new RenderDrawContext(Services, renderContext, graphicsContext);
         }
 
         public override void Update(GameTime gameTime)
@@ -120,9 +121,6 @@ namespace SiliconStudio.Xenko.Engine
             // Update the entities at draw time.
             renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext);
-
-            // Renders the scene
-            var renderDrawContext = new RenderDrawContext(Services, renderContext, graphicsContext);
 
             // Render phase
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);
