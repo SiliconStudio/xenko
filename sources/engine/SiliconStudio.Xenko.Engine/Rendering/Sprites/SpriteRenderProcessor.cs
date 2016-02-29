@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -24,7 +25,15 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
-                spriteStateKeyPair.Value.Enabled = spriteStateKeyPair.Value.SpriteComponent.Enabled;
+                var renderSprite = spriteStateKeyPair.Value;
+                renderSprite.Enabled = renderSprite.SpriteComponent.Enabled;
+
+                if (renderSprite.Enabled)
+                {
+                    // TODO GRAPHICS REFACTOR: Proper bounding box. Reuse calculations in sprite batch.
+                    renderSprite.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
+                    renderSprite.RenderGroup = renderSprite.SpriteComponent.Entity.Group;
+                }
             }
         }
 
