@@ -34,10 +34,13 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Material
         // TODO: Extract with MaterialRenderFeature
-        public MaterialInstance Material;
-        
+        public Material Material;
+
+        public bool IsShadowCaster;
+        public bool IsShadowReceiver;
+
         // TODO: Skinning
-        
+
         public Matrix World = Matrix.Identity;
     }
 

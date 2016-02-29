@@ -10,9 +10,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             var renderMesh = (RenderMesh)renderObject;
 
             // Only handle non-transparent meshes
-            if (!renderMesh.Material.Material.HasTransparency)
+            if (!renderMesh.Material.HasTransparency)
             {
-                if (renderMesh.Material.IsShadowCaster)
+                if (renderMesh.IsShadowCaster)
                     renderMesh.ActiveRenderStages[ShadowMapRenderStage.Index] = new ActiveRenderStage(EffectName);
             }
         }

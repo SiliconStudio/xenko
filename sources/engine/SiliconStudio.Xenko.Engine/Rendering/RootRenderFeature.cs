@@ -43,14 +43,12 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected RootRenderFeature()
         {
-            RenderData.Initialize();
+            RenderData.Initialize(ComputeDataArrayExpectedSize);
         }
 
         /// <summary>
-        /// Decide whether a <see cref="RenderObject"/> is supported by this <see cref="RootRenderFeature"/>.
+        /// Gets the type of render object supported by this <see cref="RootRenderFeature"/>.
         /// </summary>
-        /// <param name="renderObject">The <see cref="RenderObject"/> to test.</param>
-        /// <returns>True if this type of object is supported, false otherwise.</returns>
         public abstract Type SupportedRenderObjectType { get; }
 
         /// <summary>
@@ -192,7 +190,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void PrepareDataArrays()
         {
-            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
+            RenderData.PrepareDataArrays();
         }
 
         protected virtual int ComputeDataArrayExpectedSize(DataType type)

@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderMesh = (RenderMesh)renderObject;
 
-            var renderStage = renderMesh.Material.Material.HasTransparency ? TransparentRenderStage : MainRenderStage;
+            var renderStage = renderMesh.Material.HasTransparency ? TransparentRenderStage : MainRenderStage;
             renderObject.ActiveRenderStages[renderStage.Index] = new ActiveRenderStage(EffectName);
         }
     }

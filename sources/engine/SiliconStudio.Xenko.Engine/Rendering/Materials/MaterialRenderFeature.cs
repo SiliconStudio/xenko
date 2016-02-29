@@ -42,9 +42,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public int ResourceCount;
             public ShaderConstantBufferDescription ConstantBufferReflection;
 
-            public PermutationParameter<ShaderSource> PixelStageSurfaceShaders;
-            public PermutationParameter<ShaderSource> PixelStageStreamInitializer;
-            public PermutationParameter<ShaderSource> PixelStageSurfaceFilter;
+            // Permutation parameters
+            public int PermutationCounter; // Dirty counter against material.Parameters.PermutationCounter
+
+            public ShaderSource VertexStageSurfaceShaders;
+            public ShaderSource VertexStageStreamInitializer;
+
+            public ShaderSource DomainStageSurfaceShaders;
+            public ShaderSource DomainStageStreamInitializer;
+
+            public ShaderSource TessellationShader;
+
+            public ShaderSource PixelStageSurfaceShaders;
+            public ShaderSource PixelStageStreamInitializer;
 
             public MaterialInfo(Material material)
             {
@@ -82,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    var material = renderMesh.Material.Material;
+                    var material = renderMesh.Material;
                     var materialInfo = (MaterialInfo)material.RenderData;
                     if (materialInfo == null)
                     {
@@ -90,15 +100,45 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         materialInfo = new MaterialInfo(material);
                         material.RenderData = materialInfo;
                         allMaterialInfos.Add(materialInfo);
-
-                        materialInfo.PixelStageSurfaceShaders = material.Parameters.GetAccessor(MaterialKeys.PixelStageSurfaceShaders);
-                        materialInfo.PixelStageStreamInitializer = material.Parameters.GetAccessor(MaterialKeys.PixelStageStreamInitializer);
-                        materialInfo.PixelStageSurfaceFilter = material.Parameters.GetAccessor(MaterialKeys.PixelStageSurfaceFilter);
                     }
 
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageSurfaceShaders, material.Parameters.Get(materialInfo.PixelStageSurfaceShaders));
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageStreamInitializer, material.Parameters.Get(materialInfo.PixelStageStreamInitializer));
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageSurfaceFilter, material.Parameters.Get(materialInfo.PixelStageSurfaceFilter));
+                    if (materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
+                    {
+                        materialInfo.VertexStageSurfaceShaders = material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders);
+                        materialInfo.VertexStageStreamInitializer = material.Parameters.Get(MaterialKeys.VertexStageStreamInitializer);
+
+                        materialInfo.DomainStageSurfaceShaders = material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders);
+                        materialInfo.DomainStageStreamInitializer = material.Parameters.Get(MaterialKeys.DomainStageStreamInitializer);
+
+                        materialInfo.TessellationShader = material.Parameters.Get(MaterialKeys.TessellationShader);
+
+                        materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+                        materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
+
+                        materialInfo.PermutationCounter = material.Parameters.PermutationCounter;
+                    }
+
+                    // VS
+                    if (materialInfo.VertexStageSurfaceShaders != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.VertexStageSurfaceShaders, materialInfo.VertexStageSurfaceShaders);
+                    if (materialInfo.VertexStageStreamInitializer != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.VertexStageStreamInitializer, materialInfo.VertexStageStreamInitializer);
+
+                    // DS
+                    if (materialInfo.DomainStageSurfaceShaders != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.DomainStageSurfaceShaders, materialInfo.DomainStageSurfaceShaders);
+                    if (materialInfo.DomainStageStreamInitializer != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.DomainStageStreamInitializer, materialInfo.DomainStageStreamInitializer);
+
+                    // Tessellation
+                    if (materialInfo.TessellationShader != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.TessellationShader, materialInfo.TessellationShader);
+
+                    // PS
+                    if (materialInfo.PixelStageSurfaceShaders != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageSurfaceShaders, materialInfo.PixelStageSurfaceShaders);
+                    if (materialInfo.PixelStageStreamInitializer != null)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageStreamInitializer, materialInfo.PixelStageStreamInitializer);
                 }
             }
         }
@@ -121,7 +161,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Collect materials and create associated MaterialInfo (includes reflection) first time
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
                 // Need to offer some protection if this invariant is violated (or support it if it can actually happen in real scenario)
-                var material = renderMesh.Material.Material;
+                var material = renderMesh.Material;
                 var materialInfo = (MaterialInfo)material.RenderData;
                 var materialParameters = material.Parameters;
 
