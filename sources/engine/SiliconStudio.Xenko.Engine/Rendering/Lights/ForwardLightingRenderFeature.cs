@@ -201,7 +201,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     var renderMesh = (RenderMesh)renderPerViewNode.RenderObject;
 
-                    if (!renderMesh.Material.Material.IsLightDependent)
+                    if (!renderMesh.Material.IsLightDependent)
                         continue;
 
                     var staticObjectNode = renderMesh.StaticObjectNode;
@@ -455,7 +455,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Create different parameter collections depending on shadows
             // TODO GRAPHICS REFACTOR can we use the same parameter collection for shadowed/non-shadowed?
-            var isShadowReceiver = renderMesh.Material.IsShadowReceiver && modelComponent.IsShadowReceiver;
+            var isShadowReceiver = renderMesh.IsShadowReceiver && modelComponent.IsShadowReceiver;
             parametersKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
             shaderKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
             shaderKeyIdBuilder.Write((uint)effectSlot);

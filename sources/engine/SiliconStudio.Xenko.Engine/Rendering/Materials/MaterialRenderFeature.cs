@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    var material = renderMesh.Material.Material;
+                    var material = renderMesh.Material;
                     var materialInfo = (MaterialInfo)material.RenderData;
                     if (materialInfo == null)
                     {
@@ -161,7 +161,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Collect materials and create associated MaterialInfo (includes reflection) first time
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
                 // Need to offer some protection if this invariant is violated (or support it if it can actually happen in real scenario)
-                var material = renderMesh.Material.Material;
+                var material = renderMesh.Material;
                 var materialInfo = (MaterialInfo)material.RenderData;
                 var materialParameters = material.Parameters;
 
