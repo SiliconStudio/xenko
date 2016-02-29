@@ -76,11 +76,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawSprites()
         {
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(GraphicsCommandList);
+            spriteBatch.Begin(GraphicsContext);
             
             var x = 20f;
             var y = 20f;

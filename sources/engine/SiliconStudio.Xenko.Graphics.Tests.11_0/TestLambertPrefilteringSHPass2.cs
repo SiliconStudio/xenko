@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
 
             base.Draw(gameTime);
 
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             pass2.Draw(renderDrawContext);
 
             // Get the data out of the final buffer
-            var finalsValues = outputBuffer.GetData<Vector4>(GraphicsCommandList);
+            var finalsValues = outputBuffer.GetData<Vector4>(GraphicsContext.CommandList);
 
             // performs last possible additions, normalize the result and store it in the SH
             var result = new Vector4[NbOfCoeffs];

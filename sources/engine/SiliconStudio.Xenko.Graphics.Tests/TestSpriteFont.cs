@@ -82,12 +82,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawSpriteFont()
         {
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin(GraphicsCommandList);
+            spriteBatch.Begin(GraphicsContext);
 
             var text = "This text is in Arial 16 with anti-alias\nand multiline...";
             var dim = arial16.MeasureString(text);

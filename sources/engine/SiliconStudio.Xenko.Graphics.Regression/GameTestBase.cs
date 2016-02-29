@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             TestGameLogger.Info(@"Saving non null image");
             testName = testName ?? CurrentTestContext?.Test.FullName;
             TestGameLogger.Info(@"saving remotely.");
-            using (var image = textureToSave.GetDataAsImage(GraphicsCommandList))
+            using (var image = textureToSave.GetDataAsImage(GraphicsContext.CommandList))
             {
                 try
                 {
@@ -321,7 +321,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         protected void SaveTexture(Texture texture, string filename)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            using (var image = texture.GetDataAsImage(GraphicsCommandList))
+            using (var image = texture.GetDataAsImage(GraphicsContext.CommandList))
             {
                 using (var resultFileStream = File.OpenWrite(filename))
                 {

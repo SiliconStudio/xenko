@@ -418,7 +418,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public override void Prepare(RenderThreadContext context)
         {
             EffectObjectNodes.Clear();
 
@@ -468,7 +468,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     if (viewLayout.Entries[view.Index].MarkAsUsed(RenderSystem))
                     {
-                        NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
+                        context.ResourceGroupAllocator.PrepareResourceGroup(viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
 
                         // Register it in list of view layouts to update for this frame
                         viewFeature.Layouts.Add(viewLayout);
@@ -478,7 +478,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var frameLayout = renderEffect.Reflection.PerFrameLayout;
                     if (frameLayout != null && frameLayout.Entry.MarkAsUsed(RenderSystem))
                     {
-                        NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, viewLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
+                        context.ResourceGroupAllocator.PrepareResourceGroup(viewLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
 
                         // Register it in list of view layouts to update for this frame
                         FrameLayouts.Add(frameLayout);
@@ -490,7 +490,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Allocate descriptor set
                     renderNode.Resources = AllocateTemporaryResourceGroup();
-                    NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
+                    context.ResourceGroupAllocator.PrepareResourceGroup(renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
 
                     // Link to EffectObjectNode (created right after)
                     // TODO: rewrite this
@@ -513,7 +513,7 @@ namespace SiliconStudio.Xenko.Rendering
                             renderEffect.FallbackParameterUpdater = new EffectParameterUpdater(renderEffect.Reflection.FallbackUpdaterLayout, renderEffect.FallbackParameters);
                         }
 
-                        renderEffect.FallbackParameterUpdater.Update(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, renderEffect.FallbackParameters);
+                        renderEffect.FallbackParameterUpdater.Update(RenderSystem.GraphicsDevice, context.ResourceGroupAllocator, renderEffect.FallbackParameters);
 
                         var fallbackResourceGroupMapping = renderEffect.Reflection.FallbackResourceGroupMapping;
                         for (int i = 0; i < fallbackResourceGroupMapping.Length; ++i)
@@ -534,14 +534,14 @@ namespace SiliconStudio.Xenko.Rendering
                         pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
 
                         // Bind VAO
-                        ProcessPipelineState(context, renderNodeReference, ref renderNode, renderObject, pipelineState);
+                        ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);
 
                         // Extract outputs from render stage
                         pipelineState.Output = renderNode.RenderStage.Output;
 
                         PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
-                        MutablePipeline.Update(context.GraphicsDevice);
+                        MutablePipeline.Update(Context.GraphicsDevice);
                         renderEffect.PipelineState = MutablePipeline.CurrentState;
                     }
 

@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
             context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, spriteEffect);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, spriteEffect);
             spriteBatch.Draw(displayedViews[1], new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[2], new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[4], new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
 
             PrefilterCubeMap(renderDrawContext);
             RenderCubeMap(renderDrawContext);

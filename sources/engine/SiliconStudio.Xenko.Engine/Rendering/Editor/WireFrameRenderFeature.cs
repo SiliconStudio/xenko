@@ -50,12 +50,12 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderThreadContext context)
         {
             var perDrawValue = new PerDraw
             {
-                FrontColor = ((Color3)Color.FromBgra(0xFFFFDC51)).ToColorSpace(context.GraphicsDevice.ColorSpace),
-                BackColor = ((Color3)Color.FromBgra(0xFFFF8300)).ToColorSpace(context.GraphicsDevice.ColorSpace),
+                FrontColor = ((Color3)Color.FromBgra(0xFFFFDC51)).ToColorSpace(Context.GraphicsDevice.ColorSpace),
+                BackColor = ((Color3)Color.FromBgra(0xFFFF8300)).ToColorSpace(Context.GraphicsDevice.ColorSpace),
                 ColorBlend = 0.3f,
                 AlphaBlend = 0.1f
             };

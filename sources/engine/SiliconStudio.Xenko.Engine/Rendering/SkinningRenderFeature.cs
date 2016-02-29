@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderContext context)
+        public override unsafe void Prepare(RenderThreadContext context)
         {
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 

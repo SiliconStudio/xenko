@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderContext context)
+        public override void Prepare(RenderThreadContext context)
         {
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
@@ -125,14 +125,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var materialInfo = (MaterialInfo)material.RenderData;
                 var materialParameters = material.Parameters;
 
-                UpdateMaterial(materialInfo, renderNode.RenderEffect, materialParameters);
+                UpdateMaterial(context, materialInfo, renderNode.RenderEffect, materialParameters);
 
                 var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
             }
         }
 
-        private unsafe void UpdateMaterial(MaterialInfo materialInfo, RenderEffect renderEffect, NextGenParameterCollection materialParameters)
+        private unsafe void UpdateMaterial(RenderThreadContext context, MaterialInfo materialInfo, RenderEffect renderEffect, NextGenParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
             if (materialInfo.LastFrameUsed == RenderSystem.FrameCounter
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
 
             // Allocate resource groups
-            NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
+            context.ResourceGroupAllocator.PrepareResourceGroup(materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
 
             // Set resource bindings in PerMaterial resource set
             for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)

@@ -23,8 +23,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public class SceneSystem : GameSystemBase
     {
-
         private RenderContext renderContext;
+        private ResourceGroupAllocator resourceGroupAllocator;
 
         /// <summary>
         /// The main render frame of the scene system
@@ -107,6 +107,11 @@ namespace SiliconStudio.Xenko.Engine
                 renderContext.Allocator.Recycle(link => true);
             }
 
+            if (resourceGroupAllocator == null)
+            {
+                resourceGroupAllocator = new ResourceGroupAllocator(GraphicsDevice);
+            }
+
             previousWidth = MainRenderFrame.Width;
             previousHeight = MainRenderFrame.Height;
 
@@ -115,7 +120,7 @@ namespace SiliconStudio.Xenko.Engine
             SceneInstance.Draw(renderContext);
 
             // Renders the scene
-            var renderDrawContext = new RenderDrawContext(Services, renderContext, Game.GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, renderContext, Game.GraphicsContext);
 
             // Render phase
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);

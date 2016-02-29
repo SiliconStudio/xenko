@@ -26,6 +26,11 @@ namespace SiliconStudio.Xenko.Graphics
             bufferAllocationOffset = 0;
         }
 
+        public bool CanAllocate(int size)
+        {
+            return bufferAllocationOffset + size > Size;
+        }
+
         public void Allocate(GraphicsDevice graphicsDevice, int size, BufferPoolAllocationType type, ref BufferPoolAllocationResult bufferPoolAllocationResult)
         {
             var result = bufferAllocationOffset;
