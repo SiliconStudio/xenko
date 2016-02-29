@@ -48,7 +48,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
                 // Collect
                 // TODO GRAPHICS REFACTOR choose which views to collect
-                visibilityGroup.Views.AddRange(RenderSystem.Views);
+                foreach (var view in RenderSystem.Views)
+                    visibilityGroup.Views.Add(view);
                 visibilityGroup.Collect();
                 visibilityGroup.Views.Clear();
 

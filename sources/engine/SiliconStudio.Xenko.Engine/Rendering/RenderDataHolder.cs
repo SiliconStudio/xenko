@@ -7,11 +7,13 @@ namespace SiliconStudio.Xenko.Rendering
     public partial struct RenderDataHolder
     {
         // storage for properties (struct of arrays)
-        private Dictionary<object, int> dataArraysByDefinition;
         private FastListStruct<DataArray> dataArrays;
+        private Dictionary<object, int> dataArraysByDefinition;
+        private Func<DataType, int> computeDataArrayExpectedSize;
 
-        public void Initialize()
+        public void Initialize(Func<DataType, int> computeDataArrayExpectedSize)
         {
+            this.computeDataArrayExpectedSize = computeDataArrayExpectedSize;
             dataArraysByDefinition = new Dictionary<object, int>();
             dataArrays = new FastListStruct<DataArray>(8);
         }
@@ -26,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public void PrepareDataArrays(Func<DataType, int> computeDataArrayExpectedSize)
+        public void PrepareDataArrays()
         {
             for (int i = 0; i < dataArrays.Count; ++i)
             {

@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected RootRenderFeature()
         {
-            RenderData.Initialize();
+            RenderData.Initialize(ComputeDataArrayExpectedSize);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void PrepareDataArrays()
         {
-            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
+            RenderData.PrepareDataArrays();
         }
 
         protected virtual int ComputeDataArrayExpectedSize(DataType type)

@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             RenderSystem = renderSystem;
             RenderObjects = new RenderObjectCollection(this);
-            RenderData.Initialize();
+            RenderData.Initialize(ComputeDataArrayExpectedSize);
 
             // Create RenderStageMask key, and keep track of number of RenderStages.Count for future resizing
             RenderStageMaskKey = RenderData.CreateStaticObjectKey<uint>(null, (RenderSystem.RenderStages.Count + RenderStageMaskSizePerEntry - 1) / RenderStageMaskSizePerEntry);
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering
             renderObjects.Add(renderObject);
 
             // Resize arrays to accomodate for new data
-            RenderData.PrepareDataArrays(ComputeDataArrayExpectedSize);
+            RenderData.PrepareDataArrays();
 
             RenderSystem.AddRenderObject(renderObject);
 
