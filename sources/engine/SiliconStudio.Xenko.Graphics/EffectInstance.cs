@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -16,15 +17,14 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class EffectInstance : DisposeBase
     {
-        // Parameter keys for shader values
-        private int constantBufferTotalSize;
-
         // Store current effect
         protected Effect effect;
         protected int permutationCounter;
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;
+
+        private DescriptorSet[] descriptorSets;
 
         private EffectParameterUpdater parameterUpdater;
 
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var parameterUpdaterLayout = new EffectParameterUpdaterLayout(graphicsDevice, effect, layouts);
                 parameterUpdater = new EffectParameterUpdater(parameterUpdaterLayout, Parameters);
 
-                constantBufferTotalSize = parameterUpdaterLayout.ParameterCollectionLayout.BufferSize;
+                descriptorSets = new DescriptorSet[parameterUpdater.ResourceGroups.Length];
 
                 return true;
             }
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
-        public unsafe void Apply(GraphicsContext graphicsContext)
+        public void Apply(GraphicsContext graphicsContext)
         {
             var commandList = graphicsContext.CommandList;
 
@@ -104,7 +104,6 @@ namespace SiliconStudio.Xenko.Rendering
             bufferUploader.Apply(commandList, resourceGroups, 0);
 
             // Bind descriptor sets
-            var descriptorSets = new DescriptorSet[resourceGroups.Length];
             for (int i = 0; i < descriptorSets.Length; ++i)
                 descriptorSets[i] = resourceGroups[i].DescriptorSet;
 
