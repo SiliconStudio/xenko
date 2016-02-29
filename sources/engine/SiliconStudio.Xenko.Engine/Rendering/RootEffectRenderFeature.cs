@@ -489,7 +489,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var viewObjectNode = GetViewObjectNode(renderNode.ViewObjectNode);
 
                     // Allocate descriptor set
-                    renderNode.Resources = AllocateTemporaryResourceGroup();
+                    renderNode.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
                     context.ResourceGroupAllocator.PrepareResourceGroup(renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
 
                     // Link to EffectObjectNode (created right after)
@@ -555,12 +555,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected virtual void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
-        }
-
-        private ResourceGroup AllocateTemporaryResourceGroup()
-        {
-            // TODO: Provide a better implementation that avoids allocation (i.e. using a pool)
-            return new ResourceGroup();
         }
 
         public override void Reset()

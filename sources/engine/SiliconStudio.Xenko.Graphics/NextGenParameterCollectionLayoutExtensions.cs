@@ -39,6 +39,9 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly List<DescriptorPool> descriptorPools = new List<DescriptorPool>();
         private readonly List<BufferPool> bufferPools = new List<BufferPool>();
 
+        private readonly List<ResourceGroup> resourceGroupPool = new List<ResourceGroup>();
+        private int currentResourceGroupPoolIndex = 0;
+
         private DescriptorPool currentDescriptorPool;
         private int currentDescriptorPoolIndex = -1;
 
@@ -64,11 +67,27 @@ namespace SiliconStudio.Xenko.Graphics
                 bufferPool.Reset();
             }
 
+            currentResourceGroupPoolIndex = -1;
+
             currentDescriptorPool = descriptorPools[0];
             currentDescriptorPoolIndex = 0;
 
             currentBufferPool = bufferPools[0];
             currentBufferPoolIndex = 0;
+        }
+
+        public ResourceGroup AllocateResourceGroup()
+        {
+            ResourceGroup resourceGroup;
+            if (++currentResourceGroupPoolIndex >= resourceGroupPool.Count)
+            {
+                resourceGroupPool.Add(resourceGroup = new ResourceGroup());
+            }
+            else
+            {
+                resourceGroup = resourceGroupPool[currentResourceGroupPoolIndex];
+            }
+            return resourceGroup;
         }
 
         public void PrepareResourceGroup(ResourceGroupLayout resourceGroupLayout, BufferPoolAllocationType constantBufferAllocationType, ResourceGroup resourceGroup)
