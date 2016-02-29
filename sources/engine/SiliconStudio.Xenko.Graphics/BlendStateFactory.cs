@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             var colorDisabledDescription = new BlendStateDescription();
             colorDisabledDescription.SetDefaults();
-            colorDisabledDescription.RenderTargets[0].ColorWriteChannels = ColorWriteChannels.None;
+            colorDisabledDescription.RenderTarget0.ColorWriteChannels = ColorWriteChannels.None;
             ColorDisabled = colorDisabledDescription;
         }
 

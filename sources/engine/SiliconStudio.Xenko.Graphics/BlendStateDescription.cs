@@ -24,35 +24,36 @@ namespace SiliconStudio.Xenko.Graphics
         public BlendStateDescription(Blend sourceBlend, Blend destinationBlend) : this()
         {
             SetDefaults();
-            RenderTargets[0].BlendEnable = true;
-            RenderTargets[0].ColorSourceBlend = sourceBlend;
-            RenderTargets[0].ColorDestinationBlend = destinationBlend;
-            RenderTargets[0].AlphaSourceBlend = sourceBlend;
-            RenderTargets[0].AlphaDestinationBlend = destinationBlend;
+            RenderTarget0.BlendEnable = true;
+            RenderTarget0.ColorSourceBlend = sourceBlend;
+            RenderTarget0.ColorDestinationBlend = destinationBlend;
+            RenderTarget0.AlphaSourceBlend = sourceBlend;
+            RenderTarget0.AlphaDestinationBlend = destinationBlend;
         }
 
         /// <summary>
         /// Setup this blend description with defaults value.
         /// </summary>
-        public void SetDefaults()
+        public unsafe void SetDefaults()
         {
-            RenderTargets = new BlendStateRenderTargetDescription[8];
-
             AlphaToCoverageEnable = false;
             IndependentBlendEnable = false;
 
-            for (int i = 0; i < RenderTargets.Length; i++)
+            fixed (BlendStateRenderTargetDescription* renderTargets = &RenderTarget0)
             {
-                RenderTargets[i].BlendEnable = false;
-                RenderTargets[i].ColorSourceBlend = Blend.One;
-                RenderTargets[i].ColorDestinationBlend = Blend.Zero;
-                RenderTargets[i].ColorBlendFunction = BlendFunction.Add;
+                for (int i = 0; i < 8; i++)
+                {
+                    renderTargets[i].BlendEnable = false;
+                    renderTargets[i].ColorSourceBlend = Blend.One;
+                    renderTargets[i].ColorDestinationBlend = Blend.Zero;
+                    renderTargets[i].ColorBlendFunction = BlendFunction.Add;
 
-                RenderTargets[i].AlphaSourceBlend = Blend.One;
-                RenderTargets[i].AlphaDestinationBlend = Blend.Zero;
-                RenderTargets[i].AlphaBlendFunction = BlendFunction.Add;
+                    renderTargets[i].AlphaSourceBlend = Blend.One;
+                    renderTargets[i].AlphaDestinationBlend = Blend.Zero;
+                    renderTargets[i].AlphaBlendFunction = BlendFunction.Add;
 
-                RenderTargets[i].ColorWriteChannels = ColorWriteChannels.All;
+                    renderTargets[i].ColorWriteChannels = ColorWriteChannels.All;
+                }
             }
         }
 
@@ -82,7 +83,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// An array of render-target-blend descriptions (see <see cref="BlendStateRenderTargetDescription"/>); these correspond to the eight rendertargets  that can be set to the output-merger stage at one time. 
         /// </summary>
-        public BlendStateRenderTargetDescription[] RenderTargets;
+        public BlendStateRenderTargetDescription RenderTarget0;
+        public BlendStateRenderTargetDescription RenderTarget1;
+        public BlendStateRenderTargetDescription RenderTarget2;
+        public BlendStateRenderTargetDescription RenderTarget3;
+        public BlendStateRenderTargetDescription RenderTarget4;
+        public BlendStateRenderTargetDescription RenderTarget5;
+        public BlendStateRenderTargetDescription RenderTarget6;
+        public BlendStateRenderTargetDescription RenderTarget7;
 
         /// <inheritdoc/>
         public bool Equals(BlendStateDescription other)
@@ -91,14 +99,15 @@ namespace SiliconStudio.Xenko.Graphics
                 || IndependentBlendEnable != other.IndependentBlendEnable)
                 return false;
 
-            if (RenderTargets.Length != other.RenderTargets.Length)
+            if (RenderTarget0 != other.RenderTarget0
+                || RenderTarget1 != other.RenderTarget1
+                || RenderTarget2 != other.RenderTarget2
+                || RenderTarget3 != other.RenderTarget3
+                || RenderTarget4 != other.RenderTarget4
+                || RenderTarget5 != other.RenderTarget5
+                || RenderTarget6 != other.RenderTarget6
+                || RenderTarget7 != other.RenderTarget7)
                 return false;
-
-            for (int i = 0; i < RenderTargets.Length; ++i)
-            {
-                if (!RenderTargets[i].Equals(other.RenderTargets[i]))
-                    return false;
-            }
 
             return true;
         }
@@ -127,9 +136,14 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 int hashCode = AlphaToCoverageEnable.GetHashCode();
                 hashCode = (hashCode*397) ^ IndependentBlendEnable.GetHashCode();
-                if (RenderTargets != null)
-                    foreach (var renderTarget in RenderTargets)
-                        hashCode = (hashCode * 397) ^ renderTarget.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget0.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget1.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget2.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget3.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget4.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget5.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget6.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTarget7.GetHashCode();
                 return hashCode;
             }
         }
