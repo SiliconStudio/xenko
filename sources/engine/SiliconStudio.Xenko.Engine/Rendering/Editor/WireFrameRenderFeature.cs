@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
             perDrawData = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(MaterialFrontBackBlendShaderKeys.ColorFront.Name);
 

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering
         private ObjectPropertyKey<Color4> renderModelObjectInfoKey;
 
         /// <inheritdoc/>
-        public override void Initialize()
+        protected override void InitializeCore()
         {
             DirectReferenceColor = new Color4(1.0f, 0.35f, 0.25f, 0.8f);
             IndirectReferenceColor = new Color4(1.0f, 0.65f, 0.60f, 0.8f);
