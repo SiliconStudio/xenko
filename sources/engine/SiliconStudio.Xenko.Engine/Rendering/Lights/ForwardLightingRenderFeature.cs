@@ -222,8 +222,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         if (renderObjectInfo == null)
                             continue;
 
-                        renderEffect.EffectValidator.ValidateListParameter(LightingKeys.DirectLightGroups, renderObjectInfo.ShaderPermutationEntry.DirectLightShaders);
-                        renderEffect.EffectValidator.ValidateListParameter(LightingKeys.EnvironmentLights, renderObjectInfo.ShaderPermutationEntry.EnvironmentLightShaders);
+                        renderEffect.EffectValidator.ValidateParameter(LightingKeys.DirectLightGroups, renderObjectInfo.ShaderPermutationEntry.DirectLightShaders);
+                        renderEffect.EffectValidator.ValidateParameter(LightingKeys.EnvironmentLights, renderObjectInfo.ShaderPermutationEntry.EnvironmentLightShaders);
                     }
                 }
             }
@@ -770,8 +770,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 DirectLightGroups = new List<LightShaderGroup>();
                 EnvironmentLights = new List<LightShaderGroup>();
 
-                DirectLightShaders = new List<ShaderSource>();
-                EnvironmentLightShaders = new List<ShaderSource>();
+                DirectLightShaders = new ShaderSourceCollection();
+                EnvironmentLightShaders = new ShaderSourceCollection();
             }
 
             public void ResetGroupDatas()
@@ -793,11 +793,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly List<LightShaderGroup> DirectLightGroups;
 
-            public readonly List<ShaderSource> DirectLightShaders;
+            public readonly ShaderSourceCollection DirectLightShaders;
 
             public readonly List<LightShaderGroup> EnvironmentLights;
 
-            public readonly List<ShaderSource> EnvironmentLightShaders;
+            public readonly ShaderSourceCollection EnvironmentLightShaders;
 
             public readonly RenderEffect RenderEffect;
 

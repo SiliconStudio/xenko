@@ -281,7 +281,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 builder.AppendLine("***************************");
                 builder.Append("@P EffectName: ");
                 builder.AppendLine(fullEffectName ?? "");
-                builder.Append(usedParameters.ToStringDetailed());
+                builder.Append(usedParameters.ToStringPermutationsDetailed());
                 builder.AppendLine("***************************");
 
                 if (bytecode.Reflection.ConstantBuffers.Count > 0)

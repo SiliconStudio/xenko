@@ -13,17 +13,17 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     /// Parameters used for compilation.
     /// </summary>
     [DataContract]
-    public sealed class CompilerParameters : ParameterCollection
+    public sealed class CompilerParameters : NextGenParameterCollection
     {
         /// <summary>
         /// The compiler platform type.
         /// </summary>
-        public static readonly PermutationParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.NewPermutation<GraphicsPlatform>();
+        public static readonly PermutationParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.NewPermutation(GraphicsPlatform.Direct3D11);
 
         /// <summary>
         /// The graphics profile target type.
         /// </summary>
-        public static readonly PermutationParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.NewPermutation<GraphicsProfile>();
+        public static readonly PermutationParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.NewPermutation(GraphicsProfile.Level_11_0);
 
         /// <summary>
         /// The debug flag.
@@ -35,8 +35,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// </summary>
         public CompilerParameters()
         {
-            Platform = GraphicsPlatform.Direct3D11;
-            Profile = GraphicsProfile.Level_11_0;
+        }
+
+        public CompilerParameters(NextGenParameterCollection parameterCollection) : base(parameterCollection)
+        {
         }
 
         /// <summary>

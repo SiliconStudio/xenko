@@ -14,6 +14,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler
 {
@@ -90,7 +91,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 if (Compiler is NullEffectCompiler && bytecode == null)
                 {
                     var stringBuilder = new StringBuilder();
-                    stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringDetailed());
+                    stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringPermutationsDetailed());
                     Log.Error(stringBuilder.ToString());
                     throw new InvalidOperationException(stringBuilder.ToString());
                 }
@@ -194,7 +195,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 if (!bytecodes.ContainsKey(newBytecodeId))
                 {
-                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
+                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringPermutationsDetailed());
                     Interlocked.Increment(ref effectCompileCount);
 
                     // Replace or add new bytecode
