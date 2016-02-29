@@ -103,8 +103,13 @@ namespace SiliconStudio.Xenko.Particles
 
             WorldRotation = (hasRot) ? ParticleLocator.Rotation * rotation : ParticleLocator.Rotation;
 
-            var offsetTranslation = ParticleLocator.Translation * WorldScale;
-            WorldRotation.Rotate(ref offsetTranslation);
+            var offsetTranslation = ParticleLocator.Translation * ((hasScl) ? scale : 1f);
+
+            if (hasRot)
+            {
+                rotation.Rotate(ref offsetTranslation);
+            }
+
             WorldPosition = (hasPos) ? translation + offsetTranslation : offsetTranslation;
         }
     }

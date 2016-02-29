@@ -126,8 +126,8 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
 
             // Fix the surface point and normal to world space
+            surfaceNormal /= fieldSize;
             fieldRotation.Rotate(ref surfaceNormal);
-            surfaceNormal *= fieldSize;
             surfaceNormal.Normalize();
 
             fieldRotation.Rotate(ref surfacePoint);

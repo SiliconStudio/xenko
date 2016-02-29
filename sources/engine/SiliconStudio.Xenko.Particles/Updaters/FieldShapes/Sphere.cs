@@ -95,12 +95,14 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             }
 
             surfaceNormal = particlePosition / maxDist;
-            fieldRotation.Rotate(ref surfaceNormal);
-            surfaceNormal *= fieldSize;
 
             surfacePoint = surfaceNormal;
+            surfacePoint *= fieldSize;
+            fieldRotation.Rotate(ref surfacePoint);
             surfacePoint += fieldPosition;
 
+            surfaceNormal /= fieldSize;
+            fieldRotation.Rotate(ref surfaceNormal);
             surfaceNormal.Normalize();
 
             return (maxDist <= 1);

@@ -110,13 +110,18 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         {
             particlePosition -= fieldPosition;
             inverseRotation.Rotate(ref particlePosition);
-            particlePosition /= fieldSize;
+//            particlePosition /= fieldSize;
 
-            var isOutside = (Math.Abs(particlePosition.X) > halfSideX) || (Math.Abs(particlePosition.Y) > halfSideY) || (Math.Abs(particlePosition.Z) > halfSideZ);
+            var halfSize = fieldSize;
+            halfSize.X *= halfSideX;
+            halfSize.Y *= halfSideY;
+            halfSize.Z *= halfSideZ;
 
-            var surfaceX = (particlePosition.X >= 0) ? halfSideX : -halfSideX;
-            var surfaceY = (particlePosition.Y >= 0) ? halfSideY : -halfSideY;
-            var surfaceZ = (particlePosition.Z >= 0) ? halfSideZ : -halfSideZ;
+            var isOutside = (Math.Abs(particlePosition.X) > halfSize.X) || (Math.Abs(particlePosition.Y) > halfSize.Y) || (Math.Abs(particlePosition.Z) > halfSize.Z);
+
+            var surfaceX = (particlePosition.X >= 0) ? halfSize.X : -halfSize.X;
+            var surfaceY = (particlePosition.Y >= 0) ? halfSize.Y : -halfSize.Y;
+            var surfaceZ = (particlePosition.Z >= 0) ? halfSize.Z : -halfSize.Z;
 
             var distX = Math.Abs(particlePosition.X - surfaceX);
             var distY = Math.Abs(particlePosition.Y - surfaceY);
@@ -149,7 +154,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             surfaceNormal.Normalize();
 
             fieldRotation.Rotate(ref surfacePoint);
-            surfacePoint *= fieldSize;
+//            surfacePoint *= fieldSize;
             surfacePoint += fieldPosition;
 
             return !isOutside;

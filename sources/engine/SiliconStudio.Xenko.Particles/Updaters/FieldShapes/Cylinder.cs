@@ -111,21 +111,39 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             particlePosition /= fieldSize;
 
             var maxDist = (float)Math.Sqrt(particlePosition.X * particlePosition.X + particlePosition.Z * particlePosition.Z);
-            var maxHeight = (float)Math.Abs(particlePosition.Y);
 
-            if (maxHeight / halfHeight >= maxDist / radius)
+            var isOutside = (maxDist > radius) || (Math.Abs(particlePosition.Y) > halfHeight);
+
+            var surfaceY = (particlePosition.Y >= 0) ? halfHeight : -halfHeight;
+
+            var distR = Math.Abs(maxDist - radius) * ((fieldSize.X > fieldSize.Z) ? fieldSize.X : fieldSize.Z);
+            var distY = Math.Abs(particlePosition.Y - surfaceY) * fieldSize.Y;
+
+            if (distR <= distY)
             {
-                // Closest surface point will hit the flat surfaces before the curved one
-                surfacePoint = particlePosition * (halfHeight / maxHeight);
-                surfaceNormal = new Vector3(0, surfacePoint.Y, 0);
+                // Biggest distance is on the X axis
+                surfacePoint.X = particlePosition.X;
+                surfacePoint.Y = 0;
+                surfacePoint.Z = particlePosition.Z;
+                surfacePoint.Normalize();
+
+                surfaceNormal = surfacePoint;
+
+                surfacePoint *= radius;
+                surfacePoint.Y = (isOutside) ? surfaceY : particlePosition.Y;
             }
             else
             {
-                // Closest surface point will hit the curved surface before the flat ones
-                surfacePoint = particlePosition * (radius / maxDist);
-                surfaceNormal = surfacePoint;
-                surfaceNormal.Y = 0;
+                // Biggest distance is on the X axis
+                surfacePoint.X = particlePosition.X;
+                surfacePoint.Y = 0;
+                surfacePoint.Z = particlePosition.Z;
+
+                surfacePoint.Y = surfaceY;
+
+                surfaceNormal = (surfaceY > 0) ? new Vector3(0, 1, 0) : new Vector3(0, -1, 0);
             }
+
 
             // Fix the surface point and normal to world space
             fieldRotation.Rotate(ref surfaceNormal);
@@ -136,22 +154,8 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             surfacePoint *= fieldSize;
             surfacePoint += fieldPosition;
 
-
-            // Start of code for Cylinder
-            if (Math.Abs(particlePosition.Y) > halfHeight)
-            {
-                return false;
-            }
-
-            // The point is within -1 and +1 XZ-surafces - might collide with the curved surface of the cylinder
-
-            // If the points lies on the central axis, it is inside the cylinder
-            if (maxDist <= MathUtil.ZeroTolerance)
-            {
-                return true;
-            }
-
-            return (maxDist <= radius);
+            // Is the point inside the cylinder?
+            return (!isOutside);
         }
     }
 }
