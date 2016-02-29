@@ -7,9 +7,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    public class ParticleSystemRenderProcessor : EntityProcessor<ParticleSystemComponent, RenderParticleSystem>
+    public class ParticleSystemRenderProcessor : EntityProcessor<ParticleSystemComponent, RenderParticleSystem>, IEntityComponentRenderProcessor
     {
-        private VisibilityGroup visibilityGroup;
+        public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleSystemRenderProcessor"/> class.
@@ -17,11 +17,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         public ParticleSystemRenderProcessor()
             : base(typeof(TransformComponent))
         {
-        }
-
-        protected override void OnSystemAdd()
-        {
-            visibilityGroup = ((SceneInstance)EntityManager).VisibilityGroup;
         }
 
         public override void Draw(RenderContext gameTime)
@@ -45,7 +40,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             for (int index = 0; index < emitterCount; index++)
             {
-                visibilityGroup.RenderObjects.Add(new RenderParticleEmitter
+                VisibilityGroup.RenderObjects.Add(new RenderParticleEmitter
                 {
                     ParticleEmitter = emitters[index],
                     RenderParticleSystem = renderParticleSystem,
@@ -59,7 +54,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             foreach (var emitter in renderParticleSystem.Emitters)
             {
-                visibilityGroup.RenderObjects.Remove(emitter);
+                VisibilityGroup.RenderObjects.Remove(emitter);
             }
         }
 
