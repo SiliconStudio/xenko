@@ -130,8 +130,8 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             fieldRotation.Rotate(ref surfaceNormal);
             surfaceNormal.Normalize();
 
-            fieldRotation.Rotate(ref surfacePoint);
             surfacePoint *= fieldSize;
+            fieldRotation.Rotate(ref surfacePoint);
             surfacePoint += fieldPosition;
 
             return isInside;

@@ -149,6 +149,18 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
                 surfaceNormal = new Vector3(0, 0, surfacePoint.Z);
             }
 
+            if (isOutside)
+            {
+                surfacePoint.X = Math.Min(surfacePoint.X, halfSize.X);
+                surfacePoint.X = Math.Max(surfacePoint.X, -halfSize.X);
+
+                surfacePoint.Y = Math.Min(surfacePoint.Y, halfSize.Y);
+                surfacePoint.Y = Math.Max(surfacePoint.Y, -halfSize.Y);
+
+                surfacePoint.Z = Math.Min(surfacePoint.Z, halfSize.Z);
+                surfacePoint.Z = Math.Max(surfacePoint.Z, -halfSize.Z);
+            }
+
             // Fix the surface point and normal to world space
             fieldRotation.Rotate(ref surfaceNormal);
             surfaceNormal.Normalize();
