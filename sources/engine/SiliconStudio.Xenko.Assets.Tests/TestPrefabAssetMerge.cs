@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     }
 
     [TestFixture]
-    public class TestEntityGroupAssetMerge
+    public class TestPrefabAssetMerge
     {
 
         [Test]

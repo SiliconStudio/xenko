@@ -137,7 +137,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestEntityGroupAssetMerge.cs" />
+    <Compile Include="TestPrefabAssetMerge.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
