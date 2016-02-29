@@ -291,7 +291,9 @@ namespace SiliconStudio.Xenko.Rendering
                     // Skip if not used
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
-                   
+
+                    // Skip if nothing changed
+                    Effect effect;
                     if (renderEffect.EffectValidator.EndEffectValidation())
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);

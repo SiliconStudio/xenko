@@ -50,9 +50,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
         }
 
-        public override void Initialize()
+        protected override void InitializeCore()
         {
-            base.Initialize();
+            base.InitializeCore();
 
             renderEffectKey = RenderEffectKey;
 
