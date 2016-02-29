@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Store current effect
         protected Effect effect;
-        protected int permutationCounter = -1;
+        protected int permutationCounter;
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;

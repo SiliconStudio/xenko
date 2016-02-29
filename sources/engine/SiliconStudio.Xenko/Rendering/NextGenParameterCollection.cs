@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
         public byte[] DataValues = EmptyData;
         public object[] ObjectValues;
 
-        public int PermutationCounter;
+        public int PermutationCounter = 1;
 
         public IEnumerable<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
