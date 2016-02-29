@@ -8,11 +8,9 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("PrefabAsset")]
-    [AssetDescription(FileExtension, false)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(PrefabAssetCompiler))]
-    [Display("Prefab")]
-    //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
-    //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
+    [Display(195, "Prefab")]
     public class PrefabAsset : PrefabAssetBase
     {
         /// <summary>
