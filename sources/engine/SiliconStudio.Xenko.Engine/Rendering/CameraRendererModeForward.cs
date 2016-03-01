@@ -9,7 +9,6 @@ using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Background;
-using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Rendering.Editor;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -21,17 +20,9 @@ using SiliconStudio.Xenko.Rendering.Sprites;
 namespace SiliconStudio.Xenko.Rendering
 {
     [DataContract("CameraRendererModeForward")]
-    public class CameraRendererModeForward : CameraRendererMode
+    public class CameraRendererModeForward : CameraRenderModeBase
     {
-        [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem;
-
-        // Render views
-        private RenderView mainRenderView;
-
         private ForwardLightingRenderFeature forwardLightingRenderFeasture;
-
-        public override string ModelEffect { get; set; }
 
         [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
@@ -51,8 +42,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             base.InitializeCore();
 
-            RenderSystem = Context.Tags.Get(SceneInstance.CurrentRenderSystem);
-
             // Create mandatory render stages that don't exist yet
             if (MainRenderStage == null)
                 MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
@@ -71,25 +60,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (Highlight && HighlightRenderStage == null)
                 HighlightRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Highlight", "Highlight", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
-            var sceneInstance = SceneInstance.GetCurrent(Context);
-
-            // Describe views
-            mainRenderView = new RenderView();
-
-            mainRenderView.RenderStages.Add(MainRenderStage);
-            mainRenderView.RenderStages.Add(TransparentRenderStage);
-
-            if (PickingRenderStage != null)
-                mainRenderView.RenderStages.Add(PickingRenderStage);
-            if (WireFrameRenderStage != null)
-                mainRenderView.RenderStages.Add(WireFrameRenderStage);
-            if (HighlightRenderStage != null)
-                mainRenderView.RenderStages.Add(HighlightRenderStage);
-
-            mainRenderView.SceneInstance = sceneInstance;
-            mainRenderView.SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
-            mainRenderView.SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current);
-            RenderSystem.Views.Add(mainRenderView);
+            MainRenderView.RenderStages.Add(MainRenderStage);
+            MainRenderView.RenderStages.Add(TransparentRenderStage);
         }
         
         public override void BeforeExtract(RenderContext context)
@@ -121,9 +93,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO GRAPHICS REFACTOR: Make this non-explicit?
             RenderSystem.forwardLightingRenderFeature?.BeforeExtract();
-
-            var sceneInstance = SceneInstance.GetCurrent(Context);
-            var sceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -155,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering
                 foreach (var renderView in RenderSystem.Views)
                 {
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
-                    if (shadowmapRenderView != null && shadowmapRenderView.RenderView == mainRenderView)
+                    if (shadowmapRenderView != null && shadowmapRenderView.RenderView == MainRenderView)
                     {
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
@@ -169,13 +138,13 @@ namespace SiliconStudio.Xenko.Rendering
                 context.PopRenderTargets();
             }
 
-            RenderSystem.Draw(context, mainRenderView, MainRenderStage);
-            RenderSystem.Draw(context, mainRenderView, TransparentRenderStage);
+            RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+            RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
 
             // Material/mesh highlighting
             if (Highlight)
             {
-                RenderSystem.Draw(context, mainRenderView, HighlightRenderStage);
+                RenderSystem.Draw(context, MainRenderView, HighlightRenderStage);
             }
 
             // Wire frame
@@ -183,7 +152,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 var renderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
                 context.CommandList.Clear(renderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer);
-                RenderSystem.Draw(context, mainRenderView, WireFrameRenderStage);
+                RenderSystem.Draw(context, MainRenderView, WireFrameRenderStage);
             }
 
             // Picking
@@ -207,7 +176,7 @@ namespace SiliconStudio.Xenko.Rendering
                     context.CommandList.Clear(pickingDepthStencil, DepthStencilClearOptions.DepthBuffer);
 
                     context.CommandList.SetDepthAndRenderTarget(pickingDepthStencil, pickingRenderTarget);
-                    RenderSystem.Draw(context, mainRenderView, PickingRenderStage);
+                    RenderSystem.Draw(context, MainRenderView, PickingRenderStage);
                 }
                 context.PopRenderTargets();
 
