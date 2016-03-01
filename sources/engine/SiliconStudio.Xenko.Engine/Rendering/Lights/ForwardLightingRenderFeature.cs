@@ -137,26 +137,24 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             perLightingDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerLighting");
         }
 
-        /// <inheritdoc/>
-        public override void Extract()
+        public void BeforeExtract()
         {
-            // TODO GRAPHICS REFACTOR part of this should probably happen in a PreCollect phase (need to know shadow lights and add views early)
             // Initialize shadow map renderer
-            //if (!isShadowMapRendererSetUp)
-            //{
-            //    // TODO: Shadow mapping is currently disabled in new render system
-            //    // TODO: Make this pluggable
-            //    // TODO: Shadows should work on mobile platforms
-            //    if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
-            //        && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
-            //    {
-            //        ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowMapRenderStage);
-            //        ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
-            //        ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
-            //    }
+            if (!isShadowMapRendererSetUp && ShadowMapRenderStage != null)
+            {
+                // TODO: Shadow mapping is currently disabled in new render system
+                // TODO: Make this pluggable
+                // TODO: Shadows should work on mobile platforms
+                if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
+                    && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
+                {
+                    ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowMapRenderStage);
+                    ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
+                    ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
+                }
 
-            //    isShadowMapRendererSetUp = true;
-            //}
+                isShadowMapRendererSetUp = true;
+            }
 
             // Collect all visible lights
             CollectVisibleLights();
@@ -166,7 +164,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Collect shadow maps
             ShadowMapRenderer?.Extract(renderViewDatas);
+        }
 
+        /// <inheritdoc/>
+        public override void Extract()
+        {
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
 
@@ -230,7 +232,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderThreadContext context)
         {
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 

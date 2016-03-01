@@ -56,6 +56,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         public SceneCameraSlotCollection SceneCameraSlotCollection;
 
+        internal float MinimumDistance;
+
+        internal float MaximumDistance;
+
         /// <summary>
         /// The view matrix for this view.
         /// </summary>

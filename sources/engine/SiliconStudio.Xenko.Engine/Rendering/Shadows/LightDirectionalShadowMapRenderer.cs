@@ -90,14 +90,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var camera = shadowMapRenderer.Camera;
+            var camera = shadowMapRenderer.CurrentView.Camera;
             var shadowCamera = shadowMapRenderer.ShadowCamera;
 
             var viewToWorld = camera.ViewMatrix;
             viewToWorld.Invert();
 
             // Update the frustum infos
-            UpdateFrustum(shadowMapRenderer.Camera);
+            UpdateFrustum(camera);
 
             // Computes the cascade splits
             var minMaxDistance = ComputeCascadeSplits(context, shadowMapRenderer, ref lightShadowMap);
@@ -301,9 +301,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private Vector2 ComputeCascadeSplits(RenderContext context, ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
+            var camera = shadowContext.CurrentView.Camera;
 
-            var cameraNear = shadowContext.Camera.NearClipPlane;
-            var cameraFar = shadowContext.Camera.FarClipPlane;
+            var cameraNear = camera.NearClipPlane;
+            var cameraFar = camera.FarClipPlane;
             var cameraRange = cameraFar - cameraNear;
 
             var minDistance = cameraNear + LightDirectionalShadowMap.DepthRangeParameters.DefaultMinDistance;
@@ -311,20 +312,27 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             if (shadow.DepthRange.IsAutomatic)
             {
-                var depthReadBack = DepthReadback.GetDepthReadback(context);
-                if (depthReadBack.IsResultAvailable)
-                {
-                    var depthMinMax = depthReadBack.DepthMinMax;
+                //var depthReadBack = DepthReadback.GetDepthReadback(context);
+                //if (depthReadBack.IsResultAvailable)
+                //{
+                //    var depthMinMax = depthReadBack.DepthMinMax;
                     
-                    minDistance = ToLinearDepth(depthMinMax.X, ref shadowContext.Camera.ProjectionMatrix);
-                    // Reserve 1/3 of the guard distance for the min distance
-                    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
+                //    minDistance = ToLinearDepth(depthMinMax.X, ref camera.ProjectionMatrix);
+                //    // Reserve 1/3 of the guard distance for the min distance
+                //    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
 
-                    // Reserve 2/3 of the guard distance for the max distance
-                    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
-                    maxDistance = ToLinearDepth(depthMinMax.Y, ref shadowContext.Camera.ProjectionMatrix);
-                    maxDistance = Math.Max(maxDistance, guardMaxDistance);
-                }
+                //    // Reserve 2/3 of the guard distance for the max distance
+                //    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
+                //    maxDistance = ToLinearDepth(depthMinMax.Y, ref camera.ProjectionMatrix);
+                //    maxDistance = Math.Max(maxDistance, guardMaxDistance);
+                //}
+
+                // Reserve 1/3 of the guard distance for the min distance
+                minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
+
+                // Reserve 2/3 of the guard distance for the max distance
+                var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
+                maxDistance = Math.Max(shadowContext.CurrentView.MaximumDistance, guardMaxDistance);
             }
             else
             {
