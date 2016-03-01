@@ -31,16 +31,8 @@ namespace SiliconStudio.Xenko.Physics.Engine
     }
 
     [DataContract("PhysicsDebugCameraRendererMode")]
-    public class PhysicsDebugCameraRendererMode : CameraRendererMode
+    public class PhysicsDebugCameraRendererMode : CameraRenderModeBase
     {
-        [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem;
-
-        // Render views
-        private RenderView mainRenderView;
-
-        public override string ModelEffect { get; set; }
-
         [DataMemberIgnore]
         public RenderStage WireFrameRenderStage { get; set; }
 
@@ -48,24 +40,12 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
             base.InitializeCore();
 
-            RenderSystem = Context.Tags.Get(SceneInstance.CurrentRenderSystem);
-
             WireFrameRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
-           
-            var sceneInstance = SceneInstance.GetCurrent(Context);
-
-            // Describe views
-            mainRenderView = new RenderView();
 
             if (WireFrameRenderStage != null)
             {
-                mainRenderView.RenderStages.Add(WireFrameRenderStage);
+                MainRenderView.RenderStages.Add(WireFrameRenderStage);
             }
-
-            mainRenderView.SceneInstance = sceneInstance;
-            mainRenderView.SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
-            mainRenderView.SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current);
-            RenderSystem.Views.Add(mainRenderView);
         }
 
         public override void BeforeExtract(RenderContext context)
@@ -82,7 +62,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
             var renderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
             context.CommandList.Clear(renderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer);
-            RenderSystem.Draw(context, mainRenderView, WireFrameRenderStage);
+            RenderSystem.Draw(context, MainRenderView, WireFrameRenderStage);
         }
     }
 }
