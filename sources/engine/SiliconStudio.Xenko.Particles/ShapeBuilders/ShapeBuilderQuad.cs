@@ -88,8 +88,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     spaceRotation.Rotate(ref unitY);
                 }
 
-                unitX *= particleSize;
-                unitY *= particleSize;
+                // Use half size to make a Size = 1 result in a Billboard of 1m x 1m
+                unitX *= (particleSize * 0.5f);
+                unitY *= (particleSize * 0.5f);
 
                 var particlePos = centralPos - unitX + unitY;
                 var uvCoord = new Vector2(0, 0);

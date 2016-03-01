@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialColorSeed")]
-    [Display("Initial Color by seed")]
+    [Display("Initial Color")]
     public class InitialColorSeed : ParticleInitializer
     {
         public InitialColorSeed()
@@ -45,16 +45,34 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
+        /// <summary>
+        /// The first color to interpolate from
+        /// </summary>
+        /// <userdoc>
+        /// The first color to interpolate from
+        /// </userdoc>
         [DataMember(30)]
-        [Display("Color min")]
+        [Display("Color A")]
         public Color4 ColorMin { get; set; } = new Color4(1, 1, 1, 1);
 
+        /// <summary>
+        /// The second color to interpolate to
+        /// </summary>
+        /// <userdoc>
+        /// The second color to interpolate to
+        /// </userdoc>
         [DataMember(40)]
-        [Display("Color max")]
+        [Display("Color B")]
         public Color4 ColorMax { get; set; } = new Color4(1, 1, 1, 1);    
     }
 }
