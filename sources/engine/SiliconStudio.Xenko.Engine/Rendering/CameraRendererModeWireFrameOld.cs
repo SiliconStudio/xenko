@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A wireframe rendering mode (rendering only ModelComponent for now).
     /// </summary>
-    [DataContract("CameraRendererModeWireFrame")]
+    [DataContract("CameraRendererModeWireFrameOld")]
     [Display("WireFrame")]
-    public sealed class CameraRendererModeWireFrame : CameraRendererMode
+    public sealed class CameraRendererModeWireFrameOld : CameraRendererMode
     {
         private const string WireFrameEffect = "XenkoWireFrameShadingEffect";
 
@@ -25,9 +25,9 @@ namespace SiliconStudio.Xenko.Rendering
         //private readonly ModelComponentAndPickingRenderer modelComponentAndPickingRenderer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CameraRendererModeWireFrame"/> class.
+        /// Initializes a new instance of the <see cref="CameraRendererModeWireFrameOld"/> class.
         /// </summary>
-        public CameraRendererModeWireFrame()
+        public CameraRendererModeWireFrameOld()
         {
             ModelEffect = WireFrameEffect;
 
