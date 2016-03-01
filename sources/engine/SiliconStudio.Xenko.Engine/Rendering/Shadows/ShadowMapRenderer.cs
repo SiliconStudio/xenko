@@ -51,10 +51,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         }
 
         /// <summary>
-        /// Gets or sets the camera.
+        /// Gets or sets the render view.
         /// </summary>
-        /// <value>The camera.</value>
-        public CameraComponent Camera { get; private set; }
+        /// <value>The render view.</value>
+        public RenderView CurrentView { get; private set; }
 
         /// <summary>
         /// The shadow camera used for rendering from the shadow space.
@@ -92,9 +92,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 renderViewData.Value.LightComponentsWithShadows.Clear();
 
                 // Gets the current camera
-                Camera = renderViewData.Key.Camera;
+                CurrentView = renderViewData.Key;
 
-                if (Camera == null)
+                if (CurrentView.Camera == null)
                 {
                     continue;
                 }
