@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private bool pipelineStateDirty = true;
         private BlendStateDescription blendState = BlendStateDescription.Default;
 
+        [DataMemberIgnore]
         public BlendStateDescription BlendState
         {
             get { return blendState; }
@@ -49,6 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// The current effect instance.
         /// </summary>
+        [DataMemberIgnore]
         public DynamicEffectInstance EffectInstance { get; private set; }
 
         /// <summary>
