@@ -50,11 +50,15 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public CameraComponent Camera;
 
-        public SceneInstance SceneInstance;
+        internal SceneInstance SceneInstance;
 
-        public SceneCameraRenderer SceneCameraRenderer;
+        internal SceneCameraRenderer SceneCameraRenderer;
 
-        public SceneCameraSlotCollection SceneCameraSlotCollection;
+        internal SceneCameraSlotCollection SceneCameraSlotCollection;
+
+        internal float MinimumDistance;
+
+        internal float MaximumDistance;
 
         /// <summary>
         /// The view matrix for this view.
