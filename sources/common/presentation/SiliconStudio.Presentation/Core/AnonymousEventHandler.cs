@@ -1,34 +1,34 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace SiliconStudio.Presentation.Core
 {
     public class AnonymousEventHandler
     {
-        private Action<EventArgs> action;
+        protected Action Action;
         private Delegate eventHandler;
         private EventInfo eventInfo;
         private object target;
 
-        public static AnonymousEventHandler RegisterEventHandler(EventInfo eventInfo, object target, Action<EventArgs> handler)
+        public static AnonymousEventHandler RegisterEventHandler(EventInfo eventInfo, object target, Action handler)
         {
-            var parameterInfos = eventInfo.EventHandlerType.GetMethod("Invoke").GetParameters();
+            ParameterInfo[] parameterInfos = eventInfo.EventHandlerType.GetMethod("Invoke").GetParameters();
 
             if (parameterInfos.Length != 2)
                 throw new ArgumentException("The given event info must have exactly two parameters.");
-            
-            var type = typeof(AnonymousEventHandler);
 
-            var method = type.GetMethod(nameof(AnonymousEventHandler.Handler));
-            var anonymousHandler = new AnonymousEventHandler
-            {
-                action = handler,
-                eventInfo = eventInfo,
-                target = target,
-            };
+            Type argumentType = parameterInfos.Skip(1).First().ParameterType;
+            Type type = typeof(AnonymousEventHandler<>).MakeGenericType(argumentType);
+
+            MethodInfo method = type.GetMethod("Handler");
+            var anonymousHandler = (AnonymousEventHandler)Activator.CreateInstance(type);
+            anonymousHandler.Action = handler;
             anonymousHandler.eventHandler = Delegate.CreateDelegate(eventInfo.EventHandlerType, anonymousHandler, method);
+            anonymousHandler.eventInfo = eventInfo;
+            anonymousHandler.target = target;
             eventInfo.AddEventHandler(target, anonymousHandler.eventHandler);
 
             return anonymousHandler;
@@ -38,10 +38,18 @@ namespace SiliconStudio.Presentation.Core
         {
             handler.eventInfo.RemoveEventHandler(handler.target, handler.eventHandler);
         }
-
-        public void Handler(object sender, EventArgs e)
-        {
-            action(e);
-        }
     }
+
+    /// <summary>
+    /// This class allow to register an anonymous handler to an event using reflection.
+    /// </summary>
+    /// <typeparam name="TEventArgs">The type of <see cref="EventArgs"/> expected by the event.</typeparam>
+    /// <seealso cref="AnonymousEventHandler.RegisterEventHandler"/>
+    internal class AnonymousEventHandler<TEventArgs> : AnonymousEventHandler where TEventArgs : EventArgs
+    {
+        public void Handler(object sender, TEventArgs e)
+        {
+            Action();
+        }
+    } 
 }
