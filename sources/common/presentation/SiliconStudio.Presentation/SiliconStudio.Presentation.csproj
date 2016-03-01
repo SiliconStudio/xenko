@@ -128,6 +128,7 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
+    <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
