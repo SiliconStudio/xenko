@@ -30,7 +30,9 @@ namespace SiliconStudio.Xenko.Rendering
             // Instantiate descriptor sets
             for (int i = 0; i < resourceGroups.Length; ++i)
             {
-                resourceGroupAllocator.PrepareResourceGroup(updaterLayout.ResourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
+                var resourceGroupLayout = updaterLayout.ResourceGroupLayouts[i];
+                if (resourceGroupLayout != null)
+                    resourceGroupAllocator.PrepareResourceGroup(resourceGroupLayout, BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
             }
 
             // Set resources
@@ -42,6 +44,8 @@ namespace SiliconStudio.Xenko.Rendering
                 var resourceGroup = resourceGroups[layoutIndex];
                 var descriptorSet = resourceGroup.DescriptorSet;
                 var layout = layouts[layoutIndex];
+                if (layout == null)
+                    continue;
 
                 if (parameters.ObjectValues != null)
                 {

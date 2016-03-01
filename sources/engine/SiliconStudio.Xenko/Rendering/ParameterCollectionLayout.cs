@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public class ParameterCollectionLayout
     {
-        public FastList<ParameterKeyInfo> LayoutParameterKeyInfos = new FastList<ParameterKeyInfo>();
+        public FastListStruct<ParameterKeyInfo> LayoutParameterKeyInfos = new FastListStruct<ParameterKeyInfo>(0);
         public int ResourceCount;
         public int BufferSize;
     }

@@ -262,31 +262,29 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
 
             // Create layout for new light shader permutations
-            if (lightShadersPermutation.PerLightingLayout == null)
+            if (lightShadersPermutation.PerLightingLayout == null || lightShadersPermutation.PerLightingLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
             {
-                var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
+                var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index];
+                if (resourceGroupDescription.DescriptorSetLayout == null)
+                    return;
 
                 var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new ParameterCollectionLayout();
-                parameterCollectionLayout.ProcessResources(descriptorLayout);
+                parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
                 lightShadersPermutation.ResourceCount = parameterCollectionLayout.ResourceCount;
 
-                // First time?
-                // Find lighting cbuffer
-                var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
-
-                // Process cbuffer (if any)
-                if (lightingConstantBuffer != null)
+                // Process PerLighting cbuffer (if any)
+                if (resourceGroupDescription.ConstantBufferReflection != null)
                 {
-                    lightShadersPermutation.ConstantBufferReflection = lightingConstantBuffer;
-                    parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
+                    lightShadersPermutation.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
+                    parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                 }
 
-                lightShadersPermutation.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
+                lightShadersPermutation.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
             }
 
             // Assign layout to new parameter permutations
             var parameters = lightParameterEntry.Parameters;
-            if (!parameters.HasLayout)
+            if (parameters.Layout != lightShadersPermutation.ParameterCollectionLayout)
             {
                 // TODO GRAPHICS REFACTOR should we recompute or store the parameter layout?
                 parameters.UpdateLayout(lightShadersPermutation.ParameterCollectionLayout);
@@ -297,6 +295,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 return;
 
             lightParameterEntry.LastFrameUsed = RenderSystem.FrameCounter;
+
+            // Set values
+            foreach (var lightGroup in lightParameterEntry.DirectLightGroupDatas)
+            {
+                lightGroup.ApplyParameters(parameters);
+            }
+
+            foreach (var lightGroup in lightParameterEntry.EnvironmentLightDatas)
+            {
+                lightGroup.ApplyParameters(parameters);
+            }
 
             context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
 
@@ -651,8 +660,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 environmentLights.Add(environmentLightGroup.CreateGroupData());
             }
 
-            var parameters = parameterCollectionEntry.Parameters;
-
             foreach (var lightEntry in directLightsPerMesh)
             {
                 directLightGroups[lightEntry.GroupIndex].AddLight(lightEntry.Light, lightEntry.Shadow);
@@ -661,16 +668,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             foreach (var lightEntry in environmentLightsPerMesh)
             {
                 environmentLights[lightEntry.GroupIndex].AddLight(lightEntry.Light, null);
-            }
-
-            foreach (var lightGroup in directLightGroups)
-            {
-                lightGroup.ApplyParameters(parameters);
-            }
-
-            foreach (var lightGroup in environmentLights)
-            {
-                lightGroup.ApplyParameters(parameters);
             }
 
             return parameterCollectionEntry;

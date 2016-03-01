@@ -21,6 +21,16 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderSkybox);
 
+        public class SkyboxInfo
+        {
+            // Used internally by renderer
+            internal ResourceGroupLayout ResourceGroupLayout;
+            internal ResourceGroup Resources;
+            internal ParameterCollection IrradianceParameters;
+            internal ParameterCollection.CompositionCopier IrradianceCopier;
+            internal ParameterCollectionLayout ParameterCollectionLayout;
+        }
+
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
@@ -79,45 +89,65 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var renderNode = RenderNodes[renderNodeIndex];
 
                 var renderSkybox = (RenderSkybox)renderNode.RenderObject;
-                var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
+                var sourceParameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
+                var parameters = sourceParameters;
 
                 var renderEffect = renderNode.RenderEffect;
+
+                var skyboxInfo = (SkyboxInfo)renderSkybox.Skybox.RenderData ?? (SkyboxInfo)(renderSkybox.Skybox.RenderData = new SkyboxInfo());
 
                 if (renderSkybox.Background == SkyboxBackground.Irradiance)
                 {
                     // Need to compose keys with "skyboxColor" (sub-buffer?)
-                    throw new NotImplementedException();
+                    parameters = skyboxInfo.IrradianceParameters ?? (skyboxInfo.IrradianceParameters = new ParameterCollection());
                 }
 
-                var descriptorLayoutBuilder = renderEffect.Reflection.DescriptorReflection.Layouts[perLightingDescriptorSetSlot.Index].Layout;
-
-                if (!parameters.HasLayout)
+                // TODO GRAPHICS REFACTOR current system is not really safe with multiple renderers (parameters come from Skybox which is shared but ResourceGroupLayout from RenderSkybox is per RenderNode)
+                if (skyboxInfo.ResourceGroupLayout == null || skyboxInfo.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
                 {
-                    var parameterCollectionLayout = new ParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(descriptorLayoutBuilder);
+                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index];
+
+                    var parameterCollectionLayout = skyboxInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
 
                     // Find material cbuffer
-                    var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
-                    if (lightingConstantBuffer != null)
+                    if (resourceGroupDescription.ConstantBufferReflection != null)
                     {
-                        parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
+                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                     }
 
-                    parameters.UpdateLayout(parameterCollectionLayout);
-
-                    renderSkybox.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
-                    renderSkybox.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
+                    //skyboxInfo.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
+                    //skyboxInfo.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
 
                     // TODO: Cache that
-                    renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder, renderEffect.Effect.Bytecode, "PerLighting");
-                    renderSkybox.Resources = new ResourceGroup();
+                    skyboxInfo.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
+                    skyboxInfo.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
+                }
+
+                if (parameters.Layout != skyboxInfo.ParameterCollectionLayout)
+                {
+                    parameters.UpdateLayout(skyboxInfo.ParameterCollectionLayout);
+
+                    // Reset irradiance copier (target layout changed)
+                    skyboxInfo.IrradianceCopier = new ParameterCollection.CompositionCopier();
+                }
+
+                if (renderSkybox.Background == SkyboxBackground.Irradiance)
+                {
+                    if (!skyboxInfo.IrradianceCopier.IsValid)
+                    {
+                        skyboxInfo.IrradianceCopier = new ParameterCollection.CompositionCopier();
+                        skyboxInfo.IrradianceCopier.Compute(parameters, sourceParameters, ".skyboxColor");
+                    }
+
+                    skyboxInfo.IrradianceCopier.Copy(sourceParameters);
                 }
 
                 // Update SkyMatrix
-                var rotation = parameters.Get(renderSkybox.RotationParameter);
+                var rotation = parameters.Get(SkyboxKeys.Rotation);
                 Matrix skyMatrix;
                 Matrix.RotationY(MathUtil.DegreesToRadians(rotation), out skyMatrix);
-                parameters.Set(renderSkybox.SkyMatrixParameter, ref skyMatrix);
+                parameters.Set(SkyboxKeys.SkyMatrix, ref skyMatrix);
 
                 // Update MatrixTransform
                 // TODO: Use default values?
@@ -132,23 +162,23 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
-                context.ResourceGroupAllocator.PrepareResourceGroup(renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
-                ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = renderSkybox.Resources;
+                context.ResourceGroupAllocator.PrepareResourceGroup(skyboxInfo.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, skyboxInfo.Resources);
+                ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = skyboxInfo.Resources;
 
-                var descriptorSet = renderSkybox.Resources.DescriptorSet;
+                var descriptorSet = skyboxInfo.Resources.DescriptorSet;
 
                 // Set resource bindings in PerLighting resource set
-                for (int resourceSlot = 0; resourceSlot < descriptorLayoutBuilder.ElementCount; ++resourceSlot)
+                for (int resourceSlot = 0; resourceSlot < parameters.Layout.ResourceCount; ++resourceSlot)
                 {
                     descriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerLighting cbuffer
-                if (renderSkybox.Resources.ConstantBuffer.Size > 0)
+                if (skyboxInfo.Resources.ConstantBuffer.Size > 0)
                 {
-                    var mappedCB = renderSkybox.Resources.ConstantBuffer.Data;
+                    var mappedCB = skyboxInfo.Resources.ConstantBuffer.Data;
                     fixed (byte* dataValues = parameters.DataValues)
-                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, renderSkybox.Resources.ConstantBuffer.Size);
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, skyboxInfo.Resources.ConstantBuffer.Size);
                 }
             }
 
