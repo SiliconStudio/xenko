@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
@@ -33,34 +34,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             var newAsset = (PrefabAssetBase)base.CreateChildAsset(location);
 
-            // CAUTION: We need to re-add entities to the list as we are going to change their ids
-            // (and the Hierarchy.Entities list is ordered by Id, so they should not be changed after the entity has been added)
-            var newEntities = new List<EntityDesign>(newAsset.Hierarchy.Entities);
-            newAsset.Hierarchy.Entities.Clear();
-
-            // Process entities to create new ids for entities and base id
-            for (int i = 0; i < Hierarchy.Entities.Count; i++)
+            var newIdMaps = Hierarchy.Entities.ToDictionary(x => x.Entity.Id, x => Guid.NewGuid());
+            foreach (var entity in newAsset.Hierarchy.Entities)
             {
-                var oldEntityDesign = Hierarchy.Entities[i];
-                var newEntityDesign = newEntities[i];
-                // Assign a new guid
-                newEntityDesign.Entity.Id = Guid.NewGuid();
-
                 // Store the baseid of the new version
-                newEntityDesign.Design.BaseId = oldEntityDesign.Entity.Id;
+                entity.Design.BaseId = entity.Entity.Id;
                 // Make sure that we don't replicate the base part InstanceId
-                newEntityDesign.Design.BasePartInstanceId = null;
-
-                // If entity is root, update RootEntities
-                // TODO: might not be optimal if many root entities (should use dictionary and second pass on RootEntities)
-                int indexRoot = newAsset.Hierarchy.RootEntities.IndexOf(oldEntityDesign.Entity.Id);
-                if (indexRoot >= 0)
-                {
-                    newAsset.Hierarchy.RootEntities[indexRoot] = newEntityDesign.Entity.Id;
-                }
-
-                newAsset.Hierarchy.Entities.Add(newEntityDesign);
+                entity.Design.BasePartInstanceId = null;
+                // Apply the new Guid
+                entity.Entity.Id = newIdMaps[entity.Entity.Id];
             }
+
+            EntityAnalysis.RemapEntitiesId(newAsset.Hierarchy, newIdMaps);
 
             return newAsset;
         }
