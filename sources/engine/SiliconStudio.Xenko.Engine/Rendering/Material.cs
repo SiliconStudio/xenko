@@ -75,6 +75,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value><c>true</c> if this instance affects lighting; otherwise, <c>false</c>.</value>
         public bool IsLightDependent { get; set; }
 
+        [DataMemberIgnore]
         public object RenderData;
 
         /// <summary>
