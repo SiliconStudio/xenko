@@ -9,35 +9,24 @@ namespace SiliconStudio.Presentation.Extensions
     public static class CanvasRendererExtensions
     {
         /// <summary>
-        /// Initializes static members of the <see cref = "CanvasRendererExtensions" /> class.
-        /// </summary>
-        static CanvasRendererExtensions()
-        {
-            SubAlignment = 0.6;
-            SuperAlignment = 0;
-            SubSize = 0.62;
-            SuperSize = 0.62;
-        }
-
-        /// <summary>
         /// Gets or sets the subscript alignment.
         /// </summary>
-        private static double SubAlignment { get; }
+        private static double SubAlignment { get; } = 0.6;
 
         /// <summary>
         /// Gets or sets the subscript size.
         /// </summary>
-        private static double SubSize { get; }
+        private static double SubSize { get; } = 0.62;
 
         /// <summary>
         /// Gets or sets the superscript alignment.
         /// </summary>
-        private static double SuperAlignment { get; }
+        private static double SuperAlignment { get; } = 0;
 
         /// <summary>
         /// Gets or sets the superscript size.
         /// </summary>
-        private static double SuperSize { get; }
+        private static double SuperSize { get; } = 0.62;
 
         /// <summary>
         /// Draws a circle in the canvas.
