@@ -209,7 +209,6 @@
     <Compile Include="Entities\EntityHierarchyData.cs" />
     <Compile Include="Entities\PrefabCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
-    <Compile Include="Entities\PrefabAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityReference.cs" />
     <Compile Include="Entities\PrefabAssetSerializer.cs" />

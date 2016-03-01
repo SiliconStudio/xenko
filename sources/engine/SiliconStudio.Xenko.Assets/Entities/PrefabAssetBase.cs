@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -66,36 +66,59 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <summary>
-        /// Adds an entity as a part asset.
+        /// Clones a sub-hierarchy of this asset.
         /// </summary>
-        /// <param name="assetPartBase">The entity asset to be used as a part (must be created directly from <see cref="CreateChildAsset"/>)</param>
-        /// <param name="rootEntityId">An optional entity id to attach the part to it. If null, the part will be attached to the root entities of this instance</param>
-        public void AddPart(PrefabAssetBase assetPartBase, Guid? rootEntityId = null)
+        /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
+        /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
+        /// <returns></returns>
+        public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference)
         {
-            AddPartCore(assetPartBase);
+            if (!Hierarchy.Entities.ContainsKey(sourceRootEntity))
+                throw new ArgumentException(@"The source root entity must be an entity of this asset.", nameof(sourceRootEntity));
 
-            // If a RootEntityId is given and found in this instance, add them as children of entity
-            if (rootEntityId.HasValue && this.Hierarchy.Entities.ContainsKey(rootEntityId.Value))
+            // Note: Instead of copying the whole asset (with its potentially big hierarchy),
+            // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
+            var subTreeRoot = Hierarchy.Entities[sourceRootEntity].Entity;
+            var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntities = { sourceRootEntity } };
+            foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
+                subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Id]);
+
+            // clone the entities of the sub-tree
+            var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
+            clonedHierarchy.Entities[sourceRootEntity].Entity.Transform.Parent = null;
+
+            if (cleanReference)
             {
-                var rootEntity = Hierarchy.Entities[rootEntityId.Value];
-                foreach (var entityId in assetPartBase.Hierarchy.RootEntities)
-                {
-                    var entity = assetPartBase.Hierarchy.Entities[entityId];
-                    rootEntity.Entity.Transform.Children.Add(entity.Entity.Transform);
-                }
-            }
-            else
-            {
-                // Else add them as root
-                this.Hierarchy.RootEntities.AddRange(assetPartBase.Hierarchy.RootEntities);
+                // set to null reference outside of the sub-tree
+                EntityAnalysis.FixupEntityReferences(clonedHierarchy);
             }
 
-            // Add all entities with the correct instance id
-            foreach (var entityEntry in assetPartBase.Hierarchy.Entities)
+            // temporary nullify the hierarchy to avoid to clone it
+            var sourceHierarchy = Hierarchy;
+            Hierarchy = null;
+
+            // revert the source hierarchy
+            Hierarchy = sourceHierarchy;
+
+            // Generate entity mapping
+            var reverseEntityMapping = new Dictionary<Guid, Guid>();
+            foreach (var entityDesign in clonedHierarchy.Entities)
             {
-                entityEntry.Design.BasePartInstanceId = assetPartBase.Id;
-                this.Hierarchy.Entities.Add(entityEntry);
+                // Generate new Id
+                var newEntityId = Guid.NewGuid();
+
+                // Update mappings
+                reverseEntityMapping.Add(entityDesign.Entity.Id, newEntityId);
+
+                // Update entity with new id
+                entityDesign.Entity.Id = newEntityId;
             }
+
+            // Rewrite entity references
+            // Should we nullify invalid references?
+            EntityAnalysis.RemapEntitiesId(clonedHierarchy, reverseEntityMapping);
+
+            return clonedHierarchy;
         }
 
         public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
@@ -116,6 +139,49 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             return Hierarchy.Entities.ContainsKey(id);
         }
+
+        public IEnumerable<Entity> EnumerateChildren(Entity entity, bool isRecursive)
+        {
+            var transformationComponent = entity.Transform;
+            if (transformationComponent == null)
+                yield break;
+
+            foreach (var child in transformationComponent.Children)
+            {
+                yield return child.Entity;
+
+                if (isRecursive)
+                {
+                    foreach (var childChild in EnumerateChildren(child.Entity, true))
+                    {
+                        yield return childChild;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<EntityDesign> EnumerateChildren(EntityDesign entityDesign, bool isRecursive)
+        {
+            var transformationComponent = entityDesign.Entity.Transform;
+            if (transformationComponent == null)
+                yield break;
+
+            foreach (var child in transformationComponent.Children)
+            {
+                var childEntityDesign = Hierarchy.Entities[child.Entity.Id];
+                yield return childEntityDesign;
+
+                if (isRecursive)
+                {
+                    foreach (var childChild in EnumerateChildren(childEntityDesign, true))
+                    {
+                        var childChildEntityDesign = Hierarchy.Entities[childChild.Entity.Id];
+                        yield return childChildEntityDesign;
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Gets a mapping between a base and the list of instance actually used

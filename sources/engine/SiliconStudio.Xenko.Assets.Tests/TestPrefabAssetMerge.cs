@@ -467,11 +467,16 @@ namespace SiliconStudio.Xenko.Assets.Tests
             basePart.Hierarchy.RootEntities.Add(entityB.Id);
             basePart.Hierarchy.RootEntities.Add(entityC.Id);
 
+            // originalAsset: Add a new instanceId for this part
+            var asset = new PrefabAsset();
+
             // Create part1 asset
-            var part1 = (PrefabAsset)basePart.CreateChildAsset("part");
-            var entityB1 = part1.Hierarchy.Entities.First(it => it.Entity.Name == "B").Entity;
-            var part12 = (PrefabAsset)basePart.CreateChildAsset("part");
-            var entityB2 = part12.Hierarchy.Entities.First(it => it.Entity.Name == "B").Entity;
+            Guid part1InstanceId;
+            Guid part12InstanceId;
+            var part1 = basePart.CreatePrefabInstance(asset, "part", out part1InstanceId);
+            var entityB1 = part1.Entities.First(it => it.Entity.Name == "B").Entity;
+            var part12 = basePart.CreatePrefabInstance(asset, "part", out part12InstanceId);
+            var entityB2 = part12.Entities.First(it => it.Entity.Name == "B").Entity;
 
             // create part2 assset
             var entityD = new Entity() { Name = "D" };
@@ -481,10 +486,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var entityBFrom2 = basePart.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             entityD.Add(new TestEntityComponent() { EntityLink = entityBFrom2 });
 
-            // originalAsset: Add a new instanceId for this part
-            var asset = new PrefabAsset();
-            asset.AddPart(part1);
-            asset.AddPart(part12);
+            asset.Hierarchy.Entities.AddRange(part1.Entities);
+            asset.Hierarchy.Entities.AddRange(part12.Entities);
+            asset.Hierarchy.RootEntities.AddRange(part1.RootEntities);
+            asset.Hierarchy.RootEntities.AddRange(part12.RootEntities);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
             var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", (Asset)AssetCloner.Clone(basePart)) } );
@@ -506,10 +511,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.True(asset.Hierarchy.RootEntities.Contains(entity.Entity.Id));
             }
 
-            var entityDesignD1 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part1.Id);
+            var entityDesignD1 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part1InstanceId);
             Assert.NotNull(entityDesignD1);
 
-            var entityDesignD2 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part12.Id);
+            var entityDesignD2 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part12InstanceId);
             Assert.NotNull(entityDesignD2);
 
             // Check components
@@ -573,12 +578,21 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var asset = new PrefabAsset();
 
             // Create derived parts
-            var eRoot1Asset = (PrefabAsset)part1.CreateChildAsset("part");
-            var eRoot2Asset = (PrefabAsset)part1.CreateChildAsset("part");
-            asset.AddPart(eRoot1Asset);
-            asset.AddPart(eRoot2Asset);
+            //var eRoot1Asset = (PrefabAsset)part1.CreateChildAsset("part");
+            //var eRoot2Asset = (PrefabAsset)part1.CreateChildAsset("part");
+            //asset.AddPart(eRoot1Asset);
+            //asset.AddPart(eRoot2Asset);
+            Guid eRoot1Id;
+            Guid eRoot2Id;
+            var eRoot1Asset = part1.CreatePrefabInstance(asset, "part", out eRoot1Id);
+            var eRoot2Asset = part1.CreatePrefabInstance(asset, "part", out eRoot2Id);
+            asset.Hierarchy.Entities.AddRange(eRoot1Asset.Entities);
+            asset.Hierarchy.Entities.AddRange(eRoot2Asset.Entities);
+            asset.Hierarchy.RootEntities.AddRange(eRoot1Asset.RootEntities);
+            asset.Hierarchy.RootEntities.AddRange(eRoot2Asset.RootEntities);
 
-            var eRoot2 = asset.Hierarchy.Entities[eRoot2Asset.Hierarchy.RootEntities[0]];
+            //var eRoot2 = asset.Hierarchy.Entities[eRoot2Asset.Hierarchy.RootEntities[0]];
+            var eRoot2 = asset.Hierarchy.Entities[eRoot2Asset.RootEntities[0]];
 
             var entityToRemove = eRoot2.Entity.Transform.Children.First(it => it.Entity.Name == "B");
             eRoot2.Entity.Transform.Children.Remove(entityToRemove);
@@ -603,7 +617,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var entityDesignD1 = asset.Hierarchy.Entities[asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
             Assert.NotNull(entityDesignD1);
-            Assert.AreEqual(eRoot1Asset.Id, entityDesignD1.Design.BasePartInstanceId);
+            //Assert.AreEqual(eRoot1Asset.Id, entityDesignD1.Design.BasePartInstanceId);
+            Assert.AreEqual(eRoot1Id, entityDesignD1.Design.BasePartInstanceId);
             var testComponentD1 = entityDesignD1.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD1);
             var entityB1 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
@@ -611,7 +626,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var entityDesignD2 = asset.Hierarchy.Entities[asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[1]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
             Assert.NotNull(entityDesignD2);
-            Assert.AreEqual(eRoot2Asset.Id, entityDesignD2.Design.BasePartInstanceId);
+            //Assert.AreEqual(eRoot2Asset.Id, entityDesignD2.Design.BasePartInstanceId);
+            Assert.AreEqual(eRoot2Id, entityDesignD2.Design.BasePartInstanceId);
             var testComponentD2 = entityDesignD2.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD2);
             Assert.AreEqual(null, testComponentD2.EntityLink);
@@ -654,10 +670,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
             a1.Hierarchy.RootEntities.Add(eb.Id);
 
             var a2 = new PrefabAsset();
-            var aPartInstance1 = (PrefabAsset)a1.CreateChildAsset("a1");
-            var aPartInstance2 = (PrefabAsset)a1.CreateChildAsset("a1");
-            a2.AddPart(aPartInstance1);
-            a2.AddPart(aPartInstance2);
+            var aPartInstance1 = a1.CreatePrefabInstance(a2, "a1");
+            var aPartInstance2 = a1.CreatePrefabInstance(a2, "a1");
+            a2.Hierarchy.Entities.AddRange(aPartInstance1.Entities);
+            a2.Hierarchy.Entities.AddRange(aPartInstance2.Entities);
+            a2.Hierarchy.RootEntities.AddRange(aPartInstance1.RootEntities);
+            a2.Hierarchy.RootEntities.AddRange(aPartInstance2.RootEntities);
 
             // Modify a1 to add entity ec
             var ec = new Entity("ec");
@@ -721,10 +739,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
             assetItems.Add(new AssetItem("a1", a1));
 
             var a2 = new PrefabAsset();
-            var aPartInstance1 = (PrefabAsset)a1.CreateChildAsset("a1");
-            var aPartInstance2 = (PrefabAsset)a1.CreateChildAsset("a1");
-            a2.AddPart(aPartInstance1);
-            a2.AddPart(aPartInstance2);
+            var aPartInstance1 = a1.CreatePrefabInstance(a2, "a1");
+            var aPartInstance2 = a1.CreatePrefabInstance(a2, "a1");
+            a2.Hierarchy.Entities.AddRange(aPartInstance1.Entities);
+            a2.Hierarchy.Entities.AddRange(aPartInstance2.Entities);
+            a2.Hierarchy.RootEntities.AddRange(aPartInstance1.RootEntities);
+            a2.Hierarchy.RootEntities.AddRange(aPartInstance2.RootEntities);
             assetItems.Add(new AssetItem("a2", a2));
 
             // Modify a1 to add entity ec
