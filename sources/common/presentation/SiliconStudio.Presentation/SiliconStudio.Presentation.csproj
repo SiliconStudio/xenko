@@ -128,6 +128,10 @@
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
+    <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
+    <Compile Include="MarkupExtensions\MinDoubleExtension.cs" />
+    <Compile Include="MarkupExtensions\MinIntExtension.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
