@@ -56,12 +56,7 @@ namespace SiliconStudio.Presentation.Behaviors
         public ModifierKeys SubtractiveModifiers { get { return (ModifierKeys)GetValue(SubtractiveModifiersProperty); } set { SetValue(SubtractiveModifiersProperty, value); } }
 
         public Style SelectionRectangleStyle { get { return (Style)GetValue(SelectionRectangleStyleProperty); } set { SetValue(SelectionRectangleStyleProperty, value); } }
-
-        /// <summary>
-        /// The threshold distance the mouse-cursor must move before drag-selection begins.
-        /// </summary>
-        public double DragThreshold { get; set; } = 5;
-
+        
         public bool IsDragging { get; private set; }
 
         private static void OnCanvasChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -115,8 +110,8 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 var curMouseDownPoint = e.GetPosition(AssociatedObject);
                 var dragDelta = curMouseDownPoint - originPoint;
-                var dragDistance = Math.Abs(dragDelta.LengthSquared);
-                if (dragDistance > DragThreshold*DragThreshold)
+                if (Math.Abs(dragDelta.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                    Math.Abs(dragDelta.Y) > SystemParameters.MinimumVerticalDragDistance)
                 {
                     IsDragging = true;
                     InitDragSelectionRect(originPoint, curMouseDownPoint);
