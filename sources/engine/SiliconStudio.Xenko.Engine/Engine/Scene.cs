@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("Scene")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Content")]
-    public sealed class Scene : Prefab
+    public sealed class Scene : PrefabBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Scene"/> class.
