@@ -212,7 +212,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore] public RenderStage WireFrameRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage HighlightRenderStage { get; set; }
 
-        public bool Shadows { get; set; } = false;
+        public bool Shadows { get; set; } = true;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
         public bool WireFrame { get; set; } = false;
