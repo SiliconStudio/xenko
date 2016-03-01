@@ -3793,6 +3793,14 @@
     </Setter>
   </Style>
 
+  <Style TargetType="{x:Type Rectangle}" x:Key="{x:Static behaviors:SelectionRectangleBehavior.DefaultRectangleStyleKey}">
+    <Setter Property="Fill" Value="LightBlue" />
+    <Setter Property="Opacity" Value="0.5" />
+    <Setter Property="Stroke" Value="Blue" />
+    <Setter Property="StrokeLineJoin" Value="Round" />
+    <Setter Property="StrokeThickness" Value="1" />
+  </Style>
+
   <!--  EDITORS  -->
   <Style x:Key="{x:Static ctrl:VectorEditorResources.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}" x:Shared="False">
     <Setter Property="ToolTip" Value="Toggle editing mode" />

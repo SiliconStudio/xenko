@@ -24,7 +24,8 @@ namespace SiliconStudio.Presentation.Behaviors
         public static readonly DependencyProperty SubtractiveModifiersProperty =
             DependencyProperty.Register(nameof(SubtractiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Control));
 
-        public static readonly DependencyProperty SelectionRectangleStyleProperty;
+        public static readonly DependencyProperty RectangleStyleProperty
+            = DependencyProperty.Register(nameof(RectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior));
 
         private Point originPoint;
         private Panel itemsPanel;
@@ -32,20 +33,13 @@ namespace SiliconStudio.Presentation.Behaviors
         
         static SelectionRectangleBehavior()
         {
-            SelectionRectangleDefaultStyle = new Style(typeof(Rectangle));
-            SelectionRectangleDefaultStyle.Setters.Add(new Setter(Shape.FillProperty, new SolidColorBrush(Colors.LightBlue)));
-            SelectionRectangleDefaultStyle.Setters.Add(new Setter(UIElement.OpacityProperty, 0.5));
-            SelectionRectangleDefaultStyle.Setters.Add(new Setter(Shape.StrokeProperty, new SolidColorBrush(Colors.Blue)));
-            SelectionRectangleDefaultStyle.Setters.Add(new Setter(Shape.StrokeLineJoinProperty, PenLineJoin.Round));
-            SelectionRectangleDefaultStyle.Setters.Add(new Setter(Shape.StrokeThicknessProperty, 1.0));
-
-            SelectionRectangleStyleProperty =
-                DependencyProperty.Register(nameof(SelectionRectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior), new PropertyMetadata(SelectionRectangleDefaultStyle));
-
             AttachOnEveryLoadedEventProperty.OverrideMetadata(typeof(SelectionRectangleBehavior), new PropertyMetadata(true));
         }
 
-        public static Style SelectionRectangleDefaultStyle { get; }
+        /// <summary>
+        /// Resource Key for the default SelectionRectangleStyle.
+        /// </summary>
+        public static ResourceKey DefaultRectangleStyleKey { get; } = new ComponentResourceKey(typeof(SelectionRectangleBehavior), nameof(DefaultRectangleStyleKey));
 
         public Canvas Canvas { get { return (Canvas)GetValue(CanvasProperty); } set { SetValue(CanvasProperty, value); } }
 
@@ -55,7 +49,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public ModifierKeys SubtractiveModifiers { get { return (ModifierKeys)GetValue(SubtractiveModifiersProperty); } set { SetValue(SubtractiveModifiersProperty, value); } }
 
-        public Style SelectionRectangleStyle { get { return (Style)GetValue(SelectionRectangleStyleProperty); } set { SetValue(SelectionRectangleStyleProperty, value); } }
+        public Style RectangleStyle { get { return (Style)GetValue(RectangleStyleProperty); } set { SetValue(RectangleStyleProperty, value); } }
         
         public bool IsDragging { get; private set; }
 
@@ -139,13 +133,20 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void CreateSelectionRectangle()
         {
-            var binding = new Binding
-            {
-                Path = new PropertyPath(nameof(SelectionRectangleStyle)),
-                Source = this,
-            };
             selectionRectangle = new Rectangle();
-            selectionRectangle.SetBinding(FrameworkElement.StyleProperty, binding);
+            if (RectangleStyle != null)
+            {
+                var binding = new Binding
+                {
+                    Path = new PropertyPath(nameof(RectangleStyle)),
+                    Source = this,
+                };
+                selectionRectangle.SetBinding(FrameworkElement.StyleProperty, binding);
+            }
+            else
+            {
+                selectionRectangle.Style = selectionRectangle?.TryFindResource(DefaultRectangleStyleKey) as Style;
+            }
         }
 
         private void OnCanvasChanged(DependencyPropertyChangedEventArgs e)
