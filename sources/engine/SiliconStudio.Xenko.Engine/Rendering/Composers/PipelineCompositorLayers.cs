@@ -22,6 +22,13 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             RenderSystem.Initialize(Context);
         }
 
+        protected override void Destroy()
+        {
+            RenderSystem.Dispose();
+
+            base.Destroy();
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
             // Get or create VisibilityGroup for this RenderSystem
