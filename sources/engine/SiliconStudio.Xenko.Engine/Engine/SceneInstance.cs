@@ -102,9 +102,12 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Destroy()
         {
-            // TODO: Dispose of Scene, graphics compositor...etc.
-
             Reset();
+
+            // TODO: Dispose of Scene, graphics compositor...etc.
+            // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
+            VisibilityGroups.Clear();
+
             base.Destroy();
         }
 
