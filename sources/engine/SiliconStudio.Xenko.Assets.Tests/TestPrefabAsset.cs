@@ -64,8 +64,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
             basePartAsset.Hierarchy.RootEntities.Add(entityPart1.Id);
             basePartAsset.Hierarchy.RootEntities.Add(entityPart2.Id);
 
-            var partAsset = (PrefabAsset)basePartAsset.CreateChildAsset("part");
-            derivedAsset.AddPart(partAsset);
+            var instance = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
+            derivedAsset.Hierarchy.Entities.AddRange(instance.Entities);
+            derivedAsset.Hierarchy.RootEntities.AddRange(instance.RootEntities);
 
             using (var stream = new MemoryStream())
             {
