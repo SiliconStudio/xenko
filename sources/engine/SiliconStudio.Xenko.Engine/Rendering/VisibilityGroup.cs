@@ -79,6 +79,13 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var view in Views)
             {
+                view.MinimumDistance = float.PositiveInfinity;
+                view.MaximumDistance = float.NegativeInfinity;
+
+                Matrix viewInverse = view.View;
+                viewInverse.Invert();
+                var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
+
                 // Prepare culling mask
                 foreach (var renderViewStage in view.RenderStages)
                 {
@@ -89,12 +96,12 @@ namespace SiliconStudio.Xenko.Rendering
                 // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
                 // TODO GRAPHICS REFACTOR frustum culling is currently hardcoded (cf previous TODO, we should make this more modular and move it out of here)
                 var frustum = new BoundingFrustum(ref view.ViewProjection);
-                var cullingMode = view.SceneCameraRenderer.CullingMode;
+                var cullingMode = view.SceneCameraRenderer?.CullingMode ?? CameraCullingMode.Frustum;
 
                 // TODO GRAPHICS REFACTOR we currently forward SceneCameraRenderer.CullingMask
                 // Note sure this is really a good mechanism long term (it forces to recreate multiple time the same view, instead of using RenderStage + selectors or a similar mechanism)
                 // This is still supported so that existing gizmo code kept working with new graphics refactor. Might be reconsidered at some point.
-                var cullingMask = view.SceneCameraRenderer.CullingMask;
+                var cullingMask = view.SceneCameraRenderer?.CullingMask ?? EntityGroupMask.All;
 
                 // Process objects
                 foreach (var renderObject in RenderObjects)
@@ -143,8 +150,59 @@ namespace SiliconStudio.Xenko.Rendering
                     // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
                     // TODO GRAPHICS REFACTOR not thread-safe
                     view.RenderObjects.Add(renderObject);
+
+                    // Calculate bounding box of all render objects in the view
+                    if (renderObject.BoundingBox.Extent != Vector3.Zero)
+                        CalculateMinMaxDistance(view, ref plane, ref renderObject.BoundingBox);
                 }
             }
+        }
+
+        private static void CalculateMinMaxDistance(RenderView view, ref Plane plane, ref BoundingBoxExt boundingBox)
+        {
+            // TODO GRAPHICS REFACTOR: Optimize per-view: Only two corners need checking, depending on view direction. Also, currently unnecessary for shadow views.
+            var minimum = boundingBox.Minimum;
+            var maximum = boundingBox.Maximum;
+
+            var point = minimum;
+            var distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.X = maximum.X;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.Y = maximum.Y;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.X = minimum.X;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.Z = maximum.Z;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.Y = minimum.Y;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.X = maximum.X;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+
+            point.Y = maximum.Y;
+            distance = CollisionHelper.DistancePlanePoint(ref plane, ref point);
+            MinMax(distance, ref view.MinimumDistance, ref view.MaximumDistance);
+        }
+
+        private static void MinMax(float distance, ref float min, ref float max)
+        {
+            if (distance < min)
+                min = distance;
+            if (distance > max)
+                max = distance;
         }
 
         internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)

@@ -27,6 +27,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
         {
+            // TODO: Currently set up during BeforeExtract/Prepare/Draw. Should be initialized before
+            if (renderView.SceneCameraRenderer == null)
+                return;
+
             renderView.Camera = renderView.SceneCameraSlotCollection.GetCamera(renderView.SceneCameraRenderer.Camera);
 
             if (renderView.Camera == null)
@@ -208,7 +212,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore] public RenderStage WireFrameRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage HighlightRenderStage { get; set; }
 
-        public bool Shadows { get; set; } = false;
+        public bool Shadows { get; set; } = true;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = false;
         public bool WireFrame { get; set; } = false;
@@ -286,8 +290,8 @@ namespace SiliconStudio.Xenko.Rendering
                 RenderSystem.GetPipelinePlugin<HighlightMeshPipelinePlugin>(true);
             }
 
-            // TODO: Collect shadow map views
-            //RenderSystem.forwardLightingRenderFeature...
+            // TODO GRAPHICS REFACTOR: Make this non-explicit?
+            RenderSystem.forwardLightingRenderFeature?.BeforeExtract();
 
             var sceneInstance = SceneInstance.GetCurrent(Context);
             var sceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
@@ -314,7 +318,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (Shadows)
             {
                 // Clear atlases
-                RenderSystem.forwardLightingRenderFeature.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+                RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
 
                 context.PushRenderTargets();
 
@@ -338,14 +342,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderSystem.Draw(context, mainRenderView, MainRenderStage);
             RenderSystem.Draw(context, mainRenderView, TransparentRenderStage);
-
-            // Depth readback
-            //if (Shadows)
-            //{
-            //    foreach (var renderer in RenderSystem.forwardLightingRenderFeature.ShadowMapRenderer.Renderers)
-            //    {
-            //    }
-            //}
 
             // Material/mesh highlighting
             if (Highlight)

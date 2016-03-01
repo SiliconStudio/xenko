@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 if (renderSprite.Enabled)
                 {
                     // TODO GRAPHICS REFACTOR: Proper bounding box. Reuse calculations in sprite batch.
-                    renderSprite.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
+                    //renderSprite.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
                     renderSprite.RenderGroup = renderSprite.SpriteComponent.Entity.Group;
                 }
             }
