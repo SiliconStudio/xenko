@@ -12,17 +12,17 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         public static readonly DependencyProperty IsEnabledProperty =
             DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(true, IsEnabledChanged));
-        
+
         /// <summary>
         /// Identifies the <see cref="IsInProgress"/> dependency property key.
         /// </summary>
-        public static readonly DependencyPropertyKey IsInProgressPropertyKey =
+        protected static readonly DependencyPropertyKey IsInProgressPropertyKey =
             DependencyProperty.RegisterReadOnly(nameof(IsInProgress), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(false));
         /// <summary>
         /// Identifies the <see cref="IsInProgress"/> dependency property.
         /// </summary>
         [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
-        private static readonly DependencyProperty IsInProgressProperty = IsInProgressPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty IsInProgressProperty = IsInProgressPropertyKey.DependencyProperty;
 
         public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
         

@@ -48,22 +48,22 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="CanvasBounds"/> dependency property key.
         /// </summary>
-        public static readonly DependencyPropertyKey CanvasBoundsPropertyKey =
+        private static readonly DependencyPropertyKey CanvasBoundsPropertyKey =
             DependencyProperty.RegisterReadOnly(nameof(CanvasBounds), typeof(Rect), typeof(CanvasView), new PropertyMetadata(new Rect()));
         /// <summary>
         /// Identifies the <see cref="CanvasBounds"/> dependency property.
         /// </summary>
-        private static readonly DependencyProperty CanvasBoundsProperty = CanvasBoundsPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty CanvasBoundsProperty = CanvasBoundsPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Identifies the <see cref="IsCanvasValid"/> dependency property key.
         /// </summary>
-        public static readonly DependencyPropertyKey IsCanvasValidPropertyKey =
+        private static readonly DependencyPropertyKey IsCanvasValidPropertyKey =
             DependencyProperty.RegisterReadOnly(nameof(IsCanvasValid), typeof(bool), typeof(CanvasView), new PropertyMetadata(true));
         /// <summary>
         /// Identifies the <see cref="IsCanvasValid"/> dependency property.
         /// </summary>
-        private static readonly DependencyProperty IsCanvasValidProperty = IsCanvasValidPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty IsCanvasValidProperty = IsCanvasValidPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Identifies the <see cref="Model"/> dependency property.

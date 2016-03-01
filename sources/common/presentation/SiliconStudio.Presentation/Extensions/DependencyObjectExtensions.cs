@@ -26,15 +26,14 @@ namespace SiliconStudio.Presentation.Extensions
             // there is probably a better way using TypeDescriptor
 
             var dependencyPropertyType = typeof(DependencyProperty);
-            var dependencyPropertyKeyType = typeof(DependencyPropertyKey);
 
             var flags = BindingFlags.Public | BindingFlags.Static;
             if (includingParentProperties)
                 flags |= BindingFlags.FlattenHierarchy;
 
             return source.DependencyObjectType.SystemType.GetFields(flags)
-                .Where(fi => fi.MemberType == MemberTypes.Field && (fi.FieldType == dependencyPropertyType || fi.FieldType == dependencyPropertyKeyType))
-                .Select(fi => (fi.FieldType == dependencyPropertyType) ? (DependencyProperty)fi.GetValue(source) : ((DependencyPropertyKey)fi.GetValue(source)).DependencyProperty)
+                .Where(fi => fi.MemberType == MemberTypes.Field && fi.FieldType == dependencyPropertyType)
+                .Select(fi => (DependencyProperty)fi.GetValue(source))
                 .OrderBy(dp => dp.Name)
                 .ToArray();
         }
