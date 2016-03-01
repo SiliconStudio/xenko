@@ -37,6 +37,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Any matching effect
             public ResourceGroupLayout PerMaterialLayout;
 
+            public ParameterCollectionLayout ParameterCollectionLayout;
+
             // PerMaterial
             public ResourceGroup Resources = new ResourceGroup();
             public int ResourceCount;
@@ -184,27 +186,30 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             materialInfo.LastFrameUsed = RenderSystem.FrameCounter;
 
             // First time we use the material with a valid effect, let's update layouts
-            var descriptorLayout = renderEffect.Reflection.DescriptorReflection.Layouts[perMaterialDescriptorSetSlot.Index].Layout;
-            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != descriptorLayout.Hash)
+            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index].Hash)
             {
-                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerMaterial");
+                var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index];
+                if (resourceGroupDescription.DescriptorSetLayout == null)
+                    return;
 
-                var parameterCollectionLayout = new ParameterCollectionLayout();
-                parameterCollectionLayout.ProcessResources(descriptorLayout);
+                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
+
+                var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
+                parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
                 materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
 
-                // Find material cbuffer
-                var materialConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerMaterial");
-
-                // Process cbuffer (if any)
-                if (materialConstantBuffer != null)
+                // Process material cbuffer (if any)
+                if (resourceGroupDescription.ConstantBufferReflection != null)
                 {
-                    materialInfo.ConstantBufferReflection = materialConstantBuffer;
-                    parameterCollectionLayout.ProcessConstantBuffer(materialConstantBuffer);
+                    materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
+                    parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                 }
+            }
 
+            if (materialParameters.Layout != materialInfo.ParameterCollectionLayout)
+            {
                 // Update material parameters layout to what is expected by effect
-                materialParameters.UpdateLayout(parameterCollectionLayout);
+                materialParameters.UpdateLayout(materialInfo.ParameterCollectionLayout);
             }
 
             // Allocate resource groups

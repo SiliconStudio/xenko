@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -50,6 +51,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     renderSkybox.Skybox = skyboxComponent.Skybox;
                     renderSkybox.Background = skyboxComponent.Background;
                     renderSkybox.Intensity = skyboxComponent.Intensity;
+
+                    renderSkybox.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
+                    renderSkybox.RenderGroup = skyboxComponent.Entity.Group;
 
                     ActiveSkybox = renderSkybox;
                     break;

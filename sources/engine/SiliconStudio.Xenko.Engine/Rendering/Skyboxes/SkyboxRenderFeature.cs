@@ -79,45 +79,60 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var renderNode = RenderNodes[renderNodeIndex];
 
                 var renderSkybox = (RenderSkybox)renderNode.RenderObject;
-                var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
+                var sourceParameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
+                var parameters = sourceParameters;
 
                 var renderEffect = renderNode.RenderEffect;
 
                 if (renderSkybox.Background == SkyboxBackground.Irradiance)
                 {
                     // Need to compose keys with "skyboxColor" (sub-buffer?)
-                    throw new NotImplementedException();
+                    parameters = renderSkybox.IrradianceParameters ?? (renderSkybox.IrradianceParameters = new ParameterCollection());
                 }
 
-                var descriptorLayoutBuilder = renderEffect.Reflection.DescriptorReflection.Layouts[perLightingDescriptorSetSlot.Index].Layout;
-
-                if (!parameters.HasLayout)
+                // TODO GRAPHICS REFACTOR current system is not really safe with multiple renderers (parameters come from Skybox which is shared but ResourceGroupLayout from RenderSkybox is per RenderNode)
+                if (renderSkybox.ResourceGroupLayout == null || renderSkybox.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
                 {
-                    var parameterCollectionLayout = new ParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(descriptorLayoutBuilder);
+                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index];
+
+                    var parameterCollectionLayout = renderSkybox.ParameterCollectionLayout = new ParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
 
                     // Find material cbuffer
-                    var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
-                    if (lightingConstantBuffer != null)
+                    if (resourceGroupDescription.ConstantBufferReflection != null)
                     {
-                        parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
+                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                     }
 
-                    parameters.UpdateLayout(parameterCollectionLayout);
-
-                    renderSkybox.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
-                    renderSkybox.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
+                    //renderSkybox.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
+                    //renderSkybox.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
 
                     // TODO: Cache that
-                    renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder, renderEffect.Effect.Bytecode, "PerLighting");
-                    renderSkybox.Resources = new ResourceGroup();
+                    renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
+                    renderSkybox.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
+                }
+
+                if (parameters.Layout != renderSkybox.ParameterCollectionLayout)
+                {
+                    parameters.UpdateLayout(renderSkybox.ParameterCollectionLayout);
+                }
+
+                if (renderSkybox.Background == SkyboxBackground.Irradiance)
+                {
+                    if (!renderSkybox.IrradianceCopier.IsValid)
+                    {
+                        renderSkybox.IrradianceCopier = new ParameterCollection.CompositionCopier();
+                        renderSkybox.IrradianceCopier.Compute(parameters, sourceParameters, ".skyboxColor");
+                    }
+
+                    renderSkybox.IrradianceCopier.Copy(sourceParameters);
                 }
 
                 // Update SkyMatrix
-                var rotation = parameters.Get(renderSkybox.RotationParameter);
+                var rotation = parameters.Get(SkyboxKeys.Rotation);
                 Matrix skyMatrix;
                 Matrix.RotationY(MathUtil.DegreesToRadians(rotation), out skyMatrix);
-                parameters.Set(renderSkybox.SkyMatrixParameter, ref skyMatrix);
+                parameters.Set(SkyboxKeys.SkyMatrix, ref skyMatrix);
 
                 // Update MatrixTransform
                 // TODO: Use default values?
@@ -138,7 +153,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var descriptorSet = renderSkybox.Resources.DescriptorSet;
 
                 // Set resource bindings in PerLighting resource set
-                for (int resourceSlot = 0; resourceSlot < descriptorLayoutBuilder.ElementCount; ++resourceSlot)
+                for (int resourceSlot = 0; resourceSlot < parameters.Layout.ResourceCount; ++resourceSlot)
                 {
                     descriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
                 }

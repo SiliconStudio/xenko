@@ -11,9 +11,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public float Intensity;
 
         // Used internally by renderer
-        internal ValueParameter<float> RotationParameter;
-        internal ValueParameter<Matrix> SkyMatrixParameter;
         internal ResourceGroupLayout ResourceGroupLayout;
         internal ResourceGroup Resources;
+        internal ParameterCollection IrradianceParameters;
+        internal ParameterCollection.CompositionCopier IrradianceCopier;
+        internal ParameterCollectionLayout ParameterCollectionLayout;
     }
 }
