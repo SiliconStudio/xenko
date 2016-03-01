@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -88,6 +91,7 @@ namespace SiliconStudio.Xenko.Rendering
         public ResourceGroupBufferUploader BufferUploader;
 
         public EffectDescriptorSetReflection DescriptorReflection;
+        public ResourceGroupDescription[] ResourceGroupDescriptions;
 
         // Used only for fallback effect
         public EffectParameterUpdaterLayout FallbackUpdaterLayout;

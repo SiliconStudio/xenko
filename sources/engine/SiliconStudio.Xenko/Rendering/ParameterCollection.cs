@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private static readonly byte[] EmptyData = new byte[0];
 
-        private FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos;
+        private ParameterCollectionLayout layout;
 
         // TODO: Switch to FastListStruct (for serialization)
         private FastList<ParameterKeyInfo> parameterKeyInfos = new FastList<ParameterKeyInfo>(4);
@@ -37,7 +37,10 @@ namespace SiliconStudio.Xenko.Rendering
         public FastList<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
         [DataMemberIgnore]
-        public bool HasLayout => layoutParameterKeyInfos.Items != null;
+        public ParameterCollectionLayout Layout => layout;
+
+        [DataMemberIgnore]
+        public bool HasLayout => layout != null;
 
         public ParameterCollection()
         {
@@ -46,10 +49,9 @@ namespace SiliconStudio.Xenko.Rendering
         public unsafe ParameterCollection(ParameterCollection parameterCollection)
         {
             // Copy layout
-            if (parameterCollection.HasLayout)
+            if (parameterCollection.layout != null)
             {
-                layoutParameterKeyInfos = new FastListStruct<ParameterKeyInfo>(parameterCollection.layoutParameterKeyInfos.Count);
-                layoutParameterKeyInfos.AddRange(parameterCollection.layoutParameterKeyInfos);
+                layout = parameterCollection.layout;
             }
 
             // Copy parameter keys
@@ -121,9 +123,9 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Check layout if it exists
-            if (layoutParameterKeyInfos.Count > 0)
+            if (layout != null)
             {
-                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                foreach (var layoutParameterKeyInfo in layout.LayoutParameterKeyInfos)
                 {
                     if (layoutParameterKeyInfo.Key == parameterKey)
                     {
@@ -229,7 +231,18 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="value"></param>
         public void Set<T>(ValueParameterKey<T> parameter, T value) where T : struct
         {
-            Set(GetAccessor(parameter), value);
+            Set(GetAccessor(parameter), ref value);
+        }
+
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, ref T value) where T : struct
+        {
+            Set(GetAccessor(parameter), ref value);
         }
 
         /// <summary>
@@ -443,7 +456,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             DataValues = null;
             ObjectValues = null;
-            layoutParameterKeyInfos.Clear();
+            layout = null;
             parameterKeyInfos.Clear();
         }
 
@@ -475,6 +488,15 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="descriptorSetLayouts"></param>
         public unsafe void UpdateLayout(ParameterCollectionLayout layout)
         {
+            var oldLayout = this.layout;
+            this.layout = layout;
+
+            // Same layout, or removed layout
+            if (oldLayout == layout || layout == null)
+                return;
+
+            var layoutParameterKeyInfos = layout.LayoutParameterKeyInfos;
+
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
             newParameterKeyInfos.AddRange(parameterKeyInfos);
@@ -482,9 +504,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             var bufferSize = layout.BufferSize;
             var resourceCount = layout.ResourceCount;
-
-            // TODO: Should we perform a (read-only) copy?
-            this.layoutParameterKeyInfos = layout.LayoutParameterKeyInfos;
 
             foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
             {
@@ -556,7 +575,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // It's data
                     fixed (byte* dataValues = DataValues)
                     fixed (byte* newDataValuesPtr = newDataValues)
-                        Utilities.CopyMemory((IntPtr)newDataValuesPtr + newParameterKeyInfo.Offset, (IntPtr)dataValues + parameterKeyInfo.Offset, newParameterKeyInfo.Size);
+                        Utilities.CopyMemory((IntPtr)newDataValuesPtr + newParameterKeyInfo.Offset, (IntPtr)dataValues + parameterKeyInfo.Offset, Math.Min(newParameterKeyInfo.Size, parameterKeyInfo.Size));
                 }
                 else if (newParameterKeyInfo.BindingSlot != -1)
                 {
@@ -590,9 +609,9 @@ namespace SiliconStudio.Xenko.Rendering
                 PermutationCounter++;
 
             // Check layout if it exists
-            if (layoutParameterKeyInfos.Count > 0)
+            if (layout != null)
             {
-                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                foreach (var layoutParameterKeyInfo in layout.LayoutParameterKeyInfos)
                 {
                     if (layoutParameterKeyInfo.Key == parameterKey)
                     {
@@ -630,6 +649,8 @@ namespace SiliconStudio.Xenko.Rendering
         {
             List<CopyRange> ranges;
             ParameterCollection destination;
+
+            public bool IsValid => ranges != null;
 
             /// <summary>
             /// Copies data from source to destination according to previously compiled layout.
@@ -672,7 +693,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var currentResourceRange = new CopyRange { IsResource = true, DestStart = -1 };
 
                 // Iterate over each variable in dest, and if they match keyRoot, create the equivalent layout in source
-                foreach (var parameterKeyInfo in dest.layoutParameterKeyInfos)
+                foreach (var parameterKeyInfo in dest.Layout.LayoutParameterKeyInfos)
                 {
                     bool isResource = parameterKeyInfo.BindingSlot != -1;
                     bool isData = parameterKeyInfo.Offset != -1;
