@@ -331,6 +331,7 @@ namespace SiliconStudio.Xenko.Engine
                             }
                         }
                     }
+                    visibilityGroup.Dispose();
                     break;
             }
         }

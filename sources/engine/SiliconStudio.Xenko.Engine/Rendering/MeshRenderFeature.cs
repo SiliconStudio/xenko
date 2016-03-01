@@ -31,6 +31,18 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        protected override void Destroy()
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Dispose();
+            }
+
+            RenderFeatures.CollectionChanged -= RenderFeatures_CollectionChanged;
+
+            base.Destroy();
+        }
+
         /// <inheritdoc/>
         public override void Extract()
         {
@@ -148,9 +160,9 @@ namespace SiliconStudio.Xenko.Rendering
                     renderFeature.AttachRootRenderFeature(this);
                     renderFeature.Initialize(Context);
                     break;
-                default:
-                    // TODO implement removal of features
-                    throw new NotImplementedException();
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    renderFeature.Dispose();
+                    break;
             }
         }
     }
