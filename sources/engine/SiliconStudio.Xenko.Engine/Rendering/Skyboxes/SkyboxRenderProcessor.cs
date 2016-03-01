@@ -51,7 +51,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     renderSkybox.Skybox = skyboxComponent.Skybox;
                     renderSkybox.Background = skyboxComponent.Background;
 
-                    renderSkybox.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
                     renderSkybox.RenderGroup = skyboxComponent.Entity.Group;
 
                     ActiveSkybox = renderSkybox;
