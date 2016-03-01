@@ -63,6 +63,10 @@ namespace SiliconStudio.Xenko.Graphics
             else
             {
                 resourceGroup = resourceGroupPool[currentResourceGroupPoolIndex];
+
+                // Clear object
+                resourceGroup.DescriptorSet = default(DescriptorSet);
+                resourceGroup.ConstantBuffer = default(BufferPoolAllocationResult);
             }
             return resourceGroup;
         }
