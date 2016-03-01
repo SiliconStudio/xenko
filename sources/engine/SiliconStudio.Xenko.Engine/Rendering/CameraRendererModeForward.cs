@@ -30,11 +30,18 @@ namespace SiliconStudio.Xenko.Rendering
             if (TransparentRenderStage == null)
                 TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
+            // Setup proper sort modes
+            MainRenderStage.SortMode = new StateChangeSortMode();
+            TransparentRenderStage.SortMode = new FrontToBackSortMode();
+
             // Create optional render stages that don't exist yet
             //if (GBufferRenderStage == null)
             //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (Shadows && ShadowMapRenderStage == null)
+            {
                 ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
+            }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
             MainRenderView.RenderStages.Add(TransparentRenderStage);

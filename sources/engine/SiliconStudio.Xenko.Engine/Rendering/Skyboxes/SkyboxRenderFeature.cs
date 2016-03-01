@@ -38,6 +38,12 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             }
         }
 
+        public SkyboxRenderFeature()
+        {
+            // Skybox should render after most objects (to take advantage of early z depth test)
+            SortKey = 192;
+        }
+
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
@@ -198,7 +204,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
             for (int index = startIndex; index < endIndex; index++)
             {
-                var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
+                var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 // Get effect

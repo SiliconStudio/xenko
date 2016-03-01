@@ -313,6 +313,8 @@
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
+    <Compile Include="Rendering\SortKey.cs" />
+    <Compile Include="Rendering\SortMode.cs" />
     <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />

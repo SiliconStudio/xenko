@@ -91,6 +91,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var material = renderMesh.Material;
                 var materialInfo = renderMesh.MaterialInfo;
 
+                // Material use first 16 bits
+                var materialHashCode = material != null ? (uint)material.GetHashCode() : 0;
+                renderObject.StateSortKey = (renderObject.StateSortKey & 0x0000FFFF) | (materialHashCode << 16);
+
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
