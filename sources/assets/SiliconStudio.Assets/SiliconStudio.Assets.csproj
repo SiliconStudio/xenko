@@ -168,6 +168,7 @@
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="ProjectCodeGeneratorAsset.cs" />
     <Compile Include="ProjectSourceCodeAsset.cs" />
     <Compile Include="RawAsset.cs" />
     <Compile Include="PackageSaveParameters.cs" />
