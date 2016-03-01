@@ -362,7 +362,7 @@
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
-    <Compile Include="Rendering\CameraRendererModeWireFrame.cs" />
+    <Compile Include="Rendering\CameraRendererModeWireFrameOld.cs" />
     <Compile Include="Rendering\EntityComponentRendererEventArgs.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMax.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMaxShader.cs">
