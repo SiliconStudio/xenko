@@ -129,6 +129,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                         shadowMapTexture.Renderer.GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
 
+                        Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+
                         shadowRenderViews.Add(shadowRenderView);
                         RenderSystem.Views.Add(shadowRenderView);
                     }
