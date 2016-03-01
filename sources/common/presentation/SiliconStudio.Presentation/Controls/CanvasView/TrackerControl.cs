@@ -162,11 +162,10 @@ namespace SiliconStudio.Presentation.Controls
             if (parent == null)
                 return;
 
-            if ((bool)e.OldValue)
-                parent.MouseMove -= OnMouseMove;
-
             if ((bool)e.NewValue)
                 parent.MouseMove += OnMouseMove;
+            else
+                parent.MouseMove -= OnMouseMove;
         }
 
         private void UpdatePositionAndBorder()
