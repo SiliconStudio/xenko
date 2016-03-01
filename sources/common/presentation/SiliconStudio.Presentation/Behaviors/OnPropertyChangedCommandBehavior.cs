@@ -108,12 +108,11 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void ExecuteCommand()
         {
-            var cmd = Command;
             var parameter = PassValueAsParameter ? AssociatedObject.GetValue(dependencyProperty) : CommandParameter;
-            if (cmd == null || !cmd.CanExecute(parameter))
+            if (Command == null || !Command.CanExecute(parameter))
                 return;
 
-            cmd.Execute(parameter);
+            Command.Execute(parameter);
         }
     }
 }
