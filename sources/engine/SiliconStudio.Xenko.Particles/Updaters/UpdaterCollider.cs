@@ -116,6 +116,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
                 if (IsSolid == isInside)
                 {
+                    if (!IsSolid)
+                        surfaceNormal *= -1;
+
                     // The particle is on the wrong side of the collision shape and must collide
                     (*((Vector3*)particle[posField])) = surfacePoint;
 

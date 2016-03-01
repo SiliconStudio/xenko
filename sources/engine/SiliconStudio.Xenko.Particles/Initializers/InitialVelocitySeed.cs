@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// Initializer which sets the initial velocity for particles based on RandomSeed information
     /// </summary>
     [DataContract("InitialVelocitySeed")]
-    [Display("Initial Velocity by seed")]
+    [Display("Initial Velocity")]
     public class InitialVelocitySeed : ParticleInitializer
     {
         public InitialVelocitySeed()
@@ -59,15 +59,33 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-        
+
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
+        /// <summary>
+        /// Lower velocity value
+        /// </summary>
+        /// <userdoc>
+        /// Lower velocity value
+        /// </userdoc>
         [DataMember(30)]
         [Display("Velocity min")]
         public Vector3 VelocityMin { get; set; } = new Vector3(-1, 1, -1);
 
+        /// <summary>
+        /// Upper velocity value
+        /// </summary>
+        /// <userdoc>
+        /// Upper velocity value
+        /// </userdoc>
         [DataMember(40)]
         [Display("Velocity max")]
         public Vector3 VelocityMax { get; set; } = new Vector3(1, 1, 1);
