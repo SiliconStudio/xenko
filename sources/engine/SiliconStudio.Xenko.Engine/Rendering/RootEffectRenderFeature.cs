@@ -364,13 +364,27 @@ namespace SiliconStudio.Xenko.Rendering
 
                             // Build root signature automatically from reflection
                             renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots, "PerFrame");
+                            renderEffectReflection.ResourceGroupDescriptions = new ResourceGroupDescription[renderEffectReflection.DescriptorReflection.Layouts.Count];
+
+                            // Compute ResourceGroup hashes
+                            for (int index = 0; index < renderEffectReflection.DescriptorReflection.Layouts.Count; index++)
+                            {
+                                var descriptorSet = renderEffectReflection.DescriptorReflection.Layouts[index];
+                                if (descriptorSet.Layout == null)
+                                    continue;
+
+                                var constantBufferReflection = effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == descriptorSet.Name);
+
+                                renderEffectReflection.ResourceGroupDescriptions[index] = new ResourceGroupDescription(descriptorSet.Layout, constantBufferReflection);
+                            }
+
                             renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
                             renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
                             // Prepare well-known descriptor set layouts
-                            renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
-                            renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
-                            renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
+                            renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perDrawDescriptorSetSlot.Index], effect.Bytecode);
+                            renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perFrameDescriptorSetSlot.Index], effect.Bytecode);
+                            renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perViewDescriptorSetSlot.Index], effect.Bytecode);
 
                             InstantiatedEffects.Add(effect, renderEffectReflection);
 
@@ -580,23 +594,21 @@ namespace SiliconStudio.Xenko.Rendering
             return descriptorSetLayout;
         }
 
-        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
         {
-            if (bindingBuilder == null)
+            if (resourceGroupDescription.DescriptorSetLayout == null)
                 return null;
-
-            var constantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerDraw");
 
             var result = new RenderSystemResourceGroupLayout
             {
-                DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, bindingBuilder),
-                ConstantBufferReflection = constantBufferReflection,
+                DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
+                ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
             };
 
-            if (constantBufferReflection != null)
+            if (resourceGroupDescription.ConstantBufferReflection != null)
             {
-                result.ConstantBufferSize = constantBufferReflection.Size;
-                result.ConstantBufferHash = constantBufferReflection.Hash;
+                result.ConstantBufferSize = resourceGroupDescription.ConstantBufferReflection.Size;
+                result.ConstantBufferHash = resourceGroupDescription.ConstantBufferReflection.Hash;
             }
 
             // Resolve slots
@@ -609,33 +621,29 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
         {
-            if (bindingBuilder == null)
+            if (resourceGroupDescription.DescriptorSetLayout == null)
                 return null;
 
-            var constantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerFrame");
-
             // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
-            var hash = bindingBuilder.Hash;
-            if (constantBufferReflection != null)
-                ObjectId.Combine(ref hash, ref constantBufferReflection.Hash, out hash);
+            var hash = resourceGroupDescription.Hash;
 
             FrameResourceGroupLayout result;
             if (!frameResourceLayouts.TryGetValue(hash, out result))
             {
                 result = new FrameResourceGroupLayout
                 {
-                    DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, bindingBuilder),
-                    ConstantBufferReflection = constantBufferReflection,
+                    DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
+                    ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
                 };
 
                 result.Entry.Resources = new ResourceGroup();
 
-                if (constantBufferReflection != null)
+                if (resourceGroupDescription.ConstantBufferReflection != null)
                 {
-                    result.ConstantBufferSize = constantBufferReflection.Size;
-                    result.ConstantBufferHash = constantBufferReflection.Hash;
+                    result.ConstantBufferSize = resourceGroupDescription.ConstantBufferReflection.Size;
+                    result.ConstantBufferHash = resourceGroupDescription.ConstantBufferReflection.Hash;
                 }
 
                 // Resolve slots
@@ -651,25 +659,21 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private ViewResourceGroupLayout CreateViewResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private ViewResourceGroupLayout CreateViewResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
         {
-            if (bindingBuilder == null)
+            if (resourceGroupDescription.DescriptorSetLayout == null)
                 return null;
 
-            var constantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerView");
-
             // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
-            var hash = bindingBuilder.Hash;
-            if (constantBufferReflection != null)
-                ObjectId.Combine(ref hash, ref constantBufferReflection.Hash, out hash);
+            var hash = resourceGroupDescription.Hash;
 
             ViewResourceGroupLayout result;
             if (!viewResourceLayouts.TryGetValue(hash, out result))
             {
                 result = new ViewResourceGroupLayout
                 {
-                    DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, bindingBuilder),
-                    ConstantBufferReflection = constantBufferReflection,
+                    DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
+                    ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
                     Entries = new ResourceGroupEntry[RenderSystem.Views.Count],
                 };
 
@@ -678,10 +682,10 @@ namespace SiliconStudio.Xenko.Rendering
                     result.Entries[index].Resources = new ResourceGroup();
                 }
 
-                if (constantBufferReflection != null)
+                if (resourceGroupDescription.ConstantBufferReflection != null)
                 {
-                    result.ConstantBufferSize = constantBufferReflection.Size;
-                    result.ConstantBufferHash = constantBufferReflection.Hash;
+                    result.ConstantBufferSize = resourceGroupDescription.ConstantBufferReflection.Size;
+                    result.ConstantBufferHash = resourceGroupDescription.ConstantBufferReflection.Hash;
                 }
 
                 // Resolve slots

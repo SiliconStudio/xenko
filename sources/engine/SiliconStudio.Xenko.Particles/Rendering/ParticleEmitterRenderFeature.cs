@@ -103,26 +103,25 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 {
                     var renderEffect = materialInfo.RenderEffect;
 
-                    var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerMaterial");
+                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index];
+                    if (resourceGroupDescription.DescriptorSetLayout == null)
+                        continue;
 
                     var parameterCollectionLayout = new ParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(descriptorLayout);
+                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
                     materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
 
-                    // Find material cbuffer
-                    var materialConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerMaterial");
-
-                    // Process cbuffer (if any)
-                    if (materialConstantBuffer != null)
+                    // Process material cbuffer (if any)
+                    if (resourceGroupDescription.ConstantBufferReflection != null)
                     {
-                        materialInfo.ConstantBufferReflection = materialConstantBuffer;
-                        parameterCollectionLayout.ProcessConstantBuffer(materialConstantBuffer);
+                        materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
+                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                     }
 
                     // Update material parameters layout to what is expected by effect
                     material.Parameters.UpdateLayout(parameterCollectionLayout);
 
-                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerMaterial");
+                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
 
                     materialInfo.Resources = new ResourceGroup();
                 }

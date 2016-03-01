@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 // Find all resources related to this slot name
                 var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
+                bool hasBindings = false;
                 foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
                     .Where(x => x.Param.ResourceGroup == effectDescriptorSetSlot || (effectDescriptorSetSlot == defaultSetSlot && (x.Param.ResourceGroup == null || x.Param.ResourceGroup == "Globals")))
                     .GroupBy(x => new { Key = x.Param.Key, Class = x.Param.Class, SlotCount = x.SlotCount })
@@ -29,10 +30,11 @@ namespace SiliconStudio.Xenko.Graphics
                         if (matchingSamplerState != null)
                             samplerState = SamplerState.New(graphicsDevice, matchingSamplerState.Description);
                     }
+                    hasBindings = true;
                     descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.Class, resourceBinding.Key.SlotCount, samplerState);
                 }
 
-                descriptorSetLayouts.AddLayout(effectDescriptorSetSlot, descriptorSetLayoutBuilder);
+                descriptorSetLayouts.AddLayout(effectDescriptorSetSlot, hasBindings ? descriptorSetLayoutBuilder : null);
             }
 
             return descriptorSetLayouts;

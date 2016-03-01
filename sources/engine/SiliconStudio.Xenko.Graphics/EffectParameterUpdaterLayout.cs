@@ -23,26 +23,30 @@ namespace SiliconStudio.Xenko.Rendering
             for (int layoutIndex = 0; layoutIndex < layouts.Length; layoutIndex++)
             {
                 var layout = layouts[layoutIndex];
+                if (layout == null)
+                    continue;
 
                 ParameterCollectionLayout.ProcessResources(layout);
 
-                string cbufferName = null;
+                ShaderConstantBufferDescription cbuffer = null;
 
                 for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex)
                 {
                     var layoutEntry = layout.Entries[entryIndex];
                     if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
                     {
-                        var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
-                        ParameterCollectionLayout.ProcessConstantBuffer(constantBuffer);
-
                         // For now we assume first cbuffer will be the main one
-                        if (cbufferName == null)
-                            cbufferName = layoutEntry.Key.Name;
+                        if (cbuffer == null)
+                        {
+                            cbuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
+                            ParameterCollectionLayout.ProcessConstantBuffer(cbuffer);
+                        }
                     }
                 }
 
-                ResourceGroupLayouts[layoutIndex] = ResourceGroupLayout.New(graphicsDevice, layout, effect.Bytecode, cbufferName);
+                var resourceGroupDescription = new ResourceGroupDescription(layout, cbuffer);
+
+                ResourceGroupLayouts[layoutIndex] = ResourceGroupLayout.New(graphicsDevice, resourceGroupDescription, effect.Bytecode);
             }
         }
     }

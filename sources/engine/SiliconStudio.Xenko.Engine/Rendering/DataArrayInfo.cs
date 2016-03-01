@@ -75,6 +75,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void SwapRemoveItem(Array array, int sourceStart, int destStart)
         {
+            // Items were not added yet?
+            if (sourceStart >= ElementCount || destStart >= ElementCount)
+                return;
+
             var arrayT = (T[])array;
 
             destStart *= Multiplier;

@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Graphics
             for (int setIndex = 0; setIndex < descriptorSetLayouts.Layouts.Count; setIndex++)
             {
                 var layout = descriptorSetLayouts.Layouts[setIndex].Layout;
+                if (layout == null)
+                    continue;
 
                 var resourceGroupBinding = new ResourceGroupBinding();
 
