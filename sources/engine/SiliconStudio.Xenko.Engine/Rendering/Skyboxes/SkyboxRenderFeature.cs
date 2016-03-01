@@ -21,6 +21,16 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderSkybox);
 
+        public class SkyboxInfo
+        {
+            // Used internally by renderer
+            internal ResourceGroupLayout ResourceGroupLayout;
+            internal ResourceGroup Resources;
+            internal ParameterCollection IrradianceParameters;
+            internal ParameterCollection.CompositionCopier IrradianceCopier;
+            internal ParameterCollectionLayout ParameterCollectionLayout;
+        }
+
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
@@ -84,18 +94,20 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 var renderEffect = renderNode.RenderEffect;
 
+                var skyboxInfo = (SkyboxInfo)renderSkybox.Skybox.RenderData ?? (SkyboxInfo)(renderSkybox.Skybox.RenderData = new SkyboxInfo());
+
                 if (renderSkybox.Background == SkyboxBackground.Irradiance)
                 {
                     // Need to compose keys with "skyboxColor" (sub-buffer?)
-                    parameters = renderSkybox.IrradianceParameters ?? (renderSkybox.IrradianceParameters = new ParameterCollection());
+                    parameters = skyboxInfo.IrradianceParameters ?? (skyboxInfo.IrradianceParameters = new ParameterCollection());
                 }
 
                 // TODO GRAPHICS REFACTOR current system is not really safe with multiple renderers (parameters come from Skybox which is shared but ResourceGroupLayout from RenderSkybox is per RenderNode)
-                if (renderSkybox.ResourceGroupLayout == null || renderSkybox.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
+                if (skyboxInfo.ResourceGroupLayout == null || skyboxInfo.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
                 {
                     var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index];
 
-                    var parameterCollectionLayout = renderSkybox.ParameterCollectionLayout = new ParameterCollectionLayout();
+                    var parameterCollectionLayout = skyboxInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
 
                     // Find material cbuffer
@@ -104,28 +116,31 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                     }
 
-                    //renderSkybox.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
-                    //renderSkybox.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
+                    //skyboxInfo.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
+                    //skyboxInfo.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
 
                     // TODO: Cache that
-                    renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
-                    renderSkybox.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
+                    skyboxInfo.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
+                    skyboxInfo.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
                 }
 
-                if (parameters.Layout != renderSkybox.ParameterCollectionLayout)
+                if (parameters.Layout != skyboxInfo.ParameterCollectionLayout)
                 {
-                    parameters.UpdateLayout(renderSkybox.ParameterCollectionLayout);
+                    parameters.UpdateLayout(skyboxInfo.ParameterCollectionLayout);
+
+                    // Reset irradiance copier (target layout changed)
+                    skyboxInfo.IrradianceCopier = new ParameterCollection.CompositionCopier();
                 }
 
                 if (renderSkybox.Background == SkyboxBackground.Irradiance)
                 {
-                    if (!renderSkybox.IrradianceCopier.IsValid)
+                    if (!skyboxInfo.IrradianceCopier.IsValid)
                     {
-                        renderSkybox.IrradianceCopier = new ParameterCollection.CompositionCopier();
-                        renderSkybox.IrradianceCopier.Compute(parameters, sourceParameters, ".skyboxColor");
+                        skyboxInfo.IrradianceCopier = new ParameterCollection.CompositionCopier();
+                        skyboxInfo.IrradianceCopier.Compute(parameters, sourceParameters, ".skyboxColor");
                     }
 
-                    renderSkybox.IrradianceCopier.Copy(sourceParameters);
+                    skyboxInfo.IrradianceCopier.Copy(sourceParameters);
                 }
 
                 // Update SkyMatrix
@@ -147,10 +162,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
-                context.ResourceGroupAllocator.PrepareResourceGroup(renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
-                ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = renderSkybox.Resources;
+                context.ResourceGroupAllocator.PrepareResourceGroup(skyboxInfo.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, skyboxInfo.Resources);
+                ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = skyboxInfo.Resources;
 
-                var descriptorSet = renderSkybox.Resources.DescriptorSet;
+                var descriptorSet = skyboxInfo.Resources.DescriptorSet;
 
                 // Set resource bindings in PerLighting resource set
                 for (int resourceSlot = 0; resourceSlot < parameters.Layout.ResourceCount; ++resourceSlot)
@@ -159,11 +174,11 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 // Process PerLighting cbuffer
-                if (renderSkybox.Resources.ConstantBuffer.Size > 0)
+                if (skyboxInfo.Resources.ConstantBuffer.Size > 0)
                 {
-                    var mappedCB = renderSkybox.Resources.ConstantBuffer.Data;
+                    var mappedCB = skyboxInfo.Resources.ConstantBuffer.Data;
                     fixed (byte* dataValues = parameters.DataValues)
-                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, renderSkybox.Resources.ConstantBuffer.Size);
+                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, skyboxInfo.Resources.ConstantBuffer.Size);
                 }
             }
 
