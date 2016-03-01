@@ -122,6 +122,9 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
+    <Compile Include="Rendering\CameraRendererModeHighlight.cs" />
+    <Compile Include="Rendering\CameraRendererModePicking.cs" />
+    <Compile Include="Rendering\CameraRendererModeWireFrame.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\NextGenSceneGraphicsCompositor.cs" />
