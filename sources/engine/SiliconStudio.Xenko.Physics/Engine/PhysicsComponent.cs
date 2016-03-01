@@ -10,6 +10,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Xenko.Physics.Engine;
 
 namespace SiliconStudio.Xenko.Engine
 {

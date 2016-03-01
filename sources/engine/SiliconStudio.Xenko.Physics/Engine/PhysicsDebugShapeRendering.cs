@@ -1,13 +1,13 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
-using System;
 
-namespace SiliconStudio.Xenko.Physics
+namespace SiliconStudio.Xenko.Physics.Engine
 {
     public class PhysicsDebugShapeRendering : IDisposable
     {
@@ -16,7 +16,6 @@ namespace SiliconStudio.Xenko.Physics
         private readonly Material dynamicMaterial;
         private readonly Material kinematicMaterial;
         private readonly Material characterMaterial;
-        private readonly RasterizerStateDescription rasterizer;
         private readonly GraphicsDevice graphicsDevice;
 
         public PhysicsDebugShapeRendering(GraphicsDevice device)
@@ -28,15 +27,6 @@ namespace SiliconStudio.Xenko.Physics
             dynamicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Green, 0.77f), 1);
             kinematicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Blue, 0.77f), 1);
             characterMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Yellow, 0.77f), 1);
-
-            rasterizer = new RasterizerStateDescription(CullMode.None) { FillMode = FillMode.Wireframe };
-
-            // TODO GRAPHICS REFACTOR
-            //triggerMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            //staticMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            //dynamicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            //kinematicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            //characterMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
         }
 
         public Entity CreateDebugEntity(PhysicsComponent component)
@@ -114,11 +104,12 @@ namespace SiliconStudio.Xenko.Physics
                     {
                         var mat = triggerMaterial;
 
-                        if (component is RigidbodyComponent)
+                        var rigidbodyComponent = component as RigidbodyComponent;
+                        if (rigidbodyComponent != null)
                         {
-                            mat = ((RigidbodyComponent)component).IsKinematic ? kinematicMaterial : dynamicMaterial;
-
+                            mat = rigidbodyComponent.IsKinematic ? kinematicMaterial : dynamicMaterial;
                         }
+
                         else if (component is CharacterComponent)
                         {
                             mat = characterMaterial;
