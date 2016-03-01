@@ -9,6 +9,8 @@ namespace SiliconStudio.Xenko.Rendering
         public string Name { get; }
         public string EffectSlotName { get; }
 
+        public SortMode SortMode { get; set; }
+
         /// <summary>
         /// Index in <see cref="RootRenderFeature.RenderStages"/>.
         /// </summary>

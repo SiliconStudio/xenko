@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             bool hasBegin = false;
             for (var index = startIndex; index < endIndex; index++)
             {
-                var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
+                var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 var renderSprite = (RenderSprite)renderNode.RenderObject;

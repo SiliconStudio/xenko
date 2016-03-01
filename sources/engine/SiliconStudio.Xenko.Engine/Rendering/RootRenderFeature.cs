@@ -21,6 +21,8 @@ namespace SiliconStudio.Xenko.Rendering
         // Index that will be used for collections such as RenderView.RenderNodes and RenderView.ViewObjectNodes
         public int Index { get; internal set; }
 
+        public byte SortKey { get; protected set; } = 128;
+
         /// <summary>
         /// List of <see cref="RenderObject"/> initialized with this root render feature.
         /// </summary>

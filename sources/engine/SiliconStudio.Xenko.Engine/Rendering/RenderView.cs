@@ -17,6 +17,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public readonly List<RenderNodeFeatureReference> RenderNodes = new List<RenderNodeFeatureReference>();
 
+        public RenderNodeFeatureReference[] SortedRenderNodes;
+
         public RenderViewStage(RenderStage renderStage)
         {
             RenderStage = renderStage;

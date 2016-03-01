@@ -24,6 +24,8 @@ namespace SiliconStudio.Xenko.Rendering
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
 
+        private SortKey[] sortKeys;
+
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
         /// List of render stages.
@@ -104,7 +106,7 @@ namespace SiliconStudio.Xenko.Rendering
             Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
         }
 
-        public void Prepare(RenderThreadContext context)
+        public unsafe void Prepare(RenderThreadContext context)
         {
             // Sync point: after extract, before prepare (game simulation could resume now)
 
@@ -122,6 +124,51 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Divide into task chunks for parallelism
                 renderFeature.Prepare(context);
+            }
+
+            // Sort
+            foreach (var view in Views)
+            {
+                foreach (var renderViewStage in view.RenderStages)
+                {
+                    var renderNodes = renderViewStage.RenderNodes;
+                    if (renderNodes.Count == 0)
+                        continue;
+
+                    var renderStage = renderViewStage.RenderStage;
+
+                    // Allocate sorted render nodes
+                    if (renderViewStage.SortedRenderNodes == null || renderViewStage.SortedRenderNodes.Length < renderNodes.Count)
+                        Array.Resize(ref renderViewStage.SortedRenderNodes, renderNodes.Count);
+                    var sortedRenderNodes = renderViewStage.SortedRenderNodes;
+
+                    if (renderStage.SortMode != null)
+                    {
+                        // Make sure sortKeys is big enough
+                        if (sortKeys == null || sortKeys.Length < renderNodes.Count)
+                            Array.Resize(ref sortKeys, renderNodes.Count);
+
+                        // renderNodes[start..end] belongs to the same render feature
+                        fixed (SortKey* sortKeysPtr = sortKeys) 
+                            renderStage.SortMode.GenerateSortKey(view, renderViewStage, sortKeysPtr);
+
+                        Array.Sort(sortKeys, 0, renderNodes.Count);
+
+                        // Reorder list
+                        for (int i = 0; i < renderNodes.Count; ++i)
+                        {
+                            sortedRenderNodes[i] = renderNodes[sortKeys[i].Index];
+                        }
+                    }
+                    else
+                    {
+                        // No sorting, copy as is
+                        for (int i = 0; i < renderNodes.Count; ++i)
+                        {
+                            sortedRenderNodes[i] = renderNodes[i];
+                        }
+                    }
+                }
             }
         }
 
@@ -150,6 +197,10 @@ namespace SiliconStudio.Xenko.Rendering
             // Create nodes for objects to render
             foreach (var view in Views)
             {
+                // Sort per render feature (used for later sorting)
+                // We'll be able to process data more efficiently for the next steps
+                view.RenderObjects.Sort(RenderObjectFeatureComparer.Default);
+
                 foreach (var renderObject in view.RenderObjects)
                 {
                     var renderFeature = renderObject.RenderFeature;
@@ -179,11 +230,15 @@ namespace SiliconStudio.Xenko.Rendering
                         viewFeature.RenderNodes.Add(renderNode);
 
                         // Note: Used mostly during rendering
-                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode));
+                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode, renderObject));
                     }
                 }
 
-                // TODO: Sort RenderStage.RenderNodes
+                // Also sort view|stage per render feature
+                foreach (var renderViewStage in view.RenderStages)
+                {
+                    renderViewStage.RenderNodes.Sort(RenderNodeFeatureReferenceComparer.Default);
+                }
             }
 
             // Ensure size of data arrays per objects
@@ -222,14 +277,15 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Generate and execute draw jobs
-            var renderNodes = renderViewStage.RenderNodes;
+            var renderNodes = renderViewStage.SortedRenderNodes;
+            var renderNodeCount = renderViewStage.RenderNodes.Count;
             int currentStart, currentEnd;
 
-            for (currentStart = 0; currentStart < renderNodes.Count; currentStart = currentEnd)
+            for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
             {
                 var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
                 currentEnd = currentStart + 1;
-                while (currentEnd < renderNodes.Count && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
                 {
                     currentEnd++;
                 }
@@ -425,6 +481,40 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderFeature = renderObject.RenderFeature;
             renderFeature?.RemoveRenderObject(renderObject);
+        }
+
+        private class RenderNodeFeatureReferenceComparer : IComparer<RenderNodeFeatureReference>
+        {
+            public static readonly RenderNodeFeatureReferenceComparer Default = new RenderNodeFeatureReferenceComparer();
+
+            public int Compare(RenderNodeFeatureReference x, RenderNodeFeatureReference y)
+            {
+                return x.RootRenderFeature.Index - y.RootRenderFeature.Index;
+            }
+        }
+
+        private class RenderObjectFeatureComparer : IComparer<RenderObject>
+        {
+            public static readonly RenderObjectFeatureComparer Default = new RenderObjectFeatureComparer();
+
+            public int Compare(RenderObject x, RenderObject y)
+            {
+                return x.RenderFeature.Index - y.RenderFeature.Index;
+            }
+        }
+
+        struct RenderNodeFeatureRange
+        {
+            public readonly RootRenderFeature RenderFeature;
+            public readonly int Start;
+            public readonly int End;
+
+            public RenderNodeFeatureRange(RootRenderFeature renderFeature, int start, int end)
+            {
+                RenderFeature = renderFeature;
+                Start = start;
+                End = end;
+            }
         }
     }
 }
