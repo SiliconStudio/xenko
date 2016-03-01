@@ -34,5 +34,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public ParameterCollection DiffuseLightingParameters { get; set; }
 
         public ParameterCollection SpecularLightingParameters { get; set; }
+
+        [DataMemberIgnore]
+        public object RenderData;
     }
 }
