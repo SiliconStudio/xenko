@@ -66,5 +66,6 @@ RootAssets:
     - a9ba28ad-d83b-4957-8ed6-42863c1d903c:VisualTestSpawners
     - ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
     - c82d528c-c099-4ddb-ab27-b13b691b262f:VisualTestUpdaters
+    - d8bf8c60-f185-4383-8c94-94b468749609:VisualTestCurves
     - db59d494-42a0-4470-aadf-5c629cd67e3f:Material
     - e28ed348-02ed-45c4-8437-538a39fdbb6c:VisualTestInitializers

@@ -51,6 +51,14 @@ namespace SiliconStudio.Xenko.Particles
         [DefaultValue(false)]
         public bool DebugDraw { get; set; } = false;
 
+        /// <summary>
+        /// Attepmts to get a debug shape (shape type and location matrix) for the current module in order to display its boundaries better
+        /// </summary>
+        /// <param name="debugDrawShape">Type of the debug draw shape</param>
+        /// <param name="translation">Translation of the shape</param>
+        /// <param name="rotation">Rotation of the shape</param>
+        /// <param name="scale">Scaling of the shape</param>
+        /// <returns></returns>
         public virtual bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             debugDrawShape = DebugDrawShape.None;
