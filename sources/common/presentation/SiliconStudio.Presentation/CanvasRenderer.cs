@@ -108,6 +108,37 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Draws a collection of ellipses, where all have the same visual appearance (stroke, fill, etc.).
+        /// This performs better than calling DrawEllipse multiple times.
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="radiusX">The horizontal radius of the ellipse.</param>
+        /// <param name="radiusY">The vertical radius of the ellipse.</param>
+        /// <param name="fillColor">The color of the shape's interior.</param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        public void DrawEllipses(IList<Point> points, double radiusX, double radiusY, Color fillColor, Color strokeColor,
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+        {
+            if (points == null) throw new ArgumentNullException(nameof(points));
+            if (points.Count == 0)
+                return;
+
+            var geometry = new GeometryGroup { FillRule = FillRule.Nonzero };
+            foreach (var point in points)
+            {
+                geometry.Children.Add(new EllipseGeometry(point, radiusX, radiusY));
+            }
+            var path = Create<Path>();
+            path.Fill = GetBrush(fillColor);
+            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
+            path.Data = geometry;
+        }
+
+        /// <summary>
         /// Draws a straight line between <paramref name="p1"/> and <paramref name="p2"/>.
         /// </summary>
         /// <param name="p1"></param>
@@ -186,7 +217,7 @@ namespace SiliconStudio.Presentation
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         /// <param name="aliased"></param>
-        public void DrawPolygon(ICollection<Point> points, Color fillColor, Color strokeColor,
+        public void DrawPolygon(IList<Point> points, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
         {
             var polygon = Create<Polygon>();
