@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Particles
         None = 0,
         ByDepth = 1,
         ByAge = 2,
+        ByOrder = 3,
     }
 
     /// <summary>
@@ -432,6 +433,16 @@ namespace SiliconStudio.Xenko.Particles
                 GetSortIndex<float> sortByAge = value => { return -value; };
 
                 ParticleSorter = new ParticleSorterCustom<float>(pool, ParticleFields.Life, sortByAge);
+                return;
+            }
+
+            if (SortingPolicy == EmitterSortingPolicy.ByOrder)
+            {
+                // This sorting policy doesn't check if you actually have a Order field.
+                // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
+                GetSortIndex<UInt32> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
+
+                ParticleSorter = new ParticleSorterCustom<UInt32>(pool, ParticleFields.Order, sortByOrder);
                 return;
             }
 
