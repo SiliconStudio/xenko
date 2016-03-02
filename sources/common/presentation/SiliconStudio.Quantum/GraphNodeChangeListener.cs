@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
@@ -14,6 +15,9 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
+#if DEBUG
+        private readonly HashSet<IGraphNode> registeredNodes = new HashSet<IGraphNode>();
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
@@ -56,6 +60,13 @@ namespace SiliconStudio.Quantum
 
         protected virtual void RegisterNode(IGraphNode node)
         {
+#if DEBUG
+            if (registeredNodes.Contains(node))
+                throw new InvalidOperationException("Node already registered");
+
+            registeredNodes.Add(node);
+#endif
+
             node.Content.PrepareChange += ContentPrepareChange;
             node.Content.FinalizeChange += ContentFinalizeChange;
             node.Content.Changing += ContentChanging;
@@ -64,8 +75,14 @@ namespace SiliconStudio.Quantum
 
         protected virtual void UnregisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange += ContentPrepareChange;
-            node.Content.FinalizeChange += ContentFinalizeChange;
+#if DEBUG
+            if (!registeredNodes.Contains(node))
+                throw new InvalidOperationException("Node not registered");
+#endif
+
+            registeredNodes.Remove(node);
+            node.Content.PrepareChange -= ContentPrepareChange;
+            node.Content.FinalizeChange -= ContentFinalizeChange;
             node.Content.Changing -= ContentChanging;
             node.Content.Changed -= ContentChanged;
         }
