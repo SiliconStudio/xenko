@@ -31,7 +31,10 @@ namespace SiliconStudio.Xenko.Rendering
             VisibilityGroup.ViewObjectFilters.Add(MainRenderView, renderObject =>
             {
                 var renderMesh = renderObject as RenderMesh;
-                return renderMesh != null && EnabledEntities.Contains(renderMesh.RenderModel.ModelComponent.Entity);
+                return renderMesh != null &&
+                    (HighlightRenderFeature.MaterialHighlightColors.ContainsKey(renderMesh.Material) ||
+                    HighlightRenderFeature.MeshHighlightColors.ContainsKey(renderMesh.Mesh) ||
+                    HighlightRenderFeature.MaterialsHighlightedForModel.Contains(renderMesh.Material) && HighlightRenderFeature.ModelHighlightColors.ContainsKey(renderMesh.RenderModel.ModelComponent));
             });
         }
 
