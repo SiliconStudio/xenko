@@ -1,20 +1,18 @@
-﻿using SiliconStudio.Core.Mathematics;
+﻿using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     public class HighlightRenderFeature : SubRenderFeature
     {
-        /// <summary>
-        /// Gets the color to use to highlight directly referenced assets.
-        /// </summary>
-        /// <remarks>This color does not have premultiplied alpha.</remarks>
-        public static Color4 DirectReferenceColor { get; private set; }
+        public static readonly Dictionary<Material, Color4> MaterialHighlightColors = new Dictionary<Material, Color4>();
 
-        /// <summary>
-        /// Gets the color to use to highlight indirectly referenced assets.
-        /// </summary>
-        /// <remarks>This color does not have premultiplied alpha.</remarks>
-        public static Color4 IndirectReferenceColor { get; private set; }
+        public static readonly Dictionary<Mesh, Color4> MeshHighlightColors = new Dictionary<Mesh, Color4>();
+
+        public static readonly Dictionary<ModelComponent, Color4> ModelHighlightColors = new Dictionary<ModelComponent, Color4>();
+
+        public static readonly HashSet<Material> MaterialsHighlightedForModel = new HashSet<Material>();
 
         private ConstantBufferOffsetReference color;
 
@@ -23,9 +21,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
-            DirectReferenceColor = new Color4(1.0f, 0.35f, 0.25f, 0.8f);
-            IndirectReferenceColor = new Color4(1.0f, 0.65f, 0.60f, 0.8f);
-
             renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<Color4>();
 
             color = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(HighlightShaderKeys.HighlightColor.Name);
@@ -40,17 +35,14 @@ namespace SiliconStudio.Xenko.Rendering
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
                 var renderMesh = (RenderMesh)objectNode.RenderObject;
 
-                Color4 color = DirectReferenceColor;
-                //if ()
-                //{
-                //    color = DirectReferenceColor;
-                //}
-                //else if ()
-                //{
-                //    color = IndirectReferenceColor;
-                //}
+                Color4 highlightColor;
 
-                renderModelObjectInfo[objectNodeReference] = color;
+                var isHighlighted =
+                    MaterialHighlightColors.TryGetValue(renderMesh.Material, out highlightColor) ||
+                    MeshHighlightColors.TryGetValue(renderMesh.Mesh, out highlightColor) ||
+                    MaterialsHighlightedForModel.Contains(renderMesh.Material) && ModelHighlightColors.TryGetValue(renderMesh.RenderModel.ModelComponent, out highlightColor);
+
+                renderModelObjectInfo[objectNodeReference] = highlightColor;
             }
         }
 
