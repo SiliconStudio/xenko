@@ -17,6 +17,11 @@ namespace SiliconStudio.Xenko.Rendering
             // Create optional render stages that don't exist yet
             if (HighlightRenderStage == null)
                 HighlightRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Highlight", "Highlight", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+
+            if (HighlightRenderStage != null)
+            {
+                MainRenderView.RenderStages.Add(HighlightRenderStage);
+            }
         }
 
         public override void BeforeExtract(RenderContext context)

@@ -46,6 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns>The rasterizer state.</returns>
         public virtual RasterizerStateDescription GetDefaultRasterizerState(bool isGeomertryInverted)
         {
+            // TODO GRAPHICS REFACTOR
             return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
         }
 
