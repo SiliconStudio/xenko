@@ -31,6 +31,7 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -109,8 +110,10 @@ namespace SiliconStudio.Presentation
 
         /// <summary>
         /// Draws a collection of ellipses, where all have the same visual appearance (stroke, fill, etc.).
-        /// This performs better than calling DrawEllipse multiple times.
         /// </summary>
+        /// <remarks>
+        /// This performs better than calling <see cref="DrawEllipse"/> multiple times.
+        /// </remarks>
         /// <param name="points"></param>
         /// <param name="radiusX">The horizontal radius of the ellipse.</param>
         /// <param name="radiusY">The vertical radius of the ellipse.</param>
@@ -195,7 +198,7 @@ namespace SiliconStudio.Presentation
                 {
                     IsSmoothJoin = false,
                     IsStroked = true,
-                    Point = aliased ? ToPixelAlignedPoint(points[i+1]) : points[i + 1],
+                    Point = aliased ? ToPixelAlignedPoint(points[i + 1]) : points[i + 1],
                 };
                 figure.Segments.Add(segment);
                 pathGeometry.Figures.Add(figure);
@@ -321,6 +324,64 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Draws a collection of texts where all have the same visual appearance (color, font, alignment).
+        /// </summary>
+        /// <remarks>
+        /// This performs better than calling <see cref="DrawText"/> multiple times.
+        /// </remarks>
+        /// <param name="points"></param>
+        /// <param name="color"></param>
+        /// <param name="texts"></param>
+        /// <param name="fontFamily"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="fontWeight"></param>
+        /// <param name="hAlign"></param>
+        /// <param name="vAlign"></param>
+        public void DrawTexts(IList<Point> points, Color color, IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
+        {
+            if (points == null) throw new ArgumentNullException(nameof(points));
+            if (texts == null) throw new ArgumentNullException(nameof(texts));
+
+            if (points.Count != texts.Count) throw new ArgumentException($"{nameof(points)} and {nameof(texts)} must have the same number of elements.");
+
+            var brush = GetBrush(color);
+            var typeFace = new Typeface(fontFamily, FontStyles.Normal, fontWeight, FontStretches.Normal);
+
+            var visual = new DrawingVisual();
+            var context = visual.RenderOpen();
+            for (var i = 0; i < points.Count; ++i)
+            {
+                var text = texts[i];
+                var point = points[i];
+                var formatted = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, fontSize, brush);
+                var dx = 0.0;
+                var dy = 0.0;
+                if (hAlign != HorizontalAlignment.Left || vAlign != VerticalAlignment.Top)
+                {
+                    var size = new Size(formatted.Width, formatted.Height);
+                    if (hAlign == HorizontalAlignment.Center)
+                        dx = -size.Width / 2;
+
+                    if (hAlign == HorizontalAlignment.Right)
+                        dx = -size.Width;
+
+                    if (vAlign == VerticalAlignment.Center)
+                        dy = -size.Height / 2;
+
+                    if (vAlign == VerticalAlignment.Bottom)
+                        dy = -size.Height;
+                }
+                point.Offset(dx, dy);
+                context.DrawText(formatted, point);
+            }
+            context.Close();
+
+            var host = Create<VisualHost>();
+            host.AddChild(visual);
+        }
+
+        /// <summary>
         /// Measures the size of the specified text.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -335,6 +396,7 @@ namespace SiliconStudio.Presentation
             if (string.IsNullOrEmpty(text))
                 return Size.Empty;
 
+            // FIXME (performance): find another way to mesure without creating a control
             var textBlock = new TextBlock
             {
                 FontFamily = fontFamily,
