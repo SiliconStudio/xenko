@@ -1,10 +1,14 @@
-﻿using SiliconStudio.Core.Mathematics;
+﻿using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     public class WireFrameRenderFeature : SubRenderFeature
     {
+        // TODO GRAPHICS REFACTOR: Make per view?
+        public static float BlendFactor = 1.0f;
+
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
         private ConstantBufferOffsetReference perDrawData;
@@ -56,8 +60,8 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 FrontColor = ((Color3)Color.FromBgra(0xFFFFDC51)).ToColorSpace(Context.GraphicsDevice.ColorSpace),
                 BackColor = ((Color3)Color.FromBgra(0xFFFF8300)).ToColorSpace(Context.GraphicsDevice.ColorSpace),
-                ColorBlend = 0.3f,
-                AlphaBlend = 0.1f
+                ColorBlend = 0.3f * BlendFactor,
+                AlphaBlend = 0.1f * BlendFactor
             };
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
