@@ -172,6 +172,31 @@ Settings:
             TransformationGizmoSize: 1.0
             TranslationSnapActive: false
             TranslationSnapValue: 1.0
+        d8bf8c60-f185-4383-8c94-94b468749609:
+            ActiveStream: Color Base
+            CamAspectRatio: 1.77777779
+            CamFarClipPlane: 1000.0
+            CamNearClipPlane: 0.1
+            CamOrthographicSize: 10.0
+            CamPitchYaw: {X: -0.512037158, Y: -5.77516127}
+            CamPosition: {X: 4.28101349, Y: 4.89907742, Z: 3.57006836}
+            CamProjection: Perspective
+            CamVerticalFieldOfView: 45.0
+            CameraPreviewVisible: true
+            ComponentGizmoSize: 1.0
+            FixedSizeGizmos: false
+            GridVisible: true
+            HiddenGizmos:
+                - Transform
+            RenderMode: Lighting
+            RotationSnapActive: false
+            RotationSnapValue: 22.5
+            ScaleSnapActive: false
+            ScaleSnapValue: 1.1
+            SelectionMaskVisible: true
+            TransformationGizmoSize: 1.0
+            TranslationSnapActive: false
+            TranslationSnapValue: 1.0
         e28ed348-02ed-45c4-8437-538a39fdbb6c:
             ActiveStream: Color Base
             CamAspectRatio: 1.77777779
