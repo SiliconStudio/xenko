@@ -314,7 +314,7 @@ namespace SiliconStudio.Xenko.Graphics
                     var member = constantBuffer.Members[i];
                     constantBuffer.Members[i] = member;
 
-                    hashBuilder.Write(member.Param.RawName);
+                    hashBuilder.Write(member.Param.Key.Name);
                     hashBuilder.Write(member.SourceOffset);
                     hashBuilder.Write(member.SourceOffset);
                     hashBuilder.Write(member.Offset);

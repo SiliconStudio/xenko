@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Values
         public int Offset;
-        public int Size;
+        public int Count;
 
         // Resources
         public int BindingSlot;
@@ -21,11 +21,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="key"></param>
         /// <param name="offset"></param>
         /// <param name="size"></param>
-        public ParameterKeyInfo(ParameterKey key, int offset, int size)
+        public ParameterKeyInfo(ParameterKey key, int offset, int count)
         {
             Key = key;
             Offset = offset;
-            Size = size;
+            Count = count;
             BindingSlot = -1;
         }
 
@@ -39,17 +39,17 @@ namespace SiliconStudio.Xenko.Rendering
             Key = key;
             BindingSlot = bindingSlot;
             Offset = -1;
-            Size = 1;
+            Count = 1;
         }
 
         public override string ToString()
         {
-            return $"{Key} ({(BindingSlot != -1 ? "BindingSlot " + BindingSlot : "Offset " + Offset)}, Size {Size})";
+            return $"{Key} ({(BindingSlot != -1 ? "BindingSlot " + BindingSlot : "Offset " + Offset)}, Size {Count})";
         }
 
         public bool Equals(ParameterKeyInfo other)
         {
-            return Key.Equals(other.Key) && Offset == other.Offset && Size == other.Size && BindingSlot == other.BindingSlot;
+            return Key.Equals(other.Key) && Offset == other.Offset && Count == other.Count && BindingSlot == other.BindingSlot;
         }
 
         public override bool Equals(object obj)
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 var hashCode = Key.GetHashCode();
                 hashCode = (hashCode*397) ^ Offset;
-                hashCode = (hashCode*397) ^ Size;
+                hashCode = (hashCode*397) ^ Count;
                 hashCode = (hashCode*397) ^ BindingSlot;
                 return hashCode;
             }
@@ -78,6 +78,16 @@ namespace SiliconStudio.Xenko.Rendering
         public static bool operator !=(ParameterKeyInfo left, ParameterKeyInfo right)
         {
             return !left.Equals(right);
+        }
+
+        internal ParameterCollection.Accessor GetObjectAccessor()
+        {
+            return new ParameterCollection.Accessor(BindingSlot, Count);
+        }
+
+        internal ParameterCollection.Accessor GetValueAccessor()
+        {
+            return new ParameterCollection.Accessor(Offset, Count);
         }
     }
 }

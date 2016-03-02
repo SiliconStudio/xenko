@@ -2,11 +2,13 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public struct PermutationParameter<T>
     {
-        internal readonly int Index;
+        internal readonly int BindingSlot;
+        internal readonly int Count;
 
-        internal PermutationParameter(int index)
+        internal PermutationParameter(int bindingSlot, int count)
         {
-            this.Index = index;
+            this.BindingSlot = bindingSlot;
+            this.Count = count;
         }
     }
 }

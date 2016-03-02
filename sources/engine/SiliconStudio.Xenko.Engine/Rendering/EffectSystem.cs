@@ -395,7 +395,7 @@ namespace SiliconStudio.Xenko.Rendering
                         if (parameterKeyInfo.Key.Type != ParameterKeyType.Permutation)
                             continue;
 
-                        for (int i = 0; i < parameterKeyInfo.Size; ++i)
+                        for (int i = 0; i < parameterKeyInfo.Count; ++i)
                         {
                             var object1 = parameters.ObjectValues[parameterKeyInfo.BindingSlot + i];
                             var object2 = compiledParameters.ObjectValues[compiledParameterKeyInfo.BindingSlot + i];

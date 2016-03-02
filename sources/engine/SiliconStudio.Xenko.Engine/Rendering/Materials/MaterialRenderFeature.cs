@@ -21,8 +21,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
-        // Material alive during this frame
-        private readonly HashSet<MaterialInfo> allMaterialInfos = new HashSet<MaterialInfo>();
+        // Material instantiated
+        private readonly Dictionary<Material, MaterialInfo> allMaterialInfos = new Dictionary<Material, MaterialInfo>();
 
         /// <summary>
         /// Custom extra info that we want to store per material.
@@ -37,7 +37,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Any matching effect
             public ResourceGroupLayout PerMaterialLayout;
 
+            public ParameterCollection ParameterCollection = new ParameterCollection();
             public ParameterCollectionLayout ParameterCollectionLayout;
+            public ParameterCollection.Copier ParameterCollectionCopier;
 
             // PerMaterial
             public ResourceGroup Resources = new ResourceGroup();
@@ -84,24 +86,29 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
 
+                var renderMesh = (RenderMesh)renderObject;
+
+                var material = renderMesh.Material;
+                var materialInfo = renderMesh.MaterialInfo;
+
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
-                    var renderMesh = (RenderMesh)renderObject;
 
                     // Skip effects not used during this frame
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    var material = renderMesh.Material;
-                    var materialInfo = (MaterialInfo)material.RenderData;
-                    if (materialInfo == null)
+                    if (materialInfo == null || materialInfo.Material != material)
                     {
                         // First time this material is initialized, let's create associated info
-                        materialInfo = new MaterialInfo(material);
-                        material.RenderData = materialInfo;
-                        allMaterialInfos.Add(materialInfo);
+                        if (!allMaterialInfos.TryGetValue(material, out materialInfo))
+                        {
+                            materialInfo = new MaterialInfo(material);
+                            allMaterialInfos.Add(material, materialInfo);
+                        }
+                        renderMesh.MaterialInfo = materialInfo;
                     }
 
                     if (materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
@@ -164,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
                 // Need to offer some protection if this invariant is violated (or support it if it can actually happen in real scenario)
                 var material = renderMesh.Material;
-                var materialInfo = (MaterialInfo)material.RenderData;
+                var materialInfo = renderMesh.MaterialInfo;
                 var materialParameters = material.Parameters;
 
                 UpdateMaterial(context, materialInfo, renderNode.RenderEffect, materialParameters);
@@ -204,13 +211,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
                     parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                 }
+
+                materialInfo.ParameterCollection.UpdateLayout(parameterCollectionLayout);
+                materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
             }
 
-            if (materialParameters.Layout != materialInfo.ParameterCollectionLayout)
-            {
-                // Update material parameters layout to what is expected by effect
-                materialParameters.UpdateLayout(materialInfo.ParameterCollectionLayout);
-            }
+            // Copy back to ParameterCollection
+            // TODO GRAPHICS REFACTOR directly copy to resource group?
+            materialInfo.ParameterCollectionCopier.Copy();
 
             // Allocate resource groups
             context.ResourceGroupAllocator.PrepareResourceGroup(materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
@@ -218,14 +226,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Set resource bindings in PerMaterial resource set
             for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)
             {
-                materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, materialParameters.ObjectValues[resourceSlot]);
+                materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, materialInfo.ParameterCollection.ObjectValues[resourceSlot]);
             }
 
             // Process PerMaterial cbuffer
             if (materialInfo.ConstantBufferReflection != null)
             {
                 var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
-                fixed (byte* dataValues = materialParameters.DataValues)
+                fixed (byte* dataValues = materialInfo.ParameterCollection.DataValues)
                     Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, materialInfo.Resources.ConstantBuffer.Size);
             }
         }
