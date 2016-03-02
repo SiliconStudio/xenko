@@ -45,18 +45,6 @@
     <Compile Include="Module.cs" />
     <Compile Include="ParticleLocator.cs" />
     <Compile Include="ParticleSystemSettings.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders\ComputeColorBlue.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorBlue.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\ComputeColorWhite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -93,6 +81,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
@@ -100,6 +89,10 @@
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Updaters\UpdaterColorOverTime.cs" />
+    <Compile Include="Updaters\UpdaterGravity.cs" />
+    <Compile Include="Updaters\UpdaterRotationOverTime.cs" />
+    <Compile Include="Updaters\UpdaterSizeOverTime.cs" />
     <Compile Include="Updaters\FieldShapes\Cube.cs" />
     <Compile Include="Updaters\FieldShapes\Cylinder.cs" />
     <Compile Include="Updaters\FieldShapes\FieldFalloff.cs" />
@@ -108,7 +101,6 @@
     <Compile Include="Updaters\FieldShapes\Torus.cs" />
     <Compile Include="Updaters\UpdaterCollider.cs" />
     <Compile Include="Updaters\UpdaterForceField.cs" />
-    <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\ParticleUpdater.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
@@ -123,12 +115,6 @@
     <Compile Include="ParticleUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBaseKeys.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -181,13 +167,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
-    <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
-    <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
-    <None Include="Shaders\ComputeColorBlue.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorBlue.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\ComputeColorWhite.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorWhite.cs</LastGenOutput>

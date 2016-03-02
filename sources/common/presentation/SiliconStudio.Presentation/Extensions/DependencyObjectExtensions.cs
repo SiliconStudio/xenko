@@ -34,7 +34,7 @@ namespace SiliconStudio.Presentation.Extensions
             return source.DependencyObjectType.SystemType.GetFields(flags)
                 .Where(fi => fi.MemberType == MemberTypes.Field && fi.FieldType == dependencyPropertyType)
                 .Select(fi => (DependencyProperty)fi.GetValue(source))
-                .OrderBy(fi => fi.Name)
+                .OrderBy(dp => dp.Name)
                 .ToArray();
         }
 
