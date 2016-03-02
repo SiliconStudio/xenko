@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -40,6 +41,20 @@ using System.Windows.Shapes;
 
 namespace SiliconStudio.Presentation
 {
+    [Serializable]
+    public enum TextMeasurementMethod
+    {
+        /// <summary>
+        /// Measurement by TextBlock.
+        /// </summary>
+        TextBlock,
+
+        /// <summary>
+        /// Measurement by glyph typeface.
+        /// </summary>
+        GlyphTypeface
+    }
+
     public class CanvasRenderer
     {
         private readonly Dictionary<Color, Brush> cachedBrushes = new Dictionary<Color, Brush>();
@@ -388,24 +403,103 @@ namespace SiliconStudio.Presentation
         /// <param name="fontFamily">The font family.</param>
         /// <param name="fontSize">Size of the font.</param>
         /// <param name="fontWeight">The font weight.</param>
+        /// <param name="measurementMethod"></param>
         /// <returns>
         /// The size of the text (in device independent units, 1/96 inch).
         /// </returns>
-        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface)
         {
             if (string.IsNullOrEmpty(text))
                 return Size.Empty;
 
-            // FIXME (performance): find another way to mesure without creating a control
-            var textBlock = new TextBlock
+            switch (measurementMethod)
             {
-                FontFamily = fontFamily,
-                FontSize = fontSize,
-                FontWeight = fontWeight,
-                Text = text,
-            };
-            textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
+                case TextMeasurementMethod.GlyphTypeface:
+                    GlyphTypeface glyphTypeface;
+                    if (TryGetGlyphTypeface(fontFamily, FontStyles.Normal, fontWeight, FontStretches.Normal, out glyphTypeface))
+                        return MeasureTextSize(glyphTypeface, fontSize, text);
+                    // Fallback to TextBlock measurement method
+                    goto case TextMeasurementMethod.TextBlock;
+
+                case TextMeasurementMethod.TextBlock:
+                    var textBlock = new TextBlock
+                    {
+                        FontFamily = fontFamily,
+                        FontSize = fontSize,
+                        FontWeight = fontWeight,
+                        Text = text,
+                    };
+                    textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(measurementMethod));
+            }
+        }
+
+        /// <summary>
+        /// Measures the size of the specified texts where all have the same visual appearance (color, font, alignment) and returns the maximum.
+        /// </summary>
+        /// <remarks>
+        /// This performs better than calling <see cref="MeasureText"/> multiple times.
+        /// </remarks>
+        /// <param name="texts">The texts.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <param name="measurementMethod"></param>
+        /// <returns>
+        /// The maximum size of the texts (in device independent units, 1/96 inch).
+        /// </returns>
+        public Size MeasureTexts(IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface)
+        {
+            if (texts == null) throw new ArgumentNullException(nameof(texts));
+
+            var maxWidth = 0.0;
+            var maxHeight = 0.0;
+            TextBlock textBlock = null;
+            for (var i = 0; i < texts.Count; ++i)
+            {
+                var text = texts[i];
+                Size size;
+                switch (measurementMethod)
+                {
+                    case TextMeasurementMethod.GlyphTypeface:
+                        GlyphTypeface glyphTypeface;
+                        if (TryGetGlyphTypeface(fontFamily, FontStyles.Normal, fontWeight, FontStretches.Normal, out glyphTypeface))
+                        {
+                            size = MeasureTextSize(glyphTypeface, fontSize, text);
+                            break;
+                        }
+                        // Fallback to TextBlock measurement method
+                        goto case TextMeasurementMethod.TextBlock;
+
+                    case TextMeasurementMethod.TextBlock:
+                        if (textBlock == null)
+                        {
+                            textBlock = new TextBlock
+                            {
+                                FontFamily = fontFamily,
+                                FontSize = fontSize,
+                                FontWeight = fontWeight,
+                            };
+                        }
+                        textBlock.Text = text;
+                        textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                        size = textBlock.DesiredSize;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(measurementMethod));
+                }
+                if (size.Width > maxWidth)
+                    maxWidth = size.Width;
+                if (size.Height > maxHeight)
+                    maxHeight = size.Height;
+            }
+            return new Size(maxWidth, maxHeight);
         }
 
         /// <summary>
@@ -587,6 +681,50 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Fast text size calculation.
+        /// </summary>
+        /// <param name="glyphTypeface">The glyph typeface.</param>
+        /// <param name="sizeInEm">The size.</param>
+        /// <param name="text">The text.</param>
+        /// <returns>The text size.</returns>
+        private static Size MeasureTextSize(GlyphTypeface glyphTypeface, double sizeInEm, string text)
+        {
+            double width = 0;
+            double lineWidth = 0;
+            var lines = 0;
+            foreach (var ch in text)
+            {
+                switch (ch)
+                {
+                    case '\n':
+                        lines++;
+                        if (lineWidth > width)
+                        {
+                            width = lineWidth;
+                        }
+
+                        lineWidth = 0;
+                        continue;
+
+                    case '\t':
+                        continue;
+                }
+
+                var glyph = glyphTypeface.CharacterToGlyphMap[ch];
+                var advanceWidth = glyphTypeface.AdvanceWidths[glyph];
+                lineWidth += advanceWidth;
+            }
+
+            lines++;
+            if (lineWidth > width)
+            {
+                width = lineWidth;
+            }
+
+            return new Size(Math.Round(width*sizeInEm, 2), Math.Round(lines*glyphTypeface.Height*sizeInEm, 2));
+        }
+
+        /// <summary>
         /// Converts a <see cref="Point" /> to a pixel aligned<see cref="Point" />.
         /// </summary>
         /// <param name="point">The point.</param>
@@ -607,6 +745,13 @@ namespace SiliconStudio.Presentation
         private static PointCollection ToPointCollection(IEnumerable<Point> points, bool aliased)
         {
             return new PointCollection(aliased ? points.Select(ToPixelAlignedPoint) : points);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool TryGetGlyphTypeface(FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, out GlyphTypeface glyphTypeface)
+        {
+            var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
+            return typeface.TryGetGlyphTypeface(out glyphTypeface);
         }
     }
 }
