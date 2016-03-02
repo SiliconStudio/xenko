@@ -58,6 +58,19 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <returns></returns>
         public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference)
         {
+            Dictionary<Guid, Guid> entityMapping;
+            return CloneSubHierarchy(sourceRootEntity, cleanReference, out entityMapping);
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
+        /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
+        /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
+        /// <returns></returns>
+        public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
+        {
             if (!Hierarchy.Entities.ContainsKey(sourceRootEntity))
                 throw new ArgumentException(@"The source root entity must be an entity of this asset.", nameof(sourceRootEntity));
 
@@ -86,14 +99,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
             Hierarchy = sourceHierarchy;
 
             // Generate entity mapping
-            var reverseEntityMapping = new Dictionary<Guid, Guid>();
+            entityMapping = new Dictionary<Guid, Guid>();
             foreach (var entityDesign in clonedHierarchy.Entities)
             {
                 // Generate new Id
                 var newEntityId = Guid.NewGuid();
 
                 // Update mappings
-                reverseEntityMapping.Add(entityDesign.Entity.Id, newEntityId);
+                entityMapping.Add(entityDesign.Entity.Id, newEntityId);
 
                 // Update entity with new id
                 entityDesign.Entity.Id = newEntityId;
@@ -101,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Rewrite entity references
             // Should we nullify invalid references?
-            EntityAnalysis.RemapEntitiesId(clonedHierarchy, reverseEntityMapping);
+            EntityAnalysis.RemapEntitiesId(clonedHierarchy, entityMapping);
 
             return clonedHierarchy;
         }
