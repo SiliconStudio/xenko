@@ -265,6 +265,16 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        protected override void Destroy()
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Dispose();
+            }
+
+            base.Destroy();
+        }
+
         /// <summary>
         /// Reset render objects and features. Should be called at beginning of Extract phase.
         /// </summary>

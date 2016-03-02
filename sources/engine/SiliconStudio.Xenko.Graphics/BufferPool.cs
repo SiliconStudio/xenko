@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool CanAllocate(int size)
         {
-            return bufferAllocationOffset + size > Size;
+            return bufferAllocationOffset + size <= Size;
         }
 
         public void Allocate(GraphicsDevice graphicsDevice, int size, BufferPoolAllocationType type, ref BufferPoolAllocationResult bufferPoolAllocationResult)

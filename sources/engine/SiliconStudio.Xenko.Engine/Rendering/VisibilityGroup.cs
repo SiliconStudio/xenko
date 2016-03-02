@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Represents a group of visible <see cref="RenderObject"/>.
     /// </summary>
-    public class VisibilityGroup
+    public class VisibilityGroup : IDisposable
     {
         private int stageMaskMultiplier;
 
@@ -53,6 +53,12 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderSystem.RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderSystem.RenderStageSelectorsChanged += RenderSystem_RenderStageSelectorsChanged;
+        }
+
+        public void Dispose()
+        {
+            RenderSystem.RenderStageSelectorsChanged -= RenderSystem_RenderStageSelectorsChanged;
+            RenderSystem.RenderStages.CollectionChanged -= RenderStages_CollectionChanged;
         }
 
         // TODO GRAPHICS REFACTOR not thread-safe
