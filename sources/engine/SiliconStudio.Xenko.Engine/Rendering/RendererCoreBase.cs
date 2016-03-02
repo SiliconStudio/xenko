@@ -53,12 +53,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(true)]
         public virtual bool Enabled { get; set; }
 
-        /// <summary>
-        /// Gets if the system tried initialization but is unable to work in the current environment
-        /// </summary>
-        [DataMemberIgnore]
-        public bool Faulted { get; protected set; }
-
         [DataMemberIgnore]
         public bool Profiling { get; set; }
 
@@ -121,14 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
-            try
-            {
-                InitializeCore();
-            }
-            catch (Exception)
-            {
-                Faulted = true;
-            }         
+            InitializeCore();
 
             Initialized = true;
 

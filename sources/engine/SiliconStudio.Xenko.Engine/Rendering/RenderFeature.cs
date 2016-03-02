@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool Initialized { get; private set; }
 
-        public bool Faulted { get; private set; }
-
         public bool Enabled { get { return true; } set { throw new NotImplementedException(); } }
 
         public void Initialize(RenderContext context)
@@ -32,14 +30,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             Context = context;
 
-            try
-            {
-                InitializeCore();
-            }
-            catch (Exception)
-            {
-                Faulted = true;
-            }
+            InitializeCore();
 
             Initialized = true;
 
