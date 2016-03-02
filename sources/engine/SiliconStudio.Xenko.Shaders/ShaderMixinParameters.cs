@@ -32,10 +32,10 @@ namespace SiliconStudio.Xenko.Shaders
         public bool Contains(KeyValuePair<ParameterKey, object> item)
         {
             var accessor = GetObjectParameterHelper(item.Key);
-            if (accessor == -1)
+            if (accessor.Offset == -1)
                 return false;
 
-            return ObjectValues[accessor].Equals(item.Value);
+            return ObjectValues[accessor.Offset].Equals(item.Value);
         }
 
         public void CopyTo(KeyValuePair<ParameterKey, object>[] array, int arrayIndex)

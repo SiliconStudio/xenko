@@ -8,5 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     {
         public Skybox Skybox;
         public SkyboxBackground Background;
+
+        internal SkyboxRenderFeature.SkyboxInfo SkyboxInfo;
     }
 }

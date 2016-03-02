@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 var otherParameterKeyInfo = parameters1.ParameterKeyInfos.FirstOrDefault(x => x.Key == parameterKeyInfo.Key);
 
                 // Nothing found?
-                if (otherParameterKeyInfo.Key == null || parameterKeyInfo.Size != otherParameterKeyInfo.Size)
+                if (otherParameterKeyInfo.Key == null || parameterKeyInfo.Count != otherParameterKeyInfo.Count)
                     return false;
 
                 if (parameterKeyInfo.Offset != -1)
@@ -196,13 +196,13 @@ namespace SiliconStudio.Xenko.Assets.Model
                     // Data
                     fixed (byte* dataValues0 = parameters0.DataValues)
                     fixed (byte* dataValues1 = parameters1.DataValues)
-                        if (!Utilities.CompareMemory((IntPtr)dataValues0 + parameterKeyInfo.Offset, (IntPtr)dataValues1 + otherParameterKeyInfo.Offset, parameterKeyInfo.Size))
+                        if (!Utilities.CompareMemory((IntPtr)dataValues0 + parameterKeyInfo.Offset, (IntPtr)dataValues1 + otherParameterKeyInfo.Offset, parameterKeyInfo.Count))
                             return false;
                 }
                 else if (parameterKeyInfo.BindingSlot != -1)
                 {
                     // Resource
-                    for (int i = 0; i < parameterKeyInfo.Size; ++i)
+                    for (int i = 0; i < parameterKeyInfo.Count; ++i)
                     {
                         var object1 = parameters0.ObjectValues[parameterKeyInfo.BindingSlot + i];
                         var object2 = parameters1.ObjectValues[otherParameterKeyInfo.BindingSlot + i];

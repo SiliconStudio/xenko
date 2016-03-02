@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Compute associated layout ranges
             parameterCompositionCopier = new ParameterCollection.CompositionCopier();
-            parameterCompositionCopier.Compute(parentCollection, Parameters, keyRoot);
+            parameterCompositionCopier.Compile(parentCollection, Parameters, keyRoot);
         }
 
         /// <summary>

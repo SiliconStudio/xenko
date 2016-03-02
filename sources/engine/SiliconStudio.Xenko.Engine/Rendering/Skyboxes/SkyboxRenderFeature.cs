@@ -21,14 +21,21 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderSkybox);
 
-        public class SkyboxInfo
+        internal class SkyboxInfo
         {
+            public Skybox Skybox;
+
             // Used internally by renderer
-            internal ResourceGroupLayout ResourceGroupLayout;
-            internal ResourceGroup Resources;
-            internal ParameterCollection IrradianceParameters;
-            internal ParameterCollection.CompositionCopier IrradianceCopier;
-            internal ParameterCollectionLayout ParameterCollectionLayout;
+            public ResourceGroupLayout ResourceGroupLayout;
+            public ResourceGroup Resources = new ResourceGroup();
+            public ParameterCollection ParameterCollection = new ParameterCollection();
+            public ParameterCollectionLayout ParameterCollectionLayout;
+            public ParameterCollection.Copier ParameterCollectionCopier;
+
+            public SkyboxInfo(Skybox skybox)
+            {
+                Skybox = skybox;
+            }
         }
 
         /// <inheritdoc/>
@@ -90,17 +97,15 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 var renderSkybox = (RenderSkybox)renderNode.RenderObject;
                 var sourceParameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
-                var parameters = sourceParameters;
+
+                var skyboxInfo = renderSkybox.SkyboxInfo;
+                if (skyboxInfo == null || skyboxInfo.Skybox != renderSkybox.Skybox)
+                    skyboxInfo = renderSkybox.SkyboxInfo = new SkyboxInfo(renderSkybox.Skybox);
+
+                var parameters = skyboxInfo.ParameterCollection;
 
                 var renderEffect = renderNode.RenderEffect;
 
-                var skyboxInfo = (SkyboxInfo)renderSkybox.Skybox.RenderData ?? (SkyboxInfo)(renderSkybox.Skybox.RenderData = new SkyboxInfo());
-
-                if (renderSkybox.Background == SkyboxBackground.Irradiance)
-                {
-                    // Need to compose keys with "skyboxColor" (sub-buffer?)
-                    parameters = skyboxInfo.IrradianceParameters ?? (skyboxInfo.IrradianceParameters = new ParameterCollection());
-                }
 
                 // TODO GRAPHICS REFACTOR current system is not really safe with multiple renderers (parameters come from Skybox which is shared but ResourceGroupLayout from RenderSkybox is per RenderNode)
                 if (skyboxInfo.ResourceGroupLayout == null || skyboxInfo.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
@@ -121,27 +126,20 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                     // TODO: Cache that
                     skyboxInfo.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
-                    skyboxInfo.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
-                }
 
-                if (parameters.Layout != skyboxInfo.ParameterCollectionLayout)
-                {
-                    parameters.UpdateLayout(skyboxInfo.ParameterCollectionLayout);
+                    parameters.UpdateLayout(parameterCollectionLayout);
 
-                    // Reset irradiance copier (target layout changed)
-                    skyboxInfo.IrradianceCopier = new ParameterCollection.CompositionCopier();
-                }
-
-                if (renderSkybox.Background == SkyboxBackground.Irradiance)
-                {
-                    if (!skyboxInfo.IrradianceCopier.IsValid)
+                    if (renderSkybox.Background == SkyboxBackground.Irradiance)
                     {
-                        skyboxInfo.IrradianceCopier = new ParameterCollection.CompositionCopier();
-                        skyboxInfo.IrradianceCopier.Compute(parameters, sourceParameters, ".skyboxColor");
+                        skyboxInfo.ParameterCollectionCopier = new ParameterCollection.Copier(parameters, sourceParameters, ".skyboxColor");
                     }
-
-                    skyboxInfo.IrradianceCopier.Copy(sourceParameters);
+                    else
+                    {
+                        skyboxInfo.ParameterCollectionCopier = new ParameterCollection.Copier(parameters, sourceParameters);
+                    }
                 }
+
+                skyboxInfo.ParameterCollectionCopier.Copy();
 
                 // Update SkyMatrix
                 var rotation = parameters.Get(SkyboxKeys.Rotation);
@@ -154,7 +152,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var matrixTransformOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(this.matrixTransform);
                 if (matrixTransformOffset != -1)
                 {
-                    var mappedCB = renderNode.Resources.ConstantBuffer.Data;
+                    var mappedCB = renderNode.Resources.ConstantBuffer.Data + matrixTransformOffset;
                     unsafe
                     {
                         *(Matrix*)(byte*)mappedCB = Matrix.Identity;

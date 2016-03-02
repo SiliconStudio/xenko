@@ -4,6 +4,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -35,6 +36,7 @@ namespace SiliconStudio.Xenko.Rendering
         // Material
         // TODO: Extract with MaterialRenderFeature
         public Material Material;
+        internal MaterialRenderFeature.MaterialInfo MaterialInfo;
 
         public bool IsShadowCaster;
         public bool IsShadowReceiver;

@@ -34,6 +34,9 @@ namespace SiliconStudio.Xenko.Rendering
         public int PermutationCounter = 1;
 
         [DataMemberIgnore]
+        public int LayoutCounter = 1;
+
+        [DataMemberIgnore]
         public FastList<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
         [DataMemberIgnore]
@@ -85,7 +88,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns></returns>
         public ObjectParameterAccessor<T> GetAccessor<T>(ObjectParameterKey<T> parameterKey, bool createIfNew = true)
         {
-            return new ObjectParameterAccessor<T>(GetObjectParameterHelper(parameterKey, createIfNew));
+            var accessor = GetObjectParameterHelper(parameterKey, createIfNew);
+            return new ObjectParameterAccessor<T>(accessor.Offset, accessor.Count);
         }
 
         /// <summary>
@@ -97,7 +101,8 @@ namespace SiliconStudio.Xenko.Rendering
         public PermutationParameter<T> GetAccessor<T>(PermutationParameterKey<T> parameterKey, bool createIfNew = true)
         {
             // Remap it as PermutationParameter
-            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey, createIfNew));
+            var accessor = GetObjectParameterHelper(parameterKey, createIfNew);
+            return new PermutationParameter<T>(accessor.Offset, accessor.Count);
         }
 
         /// <summary>
@@ -108,19 +113,22 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns></returns>
         public ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
         {
-            return new ValueParameter<T>(GetValueAccessorHelper(parameterKey, elementCount));
+            var accessor = GetValueAccessorHelper(parameterKey, elementCount);
+            return new ValueParameter<T>(accessor.Offset, accessor.Count);
         }
 
-        private unsafe int GetValueAccessorHelper(ParameterKey parameterKey, int elementCount = 1)
+        private unsafe Accessor GetValueAccessorHelper(ParameterKey parameterKey, int elementCount = 1)
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
-                if (parameterKeyInfos[i].Key == parameterKey)
+                if (parameterKeyInfos.Items[i].Key == parameterKey)
                 {
-                    return i;
+                    return parameterKeyInfos.Items[i].GetValueAccessor();
                 }
             }
+
+            LayoutCounter++;
 
             // Check layout if it exists
             if (layout != null)
@@ -130,7 +138,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (layoutParameterKeyInfo.Key == parameterKey)
                     {
                         parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return parameterKeyInfos.Count - 1;
+                        return layoutParameterKeyInfo.GetValueAccessor();
                     }
                 }
             }
@@ -142,9 +150,8 @@ namespace SiliconStudio.Xenko.Rendering
                 totalSize += (elementSize + 15) / 16 * 16 * (elementCount - 1);
 
             // Create offset entry
-            var result = parameterKeyInfos.Count;
             var memberOffset = DataValues.Length;
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
+            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, elementCount));
 
             // We append at the end; resize array to accomodate new data
             Array.Resize(ref DataValues, DataValues.Length + totalSize);
@@ -156,7 +163,7 @@ namespace SiliconStudio.Xenko.Rendering
                     parameterKey.DefaultValueMetadata.WriteBuffer((IntPtr)dataValues + memberOffset, 16);
             }
 
-            return result;
+            return new Accessor(memberOffset, elementCount);
         }
 
         /// <summary>
@@ -168,7 +175,7 @@ namespace SiliconStudio.Xenko.Rendering
         public unsafe IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
         {
             fixed (byte* dataValues = DataValues)
-                return (IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset;
+                return (IntPtr)dataValues + parameter.Offset;
         }
 
         /// <summary>
@@ -191,7 +198,7 @@ namespace SiliconStudio.Xenko.Rendering
         public T Get<T>(ObjectParameterKey<T> parameter, bool createIfNew = false)
         {
             var accessor = GetAccessor(parameter, createIfNew);
-            if (accessor.Index == -1)
+            if (accessor.BindingSlot == -1)
                 return parameter.DefaultValueMetadataT.DefaultValue;
 
             return Get(GetAccessor(parameter, createIfNew));
@@ -217,7 +224,7 @@ namespace SiliconStudio.Xenko.Rendering
         public T Get<T>(PermutationParameterKey<T> parameter, bool createIfNew = false)
         {
             var accessor = GetAccessor(parameter, createIfNew);
-            if (accessor.Index == -1)
+            if (accessor.BindingSlot == -1)
                 return parameter.DefaultValueMetadataT.DefaultValue;
 
             return Get(GetAccessor(parameter));
@@ -291,8 +298,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Align to float4
             var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
-            var elementCount = (parameterKeyInfos[parameter.Index].Size + stride) / stride;
-            var values = new T[elementCount];
+            var values = new T[parameter.Count];
             for (int i = 0; i < values.Length; ++i)
             {
                 Utilities.Read(data, ref values[i]);
@@ -311,7 +317,7 @@ namespace SiliconStudio.Xenko.Rendering
         public unsafe void Set<T>(ValueParameter<T> parameter, T value) where T : struct
         {
             fixed (byte* dataValues = DataValues)
-                Utilities.Write((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
+                Utilities.Write((IntPtr)dataValues + parameter.Offset, ref value);
         }
 
         /// <summary>
@@ -323,7 +329,7 @@ namespace SiliconStudio.Xenko.Rendering
         public unsafe void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
         {
             fixed (byte* dataValues = DataValues)
-                Utilities.Write((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
+                Utilities.Write((IntPtr)dataValues + parameter.Offset, ref value);
         }
 
         /// <summary>
@@ -338,7 +344,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Align to float4
             var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
-            var elementCount = (parameterKeyInfos[parameter.Index].Size + stride) / stride;
+            var elementCount = parameter.Count;
             if (count > elementCount)
             {
                 throw new IndexOutOfRangeException();
@@ -363,7 +369,7 @@ namespace SiliconStudio.Xenko.Rendering
         public void Set<T>(PermutationParameter<T> parameter, T value)
         {
             PermutationCounter++;
-            ObjectValues[parameterKeyInfos[parameter.Index].BindingSlot] = value;
+            ObjectValues[parameter.BindingSlot] = value;
         }
 
         /// <summary>
@@ -374,7 +380,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="value"></param>
         public void Set<T>(ObjectParameterAccessor<T> parameterAccessor, T value)
         {
-            ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot] = value;
+            ObjectValues[parameterAccessor.BindingSlot] = value;
         }
 
         /// <summary>
@@ -386,7 +392,7 @@ namespace SiliconStudio.Xenko.Rendering
         public unsafe T Get<T>(ValueParameter<T> parameter) where T : struct
         {
             fixed (byte* dataValues = DataValues)
-                return Utilities.Read<T>((IntPtr)dataValues + parameterKeyInfos[parameter.Index].Offset);
+                return Utilities.Read<T>((IntPtr)dataValues + parameter.Offset);
         }
 
         /// <summary>
@@ -397,7 +403,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns></returns>
         public T Get<T>(PermutationParameter<T> parameter)
         {
-            return (T)ObjectValues[parameterKeyInfos[parameter.Index].BindingSlot];
+            return (T)ObjectValues[parameter.BindingSlot];
         }
 
         /// <summary>
@@ -408,7 +414,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns></returns>
         public T Get<T>(ObjectParameterAccessor<T> parameterAccessor)
         {
-            return (T)ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot];
+            return (T)ObjectValues[parameterAccessor.BindingSlot];
         }
 
         public void SetObject(ParameterKey key, object value)
@@ -420,7 +426,7 @@ namespace SiliconStudio.Xenko.Rendering
                 PermutationCounter++;
 
             var accessor = GetObjectParameterHelper(key);
-            ObjectValues[accessor] = value;
+            ObjectValues[accessor.Offset] = value;
         }
 
         public object GetObject(ParameterKey key)
@@ -429,10 +435,10 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException("SetObject can only be used for Permutation or Object keys");
 
             var accessor = GetObjectParameterHelper(key, false);
-            if (accessor == -1)
+            if (accessor.Offset == -1)
                 return null;
 
-            return ObjectValues[accessor];
+            return ObjectValues[accessor.Offset];
         }
 
         public bool Remove(ParameterKey key)
@@ -442,6 +448,7 @@ namespace SiliconStudio.Xenko.Rendering
                 if (parameterKeyInfos[i].Key == key)
                 {
                     parameterKeyInfos.SwapRemoveAt(i);
+                    LayoutCounter++;
                     return true;
                 }
             }
@@ -535,7 +542,10 @@ namespace SiliconStudio.Xenko.Rendering
                     // It's data
                     newParameterKeyInfos.Items[i].Offset = bufferSize;
 
-                    bufferSize += newParameterKeyInfos.Items[i].Size;
+                    var elementSize = newParameterKeyInfos.Items[i].Key.Size;
+                    var elementCount = newParameterKeyInfos.Items[i].Count;
+                    var totalSize = elementSize + (elementSize + 15) / 16 * 16 * (elementCount - 1);
+                    bufferSize += totalSize;
                 }
                 else if (parameterKeyInfo.BindingSlot != -1)
                 {
@@ -572,10 +582,14 @@ namespace SiliconStudio.Xenko.Rendering
 
                 if (newParameterKeyInfo.Offset != -1)
                 {
+                    var elementSize = newParameterKeyInfos.Items[i].Key.Size;
+                    var newTotalSize = elementSize + (elementSize + 15) / 16 * 16 * (newParameterKeyInfo.Count - 1);
+                    var totalSize = elementSize + (elementSize + 15) / 16 * 16 * (parameterKeyInfo.Count - 1);
+
                     // It's data
                     fixed (byte* dataValues = DataValues)
                     fixed (byte* newDataValuesPtr = newDataValues)
-                        Utilities.CopyMemory((IntPtr)newDataValuesPtr + newParameterKeyInfo.Offset, (IntPtr)dataValues + parameterKeyInfo.Offset, Math.Min(newParameterKeyInfo.Size, parameterKeyInfo.Size));
+                        Utilities.CopyMemory((IntPtr)newDataValuesPtr + newParameterKeyInfo.Offset, (IntPtr)dataValues + parameterKeyInfo.Offset, Math.Min(newTotalSize, totalSize));
                 }
                 else if (newParameterKeyInfo.BindingSlot != -1)
                 {
@@ -591,22 +605,24 @@ namespace SiliconStudio.Xenko.Rendering
             ObjectValues = newResourceValues;
         }
 
-        protected int GetObjectParameterHelper(ParameterKey parameterKey, bool createIfNew = true)
+        protected Accessor GetObjectParameterHelper(ParameterKey parameterKey, bool createIfNew = true)
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
-                if (parameterKeyInfos[i].Key == parameterKey)
+                if (parameterKeyInfos.Items[i].Key == parameterKey)
                 {
-                    return i;
+                    return parameterKeyInfos.Items[i].GetObjectAccessor();
                 }
             }
 
             if (!createIfNew)
-                return -1;
+                return new Accessor(-1, 0);
 
             if (parameterKey.Type == ParameterKeyType.Permutation)
                 PermutationCounter++;
+
+            LayoutCounter++;
 
             // Check layout if it exists
             if (layout != null)
@@ -616,7 +632,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (layoutParameterKeyInfo.Key == parameterKey)
                     {
                         parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return parameterKeyInfos.Count - 1;
+                        return layoutParameterKeyInfo.GetObjectAccessor();
                     }
                 }
             }
@@ -632,7 +648,7 @@ namespace SiliconStudio.Xenko.Rendering
                 ObjectValues[resourceValuesSize] = parameterKey.DefaultValueMetadata.GetDefaultValue();
             }
 
-            return parameterKeyInfos.Count - 1;
+            return new Accessor(resourceValuesSize, 1);
         }
 
         public class Serializer : ClassDataSerializer<ParameterCollection>
@@ -642,6 +658,132 @@ namespace SiliconStudio.Xenko.Rendering
                 stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
                 stream.SerializeExtended(ref parameterCollection.ObjectValues, mode);
                 stream.Serialize(ref parameterCollection.DataValues, mode);
+            }
+        }
+
+        public struct Copier
+        {
+            private CopyRange[] ranges;
+            private ParameterCollection destination;
+            private ParameterCollection source;
+            private int sourceLayoutCounter;
+            private string subKey;
+
+            public Copier(ParameterCollection destination, ParameterCollection source, string subKey = null)
+            {
+                ranges = null;
+                sourceLayoutCounter = 0;
+                this.destination = destination;
+                this.source = source;
+                this.subKey = subKey;
+            }
+
+            public unsafe void Copy()
+            {
+                var destinationLayout = destination.Layout;
+
+                // Note: we should provide a slow version for first copy during Extract (layout isn't known yet)
+                if (destinationLayout == null)
+                    throw new NotImplementedException();
+
+            TryCopy:
+                if (destinationLayout == source.Layout)
+                {
+                    // Easy, let's do a full copy!
+                    PerformFastCopy(destinationLayout);
+                }
+                else
+                {
+                    if (ranges == null || sourceLayoutCounter != source.LayoutCounter)
+                    {
+                        Compile();
+
+                        // Try again in case fast copy is possible
+                        if (destinationLayout == source.Layout)
+                        {
+                            PerformFastCopy(destinationLayout);
+                            return;
+                        }
+                    }
+
+                    // Slower path: copy element by element
+                    foreach (var range in ranges)
+                    {
+                        if (range.IsResource)
+                        {
+                            for (int i = 0; i < range.Size; ++i)
+                            {
+                                destination.ObjectValues[range.DestStart + i] = source.ObjectValues[range.SourceStart + i];
+                            }
+                        }
+                        else if (range.IsData)
+                        {
+                            fixed (byte* destDataValues = destination.DataValues)
+                            fixed (byte* sourceDataValues = source.DataValues)
+                                Utilities.CopyMemory((IntPtr)destDataValues + range.DestStart, (IntPtr)sourceDataValues + range.SourceStart, range.Size);
+                        }
+                    }
+                }
+            }
+
+            private unsafe void PerformFastCopy(ParameterCollectionLayout destinationLayout)
+            {
+                fixed (byte* destPtr = destination.DataValues)
+                fixed (byte* sourcePtr = source.DataValues)
+                    Utilities.CopyMemory((IntPtr)destPtr, (IntPtr)sourcePtr, destinationLayout.BufferSize);
+
+                var resourceCount = destinationLayout.ResourceCount;
+                for (int i = 0; i < resourceCount; ++i)
+                    destination.ObjectValues[i] = source.ObjectValues[i];
+            }
+
+            private void Compile()
+            {
+                // If we are first, let's apply our layout!
+                if (source.Layout == null && subKey == null)
+                {
+                    source.UpdateLayout(destination.Layout);
+                    return;
+                }
+                else
+                {
+                    // TODO GRAPHICS REFACTOR optim: check if layout are the same
+                    //if (source.Layout.LayoutParameterKeyInfos == destination.Layout.LayoutParameterKeyInfos)
+                }
+
+                var rangesList = new List<CopyRange>();
+
+                // Try to match elements (both source and destination should have a layout by now)
+                foreach (var parameterKeyInfo in destination.Layout.LayoutParameterKeyInfos)
+                {
+                    var sourceKey = parameterKeyInfo.Key;
+                    if (subKey != null && sourceKey.Name.EndsWith(subKey))
+                    {
+                        // That's a match
+                        var subkeyName = parameterKeyInfo.Key.Name.Substring(0, parameterKeyInfo.Key.Name.Length - subKey.Length);
+                        sourceKey = ParameterKeys.FindByName(subkeyName);
+                    }
+
+                    if (parameterKeyInfo.Key.Type == ParameterKeyType.Value)
+                    {
+                        var sourceAccessor = source.GetValueAccessorHelper(sourceKey, parameterKeyInfo.Count);
+                        var destAccessor = destination.GetValueAccessorHelper(parameterKeyInfo.Key, parameterKeyInfo.Count);
+                        var elementCount = Math.Min(sourceAccessor.Count, destAccessor.Count);
+                        var elementSize = parameterKeyInfo.Key.Size;
+                        var size = (elementSize + 15) / 16 * 16 * (elementCount - 1) + elementSize;
+                        rangesList.Add(new CopyRange { IsData = true, SourceStart = sourceAccessor.Offset, DestStart = destAccessor.Offset, Size = size });
+                    }
+                    else
+                    {
+                        var sourceAccessor = source.GetObjectParameterHelper(sourceKey);
+                        var destAccessor = destination.GetObjectParameterHelper(parameterKeyInfo.Key);
+                        var elementCount = Math.Min(sourceAccessor.Count, destAccessor.Count);
+                        rangesList.Add(new CopyRange { IsResource = true, SourceStart = sourceAccessor.Offset, DestStart = destAccessor.Offset, Size = elementCount });
+                    }
+                }
+
+                ranges = rangesList.ToArray();
+                sourceLayoutCounter = source.LayoutCounter;
             }
         }
 
@@ -671,7 +813,13 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         fixed (byte* destDataValues = destination.DataValues)
                         fixed (byte* sourceDataValues = source.DataValues)
-                            Utilities.CopyMemory((IntPtr)destDataValues + range.DestStart, (IntPtr)sourceDataValues + range.SourceStart, range.Size);
+                        {
+                            uint* destPtr = (uint*)destDataValues;
+                            uint* sourcePtr = (uint*)sourceDataValues;
+                            var count = range.Size / 4;
+                            for (int i = 0; i < count; ++i)
+                                *destPtr++ = *sourcePtr++;
+                        }
                     }
                 }
             }
@@ -682,7 +830,7 @@ namespace SiliconStudio.Xenko.Rendering
             /// <param name="dest"></param>
             /// <param name="source"></param>
             /// <param name="keyRoot"></param>
-            public void Compute(ParameterCollection dest, ParameterCollection source, string keyRoot)
+            public void Compile(ParameterCollection dest, ParameterCollection source, string keyRoot)
             {
                 ranges = new List<CopyRange>();
                 destination = dest;
@@ -701,7 +849,6 @@ namespace SiliconStudio.Xenko.Rendering
                     if (parameterKeyInfo.Key.Name.EndsWith(keyRoot))
                     {
                         // That's a match
-
                         var subkeyName = parameterKeyInfo.Key.Name.Substring(0, parameterKeyInfo.Key.Name.Length - keyRoot.Length);
                         var subkey = ParameterKeys.FindByName(subkeyName);
 
@@ -714,9 +861,9 @@ namespace SiliconStudio.Xenko.Rendering
                             // Might be some empty space (padding)
                             currentDataRange.Size = parameterKeyInfo.Offset - currentDataRange.DestStart;
 
-                            sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size, parameterKeyInfo.Size));
+                            sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size, parameterKeyInfo.Count));
 
-                            currentDataRange.Size += parameterKeyInfo.Size;
+                            currentDataRange.Size += parameterKeyInfo.Count;
                         }
                         else if (isResource)
                         {
@@ -729,7 +876,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                             sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size));
 
-                            currentResourceRange.Size += parameterKeyInfo.Size;
+                            currentResourceRange.Size += parameterKeyInfo.Count;
                         }
                     }
                     else
@@ -763,14 +910,26 @@ namespace SiliconStudio.Xenko.Rendering
                     currentRange.Size = 0;
                 }
             }
+        }
 
-            struct CopyRange
+        struct CopyRange
+        {
+            public bool IsResource;
+            public bool IsData;
+            public int SourceStart;
+            public int DestStart;
+            public int Size;
+        }
+
+        public struct Accessor
+        {
+            public int Offset;
+            public int Count;
+
+            internal Accessor(int offset, int count)
             {
-                public bool IsResource;
-                public bool IsData;
-                public int SourceStart;
-                public int DestStart;
-                public int Size;
+                Offset = offset;
+                Count = count;
             }
         }
     }
