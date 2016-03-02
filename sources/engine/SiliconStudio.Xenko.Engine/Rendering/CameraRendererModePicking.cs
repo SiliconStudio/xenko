@@ -31,6 +31,11 @@ namespace SiliconStudio.Xenko.Rendering
             // Create optional render stages that don't exist yet
             if (PickingRenderStage == null)
                 PickingRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Picking", "Picking", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+
+            if (PickingRenderStage != null)
+            {
+                MainRenderView.RenderStages.Add(PickingRenderStage);
+            }
         }
 
         public override void BeforeExtract(RenderContext context)

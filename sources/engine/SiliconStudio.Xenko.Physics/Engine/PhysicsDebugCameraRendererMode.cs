@@ -40,7 +40,8 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
             base.InitializeCore();
 
-            WireFrameRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+            if (WireFrameRenderStage == null)
+                WireFrameRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
             if (WireFrameRenderStage != null)
             {
