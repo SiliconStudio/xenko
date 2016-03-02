@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering
                     RenderFeatures =
                     {
                         new TransformRenderFeature(),
-                        //new SkinningRenderFeature(),
+                        new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
                         (renderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature()),
                     },
