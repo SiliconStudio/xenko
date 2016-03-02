@@ -115,9 +115,32 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 if (lastParticle <= 0)
                     return;
 
+                var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
+                var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
+
                 if (lastParticle <= 1)
                 {
-                    // TODO Special draw case for just one particle living
+                    // Optional - connect first particle to the origin/emitter
+
+                    // Draw a dummy quad for the first particle
+                    var particlePos = new Vector3(0, 0, 0);
+                    var uvCoord = new Vector2(0, 0);
+
+                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                    vtxBuilder.NextVertex();
+
+                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                    vtxBuilder.NextVertex();
+
+                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                    vtxBuilder.NextVertex();
+
+                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                    vtxBuilder.NextVertex();
                     return;
                 }
 
@@ -132,8 +155,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var oldUnitX = GetWidthVector(sizes[0], ref invViewX, ref invViewY, ref invViewZ, ref axis0, ref axis0);
 
                 // Step 2 - Draw each particle, connecting it to the previous (front) position
-                var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-                var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
 
                 for (int i = 0; i < lastParticle; i++)
                 {
