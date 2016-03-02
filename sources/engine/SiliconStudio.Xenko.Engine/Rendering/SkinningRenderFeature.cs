@@ -137,7 +137,11 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
-                var blendMatricesOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(blendMatrices);
+                var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
+                if (perDrawLayout == null)
+                    continue;
+
+                var blendMatricesOffset = perDrawLayout.GetConstantBufferOffset(blendMatrices);
                 if (blendMatricesOffset == -1)
                     continue;
 
