@@ -326,6 +326,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HighlightShader.cs</LastGenOutput>
     </None>
+    <Compile Include="Rendering\UI\RenderUIElement.cs" />
+    <Compile Include="Rendering\UI\UIPipelinePlugin.cs" />
+    <Compile Include="Rendering\UI\UIRenderFeature.cs" />
     <Compile Include="Rendering\Utils\HighlightShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2319,7 +2322,7 @@
     <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />
     <Compile Include="Rendering\Sprites\SpriteType.cs" />
-    <Compile Include="Engine\Processors\UIComponentProcessor.cs" />
+    <Compile Include="Rendering\UI\UIRenderProcessor.cs" />
     <Compile Include="Engine\Design\DefaultEntityComponentProcessorAttribute.cs" />
     <Compile Include="Engine\Design\EntityComponentEventArgs.cs" />
     <Compile Include="Shaders.Compiler\EffectCompileRequest.cs" />
@@ -2353,7 +2356,7 @@
     <Compile Include="Rendering\Model.cs" />
     <Compile Include="Rendering\EffectSystem.cs" />
     <Compile Include="Rendering\TransformTRS.cs" />
-    <Compile Include="Rendering\UIComponentRenderer.cs" />
+    <None Include="Rendering\UIComponentRenderer.cs" />
     <Compile Include="Animations\AnimationOperation.cs" />
     <Compile Include="Animations\AnimationOperationType.cs" />
     <Compile Include="Audio\AudioEmitterSoundController.cs" />
