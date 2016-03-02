@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool Shadows { get; set; } = true;
 
-        public bool GBuffer { get; set; } = false;
+        //public bool GBuffer { get; set; } = false;
 
         protected override void InitializeCore()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -11,7 +12,7 @@ using SiliconStudio.Xenko.Rendering.Images;
 namespace SiliconStudio.Xenko.Rendering
 {
     [DataContract("CameraRendererModePicking")]
-    [Display("Picking")]
+    [NonInstantiable]
     public class CameraRendererModePicking : CameraRenderModeBase
     {
         private const int PickingTargetSize = 512;
