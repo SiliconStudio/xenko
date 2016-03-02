@@ -392,7 +392,6 @@ namespace SiliconStudio.Xenko.Graphics
         protected override void Destroy()
         {
             base.Destroy();
-            DestroyImpl();
             if (ParentTexture != null)
             {
                 ParentTexture.ReleaseInternal();
