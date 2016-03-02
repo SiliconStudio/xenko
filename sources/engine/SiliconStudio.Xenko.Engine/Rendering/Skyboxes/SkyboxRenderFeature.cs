@@ -187,7 +187,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
 
             // Don't clip nor write Z value (we are writing at 1.0f = infinity)
-            pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
             pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.DepthRead;
         }
 
