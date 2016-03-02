@@ -42,16 +42,6 @@ namespace SiliconStudio.Xenko.Particles
         internal virtual void RestartSimulation() { }
 
         /// <summary>
-        /// Should this Particle Module's bounds be displayed as a debug draw
-        /// </summary>
-        /// <userdoc>
-        /// Display the Particle Module's bounds as a wireframe debug shape. Temporary feature (will be removed later)!
-        /// </userdoc>
-        [DataMember(-1)]
-        [DefaultValue(false)]
-        public bool DebugDraw { get; set; } = false;
-
-        /// <summary>
         /// Attepmts to get a debug shape (shape type and location matrix) for the current module in order to display its boundaries better
         /// </summary>
         /// <param name="debugDrawShape">Type of the debug draw shape</param>
