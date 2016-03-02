@@ -68,7 +68,7 @@ namespace SiliconStudio.Presentation.Extensions
         }
 
         /// <summary>
-        /// Draws or measures text containing sub- and superscript.
+        /// Draws text containing sub- and superscript.
         /// </summary>
         /// <param name="renderer">The render context.</param>
         /// <param name="point">The point.</param>

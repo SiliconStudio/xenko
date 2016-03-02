@@ -132,6 +132,7 @@
     <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
     <Compile Include="MarkupExtensions\MinDoubleExtension.cs" />
     <Compile Include="MarkupExtensions\MinIntExtension.cs" />
+    <Compile Include="Rendering\VisualHost.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
