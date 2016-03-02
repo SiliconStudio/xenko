@@ -7,6 +7,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.UI;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
@@ -16,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("UIComponent")]
     [Display("UI", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
+    [DefaultEntityComponentRenderer(typeof(UIRenderProcessor))]
     [ComponentOrder(9800)]
     public sealed class UIComponent : ActivableEntityComponent
     {
