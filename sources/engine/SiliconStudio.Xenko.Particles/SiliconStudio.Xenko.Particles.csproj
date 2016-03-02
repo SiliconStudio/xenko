@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />

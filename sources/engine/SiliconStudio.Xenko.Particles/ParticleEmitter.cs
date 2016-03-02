@@ -911,6 +911,7 @@ namespace SiliconStudio.Xenko.Particles
 
             vertexBuilder.MapBuffer(device);
 
+            ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
             ShapeBuilder.BuildVertexBuffer(vertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
             vertexBuilder.RestartBuffer();
