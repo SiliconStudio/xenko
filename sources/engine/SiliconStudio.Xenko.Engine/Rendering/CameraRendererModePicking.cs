@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -8,6 +9,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Editor;
 using SiliconStudio.Xenko.Rendering.Images;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -47,6 +49,12 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // If MeshPipelinePlugin exists and we have picking, let's enable PickingMeshPipelinePlugin
                 RenderSystem.GetPipelinePlugin<PickingMeshPipelinePlugin>(true);
+            }
+
+            if (RenderSystem.GetPipelinePlugin<SpritePipelinePlugin>(false) != null)
+            {
+                // If SpritePipelinePlugin exists and we have picking, let's enable PickingSpritePipelinePlugin
+                RenderSystem.GetPipelinePlugin<PickingSpritePipelinePlugin>(true);
             }
         }
         protected override void DrawCore(RenderDrawContext context)

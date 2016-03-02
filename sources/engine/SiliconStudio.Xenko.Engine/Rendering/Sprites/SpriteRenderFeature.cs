@@ -6,12 +6,15 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     public class SpriteRenderFeature : RootRenderFeature
     {
         private Sprite3DBatch sprite3DBatch;
+
+        private EffectInstance pickingSpriteEffect;
 
         public override Type SupportedRenderObjectType => typeof(RenderSprite);
 
@@ -22,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
         }
 
-        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public unsafe override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
@@ -33,7 +36,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
-            var isPicking = false; //context.IsPicking();
+            //TODO string comparison ...?
+            var isPicking = renderViewStage.RenderStage.Name == "Picking";
 
             var device = RenderSystem.GraphicsDevice;
 
@@ -62,10 +66,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 Vector4.Transform(ref worldPosition, ref renderView.ViewProjection, out projectedPosition);
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
-
                 // Update the sprite batch
-                var blendState = isPicking ? device.BlendStates.Opaque : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : /*spriteComp.Tags.Get(IsEntitySelected) ? GetOrCreateSelectedSpriteEffect() :*/ null; // TODO remove this code when material are available
+                var blendState = isPicking ? device.BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
+                var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null; // TODO remove this code when material are available
                 if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
                 {
                     if (hasBegin)
@@ -81,9 +84,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 var sourceRegion = sprite.Region;
                 var texture = sprite.Texture;
-                var color = spriteComp.Color;
+                var color = spriteComp.Color;                
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
-                    color = new Color4(RuntimeIdHelper.ToRuntimeId(spriteComp));
+                {
+                    var compId = RuntimeIdHelper.ToRuntimeId(spriteComp);
+                    color = new Color4(compId);
+                }
 
                 // skip the sprite if no texture is set.
                 if (texture == null)
@@ -125,12 +131,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, projectedZ);
             }
 
-            sprite3DBatch.End();
+            if(hasBegin) sprite3DBatch.End();
         }
 
         private EffectInstance GetOrCreatePickingSpriteEffect()
         {
-            throw new System.NotImplementedException();
+            return pickingSpriteEffect ?? (pickingSpriteEffect = new EffectInstance(RenderSystem.EffectSystem.LoadEffect("SpritePicking").WaitForResult()));
         }
     }
 }
