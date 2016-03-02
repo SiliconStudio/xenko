@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_IOS
             if (OpenGLES.EAGLContext.CurrentContext == null)
 #else
-            if (GraphicsContext.CurrentContext == null)
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext == null)
 #endif
             {
                 needUnbindContext = true;

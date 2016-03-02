@@ -652,7 +652,7 @@ namespace SiliconStudio.Xenko.Graphics
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
             // Enable OpenGL context sharing
-            GraphicsContext.ShareContexts = true;
+            OpenTK.Graphics.GraphicsContext.ShareContexts = true;
 
             // TODO: How to control Debug flags?
             var creationFlags = GraphicsContextFlags.Default;
@@ -769,9 +769,9 @@ namespace SiliconStudio.Xenko.Graphics
             graphicsContext = gameWindow.Context;
     #endif
             deviceCreationWindowInfo = windowInfo;
-            deviceCreationContext = new GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
 
-            GraphicsContext.CurrentContext.MakeCurrent(null);
+            OpenTK.Graphics.GraphicsContext.CurrentContext.MakeCurrent(null);
 #endif
 
             // Restore main context
