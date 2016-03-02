@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
-            var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
+            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
 
             var uiProcessor = renderView.SceneInstance.GetProcessor<UIRenderProcessor>();
             if (uiProcessor == null)
