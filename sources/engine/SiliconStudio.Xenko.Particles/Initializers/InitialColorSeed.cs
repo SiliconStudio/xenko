@@ -31,7 +31,15 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 var particle = pool.FromIndex(i);
                 var randSeed = particle.Get(rndField);
 
-                (*((Color4*)particle[colField])) = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
+                var color = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
+
+                // Premultiply alpha
+                // This can't be done in advance for ColorMin and ColorMax because it will change the math
+                color.R *= color.A;
+                color.G *= color.A;
+                color.B *= color.A;
+
+                (*((Color4*)particle[colField])) = color;
 
                 i = (i + 1) % maxCapacity;
             }
