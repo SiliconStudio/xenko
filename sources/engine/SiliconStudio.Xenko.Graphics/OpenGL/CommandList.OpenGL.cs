@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Graphics
             DepthStencilBoundState.StencilWriteMask = 0xFF;
             RasterizerBoundState.FrontFaceDirection = FrontFaceDirection.Ccw;
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            RasterizerBoundState.PolygonMode = FillMode.Solid;
+            RasterizerBoundState.PolygonMode = PolygonMode.Fill;
 #endif
 
             ClearState();
