@@ -80,6 +80,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (!resourceGroup.DescriptorSet.IsValid)
             {
                 SetupNextDescriptorPool();
+                resourceGroup.DescriptorSet = DescriptorSet.New(graphicsDevice, currentDescriptorPool, resourceGroupLayout.DescriptorSetLayout);
             }
 
             if (resourceGroupLayout.ConstantBufferSize > 0)
@@ -102,7 +103,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                currentBufferPool = bufferPools[currentDescriptorPoolIndex];
+                currentBufferPool = bufferPools[currentBufferPoolIndex];
             }
         }
 
