@@ -14,6 +14,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class VisibilityGroup : IDisposable
     {
+        [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
+        public static readonly Dictionary<RenderView, Func<RenderObject, bool>> ViewObjectFilters = new Dictionary<RenderView, Func<RenderObject, bool>>();
+
         private int stageMaskMultiplier;
 
         // TODO GRAPHICS REFACTOR not thread-safe
@@ -79,6 +82,11 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var view in Views)
             {
+                // Temporary custom filter
+                Func<RenderObject, bool> viewObjectFilter;
+                ViewObjectFilters.TryGetValue(view, out viewObjectFilter);
+
+                // View bounds calculation
                 view.MinimumDistance = float.PositiveInfinity;
                 view.MaximumDistance = float.NegativeInfinity;
 
@@ -108,6 +116,10 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     // Skip not enabled objects
                     if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
+                        continue;
+
+                    // Custom per-view filtering
+                    if (viewObjectFilter?.Invoke(renderObject) == false)
                         continue;
 
                     var renderStageMask = RenderData.GetData(RenderStageMaskKey);

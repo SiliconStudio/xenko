@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -9,6 +11,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         [DataMemberIgnore]
         public RenderStage WireFrameRenderStage { get; set; }
+
+        [DataMemberIgnore]
+        public readonly HashSet<Entity> EnabledEntities = new HashSet<Entity>();
 
         protected override void InitializeCore()
         {
@@ -22,6 +27,12 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 MainRenderView.RenderStages.Add(WireFrameRenderStage);
             }
+
+            VisibilityGroup.ViewObjectFilters.Add(MainRenderView, renderObject =>
+            {
+                var renderMesh = renderObject as RenderMesh;
+                return renderMesh != null && EnabledEntities.Contains(renderMesh.RenderModel.ModelComponent.Entity);
+            });
         }
 
         public override void BeforeExtract(RenderContext context)
