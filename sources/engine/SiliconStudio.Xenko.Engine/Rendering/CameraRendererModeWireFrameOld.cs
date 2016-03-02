@@ -2,12 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
-using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -16,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// A wireframe rendering mode (rendering only ModelComponent for now).
     /// </summary>
     [DataContract("CameraRendererModeWireFrameOld")]
-    [Display("WireFrame")]
+    [NonInstantiable]
     public sealed class CameraRendererModeWireFrameOld : CameraRendererMode
     {
         private const string WireFrameEffect = "XenkoWireFrameShadingEffect";

@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Physics.Engine
 {
@@ -31,6 +30,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
     }
 
     [DataContract("PhysicsDebugCameraRendererMode")]
+    [NonInstantiable]
     public class PhysicsDebugCameraRendererMode : CameraRenderModeBase
     {
         [DataMemberIgnore]

@@ -2,9 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
-
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -13,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// A forward rendering mode.
     /// </summary>
     [DataContract("CameraRendererModeForwardOld")]
-    [Display("Forward")]
+    [NonInstantiable]
     public sealed class CameraRendererModeForwardOld : CameraRendererMode
     {
         private const string ForwardEffect = "XenkoForwardShadingEffect";
