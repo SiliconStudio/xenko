@@ -45,6 +45,14 @@ namespace SiliconStudio.Xenko.Rendering
             context.OnRendererInitialized(this);
         }
 
+        protected override void Destroy()
+        {
+            Initialized = false;
+            Context = null;
+
+            base.Destroy();
+        }
+
         /// <summary>
         /// Initializes this instance.
         /// Query for specific cbuffer (either new one, like PerMaterial, or parts of an existing one, like PerObject=>Skinning)

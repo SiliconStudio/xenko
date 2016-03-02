@@ -63,6 +63,8 @@ namespace SiliconStudio.Xenko.Engine
                 GraphicsCompositorOverride = null;
             }
 
+            RenderSystem.Dispose();
+
             base.Destroy();
         }
 
