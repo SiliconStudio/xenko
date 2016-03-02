@@ -153,10 +153,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 if (matrixTransformOffset != -1)
                 {
                     var mappedCB = renderNode.Resources.ConstantBuffer.Data + matrixTransformOffset;
-                    unsafe
-                    {
-                        *(Matrix*)(byte*)mappedCB = Matrix.Identity;
-                    }
+                    Matrix.Translation(0.0f, 0.0f, 1.0f, out *(Matrix*)(byte*)mappedCB);
                 }
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
@@ -188,7 +185,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             // Bind VAO
             pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
             pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
-            pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.None;
+
+            // Don't clip nor write Z value (we are writing at 1.0f = infinity)
+            pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+            pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.DepthRead;
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
