@@ -471,32 +471,35 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // PerView resources/cbuffer
                     var viewLayout = renderEffectReflection.PerViewLayout;
-
-                    if (viewLayout.Entries?.Length <= view.Index)
+                    if (viewLayout != null)
                     {
-                        var oldEntries = viewLayout.Entries;
-                        viewLayout.Entries = new ResourceGroupEntry[RenderSystem.Views.Count];
 
-                        for (int index = 0; index < oldEntries.Length; index++)
-                            viewLayout.Entries[index] = oldEntries[index];
+                        if (viewLayout.Entries?.Length <= view.Index)
+                        {
+                            var oldEntries = viewLayout.Entries;
+                            viewLayout.Entries = new ResourceGroupEntry[RenderSystem.Views.Count];
 
-                        for (int index = oldEntries.Length; index < viewLayout.Entries.Length; index++)
-                            viewLayout.Entries[index].Resources = new ResourceGroup();
-                    }
+                            for (int index = 0; index < oldEntries.Length; index++)
+                                viewLayout.Entries[index] = oldEntries[index];
 
-                    if (viewLayout.Entries[view.Index].MarkAsUsed(RenderSystem))
-                    {
-                        context.ResourceGroupAllocator.PrepareResourceGroup(viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
+                            for (int index = oldEntries.Length; index < viewLayout.Entries.Length; index++)
+                                viewLayout.Entries[index].Resources = new ResourceGroup();
+                        }
 
-                        // Register it in list of view layouts to update for this frame
-                        viewFeature.Layouts.Add(viewLayout);
+                        if (viewLayout.Entries[view.Index].MarkAsUsed(RenderSystem))
+                        {
+                            context.ResourceGroupAllocator.PrepareResourceGroup(viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
+
+                            // Register it in list of view layouts to update for this frame
+                            viewFeature.Layouts.Add(viewLayout);
+                        }
                     }
 
                     // PerFrame resources/cbuffer
                     var frameLayout = renderEffect.Reflection.PerFrameLayout;
                     if (frameLayout != null && frameLayout.Entry.MarkAsUsed(RenderSystem))
                     {
-                        context.ResourceGroupAllocator.PrepareResourceGroup(viewLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
+                        context.ResourceGroupAllocator.PrepareResourceGroup(frameLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
 
                         // Register it in list of view layouts to update for this frame
                         FrameLayouts.Add(frameLayout);
@@ -508,7 +511,10 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Allocate descriptor set
                     renderNode.Resources = context.ResourceGroupAllocator.AllocateResourceGroup();
-                    context.ResourceGroupAllocator.PrepareResourceGroup(renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
+                    if (renderEffectReflection.PerDrawLayout != null)
+                    {
+                        context.ResourceGroupAllocator.PrepareResourceGroup(renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
+                    }
 
                     // Link to EffectObjectNode (created right after)
                     // TODO: rewrite this
@@ -519,7 +525,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // Bind well-known descriptor sets
                     var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
                     ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = frameLayout?.Entry.Resources;
-                    ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].Resources;
+                    ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout?.Entries[view.Index].Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
 
                     // Create resource group for everything else in case of fallback effects

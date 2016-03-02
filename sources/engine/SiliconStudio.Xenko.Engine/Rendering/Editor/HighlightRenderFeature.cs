@@ -53,7 +53,11 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
-                var colorOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(this.color);
+                var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
+                if (perDrawLayout == null)
+                    continue;
+
+                var colorOffset = perDrawLayout.GetConstantBufferOffset(this.color);
                 if (colorOffset == -1)
                     continue;
 
