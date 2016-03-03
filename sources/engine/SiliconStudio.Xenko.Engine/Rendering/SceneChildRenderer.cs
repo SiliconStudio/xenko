@@ -43,12 +43,6 @@ namespace SiliconStudio.Xenko.Engine
         public ChildSceneComponent ChildScene { get; set; }
 
         /// <summary>
-        /// Gets the render system used with this pipeline.
-        /// </summary>
-        [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem { get; } = new NextGenRenderSystem();
-
-        /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
         /// </summary>
         /// <value>The graphics compositor override.</value>
@@ -63,16 +57,7 @@ namespace SiliconStudio.Xenko.Engine
                 GraphicsCompositorOverride = null;
             }
 
-            RenderSystem.Dispose();
-
             base.Destroy();
-        }
-
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-
-            RenderSystem.Initialize(Context);
         }
 
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)
