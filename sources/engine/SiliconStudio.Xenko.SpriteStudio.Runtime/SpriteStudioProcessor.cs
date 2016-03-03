@@ -6,48 +6,40 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, SpriteStudioProcessor.Data>
+    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, RenderSpriteStudio>, IEntityComponentRenderProcessor
     {
-        public readonly List<Data> Sprites = new List<Data>();
-
         public SpriteStudioProcessor()
             : base(typeof(TransformComponent))
         {
             Order = 550;
         }
 
-        public class Data
+        protected override RenderSpriteStudio GenerateComponentData(Entity entity, SpriteStudioComponent component)
         {
-            public SpriteStudioComponent SpriteStudioComponent;
-            public TransformComponent TransformComponent;
-            public SpriteStudioNodeState RootNode;
-            public SpriteStudioSheet Sheet;
-        }
-
-        protected override Data GenerateComponentData(Entity entity, SpriteStudioComponent component)
-        {
-            return new Data
+            return new RenderSpriteStudio
             {
                 SpriteStudioComponent = component,
                 TransformComponent = entity.Transform
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, SpriteStudioComponent component, Data associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteStudioComponent component, RenderSpriteStudio associatedData)
         {
             return
                 component == associatedData.SpriteStudioComponent &&
                 entity.Transform == associatedData.TransformComponent;
         }
 
-        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, Data data)
+        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, RenderSpriteStudio data)
         {
             PrepareNodes(data);
+            VisibilityGroup.RenderObjects.Add(data);
         }
 
-        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, Data data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, RenderSpriteStudio data)
         {
             data.SpriteStudioComponent.Nodes.Clear();
+            VisibilityGroup.RenderObjects.Remove(data);
         }
 
         internal static SpriteStudioNodeState InitializeNodes(SpriteStudioComponent spriteStudioComponent)
@@ -118,96 +110,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         // ReSharper disable once ParameterTypeCanBeEnumerable.Local
         // Enumerables are Evil
-        private static unsafe void UpdateNodes(List<SpriteStudioNodeState> nodes, Data data)
-        {
-            /*var animComp = data.AnimationComponent;
-            if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
-            {
-                fixed (byte* bytes = animComp.CurrentFrameResult.Data)
-                {
-                    foreach (var node in nodes)
-                    {
-                        //Process animations
-                        var results = animComp.CurrentFrameResult;
-                        var channels = results.Channels.Where(x => x.PropertyName == node.BaseNode.Name);
-                        foreach (var channel in results.Channels)
-                        {
-                            if(channel.NodeName != node.BaseNode.Name) continue;
-
-                            var structureData = (float*)(bytes + channel.Offset);
-                            if(structureData == null) continue;
-                            if (structureData[0] == 0.0f) continue;
-
-                            var valueFloat = *(structureData + 1);
-                            var valueInt = *((int*)structureData + 1);
-
-                            if (channel.PropertyName.StartsWith("posx"))
-                            {
-                                node.Position.X = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("posy"))
-                            {
-                                node.Position.Y = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("prio"))
-                            {
-                                node.Priority = valueInt;
-                            }
-                            else if (channel.PropertyName.StartsWith("rotz"))
-                            {
-                                node.RotationZ = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("sclx"))
-                            {
-                                node.Scale.X = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("scly"))
-                            {
-                                node.Scale.Y = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("alph"))
-                            {
-                                node.Transparency = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("hide"))
-                            {
-                                node.Hide = valueInt != 0;
-                            }
-                            else if (channel.PropertyName.StartsWith("flph"))
-                            {
-                                node.HFlipped = valueInt != 0;
-                            }
-                            else if (channel.PropertyName.StartsWith("flpv"))
-                            {
-                                node.VFlipped = valueInt != 0;
-                            }
-                            else if (channel.PropertyName.StartsWith("cell"))
-                            {
-                                var spriteIndex = valueInt;
-                                node.SpriteId = spriteIndex;
-                                node.Sprite = spriteIndex != -1 ? data.SpriteStudioComponent.Sheet.Sprites[spriteIndex] : null;
-                            }
-                            else if (channel.PropertyName.StartsWith("colb"))
-                            {
-                                node.BlendType = (SpriteStudioBlending)valueInt;
-                            }
-                            else if (channel.PropertyName.StartsWith("colv"))
-                            {
-                                Utilities.Read((IntPtr)(structureData + 1), ref node.BlendColor);
-                            }
-                            else if (channel.PropertyName.StartsWith("colf"))
-                            {
-                                node.BlendFactor = valueFloat;
-                            }
-                        }
-                    }
-                }
-            }*/
-        }
-
-        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
-        // Enumerables are Evil
-        private static void SortNodes(Data data, List<SpriteStudioNodeState> nodes)
+        private static void SortNodes(RenderSpriteStudio data, List<SpriteStudioNodeState> nodes)
         {
             data.SpriteStudioComponent.SortedNodes.Clear();
             var sortedNodes = nodes.OrderBy(x => x.Priority);
@@ -219,20 +122,24 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override void Draw(RenderContext context)
         {
-            Sprites.Clear();
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
-                if (!PrepareNodes(spriteStateKeyPair.Value))
+                var renderSpriteStudio = spriteStateKeyPair.Value;
+                renderSpriteStudio.Enabled = renderSpriteStudio.SpriteStudioComponent.Enabled;
+
+                if(!renderSpriteStudio.Enabled) continue;
+
+                renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.Entity.Group;
+
+                if (!PrepareNodes(renderSpriteStudio))
                     continue;
 
-                UpdateNodes(spriteStateKeyPair.Value.SpriteStudioComponent.Nodes, spriteStateKeyPair.Value);
-                SortNodes(spriteStateKeyPair.Value, spriteStateKeyPair.Value.SpriteStudioComponent.Nodes);
-                spriteStateKeyPair.Value.RootNode.UpdateTransformation();
-                Sprites.Add(spriteStateKeyPair.Value);
+                SortNodes(renderSpriteStudio, renderSpriteStudio.SpriteStudioComponent.Nodes);
+                renderSpriteStudio.RootNode.UpdateTransformation();
             }
         }
 
-        private static bool PrepareNodes(Data data)
+        private static bool PrepareNodes(RenderSpriteStudio data)
         {
             var sheet = data.SpriteStudioComponent.Sheet;
             if (data.Sheet != sheet) // sheet changed? force pre-process
@@ -250,9 +157,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 data.Sheet = sheet;
             }
 
-            //data.SpriteStudioComponent.SortedNodes = data.SpriteStudioComponent.Nodes.ToList(); // copy
-
             return (data.RootNode != null);
         }
+
+        public VisibilityGroup VisibilityGroup { get; set; }
     }
 }

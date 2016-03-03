@@ -40,7 +40,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             var spriteRenderFeature = renderSystem.RenderFeatures.OfType<SpriteRenderFeature>().First();
             var pickingRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "Picking");
 
-            //meshRenderFeature.RenderFeatures.Add(new PickingRenderFeature());
             spriteRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
             {
                 EffectName = "TestEffect.Picking",
