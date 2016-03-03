@@ -281,6 +281,7 @@
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\CameraRendererModeForward.cs" />
     <Compile Include="Rendering\NextGenRenderSystem.cs" />
+    <Compile Include="Rendering\NextGenRenderSystemExtensions.cs" />
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
@@ -376,7 +377,6 @@
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
-    <Compile Include="Rendering\EntityComponentRendererEventArgs.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMax.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMaxShader.cs">
       <DependentUpon>DepthMinMaxShader.xksl</DependentUpon>
@@ -510,9 +510,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSubtract.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\EntityComponentRendererCoreBase.cs" />
     <Compile Include="Rendering\GraphicsRendererCollectionBase.cs" />
-    <Compile Include="Rendering\IEntityComponentRendererCore.cs" />
     <Compile Include="Rendering\IGraphicsRendererCore.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\Noise\FilmGrain.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\Noise\FilmGrainShader.cs">
@@ -1365,8 +1363,6 @@
     <Compile Include="Rendering\RenderContextExtensions.cs" />
     <Compile Include="Rendering\RendererCoreBase.cs" />
     <Compile Include="Rendering\RenderFrameProviderBase.cs" />
-    <Compile Include="Rendering\RenderItem.cs" />
-    <Compile Include="Rendering\RenderItemCollection.cs" />
     <Compile Include="Rendering\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\ClearRenderFrameFlags.cs" />
     <Compile Include="Rendering\ClearRenderFrameRenderer.cs" />
@@ -1384,7 +1380,6 @@
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
-    <Compile Include="Rendering\IEntityComponentRenderer.cs" />
     <Compile Include="Rendering\IGraphicsRenderer.cs" />
     <Compile Include="Rendering\CameraRendererMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAEffect.cs" />
@@ -2336,7 +2331,6 @@
     <Compile Include="Shaders.Compiler\EffectCompileRequest.cs" />
     <Compile Include="Extensions\GeometricPrimitiveExtension.cs" />
     <Compile Include="Engine\Design\DefaultEntityComponentRendererAttribute.cs" />
-    <Compile Include="Engine\Design\EntityComponentRendererType.cs" />
     <Compile Include="Engine\EntityGroupMask.cs" />
     <Compile Include="Engine\EntityGroupMaskExtensions.cs" />
     <Compile Include="Extensions\SimpleExtensions.cs" />
@@ -2357,14 +2351,11 @@
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
-    <Compile Include="Rendering\RendererExtensions.cs" />
     <Compile Include="Engine\EntityGroup.cs" />
-    <Compile Include="Rendering\EntityComponentRendererBase.cs" />
     <Compile Include="Rendering\Mesh.cs" />
     <Compile Include="Rendering\Model.cs" />
     <Compile Include="Rendering\EffectSystem.cs" />
     <Compile Include="Rendering\TransformTRS.cs" />
-    <None Include="Rendering\UIComponentRenderer.cs" />
     <Compile Include="Animations\AnimationOperation.cs" />
     <Compile Include="Animations\AnimationOperationType.cs" />
     <Compile Include="Audio\AudioEmitterSoundController.cs" />
