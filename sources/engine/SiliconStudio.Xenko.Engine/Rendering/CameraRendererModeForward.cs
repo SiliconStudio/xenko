@@ -37,6 +37,11 @@ namespace SiliconStudio.Xenko.Rendering
             // Create optional render stages that don't exist yet
             //if (GBufferRenderStage == null)
             //    GBufferRenderStage = RenderSystem.GetOrCreateRenderStage("GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (Shadows)
+            {
+                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+            }
+
             if (Shadows && ShadowMapRenderStage == null)
             {
                 ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
@@ -50,14 +55,6 @@ namespace SiliconStudio.Xenko.Rendering
         public override void BeforeExtract(RenderContext context)
         {
             base.BeforeExtract(context);
-
-            // Make sure required plugins are instantiated
-            // TODO GRAPHICS REFACTOR this system is temporary; probably want to make it more descriptive
-            if (Shadows && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                // If MeshPipelinePlugin exists and we have shadows, let's enable ShadowMeshPipelinePlugin
-                RenderSystem.GetPipelinePlugin<ShadowMeshPipelinePlugin>(true);
-            }
 
             // TODO GRAPHICS REFACTOR: Make this non-explicit?
             RenderSystem.forwardLightingRenderFeature?.BeforeExtract();

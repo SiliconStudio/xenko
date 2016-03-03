@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Graphics
             CullFront = new RasterizerStateDescription(CullMode.Front);
             CullBack = new RasterizerStateDescription(CullMode.Back);
             CullNone = new RasterizerStateDescription(CullMode.None);
-            WireFrameCullFront = new RasterizerStateDescription(CullMode.Front) { FillMode = FillMode.Wireframe };
-            WireFrameCullBack = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
-            WireFrame = new RasterizerStateDescription(CullMode.None) { FillMode = FillMode.Wireframe };
+            WireframeCullFront = new RasterizerStateDescription(CullMode.Front) { FillMode = FillMode.Wireframe };
+            WireframeCullBack = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
+            Wireframe = new RasterizerStateDescription(CullMode.None) { FillMode = FillMode.Wireframe };
         }
 
         /// <summary>
@@ -41,17 +41,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Built-in rasterizer state object for wireframe rendering with settings for culling primitives with clockwise winding order.
         /// </summary>
-        public readonly RasterizerStateDescription WireFrameCullFront;
+        public readonly RasterizerStateDescription WireframeCullFront;
 
         /// <summary>
         /// Built-in rasterizer state object for wireframe with settings for culling primitives with counter-clockwise winding order.
         /// </summary>
-        public readonly RasterizerStateDescription WireFrameCullBack;
+        public readonly RasterizerStateDescription WireframeCullBack;
 
         /// <summary>
         /// Built-in rasterizer state object for wireframe with settings for not culling any primitives.
         /// </summary>
-        public readonly RasterizerStateDescription WireFrame;
+        public readonly RasterizerStateDescription Wireframe;
     }
 }
 

@@ -6,22 +6,40 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics.Engine
 {
-    public class WireFramePhysicsDebugPipelinePlugin : IPipelinePlugin
+    public class PhysicsDebugPipelinePlugin : IPipelinePlugin
     {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        public void Load(PipelinePluginContext context)
         {
-            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
-            var wireFrameRenderStage = renderSystem.GetRenderStage("WireFrame");
+        }
 
-            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+        public void Unload(PipelinePluginContext context)
+        {
+        }
+    }
+
+    public class MeshPhysicsDebugPipelinePlugin : PipelinePlugin<MeshRenderFeature>
+    {
+        [ModuleInitializer]
+        internal static void Initialize()
+        {
+            PipelinePluginManager.RegisterAutomaticPlugin(typeof(MeshPhysicsDebugPipelinePlugin), typeof(MeshPipelinePlugin), typeof(PhysicsDebugPipelinePlugin));
+        }
+
+        public override void Load(PipelinePluginContext context)
+        {
+            base.Load(context);
+
+            var wireFrameRenderStage = context.RenderSystem.GetRenderStage("Wireframe");
+
+            RegisterPostProcessPipelineState((RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
                 if (renderNode.RenderStage == wireFrameRenderStage)
                 {
-                    pipelineState.RasterizerState = context.GraphicsDevice.RasterizerStates.WireFrame;
+                    pipelineState.RasterizerState = context.RenderContext.GraphicsDevice.RasterizerStates.Wireframe;
                 }
-            };
+            });
 
-            meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+            RegisterRenderStageSelector(new SimpleGroupToRenderStageSelector
             {
                 EffectName = "TestEffect",
                 RenderStage = wireFrameRenderStage,
@@ -34,36 +52,28 @@ namespace SiliconStudio.Xenko.Physics.Engine
     public class PhysicsDebugCameraRendererMode : CameraRenderModeBase
     {
         [DataMemberIgnore]
-        public RenderStage WireFrameRenderStage { get; set; }
+        public RenderStage WireframeRenderStage { get; set; }
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            if (WireFrameRenderStage == null)
-                WireFrameRenderStage = RenderSystem.GetOrCreateRenderStage("WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+            if (WireframeRenderStage == null)
+                WireframeRenderStage = RenderSystem.GetOrCreateRenderStage("Wireframe", "Wireframe", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
-            if (WireFrameRenderStage != null)
+            if (WireframeRenderStage != null)
             {
-                MainRenderView.RenderStages.Add(WireFrameRenderStage);
+                MainRenderView.RenderStages.Add(WireframeRenderStage);
             }
-        }
 
-        public override void BeforeExtract(RenderContext context)
-        {
-            base.BeforeExtract(context);
-
-            if (RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                RenderSystem.GetPipelinePlugin<WireFramePhysicsDebugPipelinePlugin>(true);
-            }
+            RenderSystem.PipelinePlugins.InstantiatePlugin<PhysicsDebugPipelinePlugin>();
         }
 
         protected override void DrawCore(RenderDrawContext context)
         {
             var renderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
             context.CommandList.Clear(renderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer);
-            RenderSystem.Draw(context, MainRenderView, WireFrameRenderStage);
+            RenderSystem.Draw(context, MainRenderView, WireframeRenderStage);
         }
     }
 }

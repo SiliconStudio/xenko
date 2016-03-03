@@ -1,41 +1,44 @@
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioPipelinePlugin : IPipelinePlugin
+    public class SpriteStudioPipelinePlugin : PipelinePlugin<SpriteStudioRenderFeature>
     {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        protected override SpriteStudioRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             // Mandatory render stages
-            var transparentRenderStage = renderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = context.RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.RenderContext.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.RenderContext.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
-            var spriteRenderFeature = renderSystem.RenderFeatures.OfType<SpriteStudioRenderFeature>().FirstOrDefault();
-            if (spriteRenderFeature != null) return;
-
-            spriteRenderFeature = new SpriteStudioRenderFeature();
+            var spriteRenderFeature = new SpriteStudioRenderFeature();
             spriteRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
             {
                 EffectName = "Test",
                 RenderStage = transparentRenderStage
             });
 
-            // Register top level renderers
-            // TODO GRAPHICS REFACTOR protect against multiple executions?
-            renderSystem.RenderFeatures.Add(spriteRenderFeature);
+            return spriteRenderFeature;
         }
     }
 
-    public class PickingSpriteStudioPipelinePlugin : IPipelinePlugin
+    public class PickingSpriteStudioPipelinePlugin : PipelinePlugin<SpriteStudioRenderFeature>
     {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        [ModuleInitializer]
+        internal static void Initialize()
         {
-            var spriteRenderFeature = renderSystem.RenderFeatures.OfType<SpriteStudioRenderFeature>().First();
-            var pickingRenderStage = renderSystem.GetRenderStage("Picking");
+            PipelinePluginManager.RegisterAutomaticPlugin(typeof(PickingSpriteStudioPipelinePlugin), typeof(SpriteStudioPipelinePlugin), typeof(PickingPipelinePlugin));
+        }
 
-            spriteRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
+        public override void Load(PipelinePluginContext context)
+        {
+            base.Load(context);
+
+            var pickingRenderStage = context.RenderSystem.GetRenderStage("Picking");
+
+            RegisterRenderStageSelector(new SimpleGroupToRenderStageSelector
             {
                 EffectName = "TestEffect.Picking",
                 RenderStage = pickingRenderStage,

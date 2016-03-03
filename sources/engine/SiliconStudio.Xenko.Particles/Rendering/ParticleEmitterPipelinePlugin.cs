@@ -4,39 +4,33 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Rendering
 {
-    public class ParticleEmitterPipelinePlugin : IPipelinePlugin
+    public class ParticleEmitterPipelinePlugin : PipelinePlugin<ParticleEmitterRenderFeature>
     {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        protected override ParticleEmitterRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             // Mandatory render stages
-            var mainRenderStage = renderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            var transparentRenderStage = renderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = context.RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(context.RenderContext.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.RenderContext.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = context.RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.RenderContext.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.RenderContext.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
-            var particleEmitterRenderFeature = renderSystem.RenderFeatures.OfType<ParticleEmitterRenderFeature>().FirstOrDefault();
-            if (particleEmitterRenderFeature == null)
+            var particleEmitterRenderFeature = new ParticleEmitterRenderFeature();
+            particleEmitterRenderFeature.RenderStageSelectors.Add(new ParticleEmitterTransparentRenderStageSelector
             {
-                particleEmitterRenderFeature = new ParticleEmitterRenderFeature();
-                particleEmitterRenderFeature.RenderStageSelectors.Add(new ParticleEmitterTransparentRenderStageSelector
-                {
-                    //EffectName = "Test",
-                    MainRenderStage = mainRenderStage,
-                    TransparentRenderStage = transparentRenderStage,
-                });
+                //EffectName = "Test",
+                MainRenderStage = mainRenderStage,
+                TransparentRenderStage = transparentRenderStage,
+            });
 
-                particleEmitterRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-                {
-                    var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-                    //renderParticleEmitter.ParticleEmitter.Material;
+            particleEmitterRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            {
+                var renderParticleEmitter = (RenderParticleEmitter)renderObject;
+                //renderParticleEmitter.ParticleEmitter.Material;
                     
-                    pipelineState.BlendState = context.GraphicsDevice.BlendStates.AlphaBlend;
-                    pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.DepthRead;
-                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.Back);
-                };
+                pipelineState.BlendState = context.RenderContext.GraphicsDevice.BlendStates.AlphaBlend;
+                pipelineState.DepthStencilState = context.RenderContext.GraphicsDevice.DepthStencilStates.DepthRead;
+                pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.Back);
+            };
 
-                // Register top level renderers
-                // TODO GRAPHICS REFACTOR protect against multiple executions?
-                renderSystem.RenderFeatures.Add(particleEmitterRenderFeature);
-            }
+            return particleEmitterRenderFeature;
         }
     }
 }
