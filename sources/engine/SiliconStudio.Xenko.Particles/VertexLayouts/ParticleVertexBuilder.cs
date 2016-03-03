@@ -32,6 +32,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         private bool bufferIsDirty = true;
         private int requiredQuads;
         private int livingQuads;
+        private int livingParticles;
+        private int currentParticleIndex = 0;
 
         private MappedResource mappedVertices;
         private IntPtr vertexBuffer = IntPtr.Zero;
@@ -53,6 +55,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             UpdateVertexLayout();
         }
+
+        protected int VerticesPerSegFirst { get; private set; }
+        protected int VerticesPerSegMiddle { get; private set; }
+        protected int VerticesPerSegLast { get; private set; }
+
+        protected int VerticesPerSegCurrent { get; private set; }
 
 
 
@@ -132,12 +140,31 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             var maxQuads = quadsPerParticle * totalParticles;
 
             livingQuads = minQuads;
+            this.livingParticles = livingParticles;
 
             if (requiredQuads == 0 || minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
             {
                 requiredQuads = maxQuads;
                 bufferIsDirty = true;
             }
+
+            // The default assumption is that every particle defines a separate segment and no segments are shared
+            SetVerticesPerSegment(verticesPerParticle, verticesPerParticle, verticesPerParticle);
+        }
+
+        /// <summary>
+        /// Sets how many vertices are associated with the first, middle and last quad segments of the buffer. In case of billboards 1 segment = 1 quad but other shapes might be laid out differently
+        /// </summary>
+        /// <param name="verticesForFirstSegment">Number of vertices for the first segment</param>
+        /// <param name="verticesForMiddleSegment">Number of vertices for the middle segments</param>
+        /// <param name="verticesForLastSegment">Number of vertices for the last segment</param>
+        public void SetVerticesPerSegment(int verticesForFirstSegment, int verticesForMiddleSegment, int verticesForLastSegment)
+        {
+            VerticesPerSegFirst = verticesForFirstSegment;
+            VerticesPerSegMiddle = verticesForMiddleSegment;
+            VerticesPerSegLast = verticesForLastSegment;
+
+            VerticesPerSegCurrent = VerticesPerSegFirst;
         }
 
         /// <summary>
@@ -213,6 +240,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public void RestartBuffer()
         {
             vertexBuffer = vertexBufferOrigin;
+            currentParticleIndex = 0;
+            VerticesPerSegCurrent = VerticesPerSegFirst;
         }
 
         /// <summary>
@@ -226,6 +255,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             vertexBuffer = IntPtr.Zero;
             vertexBufferOrigin = IntPtr.Zero;
+            currentParticleIndex = 0;
 
             device.UnmapSubresource(mappedVertices);
         }
@@ -257,7 +287,31 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         public void NextParticle()
         {
+            if (++currentParticleIndex >= livingParticles)
+            {
+                // Already at the last particle
+                currentParticleIndex = livingParticles - 1;
+                return;
+            }
+
+            VerticesPerSegCurrent = (currentParticleIndex < livingParticles - 1) ? VerticesPerSegMiddle : VerticesPerSegLast;
             vertexBuffer += VertexDeclaration.VertexStride * verticesPerParticle;
+        }
+
+        /// <summary>
+        /// Advanes the pointer to the next segment in the buffer, so that its first vertex can be written
+        /// </summary>
+        public void NextSegment()
+        {
+            if (++currentParticleIndex >= livingParticles)
+            {
+                // Already at the last particle
+                currentParticleIndex = livingParticles - 1;
+                return;
+            }
+
+            vertexBuffer += VertexDeclaration.VertexStride * VerticesPerSegCurrent;
+            VerticesPerSegCurrent = (currentParticleIndex < livingParticles - 1) ? VerticesPerSegMiddle : VerticesPerSegLast;
         }
 
         public AttributeAccessor GetAccessor(AttributeDescription desc) 
@@ -289,6 +343,19 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public void SetAttributePerParticle(AttributeAccessor accessor, IntPtr ptrRef)
         {
             for (var i = 0; i < verticesPerParticle; i++)
+            {
+                Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
+            }
+        }
+
+        /// <summary>
+        /// Sets the same data for the all vertices in the current particle using the provided <see cref="AttributeAccessor"/>
+        /// </summary>
+        /// <param name="accessor">Accessor to the vertex data</param>
+        /// <param name="ptrRef">Pointer to the source data</param>
+        public void SetAttributePerSegment(AttributeAccessor accessor, IntPtr ptrRef)
+        {
+            for (var i = 0; i < VerticesPerSegCurrent; i++)
             {
                 Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
             }
