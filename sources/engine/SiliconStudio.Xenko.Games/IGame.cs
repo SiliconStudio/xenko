@@ -83,6 +83,12 @@ namespace SiliconStudio.Xenko.Games
         GraphicsDevice GraphicsDevice { get; }
 
         /// <summary>
+        /// Gets the graphics context.
+        /// </summary>
+        /// <value>The graphics context.</value>
+        GraphicsContext GraphicsContext { get; }
+
+        /// <summary>
         /// Gets or sets the inactive sleep time.
         /// </summary>
         /// <value>The inactive sleep time.</value>
