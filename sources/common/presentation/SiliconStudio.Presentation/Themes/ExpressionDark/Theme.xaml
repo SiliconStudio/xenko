@@ -254,6 +254,10 @@
     <Setter Property="PagePadding" Value="2,0" />
     <Setter Property="TextAlignment" Value="Left" />
   </Style>
+  <Style TargetType="{x:Type Inline}" x:Key="{x:Static local:XamlMarkdown.CodeStyleKey}">
+    <Setter Property="FontFamily" Value="Courier New, Consolas" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading1StyleKey}">
     <!-- note: in HTML4, default H1 font size is 2em (see http://www.w3.org/TR/CSS21/sample.html) -->
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=2}" />
@@ -3756,6 +3760,45 @@
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="HorizontalAlignment" Value="Stretch"/>
     <Setter Property="VerticalAlignment" Value="Stretch"/>
+  </Style>
+
+  <Style TargetType="{x:Type ctrl:CanvasView}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:CanvasView}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <Grid x:Name="PART_Grid" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type ctrl:TrackerControl}">
+    <Setter Property="LineStroke" Value="LightGray" />
+    <Setter Property="LineThickness" Value="1" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:TrackerControl}">
+          <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
+            <Line x:Name="PART_HorizontalLine" Visibility="{TemplateBinding HorizontalLineVisibility}"
+                  Stroke="{TemplateBinding LineStroke}" StrokeThickness="{TemplateBinding LineThickness}" RenderOptions.EdgeMode="Aliased" />
+            <Line x:Name="PART_VerticalLine" Visibility="{TemplateBinding VerticalLineVisibility}"
+                  Stroke="{TemplateBinding LineStroke}" StrokeThickness="{TemplateBinding LineThickness}" RenderOptions.EdgeMode="Aliased" />
+            <!--<ContentPresenter />-->
+          </Canvas>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type Rectangle}" x:Key="{x:Static behaviors:SelectionRectangleBehavior.DefaultRectangleStyleKey}">
+    <Setter Property="Fill" Value="LightBlue" />
+    <Setter Property="Opacity" Value="0.5" />
+    <Setter Property="Stroke" Value="Blue" />
+    <Setter Property="StrokeLineJoin" Value="Round" />
+    <Setter Property="StrokeThickness" Value="1" />
   </Style>
 
   <!--  EDITORS  -->

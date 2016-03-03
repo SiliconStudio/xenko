@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? NullObjectType : value.GetType().Name;
+            return value?.GetType().Name ?? NullObjectType;
         }
     }
 }

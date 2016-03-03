@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
@@ -9,7 +10,7 @@ using SiliconStudio.Xenko.Particles.DebugDraw;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialPositionSeed")]
-    [Display("Initial Position by seed")]
+    [Display("Initial Position")]
     public class InitialPositionSeed : ParticleInitializer
     {
         public InitialPositionSeed()
@@ -62,20 +63,52 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
+        /// <summary>
+        /// The left bottom back corner of the box
+        /// </summary>
+        /// <userdoc>
+        /// The left bottom back corner of the box
+        /// </userdoc>
         [DataMember(30)]
         [Display("Position min")]
         public Vector3 PositionMin { get; set; } = new Vector3(-1, 1, -1);
 
+        /// <summary>
+        /// The right upper front corner of the box
+        /// </summary>
+        /// <userdoc>
+        /// The right upper front corner of the box
+        /// </userdoc>
         [DataMember(40)]
         [Display("Position max")]
         public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
- 
+
+        /// <summary>
+        /// Should this Particle Module's bounds be displayed as a debug draw
+        /// </summary>
+        /// <userdoc>
+        /// Display the Particle Module's bounds as a wireframe debug shape. Temporary feature (will be removed later)!
+        /// </userdoc>
+        [DataMember(-1)]
+        [DefaultValue(false)]
+        public bool DebugDraw { get; set; } = false;
+
+        /// <inheritdoc />
         public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
+            if (!DebugDraw)
+                return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
+
             debugDrawShape = DebugDrawShape.Cube;
 
             rotation = WorldRotation;
