@@ -54,6 +54,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void UpdateRenderModel(RenderModel renderModel)
         {
+            if (renderModel.ModelComponent.Model == null)
+                return;
+
             var modelComponent = renderModel.ModelComponent;
             var modelViewHierarchy = modelComponent.Skeleton;
             var nodeTransformations = modelViewHierarchy.NodeTransformations;
