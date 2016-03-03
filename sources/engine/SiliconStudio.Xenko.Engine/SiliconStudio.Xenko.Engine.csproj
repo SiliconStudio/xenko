@@ -281,6 +281,8 @@
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
+    <Compile Include="Rendering\PipelinePluginContext.cs" />
+    <Compile Include="Rendering\PipelinePluginManager.cs" />
     <Compile Include="Rendering\Properties.cs">
       <DependentUpon>Properties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -289,6 +291,7 @@
     <Compile Include="Rendering\RenderDataHolder.cs" />
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\RenderFeature.cs" />
+    <Compile Include="Rendering\RenderFeaturePipelinePlugin.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\RenderObject.cs" />
     <Compile Include="Rendering\RenderObjectCollection.cs" />
@@ -434,8 +437,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\XenkoWireFrameShadingEffect.cs">
-      <DependentUpon>XenkoWireFrameShadingEffect.xkfx</DependentUpon>
+    <Compile Include="Rendering\XenkoWireframeShadingEffect.cs">
+      <DependentUpon>XenkoWireframeShadingEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -3422,9 +3425,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\XenkoWireFrameShadingEffect.xkfx">
+    <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>XenkoWireFrameShadingEffect.cs</LastGenOutput>
+      <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\XenkoForwardShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

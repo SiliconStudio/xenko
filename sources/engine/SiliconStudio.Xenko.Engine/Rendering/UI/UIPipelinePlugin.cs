@@ -3,27 +3,21 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
-    public class UIPipelinePlugin : IPipelinePlugin
+    public class UIPipelinePlugin : PipelinePlugin<UIRenderFeature>
     {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        protected override UIRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             // Mandatory render stages
-            var transparentRenderStage = renderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = context.RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.RenderContext.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.RenderContext.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
-            var uiRenderFeature = renderSystem.RenderFeatures.OfType<UIRenderFeature>().FirstOrDefault();
-            if (uiRenderFeature == null)
+            var uiRenderFeature = new UIRenderFeature();
+            uiRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
             {
-                uiRenderFeature = new UIRenderFeature();
-                uiRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-                {
-                    EffectName = "Test",
-                    RenderStage = transparentRenderStage,
-                });
+                EffectName = "Test",
+                RenderStage = transparentRenderStage,
+            });
 
-                // Register top level renderers
-                // TODO GRAPHICS REFACTOR protect against multiple executions?
-                renderSystem.RenderFeatures.Add(uiRenderFeature);
-            }
+            return uiRenderFeature;
         }
     }
 }

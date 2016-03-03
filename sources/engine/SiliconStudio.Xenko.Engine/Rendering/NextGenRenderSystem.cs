@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.Rendering
     public class NextGenRenderSystem : ComponentBase
     {
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
-        private readonly Dictionary<Type, IPipelinePlugin> pipelinePlugins = new Dictionary<Type, IPipelinePlugin>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
 
@@ -67,11 +66,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The services registry.</value>
         public IServiceRegistry Services => registry;
 
+        public PipelinePluginManager PipelinePlugins { get; }
+
         // Render stages
         internal ForwardLightingRenderFeature forwardLightingRenderFeature;
 
         public NextGenRenderSystem()
         {
+            PipelinePlugins = new PipelinePluginManager(this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
@@ -452,29 +454,11 @@ namespace SiliconStudio.Xenko.Rendering
             var autoPipelineAttribute = renderObjectType.GetTypeInfo().GetCustomAttribute<DefaultPipelinePluginAttribute>();
             if (autoPipelineAttribute != null)
             {
-                GetPipelinePlugin(autoPipelineAttribute.PipelinePluginType, true);
+                PipelinePlugins.InstantiatePlugin(autoPipelineAttribute.PipelinePluginType);
                 return true;
             }
 
             return false;
-        }
-
-        public T GetPipelinePlugin<T>(bool createIfNecessary)
-        {
-            return (T)GetPipelinePlugin(typeof(T), createIfNecessary);
-        }
-
-        private IPipelinePlugin GetPipelinePlugin(Type pipelinePluginType, bool createIfNecessary)
-        {
-            IPipelinePlugin pipelinePlugin;
-            if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin) && createIfNecessary)
-            {
-                pipelinePlugin = (IPipelinePlugin)Activator.CreateInstance(pipelinePluginType);
-                pipelinePlugins.Add(pipelinePluginType, pipelinePlugin);
-                pipelinePlugin.SetupPipeline(RenderContextOld, this);
-            }
-
-            return pipelinePlugin;
         }
 
         public void RemoveRenderObject(RenderObject renderObject)
