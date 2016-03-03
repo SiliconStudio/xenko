@@ -25,18 +25,23 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="Command"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(OnPropertyChangedCommandBehavior));
+        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(OnPropertyChangedCommandBehavior));
 
         /// <summary>
         /// Identifies the <see cref="CommandParameter"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register("CommandParameter", typeof(object), typeof(OnPropertyChangedCommandBehavior));
+        public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register(nameof(CommandParameter), typeof(object), typeof(OnPropertyChangedCommandBehavior));
             
         /// <summary>
         /// Identifies the <see cref="ExecuteOnlyOnSourceUpdate"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ExecuteOnlyOnSourceUpdateProperty = DependencyProperty.Register("ExecuteOnlyOnSourceUpdate", typeof(bool), typeof(OnPropertyChangedCommandBehavior));
+        public static readonly DependencyProperty ExecuteOnlyOnSourceUpdateProperty = DependencyProperty.Register(nameof(ExecuteOnlyOnSourceUpdate), typeof(bool), typeof(OnPropertyChangedCommandBehavior));
 
+        /// <summary>
+        /// Identifies the <see cref="PassValueAsParameter"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PassValueAsParameterProperty = DependencyProperty.Register(nameof(PassValueAsParameter), typeof(bool), typeof(OnPropertyChangedCommandBehavior));
+        
         /// <summary>
         /// Gets or sets the name of the dependency property that will trigger the associated command.
         /// </summary>
@@ -58,15 +63,20 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <remarks>If set to <c>true</c>, this property requires that a binding exists on the dependency property and that it has <see cref="Binding.NotifyOnSourceUpdated"/> set to <c>true</c>.</remarks>
         public bool ExecuteOnlyOnSourceUpdate { get { return (bool)GetValue(ExecuteOnlyOnSourceUpdateProperty); } set { SetValue(ExecuteOnlyOnSourceUpdateProperty, value); } }
+        
+        /// <summary>
+        /// Gets or sets whether the value of the property should be used as the parameter of the command to execute when the property is modified.
+        /// </summary>
+        public bool PassValueAsParameter { get { return (bool)GetValue(PassValueAsParameterProperty); } set { SetValue(PassValueAsParameterProperty, value); } }
 
         protected override void OnAttached()
         {
             if (PropertyName == null)
-                throw new ArgumentException(string.Format("The PropertyName property must be set on behavior '{0}'.", GetType().FullName));
+                throw new ArgumentException($"The PropertyName property must be set on behavior '{GetType().FullName}'.");
 
             dependencyProperty = AssociatedObject.GetDependencyProperties(true).FirstOrDefault(dp => dp.Name == PropertyName);
             if (dependencyProperty == null)
-                throw new ArgumentException(string.Format("Unable to find property '{0}' on object of type '{1}'.", PropertyName, AssociatedObject.GetType().FullName));
+                throw new ArgumentException($"Unable to find property '{PropertyName}' on object of type '{AssociatedObject.GetType().FullName}'.");
 
             propertyWatcher.Attach(AssociatedObject);
             // TODO: Register/Unregister handlers when the PropertyName changes
@@ -98,10 +108,11 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void ExecuteCommand()
         {
-            if (Command == null || !Command.CanExecute(CommandParameter))
+            var parameter = PassValueAsParameter ? AssociatedObject.GetValue(dependencyProperty) : CommandParameter;
+            if (Command == null || !Command.CanExecute(parameter))
                 return;
 
-            Command.Execute(CommandParameter);
+            Command.Execute(parameter);
         }
     }
 }

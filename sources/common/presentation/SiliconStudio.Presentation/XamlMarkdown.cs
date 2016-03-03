@@ -1,11 +1,14 @@
-﻿#region Copyright and license
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+#region Copyright and license
 /*
-Distributed under the MIT license
+The MIT license (MIT)
 https://opensource.org/licenses/MIT
 
-Modified version copyright(c) 2015 Nicolas Musset
+Modified version copyright (c) 2015 Nicolas Musset
 https://github.com/Kryptos-FR/XamlMarkdown
-Original version copyright(c) 2010 Bevan Arps
+Original version copyright (c) 2010 Bevan Arps
 https://github.com/theunrepentantgeek/Markdown.XAML
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
