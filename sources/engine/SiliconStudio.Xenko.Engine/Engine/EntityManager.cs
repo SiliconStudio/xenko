@@ -400,6 +400,8 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
 
+            processor.RemoveAllEntities();
+
             processor.OnSystemRemove();
             processor.Services = null;
             processor.EntityManager = null;
