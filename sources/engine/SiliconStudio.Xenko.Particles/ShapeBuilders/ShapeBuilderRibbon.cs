@@ -6,9 +6,17 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
+using SiliconStudio.Xenko.Particles.ShapeBuilders.Tools;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
+    public enum TexCoordsPolicy
+    {
+        AsIs,
+        Stretched,
+        DistanceBased,        
+    }
+
     /// <summary>
     /// Shape builder which builds each particle as a camera-facing quad
     /// </summary>
@@ -16,7 +24,31 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Ribbon")]
     public class ShapeBuilderRibbon : ShapeBuilder
     {
-        private Ribbonizer ribbonizer = new Ribbonizer();
+        private readonly Ribbonizer ribbonizer = new Ribbonizer();
+
+        /// <summary>
+        /// Specifies how texture coordinates for the ribbons should be built
+        /// </summary>
+        /// <userdoc>
+        /// Specifies how texture coordinates for the ribbons should be built
+        /// </userdoc>
+        [DataMember(10)]
+        [Display("UV Coords")]
+        public TexCoordsPolicy TexCoordsPolicy { get; set; } = TexCoordsPolicy.AsIs;
+
+        /// <summary>
+        /// The factor (coefficient) for length to use when building texture coordinates
+        /// </summary>
+        /// <userdoc>
+        /// The factor (coefficient) for length to use when building texture coordinates
+        /// </userdoc>
+        [DataMember(20)]
+        [Display("UV Factor")]
+        public float TexCoordsFactor { get; set; } = 1f;
+
+        [DataMember(30)]
+        [Display("UV Rotate")]
+        public UVRotate UvRotate { get; set; }
 
         /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
@@ -63,12 +95,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle);
+            ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle, TexCoordsPolicy, TexCoordsFactor, UvRotate);
 
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
         }
-
 
         sealed class Ribbonizer
         {
@@ -110,7 +141,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 return unitX * (particleSize * 0.5f);
             }
 
-            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
+            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle, TexCoordsPolicy texPolicy, float texFactor, UVRotate uvRotate)
             {
                 if (lastParticle <= 0)
                     return;
@@ -158,6 +189,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 // Step 2 - Draw each particle, connecting it to the previous (front) position
 
+                var vCoordOld = 0f;
+
                 for (int i = 0; i < lastParticle; i++)
                 {
                     var centralPos = positions[i];
@@ -172,44 +205,63 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     axis0 = axis1;
 
-                    // Particle rotation - IGNORED for ribbon
-
-                    // TODO Handle particle color properly - not in tiles
-
-                    // TODO - Several texture coordinate options, including based on distance
+                    // Particle rotation - intentionally IGNORED for ribbon
 
                     var particlePos = oldPoint - oldUnitX;
                     var uvCoord = new Vector2(0, 0);
-                    // 0f 0f
+                    var rotatedCoord = uvCoord;
+
+
+                    // Top Left - 0f 0f
+                    uvCoord.Y = (texPolicy == TexCoordsPolicy.AsIs) ? 0 : vCoordOld;
                     vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+
+                    rotatedCoord = uvRotate.GetCoords(uvCoord);
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+
                     vtxBuilder.NextVertex();
 
 
-                    // 1f 0f
+                    // Top Right - 1f 0f
                     particlePos += oldUnitX * 2;
-                    uvCoord.X = 1;
                     vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+
+                    uvCoord.X = 1;
+                    rotatedCoord = uvRotate.GetCoords(uvCoord);
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+
                     vtxBuilder.NextVertex();
 
+
+                    // Move the position to the next particle in the ribbon
                     particlePos += centralPos - oldPoint;
                     particlePos += unitX - oldUnitX;
+                    vCoordOld = (texPolicy == TexCoordsPolicy.Stretched) ? 
+                        ((i + 1)/(float)(lastParticle) * texFactor) : ((centralPos - oldPoint).Length() * texFactor) + vCoordOld;
 
-                    // 1f 1f
-                    uvCoord.Y = 1;
+
+                    // Bottom Left - 1f 1f
+                    uvCoord.Y = (texPolicy == TexCoordsPolicy.AsIs) ? 1 : vCoordOld;
                     vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+
+                    rotatedCoord = uvRotate.GetCoords(uvCoord);
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+
                     vtxBuilder.NextVertex();
 
 
-                    // 0f 1f
+                    // Bottom Right - 0f 1f
                     particlePos -= unitX * 2;
-                    uvCoord.X = 0;
                     vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+
+                    uvCoord.X = 0;
+                    rotatedCoord = uvRotate.GetCoords(uvCoord);
+                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+
                     vtxBuilder.NextVertex();
 
+
+                    // Preserve the old attributes for the next cycle
                     oldUnitX = unitX;
                     oldPoint = centralPos;
                 }

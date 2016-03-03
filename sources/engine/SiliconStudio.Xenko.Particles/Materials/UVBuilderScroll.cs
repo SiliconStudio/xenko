@@ -70,9 +70,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
                         value.Y = uvTransform.Y + uvTransform.W * value.Y;
                     };
 
-                vertexBuilder.TransformAttributePerParticle(texDefault, texAttribute, transformCoords);
+                vertexBuilder.TransformAttributePerSegment(texDefault, texAttribute, transformCoords);
 
-                vertexBuilder.NextParticle();
+                vertexBuilder.NextSegment();
             }
 
 
