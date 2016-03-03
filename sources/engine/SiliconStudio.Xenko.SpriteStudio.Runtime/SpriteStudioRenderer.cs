@@ -8,21 +8,14 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     //TODO this whole renderer is not optimized at all! batching is wrong and depth calculation should be done differently
-    // TODO GRAPHICS REFACTOR rewrite this
-    [Obsolete]
-    public class SpriteStudioRenderer : EntityComponentRendererBase
+    public class SpriteStudioRenderFeature : RootRenderFeature
     {
-        // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
-        public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteStudioRenderer));
-
         private EffectInstance selectedSpriteEffect;
         private EffectInstance pickingSpriteEffect;
 
         private Sprite3DBatch sprite3DBatch;
 
         private SpriteStudioProcessor spriteProcessor;
-
-        public override bool SupportPicking => true;
 
         public BlendStateDescription MultBlendState;
         public BlendStateDescription SubBlendState;
@@ -47,89 +40,34 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             MultBlendState = blendDesc;
         }
 
-        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void Destroy()
         {
-            spriteProcessor = SceneInstance.GetProcessor<SpriteStudioProcessor>();
-            if (spriteProcessor == null)
-            {
-                return;
-            }
+            base.Destroy();
 
-            // If no camera, early exit
-            var camera = context.RenderContext.GetCurrentCamera();
-            if (camera == null)
-            {
-                return;
-            }
-            var viewProjectionMatrix = camera.ViewProjectionMatrix;
-
-            foreach (var spriteState in spriteProcessor.Sprites)
-            {
-                var worldMatrix = spriteState.TransformComponent.WorldMatrix;
-
-                var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
-
-                Vector4 projectedPosition;
-                Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
-                var projectedZ = projectedPosition.Z / projectedPosition.W;
-
-                transparentList.Add(new RenderItem(this, spriteState, projectedZ));
-
-                //for (var index = 0; index < ssSheet.Sheet.NodesInfo.Count; index++)
-                //{
-                //    var node = ssSheet.Sheet.NodesInfo[index];
-                //    var sprite = ssSheet.Sheet.SpriteSheet.Sprites[index];
-
-                //    if (sprite?.Texture == null || sprite.Region.Width <= 0 || sprite.Region.Height <= 0f)
-                //        continue;
-
-                //    // Perform culling on group and accept
-                //    if (!CurrentCullingMask.Contains(spriteState.SpriteStudioComponent.Entity.Group))
-                //        continue;
-
-                //    var worldMatrix = node.WorldTransform * spriteState.TransformComponent.WorldMatrix;
-
-                //    // Project the position
-                //    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                //    var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
-
-                //    Vector4 projectedPosition;
-                //    Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
-                //    var projectedZ = projectedPosition.Z / projectedPosition.W;
-
-                //    var list = sprite.IsTransparent ? transparentList : opaqueList;
-
-                //    list.Add(new RenderItem(this, new SpriteItem
-                //    {
-                //        Sprite = sprite,
-                //        Data = spriteState,
-                //        Node = node
-                //    }, projectedZ));
-                //}
-            }
+            sprite3DBatch.Dispose();
         }
 
-        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            //var viewParameters = context.Parameters;
-
-            var device = context.GraphicsDevice;
-            // TODO GRAPHICS REFACTOR probably better to receive RenderView when reimplemented
-            var cameraState = context.RenderContext.GetCurrentCamera();
-            if (cameraState == null) throw new InvalidOperationException("No valid camera");
-            var viewProjection = cameraState.ViewProjectionMatrix; // viewParameters.Get(TransformationKeys.ViewProjection);
+            base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
             BlendStateDescription? previousBlendState = null;
             DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
-            var isPicking = context.RenderContext.IsPicking();
+            //TODO string comparison ...?
+            var isPicking = renderViewStage.RenderStage.Name == "Picking";
 
-            bool hasBegin = false;
-            for (var i = fromIndex; i <= toIndex; i++)
+            var device = RenderSystem.GraphicsDevice;
+
+            var hasBegin = false;
+            for (var index = startIndex; index < endIndex; index++)
             {
-                var renderItem = renderItems[i];
-                var spriteState = (SpriteStudioProcessor.Data)renderItem.DrawContext;
+                var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
+                var renderNode = GetRenderNode(renderNodeReference);
+
+                var spriteState = (RenderSpriteStudio)renderNode.RenderObject;
+
                 var transfoComp = spriteState.TransformComponent;
                 var depthStencilState = device.DepthStencilStates.None;
 
@@ -158,7 +96,16 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? spriteBlending : device.BlendStates.Opaque;
+                    // TODO: this should probably be moved to Prepare()
+                    // Project the position
+                    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                    var worldPosition = new Vector4(transfoComp.WorldMatrix.TranslationVector, 1.0f);
+
+                    Vector4 projectedPosition;
+                    Vector4.Transform(ref worldPosition, ref renderView.ViewProjection, out projectedPosition);
+                    var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                    var blendState = isPicking ? device.BlendStates.Default : spriteBlending;
                     var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : ShadowObject.IsObjectSelected(spriteState.SpriteStudioComponent) ? GetOrCreateSelectedSpriteEffect() : null;
                     // TODO remove this code when material are available
                     if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
@@ -167,7 +114,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                         {
                             sprite3DBatch.End();
                         }
-                        sprite3DBatch.Begin(context.GraphicsContext, viewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                        sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                         hasBegin = true;
                     }
 
@@ -233,34 +180,23 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     worldMatrix.M42 -= centerOffset.X*worldMatrix.M12 + centerOffset.Y*worldMatrix.M22;
 
                     // draw the sprite
-                    sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color4, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                    sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color4, node.Sprite.Orientation, SwizzleMode.None, projectedZ);
                 }
             }
 
-            sprite3DBatch.End();
+            if(hasBegin) sprite3DBatch.End();
         }
 
         private EffectInstance GetOrCreateSelectedSpriteEffect()
         {
-            if (selectedSpriteEffect == null)
-                selectedSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("SelectedSprite").WaitForResult());
-
-            return selectedSpriteEffect;
+            return selectedSpriteEffect ?? (selectedSpriteEffect = new EffectInstance(RenderSystem.EffectSystem.LoadEffect("SelectedSprite").WaitForResult()));
         }
 
         private EffectInstance GetOrCreatePickingSpriteEffect()
         {
-            if (pickingSpriteEffect == null)
-                pickingSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("SpritePicking").WaitForResult());
-
-            return pickingSpriteEffect;
+            return pickingSpriteEffect ?? (pickingSpriteEffect = new EffectInstance(RenderSystem.EffectSystem.LoadEffect("SpritePicking").WaitForResult()));
         }
 
-        protected override void Unload()
-        {
-            sprite3DBatch.Dispose();
-
-            base.Unload();
-        }
+        public override Type SupportedRenderObjectType => typeof(RenderSpriteStudio);
     }
 }
