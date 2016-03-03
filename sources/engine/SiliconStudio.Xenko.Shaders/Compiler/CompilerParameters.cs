@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// <summary>
         /// The optimization level.
         /// </summary>
-        public static readonly ParameterKey<int> OptimizationLevelKey = ParameterKeys.New(0);
+        public static readonly PermutationParameterKey<int> OptimizationLevelKey = ParameterKeys.NewPermutation(0);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.
