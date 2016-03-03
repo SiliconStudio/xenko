@@ -6,6 +6,9 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
+    /// <summary>
+    /// The <see cref="UpdaterGravity"/> is a simple version of a force field which updates the particles' velocity over time and acts as a gravitational force
+    /// </summary>
     [DataContract("UpdaterGravity")]
     [Display("Gravity")]
     public class UpdaterGravity : ParticleUpdater
