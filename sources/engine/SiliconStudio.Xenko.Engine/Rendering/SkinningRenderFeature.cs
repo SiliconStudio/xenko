@@ -70,11 +70,11 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
 
                         var skinningBones = renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones);
                         if (skinningBones > MaxBones)
                             throw new NotImplementedException("Too many bones");
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, MaxBones);
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, MaxBones);
                     }
                 }
