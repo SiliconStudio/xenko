@@ -32,19 +32,4 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
     }
-
-    public class PickingSpritePipelinePlugin : IPipelinePlugin
-    {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
-        {
-            var spriteRenderFeature = renderSystem.RenderFeatures.OfType<SpriteRenderFeature>().First();
-            var pickingRenderStage = renderSystem.GetRenderStage("Picking");
-
-            spriteRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-            {
-                EffectName = "TestEffect.Picking",
-                RenderStage = pickingRenderStage,
-            });
-        }
-    }
 }

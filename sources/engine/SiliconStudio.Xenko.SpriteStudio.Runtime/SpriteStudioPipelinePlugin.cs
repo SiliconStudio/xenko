@@ -1,6 +1,7 @@
 using System.Linq;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {

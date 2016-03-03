@@ -15,8 +15,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         private Sprite3DBatch sprite3DBatch;
 
-        private SpriteStudioProcessor spriteProcessor;
-
         public BlendStateDescription MultBlendState;
         public BlendStateDescription SubBlendState;
 
@@ -26,17 +24,27 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
             sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
 
-            var blendDesc = new BlendStateDescription(Blend.SourceAlpha, Blend.One);
-            blendDesc.RenderTarget0.BlendEnable = true;
-            blendDesc.RenderTarget0.ColorBlendFunction = BlendFunction.ReverseSubtract;
-            blendDesc.RenderTarget0.AlphaBlendFunction = BlendFunction.ReverseSubtract;
+            var blendDesc = new BlendStateDescription(Blend.SourceAlpha, Blend.One)
+            {
+                RenderTarget0 =
+                {
+                    BlendEnable = true,
+                    ColorBlendFunction = BlendFunction.ReverseSubtract,
+                    AlphaBlendFunction = BlendFunction.ReverseSubtract
+                }
+            };
             SubBlendState = blendDesc;
 
-            blendDesc = new BlendStateDescription(Blend.DestinationColor, Blend.InverseSourceAlpha);
-            blendDesc.RenderTarget0.BlendEnable = true;
-            blendDesc.RenderTarget0.ColorBlendFunction = BlendFunction.Add;
-            blendDesc.RenderTarget0.AlphaSourceBlend = Blend.Zero;
-            blendDesc.RenderTarget0.AlphaBlendFunction = BlendFunction.Add;
+            blendDesc = new BlendStateDescription(Blend.DestinationColor, Blend.InverseSourceAlpha)
+            {
+                RenderTarget0 =
+                {
+                    BlendEnable = true,
+                    ColorBlendFunction = BlendFunction.Add,
+                    AlphaSourceBlend = Blend.Zero,
+                    AlphaBlendFunction = BlendFunction.Add
+                }
+            };
             MultBlendState = blendDesc;
         }
 

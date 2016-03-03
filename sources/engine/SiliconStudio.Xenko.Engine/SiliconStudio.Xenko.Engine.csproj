@@ -130,7 +130,6 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
-    <Compile Include="Rendering\CameraRendererModePicking.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\NextGenSceneGraphicsCompositor.cs" />
@@ -174,10 +173,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
-    <Compile Include="Rendering\Editor\EntityPickingResult.cs" />
     <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
-    <Compile Include="Rendering\Editor\HighlightRenderFeature.cs" />
-    <Compile Include="Rendering\Editor\WireFrameRenderFeature.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -258,7 +254,6 @@
     <Compile Include="Rendering\Background\RenderBackground.cs" />
     <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
     <Compile Include="Rendering\DataArrayInfo.cs" />
-    <Compile Include="Rendering\Editor\PickingRenderFeature.cs" />
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\EffectValidator.cs" />
