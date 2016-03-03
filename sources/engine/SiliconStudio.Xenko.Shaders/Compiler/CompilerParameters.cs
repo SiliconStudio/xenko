@@ -31,6 +31,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         public static readonly PermutationParameterKey<bool> DebugKey = ParameterKeys.NewPermutation(true);
 
         /// <summary>
+        /// The optimization level.
+        /// </summary>
+        public static readonly ParameterKey<int> OptimizationLevelKey = ParameterKeys.New(0);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.
         /// </summary>
         public CompilerParameters()
@@ -99,6 +104,23 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             set
             {
                 Set(DebugKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the optimization level when compiling shaders. 0: no optimization, 2: full optimizations
+        /// </summary>
+        [DataMemberIgnore]
+        public int OptimizationLevel
+        {
+            get
+            {
+                return Get(OptimizationLevelKey);
+            }
+
+            set
+            {
+                Set(OptimizationLevelKey, value);
             }
         }
     }

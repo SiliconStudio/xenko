@@ -158,6 +158,7 @@
     <Compile Include="ParticleForcesTest.cs" />
     <Compile Include="ParticlePoolTest.cs" />
     <Compile Include="SimpleTest.cs" />
+    <Compile Include="VisualTestCurves.cs" />
     <Compile Include="VisualTestGeneral.cs" />
     <Compile Include="VisualTestInitializers.cs" />
     <Compile Include="VisualTestMaterials.cs" />

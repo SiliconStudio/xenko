@@ -68,6 +68,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             mixinToCompile.UsedParameters.Set(CompilerParameters.GraphicsPlatformKey, compilerParameters.Platform);
             mixinToCompile.UsedParameters.Set(CompilerParameters.GraphicsProfileKey, compilerParameters.Profile);
             mixinToCompile.UsedParameters.Set(CompilerParameters.DebugKey, compilerParameters.Debug);
+            mixinToCompile.UsedParameters.Set(CompilerParameters.OptimizationLevelKey, compilerParameters.OptimizationLevel);
 
             // Compile the whole mixin tree
             var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", mixinToCompile.Name) };
