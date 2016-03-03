@@ -149,15 +149,14 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="updateData"></param>
         public void InvalidateCanvas(bool updateData = true)
         {
-            // always updates the model
-            UpdateModel(updateData);
-
             if (renderer == null || !IsCanvasValid)
                 return;
 
             IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
             {
+                // updates the model before rendering
+                UpdateModel(updateData);
                 // Invalidate the arrange state for the element.
                 // After the invalidation, the element will have its layout updated,
                 // which will occur asynchronously unless subsequently forced by UpdateLayout.
