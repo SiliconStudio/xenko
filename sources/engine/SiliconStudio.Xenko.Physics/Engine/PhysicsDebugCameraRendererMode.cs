@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
-            var wireFrameRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "WireFrame");
+            var wireFrameRenderStage = renderSystem.GetRenderStage("WireFrame");
 
             meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
             base.InitializeCore();
 
             if (WireFrameRenderStage == null)
-                WireFrameRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+                WireFrameRenderStage = RenderSystem.GetOrCreateRenderStage("WireFrame", "WireFrame", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
             if (WireFrameRenderStage != null)
             {

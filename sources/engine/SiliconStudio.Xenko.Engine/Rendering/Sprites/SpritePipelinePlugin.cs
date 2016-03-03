@@ -12,8 +12,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
-            var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            var transparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = renderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = renderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             var spriteRenderFeature = renderSystem.RenderFeatures.OfType<SpriteRenderFeature>().FirstOrDefault();
             if (spriteRenderFeature == null)
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             var spriteRenderFeature = renderSystem.RenderFeatures.OfType<SpriteRenderFeature>().First();
-            var pickingRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "Picking");
+            var pickingRenderStage = renderSystem.GetRenderStage("Picking");
 
             spriteRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
             {

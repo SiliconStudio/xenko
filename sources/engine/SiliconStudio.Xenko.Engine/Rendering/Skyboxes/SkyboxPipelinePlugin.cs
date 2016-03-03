@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
-            var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = renderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             var skyboxRenderFeature = renderSystem.RenderFeatures.OfType<SkyboxRenderFeature>().FirstOrDefault();
             if (skyboxRenderFeature == null)

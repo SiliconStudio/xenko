@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
-            var transparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = renderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             var uiRenderFeature = renderSystem.RenderFeatures.OfType<UIRenderFeature>().FirstOrDefault();
             if (uiRenderFeature == null)

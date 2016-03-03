@@ -16,8 +16,8 @@ namespace SiliconStudio.Xenko.Rendering
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             // Mandatory render stages
-            var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-            var transparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = renderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var transparentRenderStage = renderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault();
             if (meshRenderFeature == null)
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
-            var pickingRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "Picking");
+            var pickingRenderStage = renderSystem.GetRenderStage("Picking");
 
             meshRenderFeature.RenderFeatures.Add(new PickingRenderFeature());
             meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
         {
             var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
-            var shadowMapRenderStage = EntityComponentRendererBase.GetRenderStage(renderSystem, "ShadowMapCaster");
+            var shadowMapRenderStage = renderSystem.GetRenderStage("ShadowMapCaster");
 
             var forwardLightingRenderFeature = meshRenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().First();
             forwardLightingRenderFeature.ShadowMapRenderStage = shadowMapRenderStage;
