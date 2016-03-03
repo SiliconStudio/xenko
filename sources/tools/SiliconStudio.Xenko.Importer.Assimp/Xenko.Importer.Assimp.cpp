@@ -1371,8 +1371,6 @@ private:
 							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)
 							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
-						if (meshInfo->TotalClusterCount > 0)
-							nodeMeshData->Parameters->Set(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
 					}
 					modelData->Meshes->Add(nodeMeshData);
 				}
