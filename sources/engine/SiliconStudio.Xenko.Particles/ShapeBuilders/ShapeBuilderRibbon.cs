@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY);
+            ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle);
 
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 return unitX * (particleSize * 0.5f);
             }
 
-            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY)
+            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
             {
                 if (lastParticle <= 0)
                     return;
@@ -143,6 +143,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     vtxBuilder.NextVertex();
                     return;
                 }
+
+                vtxBuilder.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
 
                 // Step 1 - Determine the origin of the ribbon
                 var invViewZ = Vector3.Cross(invViewX, invViewY);
