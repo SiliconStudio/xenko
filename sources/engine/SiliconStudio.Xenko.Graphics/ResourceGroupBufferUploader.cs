@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
                         resourceGroupBinding.ConstantBufferSlot = resourceIndex;
-                        resourceGroupBinding.ConstantBufferPreallocated = Buffer.Cosntant.New(graphicsDevice, constantBuffer.Size);
+                        resourceGroupBinding.ConstantBufferPreallocated = Buffer.Constant.New(graphicsDevice, constantBuffer.Size);
                     }
                 }
 
