@@ -814,8 +814,8 @@ namespace SiliconStudio.Xenko.Rendering
                         fixed (byte* destDataValues = destination.DataValues)
                         fixed (byte* sourceDataValues = source.DataValues)
                         {
-                            uint* destPtr = (uint*)destDataValues;
-                            uint* sourcePtr = (uint*)sourceDataValues;
+                            uint* destPtr = (uint*)(destDataValues + range.DestStart);
+                            uint* sourcePtr = (uint*)(sourceDataValues + range.SourceStart);
                             var count = range.Size / 4;
                             for (int i = 0; i < count; ++i)
                                 *destPtr++ = *sourcePtr++;
@@ -863,7 +863,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                             sourceLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(subkey, currentDataRange.SourceStart + currentDataRange.Size, parameterKeyInfo.Count));
 
-                            currentDataRange.Size += parameterKeyInfo.Count;
+                            var elementCount = parameterKeyInfo.Count;
+                            var elementSize = parameterKeyInfo.Key.Size;
+                            var size = (elementSize + 15) / 16 * 16 * (elementCount - 1) + elementSize;
+
+                            currentDataRange.Size += size;
                         }
                         else if (isResource)
                         {
