@@ -137,6 +137,9 @@ namespace SiliconStudio.AssemblyProcessor
             merge.TargetAssemblyDefinition.Name.Name = assembly.Name.Name;
             merge.TargetAssemblyDefinition.Name.Version = assembly.Name.Version;
 
+            // Copy assembly characterics. This is necessary especially when targeting a windows app
+            merge.TargetAssemblyMainModule.Characteristics = assembly.MainModule.Characteristics;
+
             // Add assembly signing info
             if (assembly.Name.HasPublicKey)
             {
