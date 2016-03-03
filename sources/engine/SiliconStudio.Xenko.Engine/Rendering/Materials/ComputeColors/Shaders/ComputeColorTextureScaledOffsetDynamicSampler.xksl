@@ -15,13 +15,12 @@ class ComputeColorTextureScaledOffsetDynamicSampler<LinkType TTextureName,
                                              LinkType TSampler, 
                                              MemberName TRgba, 
                                              LinkType TScale, 
-                                             LinkType TOffset,
-                                             MemberName LocalBuffer> : ComputeColor, 
-                                                               DynamicTexture<TTextureName, LocalBuffer>, 
-                                                               DynamicSampler<TSampler, LocalBuffer>, 
+                                             LinkType TOffset> : ComputeColor, 
+                                                               DynamicTexture<TTextureName, PerMaterial>, 
+                                                               DynamicSampler<TSampler, PerMaterial>, 
                                                                DynamicTextureStream<TStream>
 {
-    cbuffer LocalBuffer
+    cbuffer PerMaterial
     {
         [Link("TScale")]
         stage float2 scale;
