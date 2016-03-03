@@ -36,7 +36,7 @@
     <Compile Include="SpriteStudioNodeState.cs" />
     <Compile Include="SpriteStudioPipelinePlugin.cs" />
     <Compile Include="SpriteStudioProcessor.cs" />
-    <Compile Include="SpriteStudioRenderer.cs" />
+    <Compile Include="SpriteStudioRenderFeature.cs" />
     <Compile Include="SpriteStudioSheet.cs" />
   </ItemGroup>
   <ItemGroup>
