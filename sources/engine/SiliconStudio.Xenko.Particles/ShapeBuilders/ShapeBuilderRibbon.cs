@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     }
 
     /// <summary>
-    /// Shape builder which builds each particle as a camera-facing quad
+    /// Shape builder which builds all particles as a ribbon, connecting adjacent particles with camera-facing quads
     /// </summary>
     [DataContract("ShapeBuilderRibbon")]
     [Display("Ribbon")]
@@ -46,6 +46,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("UV Factor")]
         public float TexCoordsFactor { get; set; } = 1f;
 
+        /// <summary>
+        /// Texture coordinates flip and rotate policy
+        /// </summary>
+        /// <userdoc>
+        /// Texture coordinates flip and rotate policy
+        /// </userdoc>
         [DataMember(30)]
         [Display("UV Rotate")]
         public UVRotate UvRotate { get; set; }
@@ -101,6 +107,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             return renderedParticles * vtxPerShape;
         }
 
+        /// <summary>
+        /// The <see cref="Ribbonizer"/> takes a list of points and creates a ribbon (connected quads), adjusting its texture coordinates accordingly
+        /// </summary>
         sealed class Ribbonizer
         {
             private int capacity = 1;
@@ -108,7 +117,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             private Vector3[] positions = new Vector3[1];
             private float[] sizes = new float[1];
 
-
+            /// <summary>
+            /// Restarts the point string, potentially expanding the capacity
+            /// </summary>
+            /// <param name="newCapacity">Required minimum capacity</param>
             public void Restart(int newCapacity)
             {
                 lastParticle = 0;
@@ -120,14 +132,30 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 }                
             }
 
+            /// <summary>
+            /// Adds a new particle position and size to the point string
+            /// </summary>
+            /// <param name="position"></param>
+            /// <param name="size"></param>
             public void AddParticle(ref Vector3 position, float size)
             {
+                if (lastParticle <= positions.Length)
+                    return;
+
                 positions[lastParticle] = position;
                 sizes[lastParticle] = size;
                 lastParticle++;
             }
 
-            private Vector3 GetWidthVector(float particleSize, ref Vector3 invViewX, ref Vector3 invViewY, ref Vector3 invViewZ, ref Vector3 axis0, ref Vector3 axis1)
+            /// <summary>
+            /// Returns the half width vector at the sampled position along the ribbon
+            /// </summary>
+            /// <param name="particleSize">Particle's size, sampled from the size field</param>
+            /// <param name="invViewZ">Unit vector Z in clip space, pointing towards the camera</param>
+            /// <param name="axis0">Central axis between the particle and the previous point along the ribbon</param>
+            /// <param name="axis1">Central axis between the particle and the next point along the ribbon</param>
+            /// <returns></returns>
+            private static Vector3 GetWidthVector(float particleSize, ref Vector3 invViewZ, ref Vector3 axis0, ref Vector3 axis1)
             {
                 // Simplest
                 // return invViewX * (particleSize * 0.5f);
@@ -141,6 +169,16 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 return unitX * (particleSize * 0.5f);
             }
 
+            /// <summary>
+            /// Constructs the ribbon by outputting vertex stream based on the positions and sizes specified previously
+            /// </summary>
+            /// <param name="vtxBuilder">Target <see cref="ParticleVertexBuilder"/></param> to use
+            /// <param name="invViewX">Unit vector X in clip space as calculated from the inverse view matrix</param>
+            /// <param name="invViewY">Unit vector Y in clip space as calculated from the inverse view matrix</param>
+            /// <param name="quadsPerParticle">The required number of quads per each particle</param>
+            /// <param name="texPolicy">Texture coordinates stretching and stitching policy</param>
+            /// <param name="texFactor">Texture coordinates stretching and stitching coefficient</param>
+            /// <param name="uvRotate">Texture coordinates rotate and flip policy</param>
             public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle, TexCoordsPolicy texPolicy, float texFactor, UVRotate uvRotate)
             {
                 if (lastParticle <= 0)
@@ -185,7 +223,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 axis0.Normalize();
 
                 var oldPoint = positions[0];
-                var oldUnitX = GetWidthVector(sizes[0], ref invViewX, ref invViewY, ref invViewZ, ref axis0, ref axis0);
+                var oldUnitX = GetWidthVector(sizes[0], ref invViewZ, ref axis0, ref axis0);
 
                 // Step 2 - Draw each particle, connecting it to the previous (front) position
 
@@ -201,7 +239,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     var axis1 = (i + 1 < lastParticle) ? positions[i] - positions[i + 1] : positions[lastParticle - 2] - positions[lastParticle - 1];
                     axis1.Normalize();
 
-                    var unitX = GetWidthVector(particleSize, ref invViewX, ref invViewY, ref invViewZ, ref axis0, ref axis1);
+                    var unitX = GetWidthVector(particleSize, ref invViewZ, ref axis0, ref axis1);
 
                     axis0 = axis1;
 
