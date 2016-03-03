@@ -81,10 +81,11 @@ namespace SiliconStudio.Xenko.Rendering
             //}
 
             // Shadow maps
-            if (Shadows)
+            var shadowMapRenderer = RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer;
+            if (Shadows && shadowMapRenderer != null)
             {
                 // Clear atlases
-                RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+                shadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
 
                 context.PushRenderTargets();
 
