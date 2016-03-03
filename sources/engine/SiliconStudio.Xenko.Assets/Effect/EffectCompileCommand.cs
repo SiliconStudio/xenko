@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// <summary>
     /// This command is responsible to compile a single permutation of an effect (xkfx or xksl)
     /// </summary>
-    internal class EffectCompileCommand : IndexFileCommand
+    internal sealed class EffectCompileCommand : IndexFileCommand
     {
         private static readonly PropertyKey<EffectCompilerBase> CompilerKey = new PropertyKey<EffectCompilerBase>("CompilerKey", typeof(EffectCompileCommand));
 

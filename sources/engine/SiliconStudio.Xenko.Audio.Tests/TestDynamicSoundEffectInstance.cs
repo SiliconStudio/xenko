@@ -347,7 +347,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         public void TestPlayableInterface()
         {
             WaveFormat dataFormat;
-            using (var stream = AssetManager.FileProvider.OpenStream("EffectFishLamp", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var stream = ContentManager.FileProvider.OpenStream("EffectFishLamp", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 var memoryStream = new MemoryStream((int)stream.Length);
                 stream.CopyTo(memoryStream);
@@ -488,7 +488,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
             sound = new DynSoundData();
 
             WaveFormat dataFormat;
-            using (var stream = AssetManager.FileProvider.OpenStream(filename, VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var stream = ContentManager.FileProvider.OpenStream(filename, VirtualFileMode.Open, VirtualFileAccess.Read))
             using (var memoryStream = new MemoryStream(new byte[stream.Length]))
             {
                 stream.CopyTo(memoryStream);

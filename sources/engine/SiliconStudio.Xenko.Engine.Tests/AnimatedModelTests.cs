@@ -36,16 +36,16 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             await base.LoadContent();
 
-            var knightModel = Asset.Load<Model>("knight Model");
+            var knightModel = Content.Load<Model>("knight Model");
             knight = new Entity { new ModelComponent { Model = knightModel } };
             knight.Transform.Position = new Vector3(0, 0f, 0f);
             var animationComponent = knight.GetOrCreate<AnimationComponent>();
-            animationComponent.Animations.Add("Run", Asset.Load<AnimationClip>("knight Run"));
-            animationComponent.Animations.Add("Idle", Asset.Load<AnimationClip>("knight Idle"));
+            animationComponent.Animations.Add("Run", Content.Load<AnimationClip>("knight Run"));
+            animationComponent.Animations.Add("Idle", Content.Load<AnimationClip>("knight Idle"));
 
             // We will test both non-optimized and optimized clips
             megalodonClip = CreateModelChangeAnimation(new ProceduralModelDescriptor(new CubeProceduralModel { Size = Vector3.One, MaterialInstance = { Material = knightModel.Materials[0].Material } }).GenerateModel(Services));
-            knightOptimizedClip = CreateModelChangeAnimation(Asset.Load<Model>("knight Model"));
+            knightOptimizedClip = CreateModelChangeAnimation(Content.Load<Model>("knight Model"));
             knightOptimizedClip.Optimize();
 
             animationComponent.Animations.Add("ChangeModel1", megalodonClip);

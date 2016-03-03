@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <remarks>
     /// Nodes are ordered so that parents always come first, allowing for hierarchical updates in a simple loop.
     /// </remarks>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Skeleton>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Skeleton>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Skeleton>))]
     [DataContract]
     public class Skeleton

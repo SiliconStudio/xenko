@@ -21,11 +21,11 @@ namespace SiliconStudio.Xenko.Assets.Model
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
         public bool AnimationRootMotion { get; set; }
 
-        private unsafe object ExportAnimation(ICommandContext commandContext, AssetManager assetManager)
+        private unsafe object ExportAnimation(ICommandContext commandContext, ContentManager contentManager)
         {
             // Read from model file
-            var modelSkeleton = LoadSkeleton(commandContext, assetManager); // we get model skeleton to compare it to real skeleton we need to map to
-            var animationClips = LoadAnimation(commandContext, assetManager);
+            var modelSkeleton = LoadSkeleton(commandContext, contentManager); // we get model skeleton to compare it to real skeleton we need to map to
+            var animationClips = LoadAnimation(commandContext, contentManager);
             AnimationClip animationClip = null;
 
             if (animationClips.Count > 0)
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 // Load asset reference skeleton
                 if (SkeletonUrl != null)
                 {
-                    var skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
+                    var skeleton = contentManager.Load<Skeleton>(SkeletonUrl);
                     var skeletonMapping = new SkeletonMapping(skeleton, modelSkeleton);
 
                     // Process missing nodes

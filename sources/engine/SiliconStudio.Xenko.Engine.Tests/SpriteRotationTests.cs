@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             await base.LoadContent();
 
-            var rotationSheet = Asset.Load<SpriteSheet>("RotationSheet");
+            var rotationSheet = Content.Load<SpriteSheet>("RotationSheet");
 
             // create the rotated sprites
             var nrnr = CreateSpriteEntity(rotationSheet, "NRNR");

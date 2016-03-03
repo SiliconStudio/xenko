@@ -58,10 +58,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
         public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, EffectCompilerParameters? effectCompilerParameters)
         {
-            var database = (FileProvider ?? AssetManager.FileProvider) as DatabaseFileProvider;
+            var database = (FileProvider ?? ContentManager.FileProvider) as DatabaseFileProvider;
             if (database == null)
             {
-                throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
+                throw new NotSupportedException("Using the cache requires to ContentManager.FileProvider to be valid.");
             }
 
             // Forward DatabaseFileProvider to actual compiler here

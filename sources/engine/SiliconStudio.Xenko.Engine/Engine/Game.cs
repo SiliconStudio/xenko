@@ -193,7 +193,7 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = new SpriteAnimationSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
 
-            Asset.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
+            Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -220,9 +220,9 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
-                if (Asset.Exists(GameSettings.AssetUrl))
+                if (Content.Exists(GameSettings.AssetUrl))
                 {
-                    Settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                    Settings = Content.Load<GameSettings>(GameSettings.AssetUrl);
 
                     // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
                     if (Settings.DefaultGraphicsProfileUsed > 0)
@@ -295,9 +295,9 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(SceneSystem);
 
             // TODO: data-driven?
-            Asset.Serializer.RegisterSerializer(new ImageSerializer());
-            Asset.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
-            Asset.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
+            Content.Serializer.RegisterSerializer(new ImageSerializer());
+            Content.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
+            Content.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
 
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Engine
                 var mountPath = VirtualFileSystem.ResolveProviderUnsafe("/asset", true).Provider == null ? "/asset" : null;
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase, mountPath);
 
-                AssetManager.GetFileProvider = () => databaseFileProvider;
+                ContentManager.GetFileProvider = () => databaseFileProvider;
             }
         }
 

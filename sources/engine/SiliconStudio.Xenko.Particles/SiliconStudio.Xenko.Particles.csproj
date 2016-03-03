@@ -112,7 +112,6 @@
     <Compile Include="Updaters\UpdaterCollider.cs" />
     <Compile Include="Updaters\UpdaterForceField.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
-    <Compile Include="Updaters\UpdaterOldPosition.cs" />
     <Compile Include="Updaters\ParticleUpdater.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />

@@ -54,11 +54,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     spaceRotation.Rotate(ref centralPos);
                     centralPos = centralPos * spaceScale + spaceTranslation;
                     particleSize *= spaceScale;
-                    // TODO Rotation
                 }
 
-                var unitX = invViewX * particleSize; 
-                var unitY = invViewY * particleSize;
+                // Use half size to make a Size = 1 result in a Billboard of 1m x 1m
+                var unitX = invViewX * (particleSize * 0.5f); 
+                var unitY = invViewY * (particleSize * 0.5f);
 
                 // Particle rotation. Positive value means clockwise rotation.
                 if (hasAngle)

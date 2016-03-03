@@ -92,10 +92,10 @@ namespace SiliconStudio.Xenko.Input.Tests
         protected override Task LoadContent()
         {
             // Load the fonts
-            spriteFont11 = Asset.Load<SpriteFont>("Arial");
+            spriteFont11 = Content.Load<SpriteFont>("Arial");
 
             // load the round texture 
-            roundTexture = Asset.Load<Texture>("round");
+            roundTexture = Content.Load<Texture>("round");
 
             // create the SpriteBatch used to render them
             spriteBatch = new SpriteBatch(GraphicsDevice);

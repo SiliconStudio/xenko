@@ -64,8 +64,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         {
             sounds = new List<SoundEffect>
                 {
-                    game.Asset.Load<SoundEffect>("EffectBip"),
-                    game.Asset.Load<SoundEffect>("EffectToneA"),
+                    game.Content.Load<SoundEffect>("EffectBip"),
+                    game.Content.Load<SoundEffect>("EffectToneA"),
                 };
 
             emitComps[0].AttachSoundEffect(sounds[0]);
@@ -301,7 +301,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 160)
             {
                 // add a longuer sound
-                sounds.Add(game.Asset.Load<SoundEffect>("EffectFishLamp"));
+                sounds.Add(game.Content.Load<SoundEffect>("EffectFishLamp"));
                 emitComps[0].AttachSoundEffect(sounds[2]);
                 soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[2]));
                 soundControllers[2].Play();
@@ -352,7 +352,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
 
             // add a longuer sound
-            sounds.Add(game.Asset.Load<SoundEffect>("EffectFishLamp"));
+            sounds.Add(game.Content.Load<SoundEffect>("EffectFishLamp"));
             emitComps[0].AttachSoundEffect(sounds[2]);
             soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[2]));
         }
@@ -406,7 +406,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
 
             // add a longuer sound
-            sounds.Add(game.Asset.Load<SoundEffect>("EffectFishLamp"));
+            sounds.Add(game.Content.Load<SoundEffect>("EffectFishLamp"));
             emitComps[0].AttachSoundEffect(sounds[2]);
             soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[2]));
         }

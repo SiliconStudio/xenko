@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Generate the AST from the mixin description
                 if (shaderMixinParser == null)
                 {
-                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? AssetManager.FileProvider);
+                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? ContentManager.FileProvider);
                     shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
                     shaderMixinParser.SourceManager.UseFileSystem = UseFileSystem;
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
@@ -255,6 +255,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                 stageStringBuilder.AppendLine("@G    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
+                if (result.DisassembleText != null)
+                {
+                    stageStringBuilder.Append(result.DisassembleText);
+                }
 #endif
                 // -------------------------------------------------------
 

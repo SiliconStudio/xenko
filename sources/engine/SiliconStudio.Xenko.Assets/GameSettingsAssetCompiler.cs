@@ -16,10 +16,27 @@ namespace SiliconStudio.Xenko.Assets
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, GameSettingsAsset asset, AssetCompilerResult result)
         {
+            var compilationMode = CompilationMode.Debug;
+            switch (context.BuildConfiguration)
+            {
+                case "Debug":
+                    compilationMode = CompilationMode.Debug;
+                    break;
+                case "Release":
+                    compilationMode = CompilationMode.Release;
+                    break;
+                case "AppStore":
+                    compilationMode = CompilationMode.AppStore;
+                    break;
+                case "Testing":
+                    compilationMode = CompilationMode.Testing;
+                    break;
+            }
+
             // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
-                new GameSettingsCompileCommand(urlInStorage, AssetItem.Package, context.Platform, asset),
+                new GameSettingsCompileCommand(urlInStorage, AssetItem.Package, context.Platform, compilationMode, asset),
             };
         }
 
@@ -27,12 +44,14 @@ namespace SiliconStudio.Xenko.Assets
         {
             private readonly Package package;
             private readonly PlatformType platform;
+            private readonly CompilationMode compilationMode;
 
-            public GameSettingsCompileCommand(string url, Package package, PlatformType platform, GameSettingsAsset asset)
+            public GameSettingsCompileCommand(string url, Package package, PlatformType platform, CompilationMode compilationMode, GameSettingsAsset asset)
                 : base(url, asset)
             {
                 this.package = package;
                 this.platform = platform;
+                this.compilationMode = compilationMode;
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -43,6 +62,7 @@ namespace SiliconStudio.Xenko.Assets
                 writer.Write(package.Id);
                 writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
                 writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
+                writer.Write(compilationMode);
 
                 // Hash platform
                 writer.Write(platform);
@@ -60,7 +80,8 @@ namespace SiliconStudio.Xenko.Assets
                     DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
                     ColorSpace =  AssetParameters.ColorSpace,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
-                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
+                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
+                    CompilationMode = compilationMode
                 };
 
                 // TODO: Platform-specific settings have priority
@@ -74,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets
                 //    }
                 //}
 
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 assetManager.Save(Url, result);
 
                 return Task.FromResult(ResultStatus.Successful);

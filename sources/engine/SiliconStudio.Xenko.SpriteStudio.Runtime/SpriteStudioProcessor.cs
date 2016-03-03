@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         public readonly List<Data> Sprites = new List<Data>();
 
         public SpriteStudioProcessor()
-            : base(typeof(TransformComponent), typeof(AnimationComponent))
+            : base(typeof(TransformComponent))
         {
             Order = 550;
         }
@@ -20,7 +20,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         {
             public SpriteStudioComponent SpriteStudioComponent;
             public TransformComponent TransformComponent;
-            public AnimationComponent AnimationComponent;
             public SpriteStudioNodeState RootNode;
             public SpriteStudioSheet Sheet;
         }
@@ -30,8 +29,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             return new Data
             {
                 SpriteStudioComponent = component,
-                TransformComponent = entity.Transform,
-                AnimationComponent = entity.Get<AnimationComponent>()
+                TransformComponent = entity.Transform
             };
         }
 
@@ -39,8 +37,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         {
             return
                 component == associatedData.SpriteStudioComponent &&
-                entity.Transform == associatedData.TransformComponent &&
-                entity.Get<AnimationComponent>() == associatedData.AnimationComponent;
+                entity.Transform == associatedData.TransformComponent;
         }
 
         protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, Data data)

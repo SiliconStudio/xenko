@@ -104,8 +104,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var random = new Random(0);
 
-            var Sprites = Asset.Load<SpriteSheet>("UIImages");
-            var img1 = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv")) };
+            var Sprites = Content.Load<SpriteSheet>("UIImages");
+            var img1 = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv")) };
             var img2 = new ImageElement { Source = Sprites["GameScreenLeft"] };
             var img3 = new ImageElement { Source = Sprites["GameScreenRight"] };
 
@@ -116,15 +116,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             stackPanel2 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             for (var i = 0; i < 1000; i++)
-                stackPanel2.Children.Add(new Button { Name = "" + i, Height = 75, Content = new TextBlock { Text = "button number " + i, Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") } });
+                stackPanel2.Children.Add(new Button { Name = "" + i, Height = 75, Content = new TextBlock { Text = "button number " + i, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") } });
 
             stackPanel3 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true, VerticalAlignment = VerticalAlignment.Center };
             for (var i = 0; i < 103; i++)
-                stackPanel3.Children.Add(new Button { Name = "" + i, Height = 50 + 500 * random.NextFloat(), Content = new TextBlock { Text = "random button number " + i, Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") } });
+                stackPanel3.Children.Add(new Button { Name = "" + i, Height = 50 + 500 * random.NextFloat(), Content = new TextBlock { Text = "random button number " + i, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") } });
 
             stackPanel4 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             for (var i = 0; i < 5; i++)
-                stackPanel4.Children.Add(new Button { Name = "" + i, Height = i * 30, Content = new TextBlock { Text = "random button number " + i, Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") } });
+                stackPanel4.Children.Add(new Button { Name = "" + i, Height = i * 30, Content = new TextBlock { Text = "random button number " + i, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") } });
 
             currentStackPanel = stackPanel1;
 

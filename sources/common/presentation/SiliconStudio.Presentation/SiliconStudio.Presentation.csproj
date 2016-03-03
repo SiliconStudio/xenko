@@ -59,6 +59,7 @@
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Collections\IObservableList.cs" />
+    <Compile Include="Collections\IReadOnlyObservableList.cs" />
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
@@ -127,6 +128,7 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
+    <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />

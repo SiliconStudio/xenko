@@ -27,12 +27,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var cube = new Entity { new ModelComponent { Model = Asset.Load<Model>("cube Model") } };
+            var cube = new Entity { new ModelComponent { Model = Content.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
             cube.Transform.Position = new Vector3(0, 0, 10);
             Scene.Entities.Add(cube);
 
-            var imageElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv")) };
+            var imageElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv")) };
             var imageEntity = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(150) } };
             imageEntity.Transform.Position = new Vector3(-500, 0, 0);
             Scene.Entities.Add(imageEntity);

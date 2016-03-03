@@ -106,8 +106,8 @@ namespace SiliconStudio.Xenko.Games
             // Externals
             Services = new ServiceRegistry();
 
-            // Asset manager
-            Asset = new AssetManager(Services);
+            // Content manager
+            Content = new ContentManager(Services);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection();
@@ -202,10 +202,15 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="AssetManager"/>.
+        /// Gets the <see cref="ContentManager"/>.
         /// </summary>
-        /// <value>The content manager.</value>
-        public AssetManager Asset { get; private set; }
+        public ContentManager Content { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ContentManager"/>.
+        /// </summary>
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        public ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the game components registered by this game.
@@ -986,7 +991,7 @@ namespace SiliconStudio.Xenko.Games
         private void graphicsDeviceService_DeviceDisposing(object sender, EventArgs e)
         {
             // TODO: Unload all assets
-            //Asset.UnloadAll();
+            //Content.UnloadAll();
 
             if (GameSystems.State == GameSystemState.ContentLoaded)
             {

@@ -100,7 +100,7 @@ namespace SiliconStudio.Quantum.Contents
             if (collectionDescriptor != null)
             {
                 var index = (int)itemIndex;
-                if (collectionDescriptor.GetCollectionCount(Value) == index)
+                if (collectionDescriptor.GetCollectionCount(Value) == index || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(Value, newItem);
                 }
@@ -120,7 +120,7 @@ namespace SiliconStudio.Quantum.Contents
             NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
         }
 
-        public override void Remove(object itemIndex)
+        public override void Remove(object itemIndex, object item)
         {
             if (itemIndex == null) throw new ArgumentNullException(nameof(itemIndex));
             var oldValue = Retrieve(itemIndex);
@@ -129,8 +129,15 @@ namespace SiliconStudio.Quantum.Contents
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = (int)itemIndex;
-                collectionDescriptor.RemoveAt(Value, index);
+                if (collectionDescriptor.HasRemoveAt)
+                {
+                    var index = (int)itemIndex;
+                    collectionDescriptor.RemoveAt(Value, index);                  
+                }
+                else
+                {
+                    collectionDescriptor.Remove(Value, item);
+                }               
             }
             else if (dictionaryDescriptor != null)
             {
