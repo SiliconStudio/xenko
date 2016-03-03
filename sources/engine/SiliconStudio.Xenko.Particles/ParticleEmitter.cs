@@ -440,7 +440,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 // This sorting policy doesn't check if you actually have a Order field.
                 // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
-                GetSortIndex<UInt32> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
+                GetSortIndex<UInt32> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
 
                 ParticleSorter = new ParticleSorterCustom<UInt32>(pool, ParticleFields.Order, sortByOrder);
                 return;
