@@ -55,21 +55,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
     }
-    public class PickingMeshPipelinePlugin : IPipelinePlugin
-    {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
-        {
-            var meshRenderFeature = renderSystem.RenderFeatures.OfType<MeshRenderFeature>().First();
-            var pickingRenderStage = renderSystem.GetRenderStage("Picking");
 
-            meshRenderFeature.RenderFeatures.Add(new PickingRenderFeature());
-            meshRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-            {
-                EffectName = "TestEffect.Picking",
-                RenderStage = pickingRenderStage,
-            });
-        }
-    }
     public class ShadowMeshPipelinePlugin : IPipelinePlugin
     {
         public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
