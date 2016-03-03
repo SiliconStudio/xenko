@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
-    partial class AssetManager
+    partial class ContentManager
     {
         // Used internally for Garbage Collection
         // Allocate once and reuse collection for every GC

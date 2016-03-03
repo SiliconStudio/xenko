@@ -36,10 +36,10 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
         }
     }
 
-    public class InputOutputCommand : IndexFileCommand
+    public sealed class InputOutputTestCommand : IndexFileCommand
     {
         /// <inheritdoc/>
-        public override string Title { get { return "InputOutputCommand " + Source + " > " + OutputUrl; } }
+        public override string Title { get { return "InputOutputTestCommand " + Source + " > " + OutputUrl; } }
 
         public int Delay = 0;
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         protected override async Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
-            var assetManager = new AssetManager();
+            var assetManager = new ContentManager();
             DataContainer result = null;
 
             switch (Source.Type)
@@ -128,7 +128,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         public override string ToString()
         {
-            return "InputOutputCommand " + Source + " > " + OutputUrl;
+            return "InputOutputTestCommand " + Source + " > " + OutputUrl;
         }
 
     }

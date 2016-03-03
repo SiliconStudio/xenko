@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests.Regression
             await base.LoadContent();
 
             Console.WriteLine(@"Begin load.");
-            texture = Asset.Load<Texture>("small_uv");
+            texture = Content.Load<Texture>("small_uv");
             Console.WriteLine(@"End load.");
         }
 

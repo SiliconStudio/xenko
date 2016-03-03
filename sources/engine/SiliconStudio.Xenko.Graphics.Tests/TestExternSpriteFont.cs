@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            testFont = Asset.Load<SpriteFont>("StaticFonts/ExternFont");
+            testFont = Content.Load<SpriteFont>("StaticFonts/ExternFont");
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);

@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private static void PrepareDatabases()
         {
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
+            ContentManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
         }
 
         private BuildResultCode BuildMaster()
@@ -121,7 +121,8 @@ namespace SiliconStudio.Assets.CompilerApp
                 var context = new AssetCompilerContext
                 {
                     Profile = builderOptions.BuildProfile,
-                    Platform = builderOptions.Platform
+                    Platform = builderOptions.Platform,
+                    BuildConfiguration =  builderOptions.ProjectConfiguration
                 };
                 context.SetGameSettingsAsset(gameSettingsAsset);
 

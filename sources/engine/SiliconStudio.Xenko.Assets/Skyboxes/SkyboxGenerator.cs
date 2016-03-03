@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public SkyboxGeneratorContext()
         {
             Services = new ServiceRegistry();
-            Assets = new AssetManager(Services);
+            Content = new ContentManager(Services);
             GraphicsDevice = GraphicsDevice.New();
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                 // load the skybox texture from the asset.
                 var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
-                var skyboxTexture = context.Assets.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
+                var skyboxTexture = context.Content.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
                 if (skyboxTexture.Dimension != TextureDimension.TextureCube)
                 {
                     result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");

@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             renderSHEffect.Initialize(drawEffectContext);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            inputCubemap = Asset.Load<Texture>("CubeMap");
+            inputCubemap = Content.Load<Texture>("CubeMap");
             outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
             displayedCubemap = outputCubemap;
         }

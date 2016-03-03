@@ -73,13 +73,13 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             await base.LoadContent();
 
-            font = Asset.Load<SpriteFont>("Font");
-            teapot = Asset.Load<Model>("Teapot");
+            font = Content.Load<SpriteFont>("Font");
+            teapot = Content.Load<Model>("Teapot");
             batch = new SpriteBatch(GraphicsDevice);
 
             BuildUI();
 
-            spriteComponent = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("SpriteSheet") } };
+            spriteComponent = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Content.Load<SpriteSheet>("SpriteSheet") } };
             modelComponent = new ModelComponent { Model = teapot };
             modelComponent2 = new ModelComponent { Model = teapot };
             modelComponent3 = new ModelComponent { Model = teapot };

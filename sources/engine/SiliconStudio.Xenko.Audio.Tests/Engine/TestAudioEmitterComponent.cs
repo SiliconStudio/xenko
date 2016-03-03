@@ -48,9 +48,9 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             using (var game = new Game())
             {
                 Game.InitializeAssetDatabase();
-                using (var audioStream1 = AssetManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
-                using (var audioStream2 = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
-                using (var audioStream3 = AssetManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var audioStream1 = ContentManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var audioStream2 = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var audioStream3 = ContentManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
                 {
                     var sound1 = SoundEffect.Load(game.Audio.AudioEngine, audioStream1);
                     var sound2 = SoundEffect.Load(game.Audio.AudioEngine, audioStream2);
@@ -101,8 +101,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             using (var game = new Game())
             {
                 Game.InitializeAssetDatabase();
-                using (var audioStream1 = AssetManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
-                using (var audioStream2 = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var audioStream1 = ContentManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var audioStream2 = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
                 {
                     var sound1 = SoundEffect.Load(game.Audio.AudioEngine, audioStream1);
                     var sound2 = SoundEffect.Load(game.Audio.AudioEngine, audioStream2);

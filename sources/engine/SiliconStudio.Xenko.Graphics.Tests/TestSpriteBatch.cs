@@ -42,8 +42,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            sphere = Asset.Load<Texture>("Sphere");
-            rotatedImages = Asset.Load<SpriteSheet>("RotatedImages");
+            sphere = Content.Load<Texture>("Sphere");
+            rotatedImages = Content.Load<SpriteSheet>("RotatedImages");
         }
 
         protected override void Draw(GameTime gameTime)

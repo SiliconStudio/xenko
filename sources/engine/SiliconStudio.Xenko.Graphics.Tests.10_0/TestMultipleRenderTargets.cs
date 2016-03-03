@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             CreatePipeline();
 
             var primitive = GeometricPrimitive.Teapot.New(GraphicsDevice);
-            var material = Asset.Load<Material>("BasicMaterial");
+            var material = Content.Load<Material>("BasicMaterial");
 
             teapot = new Entity
             {

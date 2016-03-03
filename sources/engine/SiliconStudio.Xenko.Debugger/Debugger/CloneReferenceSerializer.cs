@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
     [YamlSerializerFactory]
     public class CloneReferenceSerializer : ObjectSerializer
     {
-        // TODO: We might want to share some of the recursive logic with EntityGroupAssetSerializer?
+        // TODO: We might want to share some of the recursive logic with PrefabAssetSerializer?
         // However, ThreadStatic would still need to be separated...
         [ThreadStatic]
         private static int recursionLevel;

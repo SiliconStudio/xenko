@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 WrapText = true,
                 TextSize = 15,
                 TextColor = Color.Black,
-                Font = Asset.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("MSMincho10"),
                 Text = @"This is a very long sentence that will hopefully be wrapped up. 
 Does it work with kanjis too? let's see that in the following line. Here we goes.
 漢字も大丈夫そうですね！良かった！でも、文章の切る所は本当に合ってますか？どうかな。。
@@ -48,7 +48,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

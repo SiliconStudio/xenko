@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.ActionStack
 {
-    public delegate IActionItem AggregateActionItemDelegate(IReadOnlyCollection<IActionItem> actionItems);
+    public delegate IActionItem AggregateActionItemDelegate(IReadOnlyCollection<IActionItem> actionItems, bool reverseOrderOnUndo = true);
 
     /// <summary>
     /// Base interface for a transactional action stack.

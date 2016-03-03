@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <value>
         /// The asset manager.
         /// </value>
-        public AssetManager Assets { get; set; }
+        public ContentManager Content { get; set; }
 
         
         public ShaderGeneratorContext(GraphicsDevice graphicsDevice = null)
@@ -102,9 +102,9 @@ namespace SiliconStudio.Xenko.Assets
 
         public unsafe Texture GenerateTextureFromColor(Color color)
         {
-            if (Assets == null)
+            if (Content == null)
             {
-                Log.Error("Trying to generate a texture without an AssetManager");
+                Log.Error("Trying to generate a texture without an ContentManager");
                 return null;
             }
 
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Assets
             texture = image.ToSerializableVersion();
 
             // Save texture
-            Assets.Save(string.Format("__material_internal__/color_texture_{0:X2}{1:X2}{2:X2}{3:X2}", color.R, color.G, color.B, color.A), texture);
+            Content.Save(string.Format("__material_internal__/color_texture_{0:X2}{1:X2}{2:X2}{3:X2}", color.R, color.G, color.B, color.A), texture);
 
             singleColorTextures.Add(color, texture);
 
@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Assets
             {
                 Parameters.Set(textureKey, texture);
             }
-            else if (defaultTextureValue != null && Assets != null)
+            else if (defaultTextureValue != null && Content != null)
             {
                 texture = GenerateTextureFromColor(defaultTextureValue.Value);
                 Parameters.Set(textureKey, texture);

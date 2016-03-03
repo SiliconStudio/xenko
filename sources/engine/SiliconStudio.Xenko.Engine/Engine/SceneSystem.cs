@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void LoadContent()
         {
-            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+            var assetManager = Services.GetSafeServiceAs<ContentManager>();
             var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
             // Preload the scene if it exists
