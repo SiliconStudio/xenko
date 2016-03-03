@@ -368,7 +368,6 @@
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
-    <Compile Include="Rendering\CameraRendererModeWireFrameOld.cs" />
     <Compile Include="Rendering\EntityComponentRendererEventArgs.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMax.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMaxShader.cs">
@@ -1374,7 +1373,6 @@
     <Compile Include="Rendering\SceneEffectRenderer.cs" />
     <Compile Include="Rendering\SceneRendererBase.cs" />
     <Compile Include="Rendering\SceneRendererCollection.cs" />
-    <Compile Include="Rendering\CameraRendererModeForwardOld.cs" />
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
