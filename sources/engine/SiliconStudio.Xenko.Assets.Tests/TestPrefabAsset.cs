@@ -64,9 +64,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
             basePartAsset.Hierarchy.RootEntities.Add(entityPart1.Id);
             basePartAsset.Hierarchy.RootEntities.Add(entityPart2.Id);
 
+            // Add 2 asset parts from the same base
             var instance = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
             derivedAsset.Hierarchy.Entities.AddRange(instance.Entities);
             derivedAsset.Hierarchy.RootEntities.AddRange(instance.RootEntities);
+
+            var instance2 = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
+            derivedAsset.Hierarchy.Entities.AddRange(instance2.Entities);
+            derivedAsset.Hierarchy.RootEntities.AddRange(instance2.RootEntities);
 
             using (var stream = new MemoryStream())
             {
@@ -81,6 +86,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.NotNull(newAsset.Base);
                 Assert.NotNull(newAsset.BaseParts);
+
+                // We should have only 1 base part, as we created parts from the same base
                 Assert.AreEqual(1, newAsset.BaseParts.Count);
 
                 CheckAsset(derivedAsset, newAsset);
