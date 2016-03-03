@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.Engine
     public class SceneSystem : GameSystemBase
     {
         private RenderContext renderContext;
-        private ResourceGroupAllocator resourceGroupAllocator;
         private RenderDrawContext renderDrawContext;
 
         /// <summary>
@@ -108,11 +107,6 @@ namespace SiliconStudio.Xenko.Engine
             {
                 // Force a recycle of all allocated temporary textures
                 renderContext.Allocator.Recycle(link => true);
-            }
-
-            if (resourceGroupAllocator == null)
-            {
-                resourceGroupAllocator = new ResourceGroupAllocator(GraphicsDevice);
             }
 
             previousWidth = MainRenderFrame.Width;
