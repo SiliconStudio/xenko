@@ -21,26 +21,4 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             return spriteRenderFeature;
         }
     }
-
-    public class PickingSpriteStudioPipelinePlugin : PipelinePlugin<SpriteStudioRenderFeature>
-    {
-        [ModuleInitializer]
-        internal static void Initialize()
-        {
-            PipelinePluginManager.RegisterAutomaticPlugin(typeof(PickingSpriteStudioPipelinePlugin), typeof(SpriteStudioPipelinePlugin), typeof(PickingPipelinePlugin));
-        }
-
-        public override void Load(PipelinePluginContext context)
-        {
-            base.Load(context);
-
-            var pickingRenderStage = context.RenderSystem.GetRenderStage("Picking");
-
-            RegisterRenderStageSelector(new SimpleGroupToRenderStageSelector
-            {
-                EffectName = "TestEffect.Picking",
-                RenderStage = pickingRenderStage,
-            });
-        }
-    }
 }

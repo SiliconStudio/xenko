@@ -76,14 +76,14 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 pipelinePlugin = new PipelinePluginInstantiation((IPipelinePlugin)Activator.CreateInstance(pipelinePluginType));
                 pipelinePlugins.Add(pipelinePluginType, pipelinePlugin);
+            }
 
-                if (incrementCount)
+            if (incrementCount)
+            {
+                if (++pipelinePlugin.Counter == 1)
                 {
-                    if (++pipelinePlugin.Counter == 1)
-                    {
-                        pipelinePlugin.Instance.Load(new PipelinePluginContext(renderSystem.RenderContextOld, renderSystem));
-                        CheckAutomaticPlugins(pipelinePluginType, true);
-                    }
+                    pipelinePlugin.Instance.Load(new PipelinePluginContext(renderSystem.RenderContextOld, renderSystem));
+                    CheckAutomaticPlugins(pipelinePluginType, true);
                 }
             }
 

@@ -18,6 +18,12 @@ namespace SiliconStudio.Xenko.Rendering
             dataArrays = new FastListStruct<DataArray>(8);
         }
 
+        public void Clear()
+        {
+            dataArraysByDefinition.Clear();
+            dataArrays.Clear();
+        }
+
         public void SwapRemoveItem(DataType dataType, int source, int dest)
         {
             for (int i = 0; i < dataArrays.Count; ++i)

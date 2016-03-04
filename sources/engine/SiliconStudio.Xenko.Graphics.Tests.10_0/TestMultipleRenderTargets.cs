@@ -123,12 +123,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     GraphicsCompositor = new SceneGraphicsCompositorLayers
                     {
                         Cameras = { mainCamera.Get<CameraComponent>() },
+                        ModelEffect = "MultipleRenderTargetsEffect",
                         Master =
                         {
                             Renderers =
                             {
                                 new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                                new SceneCameraRenderer { Mode = new CameraRendererModeForward { ModelEffect = "MultipleRenderTargetsEffect" }, Output = multipleRenderFrames}, 
+                                new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames}, 
                                 new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
                                 new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
                             }

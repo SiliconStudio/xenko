@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
                         //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
-                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "TestEffect" } },
+                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" } },
                     }
                 }
             };

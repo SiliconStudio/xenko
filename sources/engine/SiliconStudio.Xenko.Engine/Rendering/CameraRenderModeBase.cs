@@ -11,8 +11,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected RenderView MainRenderView { get; private set; }
 
-        public override string ModelEffect { get; set; }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();
