@@ -15,8 +15,11 @@ namespace SiliconStudio.Xenko.Rendering
     public abstract class SortModeDistance : SortMode
     {
         private bool reverseDistance;
-        protected int distanceShift = 40;
-        protected int stateSortShift = 0;
+        protected int distancePosition = 32;
+        protected int distancePrecision = 16;
+
+        protected int statePosition = 0;
+        protected int statePrecision = 32;
 
         protected SortModeDistance(bool reverseDistance)
         {
@@ -45,6 +48,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             var renderNodes = renderViewStage.RenderNodes;
 
+            int distanceShift = 32 - distancePrecision;
+            int stateShift = 32 - statePrecision;
+
             for (int i = 0; i < renderNodes.Count; ++i)
             {
                 var renderNode = renderNodes[i];
@@ -56,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering
                     distanceI = ~distanceI;
 
                 // Compute sort key
-                sortKeys[i] = new SortKey { Value = ((ulong)renderNode.RootRenderFeature.SortKey << 56) | ((distanceI >> 16) << distanceShift) | (renderObject.StateSortKey << stateSortShift), Index = i };
+                sortKeys[i] = new SortKey { Value = ((ulong)renderNode.RootRenderFeature.SortKey << 56) | ((ulong)(distanceI >> distanceShift) << distancePosition) | ((ulong)(renderObject.StateSortKey >> stateShift) << statePosition), Index = i };
             }
         }
     }
@@ -69,6 +75,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public StateChangeSortMode() : base(false)
         {
+            statePosition = 32;
+            distancePosition = 0;
         }
     }
 
@@ -84,13 +92,17 @@ namespace SiliconStudio.Xenko.Rendering
     }
 
     /// <summary>
-    /// Sort elements according to the pattern: [RenderFeature Sort Key 8 bits] [Distance back to front 16 bits] [RenderObject states 32 bits]
+    /// Sort elements according to the pattern: [RenderFeature Sort Key 8 bits] [Distance back to front 32 bits] [RenderObject states 24 bits]
     /// </summary>
     [DataContract("BackToFrontSortMode")]
     public class BackToFrontSortMode : SortModeDistance
     {
         public BackToFrontSortMode() : base(true)
         {
+            distancePrecision = 32;
+            distancePosition = 24;
+
+            statePrecision = 24;
         }
     }
 }
