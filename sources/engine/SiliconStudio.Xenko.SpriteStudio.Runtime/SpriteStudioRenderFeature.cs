@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 var spriteState = (RenderSpriteStudio)renderNode.RenderObject;
 
                 var transfoComp = spriteState.TransformComponent;
-                var depthStencilState = device.DepthStencilStates.None;
+                var depthStencilState = device.DepthStencilStates.DepthRead;
 
                 foreach (var node in spriteState.SpriteStudioComponent.SortedNodes)
                 {

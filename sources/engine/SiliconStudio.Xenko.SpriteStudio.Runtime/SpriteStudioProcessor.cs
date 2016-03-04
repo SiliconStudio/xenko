@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, RenderSpriteStudio>, IEntityComponentRenderProcessor
+    public class SpriteStudioRendererProcessor : EntityProcessor<SpriteStudioComponent, RenderSpriteStudio>, IEntityComponentRenderProcessor
     {
-        public SpriteStudioProcessor()
+        public SpriteStudioRendererProcessor()
             : base(typeof(TransformComponent))
         {
             Order = 550;
@@ -129,6 +130,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
                 if(!renderSpriteStudio.Enabled) continue;
 
+                renderSpriteStudio.BoundingBox = new BoundingBoxExt { Center = renderSpriteStudio.TransformComponent.WorldMatrix.TranslationVector };
                 renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.Entity.Group;
 
                 if (!PrepareNodes(renderSpriteStudio))
