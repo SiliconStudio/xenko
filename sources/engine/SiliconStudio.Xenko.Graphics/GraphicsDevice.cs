@@ -90,7 +90,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             var defaultPipelineStateDescription = new PipelineStateDescription();
             defaultPipelineStateDescription.SetDefaults();
-            DefaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
+            AdjustDefaultPipelineStateDescription(ref defaultPipelineStateDescription);
+            DefaultPipelineState = PipelineState.New(this, ref defaultPipelineStateDescription);
         }
 
         protected override void Destroy()
