@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.6.0-beta", typeof(MigrateToNewComponents))]
 
     [Display(200, "Scene")]
-    public partial class SceneAsset : PrefabAssetBase
+    public partial class SceneAsset : EntityHierarchyAssetBase
     {
         private const string CurrentVersion = "1.6.0-beta";
 

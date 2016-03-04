@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(PrefabAssetCompiler))]
     [Display(195, "Prefab")]
-    public class PrefabAsset : PrefabAssetBase
+    public class PrefabAsset : EntityHierarchyAssetBase
     {
         /// <summary>
         /// The default file extension used by the <see cref="PrefabAsset"/>.
@@ -20,27 +20,27 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public const string FileExtension = ".xkprefab";
 
         /// <summary>
-        /// Creates a instance of this prefab that can be added to another <see cref="PrefabAssetBase"/>.
+        /// Creates a instance of this prefab that can be added to another <see cref="EntityHierarchyAssetBase"/>.
         /// </summary>
         /// <param name="targetContainer">The container in which the instance will be added.</param>
         /// <param name="targetLocation">The location of the <see paramref="targetContainer"/> asset.</param>
         /// <returns>An <see cref="EntityHierarchyData"/> containing the cloned entities of </returns>
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public EntityHierarchyData CreatePrefabInstance(PrefabAssetBase targetContainer, string targetLocation)
+        public EntityHierarchyData CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation)
         {
             Guid unused;
             return CreatePrefabInstance(targetContainer, targetLocation, out unused);
         }
 
         /// <summary>
-        /// Creates a instance of this prefab that can be added to another <see cref="PrefabAssetBase"/>.
+        /// Creates a instance of this prefab that can be added to another <see cref="EntityHierarchyAssetBase"/>.
         /// </summary>
         /// <param name="targetContainer">The container in which the instance will be added.</param>
         /// <param name="targetLocation">The location of this asset.</param>
         /// <param name="instanceId">The identifier of the created instance.</param>
         /// <returns>An <see cref="EntityHierarchyData"/> containing the cloned entities of </returns>
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public EntityHierarchyData CreatePrefabInstance(PrefabAssetBase targetContainer, string targetLocation, out Guid instanceId)
+        public EntityHierarchyData CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation, out Guid instanceId)
         {
             var instance = (PrefabAsset)CreateChildAsset(targetLocation);
 
