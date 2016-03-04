@@ -203,7 +203,7 @@
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
-    <Compile Include="Entities\PrefabAssetBase.cs" />
+    <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
     <Compile Include="Entities\PrefabAssetCompiler.cs" />
     <Compile Include="Entities\PrefabAssetMerge.cs" />
     <Compile Include="Entities\EntityHierarchyData.cs" />

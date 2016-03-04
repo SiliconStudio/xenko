@@ -22,9 +22,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> newEntities; // specific to this instance, GroupPartKey.PartInstanceId is always Guid.Empty
         private readonly HashSet<Guid> entitiesRemovedInNewBase;
         private readonly HashSet<Guid> entitiesToRemoveFromNew;
-        private readonly PrefabAssetBase baseAsset;
-        private readonly PrefabAssetBase newAsset;
-        private readonly PrefabAssetBase newBaseAsset;
+        private readonly EntityHierarchyAssetBase baseAsset;
+        private readonly EntityHierarchyAssetBase newAsset;
+        private readonly EntityHierarchyAssetBase newBaseAsset;
         private readonly List<AssetBase> newBaseParts;
         private readonly HashSet<Guid> entitiesInHierarchy;
         private readonly List<Guid> rootEntitiesToAdd;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="newAsset">The new asset (cannot be null)</param>
         /// <param name="newBaseAsset">The new base asset (can be null)</param>
         /// <param name="newBaseParts">The new base parts (can be null)</param>
-        public PrefabAssetMerge(PrefabAssetBase baseAsset, PrefabAssetBase newAsset, PrefabAssetBase newBaseAsset, List<AssetBase> newBaseParts)
+        public PrefabAssetMerge(EntityHierarchyAssetBase baseAsset, EntityHierarchyAssetBase newAsset, EntityHierarchyAssetBase newBaseAsset, List<AssetBase> newBaseParts)
         {
             if (newAsset == null) throw new ArgumentNullException(nameof(newAsset));
 

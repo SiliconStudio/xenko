@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public abstract class PrefabCompilerBase<T> : AssetCompilerBase<T> where T : PrefabAssetBase
+    public abstract class PrefabCompilerBase<T> : AssetCompilerBase<T> where T : EntityHierarchyAssetBase
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
         {
