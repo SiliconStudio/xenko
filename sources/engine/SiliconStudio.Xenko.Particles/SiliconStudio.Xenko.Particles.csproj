@@ -49,18 +49,6 @@
     <Compile Include="Rendering\ParticleEmitterRenderFeature.cs" />
     <Compile Include="Rendering\RenderParticleEmitter.cs" />
     <Compile Include="Rendering\RenderParticleSystem.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders\ComputeColorBlue.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorBlue.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\ComputeColorWhite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -97,12 +85,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Updaters\UpdaterColorOverTime.cs" />
+    <Compile Include="Updaters\UpdaterGravity.cs" />
+    <Compile Include="Updaters\UpdaterRotationOverTime.cs" />
+    <Compile Include="Updaters\UpdaterSizeOverTime.cs" />
     <Compile Include="Updaters\FieldShapes\Cube.cs" />
     <Compile Include="Updaters\FieldShapes\Cylinder.cs" />
     <Compile Include="Updaters\FieldShapes\FieldFalloff.cs" />
@@ -111,7 +104,6 @@
     <Compile Include="Updaters\FieldShapes\Torus.cs" />
     <Compile Include="Updaters\UpdaterCollider.cs" />
     <Compile Include="Updaters\UpdaterForceField.cs" />
-    <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\ParticleUpdater.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
@@ -126,12 +118,6 @@
     <Compile Include="ParticleUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBaseKeys.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -153,44 +139,45 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{e8b3553f-a79f-4e50-b75b-acee771c320c}</Project>
       <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
       <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
-    <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
-    <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
-    <None Include="Shaders\ComputeColorBlue.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorBlue.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\ComputeColorWhite.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorWhite.cs</LastGenOutput>

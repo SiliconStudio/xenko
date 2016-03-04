@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
             }
 
-            protected override Prefab Create(SceneAsset prefabAsset)
+            protected override PrefabBase Create(SceneAsset prefabAsset)
             {
                 return new Scene(prefabAsset.SceneSettings);
             }
