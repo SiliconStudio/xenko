@@ -34,6 +34,7 @@
     <Compile Include="Commands\SyncNodeCommand.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
+    <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
     <Compile Include="GraphNodeContentLinker.cs" />
