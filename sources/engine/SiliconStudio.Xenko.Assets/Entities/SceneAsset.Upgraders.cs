@@ -57,7 +57,40 @@ namespace SiliconStudio.Xenko.Assets.Entities
                                     emitter.RemoveChild("ParticleMinLifetime");
                                     emitter.RemoveChild("ParticleMaxLifetime");
 
-                                    // 
+                                    // Initializers
+                                    foreach (dynamic initializer in emitter.Initializers)
+                                    {
+                                        var initializerTag = initializer.Node.Tag;
+                                        if (initializerTag == "!InitialRotationSeed")
+                                        {
+                                            dynamic angle = new DynamicYamlMapping(new YamlMappingNode());
+                                            angle.AddChild("X", initializer.AngularRotationMin);
+                                            angle.AddChild("Y", initializer.AngularRotationMax);
+
+                                            initializer.AddChild("AngularRotation", angle);
+
+                                            initializer.RemoveChild("AngularRotationMin");
+                                            initializer.RemoveChild("AngularRotationMax");
+
+                                        }
+                                    }
+
+                                    // Updaters
+                                    foreach (dynamic updater in emitter.Updaters)
+                                    {
+                                        var updaterTag = updater.Node.Tag;
+                                        if (updaterTag == "!UpdaterCollider")
+                                        {
+                                            var isSolid = (bool)updater.IsSolid;
+
+                                            updater.AddChild("IsHollow", !isSolid);
+
+                                            updater.RemoveChild("IsSolid");
+                                        }
+                                    }
+
+
+
                                 }
                             }
 
