@@ -39,13 +39,13 @@ namespace SiliconStudio.Xenko.Rendering
             //    GBufferRenderStage = RenderSystem.GetOrCreateRenderStage("GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (Shadows)
             {
-                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
-            }
+                if (ShadowMapRenderStage == null)
+                {
+                    ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
+                }
 
-            if (Shadows && ShadowMapRenderStage == null)
-            {
-                ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
-                ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
+                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
             }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
