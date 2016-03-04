@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 if (renderSprite.Enabled)
                 {
-                    var transform = spriteStateKeyPair.Value.TransformComponent;
+                    var transform = renderSprite.TransformComponent;
 
                     // TODO GRAPHICS REFACTOR: Proper bounding box. Reuse calculations in sprite batch.
                     // For now we only set a center for sorting, but no extent (which disable culling)
