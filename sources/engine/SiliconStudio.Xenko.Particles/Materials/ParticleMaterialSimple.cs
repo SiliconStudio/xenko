@@ -46,8 +46,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Culling")]
         public ParticleMaterialCulling FaceCulling { get; set; }
 
-        public Color4 Color { get; set; }
-
         /// <summary>
         /// Indicates if this material requires a color field in the vertex stream
         /// </summary>
