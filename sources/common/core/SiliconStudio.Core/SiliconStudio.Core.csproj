@@ -74,9 +74,6 @@
     <Compile Include="Diagnostics\ProfilingCustomValue.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
-    <Compile Include="Reflection\IdentifiableHelper.cs" />
-    <Compile Include="Reflection\ShadowObject.cs" />
-    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
     <Compile Include="RuntimeIdHelper.cs" />

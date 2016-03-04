@@ -139,10 +139,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var result = base.ReadYaml(ref objectContext);
 
-                if (typeof(PrefabAssetBase).IsAssignableFrom(type))
+                if (typeof(EntityHierarchyAssetBase).IsAssignableFrom(type))
                 {
                     // Let's fixup entity references after serialization
-                    EntityAnalysis.FixupEntityReferences((PrefabAssetBase)objectContext.Instance);
+                    EntityAnalysis.FixupEntityReferences((EntityHierarchyAssetBase)objectContext.Instance);
                 }
 
                 return result;
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private static bool CanVisit(Type type)
         {
-            return typeof(PrefabAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
+            return typeof(EntityHierarchyAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
     }
 }

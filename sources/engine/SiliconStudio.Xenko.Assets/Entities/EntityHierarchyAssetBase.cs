@@ -14,9 +14,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract()]
-    public abstract class PrefabAssetBase : AssetComposite
+    public abstract class EntityHierarchyAssetBase : AssetComposite
     {
-        protected PrefabAssetBase()
+        protected EntityHierarchyAssetBase()
         {
             Hierarchy = new EntityHierarchyData();
         }
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override Asset CreateChildAsset(string location)
         {
-            var newAsset = (PrefabAssetBase)base.CreateChildAsset(location);
+            var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(location);
 
             var newIdMaps = Hierarchy.Entities.ToDictionary(x => x.Entity.Id, x => Guid.NewGuid());
             foreach (var entity in newAsset.Hierarchy.Entities)
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
         {
-            var entityMerge = new PrefabAssetMerge((PrefabAssetBase)baseAsset, this, (PrefabAssetBase)newBase, newBaseParts);
+            var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts);
             return entityMerge.Merge();
         }
 
@@ -186,14 +186,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="baseParts">The list of baseParts to use. If null, use the parts from this instance directly.</param>
         /// <returns>A mapping between a base asset and the list of instance actually used for inherited parts by composition</returns>
-        public Dictionary<PrefabAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
+        public Dictionary<EntityHierarchyAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
         {
             if (baseParts == null)
             {
                 baseParts = BaseParts;
             }
 
-            var mapBaseToInstanceIds = new Dictionary<PrefabAssetBase, List<Guid>>();
+            var mapBaseToInstanceIds = new Dictionary<EntityHierarchyAssetBase, List<Guid>>();
             if (baseParts == null)
             {
                 return mapBaseToInstanceIds;
@@ -208,21 +208,21 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // - for each entity in the hierarchy of this instance
             //   - Check if the entity has a <baseId> and a <basePartInstanceId>
             //   - If yes, the entity is coming from a base part
-            //       - Find which AssetBase (actually PrefabAssetBase), is containing the <basePartInstanceId>
+            //       - Find which AssetBase (actually EntityHierarchyAssetBase), is containing the <basePartInstanceId>
             //       - We can then associate 
-            var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, PrefabAssetBase>();
+            var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityHierarchyAssetBase>();
             foreach (var entityIt in Hierarchy.Entities)
             {
                 if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
                 {
                     var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
-                    PrefabAssetBase existingAssetBase;
+                    EntityHierarchyAssetBase existingAssetBase;
                     if (!mapBasePartInstanceIdToBasePart.TryGetValue(basePartInstanceId, out existingAssetBase))
                     {
                         var baseId = entityIt.Design.BaseId.Value;
                         foreach (var basePart in baseParts)
                         {
-                            var assetBase = (PrefabAssetBase)basePart.Asset;
+                            var assetBase = (EntityHierarchyAssetBase)basePart.Asset;
                             if (assetBase.ContainsPart(baseId))
                             {
                                 existingAssetBase = assetBase;
