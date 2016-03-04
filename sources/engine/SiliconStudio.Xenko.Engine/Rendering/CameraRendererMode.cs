@@ -25,31 +25,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMember(10)]
         public abstract string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
 
-        /// <summary>
-        /// Gets the filter on the types to render.
-        /// </summary>
-        /// <value>The filter renderer types.</value>
-        [DataMemberIgnore]
-        public HashSet<TypeInfo> RenderComponentTypes { get; private set; } = new HashSet<TypeInfo>();
-
-        /// <summary>
-        /// Gets the filter on the types to skip.
-        /// </summary>
-        /// <value>The filter renderer types.</value>
-        [DataMemberIgnore]
-        public HashSet<TypeInfo> SkipComponentTypes { get; private set; } = new HashSet<TypeInfo>();
-
-        /// <summary>
-        /// Gets the default <see cref="RasterizerState" /> for models drawn by this render mode.
-        /// </summary>
-        /// <param name="isGeomertryInverted"><c>true</c> if the rendered gometry is inverted through scaling, <c>false</c> otherwise.</param>
-        /// <returns>The rasterizer state.</returns>
-        public virtual RasterizerStateDescription GetDefaultRasterizerState(bool isGeomertryInverted)
-        {
-            // TODO GRAPHICS REFACTOR
-            return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
-        }
-
         /// <param name="context"></param>
         /// <inheritdoc/>
         public virtual void BeforeExtract(RenderContext context)
