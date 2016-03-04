@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 9f7b9af0-3929-4c98-8fdc-c56ecb2add8c
-SerializedVersion: {Xenko: 1.6.0-beta}
+SerializedVersion: {Xenko: 1.6.0-beta01}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -46,13 +46,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -70,6 +72,7 @@ Hierarchy:
                                             YDivisions: 6
                                             StartingFrame: 10
                                             AnimationSpeed: 26
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -130,13 +133,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -152,6 +157,7 @@ Hierarchy:
                                             ~Id: 5267fe34-36de-4411-a9d4-5c3dad1a8d09
                                             StartFrame: {X: 0.0, Y: 0.0, Z: 1.0, W: 1.0}
                                             EndFrame: {X: 0.0, Y: 0.0, Z: 5.0, W: 5.0}
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -212,13 +218,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderQuad
                                         ~Id: 80f9bdff-fdd7-458a-8b7c-6a7d84176f83
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -236,6 +244,7 @@ Hierarchy:
                                             ~Id: 5267fe34-36de-4411-a9d4-5c3dad1a8d09
                                             StartFrame: {X: 1.0, Y: 0.0, Z: 2.0, W: 1.0}
                                             EndFrame: {X: 1.0, Y: 10.0, Z: 2.0, W: 11.0}
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -296,13 +305,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -320,6 +331,7 @@ Hierarchy:
                                             ~Id: 5267fe34-36de-4411-a9d4-5c3dad1a8d09
                                             StartFrame: {X: 0.0, Y: 0.0, Z: 1.0, W: 1.0}
                                             EndFrame: {X: 0.0, Y: 3.0, Z: 1.0, W: 4.0}
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -409,13 +421,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderQuad
                                         ~Id: 80f9bdff-fdd7-458a-8b7c-6a7d84176f83
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -432,6 +446,7 @@ Hierarchy:
                                             ~Id: 5267fe34-36de-4411-a9d4-5c3dad1a8d09
                                             StartFrame: {X: 0.0, Y: 0.0, Z: 1.0, W: 1.0}
                                             EndFrame: {X: 0.0, Y: 10.0, Z: 1.0, W: 11.0}
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -492,13 +507,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -516,6 +533,7 @@ Hierarchy:
                                             YDivisions: 6
                                             StartingFrame: 0
                                             AnimationSpeed: 10
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -576,13 +594,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderQuad
                                         ~Id: 80f9bdff-fdd7-458a-8b7c-6a7d84176f83
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -599,6 +619,7 @@ Hierarchy:
                                             ~Id: 5267fe34-36de-4411-a9d4-5c3dad1a8d09
                                             StartFrame: {X: 0.0, Y: 0.0, Z: 1.0, W: 1.0}
                                             EndFrame: {X: 0.0, Y: 10.0, Z: 1.0, W: 11.0}
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -677,13 +698,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderHexagon
                                         ~Id: 3574a23d-55f6-478f-8476-585eefb36d6e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -701,6 +724,7 @@ Hierarchy:
                                             ~Id: 5267fe34-36de-4411-a9d4-5c3dad1a8d09
                                             StartFrame: {X: 0.0, Y: 0.0, Z: 1.0, W: 1.0}
                                             EndFrame: {X: 0.0, Y: 3.0, Z: 1.0, W: 4.0}
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -757,6 +781,7 @@ SceneSettings:
                     Mode: !CameraRendererModeForward
                         ~Id: 6710f190-af88-41e2-b97f-5656f5cd6039
                     Camera:
+                        ~Id: ec03b325-9e4d-45ad-aa57-a6371154dc6a
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
