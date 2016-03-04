@@ -30,8 +30,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 if (renderSprite.Enabled)
                 {
+                    var transform = spriteStateKeyPair.Value.TransformComponent;
+
                     // TODO GRAPHICS REFACTOR: Proper bounding box. Reuse calculations in sprite batch.
-                    //renderSprite.BoundingBox = new BoundingBoxExt(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
+                    // For now we only set a center for sorting, but no extent (which disable culling)
+                    renderSprite.BoundingBox = new BoundingBoxExt { Center = transform.WorldMatrix.TranslationVector };
                     renderSprite.RenderGroup = renderSprite.SpriteComponent.Entity.Group;
                 }
             }
