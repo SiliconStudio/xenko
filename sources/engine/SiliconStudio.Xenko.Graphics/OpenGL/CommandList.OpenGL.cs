@@ -52,10 +52,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private Texture boundDepthStencilBuffer;
         private Texture[] boundRenderTargets = new Texture[MaxBoundRenderTargets];
-        private Texture[] boundTextures = new Texture[64];
+        internal Texture[] boundTextures = new Texture[64];
         private Texture[] textures = new Texture[64];
         private SamplerState[] samplerStates = new SamplerState[64];
-        internal bool hasRenderTarget, hasDepthStencilBuffer;
 
         internal DepthStencilBoundState DepthStencilBoundState;
         internal RasterizerBoundState RasterizerBoundState;
@@ -70,7 +69,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private DescriptorSet[] currentDescriptorSets = new DescriptorSet[32];
 
-        private int activeTexture = 0;
+        internal int activeTexture = 0;
 
         private IndexBufferView indexBuffer;
 
@@ -85,6 +84,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public CommandList(GraphicsDevice device) : base(device)
         {
+            device.MainCommandList = this;
+
             // Default state
             DepthStencilBoundState.DepthBufferWriteEnable = true;
             DepthStencilBoundState.StencilWriteMask = 0xFF;
@@ -227,6 +228,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
 
             GL.BindTexture(texture.Target, 0);
+            boundTextures[0] = null;
 #endif
         }
 
@@ -244,6 +246,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
 
             GL.BindTexture(texture.Target, 0);
+            boundTextures[0] = null;
 #endif
         }
 
@@ -261,6 +264,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
 
             GL.BindTexture(texture.Target, 0);
+            boundTextures[0] = null;
 #endif
         }
 
@@ -443,8 +447,8 @@ namespace SiliconStudio.Xenko.Graphics
             vboDirty = true;
             enabledVertexAttribArrays |= 1 << 0;
             GL.EnableVertexAttribArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, GraphicsDevice.SquareVertices);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, GraphicsDevice.GetSquareBuffer().ResourceId);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
             GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
             GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
@@ -462,6 +466,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GL.Enable(EnableCap.StencilTest);
             GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
 
+            // Restore FBO and viewport
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
             GL.Viewport((int)viewports[0].X, (int)viewports[0].Y, (int)viewports[0].Width, (int)viewports[0].Height);
         }
@@ -1344,6 +1349,7 @@ namespace SiliconStudio.Xenko.Graphics
                             throw new NotSupportedException("Invalid texture target: " + texture.Target);
                     }
                     GL.BindTexture(texture.Target, 0);
+                    boundTextures[0] = null;
                     GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
                 }
                 else
