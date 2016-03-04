@@ -9,8 +9,6 @@ namespace SiliconStudio.Xenko.Rendering
     [Display("Forward")]
     public class CameraRendererModeForward : CameraRenderModeBase
     {
-        private ForwardLightingRenderFeature forwardLightingRenderFeasture;
-
         [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
@@ -96,7 +94,10 @@ namespace SiliconStudio.Xenko.Rendering
                 context.PopRenderTargets();
             }
 
+            // Draw [main view | main stage]
             RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+
+            // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
         }
     }
