@@ -1256,7 +1256,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetStencilReference(int stencilReference)
         {
-            BoundStencilReference = stencilReference;
+            NewStencilReference = stencilReference;
         }
 
         private void SetViewportImpl()
