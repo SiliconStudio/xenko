@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Engine
         private readonly Dictionary<TypeInfo, RegisteredRenderProcessors> registeredRenderProcessorTypes = new Dictionary<TypeInfo, RegisteredRenderProcessors>();
         private Scene previousScene;
         private Scene scene;
+        private RenderContext currentRenderContext;
 
         public TrackingCollection<VisibilityGroup> VisibilityGroups { get; }
 
@@ -147,8 +148,11 @@ namespace SiliconStudio.Xenko.Engine
 
             bool hasGraphicsBegin = false;
 
+            var previousRenderContext = currentRenderContext;
+            currentRenderContext = context.RenderContext;
+
             // Update global time
-            var gameTime = context.RenderContext.Time;
+
             // TODO GRAPHICS REFACTOR
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
@@ -181,6 +185,7 @@ namespace SiliconStudio.Xenko.Engine
             }
             finally
             {
+                currentRenderContext = previousRenderContext;
                 if (hasGraphicsBegin)
                 {
                     commandList.End();
@@ -312,7 +317,14 @@ namespace SiliconStudio.Xenko.Engine
                 case NotifyCollectionChangedAction.Add:
                     foreach (var registeredRenderProcessorType in registeredRenderProcessorTypes)
                     {
-                        CreateRenderProcessor(registeredRenderProcessorType.Value, visibilityGroup);
+                        var processor = CreateRenderProcessor(registeredRenderProcessorType.Value, visibilityGroup);
+
+                        // Assume we are in middle of a compositor draw so we need to run it manually once (Update/Draw already happened)
+                        if (currentRenderContext != null)
+                        {
+                            processor.Update(currentRenderContext.Time);
+                            processor.Draw(currentRenderContext);
+                        }
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -358,7 +370,7 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        private void CreateRenderProcessor(RegisteredRenderProcessors registeredRenderProcessor, VisibilityGroup visibilityGroup)
+        private EntityProcessor CreateRenderProcessor(RegisteredRenderProcessors registeredRenderProcessor, VisibilityGroup visibilityGroup)
         {
             // Create
             var processor = (EntityProcessor)Activator.CreateInstance(registeredRenderProcessor.Type);
@@ -369,6 +381,8 @@ namespace SiliconStudio.Xenko.Engine
             // Add processor
             Processors.Add(processor);
             registeredRenderProcessor.Instances.Add(new KeyValuePair<VisibilityGroup, EntityProcessor>(visibilityGroup, processor));
+
+            return processor;
         }
 
         private void OnSceneChanged()

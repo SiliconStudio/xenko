@@ -267,6 +267,11 @@ namespace SiliconStudio.Xenko.Graphics
             SetViewportImpl();
         }
 
+        public void SetStencilReference(int stencilReference)
+        {
+            nativeDeviceContext.OutputMerger.DepthStencilReference = stencilReference;
+        }
+
         public void SetPipelineState(PipelineState pipelineState)
         {
             newPipelineState = pipelineState ?? GraphicsDevice.DefaultPipelineState;

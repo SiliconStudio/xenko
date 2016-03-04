@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Setup proper sort modes
             MainRenderStage.SortMode = new StateChangeSortMode();
-            TransparentRenderStage.SortMode = new FrontToBackSortMode();
+            TransparentRenderStage.SortMode = new BackToFrontSortMode();
 
             // Create optional render stages that don't exist yet
             //if (GBufferRenderStage == null)
