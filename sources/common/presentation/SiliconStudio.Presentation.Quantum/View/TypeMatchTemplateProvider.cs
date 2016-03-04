@@ -35,7 +35,7 @@ namespace SiliconStudio.Presentation.Quantum.View
         public override bool MatchNode(IObservableNode node)
         {
             if (Type == null)
-                return false;
+                return true;
 
             if (MatchType(node, Type))
                 return true;
