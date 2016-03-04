@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Graphics
 
     public partial class PipelineState : GraphicsResourceBase
     {
-        public static PipelineState New(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription)
+        public static PipelineState New(GraphicsDevice graphicsDevice, ref PipelineStateDescription pipelineStateDescription)
         {
             return new PipelineState(graphicsDevice, pipelineStateDescription);
         }

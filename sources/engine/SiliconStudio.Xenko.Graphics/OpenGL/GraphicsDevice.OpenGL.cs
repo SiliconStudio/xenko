@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 #if SILICONSTUDIO_PLATFORM_ANDROID
 extern alias opentkold;
 #endif
@@ -698,11 +698,11 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-    #if SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
             gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeHandle;
-    #else
+#else
             gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
-    #endif
+#endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             gameWindow = (AndroidGameView)windowHandle.NativeHandle;
 #elif SILICONSTUDIO_PLATFORM_IOS
@@ -766,9 +766,9 @@ namespace SiliconStudio.Xenko.Graphics
             // a new one using the dummy one and invalidate the dummy one.
             graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, versionMajor, versionMinor, creationFlags);
             gameWindow.DummyGLContext.Dispose();
-    #else
+#else
             graphicsContext = gameWindow.Context;
-    #endif
+#endif
             deviceCreationWindowInfo = windowInfo;
             deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
 
@@ -788,6 +788,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Create default OpenGL State objects
             DefaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
+        }
+
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
         }
 
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
