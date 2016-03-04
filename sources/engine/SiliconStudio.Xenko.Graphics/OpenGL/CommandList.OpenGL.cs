@@ -1280,6 +1280,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void UpdateViewport(Viewport viewport)
         {
+            GL.DepthRange(viewport.MinDepth, viewport.MaxDepth);
             GL.Viewport((int)viewport.X, (int)viewport.Y, (int)viewport.Width, (int)viewport.Height);
         }
 
@@ -1295,6 +1296,7 @@ namespace SiliconStudio.Xenko.Graphics
                 _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
                 _currentViewportsSetBuffer[4 * i + 3] = currViewport.Height;
             }
+            GL.DepthRange(viewports[0].MinDepth, viewports[0].MaxDepth);
             GL.ViewportArray(0, nbViewports, _currentViewportsSetBuffer);
         }
 #endif

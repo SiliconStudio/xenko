@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class PipelineState
     {
         // Caches
-        private static GraphicsCache<EffectBytecode, EffectBytecode, EffectProgram> effectProgramCache;
+        private static GraphicsCache<Tuple<EffectBytecode, bool>, EffectBytecode, EffectProgram> effectProgramCache;
         private static GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]> vertexAttribsCache;
 
         internal readonly BlendState BlendState;
@@ -36,9 +36,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         private PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
         {
+            var depthClipEmulation = pipelineStateDescription.RasterizerState.DepthClipEnable && !graphicsDevice.HasDepthClamp;
+
             if (effectProgramCache == null)
             {
-                effectProgramCache = new GraphicsCache<EffectBytecode, EffectBytecode, EffectProgram>(source => source, source => new EffectProgram(graphicsDevice, source));
+                effectProgramCache = new GraphicsCache<Tuple<EffectBytecode, bool>, EffectBytecode, EffectProgram>(source => source.Item1, source => new EffectProgram(graphicsDevice, source.Item1, source.Item2));
                 vertexAttribsCache = new GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]>(source => new VertexAttribsKey(source), source => source);
             }
 
@@ -51,7 +53,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Compile effect
             var effectBytecode = pipelineStateDescription.EffectBytecode;
-            EffectProgram = effectBytecode != null ? effectProgramCache.Instantiate(effectBytecode) : null;
+            EffectProgram = effectBytecode != null ? effectProgramCache.Instantiate(Tuple.Create(effectBytecode, depthClipEmulation)) : null;
 
             var rootSignature = pipelineStateDescription.RootSignature;
             if (rootSignature != null && effectBytecode != null)
