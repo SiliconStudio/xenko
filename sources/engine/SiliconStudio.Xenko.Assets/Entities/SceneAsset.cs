@@ -51,7 +51,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.5.0-alpha02", typeof(MoveSceneSettingsToSceneAsset))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.6.0-beta", typeof(MigrateToNewComponents))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.0-beta01", typeof(ParticleMinMaxFieldsUpgrader))]
-//    [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.0-beta01", typeof(ParticleMinMaxFieldsUpgrader))]
 
 
     [Display(200, "Scene")]
