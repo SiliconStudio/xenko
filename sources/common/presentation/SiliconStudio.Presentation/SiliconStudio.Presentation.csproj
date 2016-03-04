@@ -48,21 +48,27 @@
     <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\MenuItemCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\MouseMoveCaptureBehaviorBase.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
     <Compile Include="Behaviors\OnMouseEventBehavior.cs" />
     <Compile Include="Behaviors\MultiOverrideCursorBehavior.cs" />
     <Compile Include="Behaviors\OverrideCursorBehavior.cs" />
+    <Compile Include="Behaviors\SelectionRectangleBehavior.cs" />
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
+    <Compile Include="Rendering\CanvasRenderer.cs" />
     <Compile Include="Collections\IObservableList.cs" />
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
     <Compile Include="Commands\UtilityCommands.cs" />
+    <Compile Include="Controls\CanvasView\CanvasView.cs" />
+    <Compile Include="Controls\CanvasView\ICanvasViewItem.cs" />
+    <Compile Include="Controls\CanvasView\TrackerControl.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />
@@ -105,7 +111,6 @@
     <Compile Include="Commands\ICommandBase.cs" />
     <Compile Include="Behaviors\DropCommandParameters.cs" />
     <Compile Include="Behaviors\GridViewAutoSizeBehavior.cs" />
-    <Compile Include="Behaviors\ListBoxRectangleSelectionBehavior.cs" />
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />
@@ -117,16 +122,24 @@
     <Compile Include="Core\AutoUnsubscribeHandler.cs" />
     <Compile Include="Core\BindingProxy.cs" />
     <Compile Include="Core\DependencyPropertyWatcher.cs" />
+    <Compile Include="Extensions\CanvasRendererExtensions.cs" />
+    <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
+    <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
+    <Compile Include="MarkupExtensions\MinDoubleExtension.cs" />
+    <Compile Include="MarkupExtensions\MinIntExtension.cs" />
+    <Compile Include="Rendering\VisualHost.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
+    <Compile Include="ValueConverters\SumMultiConverter.cs" />
     <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />

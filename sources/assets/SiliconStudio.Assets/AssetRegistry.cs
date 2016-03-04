@@ -156,6 +156,24 @@ namespace SiliconStudio.Assets
             }
         }
 
+        public static bool IsProjectCodeGeneratorAssetFileExtension(string extension)
+        {
+            if (extension == null) return false;
+            lock (RegisteredAssetFileExtensions)
+            {
+                var valid = RegisteredAssetFileExtensions.ContainsKey(extension);
+                if (valid)
+                {
+                    var type = RegisteredDefaultAssetExtension.Where(x => x.Value == extension).Select(x => x.Key).FirstOrDefault();
+                    if (type != null)
+                    {
+                        return typeof(ProjectCodeGeneratorAsset).IsAssignableFrom(type);
+                    }
+                }
+                return false;
+            }
+        }
+
         public static bool IsProjectSourceCodeAssetFileExtension(string extension)
         {
             if (extension == null) return false;

@@ -29,7 +29,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string typeName = value.ToString();
+            var typeName = value.ToString();
             return typeName == NullObjectType ? null : AssemblyRegistry.GetType(typeName);
         }
     }

@@ -3762,6 +3762,45 @@
     <Setter Property="VerticalAlignment" Value="Stretch"/>
   </Style>
 
+  <Style TargetType="{x:Type ctrl:CanvasView}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:CanvasView}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <Grid x:Name="PART_Grid" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type ctrl:TrackerControl}">
+    <Setter Property="LineStroke" Value="LightGray" />
+    <Setter Property="LineThickness" Value="1" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:TrackerControl}">
+          <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
+            <Line x:Name="PART_HorizontalLine" Visibility="{TemplateBinding HorizontalLineVisibility}"
+                  Stroke="{TemplateBinding LineStroke}" StrokeThickness="{TemplateBinding LineThickness}" RenderOptions.EdgeMode="Aliased" />
+            <Line x:Name="PART_VerticalLine" Visibility="{TemplateBinding VerticalLineVisibility}"
+                  Stroke="{TemplateBinding LineStroke}" StrokeThickness="{TemplateBinding LineThickness}" RenderOptions.EdgeMode="Aliased" />
+            <!--<ContentPresenter />-->
+          </Canvas>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type Rectangle}" x:Key="{x:Static behaviors:SelectionRectangleBehavior.DefaultRectangleStyleKey}">
+    <Setter Property="Fill" Value="LightBlue" />
+    <Setter Property="Opacity" Value="0.5" />
+    <Setter Property="Stroke" Value="Blue" />
+    <Setter Property="StrokeLineJoin" Value="Round" />
+    <Setter Property="StrokeThickness" Value="1" />
+  </Style>
+
   <!--  EDITORS  -->
   <Style x:Key="{x:Static ctrl:VectorEditorResources.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}" x:Shared="False">
     <Setter Property="ToolTip" Value="Toggle editing mode" />

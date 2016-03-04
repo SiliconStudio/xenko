@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using NUnit.Framework;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Tests
 {
@@ -23,8 +24,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             var emitter = new ParticleEmitter();
             emitter.MaxParticlesOverride = 10;
-            emitter.ParticleMaxLifetime = 1;
-            emitter.ParticleMinLifetime = 1;
+            emitter.ParticleLifetime = new Vector2(1, 1);
             emitter.EmitParticles(5);
 
             emitter.Update(0.016f, dummySystem);

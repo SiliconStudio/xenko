@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialColorSeed")]
-    [Display("Initial Color by seed")]
+    [Display("Initial Color")]
     public class InitialColorSeed : ParticleInitializer
     {
         public InitialColorSeed()
@@ -31,22 +31,48 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 var particle = pool.FromIndex(i);
                 var randSeed = particle.Get(rndField);
 
-                (*((Color4*)particle[colField])) = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
+                var color = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
+
+                // Premultiply alpha
+                // This can't be done in advance for ColorMin and ColorMax because it will change the math
+                color.R *= color.A;
+                color.G *= color.A;
+                color.B *= color.A;
+
+                (*((Color4*)particle[colField])) = color;
 
                 i = (i + 1) % maxCapacity;
             }
         }
 
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
+        /// <summary>
+        /// The first color to interpolate from
+        /// </summary>
+        /// <userdoc>
+        /// The first color to interpolate from
+        /// </userdoc>
         [DataMember(30)]
-        [Display("Color min")]
+        [Display("Color A")]
         public Color4 ColorMin { get; set; } = new Color4(1, 1, 1, 1);
 
+        /// <summary>
+        /// The second color to interpolate to
+        /// </summary>
+        /// <userdoc>
+        /// The second color to interpolate to
+        /// </userdoc>
         [DataMember(40)]
-        [Display("Color max")]
+        [Display("Color B")]
         public Color4 ColorMax { get; set; } = new Color4(1, 1, 1, 1);    
     }
 }
