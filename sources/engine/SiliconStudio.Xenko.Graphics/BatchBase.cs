@@ -229,6 +229,8 @@ namespace SiliconStudio.Xenko.Graphics
             MutablePipeline.Update(GraphicsDevice);
 
             // Bind pipeline
+            if (MutablePipeline.State.DepthStencilState.StencilEnable)
+                GraphicsContext.CommandList.SetStencilReference(StencilReferenceValue);
             GraphicsContext.CommandList.SetPipelineState(MutablePipeline.CurrentState);
 
             // Bind VB/IB
