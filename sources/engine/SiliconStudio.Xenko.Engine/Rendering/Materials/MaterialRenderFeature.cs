@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public Material Material;
 
             public int LastFrameUsed;
-            public NextGenRenderSystem LastRenderSystemUsed;
 
             // Any matching effect
             public ResourceGroupLayout PerMaterialLayout;
@@ -188,13 +187,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         private unsafe void UpdateMaterial(RenderThreadContext context, MaterialInfo materialInfo, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
-            if (materialInfo.LastFrameUsed == RenderSystem.FrameCounter
-                && materialInfo.LastRenderSystemUsed == RenderSystem)
+            if (materialInfo.LastFrameUsed == RenderSystem.FrameCounter)
                 return;
-
-            // Mark this material as used during this frame
-            materialInfo.LastRenderSystemUsed = RenderSystem;
-            materialInfo.LastFrameUsed = RenderSystem.FrameCounter;
 
             // First time we use the material with a valid effect, let's update layouts
             if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index].Hash)
@@ -219,6 +213,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 materialInfo.ParameterCollection.UpdateLayout(parameterCollectionLayout);
                 materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
             }
+
+            // Mark this material as used during this frame
+            materialInfo.LastFrameUsed = RenderSystem.FrameCounter;
 
             // Copy back to ParameterCollection
             // TODO GRAPHICS REFACTOR directly copy to resource group?
