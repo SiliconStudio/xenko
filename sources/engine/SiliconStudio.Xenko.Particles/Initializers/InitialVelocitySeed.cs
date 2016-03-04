@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
@@ -12,13 +13,14 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// Initializer which sets the initial velocity for particles based on RandomSeed information
     /// </summary>
     [DataContract("InitialVelocitySeed")]
-    [Display("Initial Velocity by seed")]
+    [Display("Initial Velocity")]
     public class InitialVelocitySeed : ParticleInitializer
     {
         public InitialVelocitySeed()
         {
             RequiredFields.Add(ParticleFields.Velocity);
             RequiredFields.Add(ParticleFields.RandomSeed);
+            InheritLocation = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
@@ -58,21 +60,52 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-        
+
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
+        /// <summary>
+        /// Lower velocity value
+        /// </summary>
+        /// <userdoc>
+        /// Lower velocity value
+        /// </userdoc>
         [DataMember(30)]
         [Display("Velocity min")]
         public Vector3 VelocityMin { get; set; } = new Vector3(-1, 1, -1);
 
+        /// <summary>
+        /// Upper velocity value
+        /// </summary>
+        /// <userdoc>
+        /// Upper velocity value
+        /// </userdoc>
         [DataMember(40)]
         [Display("Velocity max")]
         public Vector3 VelocityMax { get; set; } = new Vector3(1, 1, 1);
-        
+
+        /// <summary>
+        /// Should this Particle Module's bounds be displayed as a debug draw
+        /// </summary>
+        /// <userdoc>
+        /// Display the Particle Module's bounds as a wireframe debug shape. Temporary feature (will be removed later)!
+        /// </userdoc>
+        [DataMember(-1)]
+        [DefaultValue(false)]
+        public bool DebugDraw { get; set; } = false;
+
         public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
+            if (!DebugDraw)
+                return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
+
             debugDrawShape = DebugDrawShape.Cube;
 
             rotation = WorldRotation;
