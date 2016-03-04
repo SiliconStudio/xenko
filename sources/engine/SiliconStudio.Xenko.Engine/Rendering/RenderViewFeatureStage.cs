@@ -6,11 +6,13 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public readonly RootRenderFeature RootRenderFeature;
         public readonly RenderNodeReference RenderNode;
+        public readonly RenderObject RenderObject;
 
-        public RenderNodeFeatureReference(RootRenderFeature rootRenderFeature, RenderNodeReference renderNode)
+        public RenderNodeFeatureReference(RootRenderFeature rootRenderFeature, RenderNodeReference renderNode, RenderObject renderObject)
         {
             RootRenderFeature = rootRenderFeature;
             RenderNode = renderNode;
+            RenderObject = renderObject;
         }
     }
 

@@ -215,6 +215,7 @@ namespace SiliconStudio.Xenko.Graphics
             int uniformBlockCount;
             GL.GetProgram(resourceId, XkActiveUniformBlocks, out uniformBlockCount);
 
+            var validConstantBuffers = new bool[effectReflection.ConstantBuffers.Count];
             for (int uniformBlockIndex = 0; uniformBlockIndex < uniformBlockCount; ++uniformBlockIndex)
             {
                 // TODO: get previous name to find te actual constant buffer in the reflexion
@@ -343,10 +344,13 @@ namespace SiliconStudio.Xenko.Graphics
                 constantBuffer.Stage = stage;
 
                 // store the new values
+                validConstantBuffers[constantBufferDescriptionIndex] = true;
                 effectReflection.ConstantBuffers[constantBufferDescriptionIndex] = constantBufferDescription;
                 effectReflection.ResourceBindings[constantBufferIndex] = constantBuffer;
             }
 //#endif
+
+            // Remove unecessary cbuffer and resource bindings
 
             // Register textures, samplers, etc...
             //TODO: (?) non texture/buffer uniform outside of a block
@@ -492,6 +496,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Remove any optimized resource binding
                 effectReflection.ResourceBindings.RemoveAll(x => x.SlotStart == -1);
+                effectReflection.ConstantBuffers = effectReflection.ConstantBuffers.Where((cb, i) => validConstantBuffers[i]).ToList();
             }
 
             GL.UseProgram(currentProgram);

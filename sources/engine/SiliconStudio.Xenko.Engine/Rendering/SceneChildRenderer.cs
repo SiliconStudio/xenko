@@ -43,12 +43,6 @@ namespace SiliconStudio.Xenko.Engine
         public ChildSceneComponent ChildScene { get; set; }
 
         /// <summary>
-        /// Gets the render system used with this pipeline.
-        /// </summary>
-        [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem { get; } = new NextGenRenderSystem();
-
-        /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
         /// </summary>
         /// <value>The graphics compositor override.</value>
@@ -63,39 +57,31 @@ namespace SiliconStudio.Xenko.Engine
                 GraphicsCompositorOverride = null;
             }
 
-            RenderSystem.Dispose();
-
             base.Destroy();
         }
 
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-
-            RenderSystem.Initialize(Context);
-        }
-
-        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
+        private SceneInstance GetChildSceneInstance()
         {
             if (ChildScene == null || !ChildScene.Enabled)
             {
-                return;
+                return null;
             }
 
             currentSceneInstance = SceneInstance.GetCurrent(Context);
 
             childSceneProcessor = childSceneProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
 
-            if (childSceneProcessor == null)
-            {
-                return;
-            }
+            return childSceneProcessor?.GetSceneInstance(ChildScene);
+        }
 
-            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
-            if (sceneInstance != null)
-            {
-                sceneInstance.Draw(context, output, GraphicsCompositorOverride);
-            }
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
+        {
+            var sceneInstance = GetChildSceneInstance();
+            if (sceneInstance == null)
+                return;
+
+            // Draw scene recursively
+            sceneInstance.Draw(context, output, GraphicsCompositorOverride);
         }
     }
 }

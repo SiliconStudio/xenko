@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     var texture = Texture.New1D(game.GraphicsDevice, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
                     // Perform texture op
-                    CheckTexture(texture, data);
+                    CheckTexture(game.GraphicsContext, texture, data);
 
                     // Release the texture
                     texture.Dispose();
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     var texture = Texture.New2D(device, 256, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
                     // Perform texture op
-                    CheckTexture(texture, data);
+                    CheckTexture(game.GraphicsContext, texture, data);
 
                     // Release the texture
                     texture.Dispose();
@@ -226,7 +226,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     var texture = Texture.New3D(device, 32, 32, 32, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
                     // Perform generate texture checking
-                    CheckTexture(texture, data);
+                    CheckTexture(game.GraphicsContext, texture, data);
 
                     // Release the texture
                     texture.Dispose();
@@ -387,7 +387,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                             texture = Texture.Load(device, inStream);
                             
                         var tempStream = new MemoryStream();
-                        texture.Save(GraphicsContext.CommandList, tempStream, intermediateFormat);
+                        texture.Save(game.GraphicsContext.CommandList, tempStream, intermediateFormat);
                         tempStream.Position = 0;
                         texture.Dispose();
 
@@ -446,7 +446,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             }
         }
 
-        private void CheckTexture(Texture texture, byte[] data)
+        private void CheckTexture(GraphicsContext graphicsContext, Texture texture, byte[] data)
         {
             // Get back the data from the gpu
             var data2 = texture.GetData<byte>(GraphicsContext.CommandList);
@@ -457,10 +457,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Sets new data on the gpu
             data[0] = 1;
             data[31] = 255;
-            texture.SetData(GraphicsContext.CommandList, data);
+            texture.SetData(graphicsContext.CommandList, data);
 
             // Get back the data from the gpu
-            data2 = texture.GetData<byte>(GraphicsContext.CommandList);
+            data2 = texture.GetData<byte>(graphicsContext.CommandList);
 
             // Assert that data are the same
             Assert.That(Utilities.Compare(data, data2), Is.True);
@@ -494,7 +494,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     foreach (var flag in flags)
                     {
                         using (var texture = CreateDebugTexture(game.GraphicsDevice, data, width, height, mipmaps, arraySize, pixelFormat, flag, usage))
-                            CheckDebugTextureData(texture, width, height, mipmaps, arraySize, pixelFormat, flag, usage, DefaultColorComputer);
+                            CheckDebugTextureData(game.GraphicsContext, texture, width, height, mipmaps, arraySize, pixelFormat, flag, usage, DefaultColorComputer);
                     }
                 },
                 profile);
@@ -542,7 +542,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                                 {
                                     game.GraphicsContext.CommandList.Copy(texture, copyTexture);
 
-                                    CheckDebugTextureData(copyTexture, width, height, mipmaps, arraySize, pixelFormat, flag, usageSource, computer);
+                                    CheckDebugTextureData(game.GraphicsContext, copyTexture, width, height, mipmaps, arraySize, pixelFormat, flag, usageSource, computer);
                                 }
                             }
                         }
@@ -615,7 +615,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             }
         }
 
-        private void CheckDebugTextureData(Texture debugTexture, int width, int height, int mipmaps, int arraySize,
+        private void CheckDebugTextureData(GraphicsContext graphicsContext, Texture debugTexture, int width, int height, int mipmaps, int arraySize,
             PixelFormat format, TextureFlags flags, GraphicsResourceUsage usage, Func<int, int, int, int, int, byte> dataComputer)
         {
             var pixelSize = format.SizeInBytes();
@@ -627,7 +627,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     var w = width >> mipSlice;
                     var h = height >> mipSlice;
 
-                    var readData = debugTexture.GetData<byte>(GraphicsContext.CommandList, arraySlice, mipSlice);
+                    var readData = debugTexture.GetData<byte>(graphicsContext.CommandList, arraySlice, mipSlice);
 
                     for (int r = 0; r < h; r++)
                     {

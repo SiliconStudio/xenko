@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics
                     if (bufferPoolAllocationResult.Buffer != null)
                         bufferPoolAllocationResult.Buffer.Dispose();
 
-                    bufferPoolAllocationResult.Buffer = Buffer.Cosntant.New(graphicsDevice, size);
+                    bufferPoolAllocationResult.Buffer = Buffer.Constant.New(graphicsDevice, size);
                 }
             }
         }

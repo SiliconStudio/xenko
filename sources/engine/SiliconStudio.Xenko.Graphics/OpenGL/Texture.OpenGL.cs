@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if ((Description.Flags & TextureFlagsCustomResourceId) != 0)
                     return;
 
-                using (GraphicsDevice.UseOpenGLCreationContext())
+                using (var openglContext = GraphicsDevice.UseOpenGLCreationContext())
                 {
                     // Depth texture are render buffer for now
                     // TODO: enable switch
@@ -204,13 +204,11 @@ namespace SiliconStudio.Xenko.Graphics
                         IsRenderbuffer = true;
                         return;
                     }
-                    else
-                    {
-                        GL.GenTextures(1, out resourceId);
-                        GL.BindTexture(Target, resourceId);
 
-                        IsRenderbuffer = false;
-                    }
+                    GL.GenTextures(1, out resourceId);
+                    GL.BindTexture(Target, resourceId);
+
+                    IsRenderbuffer = false;
 
                     // No filtering on depth buffer
                     if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) != TextureFlags.None)
@@ -304,6 +302,11 @@ namespace SiliconStudio.Xenko.Graphics
                         }
                     }
                     GL.BindTexture(Target, 0);
+                    if (openglContext.CommandList != null)
+                    {
+                        // If we messed up with some states of a command list, mark dirty states
+                        openglContext.CommandList.boundTextures[openglContext.CommandList.activeTexture] = null;
+                    }
 
                     InitializePixelBufferObject();
                 }

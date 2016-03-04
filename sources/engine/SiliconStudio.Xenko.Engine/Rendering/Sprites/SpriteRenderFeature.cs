@@ -25,7 +25,14 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
         }
 
-        public unsafe override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            sprite3DBatch.Dispose();
+        }
+
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
@@ -44,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             bool hasBegin = false;
             for (var index = startIndex; index < endIndex; index++)
             {
-                var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
+                var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 var renderSprite = (RenderSprite)renderNode.RenderObject;

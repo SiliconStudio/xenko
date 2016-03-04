@@ -20,6 +20,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     {
         public class RenderViewLightData
         {
+            /// <summary>
+            /// Gets the lights without shadow per light type.
+            /// </summary>
+            /// <value>The lights.</value>
+            public readonly Dictionary<Type, LightComponentCollectionGroup> ActiveLightGroups;
+
+            /// <summary>
+            /// Gets the lights without shadow per light type.
+            /// </summary>
+            /// <value>The lights.</value>
+            public readonly Dictionary<Type, LightComponentCollectionGroup> ActiveLightGroupsWithShadows;
+
+            internal readonly List<ActiveLightGroupRenderer> ActiveRenderers;
+
             public readonly List<LightComponent> VisibleLights;
 
             public readonly List<LightComponent> VisibleLightsWithShadows;
@@ -28,6 +42,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public RenderViewLightData()
             {
+                ActiveLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
+                ActiveLightGroupsWithShadows = new Dictionary<Type, LightComponentCollectionGroup>(16);
+                ActiveRenderers = new List<ActiveLightGroupRenderer>(16);
+
                 VisibleLights = new List<LightComponent>(1024);
                 VisibleLightsWithShadows = new List<LightComponent>(1024);
                 LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
@@ -51,8 +69,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas;
 
-        private readonly List<ActiveLightGroupRenderer> activeRenderers;
-
         private readonly Dictionary<ObjectId, LightShaderPermutationEntry> shaderEntries;
         private readonly Dictionary<ObjectId, LightParametersPermutationEntry> lightParameterEntries;
 
@@ -63,18 +79,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
 
         private ViewObjectPropertyKey<LightParametersPermutationEntry> renderViewObjectInfoKey;
-
-        /// <summary>
-        /// Gets the lights without shadow per light type.
-        /// </summary>
-        /// <value>The lights.</value>
-        private readonly Dictionary<Type, LightComponentCollectionGroup> activeLightGroups;
-
-        /// <summary>
-        /// Gets the lights without shadow per light type.
-        /// </summary>
-        /// <value>The lights.</value>
-        private readonly Dictionary<Type, LightComponentCollectionGroup> activeLightGroupsWithShadows;
 
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
@@ -113,9 +117,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             directLightsPerMesh = new List<LightEntry>(16);
             environmentLightsPerMesh = new List<LightEntry>();
-            activeLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
-            activeLightGroupsWithShadows = new Dictionary<Type, LightComponentCollectionGroup>(16);
-            activeRenderers = new List<ActiveLightGroupRenderer>(16);
+    
 
             lightParameterEntries = new Dictionary<ObjectId, LightParametersPermutationEntry>(32);
 
@@ -164,11 +166,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Collect shadow maps
             ShadowMapRenderer?.Extract(renderViewDatas);
-        }
 
-        /// <inheritdoc/>
-        public override void Extract()
-        {
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
 
@@ -177,6 +175,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 shaderEntry.Value.ResetGroupDatas();
             }
+        }
+
+        /// <inheritdoc/>
+        public override void Extract()
+        {
         }
 
         /// <inheritdoc/>
@@ -333,35 +336,40 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private void CollectActiveLightRenderers(RenderContext context)
         {
-            activeRenderers.Clear();
-            foreach (var lightTypeAndRenderer in lightRenderers)
+            foreach (var renderViewData in renderViewDatas)
             {
-                LightComponentCollectionGroup lightGroup;
-                activeLightGroups.TryGetValue(lightTypeAndRenderer.Key, out lightGroup);
+                var viewData = renderViewData.Value;
+                viewData.ActiveRenderers.Clear();
 
-                var renderer = lightTypeAndRenderer.Value;
-                bool rendererToInitialize = false;
-                if (lightGroup != null && lightGroup.Count > 0)
+                foreach (var lightTypeAndRenderer in lightRenderers)
                 {
-                    activeRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
-                    rendererToInitialize = true;
-                }
+                    LightComponentCollectionGroup lightGroup;
+                    viewData.ActiveLightGroups.TryGetValue(lightTypeAndRenderer.Key, out lightGroup);
 
-                if (renderer.CanHaveShadows)
-                {
-                    LightComponentCollectionGroup lightGroupWithShadows;
-                    activeLightGroupsWithShadows.TryGetValue(lightTypeAndRenderer.Key, out lightGroupWithShadows);
-
-                    if (lightGroupWithShadows != null && lightGroupWithShadows.Count > 0)
+                    var renderer = lightTypeAndRenderer.Value;
+                    bool rendererToInitialize = false;
+                    if (lightGroup != null && lightGroup.Count > 0)
                     {
-                        activeRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroupWithShadows));
+                        viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
                         rendererToInitialize = true;
                     }
-                }
 
-                if (rendererToInitialize)
-                {
-                    renderer.Initialize(context);
+                    if (renderer.CanHaveShadows)
+                    {
+                        LightComponentCollectionGroup lightGroupWithShadows;
+                        viewData.ActiveLightGroupsWithShadows.TryGetValue(lightTypeAndRenderer.Key, out lightGroupWithShadows);
+
+                        if (lightGroupWithShadows != null && lightGroupWithShadows.Count > 0)
+                        {
+                            viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroupWithShadows));
+                            rendererToInitialize = true;
+                        }
+                    }
+
+                    if (rendererToInitialize)
+                    {
+                        renderer.Initialize(context);
+                    }
                 }
             }
         }
@@ -371,10 +379,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         private void CollectVisibleLights()
         {
-            // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
-            ClearCache(activeLightGroups);
-            ClearCache(activeLightGroupsWithShadows);
-
             foreach (var renderView in RenderSystem.Views)
             {
                 if (renderView.GetType() != typeof(RenderView))
@@ -394,6 +398,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     renderViewLightData = new RenderViewLightData();
                     renderViewDatas.Add(renderView, renderViewLightData);
+                }
+                else
+                {
+                    // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
+                    ClearCache(renderViewLightData.ActiveLightGroups);
+                    ClearCache(renderViewLightData.ActiveLightGroupsWithShadows);
                 }
 
                 renderViewLightData.VisibleLights.Clear();
@@ -421,7 +431,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     }
 
                     // Find the group for this light
-                    var lightGroup = GetLightGroup(light);
+                    var lightGroup = GetLightGroup(renderViewLightData, light);
                     lightGroup.PrepareLight(light);
 
                     // This is a visible light
@@ -436,13 +446,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // 3) Allocate collection based on their culling mask
-                AllocateCollectionsPerGroupOfCullingMask(activeLightGroups);
-                AllocateCollectionsPerGroupOfCullingMask(activeLightGroupsWithShadows);
+                AllocateCollectionsPerGroupOfCullingMask(renderViewLightData.ActiveLightGroups);
+                AllocateCollectionsPerGroupOfCullingMask(renderViewLightData.ActiveLightGroupsWithShadows);
 
                 // 4) Collect lights to the correct light collection group
                 foreach (var light in renderViewLightData.VisibleLights)
                 {
-                    var lightGroup = GetLightGroup(light);
+                    var lightGroup = GetLightGroup(renderViewLightData, light);
                     lightGroup.AddLight(light);
                 }
             }
@@ -476,7 +486,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // For example: Environment lights or directional lights are always active, so we could pregenerate part of the 
             // id and groups outside this loop. Also considering that each light renderer has a maximum of lights
             // we could pre
-            foreach (var activeRenderer in activeRenderers)
+            foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {
                 var lightRenderer = activeRenderer.LightRenderer;
                 var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
@@ -689,14 +699,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private LightComponentCollectionGroup GetLightGroup(LightComponent light)
+        private LightComponentCollectionGroup GetLightGroup(RenderViewLightData renderViewData, LightComponent light)
         {
             LightComponentCollectionGroup lightGroup;
 
             var directLight = light.Type as IDirectLight;
             var lightGroups = directLight != null && directLight.Shadow.Enabled && ShadowMapRenderer != null
-                ? activeLightGroupsWithShadows
-                : activeLightGroups;
+                ? renderViewData.ActiveLightGroupsWithShadows
+                : renderViewData.ActiveLightGroups;
 
             var type = light.Type.GetType();
             if (!lightGroups.TryGetValue(type, out lightGroup))
@@ -816,7 +826,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private struct ActiveLightGroupRenderer
+        internal struct ActiveLightGroupRenderer
         {
             public ActiveLightGroupRenderer(LightGroupRendererBase lightRenderer, LightComponentCollectionGroup lightGroup)
             {
