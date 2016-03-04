@@ -15,9 +15,7 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
-#if DEBUG
-        private readonly HashSet<IGraphNode> registeredNodes = new HashSet<IGraphNode>();
-#endif
+        private readonly Dictionary<IGraphNode, GraphNodePath> registeredNodes = new Dictionary<IGraphNode, GraphNodePath>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
@@ -32,39 +30,50 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        public event EventHandler<ContentChangeEventArgs> PrepareChange;
+        public event EventHandler<GraphContentChangeEventArgs> PrepareChange;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        public event EventHandler<ContentChangeEventArgs> FinalizeChange;
+        public event EventHandler<GraphContentChangeEventArgs> FinalizeChange;
 
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
-        public event EventHandler<ContentChangeEventArgs> Changing;
+        public event EventHandler<GraphContentChangeEventArgs> Changing;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<ContentChangeEventArgs> Changed;
+        public event EventHandler<GraphContentChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public void Dispose()
         {
             foreach (var node in rootNode.GetAllChildNodes())
             {
-                UnregisterNode(node);
+                UnregisterNode(node.Item1);
             }
         }
 
-        protected virtual void RegisterNode(IGraphNode node)
+        public GraphNodePath GetPath(IContentNode node)
+        {
+            GraphNodePath path;
+            var graphNode = node as IGraphNode;
+            if (graphNode == null)
+                return null;
+
+            registeredNodes.TryGetValue(graphNode, out path);
+            return path;
+        }
+
+        protected virtual void RegisterNode(IGraphNode node, GraphNodePath path)
         {
 #if DEBUG
-            if (registeredNodes.Contains(node))
+            if (registeredNodes.ContainsKey(node))
                 throw new InvalidOperationException("Node already registered");
 
-            registeredNodes.Add(node);
+            registeredNodes.Add(node, path);
 #endif
 
             node.Content.PrepareChange += ContentPrepareChange;
@@ -76,7 +85,7 @@ namespace SiliconStudio.Quantum
         protected virtual void UnregisterNode(IGraphNode node)
         {
 #if DEBUG
-            if (!registeredNodes.Contains(node))
+            if (!registeredNodes.ContainsKey(node))
                 throw new InvalidOperationException("Node not registered");
 #endif
 
@@ -89,48 +98,52 @@ namespace SiliconStudio.Quantum
 
         private void RegisterAllNodes()
         {
-            foreach (var node in rootNode.GetAllChildNodes())
+            foreach (var node in rootNode.GetAllChildNodes(new GraphNodePath(rootNode)))
             {
-                RegisterNode(node);
+                RegisterNode(node.Item1, node.Item2);
             }
         }
 
         private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
+            var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
                 foreach (var child in node.GetAllChildNodes())
                 {
-                    UnregisterNode(child);
+                    UnregisterNode(child.Item1);
                 }
             }
 
-            PrepareChange?.Invoke(sender, e);
+            PrepareChange?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
         }
 
         private void ContentFinalizeChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
+            var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
-                foreach (var child in node.GetAllChildNodes())
+                foreach (var child in node.GetAllChildNodes(path))
                 {
-                    RegisterNode(child);
+                    RegisterNode(child.Item1, child.Item2);
                 }
             }
 
-            FinalizeChange?.Invoke(sender, e);
+            FinalizeChange?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
         }
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            Changing?.Invoke(sender, e);
+            var path = GetPath(e.Content.OwnerNode);
+            Changing?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
         }
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            Changed?.Invoke(sender, e);
+            var path = GetPath(e.Content.OwnerNode);
+            Changed?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
         }
     }
 }
