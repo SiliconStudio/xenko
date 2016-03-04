@@ -52,14 +52,6 @@ namespace SiliconStudio.Xenko.Rendering
             MainRenderView.RenderStages.Add(TransparentRenderStage);
         }
 
-        public override void BeforeExtract(RenderContext context)
-        {
-            base.BeforeExtract(context);
-
-            // TODO GRAPHICS REFACTOR: Make this non-explicit?
-            RenderSystem.forwardLightingRenderFeature?.BeforeExtract();
-        }
-
         protected override void DrawCore(RenderDrawContext context)
         {
             var currentViewport = context.CommandList.Viewport;
