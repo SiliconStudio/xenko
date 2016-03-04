@@ -176,6 +176,13 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
+            // On D3D, default state is Less instead of our LessEqual
+            // Let's update default pipeline state so that it correspond to D3D state after a "ClearState()"
+            pipelineStateDescription.DepthStencilState.DepthBufferFunction = CompareFunction.Less;
+        }
+
         protected void DestroyPlatformDevice()
         {
             ReleaseDevice();
