@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Rendering
         public StaticObjectNodeReference VisibilityObjectNode = StaticObjectNodeReference.Invalid;
 
         public ActiveRenderStage[] ActiveRenderStages;
+        public uint StateSortKey;
 
         // TODO: Switch to a "StaticPropertyContainer" that will be optimized by assembly processor
         //public PropertyContainer Tags;

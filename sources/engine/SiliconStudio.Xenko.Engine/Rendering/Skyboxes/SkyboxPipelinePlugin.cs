@@ -7,27 +7,21 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
-    public class SkyboxPipelinePlugin : IPipelinePlugin
+    public class SkyboxPipelinePlugin : PipelinePlugin<SkyboxRenderFeature>
     {
-        public void SetupPipeline(RenderContext context, NextGenRenderSystem renderSystem)
+        protected override SkyboxRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             // Mandatory render stages
-            var mainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(renderSystem, "Main", "Main", new RenderOutputDescription(context.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            var mainRenderStage = context.RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(context.RenderContext.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.RenderContext.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
-            var skyboxRenderFeature = renderSystem.RenderFeatures.OfType<SkyboxRenderFeature>().FirstOrDefault();
-            if (skyboxRenderFeature == null)
+            var skyboxRenderFeature = new SkyboxRenderFeature();
+            skyboxRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
             {
-                skyboxRenderFeature = new SkyboxRenderFeature();
-                skyboxRenderFeature.RenderStageSelectors.Add(new SimpleGroupToRenderStageSelector
-                {
-                    RenderStage = mainRenderStage,
-                    EffectName = "SkyboxEffect",
-                });
+                RenderStage = mainRenderStage,
+                EffectName = "SkyboxEffect",
+            });
 
-                // Register top level renderers
-                // TODO GRAPHICS REFACTOR protect against multiple executions?
-                renderSystem.RenderFeatures.Add(skyboxRenderFeature);
-            }
+            return skyboxRenderFeature;
         }
     }
 }

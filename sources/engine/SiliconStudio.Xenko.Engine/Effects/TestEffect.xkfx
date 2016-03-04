@@ -28,6 +28,37 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
             mixin NormalFromMesh;
         }
 
+        // -----------------------------------------------
+        // Performs animation skinning (position, normal and tangent)
+        // -----------------------------------------------
+        if (MaterialKeys.HasSkinningPosition)
+        {
+            mixin macro MaterialKeys.SkinningMaxBones;
+            mixin TransformationSkinning;
+
+            if (MaterialKeys.HasSkinningNormal)
+            {
+                mixin NormalMeshSkinning;
+            }
+
+            if (MaterialKeys.HasSkinningTangent)
+            {
+                mixin TangentMeshSkinning;
+            }
+
+            if (MaterialKeys.HasSkinningNormal)
+            {
+                if (MaterialKeys.HasNormalMap)
+                {
+                    mixin NormalVSSkinningNormalMapping;
+                }
+                else
+                {
+                    mixin NormalVSSkinningFromMesh;
+                }
+            }
+        }
+
         //mixin TestShader;
 
         // -----------------------------------------------
@@ -76,11 +107,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
         mixin child GBuffer;
         mixin child ShadowMapCaster;
         mixin child Picking;
-        mixin child WireFrame;
+        mixin child Wireframe;
         mixin child Highlight;
     }
 
-    shader WireFrame
+    shader Wireframe
     {
         using params MaterialFrontBackBlendShaderKeys;
 

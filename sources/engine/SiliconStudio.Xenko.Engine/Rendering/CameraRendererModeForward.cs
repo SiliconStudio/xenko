@@ -26,34 +26,30 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Create mandatory render stages that don't exist yet
             if (MainRenderStage == null)
-                MainRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                MainRenderStage = RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (TransparentRenderStage == null)
-                TransparentRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+
+            // Setup proper sort modes
+            MainRenderStage.SortMode = new StateChangeSortMode();
+            TransparentRenderStage.SortMode = new FrontToBackSortMode();
 
             // Create optional render stages that don't exist yet
             //if (GBufferRenderStage == null)
-            //    GBufferRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            //    GBufferRenderStage = RenderSystem.GetOrCreateRenderStage("GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (Shadows)
+            {
+                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+            }
+
             if (Shadows && ShadowMapRenderStage == null)
-                ShadowMapRenderStage = EntityComponentRendererBase.GetOrCreateRenderStage(RenderSystem, "ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+            {
+                ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
+            }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
             MainRenderView.RenderStages.Add(TransparentRenderStage);
-        }
-
-        public override void BeforeExtract(RenderContext context)
-        {
-            base.BeforeExtract(context);
-
-            // Make sure required plugins are instantiated
-            // TODO GRAPHICS REFACTOR this system is temporary; probably want to make it more descriptive
-            if (Shadows && RenderSystem.GetPipelinePlugin<MeshPipelinePlugin>(false) != null)
-            {
-                // If MeshPipelinePlugin exists and we have shadows, let's enable ShadowMeshPipelinePlugin
-                RenderSystem.GetPipelinePlugin<ShadowMeshPipelinePlugin>(true);
-            }
-
-            // TODO GRAPHICS REFACTOR: Make this non-explicit?
-            RenderSystem.forwardLightingRenderFeature?.BeforeExtract();
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -74,10 +70,11 @@ namespace SiliconStudio.Xenko.Rendering
             //}
 
             // Shadow maps
-            if (Shadows)
+            var shadowMapRenderer = RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer;
+            if (Shadows && shadowMapRenderer != null)
             {
                 // Clear atlases
-                RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+                shadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
 
                 context.PushRenderTargets();
 

@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
-        protected readonly CameraRendererModeForwardOld SceneCameraRenderer = new CameraRendererModeForwardOld { Name = "Camera Renderers" };
+        protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera Renderers" };
 
         protected Scene Scene;
         protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };

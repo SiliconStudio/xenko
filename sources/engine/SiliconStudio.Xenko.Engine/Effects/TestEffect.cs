@@ -35,6 +35,30 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
                 {
                     context.Mixin(mixin, "NormalFromMesh");
                 }
+                if (context.GetParam(MaterialKeys.HasSkinningPosition))
+                {
+                    mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialKeys.SkinningMaxBones));
+                    context.Mixin(mixin, "TransformationSkinning");
+                    if (context.GetParam(MaterialKeys.HasSkinningNormal))
+                    {
+                        context.Mixin(mixin, "NormalMeshSkinning");
+                    }
+                    if (context.GetParam(MaterialKeys.HasSkinningTangent))
+                    {
+                        context.Mixin(mixin, "TangentMeshSkinning");
+                    }
+                    if (context.GetParam(MaterialKeys.HasSkinningNormal))
+                    {
+                        if (context.GetParam(MaterialKeys.HasNormalMap))
+                        {
+                            context.Mixin(mixin, "NormalVSSkinningNormalMapping");
+                        }
+                        else
+                        {
+                            context.Mixin(mixin, "NormalVSSkinningFromMesh");
+                        }
+                    }
+                }
                 var extensionPixelStageSurfaceShaders = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
                 if (extensionPixelStageSurfaceShaders != null)
                 {
@@ -108,9 +132,9 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
                     context.Mixin(mixin, "Picking");
                     return;
                 }
-                if (context.ChildEffectName == "WireFrame")
+                if (context.ChildEffectName == "Wireframe")
                 {
-                    context.Mixin(mixin, "WireFrame");
+                    context.Mixin(mixin, "Wireframe");
                     return;
                 }
                 if (context.ChildEffectName == "Highlight")
@@ -130,7 +154,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
     }
     internal static partial class ShaderMixins
     {
-        internal partial class WireFrame  : IShaderMixinBuilder
+        internal partial class Wireframe  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
@@ -141,7 +165,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("WireFrame", new WireFrame());
+                ShaderMixinManager.Register("Wireframe", new Wireframe());
             }
         }
     }

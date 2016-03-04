@@ -123,6 +123,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public static readonly PermutationParameterKey<int> SkinningMaxBones = ParameterKeys.NewPermutation<int>(56);
 
+        [Obsolete]
         public static readonly PermutationParameterKey<int> SkinningBones = ParameterKeys.NewPermutation<int>(0);
 
         static MaterialKeys()

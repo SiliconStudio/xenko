@@ -38,17 +38,21 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentVisibilityGroup, visibilityGroup))
             using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))
             {
-                // Update current camera to render view
-                foreach (var mainRenderView in RenderSystem.Views)
-                {
-                    RenderSystem.UpdateCameraToRenderView(context, mainRenderView);
-                }
-
                 // Draw the layers
                 Layers.BeforeExtract(context.RenderContext);
 
                 // Draw the master track
                 Master.BeforeExtract(context.RenderContext);
+
+                // Update current camera to render view
+                // TODO GRAPHICS REFACTOR: Collecte and update views every frome
+                foreach (var mainRenderView in RenderSystem.Views)
+                {
+                    RenderSystem.UpdateCameraToRenderView(context, mainRenderView);
+                }
+
+                // TODO GRAPHICS REFACTOR: Should happen somewhere like RenderFeature.BeforeExtract
+                RenderSystem.forwardLightingRenderFeature?.BeforeExtract();
 
                 // Collect
                 // TODO GRAPHICS REFACTOR choose which views to collect

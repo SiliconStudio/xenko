@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             for (var index = startIndex; index < endIndex; index++)
             {
-                var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
+                var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;

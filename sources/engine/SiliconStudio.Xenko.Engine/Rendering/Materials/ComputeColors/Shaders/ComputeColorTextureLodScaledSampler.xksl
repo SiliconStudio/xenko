@@ -14,10 +14,9 @@ class ComputeColorTextureLodScaledSampler<LinkType TTextureName,
                                        LinkType TSampler, 
                                        MemberName TRgba, 
                                        float2 TScale,
-								       float TLod,
-                                       MemberName LocalBuffer> : ComputeColor, 
-                                                        DynamicTexture<TTextureName, LocalBuffer>, 
-                                                        DynamicSampler<TSampler, LocalBuffer>, 
+								       float TLod> : ComputeColor, 
+                                                        DynamicTexture<TTextureName, PerMaterial>, 
+                                                        DynamicSampler<TSampler, PerMaterial>, 
                                                         DynamicTextureStream<TStream>
 {
     override float4 Compute() 

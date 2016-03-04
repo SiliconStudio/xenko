@@ -10,9 +10,7 @@ using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
-using System.Xml.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using SiliconStudio.Core.Mathematics;
 

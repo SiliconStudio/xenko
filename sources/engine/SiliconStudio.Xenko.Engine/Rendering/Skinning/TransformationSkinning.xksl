@@ -34,7 +34,7 @@ class TransformationSkinning : TransformationBase, PositionStream4, Transformati
 
     stage stream float4x4 skinningBlendMatrix;
 
-    void GetBlendMatrix(int index)
+    float4x4 GetBlendMatrix(int index)
     {
         return BlendMatrixArray[index];
     }

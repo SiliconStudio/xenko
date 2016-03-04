@@ -355,6 +355,11 @@ namespace SiliconStudio.Xenko.Rendering
                         }
                     }
 
+                    var effectHashCode = effect != null ? (uint)effect.GetHashCode() : 0;
+
+                    // Effect is last 16 bits
+                    renderObject.StateSortKey = (renderObject.StateSortKey & 0xFFFF0000) | (effectHashCode & 0x0000FFFF);
+
                     if (effect != null)
                     {
                         RenderEffectReflection renderEffectReflection;

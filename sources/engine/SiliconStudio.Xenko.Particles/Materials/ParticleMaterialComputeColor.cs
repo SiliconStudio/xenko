@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [Display("DynamicEmissive")]
     public class ParticleMaterialComputeColor : ParticleMaterialSimple
     {
-        [DataMemberIgnore]
         private ShaderGeneratorContext shaderGeneratorContext;
 
         // TODO Part of the graphics improvement XK-3052
@@ -92,7 +91,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 // Don't forget to set the proper color space!
                 shaderGeneratorContext.ColorSpace = graphicsDevice.ColorSpace;
 
-                shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Core.Mathematics.Color.White));
+                shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
 
                 Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
 
