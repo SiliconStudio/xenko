@@ -269,11 +269,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     break;
             }
 
-            // In case of Direct3D, we can safely remove reflection data as it is entirely resolved at compile time.
-            if (platform == GraphicsPlatform.Direct3D11)
-            {
-                CleanupReflection(bytecode.Reflection);
-            }
+            // Remove unused reflection data, as it is entirely resolved at compile time.
+            CleanupReflection(bytecode.Reflection);
             bytecode.Stages = shaderStageBytecodes.ToArray();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP

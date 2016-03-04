@@ -12,11 +12,13 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Glsl;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Writer.Hlsl;
 using ConstantBuffer = SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.LayoutQualifier;
 using ParameterQualifier = SiliconStudio.Shaders.Ast.Hlsl.ParameterQualifier;
+using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 {
@@ -206,6 +208,35 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                         reflectionConstantBuffer.Size = constantBufferOffset;
                         reflectionConstantBuffer.Stage = stage; // Should we store a flag/bitfield?
                     }
+
+                    // Find binding
+                    var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == constantBuffer.Name);
+                    if (resourceBindingIndex != -1)
+                        MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
+                }
+
+                foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
+                {
+                    // Check if we have a variable that starts or ends with this name (in case of samplers)
+                    if (variable.Type == SamplerType.Sampler1D || variable.Type == SamplerType.Sampler2D || variable.Type == SamplerType.Sampler3D ||
+                        variable.Type.Name.Text.Equals(SamplerType.SamplerCube.Name.Text, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // TODO: Make more robust
+                        var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Param.RawName));
+                        var samplerBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().EndsWith(x.Param.RawName));
+
+                        if (textureBindingIndex != -1)
+                            MarkResourceBindingAsUsed(reflection, textureBindingIndex, stage);
+
+                        if (samplerBindingIndex != -1)
+                            MarkResourceBindingAsUsed(reflection, samplerBindingIndex, stage);
+                    }
+                    else
+                    {
+                        var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == variable.Name);
+                        if (resourceBindingIndex != -1)
+                            MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
+                    }
                 }
 
                 // Output the result
@@ -298,6 +329,16 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 #endif
 
             return realShaderSource;
+        }
+
+        private static void MarkResourceBindingAsUsed(EffectReflection reflection, int resourceBindingIndex, ShaderStage stage)
+        {
+            var resourceBinding = reflection.ResourceBindings[resourceBindingIndex];
+            if (resourceBinding.Stage == ShaderStage.None)
+            {
+                resourceBinding.Stage = stage;
+                reflection.ResourceBindings[resourceBindingIndex] = resourceBinding;
+            }
         }
 
         private static int ComputeMemberSize(ref EffectParameterValueData member, out int alignment)
