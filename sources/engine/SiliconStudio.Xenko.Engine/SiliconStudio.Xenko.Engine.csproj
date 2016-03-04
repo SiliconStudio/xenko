@@ -1360,7 +1360,6 @@
     <Compile Include="Rendering\ProceduralModels\SphereProceduralModel.cs" />
     <Compile Include="Rendering\ProceduralModels\TeapotProceduralModel.cs" />
     <Compile Include="Rendering\ProceduralModels\TorusProceduralModel.cs" />
-    <Compile Include="Rendering\RenderContextExtensions.cs" />
     <Compile Include="Rendering\RendererCoreBase.cs" />
     <Compile Include="Rendering\RenderFrameProviderBase.cs" />
     <Compile Include="Rendering\SceneCameraRenderer.cs" />
