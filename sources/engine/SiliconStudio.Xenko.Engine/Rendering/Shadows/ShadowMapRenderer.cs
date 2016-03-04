@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private readonly RenderStage shadowMapRenderStage;
 
-        private readonly List<RenderView> shadowRenderViews = new List<RenderView>();
+        private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
 
         private FastListStruct<ShadowMapAtlasTexture> atlases;
 
@@ -43,11 +43,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             this.shadowMapRenderStage = shadowMapRenderStage;
 
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
+            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, CreateShadowRenderView);
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
 
             Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
             ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
+        }
+
+        private ShadowMapRenderView CreateShadowRenderView()
+        {
+            return new ShadowMapRenderView { RenderStages = { shadowMapRenderStage }};
         }
 
         /// <summary>
@@ -75,7 +81,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Cleanup previous shadow render views
             foreach (var shadowRenderView in shadowRenderViews)
                 RenderSystem.Views.Remove(shadowRenderView);
-            shadowRenderViews.Clear();
 
             // Clear currently associated shadows
             shadowMapTextures.Clear();
@@ -118,20 +123,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     shadowMapTexture.Renderer.Extract(RenderSystem.RenderContextOld, this, shadowMapTexture);
                     for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
-                        // TODO GRAPHICS REFACTOR reuse views
-                        var shadowRenderView = new ShadowMapRenderView
-                        {
-                            RenderStages = { shadowMapRenderStage },
-                            RenderView = renderViewData.Key,
-                            ShadowMapTexture = shadowMapTexture,
-                            Rectangle = shadowMapTexture.GetRectangle(cascadeIndex)
-                        };
-
+                        // Allocate shadow render view
+                        var shadowRenderView = shadowRenderViews.Add();
+                        shadowRenderView.RenderView = renderViewData.Key;
+                        shadowRenderView.ShadowMapTexture = shadowMapTexture;
+                        shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
+                        
+                        // Compute view parameters
                         shadowMapTexture.Renderer.GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
-
                         Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
 
-                        shadowRenderViews.Add(shadowRenderView);
+                        // Add the render view for the current frame
                         RenderSystem.Views.Add(shadowRenderView);
                     }
                 }
