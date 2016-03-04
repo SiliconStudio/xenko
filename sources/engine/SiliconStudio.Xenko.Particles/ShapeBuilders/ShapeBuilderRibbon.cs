@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <param name="size"></param>
             public void AddParticle(ref Vector3 position, float size)
             {
-                if (lastParticle <= positions.Length)
+                if (lastParticle >= positions.Length)
                     return;
 
                 positions[lastParticle] = position;
