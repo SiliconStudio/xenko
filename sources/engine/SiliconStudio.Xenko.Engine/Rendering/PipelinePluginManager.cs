@@ -19,7 +19,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         public static void RegisterAutomaticPlugin(Type pluginType, params Type[] dependentTypes)
         {
-            automaticPlugins.Add(new AutomaticPipelinePlugin(pluginType, dependentTypes));
+            lock (automaticPlugins)
+            {
+                automaticPlugins.Add(new AutomaticPipelinePlugin(pluginType, dependentTypes));
+            }
         }
 
         public T GetPlugin<T>() where T : IPipelinePlugin
@@ -44,50 +47,59 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void ReleasePlugin(Type pipelinePluginType)
         {
-            PipelinePluginInstantiation pipelinePlugin;
-            int newCounter;
-            if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin) || (newCounter = --pipelinePlugin.Counter) < 0)
+            lock (pipelinePlugins)
             {
-                throw new InvalidOperationException("Cannot release plugin that don't have active references");
-            }
+                PipelinePluginInstantiation pipelinePlugin;
+                int newCounter;
+                if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin) || (newCounter = --pipelinePlugin.Counter) < 0)
+                {
+                    throw new InvalidOperationException("Cannot release plugin that don't have active references");
+                }
 
-            if (newCounter == 0)
-            {
-                CheckAutomaticPlugins(pipelinePluginType, false);
-                pipelinePlugin.Instance.Unload(new PipelinePluginContext(renderSystem.RenderContextOld, renderSystem));
+                if (newCounter == 0)
+                {
+                    CheckAutomaticPlugins(pipelinePluginType, false);
+                    pipelinePlugin.Instance.Unload(new PipelinePluginContext(renderSystem.RenderContextOld, renderSystem));
+                }
             }
         }
 
         private bool IsPluginInstantiated(Type pipelinePluginType)
         {
-            PipelinePluginInstantiation pipelinePlugin;
-            if (pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin))
+            lock (pipelinePlugins)
             {
-                return pipelinePlugin.Counter > 0;
-            }
+                PipelinePluginInstantiation pipelinePlugin;
+                if (pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin))
+                {
+                    return pipelinePlugin.Counter > 0;
+                }
 
-            return false;
+                return false;
+            }
         }
 
         private IPipelinePlugin GetPlugin(Type pipelinePluginType, bool incrementCount)
         {
-            PipelinePluginInstantiation pipelinePlugin;
-            if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin))
+            lock (pipelinePlugins)
             {
-                pipelinePlugin = new PipelinePluginInstantiation((IPipelinePlugin)Activator.CreateInstance(pipelinePluginType));
-                pipelinePlugins.Add(pipelinePluginType, pipelinePlugin);
-            }
-
-            if (incrementCount)
-            {
-                if (++pipelinePlugin.Counter == 1)
+                PipelinePluginInstantiation pipelinePlugin;
+                if (!pipelinePlugins.TryGetValue(pipelinePluginType, out pipelinePlugin))
                 {
-                    pipelinePlugin.Instance.Load(new PipelinePluginContext(renderSystem.RenderContextOld, renderSystem));
-                    CheckAutomaticPlugins(pipelinePluginType, true);
+                    pipelinePlugin = new PipelinePluginInstantiation((IPipelinePlugin)Activator.CreateInstance(pipelinePluginType));
+                    pipelinePlugins.Add(pipelinePluginType, pipelinePlugin);
                 }
-            }
 
-            return pipelinePlugin.Instance;
+                if (incrementCount)
+                {
+                    if (++pipelinePlugin.Counter == 1)
+                    {
+                        pipelinePlugin.Instance.Load(new PipelinePluginContext(renderSystem.RenderContextOld, renderSystem));
+                        CheckAutomaticPlugins(pipelinePluginType, true);
+                    }
+                }
+
+                return pipelinePlugin.Instance;
+            }
         }
 
         // isTriggerTypeAlive represents the state of the plugin being added (true) or removed(false)
@@ -95,36 +107,39 @@ namespace SiliconStudio.Xenko.Rendering
         {
             // Check if this type might be affected
             // TODO: We could optimize this by preregistering which type affect which types
-            foreach (var automaticPlugin in automaticPlugins)
+            lock (automaticPlugins)
             {
-                if (Array.IndexOf(automaticPlugin.DependentTypes, triggerType) != -1)
+                foreach (var automaticPlugin in automaticPlugins)
                 {
-                    // Found a type, let's check if its state changed
-                    // First, let's check if is is already instantiated (in case of adding) or removed (in case of removing)
-                    if (IsPluginInstantiated(automaticPlugin.Type) == isTriggerTypeAlive)
+                    if (Array.IndexOf(automaticPlugin.DependentTypes, triggerType) != -1)
                     {
-                        // No need to check further
-                        continue;
-                    }
-
-                    // Check if it needs to be instantiated or removed (do all dependencies match?)
-                    bool dependenciesMatch = true;
-                    foreach (var dependentType in automaticPlugin.DependentTypes)
-                    {
-                        if (!IsPluginInstantiated(dependentType))
+                        // Found a type, let's check if its state changed
+                        // First, let's check if is is already instantiated (in case of adding) or removed (in case of removing)
+                        if (IsPluginInstantiated(automaticPlugin.Type) == isTriggerTypeAlive)
                         {
-                            dependenciesMatch = false;
-                            break;
+                            // No need to check further
+                            continue;
                         }
-                    }
 
-                    if (dependenciesMatch == isTriggerTypeAlive)
-                    {
-                        // Need to instantiate or delete this plugin
-                        if (isTriggerTypeAlive)
-                            GetPlugin(automaticPlugin.Type, true);
-                        else
-                            ReleasePlugin(automaticPlugin.Type);
+                        // Check if it needs to be instantiated or removed (do all dependencies match?)
+                        bool dependenciesMatch = true;
+                        foreach (var dependentType in automaticPlugin.DependentTypes)
+                        {
+                            if (!IsPluginInstantiated(dependentType))
+                            {
+                                dependenciesMatch = false;
+                                break;
+                            }
+                        }
+
+                        if (dependenciesMatch == isTriggerTypeAlive)
+                        {
+                            // Need to instantiate or delete this plugin
+                            if (isTriggerTypeAlive)
+                                GetPlugin(automaticPlugin.Type, true);
+                            else
+                                ReleasePlugin(automaticPlugin.Type);
+                        }
                     }
                 }
             }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
@@ -21,6 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <value>The main model effect.</value>
         /// <userdoc>The name of the effect to use to render models (a '.xksl' or '.xkfx' filename without the extension).</userdoc>
         [DataMember(10)]
+        [DefaultValue(MeshPipelinePlugin.DefaultEffectName)]
         public string ModelEffect
         {
             // TODO: This is not a good extensibility point. Check how to improve this

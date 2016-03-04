@@ -135,7 +135,6 @@
     <Compile Include="Rendering\ActiveRenderStage.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
-    <Compile Include="Rendering\Composers\NextGenSceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\Pipeline.cs" />
     <Compile Include="Rendering\Composers\PipelineCollection.cs" />
     <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
@@ -247,7 +246,6 @@
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
-    <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\CameraRendererModeForward.cs" />
     <Compile Include="Rendering\NextGenRenderSystem.cs" />
     <Compile Include="Rendering\NextGenRenderSystemExtensions.cs" />
