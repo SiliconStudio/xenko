@@ -57,10 +57,9 @@ namespace SiliconStudio.Xenko.Graphics
             // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
             if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.WindowProvidedRenderTexture)
             {
-                GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
+                GraphicsDevice.MainCommandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
                     new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
-                //GraphicsDevice.Copy(GraphicsDevice.DefaultRenderTarget, GraphicsDevice.WindowProvidedRenderTexture);
             }
             OpenTK.Graphics.GraphicsContext.CurrentContext.SwapBuffers();
             GraphicsDevice.End();
