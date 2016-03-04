@@ -72,12 +72,6 @@ namespace SiliconStudio.Xenko.Rendering
         public CameraCullingMode CullingMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating the current rendering is for picking or not.
-        /// </summary>
-        [DataMemberIgnore]
-        public bool IsPickingMode { get; set; }
-
-        /// <summary>
         /// Gets the pre-renderers attached to this instance that are called before rendering this camera.
         /// </summary>
         /// <value>The pre renderers.</value>
