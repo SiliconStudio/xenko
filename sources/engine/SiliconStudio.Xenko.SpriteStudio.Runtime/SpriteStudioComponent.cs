@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("SpriteStudioComponent")]
     [Display("Sprite Studio", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(SpriteStudioProcessor))]
+    [DefaultEntityComponentRenderer(typeof(SpriteStudioRendererProcessor))]
     [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]
     [ComponentOrder(9900)]
     public sealed class SpriteStudioComponent : ActivableEntityComponent
