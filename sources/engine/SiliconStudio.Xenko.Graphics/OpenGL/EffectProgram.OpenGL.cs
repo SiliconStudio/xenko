@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
         const string VertexShaderDepthClamp = @"
-#out# float _edc_z;
+$out$ float _edc_z;
 void main()
 {
     _edc_main();
@@ -54,7 +54,7 @@ void main()
 ";
 
         const string FragmentShaderDepthClamp = @"
-#in# float _edc_z;
+$in$ float _edc_z;
 void main()
 {
     gl_FragDepth = clamp(_edc_z, 0.0, 1.0);
@@ -154,9 +154,9 @@ void main()
                             var newMain = VertexShaderDepthClamp;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                            newMain = newMain.Replace("#out#", GraphicsDevice.IsOpenGLES2 ? "varying" : "out");
+                            newMain = newMain.Replace("$out$", GraphicsDevice.IsOpenGLES2 ? "varying" : "out");
 #else
-                            newMain = newMain.Replace("#out#", "out");
+                            newMain = newMain.Replace("$out$", "out");
 #endif
                             shaderSource += newMain;
                         }
@@ -167,9 +167,9 @@ void main()
                             var newMain = FragmentShaderDepthClamp;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                            newMain = newMain.Replace("#in#", GraphicsDevice.IsOpenGLES2 ? "varying" : "in");
+                            newMain = newMain.Replace("$in$", GraphicsDevice.IsOpenGLES2 ? "varying" : "in");
 #else
-                            newMain = newMain.Replace("#in#", "in");
+                            newMain = newMain.Replace("$in$", "in");
 #endif
                             shaderSource += newMain;
                         }
