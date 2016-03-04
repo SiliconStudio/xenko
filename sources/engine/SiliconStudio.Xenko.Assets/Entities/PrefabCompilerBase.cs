@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 return Task.FromResult(ResultStatus.Successful);
             }
 
-            protected abstract Prefab Create(T prefabAsset);
+            protected abstract PrefabBase Create(T prefabAsset);
 
             public override string ToString()
             {

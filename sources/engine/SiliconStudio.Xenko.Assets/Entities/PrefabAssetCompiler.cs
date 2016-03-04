@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
             }
 
-            protected override Prefab Create(PrefabAsset prefabAsset)
+            protected override PrefabBase Create(PrefabAsset prefabAsset)
             {
                 return new Prefab();
             }

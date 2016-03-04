@@ -5,6 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
+// The namespace has to stay SiliconStudio.Xenko.Rendering to match the generated shader code
 namespace SiliconStudio.Xenko.Rendering
 {
     public partial class ParticleBaseKeys
@@ -12,13 +13,9 @@ namespace SiliconStudio.Xenko.Rendering
         static ParticleBaseKeys()
         {
             //MatrixTransform = ParameterKeys.New(Matrix.Identity);
-        //    ViewMatrix = ParameterKeys.New(Matrix.Identity);
-        //    ProjectionMatrix = ParameterKeys.New(Matrix.Identity);
         }
 
         //public static readonly ParameterKey<bool> ColorIsSRgb = ParameterKeys.New(false);
-
-//        public static readonly ParameterKey<bool> HasColorStream = ParameterKeys.New(false);
 
         //public static readonly ParameterKey<ShaderSource> ParticleColor = ParameterKeys.New<ShaderSource>();
 

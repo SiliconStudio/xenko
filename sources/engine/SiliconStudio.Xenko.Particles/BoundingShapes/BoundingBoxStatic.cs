@@ -66,6 +66,9 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
 
         public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
+            if (!DebugDraw)
+                return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
+
             debugDrawShape = DebugDrawShape.Cube;
             scale = (Maximum - Minimum);
             translation = (Maximum + Minimum) * 0.5f;
