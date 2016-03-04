@@ -852,6 +852,13 @@ namespace SiliconStudio.Xenko.Graphics
             
         }
 
+        private string renderer;
+
+        private string GetRendererName()
+        {
+            return renderer;
+        }
+
         /// <summary>
         ///     Initializes the specified device.
         /// </summary>
@@ -865,6 +872,8 @@ namespace SiliconStudio.Xenko.Graphics
                 // Destroy previous device
                 ReleaseDevice();
             }
+
+            renderer = Adapter.NativeAdapter.Description.Description;
 
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
