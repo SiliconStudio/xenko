@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using OpenTK.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -36,11 +38,36 @@ namespace SiliconStudio.Xenko.Graphics
         private const ActiveUniformType FloatMat3x2 = ActiveUniformType.FloatMat3x2;
 #endif
 
-        private LoggerResult reflectionResult = new LoggerResult();
+        const string VertexShaderDepthClamp = @"
+#out# float _edc_z;
+void main()
+{
+    _edc_main();
+
+    // transform z to window coordinates
+    _edc_z = gl_Position.z / gl_Position.w;
+    _edc_z = (gl_DepthRange.diff * _edc_z + gl_DepthRange.near + gl_DepthRange.far) * 0.5;
+
+    // prevent z-clipping
+    gl_Position.z = clamp(_edc_z, 0.0, 1.0);
+}
+";
+
+        const string FragmentShaderDepthClamp = @"
+#in# float _edc_z;
+void main()
+{
+    gl_FragDepth = clamp(_edc_z, 0.0, 1.0);
+
+    _edc_main();
+}
+";
+
+        private readonly LoggerResult reflectionResult = new LoggerResult();
 
         private readonly EffectBytecode effectBytecode;
 
-        public Dictionary<string, int> Attributes { get; private set; } = new Dictionary<string, int>();
+        public Dictionary<string, int> Attributes { get; } = new Dictionary<string, int>();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // Fake cbuffer emulation binding
@@ -55,7 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         // Start offsets for cbuffer
-        private static readonly int[] EmptyConstantBufferOffsets = new int[] { 0 };
+        private static readonly int[] EmptyConstantBufferOffsets = { 0 };
         internal int[] ConstantBufferOffsets = EmptyConstantBufferOffsets;
 
         internal byte[] BoundUniforms;
@@ -76,9 +103,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal List<Texture> Textures = new List<Texture>();
 
-        internal EffectProgram(GraphicsDevice device, EffectBytecode bytecode) : base(device)
+        private readonly bool emulateDepthClamp;
+
+        internal EffectProgram(GraphicsDevice device, EffectBytecode bytecode, bool emulateDepthClamp) : base(device)
         {
             effectBytecode = bytecode;
+            this.emulateDepthClamp = emulateDepthClamp;
 
             // TODO OPENGL currently we modify the reflection info; need to find a better way to deal with that
             Reflection = effectBytecode.Reflection;
@@ -113,6 +143,38 @@ namespace SiliconStudio.Xenko.Graphics
 #else
                     var shaderSource = shader.GetDataAsString();
 #endif
+                    //edit the source a little to emulateDepthClamp
+                    if (emulateDepthClamp)
+                    {
+                        var mainPattern = new Regex(@"void\s+main\s*\(\)");
+                        if (shaderStage == ShaderType.VertexShader)
+                        {
+                            //bypass our regular main
+                            shaderSource = mainPattern.Replace(shaderSource, @"void _edc_main()");
+                            var newMain = VertexShaderDepthClamp;
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                            newMain = newMain.Replace("#out#", GraphicsDevice.IsOpenGLES2 ? "varying" : "out");
+#else
+                            newMain = newMain.Replace("#out#", "out");
+#endif
+                            shaderSource += newMain;
+                        }
+                        else if (shaderStage == ShaderType.FragmentShader)
+                        {
+                            //bypass our regular main
+                            shaderSource = mainPattern.Replace(shaderSource, @"void _edc_main()");
+                            var newMain = FragmentShaderDepthClamp;
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                            newMain = newMain.Replace("#in#", GraphicsDevice.IsOpenGLES2 ? "varying" : "in");
+#else
+                            newMain = newMain.Replace("#in#", "in");
+#endif
+                            shaderSource += newMain;
+                        }
+                    }
+
                     var shaderId = GL.CreateShader(shaderStage);
                     GL.ShaderSource(shaderId, shaderSource);
                     GL.CompileShader(shaderId);
@@ -382,6 +444,12 @@ namespace SiliconStudio.Xenko.Graphics
                     int length;
                     GL.GetActiveUniform(resourceId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
                     var uniformName = sb.ToString();
+
+                    //this is a special OpenglES case , it is declared as built in uniform, and the driver will take care of it, we just need to ignore it here
+                    if (uniformName.StartsWith("gl_DepthRange")) 
+                    {
+                        goto skip;
+                    }
 #endif
 
                     switch (uniformType)
@@ -492,6 +560,7 @@ namespace SiliconStudio.Xenko.Graphics
                             textureUnitCount++;
                             break;
                     }
+                    skip:;
                 }
 
                 // Remove any optimized resource binding
