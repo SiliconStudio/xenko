@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class VisibilityGroup : IDisposable
     {
+        private readonly List<RenderObject> renderObjectsWithoutFeatures = new List<RenderObject>();
+
         [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
         public static readonly Dictionary<RenderView, Func<RenderObject, bool>> ViewObjectFilters = new Dictionary<RenderView, Func<RenderObject, bool>>();
 
@@ -56,6 +58,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderSystem.RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderSystem.RenderStageSelectorsChanged += RenderSystem_RenderStageSelectorsChanged;
+            RenderSystem.RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
 
         public void Dispose()
@@ -230,12 +233,17 @@ namespace SiliconStudio.Xenko.Rendering
             RenderData.PrepareDataArrays();
 
             RenderSystem.AddRenderObject(renderObject);
-
-            ReevaluateActiveRenderStages(renderObject);
+            if (renderObject.RenderFeature != null)
+                ReevaluateActiveRenderStages(renderObject);
+            else
+                renderObjectsWithoutFeatures.Add(renderObject);
         }
 
         internal bool RemoveRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
         {
+            if (renderObject.RenderFeature == null)
+                renderObjectsWithoutFeatures.Remove(renderObject);
+
             RenderSystem.RemoveRenderObject(renderObject);
 
             // Get and clear ordered node index
@@ -314,6 +322,40 @@ namespace SiliconStudio.Xenko.Rendering
             // Everything will need reevaluation
             // TODO GRAPHICS REFACTOR optimization: only reprocess object with the given RenderFeature?
             NeedActiveRenderStageReevaluation = true;
+        }
+
+        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    for (int index = 0; index < renderObjectsWithoutFeatures.Count; index++)
+                    {
+                        var renderObject = renderObjectsWithoutFeatures[index];
+
+                        // Try to reprocess object that didn't have any stage before
+                        if (renderObject.RenderFeature == null)
+                        {
+                            RenderSystem.AddRenderObject(renderObject);
+                            if (renderObject.RenderFeature != null)
+                            {
+                                renderObjectsWithoutFeatures.SwapRemoveAt(index--);
+                                ReevaluateActiveRenderStages(renderObject);
+                            }
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (var renderObject in RenderObjects)
+                    {
+                        if (renderObject.RenderFeature == e.Item)
+                        {
+                            RenderSystem.RemoveRenderObject(renderObject);
+                            renderObjectsWithoutFeatures.Add(renderObject);
+                        }
+                    }
+                    break;
+            }
         }
 
         private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

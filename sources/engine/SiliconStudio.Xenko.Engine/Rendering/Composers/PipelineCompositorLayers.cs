@@ -15,6 +15,19 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [DataMemberIgnore]
         public NextGenRenderSystem RenderSystem { get; } = new NextGenRenderSystem();
 
+        /// <summary>
+        /// Gets or sets the effect to use to render the models in the scene.
+        /// </summary>
+        /// <value>The main model effect.</value>
+        /// <userdoc>The name of the effect to use to render models (a '.xksl' or '.xkfx' filename without the extension).</userdoc>
+        [DataMember(10)]
+        public string ModelEffect
+        {
+            // TODO: This is not a good extensibility point. Check how to improve this
+            get { return RenderSystem.PipelinePlugins.GetPlugin<MeshPipelinePlugin>().ModelEffect; }
+            set { RenderSystem.PipelinePlugins.GetPlugin<MeshPipelinePlugin>().ModelEffect = value; }
+        }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();

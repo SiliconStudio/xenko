@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Physics
                     {
                         Renderers =
                         {
-                            new SceneCameraRenderer { Mode = new PhysicsDebugCameraRendererMode { Name = "Camera renderer", ModelEffect = "TestEffect" } },
+                            new SceneCameraRenderer { Mode = new PhysicsDebugCameraRendererMode { Name = "Camera renderer" } },
                         }
                     }
                 };

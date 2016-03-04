@@ -15,6 +15,11 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public class MeshPipelinePlugin : PipelinePlugin<MeshRenderFeature>
     {
+        public const string DefaultEffectName = "XenkoForwardShadingEffect";
+
+        private string modelEffect;
+        private MeshTransparentRenderStageSelector meshRenderStageSelector;
+
         protected override MeshRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             var meshRenderFeature = new MeshRenderFeature
@@ -31,6 +36,23 @@ namespace SiliconStudio.Xenko.Rendering
             return meshRenderFeature;
         }
 
+        public string ModelEffect
+        {
+            get { return modelEffect; }
+            set
+            {
+                modelEffect = value;
+                
+                // Readd the render stage selector if needed
+                if (meshRenderStageSelector != null)
+                {
+                    RenderFeature.RenderStageSelectors.Remove(meshRenderStageSelector);
+                    meshRenderStageSelector.EffectName = modelEffect ?? DefaultEffectName;
+                    RenderFeature.RenderStageSelectors.Add(meshRenderStageSelector);
+                }
+            }
+        }
+
         public override void Load(PipelinePluginContext context)
         {
             base.Load(context);
@@ -40,9 +62,9 @@ namespace SiliconStudio.Xenko.Rendering
             var transparentRenderStage = context.RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(context.RenderContext.GraphicsDevice.Presenter.BackBuffer.ViewFormat, context.RenderContext.GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
             // Set default stage selector
-            RegisterRenderStageSelector(new MeshTransparentRenderStageSelector
+            RegisterRenderStageSelector(meshRenderStageSelector = new MeshTransparentRenderStageSelector
             {
-                EffectName = "TestEffect",
+                EffectName = modelEffect ?? DefaultEffectName,
                 MainRenderStage = mainRenderStage,
                 TransparentRenderStage = transparentRenderStage,
             });
@@ -56,30 +78,15 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             });
         }
-    }
 
-    public class PickingPipelinePlugin : IPipelinePlugin
-    {
-        public void Load(PipelinePluginContext context)
+        public override void Unload(PipelinePluginContext context)
         {
-        }
+            meshRenderStageSelector = null;
 
-        public void Unload(PipelinePluginContext context)
-        {
+            base.Unload(context);
         }
     }
 
-
-    public class ShadowPipelinePlugin : IPipelinePlugin
-    {
-        public void Load(PipelinePluginContext context)
-        {
-        }
-
-        public void Unload(PipelinePluginContext context)
-        {
-        }
-    }
 
     public class ShadowMeshPipelinePlugin : PipelinePlugin<MeshRenderFeature>
     {
@@ -108,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             RegisterRenderStageSelector(new ShadowMapRenderStageSelector
             {
-                EffectName = "TestEffect.ShadowMapCaster",
+                EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCaster",
                 ShadowMapRenderStage = shadowMapRenderStage,
             });
         }

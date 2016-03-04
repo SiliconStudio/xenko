@@ -43,15 +43,22 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public TrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new TrackingCollection<RenderStageSelector>();
 
+        /// <summary>
+        /// Gets the type of render object supported by this <see cref="RootRenderFeature"/>.
+        /// </summary>
+        public abstract Type SupportedRenderObjectType { get; }
+
         protected RootRenderFeature()
         {
             RenderData.Initialize(ComputeDataArrayExpectedSize);
         }
 
-        /// <summary>
-        /// Gets the type of render object supported by this <see cref="RootRenderFeature"/>.
-        /// </summary>
-        public abstract Type SupportedRenderObjectType { get; }
+        public override void Unload()
+        {
+            RenderData.Clear();
+
+            base.Unload();
+        }
 
         /// <summary>
         /// Gets the render node from its reference.

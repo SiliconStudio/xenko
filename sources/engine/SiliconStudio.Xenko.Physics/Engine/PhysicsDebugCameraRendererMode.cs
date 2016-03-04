@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
 
             RegisterRenderStageSelector(new SimpleGroupToRenderStageSelector
             {
-                EffectName = "TestEffect",
+                EffectName = MeshPipelinePlugin.DefaultEffectName,
                 RenderStage = wireFrameRenderStage,
             });
         }

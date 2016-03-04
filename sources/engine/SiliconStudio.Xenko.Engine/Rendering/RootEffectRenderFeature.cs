@@ -260,10 +260,12 @@ namespace SiliconStudio.Xenko.Rendering
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + effectSlots[renderNode.RenderStage.Index].Index;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
-                    // Create it (first time)
-                    if (renderEffect == null)
+                    var effectSelector = renderObject.ActiveRenderStages[renderNode.RenderStage.Index].EffectSelector;
+
+                    // Create it (first time) or regenerate it if effect changed
+                    if (renderEffect == null || effectSelector != renderEffect.EffectSelector)
                     {
-                        renderEffect = new RenderEffect(renderObject.ActiveRenderStages[renderNode.RenderStage.Index].EffectName);
+                        renderEffect = new RenderEffect(renderObject.ActiveRenderStages[renderNode.RenderStage.Index].EffectSelector);
                         renderEffects[staticEffectObjectNode] = renderEffect;
                     }
 
@@ -331,7 +333,7 @@ namespace SiliconStudio.Xenko.Rendering
                             staticCompilerParameters.SetObject(effectValue.Key, effectValue.Value);
                         }
 
-                        var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectName, staticCompilerParameters);
+                        var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectSelector.EffectName, staticCompilerParameters);
                         staticCompilerParameters.Clear();
 
                         effect = asyncEffect.Result;

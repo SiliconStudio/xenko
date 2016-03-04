@@ -403,7 +403,10 @@ namespace SiliconStudio.Xenko.Rendering
                     renderFeaturesByType.Add(renderFeature.SupportedRenderObjectType, renderFeature);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    throw new NotImplementedException();
+                    renderFeature.RenderStageSelectors.CollectionChanged -= RenderStageSelectors_CollectionChanged;
+                    renderFeaturesByType.Remove(renderFeature.SupportedRenderObjectType);
+                    renderFeature.Unload();
+                    break;
             }
         }
 

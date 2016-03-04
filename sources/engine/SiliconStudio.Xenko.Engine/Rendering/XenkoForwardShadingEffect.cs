@@ -84,6 +84,11 @@ namespace SiliconStudio.Xenko.Rendering
                         }
                     }
                 }
+                if (context.ChildEffectName == "ShadowMapCaster")
+                {
+                    context.Mixin(mixin, "ShadowMapCaster");
+                    return;
+                }
             }
 
             [ModuleInitializer]

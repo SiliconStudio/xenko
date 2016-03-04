@@ -11,8 +11,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class RenderEffect
     {
-        // Request effect name
-        public readonly string EffectName;
+        // Request effect selector
+        public readonly EffectSelector EffectSelector;
 
         public int LastFrameUsed { get; private set; }
 
@@ -42,9 +42,9 @@ namespace SiliconStudio.Xenko.Rendering
         public EffectParameterUpdater FallbackParameterUpdater;
         public ParameterCollection FallbackParameters;
 
-        public RenderEffect(string effectName)
+        public RenderEffect(EffectSelector effectSelector)
         {
-            EffectName = effectName;
+            EffectSelector = effectSelector;
             EffectValidator.Initialize();
         }
 

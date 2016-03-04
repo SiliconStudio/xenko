@@ -132,6 +132,7 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
+    <Compile Include="Rendering\ActiveRenderStage.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\NextGenSceneGraphicsCompositor.cs" />
@@ -175,6 +176,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
+    <Compile Include="Rendering\EffectSelector.cs" />
     <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
@@ -221,36 +223,6 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
-    <Compile Include="Effects\GBuffer.cs">
-      <DependentUpon>GBuffer.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Effects\GBufferShader.cs">
-      <DependentUpon>GBufferShader.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Effects\TestEffect.cs">
-      <DependentUpon>TestEffect.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Effects\TestShader.cs">
-      <DependentUpon>TestShader.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Effects\WhiteAmbient.cs">
-      <DependentUpon>WhiteAmbient.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Background\BackgroundRenderProcessor.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
     <Compile Include="Rendering\Background\RenderBackground.cs" />
@@ -283,6 +255,7 @@
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
+    <Compile Include="Rendering\PickingPipelinePlugin.cs" />
     <Compile Include="Rendering\PipelinePluginContext.cs" />
     <Compile Include="Rendering\PipelinePluginManager.cs" />
     <Compile Include="Rendering\Properties.cs">
@@ -294,6 +267,7 @@
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\RenderFeature.cs" />
     <Compile Include="Rendering\RenderFeaturePipelinePlugin.cs" />
+    <Compile Include="Rendering\RenderMesh.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\RenderObject.cs" />
     <Compile Include="Rendering\RenderObjectCollection.cs" />
@@ -305,6 +279,7 @@
     <Compile Include="Rendering\RenderViewFeatureStage.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
@@ -3397,26 +3372,6 @@
     <None Include="Rendering\Materials\Shaders\MaterialVertexStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
-    </None>
-    <None Include="Effects\GBuffer.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>GBuffer.cs</LastGenOutput>
-    </None>
-    <None Include="Effects\GBufferShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>GBufferShader.cs</LastGenOutput>
-    </None>
-    <None Include="Effects\TestEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>TestEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Effects\TestShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>TestShader.cs</LastGenOutput>
-    </None>
-    <None Include="Effects\WhiteAmbient.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>WhiteAmbient.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Utils\Picking.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

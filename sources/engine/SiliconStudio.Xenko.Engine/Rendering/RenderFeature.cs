@@ -26,7 +26,9 @@ namespace SiliconStudio.Xenko.Rendering
             if (context == null) throw new ArgumentNullException("context");
 
             if (Context != null)
-                throw new InvalidOperationException("RenderFeature already initialized");
+            {
+                Unload();
+            }
 
             Context = context;
 
@@ -45,10 +47,18 @@ namespace SiliconStudio.Xenko.Rendering
             context.OnRendererInitialized(this);
         }
 
+        public virtual void Unload()
+        {
+            Context = null;
+        }
+
         protected override void Destroy()
         {
-            Initialized = false;
-            Context = null;
+            // If this instance is destroyed and not unload, force an unload before destryoing it completely
+            if (Context != null)
+            {
+                Unload();
+            }
 
             base.Destroy();
         }
