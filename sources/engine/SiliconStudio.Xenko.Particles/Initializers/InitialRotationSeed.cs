@@ -7,35 +7,28 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
+    /// <summary>
+    /// The <see cref="InitialRotationSeed"/> is an initializer which sets the particle's rotation around the Z axis in clip space (camera-facing)
+    /// </summary>
     [DataContract("InitialRotationSeed")]
     [Display("Initial Rotation")]
     public class InitialRotationSeed : ParticleInitializer
     {
+        private Vector2 angularRotation = new Vector2(-60f, 60f);
+        private float angularRotationStart = MathUtil.DegreesToRadians(-60f);
+        private float angularRotationStep = MathUtil.DegreesToRadians(120);
+
+
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
         public InitialRotationSeed()
         {
             RequiredFields.Add(ParticleFields.Angle);
             RequiredFields.Add(ParticleFields.RandomSeed);
         }
 
-        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
-        {
-            if (!pool.FieldExists(ParticleFields.Angle) || !pool.FieldExists(ParticleFields.RandomSeed))
-                return;
 
-            var rotField = pool.GetField(ParticleFields.Angle);
-            var rndField = pool.GetField(ParticleFields.RandomSeed);
-
-            var i = startIdx;
-            while (i != endIdx)
-            {
-                var particle = pool.FromIndex(i);
-                var randSeed = particle.Get(rndField);
-
-                (*((float*)particle[rotField])) = angularRotationStart + angularRotationStep * randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
-
-                i = (i + 1) % maxCapacity;
-            }
-        }
 
         /// <summary>
         /// The seed offset used to match or separate random values
@@ -55,39 +48,40 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(30)]
         [Display("Angle (degrees) min")]
-        public float AngularRotationMin
+        public Vector2 AngularRotation
         {
-            get { return angularRotationMin; }
+            get { return angularRotation; }
             set
             {
-                angularRotationMin = value;
-                angularRotationStart = MathUtil.DegreesToRadians(angularRotationMin);
-                angularRotationStep  = MathUtil.DegreesToRadians(angularRotationMax - angularRotationMin);
+                angularRotation = value;
+                angularRotationStart = MathUtil.DegreesToRadians(angularRotation.X);
+                angularRotationStep = MathUtil.DegreesToRadians(angularRotation.Y - angularRotation.X);
             }
         }
 
-        /// <summary>
-        /// Angular rotation in degrees, positive value means clockwise
-        /// </summary>
-        /// <userdoc>
-        /// Angular rotation in degrees, positive value means clockwise
-        /// </userdoc>
-        [DataMember(40)]
-        [Display("Angle (degrees) max")]
-        public float AngularRotationMax
+
+
+        /// <inheritdoc />
+        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
-            get { return angularRotationMax; }
-            set
+            if (!pool.FieldExists(ParticleFields.Angle) || !pool.FieldExists(ParticleFields.RandomSeed))
+                return;
+
+            var rotField = pool.GetField(ParticleFields.Angle);
+            var rndField = pool.GetField(ParticleFields.RandomSeed);
+
+            var i = startIdx;
+            while (i != endIdx)
             {
-                angularRotationMax = value;
-                angularRotationStart = MathUtil.DegreesToRadians(angularRotationMin);
-                angularRotationStep  = MathUtil.DegreesToRadians(angularRotationMax - angularRotationMin);
+                var particle = pool.FromIndex(i);
+                var randSeed = particle.Get(rndField);
+
+                (*((float*)particle[rotField])) = angularRotationStart + angularRotationStep * randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
+
+                i = (i + 1) % maxCapacity;
             }
         }
-
-        private float angularRotationMin = -60f;
-        private float angularRotationMax = 60f;
-        private float angularRotationStart = MathUtil.DegreesToRadians(-60f);
-        private float angularRotationStep  = MathUtil.DegreesToRadians(120);
+        
+        
     }
 }
