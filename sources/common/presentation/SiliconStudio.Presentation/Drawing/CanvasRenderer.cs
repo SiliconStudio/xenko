@@ -38,22 +38,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation
 {
-    [Serializable]
-    public enum TextMeasurementMethod
-    {
-        /// <summary>
-        /// Measurement by TextBlock.
-        /// </summary>
-        TextBlock,
-
-        /// <summary>
-        /// Measurement by glyph typeface.
-        /// </summary>
-        GlyphTypeface
-    }
+    using Color = SiliconStudio.Core.Mathematics.Color;
 
     public class CanvasRenderer : IDrawingContext
     {
@@ -653,9 +642,9 @@ namespace SiliconStudio.Presentation
             Brush brush;
             if (!cachedBrushes.TryGetValue(color, out brush))
             {
-                brush = new SolidColorBrush(color);
+                brush = new SolidColorBrush(color.ToSystemColor());
                 if (brush.CanFreeze)
-                    brush.Freeze(); // Should improve rendering performance
+                    brush.Freeze(); // Freezing should improve rendering performance
                 cachedBrushes.Add(color, brush);
             }
 
