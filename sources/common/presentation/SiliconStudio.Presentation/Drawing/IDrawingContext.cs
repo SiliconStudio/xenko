@@ -7,6 +7,8 @@ using System.Windows.Media;
 
 namespace SiliconStudio.Presentation
 {
+    using Color = SiliconStudio.Core.Mathematics.Color;
+
     public interface IDrawingContext
     {
         /// <summary>

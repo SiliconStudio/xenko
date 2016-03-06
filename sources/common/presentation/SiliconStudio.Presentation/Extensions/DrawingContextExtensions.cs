@@ -6,6 +6,8 @@ using System.Windows.Media;
 
 namespace SiliconStudio.Presentation.Extensions
 {
+    using Color = SiliconStudio.Core.Mathematics.Color;
+
     public static class DrawingContextExtensions
     {
         /// <summary>
