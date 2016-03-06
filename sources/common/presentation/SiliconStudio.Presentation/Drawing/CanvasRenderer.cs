@@ -55,7 +55,7 @@ namespace SiliconStudio.Presentation
         GlyphTypeface
     }
 
-    public class CanvasRenderer
+    public class CanvasRenderer : IDrawingContext
     {
         private readonly Dictionary<Color, Brush> cachedBrushes = new Dictionary<Color, Brush>();
         private const int MaxPolylinesPerLine = 64;
