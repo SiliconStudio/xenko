@@ -65,6 +65,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Data\Configurations.cs" />
     <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
     <Compile Include="Data\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Effects\ParameterKeyValueMetadata.cs" />
     <Compile Include="Effects\ParameterKeys.cs" />
     <Compile Include="Effects\ParameterKeySerializer.cs" />
+    <Compile Include="Data\PlatformConfigurations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

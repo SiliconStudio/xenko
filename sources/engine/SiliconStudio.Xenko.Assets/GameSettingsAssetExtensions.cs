@@ -1,3 +1,4 @@
+using NuGet;
 using SiliconStudio.Assets;
 
 namespace SiliconStudio.Xenko.Assets
@@ -12,6 +13,10 @@ namespace SiliconStudio.Xenko.Assets
         public static GameSettingsAsset GetGameSettingsAsset(this Package package)
         {
             var gameSettingsAsset = package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+            if (gameSettingsAsset == null && package.TemporaryAssets.Count > 0)
+            {
+                gameSettingsAsset = package.TemporaryAssets.Find(x => x.Location == GameSettingsAsset.GameSettingsLocation);
+            }
             return gameSettingsAsset?.Asset as GameSettingsAsset;
         }
 
