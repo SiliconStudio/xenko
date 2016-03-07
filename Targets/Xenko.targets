@@ -200,7 +200,7 @@
     <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioXenkoCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
   </PropertyGroup>
   
-  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioCurrentPackagePath)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Assets\Shared\GameSettings.xkgamesettings" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     
