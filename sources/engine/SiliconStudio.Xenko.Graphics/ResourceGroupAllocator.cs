@@ -117,6 +117,7 @@ namespace SiliconStudio.Xenko.Graphics
                     new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 16384),
                     new DescriptorTypeCount(EffectParameterClass.ShaderResourceView, 65536),
                     new DescriptorTypeCount(EffectParameterClass.UnorderedAccessView, 4096),
+                    new DescriptorTypeCount(EffectParameterClass.Sampler, 16384),
                 }));
             }
             else

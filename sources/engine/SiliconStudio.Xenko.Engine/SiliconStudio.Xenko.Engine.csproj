@@ -31,14 +31,10 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI">
       <SpecificVersion>False</SpecificVersion>
@@ -51,6 +47,14 @@
     <Reference Include="SharpDX.DXGI">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D12" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

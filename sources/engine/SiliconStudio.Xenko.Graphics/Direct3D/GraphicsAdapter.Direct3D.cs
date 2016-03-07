@@ -113,7 +113,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>true if the profile is supported</returns>
         public bool IsProfileSupported(GraphicsProfile graphicsProfile)
         {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            // TODO D3D12
+            return true;
+#else
             return SharpDX.Direct3D11.Device.IsSupportedFeatureLevel(this.NativeAdapter, (SharpDX.Direct3D.FeatureLevel)graphicsProfile);
+#endif
         }
     }
 } 

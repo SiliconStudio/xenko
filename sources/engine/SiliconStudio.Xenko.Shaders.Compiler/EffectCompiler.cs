@@ -108,6 +108,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11", 1);
                     break;
+                case GraphicsPlatform.Direct3D12:
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12", 1);
+                    break;
                 case GraphicsPlatform.OpenGL:
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL", 1);
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE", 1);
@@ -190,6 +194,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
+                case GraphicsPlatform.Direct3D12:
                     compiler = new Direct3D.ShaderCompiler();
                     break;
 #endif

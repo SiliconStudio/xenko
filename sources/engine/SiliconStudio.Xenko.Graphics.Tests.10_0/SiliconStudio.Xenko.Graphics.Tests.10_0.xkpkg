@@ -65,6 +65,7 @@ RootAssets:
     - 12fde36c-d5d6-4ead-b472-5d088d319b8c:BasicMaterial
     - 30f8ca08-885b-417c-9d49-c0d315b2b3ec:Material1
     - 7e5ae8dc-6417-40b8-a3d6-4f019fd7cc28:HdrTexture
+    - 878181e4-ed39-495f-8f1d-e586e650cc82:Model2
     - 879181e4-ed39-495f-8f1d-e586e650cc82:Model
     - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
     - b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene

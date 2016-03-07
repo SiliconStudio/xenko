@@ -253,14 +253,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (renderNode.RenderEffect.State != RenderEffectState.Normal)
                     continue;
 
-                PrepareLightParameterEntry(context, renderViewObjectInfo, renderNode.RenderEffect);
+                if (!PrepareLightParameterEntry(context, renderViewObjectInfo, renderNode.RenderEffect))
+                    continue;
 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderViewObjectInfo.ShaderPermutationEntry.Resources;
             }
         }
 
-        private unsafe void PrepareLightParameterEntry(RenderThreadContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
+        private unsafe bool PrepareLightParameterEntry(RenderThreadContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
         {
             var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
 
@@ -269,7 +270,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index];
                 if (resourceGroupDescription.DescriptorSetLayout == null)
-                    return;
+                    return false;
 
                 var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new ParameterCollectionLayout();
                 parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
@@ -295,7 +296,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Do we need to allocate resources?
             if (lightParameterEntry.LastFrameUsed == RenderSystem.FrameCounter)
-                return;
+                return true;
 
             lightParameterEntry.LastFrameUsed = RenderSystem.FrameCounter;
 
@@ -325,6 +326,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 fixed (byte* dataValues = parameters.DataValues)
                     Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
             }
+
+            return true;
         }
 
         protected void RegisterLightGroupRenderer(Type lightType, LightGroupRendererBase renderer)

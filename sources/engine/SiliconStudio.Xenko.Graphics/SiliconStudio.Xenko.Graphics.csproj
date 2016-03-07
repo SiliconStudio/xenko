@@ -42,7 +42,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -52,13 +52,27 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
         </Reference>
+        <Reference Include="SharpDX.DXGI">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
         <Reference Include="SharpDX.Direct3D11">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
         </Reference>
-        <Reference Include="SharpDX.DXGI">
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D12">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -142,6 +156,20 @@
     <Compile Include="DescriptorSetLayoutBuilder.cs" />
     <Compile Include="DescriptorSetLayoutEntry.cs" />
     <Compile Include="DescriptorTypeCount.cs" />
+    <Compile Include="Direct3D12\Buffer.Direct3D12.cs" />
+    <Compile Include="Direct3D12\CommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSet.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorPool.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSetLayout.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDevice.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDeviceFeatures.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsOutput.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResourceBase.Direct3D12.cs" />
+    <Compile Include="Direct3D12\MappedResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\PipelineState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\SamplerState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\Texture.Direct3D12.cs" />
     <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
     <Compile Include="EffectInstance.cs" />
     <Compile Include="EffectParameterUpdater.cs" />
@@ -174,6 +202,7 @@
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="ResourceGroup.cs" />
     <Compile Include="ResourceGroupLayout.cs" />
+    <Compile Include="ResourceStates.cs" />
     <Compile Include="RootSignature.cs" />
     <Compile Include="SDL\Application.cs" />
     <Compile Include="SDL\Cursor.cs" />
