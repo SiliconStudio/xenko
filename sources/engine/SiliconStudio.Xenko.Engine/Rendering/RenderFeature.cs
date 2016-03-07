@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Can perform much more work, even while game simulation keeps running.
+        /// Performs most of the work (computation and resource preparation). Later game simulation might be running during that step.
         /// </summary>
         /// <param name="context"></param>
         public virtual void Prepare(RenderThreadContext context)

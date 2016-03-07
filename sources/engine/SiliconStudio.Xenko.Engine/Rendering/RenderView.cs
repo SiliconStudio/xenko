@@ -86,5 +86,35 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return $"RenderView ({Features.Sum(x => x.ViewObjectNodes.Count)} objects, {Features.Sum(x => x.RenderNodes.Count)} render nodes, {RenderStages.Count} stages)";
         }
+
+        public void UpdateCameraToRenderView(RenderDrawContext context)
+        {
+            // TODO: Currently set up during BeforeExtract/Prepare/Draw. Should be initialized before
+            if (SceneCameraRenderer == null)
+                return;
+
+            Camera = SceneCameraSlotCollection.GetCamera(SceneCameraRenderer.Camera);
+
+            if (Camera == null)
+                return;
+
+            // Setup viewport size
+            var currentViewport = SceneCameraRenderer.ComputedViewport;
+            var aspectRatio = currentViewport.AspectRatio;
+
+            // Update the aspect ratio
+            if (Camera.UseCustomAspectRatio)
+            {
+                aspectRatio = Camera.AspectRatio;
+            }
+
+            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+            Camera.Update(aspectRatio);
+
+            View = Camera.ViewMatrix;
+            Projection = Camera.ProjectionMatrix;
+
+            Matrix.Multiply(ref View, ref Projection, out ViewProjection);
+        }
     }
 }
