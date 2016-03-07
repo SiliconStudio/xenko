@@ -29,11 +29,11 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
             base.Load(context);
 
-            var wireFrameRenderStage = context.RenderSystem.GetRenderStage("Wireframe");
+            var physicsDebugShapeRenderStage = context.RenderSystem.GetRenderStage("PhysicsDebugShape");
 
             RegisterPostProcessPipelineState((RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
-                if (renderNode.RenderStage == wireFrameRenderStage)
+                if (renderNode.RenderStage == physicsDebugShapeRenderStage)
                 {
                     pipelineState.RasterizerState = context.RenderContext.GraphicsDevice.RasterizerStates.Wireframe;
                 }
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
             RegisterRenderStageSelector(new SimpleGroupToRenderStageSelector
             {
                 EffectName = MeshPipelinePlugin.DefaultEffectName,
-                RenderStage = wireFrameRenderStage,
+                RenderStage = physicsDebugShapeRenderStage,
             });
         }
     }
@@ -52,18 +52,18 @@ namespace SiliconStudio.Xenko.Physics.Engine
     public class PhysicsDebugCameraRendererMode : CameraRenderModeBase
     {
         [DataMemberIgnore]
-        public RenderStage WireframeRenderStage { get; set; }
+        public RenderStage PhysicsDebugShapeRenderStage { get; set; }
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            if (WireframeRenderStage == null)
-                WireframeRenderStage = RenderSystem.GetOrCreateRenderStage("Wireframe", "Wireframe", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
+            if (PhysicsDebugShapeRenderStage == null)
+                PhysicsDebugShapeRenderStage = RenderSystem.GetOrCreateRenderStage("PhysicsDebugShape", "PhysicsDebugShape", new RenderOutputDescription(PixelFormat.R32G32B32A32_Float, PixelFormat.D24_UNorm_S8_UInt));
 
-            if (WireframeRenderStage != null)
+            if (PhysicsDebugShapeRenderStage != null)
             {
-                MainRenderView.RenderStages.Add(WireframeRenderStage);
+                MainRenderView.RenderStages.Add(PhysicsDebugShapeRenderStage);
             }
 
             RenderSystem.PipelinePlugins.InstantiatePlugin<PhysicsDebugPipelinePlugin>();
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
             var renderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
             context.CommandList.Clear(renderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer);
-            RenderSystem.Draw(context, MainRenderView, WireframeRenderStage);
+            RenderSystem.Draw(context, MainRenderView, PhysicsDebugShapeRenderStage);
         }
     }
 }
