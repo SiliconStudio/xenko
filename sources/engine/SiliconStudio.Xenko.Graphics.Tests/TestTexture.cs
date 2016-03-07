@@ -437,9 +437,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
                             texture = Texture.Load(device, inStream, loadAsSRGB: true);
                         
-                        // TODO GRAPHICS REFACTOR
-                        //game.GraphicsDevice.SetBlendState(game.GraphicsDevice.BlendStates.AlphaBlend);
-                        game.GraphicsContext.DrawTexture(texture);
+                        game.GraphicsContext.DrawTexture(texture, game.GraphicsDevice.BlendStates.AlphaBlend);
                     },
                     GraphicsProfile.Level_9_1,
                     sourceFormat.ToString());

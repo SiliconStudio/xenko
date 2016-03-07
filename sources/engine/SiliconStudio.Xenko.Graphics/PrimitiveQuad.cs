@@ -75,9 +75,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="texture">The texture.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void Draw(GraphicsContext graphicsContext, Texture texture, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, BlendStateDescription? blendState = null)
         {
-            Draw(graphicsContext, texture, null, Color.White, applyEffectStates);
+            Draw(graphicsContext, texture, null, Color.White, blendState);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
-        public void Draw(GraphicsContext graphicsContext, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, SamplerState samplerState, Color4 color, BlendStateDescription? blendState = null)
         {
             // Make sure that we are using our vertex shader
             simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
@@ -96,6 +96,7 @@ namespace SiliconStudio.Xenko.Graphics
             simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
             simpleEffect.Apply(graphicsContext);
 
+            pipelineState.State.BlendState = blendState ?? graphicsContext.CommandList.GraphicsDevice.BlendStates.Default;
             pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
             pipelineState.Update(GraphicsDevice);
             graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);

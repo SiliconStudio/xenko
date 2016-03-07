@@ -45,9 +45,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, bool applyEffectStates = false)
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, BlendStateDescription? blendState = null)
         {
-            graphicsContext.DrawTexture(texture, null, Color4.White, applyEffectStates);
+            graphicsContext.DrawTexture(texture, null, Color4.White, blendState);
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="sampler">The sampler.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, SamplerState sampler, bool applyEffectStates = false)
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, SamplerState sampler, BlendStateDescription? blendState = null)
         {
-            graphicsContext.DrawTexture(texture, sampler, Color4.White, applyEffectStates);
+            graphicsContext.DrawTexture(texture, sampler, Color4.White, blendState);
         }
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, Color4 color, bool applyEffectStates = false)
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, Color4 color, BlendStateDescription? blendState = null)
         {
-            graphicsContext.DrawTexture(texture, null, color, applyEffectStates);
+            graphicsContext.DrawTexture(texture, null, color, blendState);
         }
 
         /// <summary>
@@ -81,9 +81,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sampler">The sampler.</param>
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, SamplerState sampler, Color4 color, bool applyEffectStates = false)
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, SamplerState sampler, Color4 color, BlendStateDescription? blendState = null)
         {
-            graphicsContext.CommandList.GraphicsDevice.PrimitiveQuad.Draw(graphicsContext, texture, sampler, color, applyEffectStates);
+            graphicsContext.CommandList.GraphicsDevice.PrimitiveQuad.Draw(graphicsContext, texture, sampler, color, blendState);
         }
         #endregion
 
