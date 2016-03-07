@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         {
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.RandomSeed);
-
-            InheritLocation = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
