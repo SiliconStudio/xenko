@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Presentation
+namespace SiliconStudio.Presentation.Drawing
 {
     [Serializable]
     public enum TextMeasurementMethod

@@ -40,7 +40,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using SiliconStudio.Presentation.Extensions;
 
-namespace SiliconStudio.Presentation
+namespace SiliconStudio.Presentation.Drawing
 {
     using Color = SiliconStudio.Core.Mathematics.Color;
 
