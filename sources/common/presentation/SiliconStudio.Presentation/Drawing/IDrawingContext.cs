@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 
-namespace SiliconStudio.Presentation
+namespace SiliconStudio.Presentation.Drawing
 {
     using Color = SiliconStudio.Core.Mathematics.Color;
 
