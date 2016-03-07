@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.Collections
     /// <typeparam name="T"></typeparam>
     public abstract class KeyedSortedList<TKey, T> : ICollection<T>, ICollection
     {
+        private readonly object syncRoot = new object();
         private readonly IComparer<TKey> comparer;
         protected FastListStruct<T> Items = new FastListStruct<T>(1);
 
@@ -170,7 +171,7 @@ namespace SiliconStudio.Core.Collections
         public int Count => Items.Count;
 
         /// <inheritdoc/>
-        object ICollection.SyncRoot => Items.Items.SyncRoot;
+        object ICollection.SyncRoot => this;
 
         /// <inheritdoc/>
         bool ICollection.IsSynchronized => false;
