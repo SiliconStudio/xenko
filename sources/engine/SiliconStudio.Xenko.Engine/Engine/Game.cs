@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -220,16 +219,19 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
+                var renderingSettings = new RenderingSettings();
                 if (Content.Exists(GameSettings.AssetUrl))
                 {
                     Settings = Content.Load<GameSettings>(GameSettings.AssetUrl);
 
+                    renderingSettings = Settings.Configurations.Get<RenderingSettings>();
+
                     // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
-                    if (Settings.DefaultGraphicsProfileUsed > 0)
+                    if (renderingSettings.DefaultGraphicsProfile > 0)
                     {
                         var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                         if (!deviceManager.ShaderProfile.HasValue)
-                            deviceManager.ShaderProfile = Settings.DefaultGraphicsProfileUsed;
+                            deviceManager.ShaderProfile = renderingSettings.DefaultGraphicsProfile;
                     }
                 }
 
@@ -237,14 +239,14 @@ namespace SiliconStudio.Xenko.Engine
                 if (AutoLoadDefaultSettings)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (Settings.DefaultGraphicsProfileUsed > 0)
+                    if (renderingSettings.DefaultGraphicsProfile > 0)
                     {
-                        deviceManager.PreferredGraphicsProfile = new[] { Settings.DefaultGraphicsProfileUsed };
+                        deviceManager.PreferredGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
                     }
-                    if (Settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = Settings.DefaultBackBufferWidth;
-                    if (Settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = Settings.DefaultBackBufferHeight;
-                    deviceManager.PreferredColorSpace = Settings.ColorSpace;
-                    SceneSystem.InitialSceneUrl = Settings.DefaultSceneUrl;
+                    if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
+                    if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
+                    deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
+                    SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                 }
             }
         }
@@ -252,6 +254,16 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Initialize()
         {
             base.Initialize();
+
+            //now we probably are capable of detecting the gpu so we try again settings
+            var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+            if (renderingSettings != null)
+            {
+                var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+            }
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important

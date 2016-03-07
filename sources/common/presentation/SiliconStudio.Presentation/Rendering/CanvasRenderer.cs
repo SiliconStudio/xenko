@@ -31,7 +31,9 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -39,6 +41,20 @@ using System.Windows.Shapes;
 
 namespace SiliconStudio.Presentation
 {
+    [Serializable]
+    public enum TextMeasurementMethod
+    {
+        /// <summary>
+        /// Measurement by TextBlock.
+        /// </summary>
+        TextBlock,
+
+        /// <summary>
+        /// Measurement by glyph typeface.
+        /// </summary>
+        GlyphTypeface
+    }
+
     public class CanvasRenderer
     {
         private readonly Dictionary<Color, Brush> cachedBrushes = new Dictionary<Color, Brush>();
@@ -108,6 +124,39 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Draws a collection of ellipses, where all have the same visual appearance (stroke, fill, etc.).
+        /// </summary>
+        /// <remarks>
+        /// This performs better than calling <see cref="DrawEllipse"/> multiple times.
+        /// </remarks>
+        /// <param name="points"></param>
+        /// <param name="radiusX">The horizontal radius of the ellipse.</param>
+        /// <param name="radiusY">The vertical radius of the ellipse.</param>
+        /// <param name="fillColor">The color of the shape's interior.</param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        public void DrawEllipses(IList<Point> points, double radiusX, double radiusY, Color fillColor, Color strokeColor,
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+        {
+            if (points == null) throw new ArgumentNullException(nameof(points));
+            if (points.Count == 0)
+                return;
+
+            var geometry = new GeometryGroup { FillRule = FillRule.Nonzero };
+            foreach (var point in points)
+            {
+                geometry.Children.Add(new EllipseGeometry(point, radiusX, radiusY));
+            }
+            var path = Create<Path>();
+            path.Fill = GetBrush(fillColor);
+            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
+            path.Data = geometry;
+        }
+
+        /// <summary>
         /// Draws a straight line between <paramref name="p1"/> and <paramref name="p2"/>.
         /// </summary>
         /// <param name="p1"></param>
@@ -164,7 +213,7 @@ namespace SiliconStudio.Presentation
                 {
                     IsSmoothJoin = false,
                     IsStroked = true,
-                    Point = aliased ? ToPixelAlignedPoint(points[i+1]) : points[i + 1],
+                    Point = aliased ? ToPixelAlignedPoint(points[i + 1]) : points[i + 1],
                 };
                 figure.Segments.Add(segment);
                 pathGeometry.Figures.Add(figure);
@@ -186,7 +235,7 @@ namespace SiliconStudio.Presentation
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         /// <param name="aliased"></param>
-        public void DrawPolygon(ICollection<Point> points, Color fillColor, Color strokeColor,
+        public void DrawPolygon(IList<Point> points, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
         {
             var polygon = Create<Polygon>();
@@ -290,29 +339,167 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Draws a collection of texts where all have the same visual appearance (color, font, alignment).
+        /// </summary>
+        /// <remarks>
+        /// This performs better than calling <see cref="DrawText"/> multiple times.
+        /// </remarks>
+        /// <param name="points"></param>
+        /// <param name="color"></param>
+        /// <param name="texts"></param>
+        /// <param name="fontFamily"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="fontWeight"></param>
+        /// <param name="hAlign"></param>
+        /// <param name="vAlign"></param>
+        public void DrawTexts(IList<Point> points, Color color, IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
+        {
+            if (points == null) throw new ArgumentNullException(nameof(points));
+            if (texts == null) throw new ArgumentNullException(nameof(texts));
+
+            if (points.Count != texts.Count) throw new ArgumentException($"{nameof(points)} and {nameof(texts)} must have the same number of elements.");
+
+            var brush = GetBrush(color);
+            var typeFace = new Typeface(fontFamily, FontStyles.Normal, fontWeight, FontStretches.Normal);
+
+            var visual = new DrawingVisual();
+            var context = visual.RenderOpen();
+            for (var i = 0; i < points.Count; ++i)
+            {
+                var text = texts[i];
+                var point = points[i];
+                var formatted = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, fontSize, brush);
+                var dx = 0.0;
+                var dy = 0.0;
+                if (hAlign != HorizontalAlignment.Left || vAlign != VerticalAlignment.Top)
+                {
+                    var size = new Size(formatted.Width, formatted.Height);
+                    if (hAlign == HorizontalAlignment.Center)
+                        dx = -size.Width / 2;
+
+                    if (hAlign == HorizontalAlignment.Right)
+                        dx = -size.Width;
+
+                    if (vAlign == VerticalAlignment.Center)
+                        dy = -size.Height / 2;
+
+                    if (vAlign == VerticalAlignment.Bottom)
+                        dy = -size.Height;
+                }
+                point.Offset(dx, dy);
+                context.DrawText(formatted, point);
+            }
+            context.Close();
+
+            var host = Create<VisualHost>();
+            host.AddChild(visual);
+        }
+
+        /// <summary>
         /// Measures the size of the specified text.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <param name="fontFamily">The font family.</param>
         /// <param name="fontSize">Size of the font.</param>
         /// <param name="fontWeight">The font weight.</param>
+        /// <param name="measurementMethod"></param>
         /// <returns>
         /// The size of the text (in device independent units, 1/96 inch).
         /// </returns>
-        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface)
         {
             if (string.IsNullOrEmpty(text))
                 return Size.Empty;
 
-            var textBlock = new TextBlock
+            switch (measurementMethod)
             {
-                FontFamily = fontFamily,
-                FontSize = fontSize,
-                FontWeight = fontWeight,
-                Text = text,
-            };
-            textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
+                case TextMeasurementMethod.GlyphTypeface:
+                    GlyphTypeface glyphTypeface;
+                    if (TryGetGlyphTypeface(fontFamily, FontStyles.Normal, fontWeight, FontStretches.Normal, out glyphTypeface))
+                        return MeasureTextSize(glyphTypeface, fontSize, text);
+                    // Fallback to TextBlock measurement method
+                    goto case TextMeasurementMethod.TextBlock;
+
+                case TextMeasurementMethod.TextBlock:
+                    var textBlock = new TextBlock
+                    {
+                        FontFamily = fontFamily,
+                        FontSize = fontSize,
+                        FontWeight = fontWeight,
+                        Text = text,
+                    };
+                    textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(measurementMethod));
+            }
+        }
+
+        /// <summary>
+        /// Measures the size of the specified texts where all have the same visual appearance (color, font, alignment) and returns the maximum.
+        /// </summary>
+        /// <remarks>
+        /// This performs better than calling <see cref="MeasureText"/> multiple times.
+        /// </remarks>
+        /// <param name="texts">The texts.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <param name="measurementMethod"></param>
+        /// <returns>
+        /// The maximum size of the texts (in device independent units, 1/96 inch).
+        /// </returns>
+        public Size MeasureTexts(IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+            TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface)
+        {
+            if (texts == null) throw new ArgumentNullException(nameof(texts));
+
+            var maxWidth = 0.0;
+            var maxHeight = 0.0;
+            TextBlock textBlock = null;
+            for (var i = 0; i < texts.Count; ++i)
+            {
+                var text = texts[i];
+                Size size;
+                switch (measurementMethod)
+                {
+                    case TextMeasurementMethod.GlyphTypeface:
+                        GlyphTypeface glyphTypeface;
+                        if (TryGetGlyphTypeface(fontFamily, FontStyles.Normal, fontWeight, FontStretches.Normal, out glyphTypeface))
+                        {
+                            size = MeasureTextSize(glyphTypeface, fontSize, text);
+                            break;
+                        }
+                        // Fallback to TextBlock measurement method
+                        goto case TextMeasurementMethod.TextBlock;
+
+                    case TextMeasurementMethod.TextBlock:
+                        if (textBlock == null)
+                        {
+                            textBlock = new TextBlock
+                            {
+                                FontFamily = fontFamily,
+                                FontSize = fontSize,
+                                FontWeight = fontWeight,
+                            };
+                        }
+                        textBlock.Text = text;
+                        textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                        size = textBlock.DesiredSize;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(measurementMethod));
+                }
+                if (size.Width > maxWidth)
+                    maxWidth = size.Width;
+                if (size.Height > maxHeight)
+                    maxHeight = size.Height;
+            }
+            return new Size(maxWidth, maxHeight);
         }
 
         /// <summary>
@@ -494,6 +681,50 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Fast text size calculation.
+        /// </summary>
+        /// <param name="glyphTypeface">The glyph typeface.</param>
+        /// <param name="sizeInEm">The size.</param>
+        /// <param name="text">The text.</param>
+        /// <returns>The text size.</returns>
+        private static Size MeasureTextSize(GlyphTypeface glyphTypeface, double sizeInEm, string text)
+        {
+            double width = 0;
+            double lineWidth = 0;
+            var lines = 0;
+            foreach (var ch in text)
+            {
+                switch (ch)
+                {
+                    case '\n':
+                        lines++;
+                        if (lineWidth > width)
+                        {
+                            width = lineWidth;
+                        }
+
+                        lineWidth = 0;
+                        continue;
+
+                    case '\t':
+                        continue;
+                }
+
+                var glyph = glyphTypeface.CharacterToGlyphMap[ch];
+                var advanceWidth = glyphTypeface.AdvanceWidths[glyph];
+                lineWidth += advanceWidth;
+            }
+
+            lines++;
+            if (lineWidth > width)
+            {
+                width = lineWidth;
+            }
+
+            return new Size(Math.Round(width*sizeInEm, 2), Math.Round(lines*glyphTypeface.Height*sizeInEm, 2));
+        }
+
+        /// <summary>
         /// Converts a <see cref="Point" /> to a pixel aligned<see cref="Point" />.
         /// </summary>
         /// <param name="point">The point.</param>
@@ -514,6 +745,13 @@ namespace SiliconStudio.Presentation
         private static PointCollection ToPointCollection(IEnumerable<Point> points, bool aliased)
         {
             return new PointCollection(aliased ? points.Select(ToPixelAlignedPoint) : points);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool TryGetGlyphTypeface(FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, out GlyphTypeface glyphTypeface)
+        {
+            var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
+            return typeface.TryGetGlyphTypeface(out glyphTypeface);
         }
     }
 }

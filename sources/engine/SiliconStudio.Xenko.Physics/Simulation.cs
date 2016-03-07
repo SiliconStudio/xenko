@@ -63,26 +63,24 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public static OnSimulationCreationDelegate OnSimulationCreation;
 
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
         /// <param name="processor"></param>
-        /// <param name="flags">The flags.</param>
+        /// <param name="configuration"></param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        internal Simulation(PhysicsProcessor processor, PhysicsEngineFlags flags = PhysicsEngineFlags.None)
+        internal Simulation(PhysicsProcessor processor, PhysicsSettings configuration)
         {
             this.processor = processor;
 
-            if (flags == PhysicsEngineFlags.None)
+            if (configuration.Flags == PhysicsEngineFlags.None)
             {
-                if (OnSimulationCreation != null)
-                {
-                    flags = OnSimulationCreation();
-                }
+                configuration.Flags = OnSimulationCreation?.Invoke() ?? configuration.Flags;              
             }
 
-            MaxSubSteps = 1;
-            FixedTimeStep = 1.0f / 60.0f;
+            MaxSubSteps = configuration.MaxSubSteps;
+            FixedTimeStep = configuration.FixedTimeStep;
 
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
@@ -105,11 +103,11 @@ namespace SiliconStudio.Xenko.Physics
             //default solver
             var solver = new BulletSharp.SequentialImpulseConstraintSolver();
 
-            if (flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
+            if (configuration.Flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
             {
                 collisionWorld = new BulletSharp.CollisionWorld(dispatcher, broadphase, collisionConfiguration);
             }
-            else if (flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
+            else if (configuration.Flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
             {
                 //mSoftRigidDynamicsWorld = new BulletSharp.SoftBody.SoftRigidDynamicsWorld(mDispatcher, mBroadphase, solver, mCollisionConf);
                 //mDiscreteDynamicsWorld = mSoftRigidDynamicsWorld;
@@ -129,7 +127,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 solverInfo.SolverMode |= BulletSharp.SolverModes.CacheFriendly; //todo test if helps with performance or not
 
-                if (flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
+                if (configuration.Flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
                 {
                     CanCcd = true;
                     solverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
@@ -306,12 +304,8 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private uint eventFrame;
-
         internal void SendEvents()
         {
-            ++eventFrame;
-
             foreach (var collision in newCollisionsCache)
             {
                 while (collision.ColliderA.NewPairChannel.Balance < 0)

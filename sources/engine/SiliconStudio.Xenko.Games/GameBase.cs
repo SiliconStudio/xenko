@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
@@ -326,6 +325,11 @@ namespace SiliconStudio.Xenko.Games
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets the full name of the device this game is running if available
+        /// </summary>
+        public string FullPlatformName => gamePlatform.FullName;
 
         public GameState State { get; set; }
         
