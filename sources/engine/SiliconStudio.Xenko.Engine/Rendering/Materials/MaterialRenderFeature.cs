@@ -24,13 +24,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         // Material instantiated
         private readonly Dictionary<Material, MaterialInfo> allMaterialInfos = new Dictionary<Material, MaterialInfo>();
 
-        /// <summary>
-        /// Custom extra info that we want to store per material.
-        /// </summary>
-        internal class MaterialInfo
+        public class MaterialInfoBase
         {
-            public Material Material;
-
             public int LastFrameUsed;
 
             // Any matching effect
@@ -44,6 +39,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public ResourceGroup Resources = new ResourceGroup();
             public int ResourceCount;
             public ShaderConstantBufferDescription ConstantBufferReflection;
+        }
+
+        /// <summary>
+        /// Custom extra info that we want to store per material.
+        /// </summary>
+        internal class MaterialInfo : MaterialInfoBase
+        {
+            public Material Material;
 
             // Permutation parameters
             public int PermutationCounter; // Dirty counter against material.Parameters.PermutationCounter
@@ -177,27 +180,28 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var materialInfo = renderMesh.MaterialInfo;
                 var materialParameters = material.Parameters;
 
-                UpdateMaterial(context, materialInfo, renderNode.RenderEffect, materialParameters);
+                if (!UpdateMaterial(RenderSystem, context, materialInfo, perMaterialDescriptorSetSlot.Index, renderNode.RenderEffect, materialParameters))
+                    continue;
 
                 var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
             }
         }
 
-        private unsafe void UpdateMaterial(RenderThreadContext context, MaterialInfo materialInfo, RenderEffect renderEffect, ParameterCollection materialParameters)
+        public static unsafe bool UpdateMaterial(NextGenRenderSystem renderSystem, RenderThreadContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
-            if (materialInfo.LastFrameUsed == RenderSystem.FrameCounter)
-                return;
+            if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
+                return true;
 
             // First time we use the material with a valid effect, let's update layouts
-            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index].Hash)
+            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
             {
-                var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index];
+                var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
                 if (resourceGroupDescription.DescriptorSetLayout == null)
-                    return;
+                    return false;
 
-                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
+                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
 
                 var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
                 parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
@@ -215,7 +219,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
 
             // Mark this material as used during this frame
-            materialInfo.LastFrameUsed = RenderSystem.FrameCounter;
+            materialInfo.LastFrameUsed = renderSystem.FrameCounter;
 
             // Copy back to ParameterCollection
             // TODO GRAPHICS REFACTOR directly copy to resource group?
@@ -237,6 +241,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 fixed (byte* dataValues = materialInfo.ParameterCollection.DataValues)
                     Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, materialInfo.Resources.ConstantBuffer.Size);
             }
+
+            return true;
         }
     }
 }

@@ -23,9 +23,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         public readonly ParameterCollection Parameters = new ParameterCollection();
 
-        [DataMemberIgnore]
-        public object RenderData;
-
         /// <summary>
         /// True if <see cref="InitializeCore"/> has been called
         /// </summary>
@@ -80,6 +77,15 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 InitializeCore(context);
                 IsInitialized = true;
             }          
+        }
+
+        /// <summary>
+        /// Setup the pipeline state object.
+        /// </summary>
+        /// <param name="renderContext"></param>
+        /// <param name="pipelineState"></param>
+        public virtual void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)
+        {
         }
 
         /// <summary>
