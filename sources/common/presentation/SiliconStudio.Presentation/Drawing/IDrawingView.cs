@@ -6,9 +6,14 @@ namespace SiliconStudio.Presentation.Drawing
     public interface IDrawingView
     {
         /// <summary>
-        /// Gets or sets the model.
+        /// Gets the controller.
         /// </summary>
-        IDrawingModel Model { get; set; }
+        IDrawingController Controller { get; }
+
+        /// <summary>
+        /// Gets the model.
+        /// </summary>
+        IDrawingModel Model { get; }
         
         /// <summary>
         /// Invalidates the drawing (not blocking the UI thread)
