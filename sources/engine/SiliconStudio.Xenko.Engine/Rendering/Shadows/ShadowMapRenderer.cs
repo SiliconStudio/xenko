@@ -81,6 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Cleanup previous shadow render views
             foreach (var shadowRenderView in shadowRenderViews)
                 RenderSystem.Views.Remove(shadowRenderView);
+            shadowRenderViews.Clear();
 
             // Clear currently associated shadows
             shadowMapTextures.Clear();
