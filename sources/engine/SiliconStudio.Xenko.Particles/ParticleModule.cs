@@ -10,21 +10,13 @@ using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles
 {
-    [Flags]
-    public enum InheritLocation
-    {
-        Position = 1,
-        Rotation = 2,
-        Scale = 4,
-    }
-
     /// <summary>
     /// The <see cref="ParticleModule"/> is a base class for all plugins (initializers and updaters) used by the emitter
     /// Each plugin operates over one or several <see cref="ParticleFields"/> updating or setting up the particle state
     /// Additionally, each plugin can inherit some properties from the parent particle system, which are usually passed by the user.
     /// </summary>
     [DataContract("PaticleModule")]
-    public abstract class ParticleModule
+    public abstract class ParticleModule : ParticleTransform
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleModule"/> is enabled.
@@ -66,25 +58,6 @@ namespace SiliconStudio.Xenko.Particles
         public List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
 
         /// <summary>
-        /// Note on inheritance. The current values only change once per frame, when the SetParentTrs is called. 
-        /// This is intentional and reduces overhead, because SetParentTrs is called exactly once/turn.
-        /// </summary>
-        [DataMember(1)]
-        [Display("Inheritance")]
-        public InheritLocation InheritLocation { get; set; } = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
-
-        [DataMember(5)]
-        [Display("Offset")]
-        public ParticleLocator ParticleLocator { get; set; } = new ParticleLocator();
-
-        [DataMemberIgnore]
-        public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
-        [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
-        [DataMemberIgnore]
-        public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);
-
-        /// <summary>
         /// Sets the parent (particle system's) translation, rotation and scale (uniform)
         /// The module can choose to inherit, use or ignore any of the elements
         /// </summary>
@@ -93,22 +66,10 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="scale">Particle System's uniform scale (from the Transform component)</param>
         public virtual void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
         {
-            var hasPos = InheritLocation.HasFlag(InheritLocation.Position);
-            var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
-            var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
+            var parent = new ParticleTransform() { Position = translation, Rotation = rotation, Scale = new Vector3(scale) };
+            parent.SetParentTransform(null); // Update the world transforms
 
-            WorldScale = (hasScl) ? ParticleLocator.Scale * scale : ParticleLocator.Scale;
-
-            WorldRotation = (hasRot) ? ParticleLocator.Rotation * rotation : ParticleLocator.Rotation;
-
-            var offsetTranslation = ParticleLocator.Translation * ((hasScl) ? scale : 1f);
-
-            if (hasRot)
-            {
-                rotation.Rotate(ref offsetTranslation);
-            }
-
-            WorldPosition = (hasPos) ? translation + offsetTranslation : offsetTranslation;
+            SetParentTransform(parent);
         }
     }
 }

@@ -42,8 +42,8 @@
     <Compile Include="Materials\UVBuilderFlipbook.cs" />
     <Compile Include="Materials\UVBuilderScroll.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="ParticleLocator.cs" />
     <Compile Include="ParticleSystemSettings.cs" />
+    <Compile Include="ParticleTransform.cs" />
     <Compile Include="Shaders\ComputeColorWhite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

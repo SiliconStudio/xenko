@@ -15,8 +15,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         {
             RequiredFields.Add(ParticleFields.Quaternion);
             RequiredFields.Add(ParticleFields.RandomSeed);
-
-            InheritLocation = InheritLocation.Rotation;
         }
 
         /// <inheritdoc />

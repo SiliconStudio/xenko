@@ -162,9 +162,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         public override void SetParentTrs(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
             base.SetParentTrs(ref Translation, ref Rotation, Scale);
-
-            var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
-            parentScale = (hasScl) ? Scale : 1f;
+            parentScale = (InheritScale) ? Scale : 1f;
         }
 
         /// <summary>
