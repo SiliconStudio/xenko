@@ -9,6 +9,9 @@ namespace SiliconStudio.Presentation.Extensions
 {
     using Color = SiliconStudio.Core.Mathematics.Color;
 
+    /// <summary>
+    /// Provides extension methods for the <see cref="IDrawingContext" />.
+    /// </summary>
     public static class DrawingContextExtensions
     {
         /// <summary>
