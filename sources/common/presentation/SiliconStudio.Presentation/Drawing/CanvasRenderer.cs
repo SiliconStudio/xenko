@@ -76,32 +76,20 @@ namespace SiliconStudio.Presentation.Drawing
         /// <remarks>Using stream geometry seems to be slightly faster than using path geometry.</remarks>
         public bool UseStreamGeometry { get; set; }
 
-        /// <summary>
-        /// Clears the canvas.
-        /// </summary>
+        /// <inheritdoc/>
         public void Clear()
         {
             Canvas.Children.Clear();
         }
 
-        /// <summary>
-        /// Draws an ellipse in the canvas.
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="size"></param>
-        /// <param name="fillColor">The color of the shape's interior.</param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <inheritdoc/>
         public void DrawEllipse(Point point, Size size, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool isHitTestVisible)
         {
             point.Offset(-size.Width / 2, -size.Height / 2);
             var rect = new Rect(point, size);
 
-            var ellipse = Create<Ellipse>(rect.Left, rect.Top);
+            var ellipse = Create<Ellipse>(isHitTestVisible, rect.Left, rect.Top);
 
             ellipse.Fill = GetBrush(fillColor);
             SetStroke(ellipse, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
@@ -112,54 +100,39 @@ namespace SiliconStudio.Presentation.Drawing
             Canvas.SetTop(ellipse, rect.Top);
         }
 
-        /// <summary>
-        /// Draws a collection of ellipses, where all have the same visual appearance (stroke, fill, etc.).
-        /// </summary>
-        /// <remarks>
-        /// This performs better than calling <see cref="DrawEllipse"/> multiple times.
-        /// </remarks>
-        /// <param name="points"></param>
-        /// <param name="radiusX">The horizontal radius of the ellipse.</param>
-        /// <param name="radiusY">The vertical radius of the ellipse.</param>
-        /// <param name="fillColor">The color of the shape's interior.</param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <inheritdoc/>
         public void DrawEllipses(IList<Point> points, double radiusX, double radiusY, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool isHitTestVisible)
         {
             if (points == null) throw new ArgumentNullException(nameof(points));
             if (points.Count == 0)
                 return;
 
-            var geometry = new GeometryGroup { FillRule = FillRule.Nonzero };
+            var fillBrush = GetBrush(fillColor);
+            var strokeBrush = GetBrush(strokeColor);
+            var pen = new Pen(strokeBrush, thickness)
+            {
+                LineJoin = lineJoin,
+                DashStyle = new DashStyle(dashArray, dashOffset),
+            };
+
+            var visual = new DrawingVisual();
+            var context = visual.RenderOpen();
             foreach (var point in points)
             {
-                geometry.Children.Add(new EllipseGeometry(point, radiusX, radiusY));
+                context.DrawEllipse(fillBrush, pen, point, radiusX, radiusY);
             }
-            var path = Create<Path>();
-            path.Fill = GetBrush(fillColor);
-            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
-            path.Data = geometry;
+            context.Close();
+
+            var host = Create<VisualHost>(isHitTestVisible);
+            host.AddChild(visual);
         }
 
-        /// <summary>
-        /// Draws a straight line between <paramref name="p1"/> and <paramref name="p2"/>.
-        /// </summary>
-        /// <param name="p1"></param>
-        /// <param name="p2"></param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        /// <param name="aliased"></param>
+        /// <inheritdoc/>
         public void DrawLine(Point p1, Point p2, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased, bool isHitTestVisible)
         {
-            var line = Create<Line>();
+            var line = Create<Line>(isHitTestVisible);
             SetStroke(line, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             line.X1 = p1.X;
             line.Y1 = p1.Y;
@@ -167,18 +140,9 @@ namespace SiliconStudio.Presentation.Drawing
             line.Y2 = p2.Y;
         }
 
-        /// <summary>
-        /// Draws line segments defined by points (0,1) (2,3) (4,5) etc in the canvas.
-        /// </summary>
-        /// <param name="points">The points.</param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        /// <param name="aliased"></param>
+        /// <inheritdoc/>
         public void DrawLineSegments(IList<Point> points, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased, bool isHitTestVisible)
         {
             if (points == null) throw new ArgumentNullException(nameof(points));
             if (points.Count < 2)
@@ -186,7 +150,7 @@ namespace SiliconStudio.Presentation.Drawing
 
             if (UseStreamGeometry)
             {
-                DrawLineSegmentsByStreamGeometry(points, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
+                DrawLineSegmentsByStreamGeometry(points, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased, isHitTestVisible);
                 return;
             }
 
@@ -208,26 +172,16 @@ namespace SiliconStudio.Presentation.Drawing
                 pathGeometry.Figures.Add(figure);
             }
 
-            var path = Create<Path>();
+            var path = Create<Path>(isHitTestVisible);
             SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             path.Data = pathGeometry;
         }
 
-        /// <summary>
-        /// Draws a polygon in the canvas.
-        /// </summary>
-        /// <param name="points"></param>
-        /// <param name="fillColor"></param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        /// <param name="aliased"></param>
+        /// <inheritdoc/>
         public void DrawPolygon(IList<Point> points, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased, bool isHitTestVisible)
         {
-            var polygon = Create<Polygon>();
+            var polygon = Create<Polygon>(isHitTestVisible);
 
             polygon.Fill = GetBrush(fillColor);
             SetStroke(polygon, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
@@ -235,43 +189,25 @@ namespace SiliconStudio.Presentation.Drawing
             polygon.Points = ToPointCollection(points, aliased);
         }
 
-        /// <summary>
-        /// Draws a polyline in the canvas.
-        /// </summary>
-        /// <param name="points"></param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        /// <param name="aliased"></param>
+        /// <inheritdoc/>
         public void DrawPolyline(IList<Point> points, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased, bool isHitTestVisible)
         {
             if (thickness < BalancedLineDrawingThicknessLimit)
             {
-                DrawPolylineBalanced(points, strokeColor, thickness, lineJoin, dashArray, aliased);
+                DrawPolylineBalanced(points, strokeColor, thickness, lineJoin, dashArray, aliased, isHitTestVisible);
             }
 
-            var polyline = Create<Polyline>();
+            var polyline = Create<Polyline>(isHitTestVisible);
             SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             polyline.Points = ToPointCollection(points, aliased);
         }
 
-        /// <summary>
-        /// Draws a rectangle in the canvas.
-        /// </summary>
-        /// <param name="rect"></param>
-        /// <param name="fillColor">The color of the shape's interior.</param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <inheritdoc/>
         public void DrawRectangle(Rect rect, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool isHitTestVisible)
         {
-            var rectangle = Create<Rectangle>(rect.Left, rect.Top);
+            var rectangle = Create<Rectangle>(isHitTestVisible, rect.Left, rect.Top);
 
             rectangle.Fill = GetBrush(fillColor);
             SetStroke(rectangle, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
@@ -282,21 +218,11 @@ namespace SiliconStudio.Presentation.Drawing
             Canvas.SetTop(rectangle, rect.Top);
         }
 
-        /// <summary>
-        /// Draws text in the canvas.
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="color">The color of the text.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="fontFamily">The font family.</param>
-        /// <param name="fontSize">Size of the font.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        /// <param name="hAlign">The horizontal alignment.</param>
-        /// <param name="vAlign">The vertical alignment.</param>
+        /// <inheritdoc/>
         public void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
+            HorizontalAlignment hAlign, VerticalAlignment vAlign, bool isHitTestVisible)
         {
-            var textBlock = Create<TextBlock>();
+            var textBlock = Create<TextBlock>(isHitTestVisible);
             textBlock.Foreground = GetBrush(color);
             textBlock.FontFamily = fontFamily;
             textBlock.FontSize = fontSize;
@@ -327,22 +253,9 @@ namespace SiliconStudio.Presentation.Drawing
             textBlock.SetValue(RenderOptions.ClearTypeHintProperty, ClearTypeHint.Enabled);
         }
 
-        /// <summary>
-        /// Draws a collection of texts where all have the same visual appearance (color, font, alignment).
-        /// </summary>
-        /// <remarks>
-        /// This performs better than calling <see cref="DrawText"/> multiple times.
-        /// </remarks>
-        /// <param name="points"></param>
-        /// <param name="color"></param>
-        /// <param name="texts"></param>
-        /// <param name="fontFamily"></param>
-        /// <param name="fontSize"></param>
-        /// <param name="fontWeight"></param>
-        /// <param name="hAlign"></param>
-        /// <param name="vAlign"></param>
+        /// <inheritdoc/>
         public void DrawTexts(IList<Point> points, Color color, IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
+            HorizontalAlignment hAlign, VerticalAlignment vAlign, bool isHitTestVisible)
         {
             if (points == null) throw new ArgumentNullException(nameof(points));
             if (texts == null) throw new ArgumentNullException(nameof(texts));
@@ -381,23 +294,12 @@ namespace SiliconStudio.Presentation.Drawing
             }
             context.Close();
 
-            var host = Create<VisualHost>();
+            var host = Create<VisualHost>(isHitTestVisible);
             host.AddChild(visual);
         }
 
-        /// <summary>
-        /// Measures the size of the specified text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontFamily">The font family.</param>
-        /// <param name="fontSize">Size of the font.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        /// <param name="measurementMethod"></param>
-        /// <returns>
-        /// The size of the text (in device independent units, 1/96 inch).
-        /// </returns>
-        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface)
+        /// <inheritdoc/>
+        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight, TextMeasurementMethod measurementMethod)
         {
             if (string.IsNullOrEmpty(text))
                 return Size.Empty;
@@ -427,22 +329,8 @@ namespace SiliconStudio.Presentation.Drawing
             }
         }
 
-        /// <summary>
-        /// Measures the size of the specified texts where all have the same visual appearance (color, font, alignment) and returns the maximum.
-        /// </summary>
-        /// <remarks>
-        /// This performs better than calling <see cref="MeasureText"/> multiple times.
-        /// </remarks>
-        /// <param name="texts">The texts.</param>
-        /// <param name="fontFamily">The font family.</param>
-        /// <param name="fontSize">Size of the font.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        /// <param name="measurementMethod"></param>
-        /// <returns>
-        /// The maximum size of the texts (in device independent units, 1/96 inch).
-        /// </returns>
-        public Size MeasureTexts(IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface)
+        /// <inheritdoc/>
+        public Size MeasureTexts(IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight, TextMeasurementMethod measurementMethod)
         {
             if (texts == null) throw new ArgumentNullException(nameof(texts));
 
@@ -491,18 +379,13 @@ namespace SiliconStudio.Presentation.Drawing
             return new Size(maxWidth, maxHeight);
         }
 
-        /// <summary>
-        /// Resets the clip rectangle.
-        /// </summary>
+        /// <inheritdoc/>
         public void ResetClip()
         {
             clip = null;
         }
 
-        /// <summary>
-        /// Sets the clipping rectangle.
-        /// </summary>
-        /// <param name="clippingRect">The clipping rectangle.</param>
+        /// <inheritdoc/>
         public void SetClip(Rect clippingRect)
         {
             clip = clippingRect;
@@ -512,10 +395,11 @@ namespace SiliconStudio.Presentation.Drawing
         /// Creates an element and adds it to the canvas.
         /// </summary>
         /// <typeparam name="TElement"></typeparam>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise.</param>
         /// <param name="clipOffsetX"></param>
         /// <param name="clipOffsetY"></param>
         /// <returns></returns>
-        private TElement Create<TElement>(double clipOffsetX = 0, double clipOffsetY = 0)
+        private TElement Create<TElement>(bool isHitTestVisible, double clipOffsetX = 0, double clipOffsetY = 0)
             where TElement : UIElement, new()
         {
             var element = new TElement();
@@ -529,6 +413,7 @@ namespace SiliconStudio.Presentation.Drawing
                         clip.Value.Height));
             }
             Canvas.Children.Add(element);
+            element.IsHitTestVisible = isHitTestVisible;
             return element;
         }
 
@@ -542,9 +427,10 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="dashArray">The dash array. Use <c>null</c> to get a solid line.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         /// <param name="aliased"></param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise.</param>
         /// <remarks>Using stream geometry seems to be slightly faster than using path geometry.</remarks>
         private void DrawLineSegmentsByStreamGeometry(IList<Point> points, Color strokeColor,
-            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased, bool isHitTestVisible)
         {
             var streamGeometry = new StreamGeometry();
 
@@ -556,7 +442,7 @@ namespace SiliconStudio.Presentation.Drawing
             }
             streamGeometryContext.Close();
 
-            var path = Create<Path>();
+            var path = Create<Path>(isHitTestVisible);
             SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             path.Data = streamGeometry;
         }
@@ -570,13 +456,14 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="lineJoin">The line join.</param>
         /// <param name="dashArray">The dash array. Use <c>null</c> to get a solid line.</param>
         /// <param name="aliased"></param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise.</param>
         /// <remarks>See <a href="https://oxyplot.codeplex.com/discussions/456679">discussion</a>.</remarks>
-        private void DrawPolylineBalanced(IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, bool aliased)
+        private void DrawPolylineBalanced(IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, bool aliased, bool isHitTestVisible)
         {
             // balance the number of points per polyline and the number of polylines
             var numPointsPerPolyline = Math.Max(points.Count / MaxPolylinesPerLine, MinPointsPerPolyline);
 
-            var polyline = Create<Polyline>();
+            var polyline = Create<Polyline>(isHitTestVisible);
             SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, 0, aliased);
             var pointCollection = new PointCollection(numPointsPerPolyline);
 
@@ -611,7 +498,7 @@ namespace SiliconStudio.Presentation.Drawing
                     {
                         // start a new polyline at last point so there is no gap (it is not necessary to use the % operator)
                         var dashOffset = dashPatternLength > 0 ? lineLength / thickness : 0;
-                        polyline = Create<Polyline>();
+                        polyline = Create<Polyline>(isHitTestVisible);
                         SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
                         pointCollection = new PointCollection(numPointsPerPolyline) { pointCollection.Last() };
                     }
