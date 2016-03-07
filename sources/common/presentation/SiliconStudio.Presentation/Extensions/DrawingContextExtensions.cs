@@ -39,15 +39,16 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="diameter">The diameter of the circle.</param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DrawCircle(this IDrawingContext renderer, Point point, double diameter, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false)
         {
-            renderer.DrawEllipse(point, new Size(diameter, diameter), fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            renderer.DrawEllipse(point, new Size(diameter, diameter), fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset, isHitTestVisible);
         }
 
         /// <summary>
@@ -59,16 +60,17 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="diameter">The diameter of the circle.</param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DrawCircles(this IDrawingContext renderer, IList<Point> points, double diameter, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false)
         {
             var radius = diameter*0.5;
-            renderer.DrawEllipses(points, radius, radius, fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            renderer.DrawEllipses(points, radius, radius, fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset, isHitTestVisible);
         }
 
         /// <summary>
@@ -83,12 +85,13 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="fontWeight">The font weight.</param>
         /// <param name="hAlign">The horizontal alignment.</param>
         /// <param name="vAlign">The vertical alignment.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         /// <returns>The size of the text.</returns>
         /// <example>Subscript: H_{2}O
         /// Superscript: E=mc^{2}
         /// Both: A^{2}_{i,j}</example>
         public static void DrawMathText(this IDrawingContext renderer, Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top)
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top, bool isHitTestVisible = false)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -97,11 +100,11 @@ namespace SiliconStudio.Presentation.Extensions
             {
                 var x = point.X;
                 var y = point.Y;
-                InternalDrawMathText(renderer, x, y, color, text, fontFamily, fontSize, fontWeight);
+                InternalDrawMathText(renderer, x, y, color, text, fontFamily, fontSize, fontWeight, isHitTestVisible);
             }
             else
             {
-                renderer.DrawText(point, color, text, fontFamily, fontSize, fontWeight, hAlign, vAlign);
+                renderer.DrawText(point, color, text, fontFamily, fontSize, fontWeight, hAlign, vAlign, isHitTestVisible);
             }
         }
 
@@ -116,8 +119,9 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="fontFamily">The font family.</param>
         /// <param name="fontSize">The font size.</param>
         /// <param name="fontWeight">The font weight.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         /// <returns>The size of the text.</returns>
-        private static void InternalDrawMathText(IDrawingContext renderer, double x, double y, Color color, string s, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        private static void InternalDrawMathText(IDrawingContext renderer, double x, double y, Color color, string s, FontFamily fontFamily, double fontSize, FontWeight fontWeight, bool isHitTestVisible)
         {
             var i = 0;
 
@@ -134,7 +138,7 @@ namespace SiliconStudio.Presentation.Extensions
 
             Func<double, double, string, double, Size> drawText = (xb, yb, text, fSize) =>
             {
-                renderer.DrawText(new Point(xb, yb), color, text, fontFamily, fSize, fontWeight);
+                renderer.DrawText(new Point(xb, yb), color, text, fontFamily, fSize, fontWeight, isHitTestVisible: isHitTestVisible);
 
                 var flatSize = renderer.MeasureText(text, fontFamily, fSize, fontWeight);
                 return new Size(flatSize.Width, flatSize.Height);

@@ -23,12 +23,13 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="size"></param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawEllipse(Point point, Size size, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws a collection of ellipses, where all have the same visual appearance (stroke, fill, etc.).
@@ -41,12 +42,13 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="radiusY">The vertical radius of the ellipse.</param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawEllipses(IList<Point> points, double radiusX, double radiusY, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws a straight line between <paramref name="p1"/> and <paramref name="p2"/>.
@@ -54,26 +56,28 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawLine(Point p1, Point p2, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws line segments defined by points (0,1) (2,3) (4,5) etc.
         /// </summary>
         /// <param name="points">The points.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawLineSegments(IList<Point> points, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws a polygon.
@@ -81,26 +85,28 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="points"></param>
         /// <param name="fillColor"></param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawPolygon(IList<Point> points, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws a polyline.
         /// </summary>
         /// <param name="points"></param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawPolyline(IList<Point> points, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws a rectangle.
@@ -108,12 +114,13 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="rect"></param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape. The default is <see cref="PenLineJoin.Miter"/>.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawRectangle(Rect rect, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0);
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws text.
@@ -124,10 +131,11 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="fontFamily">The font family.</param>
         /// <param name="fontSize">Size of the font.</param>
         /// <param name="fontWeight">The font weight.</param>
-        /// <param name="hAlign">The horizontal alignment.</param>
-        /// <param name="vAlign">The vertical alignment.</param>
+        /// <param name="hAlign">The horizontal alignment. The default is <see cref="HorizontalAlignment.Left"/>.</param>
+        /// <param name="vAlign">The vertical alignment. The default is <see cref="VerticalAlignment.Top"/>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top);
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top, bool isHitTestVisible = false);
 
         /// <summary>
         /// Draws a collection of texts where all have the same visual appearance (color, font, alignment).
@@ -136,15 +144,16 @@ namespace SiliconStudio.Presentation.Drawing
         /// This performs better than calling <see cref="CanvasRenderer.DrawText"/> multiple times.
         /// </remarks>
         /// <param name="points"></param>
-        /// <param name="color"></param>
+        /// <param name="color">The color of the text.</param>
         /// <param name="texts"></param>
-        /// <param name="fontFamily"></param>
-        /// <param name="fontSize"></param>
-        /// <param name="fontWeight"></param>
-        /// <param name="hAlign"></param>
-        /// <param name="vAlign"></param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <param name="hAlign">The horizontal alignment. The default is <see cref="HorizontalAlignment.Left"/>.</param>
+        /// <param name="vAlign">The vertical alignment. The default is <see cref="VerticalAlignment.Top"/>.</param>
+        /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         void DrawTexts(IList<Point> points, Color color, IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
-            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top);
+            HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top, bool isHitTestVisible = false);
 
         /// <summary>
         /// Measures the size of the specified text.
