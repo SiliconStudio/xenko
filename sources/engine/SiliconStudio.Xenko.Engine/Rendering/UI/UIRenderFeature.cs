@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 }
                 else
                 {
-                    var cameraComponent = context.Tags.Get(CameraComponentRendererExtensions.Current);
+                    var cameraComponent = context.RenderContext.Tags.Get(CameraComponentRendererExtensions.Current);
                     viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
