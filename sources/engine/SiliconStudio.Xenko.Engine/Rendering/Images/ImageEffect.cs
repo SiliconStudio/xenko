@@ -142,6 +142,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             if (outputRenderTargetView != null)
             {
+                // Transition render target
+                context.CommandList.ResourceBarrierTransition(outputRenderTargetView, GraphicsResourceState.RenderTarget);
+
                 if (outputRenderTargetView.Dimension == TextureDimension.TextureCube)
                 {
                     if(createdOutputRenderTargetViews == null)
@@ -171,6 +174,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
             else if (outputRenderTargetViews != null)
             {
+                // Transition render targets
+                foreach (var renderTarget in outputRenderTargetViews)
+                    context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
+
                 context.CommandList.SetRenderTargets(outputRenderTargetViews);
 
                 if (viewport.HasValue)
@@ -187,7 +194,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             if (EnableSetRenderTargets)
             {
-                DisposeCreatedRenderTargetViews();
+                DisposeCreatedRenderTargetViews(context);
             }
 
             base.PostDrawCore(context);
@@ -196,8 +203,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Dispose the render target views that have been created.
         /// </summary>
-        protected virtual void DisposeCreatedRenderTargetViews()
+        protected virtual void DisposeCreatedRenderTargetViews(RenderDrawContext context)
         {
+            // Transtion render targets back to read sources
+            for (int i = 0; i < context.CommandList.RenderTargetCount; ++i)
+            {
+                context.CommandList.ResourceBarrierTransition(context.CommandList.RenderTargets[i], GraphicsResourceState.GenericRead);
+            }
+
             if(createdOutputRenderTargetViews == null)
                 return;
 

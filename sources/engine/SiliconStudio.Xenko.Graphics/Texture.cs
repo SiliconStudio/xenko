@@ -363,7 +363,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The width stride in bytes (number of bytes per row).
         /// </summary>
-        private int RowStride { get; set; }
+        internal int RowStride { get; private set; }
 
         /// <summary>
         /// The depth stride in bytes (number of bytes per depth slice).
@@ -373,7 +373,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The underlying parent texture (if this is a view).
         /// </summary>
-        private Texture ParentTexture { get; set; }
+        internal Texture ParentTexture { get; private set; }
 
         private MipMapDescription[] mipmapDescriptions;
 

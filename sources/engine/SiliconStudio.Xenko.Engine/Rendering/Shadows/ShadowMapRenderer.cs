@@ -140,12 +140,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        public void ClearAtlasRenderTargets(CommandList commandList)
+        public void PrepareAtlasAsRenderTargets(CommandList commandList)
         {
             // Clear atlases
             foreach (var atlas in atlases)
             {
-                atlas.ClearRenderTargetIfNecessary(commandList);
+                atlas.PrepareAsRenderTarget(commandList);
+            }
+        }
+
+        public void PrepareAtlasAsShaderResourceViews(CommandList commandList)
+        {
+            foreach (var atlas in atlases)
+            {
+                atlas.PrepareAsShaderResourceView(commandList);
             }
         }
 

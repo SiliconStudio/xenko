@@ -97,6 +97,14 @@ namespace SiliconStudio.Xenko.Graphics
             ClearState();
         }
 
+        public void Reset()
+        {
+        }
+
+        public void Close()
+        {
+        }
+
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
 #if DEBUG
@@ -1244,6 +1252,11 @@ namespace SiliconStudio.Xenko.Graphics
                 // Setup index buffer
                 indexBuffer = newIndexBuffer;
             }
+        }
+
+        public void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
+        {
+            // Nothing to do
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)

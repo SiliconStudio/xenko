@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -80,6 +81,9 @@ namespace SiliconStudio.Xenko.Rendering
                 effect.SetOutput(output);
                 ((RendererBase)effect).Draw(context);
             }
+
+            // Switch back last output as render target
+            context.CommandList.ResourceBarrierTransition(output, GraphicsResourceState.RenderTarget);
         }
     }
 }

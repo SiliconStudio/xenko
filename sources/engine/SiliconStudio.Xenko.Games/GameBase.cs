@@ -693,6 +693,7 @@ namespace SiliconStudio.Xenko.Games
             {
                 // Reset allocator
                 GraphicsContext.ResourceGroupAllocator.Reset();
+                GraphicsContext.CommandList.Reset();
             }
 
             // Clear states
@@ -768,6 +769,8 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw.</summary>
         protected virtual void EndDraw(bool present)
         {
+            GraphicsContext.CommandList.Close();
+
             if (graphicsDeviceManager != null)
             {
                 graphicsDeviceManager.EndDraw(present);

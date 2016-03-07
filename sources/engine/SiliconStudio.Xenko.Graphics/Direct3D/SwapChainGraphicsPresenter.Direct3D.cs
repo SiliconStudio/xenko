@@ -27,6 +27,11 @@ using System.Reflection;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+using BackBufferResourceType = SharpDX.Direct3D11.Texture2D;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+using BackBufferResourceType = SharpDX.Direct3D12.Resource;
+#endif
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -41,6 +46,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         private int bufferCount;
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+        private int bufferSwapIndex;
+#endif
+
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters)
             : base(device, presentationParameters)
         {
@@ -49,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Initialize the swap chain
             swapChain = CreateSwapChain();
 
-            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0), Description.BackBufferFormat.IsSRgb());
+            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<BackBufferResourceType>(0), Description.BackBufferFormat.IsSRgb());
 
             // Reload should get backbuffer from swapchain as well
             //backBufferTexture.Reload = graphicsResource => ((Texture)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture>(0));
@@ -153,6 +162,11 @@ namespace SiliconStudio.Xenko.Graphics
             try
             {
                 swapChain.Present((int) PresentInterval, PresentFlags.None);
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+                // Manually swap back buffer
+                backBuffer.NativeResource.Dispose();
+                backBuffer.InitializeFrom(swapChain.GetBackBuffer<BackBufferResourceType>((++bufferSwapIndex) % bufferCount), Description.BackBufferFormat.IsSRgb());
+#endif
             }
             catch (SharpDXException sharpDxException)
             {
@@ -189,7 +203,7 @@ namespace SiliconStudio.Xenko.Graphics
             swapChain = CreateSwapChain();
 
             // Get newly created native texture
-            var backBufferTexture = swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0);
+            var backBufferTexture = swapChain.GetBackBuffer<BackBufferResourceType>(0);
 
             // Put it in our back buffer texture
             // TODO: Update new size
@@ -223,7 +237,7 @@ namespace SiliconStudio.Xenko.Graphics
             swapChain.ResizeBuffers(bufferCount, width, height, (SharpDX.DXGI.Format)format, SwapChainFlags.None);
 
             // Get newly created native texture
-            var backBufferTexture = swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0);
+            var backBufferTexture = swapChain.GetBackBuffer<BackBufferResourceType>(0);
 
             // Put it in our back buffer texture
             backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
@@ -323,19 +337,34 @@ namespace SiliconStudio.Xenko.Graphics
         private SwapChain CreateSwapChainForDesktop(IntPtr handle)
         {
             bufferCount = 1;
+            var backbufferFormat = Description.BackBufferFormat;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            // TODO D3D12 (check if this setting make sense on D3D11 too?)
+            backbufferFormat = backbufferFormat.ToNonSRgb();
+            // TODO D3D12 Can we make it work with something else after?
+            bufferCount = 2;
+#endif
             var description = new SwapChainDescription
                 {
-                    ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)Description.BackBufferFormat), 
+                    ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)backbufferFormat), 
                     BufferCount = bufferCount, // TODO: Do we really need this to be configurable by the user?
                     OutputHandle = handle,
-                    SampleDescription = new SampleDescription((int)Description.MultiSampleCount, 0), 
+                    SampleDescription = new SampleDescription((int)Description.MultiSampleCount, 0),
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                     SwapEffect = SwapEffect.Discard,
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+                    SwapEffect = SwapEffect.FlipDiscard,
+#endif
                     Usage = SharpDX.DXGI.Usage.BackBuffer | SharpDX.DXGI.Usage.RenderTargetOutput,
                     IsWindowed = true,
                     Flags = Description.IsFullScreen ? SwapChainFlags.AllowModeSwitch : SwapChainFlags.None, 
                 };
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
             var newSwapChain = new SwapChain(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, description);
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            var newSwapChain = new SwapChain(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeCommandQueue, description);
+#endif
             if (Description.IsFullScreen)
             {
                 // Before fullscreen switch

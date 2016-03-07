@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (Shadows && shadowMapRenderer != null)
             {
                 // Clear atlases
-                shadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+                shadowMapRenderer.PrepareAtlasAsRenderTargets(context.CommandList);
 
                 context.PushRenderTargets();
 
@@ -92,6 +92,8 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 context.PopRenderTargets();
+
+                shadowMapRenderer.PrepareAtlasAsShaderResourceViews(context.CommandList);
             }
 
             // Draw [main view | main stage]

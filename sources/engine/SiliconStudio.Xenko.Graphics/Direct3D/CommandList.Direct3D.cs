@@ -50,6 +50,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The native device context.</value>
         internal SharpDX.Direct3D11.DeviceContext NativeDeviceContext => nativeDeviceContext;
 
+        public void Reset()
+        {
+        }
+
+        public void Close()
+        {
+        }
 
         private void ClearStateImpl()
         {
@@ -285,6 +292,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
         {
             inputAssembler.SetIndexBuffer(buffer != null ? buffer.NativeBuffer : null, is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt, offset);
+        }
+
+        public void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
+        {
+            // Nothing to do
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
