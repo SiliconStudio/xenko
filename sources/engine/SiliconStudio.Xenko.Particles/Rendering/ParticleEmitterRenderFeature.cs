@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Shaders;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -23,26 +24,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         private ConstantBufferOffsetReference view;
 
         // Material alive during this frame
-        private readonly HashSet<ParticleMaterialInfo> allMaterialInfos = new HashSet<ParticleMaterialInfo>();
-        private readonly List<ParticleMaterialInfo> activeMaterialInfos = new List<ParticleMaterialInfo>();
+        private readonly Dictionary<ParticleMaterial, ParticleMaterialInfo> allMaterialInfos = new Dictionary<ParticleMaterial, ParticleMaterialInfo>();
 
         public override Type SupportedRenderObjectType => typeof(RenderParticleEmitter);
 
-        private class ParticleMaterialInfo
+        internal class ParticleMaterialInfo : MaterialRenderFeature.MaterialInfoBase
         {
             public readonly ParticleMaterial Material;
-
-            public int LastFrameUsed;
-
-            // Any matching effect
-            public ResourceGroupLayout PerMaterialLayout;
-
-            // PerMaterial
-            public ResourceGroup Resources;
-            public int ResourceCount;
-            public ShaderConstantBufferDescription ConstantBufferReflection;
-
-            public RenderEffect RenderEffect;
 
             public ParticleMaterialInfo(ParticleMaterial material)
             {
@@ -66,24 +54,84 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             base.Extract();
         }
 
-        public unsafe override void Prepare(RenderThreadContext context)
+        public override void PrepareEffectPermutationsImpl()
         {
+            base.PrepareEffectPermutationsImpl();
+
+            var renderEffects = RenderData.GetData(renderEffectKey);
+            int effectSlotCount = EffectPermutationSlotCount;
+
+            // Update existing materials
+            foreach (var material in allMaterialInfos)
+            {
+                material.Key.Setup(RenderSystem.RenderContextOld);
+            }
+
+            foreach (var renderObject in RenderObjects)
+            {
+                var staticObjectNode = renderObject.StaticObjectNode;
+                var renderParticleEmitter = (RenderParticleEmitter)renderObject;
+
+                var material = renderParticleEmitter.ParticleEmitter.Material;
+                var materialInfo = renderParticleEmitter.ParticleMaterialInfo;
+
+                for (int i = 0; i < effectSlotCount; ++i)
+                {
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
+                    var renderEffect = renderEffects[staticEffectObjectNode];
+
+                    // Skip effects not used during this frame
+                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                        continue;
+
+                    if (materialInfo == null || materialInfo.Material != material)
+                    {
+                        // First time this material is initialized, let's create associated info
+                        if (!allMaterialInfos.TryGetValue(material, out materialInfo))
+                        {
+                            materialInfo = new ParticleMaterialInfo(material);
+                            allMaterialInfos.Add(material, materialInfo);
+                        }
+                        renderParticleEmitter.ParticleMaterialInfo = materialInfo;
+
+                        // Update new materials
+                        material.Setup(RenderSystem.RenderContextOld);
+                    }
+
+                    // TODO: Iterate PermuatationParameters automatically?
+                    material.ValidateEffect(RenderSystem.RenderContextOld, ref renderEffect.EffectValidator);
+                }
+            }
+        }
+
+        public override unsafe void Prepare(RenderThreadContext context)
+        {
+            // Reset pipeline states if necessary
+            for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
+            {
+                var renderNode = RenderNodes[renderNodeIndex];
+                var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
+
+                if (renderParticleEmitter.ParticleEmitter.VertexBuilder.IsBufferDirty)
+                {
+                    // Reset pipeline state, so input layout is regenerated
+                    if (renderNode.RenderEffect != null)
+                        renderNode.RenderEffect.PipelineState = null;
+                }
+            }
+
             foreach (var renderObject in RenderObjects)
             {
                 var renderParticleEmitter = (RenderParticleEmitter)renderObject;
                 renderParticleEmitter.ParticleEmitter.PrepareForDraw();
 
-                var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleEmitter.Material.RenderData;
+                var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleMaterialInfo;
 
                 // Handle vertex element changes
                 if (renderParticleEmitter.ParticleEmitter.VertexBuilder.IsBufferDirty)
                 {
                     // Create new buffers
                     renderParticleEmitter.ParticleEmitter.VertexBuilder.RecreateBuffers(RenderSystem.GraphicsDevice);
-
-                    // Reset pipeline state, so input layout is regenerated
-                    
-                    materialInfo.RenderEffect.PipelineState = null;
                 }
 
                 // TODO: ParticleMaterial should set this up
@@ -91,57 +139,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
 
             base.Prepare(context);
-
-            foreach (var materialInfo in activeMaterialInfos)
-            {
-                var material = materialInfo.Material;
-
-                material.Setup(RenderSystem.RenderContextOld);
-
-                // First time we use the material, let's update layouts
-                if (materialInfo.PerMaterialLayout == null)
-                {
-                    var renderEffect = materialInfo.RenderEffect;
-
-                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[perMaterialDescriptorSetSlot.Index];
-                    if (resourceGroupDescription.DescriptorSetLayout == null)
-                        continue;
-
-                    var parameterCollectionLayout = new ParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
-                    materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
-
-                    // Process material cbuffer (if any)
-                    if (resourceGroupDescription.ConstantBufferReflection != null)
-                    {
-                        materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
-                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
-                    }
-
-                    // Update material parameters layout to what is expected by effect
-                    material.Parameters.UpdateLayout(parameterCollectionLayout);
-
-                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
-
-                    materialInfo.Resources = new ResourceGroup();
-                }
-
-                context.ResourceGroupAllocator.PrepareResourceGroup(materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
-
-                // Set resource bindings in PerMaterial resource set
-                for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)
-                {
-                    materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, material.Parameters.ObjectValues[resourceSlot]);
-                }
-
-                // Process PerMaterial cbuffer
-                if (materialInfo.ConstantBufferReflection != null)
-                {
-                    var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
-                    fixed (byte* dataValues = material.Parameters.DataValues)
-                        Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, materialInfo.Resources.ConstantBuffer.Size);
-                }
-            }
 
             // Assign descriptor sets to each render node
             var resourceGroupPool = ResourceGroupPool;
@@ -151,11 +148,19 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 var renderNode = RenderNodes[renderNodeIndex];
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
 
+                // Ignore fallback effects
+                if (renderNode.RenderEffect.State != RenderEffectState.Normal)
+                    continue;
+
                 // Collect materials and create associated MaterialInfo (includes reflection) first time
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
                 // Need to offer some protection if this invariant is violated (or support it if it can actually happen in real scenario)
                 var material = renderParticleEmitter.ParticleEmitter.Material;
-                var materialInfo = (ParticleMaterialInfo)material.RenderData;
+                var materialInfo = renderParticleEmitter.ParticleMaterialInfo;
+                var materialParameters = material.Parameters;
+
+                if (!MaterialRenderFeature.UpdateMaterial(RenderSystem, context, materialInfo, perMaterialDescriptorSetSlot.Index, renderNode.RenderEffect, materialParameters))
+                    continue;
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
@@ -187,59 +192,10 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
         }
 
-        public override void PrepareEffectPermutationsImpl()
-        {
-            base.PrepareEffectPermutationsImpl();
-
-            var renderEffects = RenderData.GetData(renderEffectKey);
-            int effectSlotCount = EffectPermutationSlotCount;
-
-            // Collect materials
-            activeMaterialInfos.Clear();
-
-            foreach (var renderObject in RenderObjects)
-            {
-                var staticObjectNode = renderObject.StaticObjectNode;
-
-                for (int i = 0; i < effectSlotCount; ++i)
-                {
-                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
-                    var renderEffect = renderEffects[staticEffectObjectNode];
-                    var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-
-                    // Skip effects not used during this frame
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
-                        continue;
-
-                    var material = renderParticleEmitter.ParticleEmitter.Material;
-                    var materialInfo = (ParticleMaterialInfo)material.RenderData;
-                    if (materialInfo == null)
-                    {
-                        // First time this material is initialized, let's create associated info
-                        materialInfo = new ParticleMaterialInfo(material);
-                        material.RenderData = materialInfo;
-                        allMaterialInfos.Add(materialInfo);
-
-                        materialInfo.RenderEffect = renderEffect;
-                    }
-
-                    if (materialInfo.LastFrameUsed != RenderSystem.FrameCounter)
-                    {
-                        // Add this material to a list of material used during this frame
-                        materialInfo.LastFrameUsed = RenderSystem.FrameCounter;
-                        activeMaterialInfos.Add(materialInfo);
-                    }
-
-                    // TODO: Iterate PermuatationParameters automatically?
-                    material.ValidateEffect(RenderSystem.RenderContextOld, ref renderEffect.EffectValidator);
-                }
-            }
-        }
-
         protected override void InvalidateEffectPermutation(RenderObject renderObject, RenderEffect renderEffect)
         {
             var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-            var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleEmitter.Material.RenderData;
+            var materialInfo = renderParticleEmitter.ParticleMaterialInfo;
             materialInfo.PerMaterialLayout = null;
         }
 
@@ -249,6 +205,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             pipelineState.InputElements = renderParticleEmitter.ParticleEmitter.VertexBuilder.VertexDeclaration.CreateInputElements();
             pipelineState.PrimitiveType = PrimitiveType.TriangleList;
+
+            var material = renderParticleEmitter.ParticleMaterialInfo.Material;
+            material.SetupPipeline(context, pipelineState);
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)

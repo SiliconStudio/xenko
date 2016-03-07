@@ -20,16 +20,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 TransparentRenderStage = transparentRenderStage,
             });
 
-            particleEmitterRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
-            {
-                var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-                //renderParticleEmitter.ParticleEmitter.Material;
-                    
-                pipelineState.BlendState = context.RenderContext.GraphicsDevice.BlendStates.AlphaBlend;
-                pipelineState.DepthStencilState = context.RenderContext.GraphicsDevice.DepthStencilStates.DepthRead;
-                pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.Back);
-            };
-
             return particleEmitterRenderFeature;
         }
     }

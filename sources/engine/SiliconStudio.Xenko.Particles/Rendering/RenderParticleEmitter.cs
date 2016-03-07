@@ -8,5 +8,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         public RenderParticleSystem RenderParticleSystem;
 
         public ParticleEmitter ParticleEmitter;
+        internal ParticleEmitterRenderFeature.ParticleMaterialInfo ParticleMaterialInfo;
     }
 }

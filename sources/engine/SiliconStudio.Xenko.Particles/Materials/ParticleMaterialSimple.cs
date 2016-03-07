@@ -70,17 +70,21 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.Setup(context);
 
-            // TODO GRAPHICS REFACTOR
-            //if (FaceCulling == ParticleMaterialCulling.CullNone) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
-            //if (FaceCulling == ParticleMaterialCulling.CullBack) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
-            //if (FaceCulling == ParticleMaterialCulling.CullFront) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullFront);
-
-            //graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
-
-            //graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
-            
             // This is correct. We invert the value here to reduce calculations on the shader side later
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+        }
+
+        public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)
+        {
+            base.SetupPipeline(renderContext, pipelineState);
+
+            if (FaceCulling == ParticleMaterialCulling.CullNone) pipelineState.RasterizerState = renderContext.GraphicsDevice.RasterizerStates.CullNone;
+            else if (FaceCulling == ParticleMaterialCulling.CullBack) pipelineState.RasterizerState = renderContext.GraphicsDevice.RasterizerStates.CullBack;
+            else if (FaceCulling == ParticleMaterialCulling.CullFront) pipelineState.RasterizerState = renderContext.GraphicsDevice.RasterizerStates.CullFront;
+
+            pipelineState.BlendState = renderContext.GraphicsDevice.BlendStates.AlphaBlend;
+
+            pipelineState.DepthStencilState = renderContext.GraphicsDevice.DepthStencilStates.DepthRead;
         }
 
         /// <inheritdoc />
