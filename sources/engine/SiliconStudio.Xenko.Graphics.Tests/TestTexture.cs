@@ -447,7 +447,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void CheckTexture(GraphicsContext graphicsContext, Texture texture, byte[] data)
         {
             // Get back the data from the gpu
-            var data2 = texture.GetData<byte>(GraphicsContext.CommandList);
+            var data2 = texture.GetData<byte>(graphicsContext.CommandList);
 
             // Assert that data are the same
             Assert.That(Utilities.Compare(data, data2), Is.True);
