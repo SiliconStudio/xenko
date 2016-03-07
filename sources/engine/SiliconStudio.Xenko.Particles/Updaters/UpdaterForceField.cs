@@ -25,6 +25,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
             // A force field operates over the particle's position and velocity, updating them as required
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
+
+            DisplayPosition = true;
+            DisplayRotation = true;
+            DisplayScale = true;
         }
 
         /// <summary>

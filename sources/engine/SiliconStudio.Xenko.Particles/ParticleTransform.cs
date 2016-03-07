@@ -11,25 +11,39 @@ namespace SiliconStudio.Xenko.Particles
     public class ParticleTransform
     {
         [DataMember(0)]
-        [Display("Inherit position")]
+        [Display("Position inheritance")]
         public bool InheritPosition { get; set; } = true;
 
         [DataMember(1)]
+        [Display("Position offset")]
         public Vector3 Position { get; set; } = new Vector3(0, 0, 0);
 
         [DataMember(2)]
-        [Display("Inherit rotation")]
+        [Display("Rotation inheritance")]
         public bool InheritRotation { get; set; } = true;
 
         [DataMember(3)]
+        [Display("Rotation offset")]
         public Quaternion Rotation { get; set; } = new Quaternion(0, 0, 0, 1);
 
         [DataMember(4)]
-        [Display("Inherit scale")]
+        [Display("Scale inheritance")]
         public bool InheritScale { get; set; } = true;
 
         [DataMember(5)]
+        [Display("Scale offset")]
         public Vector3 Scale { get; set; } = new Vector3(1, 1, 1);
+
+        // Order of these members should be *after* the fields they control (own offset and inherited field)
+        // The visibility is controlled from EntityViewModel.UpdateObservableNode(...)
+        [DataMember(10)]
+        public bool DisplayPosition = false;
+
+        [DataMember(10)]
+        public bool DisplayRotation = false;
+
+        [DataMember(10)]
+        public bool DisplayScale = false;
 
         [DataMemberIgnore]
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
@@ -63,6 +77,7 @@ namespace SiliconStudio.Xenko.Particles
             WorldPosition = (InheritPosition) ? parent.WorldPosition + offsetTranslation : offsetTranslation;
 
         }
-    
+
     }
 }
+
