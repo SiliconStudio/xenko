@@ -19,10 +19,6 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class PipelineState
     {
-        // Caches
-        private static GraphicsCache<Tuple<EffectBytecode, bool>, EffectBytecode, EffectProgram> effectProgramCache;
-        private static GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]> vertexAttribsCache;
-
         internal readonly BlendState BlendState;
         internal readonly DepthStencilState DepthStencilState;
 
@@ -36,18 +32,15 @@ namespace SiliconStudio.Xenko.Graphics
 
         private PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
         {
+            // First time, build caches
+            var pipelineStateCache = GetPipelineStateCache();
+
             var depthClampEmulation = !pipelineStateDescription.RasterizerState.DepthClipEnable && !graphicsDevice.HasDepthClamp;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // Depth Clamp can't be emulated on OpenGL ES 2 (TODO: warning?)
             if (graphicsDevice.IsOpenGLES2)
                 depthClampEmulation = false;
 #endif
-
-            if (effectProgramCache == null)
-            {
-                effectProgramCache = new GraphicsCache<Tuple<EffectBytecode, bool>, EffectBytecode, EffectProgram>(source => source.Item1, source => new EffectProgram(graphicsDevice, source.Item1, source.Item2));
-                vertexAttribsCache = new GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]>(source => new VertexAttribsKey(source), source => source);
-            }
 
             // Store states
             BlendState = new BlendState(pipelineStateDescription.BlendState, pipelineStateDescription.Output.RenderTargetCount > 0);
@@ -58,7 +51,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Compile effect
             var effectBytecode = pipelineStateDescription.EffectBytecode;
-            EffectProgram = effectBytecode != null ? effectProgramCache.Instantiate(Tuple.Create(effectBytecode, depthClampEmulation)) : null;
+            EffectProgram = effectBytecode != null ? pipelineStateCache.EffectProgramCache.Instantiate(Tuple.Create(effectBytecode, depthClampEmulation)) : null;
 
             var rootSignature = pipelineStateDescription.RootSignature;
             if (rootSignature != null && effectBytecode != null)
@@ -86,7 +79,7 @@ namespace SiliconStudio.Xenko.Graphics
                         inputElement.AlignedByteOffset));
                 }
 
-                VertexAttribs = vertexAttribsCache.Instantiate(vertexAttribs.ToArray());
+                VertexAttribs = pipelineStateCache.VertexAttribsCache.Instantiate(vertexAttribs.ToArray());
             }
         }
 
@@ -105,11 +98,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
             base.DestroyImpl();
 
-            if (EffectProgram != null)
-                effectProgramCache.Release(EffectProgram);
+            var pipelineStateCache = GetPipelineStateCache();
 
+            if (EffectProgram != null)
+                pipelineStateCache.EffectProgramCache.Release(EffectProgram);
             if (VertexAttribs != null)
-                vertexAttribsCache.Release(VertexAttribs);
+                pipelineStateCache.VertexAttribsCache.Release(VertexAttribs);
         }
 
         struct VertexAttribsKey
@@ -211,6 +205,28 @@ namespace SiliconStudio.Xenko.Graphics
                         }
                     }
                 }
+            }
+        }
+
+        private DevicePipelineStateCache GetPipelineStateCache()
+        {
+            return GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, typeof(DevicePipelineStateCache), device => new DevicePipelineStateCache(device));
+        }
+
+        // Caches
+        private class DevicePipelineStateCache : IDisposable
+        {
+            public readonly GraphicsCache<Tuple<EffectBytecode, bool>, EffectBytecode, EffectProgram> EffectProgramCache;
+            public readonly GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]> VertexAttribsCache;
+
+            public DevicePipelineStateCache(GraphicsDevice graphicsDevice)
+            {
+                EffectProgramCache = new GraphicsCache<Tuple<EffectBytecode, bool>, EffectBytecode, EffectProgram>(source => source.Item1, source => new EffectProgram(graphicsDevice, source.Item1, source.Item2));
+                VertexAttribsCache = new GraphicsCache<VertexAttrib[], VertexAttribsKey, VertexAttrib[]>(source => new VertexAttribsKey(source), source => source);
+            }
+
+            public void Dispose()
+            {
             }
         }
     }
