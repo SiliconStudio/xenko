@@ -1,4 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
@@ -81,7 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
             if (backBuffer != GraphicsDevice.WindowProvidedRenderTexture)
-                GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
+                GraphicsDevice.MainCommandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
                     new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
 
