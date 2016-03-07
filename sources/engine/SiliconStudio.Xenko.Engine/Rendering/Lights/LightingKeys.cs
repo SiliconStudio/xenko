@@ -24,16 +24,15 @@ namespace SiliconStudio.Xenko.Rendering
         public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
         {
             if (parameters == null) throw new ArgumentNullException("parameters");
-            // TODO GRAPHICS REFACTOR
-            throw new NotImplementedException();
-            //if (enable)
-            //{
-            //    parameters.SetResourceSlow(EnvironmentLights, DefaultAmbientLighting);
-            //}
-            //else
-            //{
-            //    parameters.Remove(EnvironmentLights);
-            //}
+
+            if (enable)
+            {
+                parameters.Set(EnvironmentLights, DefaultAmbientLighting);
+            }
+            else
+            {
+                parameters.Remove(EnvironmentLights);
+            }
         }
     }
 }
