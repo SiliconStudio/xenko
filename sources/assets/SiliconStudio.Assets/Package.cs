@@ -424,7 +424,8 @@ namespace SiliconStudio.Assets
             {
                 SetDirtyFlagOnAssetWhenFixingUFile = false,
                 ConvertUPathTo = UPathType.Relative,
-                IsProcessingUPaths = true
+                IsProcessingUPaths = true,
+                AssetTemplatingRemoveUnusedBaseParts = true,
             });
             analysis.Run(log);
 
