@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Constant Vector4 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector4")]
-    [Display("Animation")]
+    [Display("Animation", Expand = ExpandRule.Never)]
     public class ComputeAnimationCurveVector4 : ComputeAnimationCurve<Vector4>
     {
         /// <inheritdoc/>
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Constant Vector3 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector3")]
-    [Display("Animation")]
+    [Display("Animation", Expand = ExpandRule.Never)]
     public class ComputeAnimationCurveVector3 : ComputeAnimationCurve<Vector3>
     {
         /// <inheritdoc/>
@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Constant Vector2 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector2")]
-    [Display("Animation")]
+    [Display("Animation", Expand = ExpandRule.Never)]
     public class ComputeAnimationCurveVector2 : ComputeAnimationCurve<Vector2>
     {
         /// <inheritdoc/>
@@ -288,7 +288,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Animation of a float value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveFloat")]
-    [Display("Animation")]
+    [Display("Animation", Expand = ExpandRule.Never)]
     public class ComputeAnimationCurveFloat : ComputeAnimationCurve<float>
     {
         /// <inheritdoc/>
@@ -337,7 +337,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Constant Quaternion value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveQuaternion")]
-    [Display("Animation")]
+    [Display("Animation", Expand = ExpandRule.Never)]
     public class ComputeAnimationCurveQuaternion : ComputeAnimationCurve<Quaternion>
     {
         /// <inheritdoc/>

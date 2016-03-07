@@ -1,6 +1,6 @@
 !SceneAsset
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
-SerializedVersion: {Xenko: 1.6.0-beta}
+SerializedVersion: {Xenko: 1.6.0-beta01}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -42,13 +42,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -57,6 +59,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -161,13 +164,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -179,6 +184,7 @@ Hierarchy:
                                             Offset: {X: 0.0, Y: 0.0}
                                             Swizzle: null
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
@@ -223,7 +229,8 @@ Hierarchy:
                     - !ModelComponent
                         ~Id: 48eaeab8-ad5a-4050-97fe-7b058d8d9ae0
                         Model: 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
-                        Materials: []
+                        Materials:
+                            - null
             Design: {}
         -   Entity:
                 Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
@@ -268,6 +275,7 @@ SceneSettings:
                     Mode: !CameraRendererModeForward
                         ~Id: 6710f190-af88-41e2-b97f-5656f5cd6039
                     Camera:
+                        ~Id: f4fea4e5-e765-407d-9f58-9af2cc458394
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}

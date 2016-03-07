@@ -23,7 +23,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteStudioModelAsset asset, AssetCompilerResult result)
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var colorSpace = context.GetColorSpace();
+            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
+            var colorSpace = renderingSettings.ColorSpace;
 
             var cells = new List<SpriteStudioCell>();
             var images = new List<UFile>();
@@ -48,8 +49,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 new TextureAssetCompiler.TextureConvertCommand(
                     urlInStorage + texIndex,
                     new TextureConvertParameters(texture, textureAsset, context.Platform,
-                        context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile,
-                        gameSettingsAsset.TextureQuality, colorSpace)));
+                        context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile,
+                        gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
 
                 asset.BuildTextures.Add(urlInStorage + texIndex);
 

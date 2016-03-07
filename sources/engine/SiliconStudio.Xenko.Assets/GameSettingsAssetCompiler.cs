@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -7,8 +7,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -75,14 +75,30 @@ namespace SiliconStudio.Xenko.Assets
                     PackageId = package.Id,
                     PackageName = package.Meta.Name,
                     DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null,
-                    DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
-                    DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
-                    DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
-                    ColorSpace =  AssetParameters.ColorSpace,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
+                    Configurations = new PlatformConfigurations(),
                     CompilationMode = compilationMode
                 };
+
+                //start from the default platform and go down overriding
+
+                foreach (var configuration in AssetParameters.Defaults.Where(x => !x.OfflineOnly))
+                {
+                    result.Configurations.Configurations.Add(new ConfigurationOverride
+                    {
+                        Platforms = ConfigPlatforms.None,
+                        SpecificFilter = -1,
+                        Configuration = configuration
+                    });
+                }
+
+                foreach (var configurationOverride in AssetParameters.Overrides.Where(x => x.Configuration != null && !x.Configuration.OfflineOnly))
+                {
+                    result.Configurations.Configurations.Add(configurationOverride);
+                }
+
+                result.Configurations.PlatformFilters = AssetParameters.PlatformFilters;
 
                 // TODO: Platform-specific settings have priority
                 //if (platform != PlatformType.Shared)
