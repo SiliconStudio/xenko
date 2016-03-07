@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 {
                     // Check if we have a variable that starts or ends with this name (in case of samplers)
                     if (variable.Type == SamplerType.Sampler1D || variable.Type == SamplerType.Sampler2D || variable.Type == SamplerType.Sampler3D ||
-                        variable.Type.Name.Text.Equals(SamplerType.SamplerCube.Name.Text, StringComparison.InvariantCultureIgnoreCase))
+                        variable.Type.Name.Text.Equals(SamplerType.SamplerCube.Name.Text, StringComparison.OrdinalIgnoreCase))
                     {
                         // TODO: Make more robust
                         var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Param.RawName));
