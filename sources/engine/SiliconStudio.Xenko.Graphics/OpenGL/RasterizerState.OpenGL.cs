@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             State.ScissorTestEnable = rasterizerStateDescription.ScissorTestEnable;
 
-            State.DepthClamp = rasterizerStateDescription.DepthClipEnable;
+            State.DepthClamp = !rasterizerStateDescription.DepthClipEnable;
 
             State.NeedCulling = rasterizerStateDescription.CullMode != CullMode.None;
             State.CullMode = GetCullMode(rasterizerStateDescription.CullMode);

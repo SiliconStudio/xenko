@@ -36,7 +36,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         private PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
         {
-            var depthClipEmulation = pipelineStateDescription.RasterizerState.DepthClipEnable && !graphicsDevice.HasDepthClamp;
+            var depthClampEmulation = !pipelineStateDescription.RasterizerState.DepthClipEnable && !graphicsDevice.HasDepthClamp;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            // Depth Clamp can't be emulated on OpenGL ES 2 (TODO: warning?)
+            if (graphicsDevice.IsOpenGLES2)
+                depthClampEmulation = false;
+#endif
 
             if (effectProgramCache == null)
             {
@@ -53,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Compile effect
             var effectBytecode = pipelineStateDescription.EffectBytecode;
-            EffectProgram = effectBytecode != null ? effectProgramCache.Instantiate(Tuple.Create(effectBytecode, depthClipEmulation)) : null;
+            EffectProgram = effectBytecode != null ? effectProgramCache.Instantiate(Tuple.Create(effectBytecode, depthClampEmulation)) : null;
 
             var rootSignature = pipelineStateDescription.RootSignature;
             if (rootSignature != null && effectBytecode != null)
