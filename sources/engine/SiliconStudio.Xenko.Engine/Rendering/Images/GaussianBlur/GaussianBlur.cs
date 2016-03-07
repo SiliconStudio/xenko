@@ -133,9 +133,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 offsetsWeights = GaussianUtil.Calculate1D(Radius, SigmaRatio);
             }
 
-            // Update shared parameters
+            // Update permutation parameters
             blurH.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
             blurV.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            blurH.EffectInstance.UpdateEffect(context.GraphicsDevice);
+            blurV.EffectInstance.UpdateEffect(context.GraphicsDevice);
+
+            // Update parameters
             blurH.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
             blurV.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
 
