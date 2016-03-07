@@ -60,6 +60,7 @@
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
+    <Compile Include="Controls\CanvasView\CanvasView.Events.cs" />
     <Compile Include="Drawing\IDrawingContext.cs" />
     <Compile Include="Drawing\IDrawingController.cs" />
     <Compile Include="Drawing\IDrawingView.cs" />

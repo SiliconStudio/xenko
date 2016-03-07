@@ -39,7 +39,7 @@ using SiliconStudio.Presentation.Drawing;
 namespace SiliconStudio.Presentation.Controls
 {
     [TemplatePart(Name = GridPartName, Type = typeof(Grid))]
-    public sealed class CanvasView : Control, IDrawingView
+    public sealed partial class CanvasView : Control, IDrawingView
     {
         /// <summary>
         /// The name of the part for the <see cref="Canvas"/>.
@@ -55,6 +55,12 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="CanvasBounds"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CanvasBoundsProperty = CanvasBoundsPropertyKey.DependencyProperty;
+
+        /// <summary>
+        /// Identifies the <see cref="Controller"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ControllerProperty =
+            DependencyProperty.Register(nameof(Controller), typeof(IDrawingController), typeof(CanvasView));
 
         /// <summary>
         /// Identifies the <see cref="IsCanvasValid"/> dependency property key.
@@ -93,6 +99,8 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         public Rect CanvasBounds { get { return (Rect)GetValue(CanvasBoundsProperty); } private set { SetValue(CanvasBoundsPropertyKey, value); } }
+
+        public IDrawingController Controller { get { return (IDrawingController)GetValue(ControllerProperty); } set { SetValue(ControllerProperty, value); } }
 
         /// <summary>
         /// Returns True if the current rendering is valid. False otherwise.
