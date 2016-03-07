@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
         private readonly List<RenderObject> renderObjectsWithoutFeatures = new List<RenderObject>();
 
         [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
-        public static readonly Dictionary<RenderView, Func<RenderObject, bool>> ViewObjectFilters = new Dictionary<RenderView, Func<RenderObject, bool>>();
+        public static readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
 
         private int stageMaskMultiplier;
 
@@ -85,10 +85,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var view in Views)
             {
-                // Temporary custom filter
-                Func<RenderObject, bool> viewObjectFilter;
-                ViewObjectFilters.TryGetValue(view, out viewObjectFilter);
-
                 // View bounds calculation
                 view.MinimumDistance = float.PositiveInfinity;
                 view.MaximumDistance = float.NegativeInfinity;
@@ -122,7 +118,17 @@ namespace SiliconStudio.Xenko.Rendering
                         continue;
 
                     // Custom per-view filtering
-                    if (viewObjectFilter?.Invoke(renderObject) == false)
+                    bool skip = false;
+                    foreach (var filter in ViewObjectFilters)
+                    {
+                        if (!filter(view, renderObject))
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
                         continue;
 
                     var renderStageMask = RenderData.GetData(RenderStageMaskKey);
