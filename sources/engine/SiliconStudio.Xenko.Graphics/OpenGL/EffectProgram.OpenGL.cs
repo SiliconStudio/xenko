@@ -551,7 +551,10 @@ void main()
 
                 // Remove any optimized resource binding
                 effectReflection.ResourceBindings.RemoveAll(x => x.SlotStart == -1);
-                effectReflection.ConstantBuffers = effectReflection.ConstantBuffers.Where((cb, i) => validConstantBuffers[i]).ToList();
+
+                // Remove cbuffer (we don't track anything in OpenGL ES 2 since this happens inside AddUniform (we could at some point though)
+                if (!GraphicsDevice.IsOpenGLES2)
+                    effectReflection.ConstantBuffers = effectReflection.ConstantBuffers.Where((cb, i) => validConstantBuffers[i]).ToList();
             }
 
             GL.UseProgram(currentProgram);
