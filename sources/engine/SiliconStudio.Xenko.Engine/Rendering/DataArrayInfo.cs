@@ -38,9 +38,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// Move items around. Source will be reset to default values. No growing of array is expected.
         /// </summary>
         /// <param name="array"></param>
-        /// <param name="sourceStart"></param>
-        /// <param name="destStart"></param>
-        public abstract void SwapRemoveItem(Array array, int sourceStart, int destStart);
+        /// <param name="removedElement"></param>
+        /// <param name="lastElement"></param>
+        public abstract void SwapRemoveItem(Array array, int removedElement, int lastElement);
 
         /// <summary>
         /// Change number of elements per entry.
@@ -73,25 +73,25 @@ namespace SiliconStudio.Xenko.Rendering
             array = arrayT;
         }
 
-        public override void SwapRemoveItem(Array array, int sourceStart, int destStart)
+        public override void SwapRemoveItem(Array array, int removedElement, int lastElement)
         {
             // Items were not added yet?
-            if (sourceStart >= ElementCount || destStart >= ElementCount)
+            if (removedElement >= ElementCount || lastElement >= ElementCount)
                 return;
 
             var arrayT = (T[])array;
 
-            destStart *= Multiplier;
-            sourceStart *= Multiplier;
+            lastElement *= Multiplier;
+            removedElement *= Multiplier;
 
-            if (sourceStart != destStart)
+            if (removedElement < lastElement)
             {
                 for (int i = 0; i < Multiplier; ++i)
-                    arrayT[destStart + i] = arrayT[sourceStart + i];
+                    arrayT[removedElement + i] = arrayT[lastElement + i];
             }
 
             for (int i = 0; i < Multiplier; ++i)
-                arrayT[sourceStart + i] = default(T);
+                arrayT[lastElement + i] = default(T);
         }
 
         public override void ChangeMutiplier(ref Array array, int multiplier)

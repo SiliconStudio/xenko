@@ -260,13 +260,13 @@ namespace SiliconStudio.Xenko.Rendering
             renderObject.VisibilityObjectNode = StaticObjectNodeReference.Invalid;
 
             // SwapRemove each items in dataArrays
-            RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, RenderObjects.Count - 1);
+            RenderData.SwapRemoveItem(DataType.StaticObject, orderedRenderNodeIndex, renderObjects.Count - 1);
 
             // Remove entry from ordered node index
             renderObjects.SwapRemoveAt(orderedRenderNodeIndex);
 
             // If last item was moved, update its index
-            if (orderedRenderNodeIndex < RenderObjects.Count)
+            if (orderedRenderNodeIndex < renderObjects.Count)
             {
                 renderObjects[orderedRenderNodeIndex].VisibilityObjectNode = new StaticObjectNodeReference(orderedRenderNodeIndex);
             }
