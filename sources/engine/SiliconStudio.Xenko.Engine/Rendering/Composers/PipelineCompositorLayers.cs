@@ -60,10 +60,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 Master.BeforeExtract(context.RenderContext);
 
                 // Update current camera to render view
-                // TODO GRAPHICS REFACTOR: Collecte and update views every frome
+                // TODO GRAPHICS REFACTOR: Collect and update views every frame
                 foreach (var mainRenderView in RenderSystem.Views)
                 {
-                    RenderSystem.UpdateCameraToRenderView(context, mainRenderView);
+                    mainRenderView.UpdateCameraToRenderView(context);
                 }
 
                 // TODO GRAPHICS REFACTOR: Should happen somewhere like RenderFeature.BeforeExtract

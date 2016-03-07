@@ -78,102 +78,9 @@ namespace SiliconStudio.Xenko.Rendering
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
 
-        public void UpdateCameraToRenderView(RenderDrawContext context, RenderView renderView)
-        {
-            // TODO: Currently set up during BeforeExtract/Prepare/Draw. Should be initialized before
-            if (renderView.SceneCameraRenderer == null)
-                return;
-
-            renderView.Camera = renderView.SceneCameraSlotCollection.GetCamera(renderView.SceneCameraRenderer.Camera);
-
-            if (renderView.Camera == null)
-                return;
-
-            // Setup viewport size
-            var currentViewport = renderView.SceneCameraRenderer.ComputedViewport;
-            var aspectRatio = currentViewport.AspectRatio;
-
-            // Update the aspect ratio
-            if (renderView.Camera.UseCustomAspectRatio)
-            {
-                aspectRatio = renderView.Camera.AspectRatio;
-            }
-
-            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-            renderView.Camera.Update(aspectRatio);
-
-            renderView.View = renderView.Camera.ViewMatrix;
-            renderView.Projection = renderView.Camera.ProjectionMatrix;
-
-            Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
-        }
-
-        public unsafe void Prepare(RenderThreadContext context)
-        {
-            // Sync point: after extract, before prepare (game simulation could resume now)
-
-            // Generate and execute prepare effect jobs
-            foreach (var renderFeature in RenderFeatures)
-            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.PrepareEffectPermutations();
-            }
-
-            // Generate and execute prepare jobs
-            foreach (var renderFeature in RenderFeatures)
-            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.Prepare(context);
-            }
-
-            // Sort
-            foreach (var view in Views)
-            {
-                foreach (var renderViewStage in view.RenderStages)
-                {
-                    var renderNodes = renderViewStage.RenderNodes;
-                    if (renderNodes.Count == 0)
-                        continue;
-
-                    var renderStage = renderViewStage.RenderStage;
-
-                    // Allocate sorted render nodes
-                    if (renderViewStage.SortedRenderNodes == null || renderViewStage.SortedRenderNodes.Length < renderNodes.Count)
-                        Array.Resize(ref renderViewStage.SortedRenderNodes, renderNodes.Count);
-                    var sortedRenderNodes = renderViewStage.SortedRenderNodes;
-
-                    if (renderStage.SortMode != null)
-                    {
-                        // Make sure sortKeys is big enough
-                        if (sortKeys == null || sortKeys.Length < renderNodes.Count)
-                            Array.Resize(ref sortKeys, renderNodes.Count);
-
-                        // renderNodes[start..end] belongs to the same render feature
-                        fixed (SortKey* sortKeysPtr = sortKeys) 
-                            renderStage.SortMode.GenerateSortKey(view, renderViewStage, sortKeysPtr);
-
-                        Array.Sort(sortKeys, 0, renderNodes.Count);
-
-                        // Reorder list
-                        for (int i = 0; i < renderNodes.Count; ++i)
-                        {
-                            sortedRenderNodes[i] = renderNodes[sortKeys[i].Index];
-                        }
-                    }
-                    else
-                    {
-                        // No sorting, copy as is
-                        for (int i = 0; i < renderNodes.Count; ++i)
-                        {
-                            sortedRenderNodes[i] = renderNodes[i];
-                        }
-                    }
-                }
-            }
-        }
-
+        /// <summary>
+        /// Extract data from entities, should be as fast as possible to not block simulation loop. It should be mostly copies, and the actual processing should be part of Prepare().
+        /// </summary>
         public void Extract(RenderThreadContext context)
         {
             // Prepare views
@@ -256,6 +163,76 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Ensure size of all other data arrays
             PrepareDataArrays();
+        }
+
+        /// <summary>
+        /// Performs most of the work (computation and resource preparation). Later game simulation might be running during that step.
+        /// </summary>
+        /// <param name="context"></param>
+        public unsafe void Prepare(RenderThreadContext context)
+        {
+            // Sync point: after extract, before prepare (game simulation could resume now)
+
+            // Generate and execute prepare effect jobs
+            foreach (var renderFeature in RenderFeatures)
+            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.PrepareEffectPermutations();
+            }
+
+            // Generate and execute prepare jobs
+            foreach (var renderFeature in RenderFeatures)
+            // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.Prepare(context);
+            }
+
+            // Sort
+            foreach (var view in Views)
+            {
+                foreach (var renderViewStage in view.RenderStages)
+                {
+                    var renderNodes = renderViewStage.RenderNodes;
+                    if (renderNodes.Count == 0)
+                        continue;
+
+                    var renderStage = renderViewStage.RenderStage;
+
+                    // Allocate sorted render nodes
+                    if (renderViewStage.SortedRenderNodes == null || renderViewStage.SortedRenderNodes.Length < renderNodes.Count)
+                        Array.Resize(ref renderViewStage.SortedRenderNodes, renderNodes.Count);
+                    var sortedRenderNodes = renderViewStage.SortedRenderNodes;
+
+                    if (renderStage.SortMode != null)
+                    {
+                        // Make sure sortKeys is big enough
+                        if (sortKeys == null || sortKeys.Length < renderNodes.Count)
+                            Array.Resize(ref sortKeys, renderNodes.Count);
+
+                        // renderNodes[start..end] belongs to the same render feature
+                        fixed (SortKey* sortKeysPtr = sortKeys)
+                            renderStage.SortMode.GenerateSortKey(view, renderViewStage, sortKeysPtr);
+
+                        Array.Sort(sortKeys, 0, renderNodes.Count);
+
+                        // Reorder list
+                        for (int i = 0; i < renderNodes.Count; ++i)
+                        {
+                            sortedRenderNodes[i] = renderNodes[sortKeys[i].Index];
+                        }
+                    }
+                    else
+                    {
+                        // No sorting, copy as is
+                        for (int i = 0; i < renderNodes.Count; ++i)
+                        {
+                            sortedRenderNodes[i] = renderNodes[i];
+                        }
+                    }
+                }
+            }
         }
 
         public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
@@ -487,20 +464,6 @@ namespace SiliconStudio.Xenko.Rendering
             public int Compare(RenderObject x, RenderObject y)
             {
                 return x.RenderFeature.Index - y.RenderFeature.Index;
-            }
-        }
-
-        struct RenderNodeFeatureRange
-        {
-            public readonly RootRenderFeature RenderFeature;
-            public readonly int Start;
-            public readonly int End;
-
-            public RenderNodeFeatureRange(RootRenderFeature renderFeature, int start, int end)
-            {
-                RenderFeature = renderFeature;
-                Start = start;
-                End = end;
             }
         }
     }
