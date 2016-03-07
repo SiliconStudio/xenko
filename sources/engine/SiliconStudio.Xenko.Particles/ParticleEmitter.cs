@@ -111,16 +111,10 @@ namespace SiliconStudio.Xenko.Particles
         private bool delayInit;
 
         /// <summary>
-        /// Particles will live at least that much when spawned
+        /// Particles will live for a number of seconds between these two values
         /// </summary>
         [DataMemberIgnore]
-        private float particleMinLifetime = 1;
-
-        /// <summary>
-        /// Particles will live at most that much when spawned
-        /// </summary>
-        [DataMemberIgnore]
-        private float particleMaxLifetime = 1;
+        private Vector2 particleLifetime = new Vector2(1, 1);
 
         // Draw location can be different than the particle position if we are using local coordinate system
         private Vector3 drawPosition = new Vector3(0, 0, 0);
@@ -212,45 +206,18 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
-        /// <summary>
-        /// Minimum particle lifetime, in seconds. Should be positive and no bigger than <see cref="ParticleMaxLifetime"/>
-        /// </summary>
-        /// <userdoc>
-        /// When a new particle is born it will have at least that much Lifetime remaining (in seconds)
-        /// </userdoc>
-        [DataMember(8)]
-        [Display("Lifespan min")]
-        public float ParticleMinLifetime
+        [DataMember(7)]
+        [Display("Lifespan")]
+        public Vector2 ParticleLifetime
         {
-            get { return particleMinLifetime; }
+            get { return particleLifetime; }
             set
             {
-                if (value <= 0) //  || value > particleMaxLifetime - there is a problem with reading data when MaxLifetime is still not initialized
+                if (value.X <= 0 || value.Y < value.X)
                     return;
 
                 DirtyParticlePool = true;
-                particleMinLifetime = value;
-            }
-        }
-
-        /// <summary>
-        /// Maximum particle lifetime, in seconds. Should be positive and no smaller than <see cref="ParticleMinLifetime"/>
-        /// </summary>
-        /// <userdoc>
-        /// When a new particle is born it will have at most that much Lifetime remaining (in seconds)
-        /// </userdoc>
-        [DataMember(10)]
-        [Display("Lifespan max")]
-        public float ParticleMaxLifetime
-        {
-            get { return particleMaxLifetime; }
-            set
-            {
-                if (value < particleMinLifetime)
-                    return;
-
-                DirtyParticlePool = true;
-                particleMaxLifetime = value;
+                particleLifetime = value;
             }
         }
 
@@ -652,7 +619,7 @@ namespace SiliconStudio.Xenko.Particles
                 particlesPerSecond += spawnerBase.GetMaxParticlesPerSecond();
             }
 
-            MaxParticles = (int)Math.Ceiling(ParticleMaxLifetime * particlesPerSecond);
+            MaxParticles = (int)Math.Ceiling(particleLifetime.Y * particlesPerSecond);
 
             pool.SetCapacity(MaxParticles);
             PoolChangedNotification();
@@ -669,7 +636,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 var lifeField = pool.GetField(ParticleFields.RemainingLife);
                 var randField = pool.GetField(ParticleFields.RandomSeed);
-                var lifeStep = ParticleMaxLifetime - ParticleMinLifetime;
+                var lifeStep = particleLifetime.Y - particleLifetime.X;
 
                 var particleEnumerator = pool.GetEnumerator();
                 while (particleEnumerator.MoveNext())
@@ -682,7 +649,7 @@ namespace SiliconStudio.Xenko.Particles
                     if (*life > 1)
                         *life = 1;
 
-                    var startingLife = ParticleMinLifetime + lifeStep * randSeed.GetFloat(0);
+                    var startingLife = particleLifetime.X + lifeStep * randSeed.GetFloat(0);
 
                     if (*life <= 0 || (*life -= (dt / startingLife)) <= 0)
                     {

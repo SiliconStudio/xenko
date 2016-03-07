@@ -1,6 +1,6 @@
 !SceneAsset
 Id: d8bf8c60-f185-4383-8c94-94b468749609
-SerializedVersion: {Xenko: 1.6.0-beta}
+SerializedVersion: {Xenko: 1.6.0-beta01}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -54,8 +54,7 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.5
-                                    ParticleMaxLifetime: 1.5
+                                    ParticleLifetime: {X: 1.5, Y: 1.5}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
@@ -227,8 +226,7 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.5
-                                    ParticleMaxLifetime: 1.5
+                                    ParticleLifetime: {X: 1.5, Y: 1.5}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: ByDepth

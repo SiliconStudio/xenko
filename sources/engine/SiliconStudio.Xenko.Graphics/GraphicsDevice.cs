@@ -46,6 +46,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public static GraphicsPlatform Platform => GraphicPlatform;
 
+        public string RendererName => GetRendererName();
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="GraphicsDevice" /> class.
         /// </summary>
