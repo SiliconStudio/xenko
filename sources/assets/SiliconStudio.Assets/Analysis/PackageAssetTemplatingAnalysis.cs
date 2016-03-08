@@ -15,10 +15,6 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public class PackageAssetTemplatingAnalysis
     {
-        // TODO: The current code doesn't perform skip optimization and always tries to merge assets base/derived, even things didn't change from base.
-        // In order to support this skip optimization, we will have to add a content hash when loading assets, this hash will be used to check if content has changed.
-        // The hash should include shadow informations (like overrides)
-
         private readonly Package package;
         private readonly Dictionary<Guid, AssetItem> assetsToProcess;
         private readonly Dictionary<Guid, AssetItem> assetsProcessed;
@@ -158,11 +154,43 @@ namespace SiliconStudio.Assets.Analysis
             return true;
         }
 
+        private static bool CompareAssets(Asset left, Asset right)
+        {
+            // Computes the hash on the clone (so that we don't have a .Base/.BaseParts in them
+            // TODO: We might want to store the hash in the asset in order to avoid a recompute at load time
+            // (but would require a compute at save time)
+            var baseId = AssetHash.Compute(left);
+            var newBaseCopyId = AssetHash.Compute(right);
+
+            // If the old base and new base are similar (including ids and overrides), we don't need to perform a merge
+            return baseId == newBaseCopyId;
+        }
+
         private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetBase> existingBaseParts)
         {
             // No need to clone existingBaseParts as they are already cloned
             var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
             var newBaseCopy = (Asset)AssetCloner.Clone(existingBase?.Asset);
+
+            // Check base parts
+            bool basePartsAreEqual = true;
+            if (item.Asset != null && item.Asset.BaseParts != null)
+            {
+                foreach (var assetBasePart in item.Asset.BaseParts)
+                {
+                    var existingBasePart = existingBaseParts.First(e => e.Id == assetBasePart.Asset.Id);
+                    if (!CompareAssets(assetBasePart.Asset, existingBasePart.Asset))
+                    {
+                        basePartsAreEqual = false;
+                    }
+                }
+            }
+
+            // If the old base and new base are similar (including ids and overrides), we don't need to perform a merge
+            if (CompareAssets(baseCopy, newBaseCopy) && basePartsAreEqual)
+            {
+                return true;
+            }
 
             // Delegates actual merge to the asset implem
             var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts);

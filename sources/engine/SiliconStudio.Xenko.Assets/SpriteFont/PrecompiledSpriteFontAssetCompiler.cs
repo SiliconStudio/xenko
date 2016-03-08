@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                         AssetParameters.DefaultCharacter);
 
                     // save the data into the database
-                    var assetManager = new AssetManager();
+                    var assetManager = new ContentManager();
                     assetManager.Save(Url, staticFont);
 
                     image.Dispose();

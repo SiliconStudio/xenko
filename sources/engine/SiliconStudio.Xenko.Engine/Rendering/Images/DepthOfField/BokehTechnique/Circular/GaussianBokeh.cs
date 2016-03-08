@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </remarks>
     public class GaussianBokeh : BokehBlur
     {
-        private ImageEffect directionalBlurEffect;
+        private ImageEffectShader directionalBlurEffect;
 
         private int tapCount;
 
@@ -73,14 +73,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var outputTexture = GetSafeOutput(0);
 
             var tapNumber = 2 * tapCount - 1;
-            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.Count, tapCount);
-            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
-            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
-            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
             // Blur in one direction
             var blurAngle = 0f;
-            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var firstBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Second blur pass to ouput the final result
             blurAngle = MathUtil.PiOverTwo;
-            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             directionalBlurEffect.SetInput(0, firstBlurTexture);
             directionalBlurEffect.SetOutput(outputTexture);

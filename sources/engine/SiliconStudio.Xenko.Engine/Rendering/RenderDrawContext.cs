@@ -5,10 +5,26 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    public class RenderThreadContext : ComponentBase
+    {
+        public RenderContext RenderContext { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ResourceGroup"/> allocator.
+        /// </summary>
+        public ResourceGroupAllocator ResourceGroupAllocator { get; }
+
+        public RenderThreadContext(RenderContext renderContext, ResourceGroupAllocator resourceGroupAllocator)
+        {
+            RenderContext = renderContext;
+            ResourceGroupAllocator = resourceGroupAllocator;
+        }
+    }
+
     /// <summary>
     /// Rendering context used during <see cref="IGraphicsRenderer.Draw"/>.
     /// </summary>
-    public sealed class RenderDrawContext : ComponentBase
+    public sealed class RenderDrawContext : RenderThreadContext
     {
         // States
         private int currentStateIndex = -1;
@@ -16,13 +32,14 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
 
-        public RenderDrawContext(IServiceRegistry services, RenderContext renderContext, CommandList commandList)
+        public RenderDrawContext(IServiceRegistry services, RenderContext renderContext, GraphicsContext graphicsContext)
+            : base(renderContext, graphicsContext.ResourceGroupAllocator)
         {
             if (services == null) throw new ArgumentNullException("services");
 
-            RenderContext = renderContext;
             GraphicsDevice = RenderContext.GraphicsDevice;
-            CommandList = commandList;
+            GraphicsContext = graphicsContext;
+            CommandList = graphicsContext.CommandList;
         }
 
         /// <summary>
@@ -30,9 +47,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public CommandList CommandList { get; private set; }
 
-        public GraphicsDevice GraphicsDevice { get; private set; }
+        public GraphicsContext GraphicsContext { get; private set; }
 
-        public RenderContext RenderContext { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
         /// Pushes render targets and viewport state.
@@ -97,33 +114,26 @@ namespace SiliconStudio.Xenko.Rendering
         {
             private const int MaxRenderTargetCount = 8;
 
+            public int RenderTargetCount;
+
             public Viewport[] Viewports;
-
-            public Texture DepthStencilBuffer;
-
             public Texture[] RenderTargets;
+            public Texture DepthStencilBuffer;
 
             public void Capture(CommandList commandList)
             {
-                int renderTargetCount = MaxRenderTargetCount;
-                switch (commandList.GraphicsDevice.Features.Profile)
-                {
-                    case GraphicsProfile.Level_9_1:
-                    case GraphicsProfile.Level_9_2:
-                    case GraphicsProfile.Level_9_3:
-                        renderTargetCount = 1;
-                        break;
-                }
+                RenderTargetCount = commandList.RenderTargetCount;
 
-                if (RenderTargets == null || RenderTargets.Length != renderTargetCount)
+                // TODO GRAPHICS REFACTOR avoid unecessary reallocation if size is different
+                if (RenderTargetCount > 0 && (RenderTargets == null || RenderTargets.Length != RenderTargetCount))
                 {
-                    RenderTargets = new Texture[renderTargetCount];
-                    Viewports = new Viewport[renderTargetCount];
+                    RenderTargets = new Texture[RenderTargetCount];
+                    Viewports = new Viewport[RenderTargetCount];
                 }
 
                 DepthStencilBuffer = commandList.DepthStencilBuffer;
 
-                for (int i = 0; i < renderTargetCount; i++)
+                for (int i = 0; i < RenderTargetCount; i++)
                 {
                     Viewports[i] = commandList.Viewports[i];
                     RenderTargets[i] = commandList.RenderTargets[i];
@@ -132,8 +142,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             public void Restore(CommandList commandList)
             {
-                commandList.SetDepthAndRenderTargets(DepthStencilBuffer, RenderTargets);
-                commandList.SetViewports(Viewports);
+                commandList.SetDepthAndRenderTargets(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
+                if (RenderTargetCount > 0)
+                    commandList.SetViewports(Viewports);
             }
         }
     }

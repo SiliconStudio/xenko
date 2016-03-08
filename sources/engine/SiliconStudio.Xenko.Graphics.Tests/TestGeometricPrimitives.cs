@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private float timeSeconds;
 
-        private ParameterCollection parameterCollection;
-
         private bool isWireframe;
 
         private RasterizerStateDescription wireframeState;
@@ -53,10 +51,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
-            parameterCollection = new ParameterCollection();
-            throw new NotImplementedException();
-            //parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new [] { parameterCollection });
-            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
+
+            // TODO GRAPHICS REFACTOR
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
 
             primitives = new List<GeometricPrimitive>();
 
@@ -129,9 +126,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void DrawPrimitives()
         {
             // Clears the screen with the Color.CornflowerBlue
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.CornflowerBlue);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.CornflowerBlue);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render each primitive
             for (int i = 0; i < Math.Min(primitives.Count, 8); i++)
@@ -156,9 +153,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 //GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 
                 // Draw the primitive using BasicEffect
-                simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
-                simpleEffect.Apply(GraphicsCommandList);
-                primitive.Draw(GraphicsCommandList);
+                simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
+                simpleEffect.Apply(GraphicsContext);
+                primitive.Draw(GraphicsContext.CommandList, simpleEffect);
             }
         }
         

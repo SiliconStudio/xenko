@@ -14,10 +14,11 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler
 {
-    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
+    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters);
 
     /// <summary>
     /// Checks if an effect has already been compiled in its cache before deferring to a real <see cref="IEffectCompiler"/>.
@@ -55,12 +56,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, EffectCompilerParameters? effectCompilerParameters)
         {
-            var database = (FileProvider ?? AssetManager.FileProvider) as DatabaseFileProvider;
+            var database = (FileProvider ?? ContentManager.FileProvider) as DatabaseFileProvider;
             if (database == null)
             {
-                throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
+                throw new NotSupportedException("Using the cache requires to ContentManager.FileProvider to be valid.");
             }
 
             // Forward DatabaseFileProvider to actual compiler here
@@ -90,7 +91,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 if (Compiler is NullEffectCompiler && bytecode == null)
                 {
                     var stringBuilder = new StringBuilder();
-                    stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringDetailed());
+                    stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringPermutationsDetailed());
                     Log.Error(stringBuilder.ToString());
                     throw new InvalidOperationException(stringBuilder.ToString());
                 }
@@ -139,7 +140,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Compile the mixin in a Task
                 if (CompileEffectAsynchronously)
                 {
-                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, compilerParameters) : TaskScheduler.Default);
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, effectCompilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, effectCompilerParameters) : TaskScheduler.Default);
 
                     compilingShaders.Add(mixinObjectId, resultTask);
 
@@ -147,12 +148,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
                 else
                 {
-                    return CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
+                    return CompileBytecode(mixin, effectCompilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
                 }
             }
         }
 
-        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
+        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
         {
             // Open the database for writing
             var log = new LoggerResult();
@@ -194,7 +195,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 if (!bytecodes.ContainsKey(newBytecodeId))
                 {
-                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
+                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringPermutationsDetailed());
                     Interlocked.Increment(ref effectCompileCount);
 
                     // Replace or add new bytecode

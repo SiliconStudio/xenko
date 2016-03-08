@@ -9,7 +9,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Graphics.Font
 {
-    [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Content")]
     [ContentSerializer(typeof(StaticSpriteFontContentSerializer))]
     [DataSerializer(typeof(StaticSpriteFontSerializer))]
     internal class StaticSpriteFont : SpriteFont

@@ -20,12 +20,12 @@ using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
-    public class SkyboxGeneratorContext : ShaderGeneratorContextBase, IDisposable
+    public class SkyboxGeneratorContext : ShaderGeneratorContext, IDisposable
     {
         public SkyboxGeneratorContext()
         {
             Services = new ServiceRegistry();
-            Assets = new AssetManager(Services);
+            Content = new ContentManager(Services);
             GraphicsDevice = GraphicsDevice.New();
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
             RenderContext = RenderContext.GetShared(Services);
-            RenderDrawContext = new RenderDrawContext(Services, RenderContext, new CommandList(GraphicsDevice));
+            RenderDrawContext = new RenderDrawContext(Services, RenderContext, new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice)));
         }
 
         public IServiceRegistry Services { get; private set; }
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                 // load the skybox texture from the asset.
                 var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
-                var skyboxTexture = context.Assets.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
+                var skyboxTexture = context.Content.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
                 if (skyboxTexture.Dimension != TextureDimension.TextureCube)
                 {
                     result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 }
 
                 var shaderSource = asset.Model.Generate(context);
-                parameters.SetResourceSlow(SkyboxKeys.Shader, shaderSource);
+                parameters.Set(SkyboxKeys.Shader, shaderSource);
 
                 // -------------------------------------------------------------------
                 // Calculate Diffuse prefiltering
@@ -149,8 +149,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     coefficients[i] = coefficients[i] * bases[i];
                 }
 
-                skybox.DiffuseLightingParameters.SetResourceSlow(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
-                skybox.DiffuseLightingParameters.SetValueSlow(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
+                skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
+                skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
 
                 // -------------------------------------------------------------------
                 // Calculate Specular prefiltering
@@ -176,8 +176,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage(context.RenderDrawContext.CommandList));
 
-                    skybox.SpecularLightingParameters.SetResourceSlow(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
-                    skybox.SpecularLightingParameters.SetResourceSlow(SkyboxKeys.CubeMap, cubeTexture);
+                    skybox.SpecularLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
+                    skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, cubeTexture);
                 }
 
                 // TODO: cubeTexture is not deallocated

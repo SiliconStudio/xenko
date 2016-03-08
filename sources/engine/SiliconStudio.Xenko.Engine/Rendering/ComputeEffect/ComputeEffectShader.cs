@@ -18,11 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         private bool pipelineStateDirty = true;
 
         public ComputeEffectShader(RenderContext context)
-            : this(context, null)
-        {
-        }
-
-        public ComputeEffectShader(RenderContext context, params ParameterCollection[] sharedParameterCollections)
             : base(context, null)
         {
             // Setup the effect compiler
@@ -82,9 +77,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;
 
-            EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
-            EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
-            Parameters.SetValueSlow(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
+            Parameters.Set(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
+            Parameters.Set(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
+            Parameters.Set(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
 
             if (pipelineStateDirty)
             {
@@ -101,7 +96,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             // Apply the effect
-            EffectInstance.Apply(context.CommandList);
+            EffectInstance.Apply(context.GraphicsContext);
 
             // Draw a full screen quad
             context.CommandList.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);

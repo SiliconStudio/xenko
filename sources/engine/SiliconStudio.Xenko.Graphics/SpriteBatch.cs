@@ -89,19 +89,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Begins a sprite batch operation using deferred sort and default state objects (BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise).
         /// </summary>
-        /// <param name="commandList">The command list to fill.</param>
+        /// <param name="graphicsContext">The graphics context to use.</param>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
-        public void Begin(CommandList commandList, SpriteSortMode sortMode, EffectInstance effect)
+        public void Begin(GraphicsContext graphicsContext, SpriteSortMode sortMode, EffectInstance effect)
         {
-            UpdateDefaultProjectionMatrix(commandList);
-            Begin(commandList, defaultViewMatrix, defaultProjectionMatrix, sortMode, null, null, null, null, effect);
+            UpdateDefaultProjectionMatrix(graphicsContext.CommandList);
+            Begin(graphicsContext, defaultViewMatrix, defaultProjectionMatrix, sortMode, null, null, null, null, effect);
         }
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil and rasterizer state objects, plus a custom effect. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
-        /// <param name="commandList">The command list to fill.</param>
+        /// <param name="graphicsContext">The graphics context to use.</param>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="blendState">The blending state to use for the batch session</param>
         /// <param name="samplerState">The sampling state to use for the batch session</param>
@@ -109,16 +109,16 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(CommandList commandList, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendStateDescription? blendState = null, SamplerState samplerState = null, DepthStencilStateDescription? depthStencilState = null, RasterizerStateDescription? rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
+        public void Begin(GraphicsContext graphicsContext, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendStateDescription? blendState = null, SamplerState samplerState = null, DepthStencilStateDescription? depthStencilState = null, RasterizerStateDescription? rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
         {
-            UpdateDefaultProjectionMatrix(commandList);
-            Begin(commandList, defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
+            UpdateDefaultProjectionMatrix(graphicsContext.CommandList);
+            Begin(graphicsContext, defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
         }
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
-        /// <param name="commandList">The command list to fill.</param>
+        /// <param name="graphicsContext">The graphics context to use.</param>
         /// <param name="viewMatrix">The view matrix to use for the batch session</param>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="blendState">The blending state to use for the batch session</param>
@@ -127,16 +127,16 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(CommandList commandList, Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendStateDescription? blendState = null, SamplerState samplerState = null, DepthStencilStateDescription? depthStencilState = null, RasterizerStateDescription? rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
+        public void Begin(GraphicsContext graphicsContext, Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendStateDescription? blendState = null, SamplerState samplerState = null, DepthStencilStateDescription? depthStencilState = null, RasterizerStateDescription? rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
         {
-            UpdateDefaultProjectionMatrix(commandList);
-            Begin(commandList, viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
+            UpdateDefaultProjectionMatrix(graphicsContext.CommandList);
+            Begin(graphicsContext, viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
         }
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
-        /// <param name="commandList">The command list to fill.</param>
+        /// <param name="graphicsContext">The graphics context to use.</param>
         /// <param name="viewMatrix">The view matrix to use for the batch session</param>
         /// <param name="projectionMatrix">The projection matrix to use for the batch session</param>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
@@ -146,14 +146,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(CommandList commandList, Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendStateDescription? blendState = null, SamplerState samplerState = null, DepthStencilStateDescription? depthStencilState = null, RasterizerStateDescription? rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
+        public void Begin(GraphicsContext graphicsContext, Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendStateDescription? blendState = null, SamplerState samplerState = null, DepthStencilStateDescription? depthStencilState = null, RasterizerStateDescription? rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
             userViewMatrix = viewMatrix;
             userProjectionMatrix = projectionMatrix;
 
-            Begin(commandList, effect, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            base.Begin(graphicsContext, effect, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>
@@ -486,8 +486,9 @@ namespace SiliconStudio.Xenko.Graphics
                 fontSize = spriteFont.Size;
 
             // calculate the resolution ratio between the screen real size and the virtual resolution
-            var viewportSize = CommandList.Viewport;
-            var virtualResolution = GetCurrentResolution(CommandList);
+            var commandList = GraphicsContext.CommandList;
+            var viewportSize = commandList.Viewport;
+            var virtualResolution = GetCurrentResolution(commandList);
             var resolutionRatio = new Vector2(viewportSize.Width / virtualResolution.X, viewportSize.Height / virtualResolution.Y);
             scale.X = scale.X / resolutionRatio.X;
             scale.Y = scale.Y / resolutionRatio.Y;
@@ -502,7 +503,7 @@ namespace SiliconStudio.Xenko.Graphics
             drawCommand.Position.X /= resolutionRatio.X;
             drawCommand.Position.Y /= resolutionRatio.Y;
 
-            spriteFont.InternalDraw(CommandList, ref text, ref drawCommand, alignment);
+            spriteFont.InternalDraw(commandList, ref text, ref drawCommand, alignment);
         }
         
         internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref RectangleF? sourceRectangle, Color4 color, 
@@ -595,7 +596,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Setup effect states and parameters: SamplerState and MatrixTransform
             // Sets the sampler state
-            Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, viewProjection);
+            Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
 
             base.PrepareForRendering();
         }

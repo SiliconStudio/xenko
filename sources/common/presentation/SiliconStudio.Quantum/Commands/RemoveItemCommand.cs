@@ -11,10 +11,10 @@ namespace SiliconStudio.Quantum.Commands
 {
     public class RemoveItemCommand : SyncNodeCommand
     {
-        public const string StaticName = "RemoveItem";
+        public const string CommandName = "RemoveItem";
 
         /// <inheritdoc/>
-        public override string Name => StaticName;
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.AlwaysCombine;
@@ -43,7 +43,8 @@ namespace SiliconStudio.Quantum.Commands
 
         protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            content.Remove(index);
+            var item = content.Retrieve(index);
+            content.Remove(index, item);
             return null;
         }
     }

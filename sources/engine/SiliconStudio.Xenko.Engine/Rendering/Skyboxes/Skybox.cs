@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// The Skybox at runtime.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Skybox>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Skybox>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Skybox>))]
     [DataContract]
     public class Skybox
@@ -20,19 +20,19 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// </summary>
         public Skybox()
         {
-            Parameters = new NextGenParameterCollection();
-            DiffuseLightingParameters = new NextGenParameterCollection();
-            SpecularLightingParameters = new NextGenParameterCollection();
+            Parameters = new ParameterCollection();
+            DiffuseLightingParameters = new ParameterCollection();
+            SpecularLightingParameters = new ParameterCollection();
         }
 
         /// <summary>
         /// Gets or sets the parameters compiled for the runtime for the skybox.
         /// </summary>
         /// <value>The parameters.</value>
-        public NextGenParameterCollection Parameters { get; set; }
+        public ParameterCollection Parameters { get; set; }
 
-        public NextGenParameterCollection DiffuseLightingParameters { get; set; }
+        public ParameterCollection DiffuseLightingParameters { get; set; }
 
-        public NextGenParameterCollection SpecularLightingParameters { get; set; }
+        public ParameterCollection SpecularLightingParameters { get; set; }
     }
 }

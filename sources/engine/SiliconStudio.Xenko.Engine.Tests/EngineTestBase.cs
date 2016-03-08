@@ -53,9 +53,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private SceneGraphicsCompositorLayers graphicsCompositor;
 
-        public EngineTestBase(string effectName = "XenkoForwardShadingEffect")
+        public EngineTestBase()
         {
-            SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = effectName };
+            SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer" };
         }
 
         protected override async Task LoadContent()

@@ -48,10 +48,10 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.Begin();
 
             // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-            if (backBuffer != GraphicsDevice.windowProvidedRenderTexture)
-                GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.windowProvidedRenderTexture,
+            if (backBuffer != GraphicsDevice.WindowProvidedRenderTexture)
+                GraphicsDevice.MainCommandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
-                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), true);
+                    new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
 
             gameWindow.SwapBuffers();
 

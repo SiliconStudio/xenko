@@ -20,6 +20,11 @@ namespace SiliconStudio.Xenko.Graphics
             for (int setIndex = 0; setIndex < descriptorSetLayouts.Layouts.Count; setIndex++)
             {
                 var layout = descriptorSetLayouts.Layouts[setIndex].Layout;
+                if (layout == null)
+                {
+                    resourceGroupBindings[setIndex] = new ResourceGroupBinding { ConstantBufferSlot = -1 };
+                    continue;
+                }
 
                 var resourceGroupBinding = new ResourceGroupBinding();
 
@@ -27,35 +32,11 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     var layoutEntry = layout.Entries[resourceIndex];
 
-                    // Find it in shader reflection
-                    bool bindingFound = false;
-                    Buffer preallocatedCBuffer = null;
-
                     if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
                     {
                         var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
                         resourceGroupBinding.ConstantBufferSlot = resourceIndex;
-                        resourceGroupBinding.ConstantBufferPreallocated = Buffer.Cosntant.New(graphicsDevice, constantBuffer.Size);
-                    }
-
-                    foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings)
-                    {
-                        if (resourceBinding.Param.Key == layoutEntry.Key)
-                        {
-                            if (!bindingFound)
-                            {
-                                bindingFound = true;
-
-                                // If it's a cbuffer and API without cbuffer offset, we need to preallocate a real cbuffer for emulation
-                                if (resourceBinding.Param.Class == EffectParameterClass.ConstantBuffer)
-                                {
-                                    var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
-                                    resourceGroupBinding.ConstantBufferSlot = resourceIndex;
-                                    resourceGroupBinding.ConstantBufferPreallocated = Buffer.Cosntant.New(graphicsDevice, constantBuffer.Size);
-
-                                }
-                            }
-                        }
+                        resourceGroupBinding.ConstantBufferPreallocated = Buffer.Constant.New(graphicsDevice, constantBuffer.Size);
                     }
                 }
 
@@ -63,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal void Apply(CommandList commandList, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
+        public void Apply(CommandList commandList, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
         {
             if (resourceGroupBindings.Length == 0)
                 return;
@@ -74,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var resourceGroup = resourceGroups[resourceGroupsOffset + i];
 
                 // Upload cbuffer (if not done yet)
-                if (resourceGroup != null && resourceGroup.ConstantBuffer.Data != IntPtr.Zero)
+                if (resourceGroupBinding.ConstantBufferSlot != -1 && resourceGroup != null && resourceGroup.ConstantBuffer.Data != IntPtr.Zero)
                 {
                     var preallocatedBuffer = resourceGroup.ConstantBuffer.Buffer;
                     bool needUpdate = true;

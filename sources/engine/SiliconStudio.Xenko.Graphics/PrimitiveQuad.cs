@@ -13,11 +13,14 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public class PrimitiveQuad : ComponentBase
     {
-        private readonly Effect simpleEffect;
+        /// <summary>
+        /// The pipeline state.
+        /// </summary>
+        private readonly MutablePipelineState pipelineState = new MutablePipelineState();
+
+        private readonly EffectInstance simpleEffect;
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
-
-        private readonly ParameterCollection parameters;
 
         public static readonly VertexDeclaration VertexDeclaration = VertexPositionNormalTexture.Layout;
         public static readonly PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
@@ -30,9 +33,17 @@ namespace SiliconStudio.Xenko.Graphics
         public PrimitiveQuad(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            parameters = new ParameterCollection();
-            parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
+
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+            simpleEffect.UpdateEffect(graphicsDevice);
+            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+
+            pipelineState.State.SetDefaults();
+            pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
+            pipelineState.State.PrimitiveType = PrimitiveType;
+            pipelineState.State.RootSignature = simpleEffect.RootSignature;
+            pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
         }
 
         /// <summary>
@@ -45,13 +56,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the parameters used.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public ParameterCollection Parameters => simpleEffect.Parameters;
 
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
@@ -70,9 +75,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="texture">The texture.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void Draw(CommandList commandList, Texture texture, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, BlendStateDescription? blendState = null)
         {
-            Draw(commandList, texture, null, Color.White, applyEffectStates);
+            Draw(graphicsContext, texture, null, Color.White, blendState);
         }
 
         /// <summary>
@@ -83,15 +88,20 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
-        public void Draw(CommandList commandList, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, SamplerState samplerState, Color4 color, BlendStateDescription? blendState = null)
         {
             // Make sure that we are using our vertex shader
-            parameters.Set(SpriteEffectKeys.Color, color);
-            parameters.Set(TexturingKeys.Texture0, texture);
-            parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            //simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
-            throw new InvalidOperationException();
-            Draw(commandList);
+            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture);
+            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(graphicsContext);
+
+            pipelineState.State.BlendState = blendState ?? graphicsContext.CommandList.GraphicsDevice.BlendStates.Default;
+            pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
+            pipelineState.Update(GraphicsDevice);
+            graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
+
+            Draw(graphicsContext.CommandList);
 
             // TODO ADD QUICK UNBIND FOR SRV
             //GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);

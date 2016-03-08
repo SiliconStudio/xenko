@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
@@ -106,8 +105,8 @@ namespace SiliconStudio.Xenko.Games
             // Externals
             Services = new ServiceRegistry();
 
-            // Asset manager
-            Asset = new AssetManager(Services);
+            // Content manager
+            Content = new ContentManager(Services);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection();
@@ -202,10 +201,15 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="AssetManager"/>.
+        /// Gets the <see cref="ContentManager"/>.
         /// </summary>
-        /// <value>The content manager.</value>
-        public AssetManager Asset { get; private set; }
+        public ContentManager Content { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ContentManager"/>.
+        /// </summary>
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        public ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the game components registered by this game.
@@ -225,10 +229,7 @@ namespace SiliconStudio.Xenko.Games
         /// <value>The graphics device.</value>
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        /// <summary>
-        /// Gets the current command list.
-        /// </summary>
-        public CommandList GraphicsCommandList { get; set; }
+        public GraphicsContext GraphicsContext { get; private set; }
 
         /// <summary>
         /// Gets or sets the inactive sleep time.
@@ -315,6 +316,11 @@ namespace SiliconStudio.Xenko.Games
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets the full name of the device this game is running if available
+        /// </summary>
+        public string FullPlatformName => gamePlatform.FullName;
 
         public GameState State { get; set; }
         
@@ -443,6 +449,7 @@ namespace SiliconStudio.Xenko.Games
                 Context.RequestedBackBufferFormat = graphicsDeviceManagerImpl.PreferredBackBufferFormat;
                 Context.RequestedDepthStencilFormat = graphicsDeviceManagerImpl.PreferredDepthStencilFormat;
                 Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
+                Context.DeviceCreationFlags = graphicsDeviceManagerImpl.DeviceCreationFlags;
 
                 gamePlatform.Run(Context);
 
@@ -677,7 +684,20 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Setup default command list
-            GraphicsCommandList = new CommandList(GraphicsDevice);
+            if (GraphicsContext == null)
+            {
+                GraphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
+                Services.AddService(typeof(GraphicsContext), GraphicsContext);
+            }
+            else
+            {
+                // Reset allocator
+                GraphicsContext.ResourceGroupAllocator.Reset();
+                GraphicsContext.CommandList.Reset();
+            }
+
+            // Clear states
+            GraphicsContext.CommandList.ClearState();
 
             return true;
         }
@@ -742,14 +762,14 @@ namespace SiliconStudio.Xenko.Games
             // TODO: Check how we can handle this more cleanly
             if (GraphicsDevice != null && GraphicsDevice.Presenter.BackBuffer != null)
             {
-                GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+                GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             }
         }
 
         /// <summary>Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw.</summary>
         protected virtual void EndDraw(bool present)
         {
-            GraphicsCommandList = null;
+            GraphicsContext.CommandList.Close();
 
             if (graphicsDeviceManager != null)
             {
@@ -978,7 +998,7 @@ namespace SiliconStudio.Xenko.Games
         private void graphicsDeviceService_DeviceDisposing(object sender, EventArgs e)
         {
             // TODO: Unload all assets
-            //Asset.UnloadAll();
+            //Content.UnloadAll();
 
             if (GameSystems.State == GameSystemState.ContentLoaded)
             {

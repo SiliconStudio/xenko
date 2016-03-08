@@ -45,7 +45,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public void Clear()
         {
             packer.Clear();
-            clearNeeded = false;
         }
 
         public bool Insert(int width, int height, ref Rectangle bestRectangle)
@@ -63,13 +62,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             clearNeeded = true;
         }
 
-        public void ClearRenderTargetIfNecessary(CommandList commandList)
+        public void PrepareAsRenderTarget(CommandList commandList)
         {
+            // Switch to render target
+            commandList.ResourceBarrierTransition(Texture, GraphicsResourceState.DepthWrite);
+
             if (clearNeeded)
             {
                 // TODO GRAPHICS REFACTOR
                 commandList.Clear(Texture, DepthStencilClearOptions.DepthBuffer);
+                clearNeeded = false;
             }
+        }
+
+        public void PrepareAsShaderResourceView(CommandList commandList)
+        {
+            commandList.ResourceBarrierTransition(Texture, GraphicsResourceState.PixelShaderResource);
         }
     }
 }

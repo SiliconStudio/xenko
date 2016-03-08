@@ -14,22 +14,22 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The depth stencil buffer key.
         /// </summary>
-        public static readonly ParameterKey<Texture> DepthStencil = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> DepthStencil = ParameterKeys.NewObject<Texture>();
 
         /// <summary>
         /// The depth stencil buffer key used as an input shader resource.
         /// </summary>
-        public static readonly ParameterKey<Texture> DepthStencilSource = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> DepthStencilSource = ParameterKeys.NewObject<Texture>();
 
         /// <summary>
         /// The render target key.
         /// </summary>
-        public static readonly ParameterKey<Texture> RenderTarget = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> RenderTarget = ParameterKeys.NewObject<Texture>();
 
         /// <summary>
         /// The render target key.
         /// </summary>
-        public static readonly ParameterKey<Buffer> StreamTarget = ParameterKeys.New<Buffer>();
+        public static readonly ObjectParameterKey<Buffer> StreamTarget = ParameterKeys.NewObject<Buffer>();
 
         /// <summary>
         /// Used by <see cref="RenderTargetPlugin"/> to notify that the plugin requires support for depth stencil as shader resource

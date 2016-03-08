@@ -60,25 +60,25 @@ namespace SiliconStudio.Xenko.Engine.Tests
             await base.LoadContent();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = Asset.Load<SpriteFont>("Font");
+            font = Content.Load<SpriteFont>("Font");
 
             wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
-            materials.Add(Asset.Load<Material>("NoTessellation"));
-            materials.Add(Asset.Load<Material>("FlatTessellation"));
-            materials.Add(Asset.Load<Material>("PNTessellation"));
-            materials.Add(Asset.Load<Material>("PNTessellationAE"));
-            materials.Add(Asset.Load<Material>("FlatTessellationDispl"));
-            materials.Add(Asset.Load<Material>("FlatTessellationDisplAE"));
-            materials.Add(Asset.Load<Material>("PNTessellationDisplAE"));
+            materials.Add(Content.Load<Material>("NoTessellation"));
+            materials.Add(Content.Load<Material>("FlatTessellation"));
+            materials.Add(Content.Load<Material>("PNTessellation"));
+            materials.Add(Content.Load<Material>("PNTessellationAE"));
+            materials.Add(Content.Load<Material>("FlatTessellationDispl"));
+            materials.Add(Content.Load<Material>("FlatTessellationDisplAE"));
+            materials.Add(Content.Load<Material>("PNTessellationDisplAE"));
 
             var cube = new Entity("Cube") { new ModelComponent(new ProceduralModelDescriptor(new CubeProceduralModel { Size = new Vector3(80), MaterialInstance = { Material = materials[0] } }).GenerateModel(Services)) };
             var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Radius = 50, Tessellation = 5, MaterialInstance = { Material = materials[0] }} ).GenerateModel(Services)) };
 
-            var megalodon = new Entity { new ModelComponent { Model = Asset.Load<Model>("megalodon Model") } };
+            var megalodon = new Entity { new ModelComponent { Model = Content.Load<Model>("megalodon Model") } };
             megalodon.Transform.Position= new Vector3(0, -30f, -10f);
 
-            var knight = new Entity { new ModelComponent { Model = Asset.Load<Model>("knight Model") } };
+            var knight = new Entity { new ModelComponent { Model = Content.Load<Model>("knight Model") } };
             knight.Transform.RotationEulerXYZ = new Vector3(-MathUtil.Pi / 2, MathUtil.Pi / 4, 0);
             knight.Transform.Position = new Vector3(0, -50f, 20f);
             knight.Transform.Scale= new Vector3(0.6f);
@@ -92,8 +92,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
-            LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
+            // TODO GRAPHICS REFACTOR
+            throw new System.NotImplementedException();
+            //LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
+            //GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
             ChangeModel(0);
             SetWireframe(true);
@@ -119,8 +121,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             if (!debug)
                 return;
 
-            spriteBatch.Begin(GraphicsCommandList);
-            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.GetValueSlow(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
+            spriteBatch.Begin(GraphicsContext);
+            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();
         }
@@ -165,8 +167,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             if(currentMaterial == null)
                 return;
 
-            var oldValue = currentMaterial.Parameters.GetValueSlow(TessellationKeys.DesiredTriangleSize);
-            currentMaterial.Parameters.SetValueSlow(TessellationKeys.DesiredTriangleSize, oldValue + f);
+            var oldValue = currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize);
+            currentMaterial.Parameters.Set(TessellationKeys.DesiredTriangleSize, oldValue + f);
         }
 
         private void ChangeModel(int offset)

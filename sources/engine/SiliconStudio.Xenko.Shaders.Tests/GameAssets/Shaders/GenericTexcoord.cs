@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class GenericTexcoordKeys
     {
-        public static readonly ParameterKey<Vector2> coords = ParameterKeys.New<Vector2>();
+        public static readonly ValueParameterKey<Vector2> coords = ParameterKeys.NewValue<Vector2>();
     }
 }

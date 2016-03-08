@@ -10,8 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     internal static class LightStreakKeys
     {
-        public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
-
-        public static readonly ParameterKey<int> AnamorphicCount = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> Count = ParameterKeys.NewPermutation<int>();
+        
+        public static readonly PermutationParameterKey<int> AnamorphicCount = ParameterKeys.NewPermutation<int>();
     }
 }

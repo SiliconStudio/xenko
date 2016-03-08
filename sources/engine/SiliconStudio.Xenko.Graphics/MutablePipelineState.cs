@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // Otherwise, instantiate it
                 // First, make an copy
                 hashedState = new PipelineStateDescriptionWithHash(State.Clone());
-                cache.Add(hashedState, pipelineState = PipelineState.New(graphicsDevice, State));
+                cache.Add(hashedState, pipelineState = PipelineState.New(graphicsDevice, ref State));
             }
 
             CurrentState = pipelineState;

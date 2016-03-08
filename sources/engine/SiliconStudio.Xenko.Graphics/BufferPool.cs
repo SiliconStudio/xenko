@@ -26,6 +26,11 @@ namespace SiliconStudio.Xenko.Graphics
             bufferAllocationOffset = 0;
         }
 
+        public bool CanAllocate(int size)
+        {
+            return bufferAllocationOffset + size <= Size;
+        }
+
         public void Allocate(GraphicsDevice graphicsDevice, int size, BufferPoolAllocationType type, ref BufferPoolAllocationResult bufferPoolAllocationResult)
         {
             var result = bufferAllocationOffset;
@@ -47,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics
                     if (bufferPoolAllocationResult.Buffer != null)
                         bufferPoolAllocationResult.Buffer.Dispose();
 
-                    bufferPoolAllocationResult.Buffer = Buffer.Cosntant.New(graphicsDevice, size);
+                    bufferPoolAllocationResult.Buffer = Buffer.Constant.New(graphicsDevice, size);
                 }
             }
         }

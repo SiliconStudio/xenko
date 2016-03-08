@@ -16,6 +16,11 @@ namespace SiliconStudio.Xenko.Graphics
         Direct3D11,
 
         /// <summary>
+        /// HLSL Direct3D Shader.
+        /// </summary>
+        Direct3D12,
+
+        /// <summary>
         /// GLSL OpenGL Shader.
         /// </summary>
         OpenGL,

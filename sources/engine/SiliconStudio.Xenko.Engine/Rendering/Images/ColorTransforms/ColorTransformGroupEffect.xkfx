@@ -28,7 +28,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         mixin ColorTransformGroupShader;
         foreach (var colorTransform in ColorTransformGroupKeys.Transforms)
         {
+            context.PushParameters(colorTransform.Parameters);
             mixin compose Transforms += ColorTransformCompose;
+            context.PopParameters();
         }
     };
 }

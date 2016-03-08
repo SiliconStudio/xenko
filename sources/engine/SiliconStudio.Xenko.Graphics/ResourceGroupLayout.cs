@@ -5,24 +5,44 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    public struct ResourceGroupDescription
+    {
+        public readonly DescriptorSetLayoutBuilder DescriptorSetLayout;
+        public readonly ShaderConstantBufferDescription ConstantBufferReflection;
+        public readonly ObjectId Hash;
+
+        public ResourceGroupDescription(DescriptorSetLayoutBuilder descriptorSetLayout, ShaderConstantBufferDescription constantBufferReflection) : this()
+        {
+            DescriptorSetLayout = descriptorSetLayout;
+            ConstantBufferReflection = constantBufferReflection;
+
+            // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
+            Hash = descriptorSetLayout.Hash;
+            if (constantBufferReflection != null)
+                ObjectId.Combine(ref Hash, ref constantBufferReflection.Hash, out Hash);
+        }
+    }
+
     public class ResourceGroupLayout
     {
         public DescriptorSetLayout DescriptorSetLayout;
         public int ConstantBufferSize;
         public ShaderConstantBufferDescription ConstantBufferReflection;
+        public ObjectId Hash;
         public ObjectId ConstantBufferHash;
 
-        public static ResourceGroupLayout New(GraphicsDevice graphicsDevice, DescriptorSetLayoutBuilder descriptorSetLayoutBuilder, EffectBytecode effectBytecode, string cbufferName)
+        public static ResourceGroupLayout New(GraphicsDevice graphicsDevice, ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
         {
-            return New<ResourceGroupLayout>(graphicsDevice, descriptorSetLayoutBuilder, effectBytecode, cbufferName);
+            return New<ResourceGroupLayout>(graphicsDevice, resourceGroupDescription, effectBytecode);
         }
 
-        public static ResourceGroupLayout New<T>(GraphicsDevice graphicsDevice, DescriptorSetLayoutBuilder descriptorSetLayoutBuilder, EffectBytecode effectBytecode, string cbufferName) where T : ResourceGroupLayout, new()
+        public static ResourceGroupLayout New<T>(GraphicsDevice graphicsDevice, ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode) where T : ResourceGroupLayout, new()
         {
             var result = new T
             {
-                DescriptorSetLayout = DescriptorSetLayout.New(graphicsDevice, descriptorSetLayoutBuilder),
-                ConstantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == cbufferName),
+                DescriptorSetLayout = DescriptorSetLayout.New(graphicsDevice, resourceGroupDescription.DescriptorSetLayout),
+                ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
+                Hash = resourceGroupDescription.Hash,
             };
 
             if (result.ConstantBufferReflection != null)

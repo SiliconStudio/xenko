@@ -16,8 +16,10 @@ Profiles:
     - Name: Shared
       AssetFolders:
         - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
+        - Path: sources/engine/SiliconStudio.Xenko.Engine.NextGen/Effects		
         - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
+        - Path: sources/engine/SiliconStudio.Xenko.Particles/Shaders
 TemplateFolders:
     - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates
       Group: Core
@@ -64,11 +66,15 @@ TemplateFolders:
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
+        - samples\Particles\SimpleParticles\SimpleParticles.xktpl
+        - samples\Particles\CustomParticles\CustomParticles.xktpl
+        - samples\Particles\ParticleMaterialShader\ParticleMaterialShader.xktpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\Physics\Raycasting\Raycasting.xktpl
         - samples\Physics\VolumeTrigger\VolumeTrigger.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
+        - samples\UI\UIParticles\UIParticles.xktpl
         - samples\Others\NativeLinking\NativeLinking.xktpl
         - samples\Others\CustomAnimation\CustomAnimation.xktpl
 RootAssets:

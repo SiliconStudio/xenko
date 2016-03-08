@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             skipHighestLevel = radianceFilter.DoNotFilterHighestLevel;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            inputCubemap = Asset.Load<Texture>("CubeMap");
+            inputCubemap = Content.Load<Texture>("CubeMap");
             outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
             outputCubemapNoCompute = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6).DisposeBy(this);
             CreateViews();
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
             context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, spriteEffect);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, spriteEffect);
             spriteBatch.Draw(displayedViews[1], new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[2], new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[4], new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
 
             PrefilterCubeMap(renderDrawContext);
             RenderCubeMap(renderDrawContext);

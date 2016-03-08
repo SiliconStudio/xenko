@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// Class used for all Textures (1D, 2D, 3D, DepthStencil, RenderTargets...etc.)
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Content")]
     [ContentSerializer(typeof(TextureContentSerializer))]
     [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
     [DataSerializer(typeof(TextureSerializer))]
@@ -363,7 +363,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The width stride in bytes (number of bytes per row).
         /// </summary>
-        private int RowStride { get; set; }
+        internal int RowStride { get; private set; }
 
         /// <summary>
         /// The depth stride in bytes (number of bytes per depth slice).
@@ -373,7 +373,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The underlying parent texture (if this is a view).
         /// </summary>
-        private Texture ParentTexture { get; set; }
+        internal Texture ParentTexture { get; private set; }
 
         private MipMapDescription[] mipmapDescriptions;
 
@@ -392,7 +392,6 @@ namespace SiliconStudio.Xenko.Graphics
         protected override void Destroy()
         {
             base.Destroy();
-            DestroyImpl();
             if (ParentTexture != null)
             {
                 ParentTexture.ReleaseInternal();

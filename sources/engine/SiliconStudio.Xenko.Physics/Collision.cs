@@ -1,4 +1,7 @@
-using System.Collections.Generic;
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Xenko.Engine;
 
@@ -16,7 +19,7 @@ namespace SiliconStudio.Xenko.Physics
         public PhysicsComponent ColliderA;
         public PhysicsComponent ColliderB;
 
-        public List<ContactPoint> Contacts;
+        public TrackingCollection<ContactPoint> Contacts;
 
         internal Channel<ContactPoint> NewContactChannel;
 

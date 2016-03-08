@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
 
 using SharpDX.DXGI;
@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
 
         private bool simulateReset = false;
+        private string rendererName;
 
         private SharpDX.Direct3D11.Device nativeDevice;
         private SharpDX.Direct3D11.DeviceContext nativeDeviceContext;
@@ -141,9 +142,14 @@ namespace SiliconStudio.Xenko.Graphics
             simulateReset = true;
         }
 
-        private void InitializeFactories()
+        private void InitializePostFeatures()
         {
             
+        }
+
+        private string GetRendererName()
+        {
+            return rendererName;
         }
 
         /// <summary>
@@ -160,6 +166,8 @@ namespace SiliconStudio.Xenko.Graphics
                 ReleaseDevice();
             }
 
+            rendererName = Adapter.NativeAdapter.Description.Description;
+
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
 
@@ -174,6 +182,13 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsResourceBase.SetDebugName(this, nativeDeviceContext, "ImmediateContext");
             }
+        }
+
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
+            // On D3D, default state is Less instead of our LessEqual
+            // Let's update default pipeline state so that it correspond to D3D state after a "ClearState()"
+            pipelineStateDescription.DepthStencilState.DepthBufferFunction = CompareFunction.Less;
         }
 
         protected void DestroyPlatformDevice()

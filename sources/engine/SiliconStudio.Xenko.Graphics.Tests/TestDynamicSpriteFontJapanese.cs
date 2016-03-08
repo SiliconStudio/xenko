@@ -53,8 +53,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            msMincho10 = Asset.Load<SpriteFont>(AssetPrefix + "MSMincho10");
-            arialMS = Asset.Load<SpriteFont>(AssetPrefix + "Meiryo14");
+            msMincho10 = Content.Load<SpriteFont>(AssetPrefix + "MSMincho10");
+            arialMS = Content.Load<SpriteFont>(AssetPrefix + "Meiryo14");
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -70,12 +70,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawText()
         {
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin(GraphicsCommandList);
+            spriteBatch.Begin(GraphicsContext);
 
             var x = 20;
             var y = 10;

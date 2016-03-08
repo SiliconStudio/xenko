@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Generate the AST from the mixin description
                 if (shaderMixinParser == null)
                 {
-                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? AssetManager.FileProvider);
+                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? ContentManager.FileProvider);
                     shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
                     shaderMixinParser.SourceManager.UseFileSystem = UseFileSystem;
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters)
         {
             var log = new LoggerResult();
 
@@ -107,6 +107,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 case GraphicsPlatform.Direct3D11:
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11", 1);
+                    break;
+                case GraphicsPlatform.Direct3D12:
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12", 1);
                     break;
                 case GraphicsPlatform.OpenGL:
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL", 1);
@@ -193,6 +197,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
+                case GraphicsPlatform.Direct3D12:
                     compiler = new Direct3D.ShaderCompiler();
                     break;
 #endif
@@ -259,6 +264,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                 stageStringBuilder.AppendLine("@G    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
+                if (result.DisassembleText != null)
+                {
+                    stageStringBuilder.Append(result.DisassembleText);
+                }
 #endif
                 // -------------------------------------------------------
 
@@ -269,11 +278,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     break;
             }
 
-            // In case of Direct3D, we can safely remove reflection data as it is entirely resolved at compile time.
-            if (platform == GraphicsPlatform.Direct3D11)
-            {
-                CleanupReflection(bytecode.Reflection);
-            }
+            // Remove unused reflection data, as it is entirely resolved at compile time.
+            CleanupReflection(bytecode.Reflection);
             bytecode.Stages = shaderStageBytecodes.ToArray();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -285,7 +291,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 builder.AppendLine("***************************");
                 builder.Append("@P EffectName: ");
                 builder.AppendLine(fullEffectName ?? "");
-                builder.Append(usedParameters.ToStringDetailed());
+                builder.Append(usedParameters.ToStringPermutationsDetailed());
                 builder.AppendLine("***************************");
 
                 if (bytecode.Reflection.ConstantBuffers.Count > 0)

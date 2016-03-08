@@ -11,13 +11,14 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A compiled version of <see cref="MaterialDescriptor"/>.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Material>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Material>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Material>))]
     [DataContract]
     public class Material
@@ -27,14 +28,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Material()
         {
-            Parameters = new NextGenParameterCollection();
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Material"/> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        public Material(NextGenParameterCollection parameters)
+        public Material(ParameterCollection parameters)
         {
             Parameters = parameters;
         }
@@ -43,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public NextGenParameterCollection Parameters { get; set; }
+        public ParameterCollection Parameters { get; set; }
 
         /// <summary>
         /// Overrides the cullmode for this material.
@@ -68,7 +69,11 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public MaterialDescriptor Descriptor { get; set; }
 
-        public object RenderData;
+        /// <summary>
+        /// Determines if this material is affected by lighting.
+        /// </summary>
+        /// <value><c>true</c> if this instance affects lighting; otherwise, <c>false</c>.</value>
+        public bool IsLightDependent { get; set; }
 
         /// <summary>
         /// Creates a new material from the specified descriptor.

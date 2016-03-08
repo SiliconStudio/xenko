@@ -31,7 +31,7 @@ namespace SiliconStudio.Presentation.View
         /// <param name="dispatcher">The dispatcher to use for this instance of <see cref="DispatcherService"/>.</param>
         public DispatcherService(Dispatcher dispatcher)
         {
-            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             this.dispatcher = dispatcher;
         }
 

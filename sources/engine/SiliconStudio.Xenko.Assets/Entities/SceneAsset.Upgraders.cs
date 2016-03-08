@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
@@ -18,6 +20,87 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public partial class SceneAsset
     {
+        // Upgrades inconsistent Float and Float2 Min/Max fields into Float2 and Float4 MinMax fields respectively
+        class ParticleMinMaxFieldsUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    var entityId = (string)entity.Id;
+                    var entityName = (string)entity.Name;
+
+                    foreach (var component in entity.Components)
+                    {
+                        var componentKey = (string)component.Key;
+                        var componentTag = component.Node.Tag;
+                        if (componentTag == "!ParticleSystemComponent")
+                        {
+                            dynamic particleSystem = component.ParticleSystem;
+                            if (particleSystem != null)
+                            {
+
+                                foreach (dynamic emitter in particleSystem.Emitters)
+                                {
+                                    // Lifetime changed from: float (ParticleMinLifetime), float (ParticleMaxLifetime) -> Vector2 (ParticleLifetime)
+
+                                    dynamic lifetime = new DynamicYamlMapping(new YamlMappingNode());
+                                    lifetime.AddChild("X", emitter.ParticleMinLifetime);
+                                    lifetime.AddChild("Y", emitter.ParticleMaxLifetime);
+
+                                    emitter.AddChild("ParticleLifetime", lifetime);
+
+                                    emitter.RemoveChild("ParticleMinLifetime");
+                                    emitter.RemoveChild("ParticleMaxLifetime");
+
+                                    // Initializers
+                                    foreach (dynamic initializer in emitter.Initializers)
+                                    {
+                                        var initializerTag = initializer.Node.Tag;
+                                        if (initializerTag == "!InitialRotationSeed")
+                                        {
+                                            dynamic angle = new DynamicYamlMapping(new YamlMappingNode());
+                                            angle.AddChild("X", initializer.AngularRotationMin);
+                                            angle.AddChild("Y", initializer.AngularRotationMax);
+
+                                            initializer.AddChild("AngularRotation", angle);
+
+                                            initializer.RemoveChild("AngularRotationMin");
+                                            initializer.RemoveChild("AngularRotationMax");
+
+                                        }
+                                    }
+
+                                    // Updaters
+                                    foreach (dynamic updater in emitter.Updaters)
+                                    {
+                                        var updaterTag = updater.Node.Tag;
+                                        if (updaterTag == "!UpdaterCollider")
+                                        {
+                                            var isSolid = (bool)updater.IsSolid;
+
+                                            updater.AddChild("IsHollow", !isSolid);
+
+                                            updater.RemoveChild("IsSolid");
+                                        }
+                                    }
+
+
+
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
+
         // All upgraders for SceneAsset
         class RemoveSourceUpgrader : AssetUpgraderBase
         {
@@ -35,9 +118,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
             {
                 dynamic asset = new DynamicYamlMapping(yamlAssetNode);
-                var baseBranch = asset["~Base"];
+                var baseBranch = asset[Asset.BaseProperty];
                 if (baseBranch != null)
-                    asset["~Base"] = DynamicYamlEmpty.Default;
+                    asset[BaseProperty] = DynamicYamlEmpty.Default;
 
                 AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, targetVersion);
             }

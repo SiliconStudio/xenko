@@ -17,11 +17,10 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     // TODO REWRITE AND COMMENT THIS CLASS
-    public class MaterialGeneratorContext : ShaderGeneratorContextBase
+    public class MaterialGeneratorContext : ShaderGeneratorContext
     {
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
         private int shadingModelCount;
-        private MaterialOverrides currentOverrides;
 
         private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> inputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
 
@@ -30,7 +29,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         private readonly Material material;
 
-        private Stack<MaterialOverrides> overridesStack = new Stack<MaterialOverrides>();
 
         private Stack<IMaterialDescriptor> materialStack = new Stack<IMaterialDescriptor>();
 
@@ -38,8 +36,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             this.material = material ?? new Material();
             Parameters = this.material.Parameters;
-
-            currentOverrides = new MaterialOverrides();
 
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
             {
@@ -67,21 +63,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        public ColorSpace ColorSpace { get; set; }
-
         private MaterialBlendLayerNode Current { get; set; }
 
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
-        public bool IsNotPixelStage { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether materials will be optimized (textures blended together, generate optimized shader permutations, etc...).
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [materials are optimized]; otherwise, <c>false</c>.
-        /// </value>
-        public bool OptimizeMaterials { get; set; }
 
         public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback)
         {
@@ -104,28 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             return shaderSource;
         }
 
-        public void PushOverrides(MaterialOverrides overrides)
-        {
-            if (overrides == null) throw new ArgumentNullException("overrides");
-            overridesStack.Push(overrides);
-            UpdateOverrides();
-        }
 
-        public void PopOverrides()
-        {
-            overridesStack.Pop();
-            UpdateOverrides();
-        }
-
-        private void UpdateOverrides()
-        {
-            // Update overrides by squashing them using multiplication
-            currentOverrides = new MaterialOverrides();
-            foreach (var current in overridesStack)
-            {
-                currentOverrides *= current;
-            }
-        }
 
         public void PushLayer()
         {
@@ -135,14 +99,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 Current.Children.Add(newLayer);
             }
             Current = newLayer;
-        }
-
-        public MaterialOverrides CurrentOverrides
-        {
-            get
-            {
-                return currentOverrides;
-            }
         }
 
         /// <summary>
@@ -205,7 +161,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
                 {
-                    // the initializers
+                    // the Initializers
                     Current.Parent.StreamInitializers[stage].AddRange(Current.StreamInitializers[stage]);
 
                     // skip pixel shader if shading model need to be blended
@@ -292,23 +248,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         // TODO: move this method to an extension method
-        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
-        {
-            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
-            return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
-        }
-
-        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
-        {
-            if (sampler == null) throw new ArgumentNullException("sampler");
-
-            var samplerStateDesc = new SamplerStateDescription(sampler.Filtering, sampler.AddressModeU)
-            {
-                AddressV = sampler.AddressModeV,
-                AddressW = TextureAddressMode.Wrap
-            };
-            return GetSamplerKey(samplerStateDesc);
-        }
 
         public void Visit(IMaterialFeature feature)
         {
@@ -358,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Current.StreamInitializers[stage].Add(streamInitilizerSource);
         }
 
-        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
+        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             Current.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
@@ -368,7 +307,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Current.SetStream(stage, stream, streamType, shaderSource);
         }
 
-        public void SetStream(string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
+        public void SetStream(string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
@@ -424,7 +363,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public MaterialShadingModelCollection ShadingModels { get; set; }
 
-            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
+            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
             {
                 if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
                 if (computeNode == null)
@@ -605,6 +544,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     var shadingModel = shadingModelKeyPair.Key;
                     if (shadingModel.IsLightDependent)
                     {
+                        context.Material.IsLightDependent = true;
+
                         if (mixinSource == null)
                         {
                             mixinSource = new ShaderMixinSource();

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
 #endif
@@ -172,7 +173,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if ((Description.Flags & TextureFlagsCustomResourceId) != 0)
                     return;
 
-                using (GraphicsDevice.UseOpenGLCreationContext())
+                using (var openglContext = GraphicsDevice.UseOpenGLCreationContext())
                 {
                     // Depth texture are render buffer for now
                     // TODO: enable switch
@@ -203,13 +204,11 @@ namespace SiliconStudio.Xenko.Graphics
                         IsRenderbuffer = true;
                         return;
                     }
-                    else
-                    {
-                        GL.GenTextures(1, out resourceId);
-                        GL.BindTexture(Target, resourceId);
 
-                        IsRenderbuffer = false;
-                    }
+                    GL.GenTextures(1, out resourceId);
+                    GL.BindTexture(Target, resourceId);
+
+                    IsRenderbuffer = false;
 
                     // No filtering on depth buffer
                     if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) != TextureFlags.None)
@@ -267,7 +266,7 @@ namespace SiliconStudio.Xenko.Graphics
                                 }
                                 else
                                 {
-                                    GL.TexImage2D(dataSetTarget, i, internalFormat, width, height, 0, format, type, data);
+                                    GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat, width, height, 0, format, type, data);
                                 }
                             }
                             else if (setSize == 3)
@@ -303,6 +302,11 @@ namespace SiliconStudio.Xenko.Graphics
                         }
                     }
                     GL.BindTexture(Target, 0);
+                    if (openglContext.CommandList != null)
+                    {
+                        // If we messed up with some states of a command list, mark dirty states
+                        openglContext.CommandList.boundTextures[openglContext.CommandList.activeTexture] = null;
+                    }
 
                     InitializePixelBufferObject();
                 }
@@ -481,7 +485,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private bool IsFlipped()
         {
-            return GraphicsDevice.windowProvidedRenderTexture == this || GraphicsDevice.windowProvidedDepthTexture == this;
+            return GraphicsDevice.WindowProvidedRenderTexture == this;
         }
 
         private void InitializePixelBufferObject()

@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
         private static Stream OpenDataBaseStream(string name)
         {
-            return AssetManager.FileProvider.OpenStream(name, VirtualFileMode.Open, VirtualFileAccess.Read);
+            return ContentManager.FileProvider.OpenStream(name, VirtualFileMode.Open, VirtualFileAccess.Read);
         }
 
         [TestFixtureSetUp]
@@ -547,7 +547,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
             ///////////////////////////////////////////////////////////////////////////////
             // 7. Check that modifying SoundMusic volume does not modify SoundEffectVolume
             SoundEffect soundEffect;
-            using (var contStream = AssetManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var contStream = ContentManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 soundEffect = SoundEffect.Load(defaultEngine, contStream);
             }

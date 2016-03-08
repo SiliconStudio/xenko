@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            hdrTexture = Asset.Load<Texture>("HdrTexture");
+            hdrTexture = Content.Load<Texture>("HdrTexture");
             hdrRenderTexture = Texture.New2D(GraphicsDevice, hdrTexture.Width, hdrTexture.Height, 1, hdrTexture.Description.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             drawEffectContext = RenderContext.GetShared(Services);
             postProcessingEffects = new PostProcessingEffects(drawEffectContext);
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (!ScreenShotAutomationEnabled)
                 AdjustEffectParameters();
 
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
             DrawCustomEffect(renderDrawContext);
 
             base.Draw(gameTime);
@@ -89,10 +89,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         }
         private void DrawCustomEffect(RenderDrawContext context)
         {
-            GraphicsCommandList.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
+            GraphicsContext.CommandList.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
 
             postProcessingEffects.SetInput(hdrRenderTexture);
-            postProcessingEffects.SetOutput(GraphicsCommandList.RenderTarget);
+            postProcessingEffects.SetOutput(GraphicsContext.CommandList.RenderTarget);
             postProcessingEffects.Draw(context);
         }
 

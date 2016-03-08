@@ -6,7 +6,15 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Background;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Shadows;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
+using SiliconStudio.Xenko.Rendering.Sprites;
+using ShaderMixins = SiliconStudio.Xenko.Rendering.ShaderMixins;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -15,8 +23,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public class SceneSystem : GameSystemBase
     {
-
         private RenderContext renderContext;
+        private RenderDrawContext renderDrawContext;
 
         /// <summary>
         /// The main render frame of the scene system
@@ -53,7 +61,8 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void LoadContent()
         {
-            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+            var assetManager = Services.GetSafeServiceAs<ContentManager>();
+            var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
             // Preload the scene if it exists
             if (InitialSceneUrl != null && assetManager.Exists(InitialSceneUrl))
@@ -64,7 +73,7 @@ namespace SiliconStudio.Xenko.Engine
             if (MainRenderFrame == null)
             {
                 // TODO GRAPHICS REFACTOR Check if this is a good idea to use Presenter targets
-                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter.BackBuffer, GraphicsDevice.Presenter.DepthStencilBuffer);
+                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter?.BackBuffer, GraphicsDevice.Presenter?.DepthStencilBuffer);
                 if (MainRenderFrame != null)
                 {
                     previousWidth = MainRenderFrame.Width;
@@ -74,6 +83,7 @@ namespace SiliconStudio.Xenko.Engine
 
             // Create the drawing context
             renderContext = RenderContext.GetShared(Services);
+            renderDrawContext = new RenderDrawContext(Services, renderContext, graphicsContext);
         }
 
         public override void Update(GameTime gameTime)
@@ -106,8 +116,7 @@ namespace SiliconStudio.Xenko.Engine
             renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext);
 
-            // Renders the scene
-            var renderDrawContext = new RenderDrawContext(Services, renderContext, Game.GraphicsCommandList);
+            // Render phase
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);
         }
     }

@@ -20,12 +20,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets a value indicating whether this renderer is initialized.
         /// </summary>
         bool Initialized { get; }
-
-        /// <summary>
-        /// Gets if the system tried initialization but is unable to work in the current environment
-        /// </summary>
-        bool Faulted { get; }
-
         /// <summary>
         /// Loads this renderer. See remarks.
         /// </summary>

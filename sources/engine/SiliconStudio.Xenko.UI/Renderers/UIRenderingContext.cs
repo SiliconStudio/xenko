@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.UI.Renderers
     public class UIRenderingContext
     {
         /// <summary>
-        /// The active graphics command list.
+        /// The active graphics context.
         /// </summary>
-        public CommandList GraphicsCommandList { get; set; }
+        public GraphicsContext GraphicsContext { get; set; }
 
         /// <summary>
         /// The current time.

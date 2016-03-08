@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="DataVisitorBase"/> class.
         /// </summary>
         protected DataVisitorBase()
-            : this(new TypeDescriptorFactory(new AttributeRegistry()))
+            : this(Reflection.TypeDescriptorFactory.Default)
         {
         }
 
@@ -208,7 +208,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 var value = array.GetValue(i);
                 CurrentPath.Push(descriptor, i);
-                VisitArrayItem(array, descriptor, i, value, value == null ? null : TypeDescriptorFactory.Find(value.GetType()));
+                VisitArrayItem(array, descriptor, i, value, TypeDescriptorFactory.Find(value?.GetType() ?? descriptor.ElementType));
                 CurrentPath.Pop();
             }
         }
@@ -224,7 +224,7 @@ namespace SiliconStudio.Core.Reflection
             foreach (var item in collection)
             {
                 CurrentPath.Push(descriptor, i);
-                VisitCollectionItem(collection, descriptor, i, item, item == null ? null : TypeDescriptorFactory.Find(item.GetType()));
+                VisitCollectionItem(collection, descriptor, i, item, TypeDescriptorFactory.Find(item?.GetType() ?? descriptor.ElementType));
                 CurrentPath.Pop();
                 i++;
             }
@@ -240,9 +240,9 @@ namespace SiliconStudio.Core.Reflection
             foreach (var keyValue in descriptor.GetEnumerator(dictionary))
             {
                 var key = keyValue.Key;
-                var keyDescriptor = keyValue.Key == null ? null : TypeDescriptorFactory.Find(keyValue.Key.GetType());
+                var keyDescriptor = TypeDescriptorFactory.Find(keyValue.Key?.GetType() ?? descriptor.KeyType);
                 var value = keyValue.Value;
-                var valueDescriptor = keyValue.Value == null ? null : TypeDescriptorFactory.Find(keyValue.Value.GetType());
+                var valueDescriptor = TypeDescriptorFactory.Find(keyValue.Value?.GetType() ?? descriptor.ValueType);
 
                 CurrentPath.Push(descriptor, key);
                 VisitDictionaryKeyValue(dictionary, descriptor, key, keyDescriptor, value, valueDescriptor);

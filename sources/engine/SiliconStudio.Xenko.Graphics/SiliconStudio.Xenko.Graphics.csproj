@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -28,7 +28,7 @@
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -42,7 +42,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -52,10 +52,6 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
         </Reference>
-        <Reference Include="SharpDX.Direct3D11">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-        </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
@@ -64,8 +60,34 @@
     </When>
   </Choose>
   <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D11">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D12">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+          <ItemGroup>
+            <Reference Include="OpenTK">
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
@@ -96,9 +118,9 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
       <ItemGroup>
-        <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
@@ -123,7 +145,7 @@
       <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+  <ItemGroup Condition="('$(SiliconStudioPlatform)' == 'Android') OR ('$(SiliconStudioPlatform)' == 'Linux')">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
@@ -135,6 +157,7 @@
     <Compile Include="BatchBase.cs" />
     <Compile Include="BufferPool.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
     <Compile Include="DescriptorSet.cs" />
@@ -143,11 +166,33 @@
     <Compile Include="DescriptorSetLayoutBuilder.cs" />
     <Compile Include="DescriptorSetLayoutEntry.cs" />
     <Compile Include="DescriptorTypeCount.cs" />
+    <Compile Include="Direct3D12\Buffer.Direct3D12.cs" />
+    <Compile Include="Direct3D12\CommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSet.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorPool.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSetLayout.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDevice.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDeviceFeatures.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsOutput.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResourceBase.Direct3D12.cs" />
+    <Compile Include="Direct3D12\MappedResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\PipelineState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\SamplerState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\Texture.Direct3D12.cs" />
     <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
     <Compile Include="EffectInstance.cs" />
+    <Compile Include="EffectParameterUpdater.cs" />
+    <Compile Include="EffectParameterUpdaterLayout.cs" />
+    <Compile Include="GraphicsContext.cs" />
     <Compile Include="InputClassification.cs" />
     <Compile Include="InputElementDescription.cs" />
     <Compile Include="MutablePipelineState.cs" />
+    <Compile Include="RenderOutputDescription.cs" />
+    <Compile Include="OpenGL\CommandList.OpenGL.cs" />
+    <Compile Include="OpenGL\PipelineState.OpenGL.cs" />
+    <Compile Include="ResourceBinder.cs" />
+    <Compile Include="ResourceGroupAllocator.cs" />
     <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
@@ -156,7 +201,7 @@
     <Compile Include="Font\StaticSpriteFontSerializer.cs" />
     <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
-    <Compile Include="NextGenParameterCollectionLayoutExtensions.cs" />
+    <Compile Include="ParameterCollectionLayoutExtensions.cs" />
     <Compile Include="PipelineState.cs" />
     <Compile Include="Data\BufferData.cs" />
     <Compile Include="Data\GraphicsSerializerExtensions.cs" />
@@ -167,7 +212,14 @@
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="ResourceGroup.cs" />
     <Compile Include="ResourceGroupLayout.cs" />
+    <Compile Include="ResourceStates.cs" />
     <Compile Include="RootSignature.cs" />
+    <Compile Include="SDL\Application.cs" />
+    <Compile Include="SDL\Cursor.cs" />
+    <Compile Include="SDL\FormBorderStyle.cs" />
+    <Compile Include="SDL\FormWindowState.cs" />
+    <Compile Include="SDL\SDLMessageLoop.cs" />
+    <Compile Include="SDL\Window.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
@@ -230,7 +282,6 @@
     <Compile Include="ImageOrientation.cs" />
     <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
-    <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
     <Compile Include="ResumeManager.cs" />
     <Compile Include="Effects\Effect.cs" />
@@ -265,7 +316,6 @@
     <Compile Include="IVertex.cs" />
     <Compile Include="MappedResource.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="OpenGL\EffectInputSignature.OpenGL.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.iOS.cs" />
     <Compile Include="PrimitiveQuad.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Direct3D11.Level_9_1.cs" />
@@ -345,7 +395,6 @@
     <Compile Include="Null\GraphicsDeviceFeatures.Null.cs" />
     <Compile Include="Null\Texture2DBase.Null.cs" />
     <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
-    <Compile Include="OpenGL\Shader.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
     <Compile Include="SwizzleMode.cs" />
@@ -429,7 +478,6 @@
     <Compile Include="OpenGL\RasterizerState.OpenGL.cs" />
     <Compile Include="OpenGL\SamplerState.OpenGL.cs" />
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
-    <Compile Include="OpenGL\VertexArrayObject.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">

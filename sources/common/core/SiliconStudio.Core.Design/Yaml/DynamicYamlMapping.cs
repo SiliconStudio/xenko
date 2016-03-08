@@ -36,6 +36,18 @@ namespace SiliconStudio.Core.Yaml
             return node.Children.Select(x => new KeyValuePair<dynamic, dynamic>(ConvertToDynamic(x.Key), ConvertToDynamic(x.Value))).ToArray().GetEnumerator();
         }
 
+        public void AddChild(object key, object value)
+        {
+            var yamlKey = ConvertFromDynamic(key);
+            var yamlValue = ConvertFromDynamic(value);
+
+            var keyPosition = node.Children.IndexOf(yamlKey);
+            if (keyPosition != -1)
+                return;
+
+            node.Children.Add(yamlKey, yamlValue);
+        }
+
         public void MoveChild(object key, int movePosition)
         {
             var yamlKey = ConvertFromDynamic(key);

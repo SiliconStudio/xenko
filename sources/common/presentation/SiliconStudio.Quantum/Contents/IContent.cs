@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -47,6 +47,11 @@ namespace SiliconStudio.Quantum.Contents
         /// Gets the reference hold by this content, if applicable.
         /// </summary>
         IReference Reference { get; }
+
+        /// <summary>
+        /// Gets all the indices in the value of this content, if it is a collection. Otherwise, this property returns null.
+        /// </summary>
+        IEnumerable<object> Indices { get; }
 
         /// <summary>
         /// Gets whether the <see cref="Reference"/> contained in this content should lead to the creation of model node for the referenced object.
@@ -110,7 +115,8 @@ namespace SiliconStudio.Quantum.Contents
         /// Removes an item from this content, assuming the content is a collection.
         /// </summary>
         /// <param name="itemIndex">The index from which the item must be removed.</param>
-        void Remove(object itemIndex);
+        /// <param name="item"></param>
+        void Remove(object itemIndex, object item);
 
         // TODO: implement clear if needed
         //void Clear();

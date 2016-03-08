@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
 using SiliconStudio.Xenko.Shaders;
@@ -161,12 +162,16 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 
         protected abstract string GetTextureChannelAsString();
 
-        public abstract ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+        public abstract ShaderSource GenerateShaderFromFallbackValue(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys);
 
-        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             if (!Enabled || Texture == null) // generate shader from default value when the texture is null or disabled
-                return GenerateShaderFromFallbackValue(context, baseKeys);
+            {
+                var fallbackValue = GenerateShaderFromFallbackValue(context, baseKeys);
+                if (fallbackValue != null)
+                    return fallbackValue;
+            }
 
             // generate shader from the texture
             // TODO: Use a generated UsedTexcoordIndex when backing textures
@@ -198,38 +203,38 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
                 if (context.IsNotPixelStage)
                 {
                     if (Offset != Vector2.Zero)
-                        shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr, 0.0f, "PerMaterial");
+                        shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr, 0.0f);
                     else if (scale != Vector2.One)
-                        shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, 0.0f, "PerMaterial");
+                        shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, 0.0f);
                     else
-                        shaderSource = new ShaderClassSource("ComputeColorTextureLodSampler", textureKey, usedTexcoord, samplerKey, channelStr, 0.0f, "PerMaterial");
+                        shaderSource = new ShaderClassSource("ComputeColorTextureLodSampler", textureKey, usedTexcoord, samplerKey, channelStr, 0.0f);
                 }
                 else
                 {
                     if (Offset != Vector2.Zero)
-                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr, "PerMaterial");
+                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr);
                     else if (scale != Vector2.One)
-                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, "PerMaterial");
+                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr);
                     else
-                        shaderSource = new ShaderClassSource("ComputeColorTextureSampler", textureKey, usedTexcoord, samplerKey, channelStr, "PerMaterial");
+                        shaderSource = new ShaderClassSource("ComputeColorTextureSampler", textureKey, usedTexcoord, samplerKey, channelStr);
                 }
             }
             else
             {
                 // Try to avoid shader permutations, by putting UV scaling/offset in shader parameters
-                var textureScale = (ParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureScale);
-                var textureOffset = (ParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureOffset);
+                var textureScale = (ValueParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureScale);
+                var textureOffset = (ValueParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureOffset);
 
-                context.Parameters.SetValueSlow(textureScale, scale);
-                context.Parameters.SetValueSlow(textureOffset, Offset);
+                context.Parameters.Set(textureScale, scale);
+                context.Parameters.Set(textureOffset, Offset);
 
                 if (context.IsNotPixelStage)
                 {
-                    shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, 0.0f, "PerMaterial");
+                    shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, 0.0f);
                 }
                 else
                 {
-                    shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, "PerMaterial");
+                    shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
                 }
             }
 

@@ -73,13 +73,13 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             await base.LoadContent();
 
-            font = Asset.Load<SpriteFont>("Font");
-            teapot = Asset.Load<Model>("Teapot");
+            font = Content.Load<SpriteFont>("Font");
+            teapot = Content.Load<Model>("Teapot");
             batch = new SpriteBatch(GraphicsDevice);
 
             BuildUI();
 
-            spriteComponent = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("SpriteSheet") } };
+            spriteComponent = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Content.Load<SpriteSheet>("SpriteSheet") } };
             modelComponent = new ModelComponent { Model = teapot };
             modelComponent2 = new ModelComponent { Model = teapot };
             modelComponent3 = new ModelComponent { Model = teapot };
@@ -262,11 +262,11 @@ namespace SiliconStudio.Xenko.Input.Tests
                 currentYawPitchRoww = new Vector3(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll);
             }
 
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
             var targetSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
 
-            batch.Begin(GraphicsCommandList);
+            batch.Begin(GraphicsContext);
 
             var position = new Vector2(0.005f, 0.01f);
             var text = "Acceleration[{0}]=({1:0.00})".ToFormat(Input.Accelerometer.IsEnabled ? "E" : "D", currentAcceleration);

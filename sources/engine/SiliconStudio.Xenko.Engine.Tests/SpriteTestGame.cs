@@ -55,10 +55,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             CameraComponent.ProjectionMatrix = Matrix.OrthoRH(areaSize.X, areaSize.Y, -2, 2);
 
             // Load assets
-            groundSprites = Asset.Load<SpriteSheet>("GroundSprite");
-            ballSprite1 = Asset.Load<SpriteSheet>("BallSprite1");
-            ballSprite2 = Asset.Load<SpriteSheet>("BallSprite2");
-            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("BallSprite1") } } };
+            groundSprites = Content.Load<SpriteSheet>("GroundSprite");
+            ballSprite1 = Content.Load<SpriteSheet>("BallSprite1");
+            ballSprite2 = Content.Load<SpriteSheet>("BallSprite2");
+            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Content.Load<SpriteSheet>("BallSprite1") } } };
 
             // create fore/background entities
             foreground = new Entity();

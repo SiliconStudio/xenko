@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// A graphics layer.
     /// </summary>
     [DataContract("SceneGraphicsLayer")]
-    public class SceneGraphicsLayer : RendererBase, IEnumerable
+    public class SceneGraphicsLayer : RendererBase, IEnumerable, INextGenRenderer
     {
         private IGraphicsLayerOutput output;
 
@@ -116,6 +116,16 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.Unload();
         }
 
+        public void BeforeExtract(RenderContext context)
+        {
+            var renderFrame = Output.GetRenderFrame(context);
+
+            using (context.PushTagAndRestore(RenderFrame.Current, renderFrame))
+            {
+                Renderers.BeforeExtract(context);
+            }
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
             if (!Enabled || Output == null)
@@ -128,11 +138,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             
             // Sets the output of the layer 
             // Master is always going to use the Master frame for the current frame.
-            var renderFrame = Output.GetRenderFrame(context);
+            var renderFrame = Output.GetRenderFrame(context.RenderContext);
 
-            using (var t1 = context.PushTagAndRestore(CurrentInput, currentRenderFrame))
+            using (context.RenderContext.PushTagAndRestore(CurrentInput, currentRenderFrame))
+            using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, renderFrame))
             {
-                context.RenderContext.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
             }
         }

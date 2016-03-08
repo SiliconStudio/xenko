@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Graphics
         public CommandList(GraphicsDevice device) : base(device)
         {
             nativeDeviceContext = device.NativeDeviceContext;
-            nativeDeviceProfiler = SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer);
+            nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
             InitializeStages();
 
             ClearState();
@@ -50,6 +50,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The native device context.</value>
         internal SharpDX.Direct3D11.DeviceContext NativeDeviceContext => nativeDeviceContext;
 
+        public void Reset()
+        {
+        }
+
+        public void Close()
+        {
+        }
 
         private void ClearStateImpl()
         {
@@ -83,13 +90,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
+        /// <param name="renderTargetCount">The number of render targets.</param>
         /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, Texture[] renderTargets)
+        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
-            for (int i = 0; i < renderTargets.Length; i++)
-                currentRenderTargetViews[i] = renderTargets[i] != null ? renderTargets[i].NativeRenderTargetView : null;
-            outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, currentRenderTargetViews.Length, currentRenderTargetViews);
+            for (int i = 0; i < renderTargetCount; i++)
+                currentRenderTargetViews[i] = renderTargets[i].NativeRenderTargetView;
+
+            outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, renderTargetCount, currentRenderTargetViews);
         }
 
         /// <summary>
@@ -147,9 +156,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         private unsafe void SetViewportImpl()
         {
+            if (!viewportDirty)
+                return;
+
+            viewportDirty = false;
+
             fixed (Viewport* viewportsPtr = viewports)
             {
-                nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, viewports.Length);
+                nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewportsPtr, renderTargetCount > 0 ? renderTargetCount : 1);
             }
         }
 
@@ -260,6 +274,11 @@ namespace SiliconStudio.Xenko.Graphics
             SetViewportImpl();
         }
 
+        public void SetStencilReference(int stencilReference)
+        {
+            nativeDeviceContext.OutputMerger.DepthStencilReference = stencilReference;
+        }
+
         public void SetPipelineState(PipelineState pipelineState)
         {
             newPipelineState = pipelineState ?? GraphicsDevice.DefaultPipelineState;
@@ -273,6 +292,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
         {
             inputAssembler.SetIndexBuffer(buffer != null ? buffer.NativeBuffer : null, is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt, offset);
+        }
+
+        public void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
+        {
+            // Nothing to do
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)

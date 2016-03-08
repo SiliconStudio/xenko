@@ -37,7 +37,7 @@
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -65,11 +65,11 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Data\Configurations.cs" />
     <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
-    <Compile Include="Data\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
-    <Compile Include="Effects\EffectParameterExtensions.cs" />
     <Compile Include="Effects\ParameterCollectionSerializer.cs" />
+    <Compile Include="CompilationMode.cs" />
     <Compile Include="Graphics\ColorExtensions.cs" />
     <Compile Include="Graphics\ColorSpace.cs" />
     <Compile Include="Graphics\CompareFunction.cs" />
@@ -106,19 +106,18 @@
     <Compile Include="Graphics\TextureFilter.cs" />
     <Compile Include="Graphics\WICHelper.cs" />
     <Compile Include="Graphics\WICFlags.cs" />
-    <Compile Include="Effects\IParameterCollectionInheritance.cs" />
-    <Compile Include="Effects\IParameterCollectionInheritanceInternal.cs" />
-    <Compile Include="Effects\ParameterCollection.cs" />
     <Compile Include="Effects\ParameterCollectionExtensions.cs" />
     <Compile Include="Effects\ParameterKey.cs" />
     <Compile Include="Effects\ParameterKeyValueMetadata.cs" />
     <Compile Include="Effects\ParameterKeys.cs" />
     <Compile Include="Effects\ParameterKeySerializer.cs" />
+    <Compile Include="Data\PlatformConfigurations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\NextGenParameterCollection.cs" />
-    <Compile Include="Rendering\NextGenParameterCollectionLayout.cs" />
+    <Compile Include="Rendering\ParameterCollection.cs" />
+    <Compile Include="Rendering\ParameterCollectionLayout.cs" />
     <Compile Include="Rendering\ParameterKeyInfo.cs" />
-    <Compile Include="Rendering\ResourceParameter.cs" />
+    <Compile Include="Rendering\PermutationParameter.cs" />
+    <Compile Include="Rendering\ObjectParameterAccessor.cs" />
     <Compile Include="Rendering\ValueParameter.cs" />
   </ItemGroup>
   <ItemGroup>

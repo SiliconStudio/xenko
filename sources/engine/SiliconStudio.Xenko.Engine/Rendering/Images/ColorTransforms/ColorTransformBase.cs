@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract(Inherited = true)]
     public abstract class ColorTransformBase
     {
+        ParameterCollection.CompositionCopier parameterCompositionCopier;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorTransformBase" /> class.
         /// </summary>
@@ -30,6 +32,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             Shader = colorTransformShader;
         }
+
+        /// <summary>
+        /// Gets the group this <see cref="ColorTransformBase" /> is associated with.
+        /// </summary>
+        [DataMemberIgnore]
+        public ColorTransformGroup Group { get; internal set; }
 
         /// <summary>
         /// Gets or sets the name of the shader.
@@ -50,6 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
 
                 Parameters.Set(ColorTransformKeys.Shader, value);
+                Group?.NotifyPermutationChange();
             }
         }
 
@@ -67,6 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             set
             {
                 Parameters.Set(ColorTransformKeys.GenericArguments, value);
+                Group?.NotifyPermutationChange();
             }
         }
 
@@ -97,12 +107,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
         }
 
         /// <summary>
+        /// Prepare copy operations for parameters.
+        /// </summary>
+        public virtual void PrepareParameters(ColorTransformContext context, ParameterCollection parentCollection, string keyRoot)
+        {
+            // Save Group aside
+            Group = context.Group;
+
+            // Compute associated layout ranges
+            parameterCompositionCopier = new ParameterCollection.CompositionCopier();
+            parameterCompositionCopier.Compile(parentCollection, Parameters, keyRoot);
+        }
+
+        /// <summary>
         /// Updates the parameters for this transformation.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <remarks>This method is called just before rendering the ColorTransformGroup that is holding this ColorTransformBase</remarks>
         public virtual void UpdateParameters(ColorTransformContext context)
         {
+            parameterCompositionCopier.Copy(Parameters);
         }
 
         private void InitializeProperties()

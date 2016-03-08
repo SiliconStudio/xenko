@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class PhysicsDebugEffectKeys
     {
-        public static readonly ParameterKey<Matrix> WorldViewProj = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Color4> Color = ParameterKeys.New<Color4>(new Color4(1,1,1,1));
-        public static readonly ParameterKey<float> UseUv = ParameterKeys.New<float>(1.0f);
+        public static readonly ValueParameterKey<Matrix> WorldViewProj = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Color4> Color = ParameterKeys.NewValue<Color4>(new Color4(1,1,1,1));
+        public static readonly ValueParameterKey<float> UseUv = ParameterKeys.NewValue<float>(1.0f);
     }
 }

@@ -53,12 +53,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(true)]
         public virtual bool Enabled { get; set; }
 
-        /// <summary>
-        /// Gets if the system tried initialization but is unable to work in the current environment
-        /// </summary>
-        [DataMemberIgnore]
-        public bool Faulted { get; protected set; }
-
         [DataMemberIgnore]
         public bool Profiling { get; set; }
 
@@ -73,11 +67,18 @@ namespace SiliconStudio.Xenko.Rendering
         protected IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="AssetManager"/>.
+        /// Gets the <see cref="ContentManager"/>.
         /// </summary>
         /// <value>The asset manager.</value>
         [DataMemberIgnore]
-        protected AssetManager Assets { get; private set; }
+        protected ContentManager Content { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ContentManager"/>.
+        /// </summary>
+        [DataMemberIgnore]
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        protected ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the graphics device.
@@ -110,18 +111,11 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Initialize most common services related to rendering
             Services = Context.Services;
-            Assets = Services.GetSafeServiceAs<AssetManager>();
+            Content = Services.GetSafeServiceAs<ContentManager>();
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
-            try
-            {
-                InitializeCore();
-            }
-            catch (Exception)
-            {
-                Faulted = true;
-            }         
+            InitializeCore();
 
             Initialized = true;
 
@@ -233,14 +227,7 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new ArgumentNullException("context");
             }
 
-            if (Context == null)
-            {
-                Initialize(context.RenderContext);
-            }
-            else if (Context != context.RenderContext)
-            {
-                throw new InvalidOperationException("Cannot use a different context between Load and Draw");
-            }
+            EnsureContext(context.RenderContext);
 
             if (Name != null && Profiling)
             {
@@ -251,6 +238,18 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Allow scoped allocation RenderTargets
             isInDrawCore = true;
+        }
+
+        protected void EnsureContext(RenderContext context)
+        {
+            if (Context == null)
+            {
+                Initialize(context);
+            }
+            else if (Context != context)
+            {
+                throw new InvalidOperationException("Cannot use a different context between Load and Draw");
+            }
         }
 
         protected void PostDrawCoreInternal(RenderDrawContext context)

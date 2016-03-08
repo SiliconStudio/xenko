@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A render frame is a container for a render target and its depth stencil buffer.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<RenderFrame>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<RenderFrame>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<RenderFrame>))]
     [DataSerializer(typeof(RenderFrameSerializer))]
     public class RenderFrame : IDisposable
@@ -148,16 +148,16 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 foreach (var renderTexture in renderTextures)
                 {
-                    if (renderTexture != null && !renderTexture.IsRenderTarget)
+                    if (!renderTexture.IsRenderTarget)
                     {
                         throw new ArgumentException("The texture must be a render target", "renderTextures");
                     }
 
-                    if (referenceTexture == null && renderTexture != null)
+                    if (referenceTexture == null)
                     {
                         referenceTexture = renderTexture;
                     }
-                    else if (renderTexture != null)
+                    else
                     {
                         if (referenceTexture.Width != renderTexture.Width || referenceTexture.Height != renderTexture.Height)
                         {
@@ -230,7 +230,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return null;
             }
 
-            return FromTexture(new [] { texture }, depthStencilTexture);
+            return FromTexture(texture != null ? new[] { texture } : null, depthStencilTexture);
         }
 
         /// <summary>

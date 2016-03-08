@@ -1,12 +1,16 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
-using System.Collections.Generic;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Xenko.Physics.Engine;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -15,7 +19,7 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     [AllowMultipleComponents]
     [ComponentOrder(3000)]
-    public abstract class PhysicsComponent : EntityComponent
+    public abstract class PhysicsComponent : ActivableEntityComponent
     {
         static PhysicsComponent()
         {
@@ -33,10 +37,8 @@ namespace SiliconStudio.Xenko.Engine
                 ColliderShapeChanged = true;
             };
 
-            FirstCollisionChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
-            AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
         }
 
         [DataMemberIgnore]
@@ -47,6 +49,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [DataMember(200)]
         [Category]
+        [NotNullItems]
         public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; }
 
         /// <summary>
@@ -75,8 +78,6 @@ namespace SiliconStudio.Xenko.Engine
 
         protected bool IsDefaultGroup => CanCollideWith == 0 || CollisionGroup == 0;
 
-        private bool processCollisions = true;
-
         /// <summary>
         /// Gets or sets if this element will store collisions
         /// </summary>
@@ -88,9 +89,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [Display("Collision events")]
         [DataMember(45)]
-        public virtual bool ProcessCollisions { get; set; }
-
-        private bool enabled = true;
+        [DefaultValue(true)]
+        public virtual bool ProcessCollisions { get; set; } = true;
 
         /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
@@ -101,20 +101,21 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// If this element is enabled in the physics engine
         /// </userdoc>
-        [DataMember(50)]
-        public bool Enabled
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public override bool Enabled
         {
             get
             {
-                return enabled;
+                return base.Enabled;
             }
             set
             {
-                enabled = value;
+                base.Enabled = value;
 
                 if (NativeCollisionObject == null) return;
 
-                if (enabled)
+                if (value)
                 {
                     NativeCollisionObject.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
@@ -149,7 +150,7 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (NativeCollisionObject == null) return;
 
-                if (enabled)
+                if (Enabled)
                 {
                     NativeCollisionObject.ActivationState = value ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
                 }
@@ -303,15 +304,7 @@ namespace SiliconStudio.Xenko.Engine
         #region Ignore or Private/Internal
 
         [DataMemberIgnore]
-        public List<Collision> Collisions { get; } = new List<Collision>();
-
-        [DataMemberIgnore]
-        internal Channel<Collision> FirstCollisionChannel;
-
-        public ChannelMicroThreadAwaiter<Collision> FirstCollision()
-        {
-            return FirstCollisionChannel.Receive();
-        }
+        public TrackingCollection<Collision> Collisions { get; } = new TrackingCollection<Collision>();
 
         [DataMemberIgnore]
         internal Channel<Collision> NewPairChannel;
@@ -327,14 +320,6 @@ namespace SiliconStudio.Xenko.Engine
         public ChannelMicroThreadAwaiter<Collision> CollisionEnded()
         {
             return PairEndedChannel.Receive();
-        }
-
-        [DataMemberIgnore]
-        internal Channel<Collision> AllPairsEndedChannel;
-
-        public ChannelMicroThreadAwaiter<Collision> AllCollisionsEnded()
-        {
-            return AllPairsEndedChannel.Receive();
         }
 
         [DataMemberIgnore]
@@ -635,7 +620,6 @@ namespace SiliconStudio.Xenko.Engine
 
         #endregion Utility
 
-
         internal void Attach(PhysicsProcessor.AssociatedData data)
         {
             Data = data;
@@ -682,8 +666,7 @@ namespace SiliconStudio.Xenko.Engine
         protected virtual void OnAttach()
         {
             //set pre-set post deserialization properties
-            ProcessCollisions = processCollisions;
-            Enabled = enabled;
+            Enabled = base.Enabled;
             CanSleep = canSleep;
             Restitution = restitution;
             Friction = friction;

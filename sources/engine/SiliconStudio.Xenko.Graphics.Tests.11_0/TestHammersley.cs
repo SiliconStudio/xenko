@@ -63,16 +63,16 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
 
-            GraphicsCommandList.Clear(output, Color4.White);
+            GraphicsContext.CommandList.Clear(output, Color4.White);
             renderHammersley.ThreadGroupCounts = new Int3(samplesCount, 1, 1);
             renderHammersley.ThreadNumbers = new Int3(1);
-            renderHammersley.Parameters.SetResourceSlow(HammersleyTestKeys.OutputTexture, output);
-            renderHammersley.Parameters.SetValueSlow(HammersleyTestKeys.SamplesCount, samplesCount);
+            renderHammersley.Parameters.Set(HammersleyTestKeys.OutputTexture, output);
+            renderHammersley.Parameters.Set(HammersleyTestKeys.SamplesCount, samplesCount);
             renderHammersley.Draw(renderDrawContext);
 
-            GraphicsCommandList.DrawTexture(output);
+            GraphicsContext.DrawTexture(output);
 
             base.Draw(gameTime);
         }

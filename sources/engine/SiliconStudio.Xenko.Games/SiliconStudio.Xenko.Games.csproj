@@ -30,23 +30,27 @@
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>    
-  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+  </Choose>
+  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX.DXGI">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D12" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -101,14 +105,8 @@
     <Compile Include="OpenTK\GamePlatform.Windows.OpenTK.cs" />
     <Compile Include="OpenTK\GameWindow.Windows.OpenTK.cs" />
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
-    <Compile Include="SDL\Application.cs" />
-    <Compile Include="SDL\Cursor.cs" />
-    <Compile Include="SDL\FormBorderStyle.cs" />
-    <Compile Include="SDL\FormWindowState.cs" />
     <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="SDL\GameWindow.SDL.cs" />
-    <Compile Include="SDL\SDLMessageLoop.cs" />
-    <Compile Include="SDL\Window.cs" />
     <Compile Include="Time\AbsoluteStopwatch.cs" />
     <Compile Include="Time\ITimedValue.cs" />
     <Compile Include="Time\TimerTick.cs" />

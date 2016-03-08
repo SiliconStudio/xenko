@@ -48,8 +48,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             batch = new Sprite3DBatch(GraphicsDevice);
-            sphere = Asset.Load<Texture>("Sphere");
-            rotatedImages = Asset.Load<SpriteSheet>("RotatedImages");
+            sphere = Content.Load<Texture>("Sphere");
+            rotatedImages = Content.Load<SpriteSheet>("RotatedImages");
             rasterizerState = new RasterizerStateDescription(CullMode.None);
         }
 
@@ -87,11 +87,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var projectionMatrix = Matrix.PerspectiveRH(cameraSize, cameraSize, cameraNear, 10000);
             var viewMatrix = Matrix.LookAtRH(cameraNear * Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
 
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            batch.Begin(GraphicsCommandList, viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
+            batch.Begin(GraphicsContext, viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
 
             var leftTopCorner = new Vector3(-320, -320, 0);
             var pos = leftTopCorner;

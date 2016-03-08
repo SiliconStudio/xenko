@@ -14,7 +14,6 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public class MemberContent : ContentBase
     {
-        protected IContent Container;
         private readonly NodeContainer nodeContainer;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
@@ -31,7 +30,15 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
+        /// <summary>
+        /// Gets the name of the node holding this content.
+        /// </summary>
         public string Name => OwnerNode?.Name;
+
+        /// <summary>
+        /// Gets the container content of this member content.
+        /// </summary>
+        public IContent Container { get; }
 
         /// <inheritdoc/>
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
@@ -93,7 +100,7 @@ namespace SiliconStudio.Quantum.Contents
             if (collectionDescriptor != null)
             {
                 var index = (int)itemIndex;
-                if (collectionDescriptor.GetCollectionCount(Value) == index)
+                if (collectionDescriptor.GetCollectionCount(Value) == index || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(Value, newItem);
                 }
@@ -113,7 +120,7 @@ namespace SiliconStudio.Quantum.Contents
             NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
         }
 
-        public override void Remove(object itemIndex)
+        public override void Remove(object itemIndex, object item)
         {
             if (itemIndex == null) throw new ArgumentNullException(nameof(itemIndex));
             var oldValue = Retrieve(itemIndex);
@@ -122,8 +129,15 @@ namespace SiliconStudio.Quantum.Contents
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = (int)itemIndex;
-                collectionDescriptor.RemoveAt(Value, index);
+                if (collectionDescriptor.HasRemoveAt)
+                {
+                    var index = (int)itemIndex;
+                    collectionDescriptor.RemoveAt(Value, index);                  
+                }
+                else
+                {
+                    collectionDescriptor.Remove(Value, item);
+                }               
             }
             else if (dictionaryDescriptor != null)
             {

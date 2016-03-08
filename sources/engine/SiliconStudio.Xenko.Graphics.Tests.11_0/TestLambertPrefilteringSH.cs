@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             renderSHEffect.Initialize(drawEffectContext);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            inputCubemap = Asset.Load<Texture>("CubeMap");
+            inputCubemap = Content.Load<Texture>("CubeMap");
             outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
             displayedCubemap = outputCubemap;
         }
@@ -105,33 +105,33 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
             context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
-            cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 1);
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 1);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 2);
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 2);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 4);
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 4);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 3);
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 3);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 2f * size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 5);
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 5);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 3f * size.Y, size.X, size.Y), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipVertically);
             spriteBatch.End();
 
-            cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 0);
-            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 0);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(2f * size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
         }
@@ -158,7 +158,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
             PrefilterCubeMap(renderDrawContext);
             RenderCubeMap(renderDrawContext);
 

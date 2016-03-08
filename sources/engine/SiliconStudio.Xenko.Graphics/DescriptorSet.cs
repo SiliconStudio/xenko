@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Graphics
             return new DescriptorSet(graphicsDevice, pool, desc);
         }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         internal readonly DescriptorSetEntry[] HeapObjects;
         internal readonly int DescriptorStartOffset;
 
@@ -24,6 +24,8 @@ namespace SiliconStudio.Xenko.Graphics
             this.HeapObjects = pool.Entries;
             this.DescriptorStartOffset = pool.Allocate(desc.ElementCount);
         }
+
+        public bool IsValid => DescriptorStartOffset != -1;
 
         /// <summary>
         /// Sets a descriptor.

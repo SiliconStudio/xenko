@@ -2,11 +2,13 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public struct ValueParameter<T> where T : struct
     {
-        internal readonly int Index;
+        internal readonly int Offset;
+        internal readonly int Count;
 
-        internal ValueParameter(int index)
+        internal ValueParameter(int offset, int count)
         {
-            this.Index = index;
+            this.Offset = offset;
+            this.Count = count;
         }
     }
 }

@@ -1,8 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -22,38 +23,40 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Retrieve the child node of the given <see cref="IGraphNode"/> that matches the given name. If the node represents an object reference, it returns the referenced object.
+        /// Gets all the children of the given node, the nodes it references, and their children, recursively.
         /// </summary>
-        /// <param name="modelNode">The view model node to look into.</param>
-        /// <param name="name">The name of the child to retrieve.</param>
-        /// <returns>The child node that matches the given name, or the referenced node if the child hold an object reference, or <c>null</c> if no child matches.</returns>
-        public static IGraphNode GetReferencedChild(this IGraphNode modelNode, string name)
+        /// <param name="graphNode">The node for which to obtain all children.</param>
+        /// <param name="rootPath">The path of the root node passed to this method.</param>
+        /// <returns>A sequence of node containing all the nodes that are either child or referenced by the given node, recursively.</returns>
+        public static IEnumerable<Tuple<IGraphNode, GraphNodePath>> GetAllChildNodes(this IGraphNode graphNode, GraphNodePath rootPath = null)
         {
-            return modelNode.GetChild(name)?.ResolveTarget();
-        }
+            var processedNodes = new HashSet<IGraphNode>();
+            var nodeStack = new Stack<Tuple<IGraphNode, GraphNodePath>>();
+            nodeStack.Push(Tuple.Create(graphNode, rootPath));
 
-        /// <summary>
-        /// Gets the child of the given node that matches the given name. If the given node holds an object reference, resolve the target of the reference
-        /// and gets the child of the target node that matches the given name.
-        /// </summary>
-        /// <param name="modelNode">The model node.</param>
-        /// <param name="name">The name of the child to retrieve.</param>
-        /// <returns></returns>
-        public static IGraphNode GetChildThroughReferences(this IGraphNode modelNode, string name)
-        {
-            var child = modelNode.GetChild(name) ?? modelNode.ResolveTarget().GetChild(name);
-            return child;
-        }
+            while (nodeStack.Count > 0)
+            {
+                var item = nodeStack.Pop();
+                var node = item.Item1;
+                var path = item.Item2;
 
-        /// <summary>
-        /// Gets the target node of the given <see cref="IGraphNode"/> if it holds an object reference, or returns the node itself otherwise
-        /// </summary>
-        /// <param name="modelNode">The node that may contains an object reference.</param>
-        /// <returns>The target node of the given <see cref="IGraphNode"/> if it holds an object reference, or the node itself otherwise.</returns>
-        public static IGraphNode ResolveTarget(this IGraphNode modelNode)
-        {
-            var objReference = modelNode.Content.Reference as ObjectReference;
-            return objReference != null ? objReference.TargetNode : modelNode;
+                processedNodes.Add(node);
+                // We don't want to include the initial node
+                if (node != graphNode)
+                    yield return item;
+
+                // Add child nodes
+                node.Children.ForEach(x => nodeStack.Push(Tuple.Create(x, path?.Append(node, x, GraphNodePath.ElementType.Member, null))));
+
+                // Add object reference target node
+                var objectReference = node.Content.Reference as ObjectReference;
+                if (objectReference?.TargetNode != null)
+                    nodeStack.Push(Tuple.Create(objectReference.TargetNode, path?.Append(node, objectReference.TargetNode, GraphNodePath.ElementType.Target, null)));
+
+                // Add enumerable reference target nodes
+                var enumerableReference = node.Content.Reference as ReferenceEnumerable;
+                enumerableReference?.Where(x => x.TargetNode != null).ForEach(x => nodeStack.Push(Tuple.Create(x.TargetNode, path?.Append(node, x.TargetNode, GraphNodePath.ElementType.Index, x.Index))));
+            }
         }
 
         /// <summary>

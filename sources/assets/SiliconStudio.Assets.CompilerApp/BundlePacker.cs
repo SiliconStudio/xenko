@@ -53,7 +53,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 }
 
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase.AssetIndexMap, objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
+                ContentManager.GetFileProvider = () => databaseFileProvider;
 
                 // Pass1: Create ResolvedBundle from user Bundle
                 var resolvedBundles = new Dictionary<string, ResolvedBundle>();
@@ -298,7 +298,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 referencesByObjectId[objectId] = references = new List<string>();
 
                 // Open stream to read list of chunk references
-                using (var stream = AssetManager.FileProvider.OpenStream(DatabaseFileProvider.ObjectIdUrl + objectId, VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var stream = ContentManager.FileProvider.OpenStream(DatabaseFileProvider.ObjectIdUrl + objectId, VirtualFileMode.Open, VirtualFileAccess.Read))
                 {
                     // Read chunk header
                     var streamReader = new BinarySerializationReader(stream);

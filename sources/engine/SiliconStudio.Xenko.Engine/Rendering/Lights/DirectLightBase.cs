@@ -25,18 +25,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public abstract BoundingBox ComputeBounds(Vector3 position, Vector3 direction);
 
-        public float ComputeScreenCoverage(RenderContext context, Vector3 position, Vector3 direction)
-        {
-            var camera = context.GetCurrentCamera();
-            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-            if (camera == null || sceneCameraRenderer == null)
-            {
-                return 0.0f;
-            }
-            var viewport = sceneCameraRenderer.ComputedViewport;
-            return ComputeScreenCoverage(camera, position, direction, viewport.Width, viewport.Height);
-        }
-
-        protected abstract float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height);
+        public abstract float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height);
     }
 }

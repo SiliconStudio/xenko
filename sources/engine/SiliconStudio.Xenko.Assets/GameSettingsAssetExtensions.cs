@@ -1,4 +1,8 @@
+using System.IO;
+using NuGet;
 using SiliconStudio.Assets;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -12,15 +16,24 @@ namespace SiliconStudio.Xenko.Assets
         public static GameSettingsAsset GetGameSettingsAsset(this Package package)
         {
             var gameSettingsAsset = package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+            if (gameSettingsAsset == null && package.TemporaryAssets.Count > 0)
+            {
+                gameSettingsAsset = package.TemporaryAssets.Find(x => x.Location == GameSettingsAsset.GameSettingsLocation);
+            }
             return gameSettingsAsset?.Asset as GameSettingsAsset;
         }
 
         public static GameSettingsAsset GetGameSettingsAssetOrDefault(this AssetItem assetItem)
         {
-            var gameSettings = assetItem.Package.GetGameSettingsAsset();
+            return assetItem.Package.GetGameSettingsAssetOrDefault();
+        }
+
+        public static GameSettingsAsset GetGameSettingsAssetOrDefault(this Package package)
+        {
+            var gameSettings = package.GetGameSettingsAsset();
             if (gameSettings == null)
             {
-                var session = assetItem.Package.Session;
+                var session = package.Session;
                 var currentPackage = session.CurrentPackage;
                 if (currentPackage != null)
                 {
@@ -28,6 +41,15 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
             return gameSettings ?? new GameSettingsAsset();
+        }
+
+        public static GameSettingsAsset CloneGameSettingsAsset(this Package package)
+        {
+            lock (package)
+            {
+                var gameSettings = package.GetGameSettingsAssetOrDefault();
+                return (GameSettingsAsset)AssetCloner.Clone(gameSettings);
+            }
         }
     }
 }

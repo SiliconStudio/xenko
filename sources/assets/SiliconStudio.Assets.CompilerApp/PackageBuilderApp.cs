@@ -20,6 +20,7 @@ using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Model;
 using SiliconStudio.Xenko.Assets.SpriteFont;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.SpriteStudio.Offline;
@@ -51,12 +52,13 @@ namespace SiliconStudio.Assets.CompilerApp
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteFontAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(ModelAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteStudioAnimationAsset).Module.ModuleHandle);
+            RuntimeHelpers.RunModuleConstructor(typeof(ParticleSystem).Module.ModuleHandle);
             //var project = new Package();
             //project.Save("test.xkpkg");
 
             //Thread.Sleep(10000);
             //var spriteFontAsset = StaticFontAsset.New();
-            //Asset.Save("test.xkfnt", spriteFontAsset);
+            //Content.Save("test.xkfnt", spriteFontAsset);
             //project.Refresh();
 
             //args = new string[] { "test.xkpkg", "-o:app_data", "-b:tmp", "-t:1" };

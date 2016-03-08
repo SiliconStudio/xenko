@@ -6,15 +6,20 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+    /// <summary>
+    /// Performs resource bindings and primitive-based rendering. See <see cref="The+GraphicsDevice+class"/> to learn more about the class.
+    /// </summary>
     public partial class CommandList : GraphicsResourceBase
     {
         private const int MaxRenderTargetCount = 8;
+        private bool viewportDirty = false;
 
         private Viewport[] viewports = new Viewport[MaxRenderTargetCount];
 
         private Texture depthStencilBuffer;
 
         private Texture[] renderTargets = new Texture[MaxRenderTargetCount];
+        private int renderTargetCount;
 
         /// <summary>
         ///     Gets the first viewport.
@@ -39,6 +44,8 @@ namespace SiliconStudio.Xenko.Graphics
         public Texture RenderTarget => renderTargets[0];
 
         public IReadOnlyList<Texture> RenderTargets => renderTargets;
+
+        public int RenderTargetCount => renderTargetCount;
 
         public IReadOnlyList<Viewport> Viewports => viewports;
 
@@ -78,6 +85,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             depthStencilBuffer = depthStencilView;
             renderTargets[0] = renderTargetView;
+            renderTargetCount = renderTargetView != null ? 1 : 0;
 
             // Clear the other render targets bound
             for (int i = 1; i < renderTargets.Length; i++)
@@ -85,7 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
                 renderTargets[i] = null;
             }
 
-            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargets);
+            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
         /// <summary>
@@ -142,7 +150,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         public void SetViewport(int index, Viewport value)
         {
-            viewports[index] = value;
+            if (viewports[index] != value)
+            {
+                viewportDirty = true;
+                viewports[index] = value;
+            }
         }
 
         /// <summary>
@@ -151,12 +163,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         public void SetViewports(Viewport[] values)
         {
-            for (int i = 0; i < viewports.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
-                if (i >= values.Length)
-                    break;
-
-                viewports[i] = values[i];
+                if (viewports[i] != values[i])
+                {
+                    viewportDirty = true;
+                    viewports[i] = values[i];
+                }
             }
         }
 
@@ -172,98 +185,38 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (renderTargetViews != null)
             {
-                for (int i = 0; i < renderTargets.Length; i++)
+                renderTargetCount = renderTargetViews.Length;
+                for (int i = 0; i < renderTargetViews.Length; i++)
                 {
-                    renderTargets[i] = i < renderTargetViews.Length ? renderTargetViews[i] : null;
+                    renderTargets[i] = renderTargetViews[i];
                 }
             }
             else
             {
+                renderTargetCount = 0;
                 for (int i = 0; i < renderTargets.Length; i++)
                 {
                     renderTargets[i] = null;
                 }
             }
 
-            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargets);
+            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
-        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, Texture[] renderTargetViews)
+        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
         {
             if (depthStencilView != null)
             {
                 SetViewport(new Viewport(0, 0, depthStencilView.ViewWidth, depthStencilView.ViewHeight));
             }
-            else
+            else if (renderTargetCount > 0)
             {
                 // Setup the viewport from the rendertarget view
-                foreach (var rtv in renderTargetViews)
-                {
-                    if (rtv != null)
-                    {
-                        SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
-                        break;
-                    }
-                }
+                var rtv = renderTargetViews[0];
+                SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
 
-            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetViews);
+            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
         }
-
-        #region DrawQuad/DrawTexture Helpers
-        /// <summary>
-        /// Draws a full screen quad. An <see cref="Effect"/> must be applied before calling this method.
-        /// </summary>
-        public void DrawQuad()
-        {
-            GraphicsDevice.PrimitiveQuad.Draw(this);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, bool applyEffectStates = false)
-        {
-            DrawTexture(texture, null, Color4.White, applyEffectStates);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using the specified sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="sampler">The sampler.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler, bool applyEffectStates = false)
-        {
-            DrawTexture(texture, sampler, Color4.White, applyEffectStates);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler
-        /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, Color4 color, bool applyEffectStates = false)
-        {
-            DrawTexture(texture, null, color, applyEffectStates);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using the specified sampler
-        /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="sampler">The sampler.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler, Color4 color, bool applyEffectStates = false)
-        {
-            GraphicsDevice.PrimitiveQuad.Draw(this, texture, sampler, color, applyEffectStates);
-        }
-        #endregion
     }
 }

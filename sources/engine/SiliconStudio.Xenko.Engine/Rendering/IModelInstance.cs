@@ -17,12 +17,6 @@ namespace SiliconStudio.Xenko.Rendering
         Model Model { get; }
 
         /// <summary>
-        /// Gets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        ParameterCollection Parameters { get; }
-
-        /// <summary>
         /// Gets the materials.
         /// </summary>
         /// <value>

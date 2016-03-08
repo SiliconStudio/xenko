@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
-    partial class AssetManager
+    partial class ContentManager
     {
         /// <summary>
         /// Internal object that represents a loaded asset, with its url and reference counts.
@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             public readonly string Url;
 
             /// <summary>
-            /// The public reference count (corresponding to AssetManager.Load/Unload).
+            /// The public reference count (corresponding to ContentManager.Load/Unload).
             /// </summary>
             public int PublicReferenceCount;
 

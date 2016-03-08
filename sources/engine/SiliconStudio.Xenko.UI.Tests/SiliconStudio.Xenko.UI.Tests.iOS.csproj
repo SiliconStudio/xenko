@@ -27,7 +27,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
@@ -42,7 +42,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
@@ -55,7 +55,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Testing\</IntermediateOutputPath>
@@ -70,7 +70,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\AppStore\</IntermediateOutputPath>
@@ -84,7 +84,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
@@ -95,7 +95,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>

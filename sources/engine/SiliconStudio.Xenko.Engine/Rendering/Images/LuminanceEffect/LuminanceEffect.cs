@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     public class LuminanceEffect : ImageEffect
     {
-        public static readonly ParameterKey<LuminanceResult> LuminanceResult = ParameterKeys.New<LuminanceResult>();
+        public static readonly ObjectParameterKey<LuminanceResult> LuminanceResult = ParameterKeys.NewObject<LuminanceResult>();
 
         private PixelFormat luminanceFormat = PixelFormat.R16_Float;
         private ImageEffectShader luminanceLogEffect;

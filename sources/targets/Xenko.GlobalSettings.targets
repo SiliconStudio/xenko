@@ -31,6 +31,10 @@
     <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11</XenkoGraphicsApiDefines>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Null' ">
     <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_NULL</XenkoGraphicsApiDefines>
   </PropertyGroup>
@@ -72,6 +76,9 @@
     <ProjectLockFile Condition="'$(ProjectLockFile)' == ''">$(MSBuildThisFileDirectory)..\build\project.lock.json</ProjectLockFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Linux' ">
+    <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
+  </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
     <XenkoExternalSuffix>.Android</XenkoExternalSuffix>

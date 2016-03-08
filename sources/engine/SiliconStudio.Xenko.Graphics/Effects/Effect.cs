@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     [ContentSerializer(typeof(DataContentSerializer<Effect>))]
     [DataSerializer(typeof(EffectSerializer))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Content")]
     public class Effect : ComponentBase
     {
         private GraphicsDevice graphicsDeviceDefault;
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Graphics
                         samplerBinding.Key = key;
                         var samplerDescription = samplerBinding.Description;
                         // TODO GRAPHICS REFACTOR
-                        //defaultParameters.Set((ParameterKey<SamplerState>)key, SamplerState.New(graphicsDeviceDefault, samplerDescription));
+                        //defaultParameters.Set((ObjectParameterKey<SamplerState>)key, SamplerState.New(graphicsDeviceDefault, samplerDescription));
                     }
                 }
             }
@@ -289,13 +289,13 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static ParameterKey FindOrCreateResourceKey<T>(string name)
         {
-            return ParameterKeys.FindByName(name) ?? ParameterKeys.New<T>(name);
+            return ParameterKeys.FindByName(name) ?? ParameterKeys.NewObject<T>(default(T), name);
         }
 
         private static ParameterKey FindOrCreateValueKey<T>(EffectParameterValueData binding) where T : struct
         {
             var name = binding.Param.KeyName;
-            return ParameterKeys.FindByName(name) ?? (binding.Count > 1 ? (ParameterKey)ParameterKeys.New<T[]>(name) : ParameterKeys.New<T>(name));
+            return ParameterKeys.FindByName(name) ?? ParameterKeys.NewValue<T>(default(T), name);
         }
 
         private static void UpdateConstantBufferHashes(EffectReflection reflection)
@@ -314,7 +314,7 @@ namespace SiliconStudio.Xenko.Graphics
                     var member = constantBuffer.Members[i];
                     constantBuffer.Members[i] = member;
 
-                    hashBuilder.Write(member.Param.RawName);
+                    hashBuilder.Write(member.Param.Key.Name);
                     hashBuilder.Write(member.SourceOffset);
                     hashBuilder.Write(member.SourceOffset);
                     hashBuilder.Write(member.Offset);

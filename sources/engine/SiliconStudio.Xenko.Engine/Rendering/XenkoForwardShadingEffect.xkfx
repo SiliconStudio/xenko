@@ -60,5 +60,6 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        mixin child ShadowMapCaster;
     };
 }

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Reflection;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -9,8 +10,6 @@ namespace SiliconStudio.Xenko.Rendering
     public abstract class ParameterKeyValueMetadata : PropertyKeyMetadata
     {
         public abstract object GetDefaultValue();
-
-        public abstract void SetupDefaultValue(ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies);
 
         public abstract bool WriteBuffer(IntPtr dest, int alignment = 1);
     }
@@ -44,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
         public override unsafe bool WriteBuffer(IntPtr dest, int alignment = 1)
         {
             // We only support structs (not sure how to deal with arrays yet
-            if (typeof(T).IsValueType)
+            if (typeof(T).GetTypeInfo().IsValueType)
             {
                 // Struct copy
                 var value = DefaultValue;
@@ -58,11 +57,6 @@ namespace SiliconStudio.Xenko.Rendering
         public override object GetDefaultValue()
         {
             return DefaultValue;
-        }
-
-        public override void SetupDefaultValue(ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies)
-        {
-            parameterCollection.Set((ParameterKey<T>)parameterKey, DefaultValue);
         }
     }
 }

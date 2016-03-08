@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
-    ///     Performs primitive-based rendering, creates resources, handles system-level variables, adjusts gamma ramp levels, and creates shaders. See <see cref="The+GraphicsDevice+class"/> to learn more about the class.
+    /// Used for GPU resources creation (buffers, textures, states, shaders), and <see cref="CommandList"/> manipulations.
     /// </summary>
     public partial class GraphicsDevice : ComponentBase
     {
@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly bool NeedWorkAroundForUpdateSubResource;
         internal Effect CurrentEffect;
         private readonly bool isDeferred;
-        private readonly ParameterCollection parameters = new ParameterCollection();
 
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
         private readonly Dictionary<object, IDisposable> sharedDataPerDeviceContext = new Dictionary<object, IDisposable>();
@@ -46,6 +45,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the type of the platform that graphics device is using.
         /// </summary>
         public static GraphicsPlatform Platform => GraphicPlatform;
+
+        public string RendererName => GetRendererName();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="GraphicsDevice" /> class.
@@ -79,10 +80,10 @@ namespace SiliconStudio.Xenko.Graphics
             // Initialize this instance
             InitializePlatformDevice(profile, deviceCreationFlags, windowHandle);
 
-            InitializeFactories();
-
             // Create a new graphics device
             Features = new GraphicsDeviceFeatures(this);
+
+            InitializePostFeatures();
 
             SamplerStates = new SamplerStateFactory(this);
             BlendStates = new BlendStateFactory(this);
@@ -91,7 +92,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             var defaultPipelineStateDescription = new PipelineStateDescription();
             defaultPipelineStateDescription.SetDefaults();
-            DefaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
+            AdjustDefaultPipelineStateDescription(ref defaultPipelineStateDescription);
+            DefaultPipelineState = PipelineState.New(this, ref defaultPipelineStateDescription);
         }
 
         protected override void Destroy()
@@ -189,18 +191,6 @@ namespace SiliconStudio.Xenko.Graphics
             set
             {
                 colorSpace = value;
-            }
-        }
-
-        /// <summary>
-        ///     Gets the parameters attached to this particular device. This Parameters are used to override <see cref="Effect" /> parameters.
-        /// </summary>
-        /// <value>The parameters used to override all effects.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
             }
         }
 

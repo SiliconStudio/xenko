@@ -40,12 +40,19 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(true)]
         public bool ResetGraphicsStates { get; set; }
 
+        /// <param name="context"></param>
+        /// <inheritdoc/>
+        public virtual void BeforeExtract(RenderContext context)
+        {
+            EnsureContext(context);
+        }
+
         /// <summary>
         /// Gets the current output <see cref="RenderFrame"/> output.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>RenderFrame.</returns>
-        public RenderFrame GetOutput(RenderDrawContext context)
+        public RenderFrame GetOutput(RenderContext context)
         {
             return Output.GetSafeRenderFrame(context);
         }
@@ -57,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
         public void ActivateOutput(RenderDrawContext context, bool disableDepth = false)
         {
-            var output = GetOutput(context);
+            var output = GetOutput(context.RenderContext);
             if (output != null)
             {
                 ActivateOutputCore(context, output, disableDepth);
@@ -78,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            var output = GetOutput(context);
+            var output = GetOutput(context.RenderContext);
             if (output != null)
             {
                 try

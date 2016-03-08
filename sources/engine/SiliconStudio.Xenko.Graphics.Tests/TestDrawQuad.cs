@@ -52,12 +52,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void DrawQuad()
         {
             // Clears the screen 
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LimeGreen);
-            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LimeGreen);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
 
             // Render to the backbuffer
-            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
-            GraphicsCommandList.DrawTexture(UVTexture);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.DrawTexture(UVTexture);
 
             // -> Render to back by using intermediate texture
             //GraphicsDevice.SetDepthAndRenderTarget(offlineTarget);

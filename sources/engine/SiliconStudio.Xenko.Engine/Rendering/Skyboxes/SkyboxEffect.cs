@@ -9,13 +9,13 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
@@ -30,9 +30,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 {
 
                     {
-                        var __subMixin = new ShaderMixinSource() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(SkyboxKeys.Shader);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "skyboxColor", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(SkyboxKeys.Shader));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 }
