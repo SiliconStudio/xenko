@@ -370,6 +370,42 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.UnsignedByte;
                     compressed = true;
                     break;
+                case PixelFormat.BC2_UNorm:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC2_UNorm_SRgb:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC3_UNorm:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC3_UNorm_SRgb:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
 #endif
                 case PixelFormat.R16_Float:
                     internalFormat = PixelInternalFormat.R16f;
