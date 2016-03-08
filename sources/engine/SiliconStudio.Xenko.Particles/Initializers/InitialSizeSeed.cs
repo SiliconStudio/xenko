@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             RequiredFields.Add(ParticleFields.Size);
             RequiredFields.Add(ParticleFields.RandomSeed);
 
-            DisplayScale = true;
+            DisplayParticleScaleUniform = true;
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)

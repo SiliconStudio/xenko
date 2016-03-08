@@ -34,21 +34,30 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Scale offset")]
         public Vector3 Scale { get; set; } = new Vector3(1, 1, 1);
 
+        [DataMember(5)]
+        [Display("Uniform Scale")]
+        public float ScaleUniform { get; set; } = 1f;
+
         // Order of these members should be *after* the fields they control (own offset and inherited field)
         // The visibility is controlled from EntityViewModel.UpdateObservableNode(...)
         [DataMember(10)]
-        public bool DisplayPosition = false;
+        public bool DisplayParticlePosition = false;
 
         [DataMember(10)]
-        public bool DisplayRotation = false;
+        public bool DisplayParticleRotation = false;
 
         [DataMember(10)]
-        public bool DisplayScale = false;
+        public bool DisplayParticleScale = false;
+
+        [DataMember(10)]
+        public bool DisplayParticleScaleUniform = false;
 
         [DataMemberIgnore]
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
+
         [DataMemberIgnore]
         public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
+
         [DataMemberIgnore]
         public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);
 
@@ -59,11 +68,14 @@ namespace SiliconStudio.Xenko.Particles
             {
                 WorldPosition = Position;
                 WorldRotation = Rotation;
-                WorldScale = Scale;
+                WorldScale = Scale * ScaleUniform;
                 return;
             }
 
-            WorldScale = (InheritScale) ? Scale * parent.WorldScale : Scale;
+            // Note! The ParticleTransform presumes only uniform scale for any parent transforms.
+            // In this is not the case, parent.WorldScale should change based on the transform's own rotation
+            var ownScale = Scale * ScaleUniform;
+            WorldScale = (InheritScale) ? ownScale * parent.WorldScale : ownScale;
 
             WorldRotation = (InheritRotation) ? Rotation * parent.WorldRotation : Rotation;
 

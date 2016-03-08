@@ -19,8 +19,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             RequiredFields.Add(ParticleFields.RandomSeed);
 
             // DisplayPosition = true; // Always inherit the position and don't allow to opt out
-            DisplayRotation = true;
-            DisplayScale = true;
+            DisplayParticleRotation = true;
+            DisplayParticleScaleUniform = true;
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)

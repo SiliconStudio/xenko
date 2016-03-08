@@ -26,9 +26,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
 
-            DisplayPosition = true;
-            DisplayRotation = true;
-            DisplayScale = true;
+            DisplayParticlePosition = true;
+            DisplayParticleRotation = true;
+            DisplayParticleScale = true;
         }
 
         /// <summary>
