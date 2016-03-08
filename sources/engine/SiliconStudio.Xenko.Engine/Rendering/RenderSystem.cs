@@ -19,6 +19,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class RenderSystem : ComponentBase
     {
+        [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
+        public readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
+
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;

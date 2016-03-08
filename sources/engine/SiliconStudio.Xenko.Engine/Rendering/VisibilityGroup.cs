@@ -114,7 +114,24 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Custom per-view filtering
                 bool skip = false;
-                foreach (var filter in ViewObjectFilters)
+                lock (ViewObjectFilters)
+                {
+                    // TODO HACK First filter with global static filters
+                    foreach (var filter in ViewObjectFilters)
+                    {
+                        if (!filter(view, renderObject))
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
+                        continue;
+                }
+
+                // TODO HACK Then filter with RenderSystem filters
+                foreach (var filter in RenderSystem.ViewObjectFilters)
                 {
                     if (!filter(view, renderObject))
                     {
