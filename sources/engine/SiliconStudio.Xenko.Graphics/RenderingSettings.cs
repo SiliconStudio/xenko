@@ -38,17 +38,22 @@ namespace SiliconStudio.Xenko.Graphics
         Default,
 
         /// <summary>
-        /// HLSL Direct3D Shader.
+        /// Direct3D11.
         /// </summary>
         Direct3D11,
 
         /// <summary>
-        /// GLSL OpenGL Shader.
+        /// Direct3D12.
+        /// </summary>
+        Direct3D12,
+
+        /// <summary>
+        /// OpenGL.
         /// </summary>
         OpenGL,
 
         /// <summary>
-        /// GLSL OpenGL ES Shader.
+        /// OpenGL ES.
         /// </summary>
         [Display("OpenGL ES")]
         OpenGLES
@@ -141,7 +146,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case PlatformType.Windows10:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11;
                 case PlatformType.Windows:
-                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11 || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11 || preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D12 || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
                 case PlatformType.Android:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
                 case PlatformType.iOS:
@@ -171,6 +176,9 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PreferredGraphicsPlatform.Direct3D11:
                     graphicsPlatform = GraphicsPlatform.Direct3D11;
+                    break;
+                case PreferredGraphicsPlatform.Direct3D12:
+                    graphicsPlatform = GraphicsPlatform.Direct3D12;
                     break;
                 case PreferredGraphicsPlatform.OpenGL:
                     graphicsPlatform = GraphicsPlatform.OpenGL;

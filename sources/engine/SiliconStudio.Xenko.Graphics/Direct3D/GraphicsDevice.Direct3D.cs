@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
 
         private bool simulateReset = false;
+        private string rendererName;
 
         private SharpDX.Direct3D11.Device nativeDevice;
         private SharpDX.Direct3D11.DeviceContext nativeDeviceContext;
@@ -146,11 +147,9 @@ namespace SiliconStudio.Xenko.Graphics
             
         }
 
-        private string renderer;
-
         private string GetRendererName()
         {
-            return renderer;
+            return rendererName;
         }
 
         /// <summary>
@@ -167,7 +166,7 @@ namespace SiliconStudio.Xenko.Graphics
                 ReleaseDevice();
             }
 
-            renderer = Adapter.NativeAdapter.Description.Description;
+            rendererName = Adapter.NativeAdapter.Description.Description;
 
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
