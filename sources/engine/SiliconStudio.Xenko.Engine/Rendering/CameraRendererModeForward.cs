@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -14,6 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
 
+        [DefaultValue(true)]
         public bool Shadows { get; set; } = true;
 
         //public bool GBuffer { get; set; } = false;
