@@ -56,6 +56,8 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
 
+        internal int FrameCounter;
+
         // Used when locking asyncCreationLockObject
         private bool asyncCreationLockTaken;
 
@@ -278,7 +280,10 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
             if (contextBeginCounter == 1)
+            {
+                FrameCounter++;
                 graphicsContext.MakeCurrent(windowInfo);
+            }
         }
 
         internal Buffer GetSquareBuffer()
