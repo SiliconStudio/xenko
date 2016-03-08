@@ -63,9 +63,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 // Collect in render features
                 RenderSystem.Collect(context);
 
-                // Renderstages might have been changed during collect
-                visibilityGroup.ReevaluateActiveRenderStages();
-
                 // Extract
                 RenderSystem.Extract(context);
 
