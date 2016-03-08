@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// The vertex builder is used for rendering, and it builds the actual vertex buffer stream from particle data
         /// </summary>
-        public readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
+        internal readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
 
 
         /// <summary>
