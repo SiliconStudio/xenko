@@ -142,6 +142,14 @@ namespace SiliconStudio.Xenko.Graphics
             set { Description.PresentationInterval = value; }
         }
 
+        public virtual void BeginDraw(CommandList commandList)
+        {
+        }
+
+        public virtual void EndDraw(CommandList commandList, bool present)
+        {
+        }
+
         /// <summary>
         /// Presents the Backbuffer to the screen.
         /// </summary>

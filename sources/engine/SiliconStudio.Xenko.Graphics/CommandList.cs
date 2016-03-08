@@ -49,16 +49,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         public IReadOnlyList<Viewport> Viewports => viewports;
 
-        public void Begin()
-        {
-            
-        }
-
-        public void End()
-        {
-            
-        }
-
         /// <summary>
         /// Clears the state and restore the state of the device.
         /// </summary>

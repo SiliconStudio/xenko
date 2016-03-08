@@ -157,6 +157,14 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        public override void BeginDraw(CommandList commandList)
+        {
+        }
+
+        public override void EndDraw(CommandList commandList, bool present)
+        {
+        }
+
         public override void Present()
         {
             try

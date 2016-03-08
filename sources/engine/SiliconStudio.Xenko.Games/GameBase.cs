@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Games
         private bool isEndRunRequired;
         private bool isExiting;
         private bool suppressDraw;
+        private bool beginDrawOk;
 
         private TimeSpan totalUpdateTime;
         private TimeSpan totalDrawTime;
@@ -678,6 +679,8 @@ namespace SiliconStudio.Xenko.Games
         /// <returns><c>true</c> to continue drawing, false to not call <see cref="Draw"/> and <see cref="EndDraw"/></returns>
         protected virtual bool BeginDraw()
         {
+            beginDrawOk = false;
+
             if ((graphicsDeviceManager != null) && !graphicsDeviceManager.BeginDraw())
             {
                 return false;
@@ -696,8 +699,22 @@ namespace SiliconStudio.Xenko.Games
                 GraphicsContext.CommandList.Reset();
             }
 
+            // Bind context
+            GraphicsContext.CommandList.Begin();
+
+            beginDrawOk = true;
+
             // Clear states
             GraphicsContext.CommandList.ClearState();
+
+            // Perform begin of frame presenter operations
+            if (GraphicsDevice.Presenter != null)
+            {
+                GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsResourceState.DepthWrite);
+                GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.RenderTarget);
+
+                GraphicsDevice.Presenter.BeginDraw(GraphicsContext.CommandList);
+            }
 
             return true;
         }
@@ -769,11 +786,26 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw.</summary>
         protected virtual void EndDraw(bool present)
         {
-            GraphicsContext.CommandList.Close();
-
-            if (graphicsDeviceManager != null)
+            if (beginDrawOk)
             {
+                if (GraphicsDevice.Presenter != null)
+                {
+                    // Perform end of frame presenter operations
+                    GraphicsDevice.Presenter.EndDraw(GraphicsContext.CommandList, present);
+
+                    GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.Present);
+                }
+
+                // Unbind context
+                GraphicsContext.CommandList.End();
+
+                // Close command list
+                GraphicsContext.CommandList.Close();
+
+                // Present (if necessary)
                 graphicsDeviceManager.EndDraw(present);
+
+                beginDrawOk = false;
             }
         }
 

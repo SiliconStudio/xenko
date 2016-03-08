@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        ///     Gets or sets the current presenter use by the <see cref="Present" /> method.
+        ///     Gets or sets the current presenter used to display the frame.
         /// </summary>
         /// <value>The current presenter.</value>
         public virtual GraphicsPresenter Presenter
@@ -274,17 +274,6 @@ namespace SiliconStudio.Xenko.Graphics
         public static GraphicsDevice New(GraphicsAdapter adapter, DeviceCreationFlags creationFlags = DeviceCreationFlags.None, WindowHandle windowHandle = null, params GraphicsProfile[] graphicsProfiles)
         {
             return new GraphicsDevice(adapter ?? GraphicsAdapterFactory.Default, graphicsProfiles, creationFlags, windowHandle);
-        }
-
-        /// <summary>
-        ///     Presents the current Presenter.
-        /// </summary>
-        public void Present()
-        {
-            if (Presenter != null)
-            {
-                Presenter.Present();
-            }
         }
 
         /// <summary>
