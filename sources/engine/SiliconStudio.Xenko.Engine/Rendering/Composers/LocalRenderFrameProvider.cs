@@ -52,10 +52,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             }
         }
 
-        public override RenderFrame GetRenderFrame(RenderDrawContext context)
+        public override RenderFrame GetRenderFrame(RenderContext context)
         {
             // Get the relative frame
-            var relativeFrame = context.RenderContext.Tags.Get(RelativeSizeSource == RenderFrameRelativeMode.Current ? RenderFrame.Current : SceneGraphicsLayer.Master);
+            var relativeFrame = context.Tags.Get(RelativeSizeSource == RenderFrameRelativeMode.Current ? RenderFrame.Current : SceneGraphicsLayer.Master);
 
             // Check if we need to resize it
             if (currentFrame != null && (currentFrame.Descriptor != Descriptor || currentFrame.CheckIfResizeRequired(relativeFrame) || Descriptor.Format == RenderFrameFormat.LDR && colorSpace != context.GraphicsDevice.ColorSpace))

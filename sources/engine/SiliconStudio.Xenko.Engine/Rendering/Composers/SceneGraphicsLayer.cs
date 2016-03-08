@@ -118,7 +118,12 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public void BeforeExtract(RenderContext context)
         {
-            Renderers.BeforeExtract(context);
+            var renderFrame = Output.GetRenderFrame(context);
+
+            using (context.PushTagAndRestore(RenderFrame.Current, renderFrame))
+            {
+                Renderers.BeforeExtract(context);
+            }
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -133,11 +138,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             
             // Sets the output of the layer 
             // Master is always going to use the Master frame for the current frame.
-            var renderFrame = Output.GetRenderFrame(context);
+            var renderFrame = Output.GetRenderFrame(context.RenderContext);
 
-            using (var t1 = context.PushTagAndRestore(CurrentInput, currentRenderFrame))
+            using (context.RenderContext.PushTagAndRestore(CurrentInput, currentRenderFrame))
+            using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, renderFrame))
             {
-                context.RenderContext.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
             }
         }

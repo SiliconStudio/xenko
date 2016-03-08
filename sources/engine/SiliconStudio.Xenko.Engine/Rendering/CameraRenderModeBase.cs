@@ -20,10 +20,12 @@ namespace SiliconStudio.Xenko.Rendering
             var sceneInstance = SceneInstance.GetCurrent(Context);
 
             // Describe views
-            MainRenderView = new RenderView();
-            MainRenderView.SceneInstance = sceneInstance;
-            MainRenderView.SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
-            MainRenderView.SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current);
+            MainRenderView = new RenderView
+            {
+                SceneInstance = sceneInstance,
+                SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current),
+                SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current)
+            };
             RenderSystem.Views.Add(MainRenderView);
         }
     }

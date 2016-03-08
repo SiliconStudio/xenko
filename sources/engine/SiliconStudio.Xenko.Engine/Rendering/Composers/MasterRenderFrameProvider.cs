@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// </summary>
         public static readonly MasterRenderFrameProvider Instance = new MasterRenderFrameProvider();
 
-        public override RenderFrame GetRenderFrame(RenderDrawContext context)
+        public override RenderFrame GetRenderFrame(RenderContext context)
         {
-            return context.RenderContext.Tags.Get(SceneGraphicsLayer.Master);
+            return context.Tags.Get(SceneGraphicsLayer.Master);
         }
     }
 }
