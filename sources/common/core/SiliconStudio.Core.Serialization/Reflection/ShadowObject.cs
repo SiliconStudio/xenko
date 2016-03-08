@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -157,6 +158,8 @@ namespace SiliconStudio.Core.Reflection
             {
                 var newShadow = Shadows.GetValue(toInstance, key => new ShadowObject());
                 shadow.CopyTo(newShadow);
+
+                // Copy the id of the attached reference to the destination
                 if (shadow.IsIdentifiable)
                 {
                     newShadow.SetId(toInstance, shadow.GetId(fromInstance));
@@ -164,7 +167,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        internal Guid GetId(object instance)
+        public Guid GetId(object instance)
         {
             // If the object is not identifiable, early exit
             if (!isIdentifiable)
@@ -173,10 +176,17 @@ namespace SiliconStudio.Core.Reflection
             }
 
             // Don't use  local id if the object is already identifiable
-            var @component = instance as IIdentifiable;
-            if (@component != null)
+
+            // If an object has an attached reference, we cannot use the id of the instance
+            // So we need to use an auto-generated Id
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
+            if (attachedReference == null)
             {
-                return @component.Id;
+                var @component = instance as IIdentifiable;
+                if (@component != null)
+                {
+                    return @component.Id;
+                }
             }
 
             // If we don't have yet an id, create one.
@@ -188,7 +198,7 @@ namespace SiliconStudio.Core.Reflection
             return id.Value;
         }
 
-        internal void SetId(object instance, Guid id)
+        public void SetId(object instance, Guid id)
         {
             // If the object is not identifiable, early exit
             if (!isIdentifiable)
@@ -197,8 +207,9 @@ namespace SiliconStudio.Core.Reflection
             }
 
             // If the object instance is already identifiable, store id into it directly
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
             var @component = instance as IIdentifiable;
-            if (@component != null)
+            if (attachedReference == null && @component != null)
             {
                 @component.Id = id;
             }
@@ -208,7 +219,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        internal void CopyTo(ShadowObject copy)
+        public void CopyTo(ShadowObject copy)
         {
             copy.id = id;
             copy.isIdentifiable = isIdentifiable;

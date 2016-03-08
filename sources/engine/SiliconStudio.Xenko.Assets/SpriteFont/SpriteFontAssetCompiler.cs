@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     return Task.FromResult(ResultStatus.Failed);
 
                 // save the data into the database
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 assetManager.Save(Url, staticFont);
 
                 // dispose textures allocated by the StaticFontCompiler
@@ -179,7 +179,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     FontHelper.PointsToPixels(AssetParameters.Size), AssetParameters.FontName, AssetParameters.Style, 
                     AssetParameters.AntiAlias, AssetParameters.UseKerning, AssetParameters.Spacing, AssetParameters.LineSpacing, AssetParameters.DefaultCharacter);
 
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 assetManager.Save(Url, dynamicFont);
 
                 return Task.FromResult(ResultStatus.Successful);

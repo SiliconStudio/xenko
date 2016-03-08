@@ -38,7 +38,7 @@ namespace SiliconStudio.Quantum.Contents
             throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
         }
 
-        public override void Remove(object itemIndex)
+        public override void Remove(object itemIndex, object item)
         {
             throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
         }

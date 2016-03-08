@@ -34,8 +34,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            spriteUv = Asset.Load<SpriteSheet>("SpriteUV");
-            spriteSphere = Asset.Load<SpriteSheet>("SpriteSphere");
+            spriteUv = Content.Load<SpriteSheet>("SpriteUV");
+            spriteSphere = Content.Load<SpriteSheet>("SpriteSphere");
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 

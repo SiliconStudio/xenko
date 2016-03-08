@@ -73,7 +73,8 @@ namespace SiliconStudio.Assets
             }
 
             // Calculate dependencies
-            var dependencies = session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            // Search only for references
+            var dependencies = session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             var assetItemRootCloned = dependencies.Item.Clone();
 
             // Store the fullpath to the sourcefolder, this avoid us to clone hierarchy of packages

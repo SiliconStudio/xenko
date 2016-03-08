@@ -7,23 +7,23 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// <summary>
     /// Keys used for profiling the game class.
     /// </summary>
-    public static class AssetProfilingKeys
+    public static class ContentProfilingKeys
     {
-        public static readonly ProfilingKey Asset = new ProfilingKey("Asset");
+        public static readonly ProfilingKey Content = new ProfilingKey("Content");
 
         /// <summary>
         /// Profiling load of an asset.
         /// </summary>
-        public static readonly ProfilingKey AssetLoad = new ProfilingKey(Asset, "Load", ProfilingKeyFlags.Log);
+        public static readonly ProfilingKey ContentLoad = new ProfilingKey(Content, "Load", ProfilingKeyFlags.Log);
 
         /// <summary>
         /// Profiling load of an asset.
         /// </summary>
-        public static readonly ProfilingKey AssetReload = new ProfilingKey(Asset, "Reload", ProfilingKeyFlags.Log);
+        public static readonly ProfilingKey ContentReload = new ProfilingKey(Content, "Reload", ProfilingKeyFlags.Log);
 
         /// <summary>
         /// Profiling save of an asset.
         /// </summary>
-        public static readonly ProfilingKey AssetSave = new ProfilingKey(Asset, "Save", ProfilingKeyFlags.Log);
+        public static readonly ProfilingKey ContentSave = new ProfilingKey(Content, "Save", ProfilingKeyFlags.Log);
     }
 }

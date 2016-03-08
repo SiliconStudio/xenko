@@ -62,6 +62,7 @@
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Rendering\CanvasRenderer.cs" />
     <Compile Include="Collections\IObservableList.cs" />
+    <Compile Include="Collections\IReadOnlyObservableList.cs" />
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
