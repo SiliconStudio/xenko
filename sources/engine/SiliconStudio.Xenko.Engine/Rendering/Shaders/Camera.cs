@@ -21,8 +21,8 @@ namespace SiliconStudio.Xenko.Rendering
         public static readonly ValueParameterKey<float> NearClipPlane = ParameterKeys.NewValue<float>(1.0f);
         public static readonly ValueParameterKey<float> FarClipPlane = ParameterKeys.NewValue<float>(100.0f);
         public static readonly ValueParameterKey<Vector2> ZProjection = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<float> AspectRatio = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<Vector2> ViewSize = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<float> AspectRatio = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> VerticalFieldOfView = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> OrthoSize = ParameterKeys.NewValue<float>();
     }
