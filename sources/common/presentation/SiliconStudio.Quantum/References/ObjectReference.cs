@@ -54,6 +54,12 @@ namespace SiliconStudio.Quantum.References
         public Guid TargetGuid { get; private set; }
 
         /// <inheritdoc/>
+        public bool HasIndex(object index)
+        {
+            return index == null;
+        }
+
+        /// <inheritdoc/>
         public void Clear()
         {
             TargetNode = null;
@@ -66,29 +72,6 @@ namespace SiliconStudio.Quantum.References
         {
             Clear();
             orphanObject = newObjectValue;
-        }
-
-        /// <summary>
-        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
-        /// </summary>
-        /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        /// <param name="nodeFactory">The factory to use to create nodes.</param>
-        internal IGraphNode SetTarget(NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
-        {
-            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IGraphNode targetNode = nodeContainer.GetOrCreateNode(ObjectValue, nodeFactory);
-            if (targetNode != null)
-            {
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
-
-                if (TargetNode != null || TargetGuid != Guid.Empty)
-                    throw new InvalidOperationException("TargetNode has already been set.");
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
-                    throw new InvalidOperationException("TargetNode type does not match the reference type.");
-                TargetNode = targetNode;
-                TargetGuid = targetNode.Guid;
-            }
-            return targetNode;
         }
 
         /// <inheritdoc/>
@@ -112,6 +95,29 @@ namespace SiliconStudio.Quantum.References
 
             result += TargetGuid + " " + (ObjectValue?.ToString() ?? "null");
             return result;
+        }
+
+        /// <summary>
+        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
+        /// </summary>
+        /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
+        /// <param name="nodeFactory">The factory to use to create nodes.</param>
+        internal IGraphNode SetTarget(NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        {
+            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
+            IGraphNode targetNode = nodeContainer.GetOrCreateNode(ObjectValue, nodeFactory);
+            if (targetNode != null)
+            {
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
+
+                if (TargetNode != null || TargetGuid != Guid.Empty)
+                    throw new InvalidOperationException("TargetNode has already been set.");
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                    throw new InvalidOperationException("TargetNode type does not match the reference type.");
+                TargetNode = targetNode;
+                TargetGuid = targetNode.Guid;
+            }
+            return targetNode;
         }
     }
 }

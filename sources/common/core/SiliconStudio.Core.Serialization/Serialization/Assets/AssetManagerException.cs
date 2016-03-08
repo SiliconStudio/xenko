@@ -5,7 +5,7 @@ using System;
 namespace SiliconStudio.Core.Serialization.Assets
 {
     /// <summary>
-    /// A subtype of <see cref="Exception"/> thrown by the <see cref="AssetManager"/>.
+    /// A subtype of <see cref="Exception"/> thrown by the <see cref="ContentManager"/>.
     /// </summary>
     class AssetManagerException : Exception
     {

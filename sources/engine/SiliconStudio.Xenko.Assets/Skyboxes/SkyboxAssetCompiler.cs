@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                         return Task.FromResult(ResultStatus.Failed);
                     }
 
-                    context.Assets.Save(Url, result.Skybox);
+                    context.Content.Save(Url, result.Skybox);
                 }
 
                 return Task.FromResult(ResultStatus.Successful);

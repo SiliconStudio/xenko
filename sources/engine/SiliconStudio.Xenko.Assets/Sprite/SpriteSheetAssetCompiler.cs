@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
 
                 // Create atlas texture
                 Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite = null;

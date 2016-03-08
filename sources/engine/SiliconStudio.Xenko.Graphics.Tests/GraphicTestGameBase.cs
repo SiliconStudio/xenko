@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            UVTexture = Asset.Load<Texture>("uv");
+            UVTexture = Content.Load<Texture>("uv");
         }
 
         protected override void Update(GameTime gameTime)

@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Audio
     /// <seealso cref="SoundEffectInstance"/>
     /// <seealso cref="SoundMusic"/>
     /// <seealso cref="IPositionableSound"/>    
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SoundEffect>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SoundEffect>), Profile = "Content")]
     [DataSerializer(typeof(NullSerializer<SoundEffect>))]
     public sealed partial class SoundEffect : SoundBase, IPositionableSound
     {

@@ -21,8 +21,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             await base.LoadContent();
 
-            music = Asset.Load<SoundMusic>("MusicFishLampMp3");
-            effect = Asset.Load<SoundEffect>("EffectBip");
+            music = Content.Load<SoundMusic>("MusicFishLampMp3");
+            effect = Content.Load<SoundEffect>("EffectBip");
             music.IsLooped = true;
             effect.IsLooped = true;
             music.Play();

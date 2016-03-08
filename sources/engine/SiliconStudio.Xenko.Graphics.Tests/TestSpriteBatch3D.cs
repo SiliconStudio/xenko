@@ -48,8 +48,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             batch = new Sprite3DBatch(GraphicsDevice);
-            sphere = Asset.Load<Texture>("Sphere");
-            rotatedImages = Asset.Load<SpriteSheet>("RotatedImages");
+            sphere = Content.Load<Texture>("Sphere");
+            rotatedImages = Content.Load<SpriteSheet>("RotatedImages");
             rasterizerState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.None));
         }
 
