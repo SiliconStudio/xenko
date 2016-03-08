@@ -40,11 +40,14 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             for (int index = 0; index < emitterCount; index++)
             {
-                VisibilityGroup.RenderObjects.Add(new RenderParticleEmitter
+                var renderEmitter = new RenderParticleEmitter
                 {
                     ParticleEmitter = emitters[index],
                     RenderParticleSystem = renderParticleSystem,
-                });
+                };
+
+                renderEmitters[index] = renderEmitter;
+                VisibilityGroup.RenderObjects.Add(renderEmitter);
             }
 
             renderParticleSystem.Emitters = renderEmitters;
