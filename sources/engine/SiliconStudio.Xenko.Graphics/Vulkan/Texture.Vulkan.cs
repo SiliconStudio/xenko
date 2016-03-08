@@ -242,22 +242,13 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            MemoryBarrier memoryBarrier = new MemoryBarrier();
-            BufferMemoryBarrier bufferMemoryBarrier = new BufferMemoryBarrier();
             var imageMemoryBarrier = new ImageMemoryBarrier
             {
                 StructureType = StructureType.ImageMemoryBarrier,
                 OldLayout = ImageLayout.Undefined,
                 NewLayout = PreferredLayout,
                 Image = NativeImage,
-                SubresourceRange = new ImageSubresourceRange
-                {
-                    AspectMask = ImageAspectFlags.Color,
-                    BaseArrayLayer = 0,
-                    BaseMipLevel = 0,
-                    LayerCount = (uint)ArraySize,
-                    LevelCount = (uint)MipLevels
-                }
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)ArraySize, 0, (uint)MipLevels)
             };
 
             if (PreferredLayout == ImageLayout.TransferDestinationOptimal)
@@ -279,7 +270,7 @@ namespace SiliconStudio.Xenko.Graphics
                 StructureType = StructureType.CommandBufferBeginInfo,
             };
             commandBuffer.Begin(ref beginInfo);
-            commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, ref memoryBarrier, 0, ref bufferMemoryBarrier, 1, &imageMemoryBarrier);
+            commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
             commandBuffer.End();
 
             var submitInfo = new SubmitInfo
@@ -455,15 +446,8 @@ namespace SiliconStudio.Xenko.Graphics
                 StructureType = StructureType.ImageViewCreateInfo,
                 Format = nativeViewFormat,
                 Image = NativeImage,
-                Components = new ComponentMapping { R = ComponentSwizzle.R, G = ComponentSwizzle.G, B = ComponentSwizzle.B, A = ComponentSwizzle.A },
-                SubresourceRange = new ImageSubresourceRange
-                {
-                    BaseArrayLayer = (uint)arrayOrDepthSlice,
-                    LayerCount = (uint)arrayCount,
-                    BaseMipLevel = (uint)mipIndex,
-                    LevelCount = (uint)mipCount,
-                    AspectMask = ImageAspectFlags.Color
-                }
+                Components = ComponentMapping.Identity,
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)arrayCount, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)
@@ -541,7 +525,7 @@ namespace SiliconStudio.Xenko.Graphics
                 ViewType = ImageViewType.Image2D,
                 Format = backBufferFormat,
                 Image = NativeImage,
-                Components = new ComponentMapping { R = ComponentSwizzle.R, G = ComponentSwizzle.G, B = ComponentSwizzle.B, A = ComponentSwizzle.A },
+                Components = ComponentMapping.Identity,
                 SubresourceRange = new ImageSubresourceRange
                 {
                     BaseArrayLayer = (uint)arrayOrDepthSlice,
@@ -600,15 +584,8 @@ namespace SiliconStudio.Xenko.Graphics
                 ViewType = ImageViewType.Image2D,
                 Format = nativeFormat,
                 Image = NativeImage,
-                Components = new ComponentMapping { R = ComponentSwizzle.R, G = ComponentSwizzle.G, B = ComponentSwizzle.B, A = ComponentSwizzle.A },
-                SubresourceRange = new ImageSubresourceRange
-                {
-                    BaseArrayLayer = 0,
-                    LayerCount = 1,
-                    BaseMipLevel = 0,
-                    LevelCount = 1,
-                    AspectMask = ImageAspectFlags.Depth | (HasStencil ? ImageAspectFlags.Stencil : ImageAspectFlags.None)
-                }
+                Components = ComponentMapping.Identity,
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Depth | (HasStencil ? ImageAspectFlags.Stencil : ImageAspectFlags.None), 0, 1, 0, 1)
             };
 
             //if (IsDepthStencilReadOnly)
