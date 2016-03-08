@@ -204,6 +204,16 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Gets the effect slot for a given render stage.
+        /// </summary>
+        /// <param name="renderStage"></param>
+        /// <returns></returns>
+        public EffectPermutationSlot GetEffectPermutationSlot(RenderStage renderStage)
+        {
+            return effectSlots[renderStage.Index];
+        }
+
+        /// <summary>
         /// Creates a slot for storing a particular effect instantiation (per RenderObject).
         /// </summary>
         /// As an example, we could have main shader (automatically created), GBuffer shader and shadow mapping shader.

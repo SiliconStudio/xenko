@@ -47,6 +47,15 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
+        public override void Collect()
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Collect();
+            }
+        }
+
+        /// <inheritdoc/>
         public override void Extract()
         {
             foreach (var renderFeature in RenderFeatures)

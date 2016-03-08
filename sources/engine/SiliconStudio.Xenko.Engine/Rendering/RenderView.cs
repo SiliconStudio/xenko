@@ -87,9 +87,9 @@ namespace SiliconStudio.Xenko.Rendering
             return $"RenderView ({Features.Sum(x => x.ViewObjectNodes.Count)} objects, {Features.Sum(x => x.RenderNodes.Count)} render nodes, {RenderStages.Count} stages)";
         }
 
-        public void UpdateCameraToRenderView(RenderDrawContext context)
+        public void UpdateCameraToRenderView()
         {
-            // TODO: Currently set up during BeforeExtract/Prepare/Draw. Should be initialized before
+            // TODO: Currently set up during Collect/Prepare/Draw. Should be initialized before
             if (SceneCameraRenderer == null)
                 return;
 

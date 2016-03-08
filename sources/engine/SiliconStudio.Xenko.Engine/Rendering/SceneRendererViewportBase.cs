@@ -46,14 +46,16 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Viewport in %")]
         public bool IsViewportInPercentage { get; set; }
 
-        protected override void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
+        public override void Collect(RenderContext context)
         {
-            base.ActivateOutputCore(context, output, disableDepth);
+            base.Collect(context);
 
             var rect = Viewport;
+
             // Setup the viewport
             if (IsViewportInPercentage)
             {
+                var output = GetOutput(context);
                 var width = output.Width;
                 var height = output.Height;
                 ComputedViewport = new Viewport((int)(rect.X * width / 100.0f), (int)(rect.Y * height / 100.0f), (int)(rect.Width * width / 100.0f), (int)(rect.Height * height / 100.0f));
@@ -62,6 +64,11 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 ComputedViewport = new Viewport((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
             }
+        }
+
+        protected override void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
+        {
+            base.ActivateOutputCore(context, output, disableDepth);
             context.CommandList.SetViewport(ComputedViewport);
         }
     }

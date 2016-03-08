@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     public sealed class SceneRendererCollection : GraphicsRendererCollection<ISceneRenderer>, INextGenRenderer
     {
         /// <inheritdoc/>
-        public void BeforeExtract(RenderContext context)
+        public void Collect(RenderContext context)
         {
             InitializeRenderers(context);
 
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
                 if (renderer.Enabled)
                 {
                     // Draw the renderer
-                    renderer.BeforeExtract(context);
+                    renderer.Collect(context);
                 }
             }
         }

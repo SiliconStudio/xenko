@@ -20,11 +20,25 @@ namespace SiliconStudio.Xenko.Rendering
             var sceneInstance = SceneInstance.GetCurrent(Context);
 
             // Describe views
-            MainRenderView = new RenderView();
-            MainRenderView.SceneInstance = sceneInstance;
-            MainRenderView.SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
-            MainRenderView.SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current);
+            MainRenderView = new RenderView
+            {
+                SceneInstance = sceneInstance,
+                SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current),
+                SceneCameraSlotCollection = Context.Tags.Get(SceneCameraSlotCollection.Current)
+            };
             RenderSystem.Views.Add(MainRenderView);
+        }
+
+        public override void Collect(RenderContext context)
+        {
+            base.Collect(context);
+
+            // Update view parameters
+            MainRenderView.UpdateCameraToRenderView();
+
+            // Collect render objects
+            var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
+            visibilityGroup.Collect(MainRenderView);
         }
     }
 }

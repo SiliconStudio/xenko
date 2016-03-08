@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -9,11 +11,14 @@ namespace SiliconStudio.Xenko.Rendering
     [Display("Forward")]
     public class CameraRendererModeForward : CameraRenderModeBase
     {
+        private MeshPipelinePlugin meshPipelinePlugin;
+
         [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
 
+        [DefaultValue(true)]
         public bool Shadows { get; set; } = true;
 
         //public bool GBuffer { get; set; } = false;
@@ -44,6 +49,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                meshPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<MeshPipelinePlugin>();
             }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
@@ -68,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering
             //}
 
             // Shadow maps
-            var shadowMapRenderer = RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer;
+            var shadowMapRenderer = meshPipelinePlugin?.ForwardLightingRenderFeature?.ShadowMapRenderer;
             if (Shadows && shadowMapRenderer != null)
             {
                 // Clear atlases
