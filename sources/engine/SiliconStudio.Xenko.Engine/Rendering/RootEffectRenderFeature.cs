@@ -233,15 +233,17 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Actual implementation of <see cref="PrepareEffectPermutations"/>.
         /// </summary>
-        public virtual void PrepareEffectPermutationsImpl()
+        /// <param name="context"></param>
+        public virtual void PrepareEffectPermutationsImpl(RenderThreadContext context)
         {
             
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations()
+        public override void PrepareEffectPermutations(RenderThreadContext context)
         {
-            base.PrepareEffectPermutations();
+            base.PrepareEffectPermutations(context);
 
             // TODO: Temporary until we have a better system for handling permutations
             var renderEffects = RenderData.GetData(RenderEffectKey);
@@ -278,7 +280,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Step1: Perform permutations
-            PrepareEffectPermutationsImpl();
+            PrepareEffectPermutationsImpl(context);
 
             // CompilerParameters are ThreadStatic
             if (staticCompilerParameters == null)
@@ -564,11 +566,11 @@ namespace SiliconStudio.Xenko.Rendering
                         pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
                         pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
 
-                        // Bind VAO
-                        ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);
-
                         // Extract outputs from render stage
                         pipelineState.Output = renderNode.RenderStage.Output;
+
+                        // Bind VAO
+                        ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);
 
                         PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 

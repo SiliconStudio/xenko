@@ -18,8 +18,11 @@
 
 class TessellationBase : ShaderBase, TransformationBase, MaterialDomainStream, Camera, Transformation, NormalBase
 {
-    [Link("Tessellation.DesiredTriangleSize")]
-    stage float DesiredTriangleSize = 12.0f;
+    cbuffer PerMaterial
+    {
+        [Link("Tessellation.DesiredTriangleSize")]
+        stage float DesiredTriangleSize = 12.0f;
+    }
     
     patchstream float tessFactor[3] : SV_TessFactor;
     patchstream float insideTessFactor : SV_InsideTessFactor;

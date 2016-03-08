@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.Rendering
     [DefaultPipelinePlugin(typeof(MeshPipelinePlugin))]
     public class RenderMesh : RenderObject
     {
+        public MeshDraw ActiveMeshDraw;
+
         public RenderModel RenderModel;
 
         /// <summary>

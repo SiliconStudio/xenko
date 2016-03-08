@@ -182,8 +182,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations()
+        public override void PrepareEffectPermutations(RenderThreadContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
