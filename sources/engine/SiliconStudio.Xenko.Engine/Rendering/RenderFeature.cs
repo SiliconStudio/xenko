@@ -63,6 +63,13 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Performs pipeline initialization, enumerates views and populates visibility groups.
+        /// </summary>
+        public virtual void Collect()
+        {
+        }
+
+        /// <summary>
         /// Extract data from entities, should be as fast as possible to not block simulation loop. It should be mostly copies, and the actual processing should be part of Prepare().
         /// </summary>
         public virtual void Extract()

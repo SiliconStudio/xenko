@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             perLightingDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerLighting");
         }
 
-        public void BeforeExtract()
+        public override void Collect()
         {
             // Initialize shadow map renderer
             if (!isShadowMapRendererSetUp && ShadowMapRenderStage != null)
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
 
             // Collect shadow maps
-            ShadowMapRenderer?.Extract(renderViewDatas);
+            ShadowMapRenderer?.Collect(RenderSystem.RenderContextOld, renderViewDatas);
 
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
