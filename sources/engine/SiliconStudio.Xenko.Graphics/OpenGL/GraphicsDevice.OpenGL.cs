@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Graphics
         private bool asyncCreationLockTaken;
 
         internal bool ApplicationPaused = false;
-        internal bool ProfileEnabled = true;
+        internal bool ProfileEnabled = false;
 
         internal IWindowInfo deviceCreationWindowInfo;
         internal object asyncCreationLockObject = new object();
@@ -668,6 +668,7 @@ namespace SiliconStudio.Xenko.Graphics
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {
                 creationFlags |= GraphicsContextFlags.Debug;
+                ProfileEnabled = true;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                 GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
 #endif
