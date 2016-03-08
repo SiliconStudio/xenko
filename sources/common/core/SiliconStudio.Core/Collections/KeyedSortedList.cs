@@ -14,7 +14,6 @@ namespace SiliconStudio.Core.Collections
     /// <typeparam name="T"></typeparam>
     public abstract class KeyedSortedList<TKey, T> : ICollection<T>, ICollection
     {
-        private readonly object syncRoot = new object();
         private readonly IComparer<TKey> comparer;
         protected FastListStruct<T> Items = new FastListStruct<T>(1);
 
