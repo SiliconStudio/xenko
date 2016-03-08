@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,27 +7,6 @@ using System.Windows.Shapes;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
-    [Serializable]
-    public enum SelectionMode
-    {
-        Normal,
-        Additive,
-        Substractive
-    }
-
-    public struct SelectionResult
-    {
-        public SelectionResult(Rect rect, SelectionMode mode)
-        {
-            Rect = rect;
-            Mode = mode;
-        }
-
-        public Rect Rect { get; }
-
-        public SelectionMode Mode { get; }
-    }
-
     public sealed class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<UIElement>
     {
         public static readonly DependencyProperty CanvasProperty =
@@ -36,15 +14,6 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(SelectionRectangleBehavior));
-
-        public static readonly DependencyProperty AdditiveModifiersProperty =
-            DependencyProperty.Register(nameof(AdditiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Shift));
-
-        public static readonly DependencyProperty DefaultModifiersProperty =
-            DependencyProperty.Register(nameof(DefaultModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.None));
-
-        public static readonly DependencyProperty SubtractiveModifiersProperty =
-            DependencyProperty.Register(nameof(SubtractiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Control));
 
         public static readonly DependencyProperty RectangleStyleProperty =
             DependencyProperty.Register(nameof(RectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior));
@@ -66,12 +35,6 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public ICommand Command { get { return (ICommand)GetValue(CommandProperty); } set { SetValue(CommandProperty, value); } }
 
-        public ModifierKeys AdditiveModifiers { get { return (ModifierKeys)GetValue(AdditiveModifiersProperty); } set { SetValue(AdditiveModifiersProperty, value); } }
-
-        public ModifierKeys DefaultModifiers { get { return (ModifierKeys)GetValue(DefaultModifiersProperty); } set { SetValue(DefaultModifiersProperty, value); } }
-
-        public ModifierKeys SubtractiveModifiers { get { return (ModifierKeys)GetValue(SubtractiveModifiersProperty); } set { SetValue(SubtractiveModifiersProperty, value); } }
-
         public Style RectangleStyle { get { return (Style)GetValue(RectangleStyleProperty); } set { SetValue(RectangleStyleProperty, value); } }
         
         public bool IsDragging { get; private set; }
@@ -91,7 +54,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (!AreModifiersValid() || e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -104,7 +67,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (!AreModifiersValid() || e.MouseDevice.LeftButton != MouseButtonState.Pressed)
+            if (e.MouseDevice.LeftButton != MouseButtonState.Pressed)
             {
                 Cancel();
                 return;
@@ -132,7 +95,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (!AreModifiersValid() || e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -144,7 +107,6 @@ namespace SiliconStudio.Presentation.Behaviors
                 IsDragging = false;
                 ApplyDragSelectionRect();
             }
-
         }
 
         private void CreateSelectionRectangle()
@@ -251,54 +213,11 @@ namespace SiliconStudio.Presentation.Behaviors
             var width = selectionRectangle.Width;
             var height = selectionRectangle.Height;
             var dragRect = new Rect(x, y, width, height);
-
-            SelectionMode mode;
-            if (HasDefaultModifiers())
+            
+            if (Command.CanExecute(dragRect))
             {
-                mode = SelectionMode.Normal;
+                Command.Execute(dragRect);
             }
-            else if (HasAdditiveModifiers())
-            {
-                mode = SelectionMode.Additive;
-            }
-            else if (HasSubstractiveModifiers())
-            {
-                mode = SelectionMode.Substractive;
-            }
-            else
-            {
-                return;
-            }
-
-            var result = new SelectionResult(dragRect, mode);
-            if (Command.CanExecute(result))
-            {
-                Command.Execute(result);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool AreModifiersValid()
-        {
-            return HasAdditiveModifiers() || HasDefaultModifiers() || HasSubstractiveModifiers();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasAdditiveModifiers()
-        {
-            return AdditiveModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(AdditiveModifiers);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasDefaultModifiers()
-        {
-            return DefaultModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(DefaultModifiers);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasSubstractiveModifiers()
-        {
-            return SubtractiveModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(SubtractiveModifiers);
         }
     }
 }
