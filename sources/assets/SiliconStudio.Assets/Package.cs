@@ -424,7 +424,8 @@ namespace SiliconStudio.Assets
             {
                 SetDirtyFlagOnAssetWhenFixingUFile = false,
                 ConvertUPathTo = UPathType.Relative,
-                IsProcessingUPaths = true
+                IsProcessingUPaths = true,
+                AssetTemplatingRemoveUnusedBaseParts = true,
             });
             analysis.Run(log);
 
@@ -435,6 +436,13 @@ namespace SiliconStudio.Assets
 
                 if (IsDirty)
                 {
+                    List<UFile> filesToDeleteLocal;
+                    lock (filesToDelete)
+                    {
+                        filesToDeleteLocal = filesToDelete.ToList();
+                        filesToDelete.Clear();
+                    }
+
                     try
                     {
                         // Notifies the dependency manager that a package with the specified path is being saved
@@ -448,7 +456,7 @@ namespace SiliconStudio.Assets
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
                         {
-                            filesToDelete.Add(previousPackagePath);
+                            filesToDeleteLocal.Add(previousPackagePath);
                         }
                         previousPackagePath = packagePath;
 
@@ -461,7 +469,7 @@ namespace SiliconStudio.Assets
                     }
                     
                     // Delete obsolete files
-                    foreach (var file in filesToDelete)
+                    foreach (var file in filesToDeleteLocal)
                     {
                         if (File.Exists(file.FullPath))
                         {
@@ -475,7 +483,6 @@ namespace SiliconStudio.Assets
                             }
                         }
                     }
-                    filesToDelete.Clear();
                 }
 
                 //batch projects

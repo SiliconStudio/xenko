@@ -31,9 +31,29 @@ namespace SiliconStudio.Assets.Analysis
             this.package = package;
             session = package.Session;
             this.log = log;
+            MergeModifiedAssets = true;
+            RemoveUnusedBaseParts = true;
         }
 
+        public bool MergeModifiedAssets { get; set; }
+
+        public bool RemoveUnusedBaseParts { get; set; }
+
+
         public void Run()
+        {
+            if (RemoveUnusedBaseParts)
+            {
+                ProcessRemoveUnusedBaseParts();
+            }
+
+            if (MergeModifiedAssets)
+            {
+                ProcessMergeModifiedAssets();
+            }
+        }
+
+        private void ProcessMergeModifiedAssets()
         {
             foreach (var assetItem in package.Assets)
             {
@@ -68,6 +88,60 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     log.Error("Unexpected error while processing asset templating");
                     break;
+                }
+            }
+        }
+
+        private void ProcessRemoveUnusedBaseParts()
+        {
+            var basePartsToKeep = new HashSet<AssetBase>();
+            var partInstanceIdProcessed = new HashSet<Guid>();
+            foreach (var assetItem in package.Assets)
+            {
+                var asset = assetItem.Asset as AssetComposite;
+                if (asset == null)
+                {
+                    continue;
+                }
+
+                // If an asset doesn't have any base for templating, we can skip this part
+                if (asset.BaseParts != null)
+                {
+                    basePartsToKeep.Clear();
+                    partInstanceIdProcessed.Clear();
+
+                    foreach (var part in asset.CollectParts())
+                    {
+                        if (part.BaseId.HasValue && part.BasePartInstanceId.HasValue && !partInstanceIdProcessed.Contains(part.BasePartInstanceId.Value))
+                        {
+                            // Add to this map to avoid processing assets from the same BasePartInstanceId
+                            partInstanceIdProcessed.Add(part.BasePartInstanceId.Value);
+
+                            var baseId = part.BaseId.Value;
+                            foreach (var basePart in asset.BaseParts)
+                            {
+                                var assetBase = (AssetComposite)basePart.Asset;
+                                if (assetBase.ContainsPart(baseId))
+                                {
+                                    basePartsToKeep.Add(basePart);
+                                }
+                            }
+                        }
+                    }
+
+                    for (int i = asset.BaseParts.Count - 1; i >= 0; i--)
+                    {
+                        var basePart = asset.BaseParts[i];
+                        if (!basePartsToKeep.Contains(basePart))
+                        {
+                            asset.BaseParts.RemoveAt(i);
+                        }
+                    }
+
+                    if (asset.BaseParts.Count == 0)
+                    {
+                        asset.BaseParts = null;
+                    }
                 }
             }
         }
