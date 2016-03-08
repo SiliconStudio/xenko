@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw all renderers
             foreach (var renderer in this)
             {
-                if (renderer.Enabled && !renderer.Faulted)
+                if (renderer.Enabled)
                 {
                     // Draw the renderer
                     renderer.BeforeExtract(context);
