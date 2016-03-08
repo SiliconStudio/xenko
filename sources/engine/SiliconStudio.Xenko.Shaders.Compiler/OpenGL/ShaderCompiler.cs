@@ -381,7 +381,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             if (member.Count > 1)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
-                size = roundedSize * (member.Count - 1) + size; // last element might be smaller than vec4
+                size = roundedSize * member.Count;
                 alignment = roundedSize * member.Count;
             }
 
