@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Rendering
         public Matrix ViewProjection;
 
         /// <summary>
-        /// Index in <see cref="NextGenRenderSystem.Views"/>.
+        /// Index in <see cref="RenderSystem.Views"/>.
         /// </summary>
         public int Index = -1;
 

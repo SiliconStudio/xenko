@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// A graphics layer.
     /// </summary>
     [DataContract("SceneGraphicsLayer")]
-    public class SceneGraphicsLayer : RendererBase, IEnumerable, INextGenRenderer
+    public class SceneGraphicsLayer : RendererBase, IEnumerable, IRenderCollector
     {
         private IGraphicsLayerOutput output;
 

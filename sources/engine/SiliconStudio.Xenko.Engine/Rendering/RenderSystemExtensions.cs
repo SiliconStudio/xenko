@@ -3,14 +3,14 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public static class NextGenRenderSystemExtensions
+    public static class RenderSystemExtensions
     {
-        public static RenderStage GetRenderStage(this NextGenRenderSystem renderSystem, string name)
+        public static RenderStage GetRenderStage(this RenderSystem renderSystem, string name)
         {
             return renderSystem.RenderStages.FirstOrDefault(x => x.Name == name);
         }
 
-        public static RenderStage GetOrCreateRenderStage(this NextGenRenderSystem renderSystem, string name, string effectSlotName, RenderOutputDescription defaultOutput)
+        public static RenderStage GetOrCreateRenderStage(this RenderSystem renderSystem, string name, string effectSlotName, RenderOutputDescription defaultOutput)
         {
             var renderStage = renderSystem.RenderStages.FirstOrDefault(x => x.Name == name);
             if (renderStage != null)

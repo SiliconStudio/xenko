@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
 
-        public NextGenRenderSystem RenderSystem { get; set; }
+        public RenderSystem RenderSystem { get; set; }
 
         private readonly RenderStage shadowMapRenderStage;
 
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private const float ReferenceShadowSize = 1024;
 
-        public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowMapRenderStage)
+        public ShadowMapRenderer(RenderSystem renderSystem, RenderStage shadowMapRenderStage)
         {
             RenderSystem = renderSystem;
             this.shadowMapRenderStage = shadowMapRenderStage;

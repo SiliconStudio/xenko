@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// A Collection of <see cref="SceneGraphicsLayer"/>.
     /// </summary>
     [DataContract("SceneGraphicsLayerCollection")]
-    public sealed class SceneGraphicsLayerCollection : GraphicsRendererCollection<SceneGraphicsLayer>, INextGenRenderer
+    public sealed class SceneGraphicsLayerCollection : GraphicsRendererCollection<SceneGraphicsLayer>, IRenderCollector
     {
         /// <inheritdoc/>
         public void Collect(RenderContext context)

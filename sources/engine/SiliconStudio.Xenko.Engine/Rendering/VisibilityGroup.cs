@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
         public readonly StaticObjectPropertyKey<uint> RenderStageMaskKey;
         public const int RenderStageMaskSizePerEntry = 32; // 32 bits per uint
 
-        public NextGenRenderSystem RenderSystem { get; }
+        public RenderSystem RenderSystem { get; }
 
         /// <summary>
         /// Stores render data.
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public RenderObjectCollection RenderObjects { get; }
 
-        public VisibilityGroup(NextGenRenderSystem renderSystem)
+        public VisibilityGroup(RenderSystem renderSystem)
         {
             RenderSystem = renderSystem;
             RenderObjects = new RenderObjectCollection(this);
