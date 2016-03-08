@@ -29,9 +29,9 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem.Views.Add(MainRenderView);
         }
 
-        public override void BeforeExtract(RenderContext context)
+        public override void Collect(RenderContext context)
         {
-            base.BeforeExtract(context);
+            base.Collect(context);
 
             // Update view parameters
             MainRenderView.UpdateCameraToRenderView();

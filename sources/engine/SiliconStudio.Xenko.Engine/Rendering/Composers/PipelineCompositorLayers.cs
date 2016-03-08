@@ -57,8 +57,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 visibilityGroup.Reset();
 
                 // Collect in layers. Setup features/stages, enumerate viewes and populates VisibilityGroup
-                Layers.BeforeExtract(context.RenderContext);
-                Master.BeforeExtract(context.RenderContext);
+                Layers.Collect(context.RenderContext);
+                Master.Collect(context.RenderContext);
 
                 // Collect in render features
                 RenderSystem.Collect(context);
