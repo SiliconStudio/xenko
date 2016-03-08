@@ -68,14 +68,23 @@ namespace SiliconStudio.Xenko.Rendering
 
         public PipelinePluginManager PipelinePlugins { get; }
 
-        // Render stages
-        internal ForwardLightingRenderFeature forwardLightingRenderFeature;
-
         public NextGenRenderSystem()
         {
             PipelinePlugins = new PipelinePluginManager(this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
+        }
+
+        /// <summary>
+        /// Performs pipeline initialization, enumerates views and populates visibility groups.
+        /// </summary>
+        /// <param name="context"></param>
+        public void Collect(RenderThreadContext context)
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Collect();
+            }
         }
 
         /// <summary>

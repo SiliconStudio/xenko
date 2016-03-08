@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Rendering
         private string modelEffect;
         private MeshTransparentRenderStageSelector meshRenderStageSelector;
 
+        public ForwardLightingRenderFeature ForwardLightingRenderFeature { get; private set; }
+
         protected override MeshRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             var meshRenderFeature = new MeshRenderFeature
@@ -29,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
                     new TransformRenderFeature(),
                     new SkinningRenderFeature(),
                     new MaterialRenderFeature(),
-                    (context.RenderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature()),
+                    (ForwardLightingRenderFeature = new ForwardLightingRenderFeature()),
                 },
             };
 

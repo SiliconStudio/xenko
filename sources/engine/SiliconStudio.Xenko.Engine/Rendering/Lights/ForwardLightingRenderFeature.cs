@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             perLightingDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerLighting");
         }
 
-        public void BeforeExtract()
+        public override void Collect()
         {
             // Initialize shadow map renderer
             if (!isShadowMapRendererSetUp && ShadowMapRenderStage != null)
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
 
             // Collect shadow maps
-            ShadowMapRenderer?.Extract(renderViewDatas);
+            ShadowMapRenderer?.Collect(RenderSystem.RenderContextOld, renderViewDatas);
 
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
@@ -189,6 +189,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
+
+            var shadowMapEffectSlot = ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(ShadowMapRenderStage);
 
             foreach (var view in RenderSystem.Views)
             {
@@ -214,6 +216,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     for (int i = 0; i < effectSlotCount; ++i)
                     {
+                        // Don't apply lighting for shadow casters
+                        if (i == shadowMapEffectSlot.Index)
+                            continue;
+
                         var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                         var renderEffect = renderEffects[staticEffectObjectNode];
 

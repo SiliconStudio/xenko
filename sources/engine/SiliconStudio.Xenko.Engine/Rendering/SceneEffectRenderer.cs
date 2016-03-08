@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
-            var input = Input.GetSafeRenderFrame(context);
+            var input = Input.GetSafeRenderFrame(context.RenderContext);
 
             // If RenderFrame input or output are null, we can't do anything
             if (input == null)

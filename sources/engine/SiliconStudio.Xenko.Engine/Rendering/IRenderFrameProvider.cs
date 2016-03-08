@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>RenderFrame.</returns>
-        RenderFrame GetRenderFrame(RenderDrawContext context);
+        RenderFrame GetRenderFrame(RenderContext context);
     }
 
     /// <summary>
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="context">The context.</param>
         /// <returns>RenderFrame or null if IRenderFrameProvider is null.</returns>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        public static RenderFrame GetSafeRenderFrame(this IRenderFrameProvider renderFrameProvider, RenderDrawContext context)
+        public static RenderFrame GetSafeRenderFrame(this IRenderFrameProvider renderFrameProvider, RenderContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
             return renderFrameProvider == null ? null : renderFrameProvider.GetRenderFrame(context);

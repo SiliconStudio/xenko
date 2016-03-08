@@ -85,9 +85,9 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public SafeList<IGraphicsRenderer> PostRenderers { get; private set; }
 
-        public override void BeforeExtract(RenderContext context)
+        public override void Collect(RenderContext context)
         {
-            base.BeforeExtract(context);
+            base.Collect(context);
 
             // Early exit if some properties are null
             if (Mode == null)
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Rendering
             using (context.PushTagAndRestore(Current, this))
             using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
-                Mode.BeforeExtract(context);
+                Mode.Collect(context);
             }
         }
 

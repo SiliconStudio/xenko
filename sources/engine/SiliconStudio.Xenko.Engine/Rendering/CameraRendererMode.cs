@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public virtual void BeforeExtract(RenderContext context)
+        public virtual void Collect(RenderContext context)
         {
             EnsureContext(context);
         }
