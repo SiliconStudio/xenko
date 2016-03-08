@@ -54,9 +54,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             base.Extract();
         }
 
-        public override void PrepareEffectPermutationsImpl()
+        public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
         {
-            base.PrepareEffectPermutationsImpl();
+            base.PrepareEffectPermutationsImpl(context);
 
             var renderEffects = RenderData.GetData(renderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;

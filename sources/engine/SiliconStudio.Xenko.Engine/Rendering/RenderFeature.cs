@@ -81,7 +81,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Perform effect permutations, before <see cref="Prepare"/>.
         /// </summary>
-        public virtual void PrepareEffectPermutations()
+        /// <param name="context"></param>
+        public virtual void PrepareEffectPermutations(RenderThreadContext context)
         {
         }
 

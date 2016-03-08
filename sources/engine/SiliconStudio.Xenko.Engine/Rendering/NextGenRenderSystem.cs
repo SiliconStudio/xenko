@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering
             // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
             {
                 // Divide into task chunks for parallelism
-                renderFeature.PrepareEffectPermutations();
+                renderFeature.PrepareEffectPermutations(context);
             }
 
             // Generate and execute prepare jobs

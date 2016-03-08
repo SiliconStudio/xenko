@@ -1,3 +1,4 @@
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -17,6 +18,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             RootRenderFeature = rootRenderFeature;
             RenderSystem = rootRenderFeature.RenderSystem;
+        }
+
+        public virtual void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
+        {
         }
     }
 }

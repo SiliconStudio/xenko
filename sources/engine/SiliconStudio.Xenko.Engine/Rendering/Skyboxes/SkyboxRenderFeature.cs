@@ -64,8 +64,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Extract();
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutationsImpl()
+        public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
         {
             var renderEffects = RenderData.GetData(RenderEffectKey);
 
@@ -88,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
             }
 
-            transformRenderFeature.PrepareEffectPermutations();
+            transformRenderFeature.PrepareEffectPermutations(context);
         }
 
         /// <inheritdoc/>

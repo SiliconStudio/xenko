@@ -55,14 +55,24 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutationsImpl()
+        public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
         {
-            base.PrepareEffectPermutationsImpl();
+            // Setup ActiveMeshDraw
+            foreach (var objectNodeReference in ObjectNodeReferences)
+            {
+                var objectNode = GetObjectNode(objectNodeReference);
+                var renderMesh = (RenderMesh)objectNode.RenderObject;
+
+                renderMesh.ActiveMeshDraw = renderMesh.Mesh.Draw;
+            }
+
+            base.PrepareEffectPermutationsImpl(context);
 
             foreach (var renderFeature in RenderFeatures)
             {
-                renderFeature.PrepareEffectPermutations();
+                renderFeature.PrepareEffectPermutations(context);
             }
         }
 
@@ -81,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering
         protected override void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
             var renderMesh = (RenderMesh)renderObject;
-            var drawData = renderMesh.Mesh.Draw;
+            var drawData = renderMesh.ActiveMeshDraw;
 
             pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
             pipelineState.PrimitiveType = drawData.PrimitiveType;
@@ -106,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 var renderMesh = (RenderMesh)renderNode.RenderObject;
-                var drawData = renderMesh.Mesh.Draw;
+                var drawData = renderMesh.ActiveMeshDraw;
 
                 // Get effect
                 // TODO: Use real effect slot

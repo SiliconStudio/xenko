@@ -4,6 +4,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -18,8 +19,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     public class MaterialRenderFeature : SubRenderFeature
     {
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<TessellationState> tessellationStateKey;
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
+
+        private List<MeshDraw> meshDrawsToGenerateAEN = new List<MeshDraw>();
 
         // Material instantiated
         private readonly Dictionary<Material, MaterialInfo> allMaterialInfos = new Dictionary<Material, MaterialInfo>();
@@ -74,14 +78,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             base.InitializeCore();
 
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
+            tessellationStateKey = RootRenderFeature.RenderData.CreateStaticObjectKey<TessellationState>();
 
             perMaterialDescriptorSetSlot = ((RootEffectRenderFeature)RootRenderFeature).GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations()
+        public override void PrepareEffectPermutations(RenderThreadContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
+            var tessellationStates = RootRenderFeature.RenderData.GetData(tessellationStateKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
             foreach (var renderObject in RootRenderFeature.RenderObjects)
@@ -96,6 +103,57 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Material use first 16 bits
                 var materialHashCode = material != null ? (uint)material.GetHashCode() : 0;
                 renderObject.StateSortKey = (renderObject.StateSortKey & 0x0000FFFF) | (materialHashCode << 16);
+
+                var tessellationState = tessellationStates[staticObjectNode];
+
+                if (material.TessellationMethod != tessellationState.Method)
+                {
+                    // Tessellation state has just been changed, reset pipeline state
+                    for (int i = 0; i < effectSlotCount; ++i)
+                    {
+                        var staticEffectObjectNode = staticObjectNode*effectSlotCount + i;
+                        var renderEffect = renderEffects[staticEffectObjectNode];
+
+                        if (renderEffect != null)
+                            renderEffect.PipelineState = null;
+                    }
+                }
+
+                // Update draw data if tessellation is active
+                if (material.TessellationMethod != XenkoTessellationMethod.None)
+                {
+                    var tessellationMeshDraw = tessellationState.MeshDraw;
+
+                    if (tessellationState.Method != material.TessellationMethod)
+                    {
+                        tessellationState.Method = material.TessellationMethod;
+
+                        if (tessellationMeshDraw == null)
+                        {
+                            var oldMeshDraw = renderMesh.ActiveMeshDraw;
+                            tessellationMeshDraw = new MeshDraw
+                            {
+                                VertexBuffers = oldMeshDraw.VertexBuffers,
+                                IndexBuffer = oldMeshDraw.IndexBuffer,
+                                DrawCount = oldMeshDraw.DrawCount,
+                                StartLocation = oldMeshDraw.StartLocation,
+                                PrimitiveType = tessellationState.Method.GetPrimitiveType(),
+                            };
+
+                            // adapt the primitive type and index buffer to the tessellation used
+                            if (tessellationState.Method.PerformsAdjacentEdgeAverage())
+                            {
+                                meshDrawsToGenerateAEN.Add(tessellationMeshDraw);
+                            }
+                            tessellationState.MeshDraw = tessellationMeshDraw;
+                        }
+
+                        // Save back new state
+                        tessellationStates[staticObjectNode] = tessellationState;
+                    }
+
+                    renderMesh.ActiveMeshDraw = tessellationState.MeshDraw;
+                }
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
@@ -188,6 +246,18 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        {
+            foreach (var tessellationMeshDraw in meshDrawsToGenerateAEN)
+            {
+                var indicesAEN = IndexExtensions.GenerateIndexBufferAEN(tessellationMeshDraw.IndexBuffer, tessellationMeshDraw.VertexBuffers[0], context.CommandList);
+                tessellationMeshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(Context.GraphicsDevice, indicesAEN), true, tessellationMeshDraw.IndexBuffer.Count * 12 / 3);
+                tessellationMeshDraw.DrawCount = 12 / 3 * tessellationMeshDraw.DrawCount;
+            }
+
+            meshDrawsToGenerateAEN.Clear();
+        }
+
         public static unsafe bool UpdateMaterial(NextGenRenderSystem renderSystem, RenderThreadContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
@@ -243,6 +313,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
 
             return true;
+        }
+
+        struct TessellationState
+        {
+            public XenkoTessellationMethod Method;
+            public MeshDraw MeshDraw;
         }
     }
 }
