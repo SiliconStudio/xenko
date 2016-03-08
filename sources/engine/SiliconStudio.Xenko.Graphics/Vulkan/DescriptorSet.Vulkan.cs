@@ -16,6 +16,8 @@ namespace SiliconStudio.Xenko.Graphics
         //internal readonly CpuDescriptorHandle SrvStart;
         //internal readonly CpuDescriptorHandle SamplerStart;
 
+        public bool IsValid => Description != null;
+
         private DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
         {
             Device = graphicsDevice;

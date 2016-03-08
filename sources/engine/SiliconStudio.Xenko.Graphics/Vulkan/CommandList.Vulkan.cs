@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, Texture[] renderTargets)
+        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
             //// TODO D3D12 we don't have a way to provide array + size with SharpDX
             //var renderTargetLength = renderTargets.Length;
@@ -197,6 +197,11 @@ namespace SiliconStudio.Xenko.Graphics
             //NativeCommandList.SetScissorRectangles(new RawRectangle { Right = (int)viewport.Width, Bottom = (int)viewport.Height });
         }
 
+        public void SetStencilReference(int stencilReference)
+        {
+            //NativeCommandBuffer.StencilReference = stencilReference;
+        }
+
         public void SetPipelineState(PipelineState pipelineState)
         {
             //boundPipelineState = pipelineState;
@@ -226,6 +231,20 @@ namespace SiliconStudio.Xenko.Graphics
             //    Format = is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
             //    SizeInBytes = buffer.SizeInBytes - offset
             //} : null);
+        }
+
+        public void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
+        {
+            //// Find parent resource
+            //if (resource.ParentResource != null)
+            //    resource = resource.ParentResource;
+
+            //var currentState = resource.NativeResourceState;
+            //if (currentState != (ResourceStates)newState)
+            //{
+            //    resource.NativeResourceState = (ResourceStates)newState;
+            //    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, currentState, (ResourceStates)newState);
+            //}
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)

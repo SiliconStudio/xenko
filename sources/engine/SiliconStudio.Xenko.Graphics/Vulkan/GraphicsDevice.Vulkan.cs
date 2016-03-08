@@ -17,9 +17,10 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
-        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
+        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Vulkan;
 
         private bool simulateReset = false;
+        private string rendererName;
 
         private Device nativeDevice;
         internal Queue NativeCommandQueue;
@@ -143,14 +144,18 @@ namespace SiliconStudio.Xenko.Graphics
             //commandList.Dispose();
         }
 
+        private void InitializePostFeatures()
+        {
+        }
+
+        private string GetRendererName()
+        {
+            return rendererName;
+        }
+
         public void SimulateReset()
         {
             simulateReset = true;
-        }
-
-        private void InitializeFactories()
-        {
-            
         }
 
         /// <summary>
@@ -166,6 +171,8 @@ namespace SiliconStudio.Xenko.Graphics
                 // Destroy previous device
                 ReleaseDevice();
             }
+
+            rendererName = Adapter.Description;
 
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
@@ -297,6 +304,10 @@ namespace SiliconStudio.Xenko.Graphics
             //nativeUploadBuffer = null;
 
             //TemporaryResources.Clear();
+        }
+
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
         }
 
         protected void DestroyPlatformDevice()
