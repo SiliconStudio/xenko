@@ -23,8 +23,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [Display("DynamicEmissive")]
     public class ParticleMaterialComputeColor : ParticleMaterialSimple
     {
-        private ShaderGeneratorContext shaderGeneratorContext;
-
         // TODO Part of the graphics improvement XK-3052
         private int shadersUpdateCounter;
 
@@ -69,7 +67,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.InitializeCore(context);
 
-            shaderGeneratorContext = new ShaderGeneratorContext(context.GraphicsDevice) { Parameters = Parameters };
+            UpdateShaders(context.GraphicsDevice);
+        }
+
+        /// <inheritdoc />
+        public override void Setup(RenderContext context)
+        {
+            base.Setup(context);
 
             UpdateShaders(context.GraphicsDevice);
         }
@@ -88,15 +92,23 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (ComputeColor != null)
             {
-                // Don't forget to set the proper color space!
-                shaderGeneratorContext.ColorSpace = graphicsDevice.ColorSpace;
+                var shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice)
+                {
+                    Parameters = Parameters,
+                    ColorSpace = graphicsDevice.ColorSpace
+                };
 
-                shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
+                var newShaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
 
-                Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
+                // Check if shader code has changed
+                if (!newShaderSource.Equals(shaderSource))
+                {
+                    shaderSource = newShaderSource;
+                    Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
 
-                // TODO: Is this necessary?
-                HasVertexLayoutChanged = true;
+                    // TODO: Is this necessary?
+                    HasVertexLayoutChanged = true;
+                }
             }
         }
 
