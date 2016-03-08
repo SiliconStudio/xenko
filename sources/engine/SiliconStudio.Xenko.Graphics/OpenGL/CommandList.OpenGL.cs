@@ -47,6 +47,8 @@ namespace SiliconStudio.Xenko.Graphics
         private bool keepContextOnEnd;
 #endif
 
+        // How many frames to wait before allowing non-blocking texture readbacks
+        private const int ReadbackFrameDelay = 2;
         private const int MaxBoundRenderTargets = 16;
         private int contextBeginCounter = 0;
 
@@ -860,7 +862,7 @@ namespace SiliconStudio.Xenko.Graphics
                         if (doNotWait)
                         {
                             // Wait at least 2 frames after last operation
-                            if (GraphicsDevice.FrameCounter < texture.PixelBufferFrame + 2)
+                            if (GraphicsDevice.FrameCounter < texture.PixelBufferFrame + ReadbackFrameDelay)
                             {
                                 return new MappedResource(resource, subResourceIndex, new DataBox(), offsetInBytes, lengthInBytes);
                             }
