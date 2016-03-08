@@ -372,6 +372,8 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.BindBuffer(BufferTarget.PixelPackBuffer, destTexture.PixelBufferObjectId);
                     GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, IntPtr.Zero);
                     GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
+
+                    destTexture.PixelBufferFrame = GraphicsDevice.FrameCounter;
                 }
 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
@@ -744,7 +746,9 @@ namespace SiliconStudio.Xenko.Graphics
                         GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, IntPtr.Zero, buffer.bufferUsageHint);
                     }
 
-                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (doNotWait ? BufferAccessMask.MapUnsynchronizedBit : 0));
+                    var unsynchronized = doNotWait && mapMode != MapMode.Read && mapMode != MapMode.ReadWrite;
+
+                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (unsynchronized ? BufferAccessMask.MapUnsynchronizedBit : 0));
                 }
 
                 return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = 0, RowPitch = 0 });
@@ -771,7 +775,16 @@ namespace SiliconStudio.Xenko.Graphics
                     else
 #endif
                     {
-                        return MapTexture(texture, BufferTarget.PixelPackBuffer, subResourceIndex, mapMode, doNotWait, offsetInBytes, lengthInBytes);
+                        if (doNotWait)
+                        {
+                            // Wait at least 2 frames after last operation
+                            if (GraphicsDevice.FrameCounter < texture.PixelBufferFrame + 2)
+                            {
+                                return new MappedResource(resource, subResourceIndex, new DataBox(), offsetInBytes, lengthInBytes);
+                            }
+                        }
+
+                        return MapTexture(texture, BufferTarget.PixelPackBuffer, subResourceIndex, mapMode, offsetInBytes, lengthInBytes);
                     }
                 }
                 else if (mapMode == MapMode.WriteDiscard)
@@ -783,25 +796,17 @@ namespace SiliconStudio.Xenko.Graphics
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
                         throw new NotSupportedException("Only dynamic texture can be mapped.");
 
-                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, subResourceIndex, mapMode, doNotWait, offsetInBytes, lengthInBytes);
+                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, subResourceIndex, mapMode, offsetInBytes, lengthInBytes);
                 }
             }
 
             throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
         }
 
-        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, int subResourceIndex, MapMode mapMode, bool doNotWait, int offsetInBytes, int lengthInBytes)
+        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, int subResourceIndex, MapMode mapMode, int offsetInBytes, int lengthInBytes)
         {
             GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            
-            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (doNotWait ? BufferAccessMask.MapUnsynchronizedBit : 0));
-            GL.BindBuffer(pixelPackUnpack, 0);
-#else
-            offsetInBytes = 0;
-            lengthInBytes = -1;
-            var mapResult = GL.MapBuffer(pixelPackUnpack, mapMode.ToOpenGL());
-#endif
+            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
             GL.BindBuffer(pixelPackUnpack, 0);
 
             return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
