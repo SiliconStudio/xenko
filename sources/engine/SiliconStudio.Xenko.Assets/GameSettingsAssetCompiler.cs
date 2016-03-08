@@ -100,17 +100,6 @@ namespace SiliconStudio.Xenko.Assets
 
                 result.Configurations.PlatformFilters = AssetParameters.PlatformFilters;
 
-                // TODO: Platform-specific settings have priority
-                //if (platform != PlatformType.Shared)
-                //{
-                //    var platformProfile = package.Profiles.FirstOrDefault(o => o.Platform == platform);
-                //    if (platformProfile != null && platformProfile.Properties.ContainsKey(DefaultGraphicsProfile))
-                //    {
-                //        var customProfile = platformProfile.Properties.Get(DefaultGraphicsProfile);
-                //        result.DefaultGraphicsProfileUsed = customProfile;
-                //    }
-                //}
-
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, result);
 
