@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Facility to perform rendering: extract rendering data from scene, determine effects and GPU states, compute and prepare data (i.e. matrices, buffers, etc...) and finally draw it.
     /// </summary>
-    public class NextGenRenderSystem : ComponentBase
+    public class RenderSystem : ComponentBase
     {
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public PipelinePluginManager PipelinePlugins { get; }
 
-        public NextGenRenderSystem()
+        public RenderSystem()
         {
             PipelinePlugins = new PipelinePluginManager(this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;

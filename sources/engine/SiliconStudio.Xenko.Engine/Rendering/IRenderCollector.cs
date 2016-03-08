@@ -1,6 +1,6 @@
 namespace SiliconStudio.Xenko.Rendering
 {
-    public interface INextGenRenderer
+    public interface IRenderCollector
     {
         /// <summary>
         /// Executed before extract. Should create views, update RenderStages, etc...

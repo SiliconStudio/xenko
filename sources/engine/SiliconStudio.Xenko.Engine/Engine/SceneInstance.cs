@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// A property key to get the current render system from the <see cref="RenderContext.Tags"/>.
         /// </summary>
-        public static readonly PropertyKey<NextGenRenderSystem> CurrentRenderSystem = new PropertyKey<NextGenRenderSystem>("SceneInstance.CurrentRenderSystem", typeof(SceneInstance));
+        public static readonly PropertyKey<RenderSystem> CurrentRenderSystem = new PropertyKey<RenderSystem>("SceneInstance.CurrentRenderSystem", typeof(SceneInstance));
 
         /// <summary>
         /// A property key to get the current visibility group from the <see cref="RenderContext.Tags"/>.
@@ -193,7 +193,7 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        public VisibilityGroup GetOrCreateVisibilityGroup(NextGenRenderSystem renderSystem)
+        public VisibilityGroup GetOrCreateVisibilityGroup(RenderSystem renderSystem)
         {
             // Find if it exists
             VisibilityGroup visibilityGroup = null;

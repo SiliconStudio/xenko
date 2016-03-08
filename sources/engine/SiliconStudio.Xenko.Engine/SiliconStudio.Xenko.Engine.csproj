@@ -208,7 +208,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Rendering\INextGenRenderer.cs" />
+    <Compile Include="Rendering\IRenderCollector.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
@@ -252,8 +252,8 @@
     <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\CameraRendererModeForward.cs" />
-    <Compile Include="Rendering\NextGenRenderSystem.cs" />
-    <Compile Include="Rendering\NextGenRenderSystemExtensions.cs" />
+    <Compile Include="Rendering\RenderSystem.cs" />
+    <Compile Include="Rendering\RenderSystemExtensions.cs" />
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />

@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Rendering
         public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
 
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
-        public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
+        public Action<RenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
         public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
         public ProcessPipelineStateDelegate PostProcessPipelineState;

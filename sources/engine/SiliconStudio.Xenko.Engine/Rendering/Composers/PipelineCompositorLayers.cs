@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// Gets the render system used with this pipeline.
         /// </summary>
         [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem { get; } = new NextGenRenderSystem();
+        public RenderSystem RenderSystem { get; } = new RenderSystem();
 
         /// <summary>
         /// Gets or sets the effect to use to render the models in the scene.

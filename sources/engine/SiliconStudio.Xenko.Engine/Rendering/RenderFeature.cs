@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         protected RenderContext Context { get; private set; }
 
-        public NextGenRenderSystem RenderSystem { get; internal set; }
+        public RenderSystem RenderSystem { get; internal set; }
 
         public bool Initialized { get; private set; }
 

@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering
     public abstract class CameraRenderModeBase : CameraRendererMode
     {
         [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem { get; private set; }
+        public RenderSystem RenderSystem { get; private set; }
 
         protected RenderView MainRenderView { get; private set; }
 

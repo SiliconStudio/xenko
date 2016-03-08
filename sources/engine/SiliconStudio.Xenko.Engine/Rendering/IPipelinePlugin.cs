@@ -1,7 +1,7 @@
 ﻿namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Automatically register part of the <see cref="NextGenRenderSystem"/> pipeline.
+    /// Automatically register part of the <see cref="RenderSystem"/> pipeline.
     /// </summary>
     public interface IPipelinePlugin
     {

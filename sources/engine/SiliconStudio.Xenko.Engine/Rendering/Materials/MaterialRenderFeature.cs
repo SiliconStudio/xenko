@@ -258,7 +258,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             meshDrawsToGenerateAEN.Clear();
         }
 
-        public static unsafe bool UpdateMaterial(NextGenRenderSystem renderSystem, RenderThreadContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
+        public static unsafe bool UpdateMaterial(RenderSystem renderSystem, RenderThreadContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
             if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
