@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             var url = GetStoragePathFromShaderType(type);
             ObjectId shaderSourceId;
-            AssetManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
+            ContentManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
             return shaderSourceId;
         }
 

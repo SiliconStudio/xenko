@@ -73,11 +73,18 @@ namespace SiliconStudio.Xenko.Rendering
         protected IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="AssetManager"/>.
+        /// Gets the <see cref="ContentManager"/>.
         /// </summary>
         /// <value>The asset manager.</value>
         [DataMemberIgnore]
-        protected AssetManager Assets { get; private set; }
+        protected ContentManager Content { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ContentManager"/>.
+        /// </summary>
+        [DataMemberIgnore]
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        protected ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the graphics device.
@@ -110,7 +117,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Initialize most common services related to rendering
             Services = Context.Services;
-            Assets = Services.GetSafeServiceAs<AssetManager>();
+            Content = Services.GetSafeServiceAs<ContentManager>();
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 

@@ -115,7 +115,8 @@ namespace SiliconStudio.Quantum.Contents
         /// Removes an item from this content, assuming the content is a collection.
         /// </summary>
         /// <param name="itemIndex">The index from which the item must be removed.</param>
-        void Remove(object itemIndex);
+        /// <param name="item"></param>
+        void Remove(object itemIndex, object item);
 
         // TODO: implement clear if needed
         //void Clear();

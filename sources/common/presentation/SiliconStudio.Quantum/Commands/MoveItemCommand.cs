@@ -38,7 +38,7 @@ namespace SiliconStudio.Quantum.Commands
             var sourceIndex = indices.Item1;
             var targetIndex = indices.Item2;
             var value = content.Retrieve(sourceIndex);
-            content.Remove(sourceIndex);
+            content.Remove(sourceIndex, value);
             content.Add(targetIndex, value);
             return null;
         }

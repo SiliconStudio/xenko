@@ -65,6 +65,12 @@ namespace SiliconStudio.Quantum.References
         public ObjectReference this[object index] { get { return references.Single(x => Equals(x.Index, index)); } }
 
         /// <inheritdoc/>
+        public bool HasIndex(object index)
+        {
+            return indices.Any(x => x.Equals(index));
+        }
+
+        /// <inheritdoc/>
         public void Clear()
         {
             references.Clear();

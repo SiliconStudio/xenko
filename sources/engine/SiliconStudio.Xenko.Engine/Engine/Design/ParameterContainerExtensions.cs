@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         static ParameterContainerExtensions()
         {
-            DefaultSceneSerializerSelector = new SerializerSelector("Default", "Asset");
+            DefaultSceneSerializerSelector = new SerializerSelector("Default", "Content");
         }
 
         public static HashSet<Entity> CollectEntityTree(Entity entity)
