@@ -435,10 +435,15 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Disable(EnableCap.StencilTest);
             GL.ColorMask(true, true, true, true);
 
+            // TODO find a better way to detect if sRGB conversion is needed (need to detect if main frame buffer is sRGB or not at init time)
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // If we are copying from an SRgb texture to a non SRgb texture, we use a special SRGb copy shader
-            bool isSRgb = sourceTexture.Description.Format.IsSRgb() && destTexture == GraphicsDevice.WindowProvidedRenderTexture;
+            bool needSRgbConversion = sourceTexture.Description.Format.IsSRgb() && destTexture == GraphicsDevice.WindowProvidedRenderTexture;
+#else
+            bool needSRgbConversion = false;
+#endif
             int offsetLocation, scaleLocation;
-            var program = GraphicsDevice.GetCopyProgram(isSRgb, out offsetLocation, out scaleLocation);
+            var program = GraphicsDevice.GetCopyProgram(needSRgbConversion, out offsetLocation, out scaleLocation);
 
             GL.UseProgram(program);
 
