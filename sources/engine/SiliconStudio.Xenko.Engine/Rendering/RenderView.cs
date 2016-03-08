@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void UpdateCameraToRenderView()
         {
-            // TODO: Currently set up during BeforeExtract/Prepare/Draw. Should be initialized before
+            // TODO: Currently set up during Collect/Prepare/Draw. Should be initialized before
             if (SceneCameraRenderer == null)
                 return;
 

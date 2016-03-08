@@ -6,6 +6,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// Executed before extract. Should create views, update RenderStages, etc...
         /// </summary>
         /// <param name="context"></param>
-        void BeforeExtract(RenderContext context);
+        void Collect(RenderContext context);
     }
 }

@@ -116,13 +116,13 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.Unload();
         }
 
-        public void BeforeExtract(RenderContext context)
+        public void Collect(RenderContext context)
         {
             var renderFrame = Output.GetRenderFrame(context);
 
             using (context.PushTagAndRestore(RenderFrame.Current, renderFrame))
             {
-                Renderers.BeforeExtract(context);
+                Renderers.Collect(context);
             }
         }
 
