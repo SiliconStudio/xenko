@@ -6,11 +6,6 @@ namespace SiliconStudio.Presentation.Drawing
     public interface IDrawingView
     {
         /// <summary>
-        /// Gets the controller.
-        /// </summary>
-        IDrawingController Controller { get; }
-
-        /// <summary>
         /// Gets the model.
         /// </summary>
         IDrawingModel Model { get; }

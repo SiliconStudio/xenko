@@ -57,12 +57,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty CanvasBoundsProperty = CanvasBoundsPropertyKey.DependencyProperty;
 
         /// <summary>
-        /// Identifies the <see cref="Controller"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ControllerProperty =
-            DependencyProperty.Register(nameof(Controller), typeof(IDrawingController), typeof(CanvasView));
-
-        /// <summary>
         /// Identifies the <see cref="IsCanvasValid"/> dependency property key.
         /// </summary>
         private static readonly DependencyPropertyKey IsCanvasValidPropertyKey =
@@ -99,8 +93,6 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         public Rect CanvasBounds { get { return (Rect)GetValue(CanvasBoundsProperty); } private set { SetValue(CanvasBoundsPropertyKey, value); } }
-
-        public IDrawingController Controller { get { return (IDrawingController)GetValue(ControllerProperty); } set { SetValue(ControllerProperty, value); } }
 
         /// <summary>
         /// Returns True if the current rendering is valid. False otherwise.
