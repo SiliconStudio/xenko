@@ -54,14 +54,15 @@ namespace SiliconStudio.Xenko.Graphics
         {
             this.adapterOrdinal = adapterOrdinal;
             this.physicalDevice = physicalDevice;
-
-            var displayProperties = physicalDevice.DisplayProperties;
-
+           
             physicalDevice.GetProperties(out properties);
 
-            outputs = new GraphicsOutput[displayProperties.Length];
-            for (var i = 0; i < outputs.Length; i++)
-                outputs[i] = new GraphicsOutput(this, displayProperties[i], i).DisposeBy(this);
+            // TODO VULKAN
+            //var displayProperties = physicalDevice.DisplayProperties;
+            //outputs = new GraphicsOutput[displayProperties.Length];
+            //for (var i = 0; i < outputs.Length; i++)
+            //    outputs[i] = new GraphicsOutput(this, displayProperties[i], i).DisposeBy(this);
+            outputs = new[] { new GraphicsOutput() };
         }
 
         /// <summary>

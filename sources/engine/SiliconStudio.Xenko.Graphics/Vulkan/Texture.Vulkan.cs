@@ -86,6 +86,8 @@ namespace SiliconStudio.Xenko.Graphics
             DepthPitch = Description.Width * Description.Height * pixelSize;
             RowPitch = Description.Width * pixelSize;
 
+            PreferredLayout = IsRenderTarget ? ImageLayout.ColorAttachmentOptimal : IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal : IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal : ImageLayout.General;
+
             if (ParentTexture != null)
             {
                 // Create only a view
@@ -93,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                if (NativeImage.Equals(default(SharpVulkan.Image)))
+                if (NativeImage == SharpVulkan.Image.Null)
                 {
                     if (!isNotOwningResources)
                     {
@@ -108,6 +110,7 @@ namespace SiliconStudio.Xenko.Graphics
                             Format = nativeFormat,
                             Flags = ImageCreateFlags.None,
                             Tiling = ImageTiling.Optimal,
+                            InitialLayout = dataBoxes == null ? PreferredLayout : ImageLayout.Preinitialized
                         };
 
                         switch (Dimension)
@@ -153,6 +156,37 @@ namespace SiliconStudio.Xenko.Graphics
 
                         NativeImage = GraphicsDevice.NativeDevice.CreateImage(ref createInfo);
 
+                        MemoryRequirements memoryRequirements;
+                        GraphicsDevice.NativeDevice.GetImageMemoryRequirements(NativeImage, out memoryRequirements);
+
+                        var allocateInfo = new MemoryAllocateInfo
+                        {
+                            StructureType = StructureType.MemoryAllocateInfo,
+                            AllocationSize = memoryRequirements.Size,
+                        };
+
+                        PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+                        GraphicsDevice.Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
+                        var typeBits = memoryRequirements.MemoryTypeBits;
+                        for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
+                        {
+                            if ((typeBits & 1) == 1)
+                            {
+                                // Type is available, does it match user properties?
+                                var memoryType = *((MemoryType*)&physicalDeviceMemoryProperties.MemoryTypes + i);
+                                if ((memoryType.PropertyFlags & memoryProperties) == memoryProperties)
+                                {
+                                    allocateInfo.MemoryTypeIndex = i;
+                                    break;
+                                }
+                            }
+                            typeBits >>= 1;
+                        }
+
+                        var memory = GraphicsDevice.NativeDevice.AllocateMemory(ref allocateInfo);
+
+                        GraphicsDevice.NativeDevice.BindImageMemory(NativeImage, memory, 0);
+
                         //AllocateMemory(IntPtr.Zero, memoryProperties);
 
                         //if (dataBoxes != null && dataBoxes.Length > 0)
@@ -192,23 +226,69 @@ namespace SiliconStudio.Xenko.Graphics
                         //        }
                         //    }
 
-                            //// Trigger copy
-                            //var commandList = GraphicsDevice.NativeCopyCommandList;
-                            //commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
-                            //commandList.CopyResource(NativeResource, nativeUploadTexture);
-                            //commandList.ResourceBarrierTransition(NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
-                            //commandList.Close();
+                        //// Trigger copy
+                        //var commandList = GraphicsDevice.NativeCopyCommandList;
+                        //commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
+                        //commandList.CopyResource(NativeResource, nativeUploadTexture);
+                        //commandList.ResourceBarrierTransition(NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
+                        //commandList.Close();
 
-                            //GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
+                        //GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
                         //}
                     }
-
-                    PreferredLayout = IsRenderTarget ? ImageLayout.ColorAttachmentOptimal : IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal : IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal : ImageLayout.General;
 
                     //GraphicsDevice.SetImageLayout(this, IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, ImageLayout.Undefined, PreferredLayout);
                     //GraphicsDevice.Flush();
                 }
             }
+
+            MemoryBarrier memoryBarrier = new MemoryBarrier();
+            BufferMemoryBarrier bufferMemoryBarrier = new BufferMemoryBarrier();
+            var imageMemoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                OldLayout = ImageLayout.Undefined,
+                NewLayout = PreferredLayout,
+                Image = NativeImage,
+                SubresourceRange = new ImageSubresourceRange
+                {
+                    AspectMask = ImageAspectFlags.Color,
+                    BaseArrayLayer = 0,
+                    BaseMipLevel = 0,
+                    LayerCount = (uint)ArraySize,
+                    LevelCount = (uint)MipLevels
+                }
+            };
+
+            if (PreferredLayout == ImageLayout.TransferDestinationOptimal)
+                imageMemoryBarrier.DestinationAccessMask = AccessFlags.TransferRead;
+
+            if (PreferredLayout == ImageLayout.ColorAttachmentOptimal)
+                imageMemoryBarrier.DestinationAccessMask = AccessFlags.ColorAttachmentWrite;
+
+            if (PreferredLayout == ImageLayout.DepthStencilAttachmentOptimal)
+                imageMemoryBarrier.DestinationAccessMask = AccessFlags.DepthStencilAttachmentWrite;
+
+            if (PreferredLayout == ImageLayout.ShaderReadOnlyOptimal)
+                imageMemoryBarrier.DestinationAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
+
+            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
+            commandBuffer.Reset(CommandBufferResetFlags.None);
+            var beginInfo = new CommandBufferBeginInfo
+            {
+                StructureType = StructureType.CommandBufferBeginInfo,
+            };
+            commandBuffer.Begin(ref beginInfo);
+            commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, ref memoryBarrier, 0, ref bufferMemoryBarrier, 1, &imageMemoryBarrier);
+            commandBuffer.End();
+
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = 1,
+                CommandBuffers = new IntPtr(&commandBuffer),
+            };
+            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
 
             if (!isNotOwningResources && Usage != GraphicsResourceUsage.Staging)
             {

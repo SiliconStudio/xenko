@@ -237,6 +237,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe Swapchain CreateSwapChain()
         {
+
+            Description.BackBufferFormat = PixelFormat.B8G8R8A8_UNorm;
+
             CreateSurface();
 
             // Create swapchain
@@ -287,14 +290,16 @@ namespace SiliconStudio.Xenko.Graphics
             // Create swapchain
             var swapchainCreateInfo = new SwapchainCreateInfo
             {
-                //StructureType = 
+                StructureType = StructureType.SwapchainCreateInfo,
                 Surface = surface,
-                ImageExtent = new Extent2D { Width = (uint)Description.BackBufferWidth, Height = (uint)Description.BackBufferHeight },
+                ImageArrayLayers = 1,
+                ImageSharingMode = SharingMode.Exclusive,
+                ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight),
                 ImageFormat = backBufferFormat,
                 ImageColorSpace = Description.ColorSpace == ColorSpace.Gamma ? SharpVulkan.ColorSpace.SRgbNonlinear : 0,
                 ImageUsage = ImageUsageFlags.ColorAttachment,
                 PresentMode = swapChainPresentMode,
-                CompositeAlpha = CompositeAlphaFlags.PreMultiplied,
+                CompositeAlpha = CompositeAlphaFlags.Opaque,
                 MinImageCount = desiredImageCount,
                 PreTransform = preTransform,
                 // OldSwapchain = 
@@ -324,13 +329,15 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO VULKAN Check queue surface support
 
             // Create surface
+#if SILICONSTUDIO_PLATFORM_WINDOWS
             var surfaceCreateInfo = new Win32SurfaceCreateInfo
             {
-                //StructureType = 
+                StructureType = StructureType.Win32SurfaceCreateInfo,
                 InstanceHandle = Process.GetCurrentProcess().Handle,
                 WindowHandle = control.Handle,
             };
             surface = GraphicsAdapterFactory.Instance.CreateWin32Surface(surfaceCreateInfo);
+#endif
         }
 
         private void CreateBackBuffers()

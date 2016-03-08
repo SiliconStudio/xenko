@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using SharpVulkan;
 using SiliconStudio.Core;
 
@@ -25,13 +26,37 @@ namespace SiliconStudio.Xenko.Graphics
                 ApiVersion = Vulkan.ApiVersion,
             };
 
-            var insatanceCreateInfo = new InstanceCreateInfo
+            var enabledExtensionNames = new[]
             {
-                StructureType = StructureType.InstanceCreateInfo,
-                ApplicationInfo = new IntPtr(&applicationInfo),
+                Marshal.StringToHGlobalAnsi("VK_KHR_surface"),
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+                Marshal.StringToHGlobalAnsi("VK_KHR_win32_surface"),
+#endif
             };
 
-            NativeInstance = Vulkan.CreateInstance(ref insatanceCreateInfo);
+            try
+            {
+                fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
+                {
+
+                    var insatanceCreateInfo = new InstanceCreateInfo
+                    {
+                        StructureType = StructureType.InstanceCreateInfo,
+                        ApplicationInfo = new IntPtr(&applicationInfo),
+                        EnabledExtensionCount = (uint)enabledExtensionNames.Length,
+                        EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
+                    };
+
+                    NativeInstance = Vulkan.CreateInstance(ref insatanceCreateInfo);
+                }
+            }
+            finally
+            {
+                foreach (var enabledExtensionName in enabledExtensionNames)
+                {
+                    Marshal.FreeHGlobal(enabledExtensionName);
+                }
+            }
 
             staticCollector.Add(new AnonymousDisposable(() => NativeInstance.Destroy()));
 

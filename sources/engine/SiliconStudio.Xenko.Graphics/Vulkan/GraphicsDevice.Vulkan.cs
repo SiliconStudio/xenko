@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using SharpVulkan;
 
@@ -22,6 +23,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private Device nativeDevice;
         internal Queue NativeCommandQueue;
+
+        internal CommandPool NativeCopyCommandPool;
+        internal CommandBuffer NativeCopyCommandBuffer;
 
         //internal CommandAllocator NativeCopyCommandAllocator;
         //internal GraphicsCommandList NativeCopyCommandList;
@@ -182,14 +186,36 @@ namespace SiliconStudio.Xenko.Graphics
                 QueueCount = 1,
             };
 
-            var deviceCreateInfo = new DeviceCreateInfo
+
+            var enabledExtensionNames = new[]
             {
-                StructureType = StructureType.DeviceCreateInfo,
-                QueueCreateInfoCount = 1,
-                QueueCreateInfos = new IntPtr(&queueCreateInfo),
+                Marshal.StringToHGlobalAnsi("VK_KHR_swapchain"),
             };
 
-            nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
+            try
+            {
+                fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
+                {
+                    var deviceCreateInfo = new DeviceCreateInfo
+                    {
+                        StructureType = StructureType.DeviceCreateInfo,
+                        QueueCreateInfoCount = 1,
+                        QueueCreateInfos = new IntPtr(&queueCreateInfo),
+                        EnabledExtensionCount = (uint)enabledExtensionNames.Length,
+                        EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
+                    };
+
+                    nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
+                }
+            }
+            finally
+            {
+                foreach (var enabledExtensionName in enabledExtensionNames)
+                {
+                    Marshal.FreeHGlobal(enabledExtensionName);
+                }
+            }
+
             NativeCommandQueue = nativeDevice.GetQueue(0, 0);
 
             //SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
@@ -201,6 +227,24 @@ namespace SiliconStudio.Xenko.Graphics
             //RenderTargetViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.RenderTargetView);
 
             //// Prepare copy command list (start it closed, so that every new use start with a Reset)
+            var commandPoolCreateInfo = new CommandPoolCreateInfo
+            {
+                StructureType = StructureType.CommandPoolCreateInfo,
+                QueueFamilyIndex = 0, //device.NativeCommandQueue.FamilyIndex
+                Flags = CommandPoolCreateFlags.ResetCommandBuffer
+            };
+            NativeCopyCommandPool = NativeDevice.CreateCommandPool(ref commandPoolCreateInfo);
+
+            var commandBufferAllocationInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                Level = CommandBufferLevel.Primary,
+                CommandPool = NativeCopyCommandPool,
+                CommandBufferCount = 1
+            };
+            CommandBuffer nativeCommandBuffer;
+            NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
+            NativeCopyCommandBuffer = nativeCommandBuffer;
             //NativeCopyCommandAllocator = NativeDevice.CreateCommandAllocator(CommandListType.Direct);
             //NativeCopyCommandList = NativeDevice.CreateCommandList(CommandListType.Direct, NativeCopyCommandAllocator, null);
             //NativeCopyCommandList.Close();
