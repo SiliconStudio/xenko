@@ -74,6 +74,8 @@ namespace SiliconStudio.Xenko.Rendering
         // TODO GRAPHICS REFACTOR not thread-safe
         public void Collect(RenderView view)
         {
+            ReevaluateActiveRenderStages();
+
             // Collect objects, and perform frustum culling
             // TODO GRAPHICS REFACTOR Create "VisibilityObject" (could contain multiple RenderNode) and separate frustum culling from RenderSystem
             // TODO GRAPHICS REFACTOR optimization: maybe we could process all views at once (swap loop between per object and per view)
@@ -266,7 +268,7 @@ namespace SiliconStudio.Xenko.Rendering
             return true;
         }
 
-        public void ReevaluateActiveRenderStages(RenderObject renderObject)
+        private void ReevaluateActiveRenderStages(RenderObject renderObject)
         {
             var renderFeature = renderObject.RenderFeature;
             if (renderFeature == null)
@@ -291,7 +293,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        internal void ReevaluateActiveRenderStages()
+        private void ReevaluateActiveRenderStages()
         {
             if (!NeedActiveRenderStageReevaluation)
                 return;
