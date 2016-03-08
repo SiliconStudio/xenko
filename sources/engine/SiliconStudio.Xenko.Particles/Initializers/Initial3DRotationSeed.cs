@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             RequiredFields.Add(ParticleFields.Quaternion);
             RequiredFields.Add(ParticleFields.RandomSeed);
 
-            DisplayRotation = true;
+            DisplayParticleRotation = true;
         }
 
         /// <inheritdoc />
