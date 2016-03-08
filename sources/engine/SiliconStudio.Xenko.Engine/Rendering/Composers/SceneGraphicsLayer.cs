@@ -120,10 +120,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         {
             var renderFrame = Output.GetRenderFrame(context);
 
-            using (context.PushTagAndRestore(RenderFrame.Current, renderFrame))
-            {
-                Renderers.Collect(context);
-            }
+            context.Tags.Set(RenderFrame.Current, renderFrame);
+            Renderers.Collect(context);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -141,8 +139,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             var renderFrame = Output.GetRenderFrame(context.RenderContext);
 
             using (context.RenderContext.PushTagAndRestore(CurrentInput, currentRenderFrame))
-            using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, renderFrame))
             {
+                context.RenderContext.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
             }
         }
