@@ -39,7 +39,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// </summary>
         /// <param name="renderer">The renderer.</param>
         /// <param name="point"></param>
-        /// <param name="diameter">The diameter of the circle.</param>
+        /// <param name="radius">The radius of the circle.</param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
         /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
@@ -48,9 +48,10 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void DrawCircle(this IDrawingContext renderer, Point point, double diameter, Color fillColor, Color strokeColor,
+        public static void DrawCircle(this IDrawingContext renderer, Point point, double radius, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false)
         {
+            var diameter = radius*2;
             renderer.DrawEllipse(point, new Size(diameter, diameter), fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset, isHitTestVisible);
         }
 
@@ -60,7 +61,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// </summary>
         /// <param name="renderer">The renderer.</param>
         /// <param name="points"></param>
-        /// <param name="diameter">The diameter of the circle.</param>
+        /// <param name="radius">The radius of the circle.</param>
         /// <param name="fillColor">The color of the shape's interior.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
         /// <param name="thickness">The wifdth of the shape's outline. The default is <c>1</c>.</param>
@@ -69,10 +70,9 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void DrawCircles(this IDrawingContext renderer, IList<Point> points, double diameter, Color fillColor, Color strokeColor,
+        public static void DrawCircles(this IDrawingContext renderer, IList<Point> points, double radius, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false)
         {
-            var radius = diameter*0.5;
             renderer.DrawEllipses(points, radius, radius, fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset, isHitTestVisible);
         }
 
