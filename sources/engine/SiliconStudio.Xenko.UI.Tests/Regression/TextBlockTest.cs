@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Asset.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("MSMincho10"),
                 Text = @"Text Block test
 にほんご ニホンゴ 人
 Several line of texts with different width.

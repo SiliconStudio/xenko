@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Audio
     /// <seealso cref="SoundEffect"/>
     /// <seealso cref="IPlayableSound"/>
     /// <seealso cref="DynamicSoundEffectInstance"/>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<SoundMusic>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SoundMusic>), Profile = "Content")]
     [DataSerializer(typeof(NullSerializer<SoundMusic>))]
     public sealed class SoundMusic : SoundInstanceBase
     {

@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Asset.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("MSMincho10"),
                 Text = @"Simple sample text surrounded by decorator.",
                 SynchronousCharacterGeneration = true
             };
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

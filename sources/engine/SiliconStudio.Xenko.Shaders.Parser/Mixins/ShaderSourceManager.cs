@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
         /// </summary>
         public ShaderSourceManager()
-            : this(AssetManager.FileProvider)
+            : this(ContentManager.FileProvider)
         {
         }
 

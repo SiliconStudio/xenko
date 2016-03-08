@@ -109,7 +109,7 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         public void EndTransaction(string name, bool reverseOrderOnUndo = true)
         {
-            EndTransaction(name, x => AggregateActionItems(x, name));
+            EndTransaction(name, (items, reverse) => AggregateActionItems(items, name, reverse), reverseOrderOnUndo);
         }
 
         /// <inheritdoc/>
@@ -120,12 +120,7 @@ namespace SiliconStudio.ActionStack
             var currentTransaction = TransactionStack.Pop();
             if (currentTransaction.Count > 0)
             {
-                var result = aggregateActionItems(currentTransaction);
-                var aggregateActionItem = result as IAggregateActionItem;
-                if (aggregateActionItem != null)
-                {
-                    aggregateActionItem.ReverseOrderOnUndo = reverseOrderOnUndo;
-                }
+                var result = aggregateActionItems(currentTransaction, reverseOrderOnUndo);
                 Add(result);
                 TransactionEnded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(result));
             }
@@ -176,7 +171,7 @@ namespace SiliconStudio.ActionStack
             }
         }
 
-        private static IActionItem AggregateActionItems(IReadOnlyCollection<IActionItem> actionItems, string name = null)
+        private static IActionItem AggregateActionItems(IReadOnlyCollection<IActionItem> actionItems, string name = null, bool reverseOrderOnUndo = true)
         {
             if (actionItems.Count == 1)
             {
@@ -185,7 +180,7 @@ namespace SiliconStudio.ActionStack
                     actionItem.Name = name;
                 return actionItem;
             }
-            return new AggregateActionItem(name, actionItems.ToArray());
+            return new AggregateActionItem(name, actionItems.ToArray()) { ReverseOrderOnUndo = reverseOrderOnUndo };
         }
     }
 }

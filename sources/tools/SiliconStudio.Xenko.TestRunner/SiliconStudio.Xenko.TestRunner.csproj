@@ -45,6 +45,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.ConnectionRouter\SiliconStudio.Xenko.ConnectionRouter.csproj">
       <Project>{77e2fcc0-4ca6-436c-be6f-9418cb807d45}</Project>
       <Name>SiliconStudio.Xenko.ConnectionRouter</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

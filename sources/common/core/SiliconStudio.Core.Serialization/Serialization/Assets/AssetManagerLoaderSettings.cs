@@ -6,7 +6,7 @@ using System.Linq;
 namespace SiliconStudio.Core.Serialization.Assets
 {
     /// <summary>
-    /// Specifies settings for <see cref="AssetManager.Load{T}"/> operations.
+    /// Specifies settings for <see cref="ContentManager.Load{T}"/> operations.
     /// </summary>
     public sealed class AssetManagerLoaderSettings
     {

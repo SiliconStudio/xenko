@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Tests
 {
     [TestFixture]
-    public class TestEntityGroupAsset
+    public class TestPrefabAsset
     {
         [Test]
         public void TestSerialization()
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var newAsset = (EntityGroupAsset)AssetSerializer.Load(stream, "xkentity");
+                var newAsset = (PrefabAsset)AssetSerializer.Load(stream, "xkentity");
 
                 CheckAsset(originAsset, newAsset);
             }
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestClone()
         {
             var originAsset = CreateOriginAsset();
-            var newAsset = (EntityGroupAsset)AssetCloner.Clone(originAsset);
+            var newAsset = (PrefabAsset)AssetCloner.Clone(originAsset);
             CheckAsset(originAsset, newAsset);
         }
 
@@ -54,9 +54,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var originAsset = CreateOriginAsset();
 
-            var derivedAsset = (EntityGroupAsset)originAsset.CreateChildAsset("base");
+            var derivedAsset = (PrefabAsset)originAsset.CreateChildAsset("base");
 
-            var basePartAsset = new EntityGroupAsset();
+            var basePartAsset = new PrefabAsset();
             var entityPart1 = new Entity() { Name = "EPart1" };
             var entityPart2 = new Entity() { Name = "EPart2" };
             basePartAsset.Hierarchy.Entities.Add(entityPart1);
@@ -64,8 +64,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
             basePartAsset.Hierarchy.RootEntities.Add(entityPart1.Id);
             basePartAsset.Hierarchy.RootEntities.Add(entityPart2.Id);
 
-            var partAsset = (EntityGroupAsset)basePartAsset.CreateChildAsset("part");
-            derivedAsset.AddPart(partAsset);
+            // Add 2 asset parts from the same base
+            var instance = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
+            derivedAsset.Hierarchy.Entities.AddRange(instance.Entities);
+            derivedAsset.Hierarchy.RootEntities.AddRange(instance.RootEntities);
+
+            var instance2 = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
+            derivedAsset.Hierarchy.Entities.AddRange(instance2.Entities);
+            derivedAsset.Hierarchy.RootEntities.AddRange(instance2.RootEntities);
 
             using (var stream = new MemoryStream())
             {
@@ -76,21 +82,23 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var newAsset = (EntityGroupAsset)AssetSerializer.Load(stream, "xkentity");
+                var newAsset = (PrefabAsset)AssetSerializer.Load(stream, "xkentity");
 
                 Assert.NotNull(newAsset.Base);
                 Assert.NotNull(newAsset.BaseParts);
+
+                // We should have only 1 base part, as we created parts from the same base
                 Assert.AreEqual(1, newAsset.BaseParts.Count);
 
                 CheckAsset(derivedAsset, newAsset);
 
-                CheckAsset(originAsset, (EntityGroupAsset)newAsset.Base.Asset);
+                CheckAsset(originAsset, (PrefabAsset)newAsset.Base.Asset);
 
-                CheckGenericAsset(basePartAsset, (EntityGroupAsset)newAsset.BaseParts[0].Asset);
+                CheckGenericAsset(basePartAsset, (PrefabAsset)newAsset.BaseParts[0].Asset);
             }
         }
 
-        private static EntityGroupAsset CreateOriginAsset()
+        private static PrefabAsset CreateOriginAsset()
         {
             // Basic test of entity serialization with links between entities (entity-entity, entity-component)
             // E1
@@ -98,7 +106,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // E3
             // E4 + link to E3.Transform component via TestEntityComponent
 
-            var originAsset = new EntityGroupAsset();
+            var originAsset = new PrefabAsset();
 
             {
                 var entity1 = new Entity() { Name = "E1" };
@@ -128,7 +136,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             return originAsset;
         }
 
-        private static void CheckGenericAsset(EntityGroupAsset originAsset, EntityGroupAsset newAsset)
+        private static void CheckGenericAsset(PrefabAsset originAsset, PrefabAsset newAsset)
         {
             // Check that we have exactly the same root entities
             Assert.AreEqual(originAsset.Hierarchy.RootEntities, newAsset.Hierarchy.RootEntities);
@@ -163,7 +171,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             }
         }
 
-        private static void CheckAsset(EntityGroupAsset originAsset, EntityGroupAsset newAsset)
+        private static void CheckAsset(PrefabAsset originAsset, PrefabAsset newAsset)
         {
             CheckGenericAsset(originAsset, newAsset);
 
