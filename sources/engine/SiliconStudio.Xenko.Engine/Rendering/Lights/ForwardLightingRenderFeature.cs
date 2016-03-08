@@ -190,6 +190,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
+            var shadowMapEffectSlot = ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(ShadowMapRenderStage);
+
             foreach (var view in RenderSystem.Views)
             {
                 if (view.GetType() != typeof(RenderView))
@@ -214,6 +216,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     for (int i = 0; i < effectSlotCount; ++i)
                     {
+                        // Don't apply lighting for shadow casters
+                        if (i == shadowMapEffectSlot.Index)
+                            continue;
+
                         var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                         var renderEffect = renderEffects[staticEffectObjectNode];
 
