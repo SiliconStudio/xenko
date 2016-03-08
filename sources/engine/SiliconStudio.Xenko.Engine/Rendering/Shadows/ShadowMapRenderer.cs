@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return shadowMapRenderer;
         }
 
-        public void Extract(Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
+        public void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
         {
             // Cleanup previous shadow render views
             foreach (var shadowRenderView in shadowRenderViews)
@@ -118,6 +118,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 AssignRectangles();
 
                 // Collect shadow render views
+                var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
+
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;
@@ -136,6 +138,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                         // Add the render view for the current frame
                         RenderSystem.Views.Add(shadowRenderView);
+
+                        // Collect objects in shadow views
+                        visibilityGroup.Collect(shadowRenderView);
                     }
                 }
             }

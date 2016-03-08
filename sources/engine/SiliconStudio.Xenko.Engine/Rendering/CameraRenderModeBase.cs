@@ -28,5 +28,17 @@ namespace SiliconStudio.Xenko.Rendering
             };
             RenderSystem.Views.Add(MainRenderView);
         }
+
+        public override void BeforeExtract(RenderContext context)
+        {
+            base.BeforeExtract(context);
+
+            // Update view parameters
+            MainRenderView.UpdateCameraToRenderView();
+
+            // Collect render objects
+            var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
+            visibilityGroup.Collect(MainRenderView);
+        }
     }
 }
