@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
         private ConstantBufferOffsetReference time; // TODO: Move this at a more global level so that it applies on everything? (i.e. RootEffectRenderFeature)
         private ConstantBufferOffsetReference view;
         private ConstantBufferOffsetReference world;
+        private ConstantBufferOffsetReference camera;
 
         struct RenderModelFrameInfo
         {
@@ -38,6 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             time = ((RootEffectRenderFeature)RootRenderFeature).CreateFrameCBufferOffsetSlot(GlobalKeys.Time.Name);
             view = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(TransformationKeys.View.Name);
+            camera = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(CameraKeys.NearClipPlane.Name);
             world = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationKeys.World.Name);
         }
 
@@ -101,7 +103,7 @@ namespace SiliconStudio.Xenko.Rendering
                     renderModelViewInfoData[renderPerViewNodeReference] = renderModelViewInfo;
                 }
 
-                // Copy ViewProjection to PerFrame cbuffer
+                // Copy ViewProjection to PerView cbuffer
                 foreach (var viewLayout in viewFeature.Layouts)
                 {
                     var viewProjectionOffset = viewLayout.GetConstantBufferOffset(this.view);
@@ -122,6 +124,34 @@ namespace SiliconStudio.Xenko.Rendering
                     perView->ProjScreenRay = new Vector2(-1.0f / view.Projection.M11, 1.0f / view.Projection.M22);
                     // TODO GRAPHICS REFACTOR avoid cbuffer read
                     perView->Eye = new Vector4(perView->ViewInverse.M41, perView->ViewInverse.M42, perView->ViewInverse.M43, 1.0f);
+                }
+
+                // Copy Camera to PerView cbuffer
+                var cameraComponent = view.Camera;
+                if (cameraComponent != null)
+                {
+                    foreach (var viewLayout in viewFeature.Layouts)
+                    {
+                        var cameraOffset = viewLayout.GetConstantBufferOffset(camera);
+                        if (cameraOffset == -1)
+                            continue;
+
+                        var resourceGroup = viewLayout.Entries[view.Index].Resources;
+                        var mappedCB = resourceGroup.ConstantBuffer.Data;
+
+                        var perViewCamera = (PerViewCamera*)((byte*)mappedCB + cameraOffset);
+
+                        perViewCamera->NearClipPlane = cameraComponent.NearClipPlane;
+                        perViewCamera->FarClipPlane = cameraComponent.FarClipPlane;
+                        perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(cameraComponent.NearClipPlane, cameraComponent.FarClipPlane);
+
+                        if (view.SceneCameraRenderer != null)
+                            perViewCamera->ViewSize = new Vector2(view.SceneCameraRenderer.ComputedViewport.Width, view.SceneCameraRenderer.ComputedViewport.Height);
+
+                        perViewCamera->AspectRatio = cameraComponent.AspectRatio;
+                        perViewCamera->VerticalFieldOfView = cameraComponent.VerticalFieldOfView;
+                        perViewCamera->OrthoSize = cameraComponent.OrthographicSize;
+                    }
                 }
             }
 
@@ -194,6 +224,20 @@ namespace SiliconStudio.Xenko.Rendering
             public Vector3 WorldScale;
             private float padding1;
             public Vector4 EyeMS;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct PerViewCamera
+        {
+            public float NearClipPlane;
+            public float FarClipPlane;
+            public Vector2 ZProjection;
+
+            public Vector2 ViewSize;
+            public float AspectRatio;
+            public float VerticalFieldOfView;
+
+            public float OrthoSize;
         }
     }
 }
