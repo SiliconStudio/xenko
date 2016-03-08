@@ -4,16 +4,38 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
-using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
-    public sealed class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<ListBox>
+    [Serializable]
+    public enum SelectionMode
+    {
+        Normal,
+        Additive,
+        Substractive
+    }
+
+    public struct SelectionResult
+    {
+        public SelectionResult(Rect rect, SelectionMode mode)
+        {
+            Rect = rect;
+            Mode = mode;
+        }
+
+        public Rect Rect { get; }
+
+        public SelectionMode Mode { get; }
+    }
+
+    public sealed class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<UIElement>
     {
         public static readonly DependencyProperty CanvasProperty =
             DependencyProperty.Register(nameof(Canvas), typeof(Canvas), typeof(SelectionRectangleBehavior), new PropertyMetadata(OnCanvasChanged));
+
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(SelectionRectangleBehavior));
 
         public static readonly DependencyProperty AdditiveModifiersProperty =
             DependencyProperty.Register(nameof(AdditiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Shift));
@@ -24,11 +46,10 @@ namespace SiliconStudio.Presentation.Behaviors
         public static readonly DependencyProperty SubtractiveModifiersProperty =
             DependencyProperty.Register(nameof(SubtractiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Control));
 
-        public static readonly DependencyProperty RectangleStyleProperty
-            = DependencyProperty.Register(nameof(RectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior));
+        public static readonly DependencyProperty RectangleStyleProperty =
+            DependencyProperty.Register(nameof(RectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior));
 
         private Point originPoint;
-        private Panel itemsPanel;
         private Rectangle selectionRectangle;
         
         static SelectionRectangleBehavior()
@@ -42,6 +63,8 @@ namespace SiliconStudio.Presentation.Behaviors
         public static ResourceKey DefaultRectangleStyleKey { get; } = new ComponentResourceKey(typeof(SelectionRectangleBehavior), nameof(DefaultRectangleStyleKey));
 
         public Canvas Canvas { get { return (Canvas)GetValue(CanvasProperty); } set { SetValue(CanvasProperty, value); } }
+
+        public ICommand Command { get { return (ICommand)GetValue(CommandProperty); } set { SetValue(CommandProperty, value); } }
 
         public ModifierKeys AdditiveModifiers { get { return (ModifierKeys)GetValue(AdditiveModifiersProperty); } set { SetValue(AdditiveModifiersProperty, value); } }
 
@@ -64,13 +87,6 @@ namespace SiliconStudio.Presentation.Behaviors
             base.CancelOverride();
             IsDragging = false;
             Canvas.Visibility = Visibility.Collapsed;
-        }
-
-        protected override void OnAttachedOverride()
-        {
-            base.OnAttachedOverride();
-
-            itemsPanel = GetItemsPanel(AssociatedObject);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -147,6 +163,7 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 selectionRectangle.Style = selectionRectangle?.TryFindResource(DefaultRectangleStyleKey) as Style;
             }
+            selectionRectangle.IsHitTestVisible = false;
         }
 
         private void OnCanvasChanged(DependencyPropertyChangedEventArgs e)
@@ -226,59 +243,38 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             Canvas.Visibility = Visibility.Collapsed;
 
+            if (Command == null)
+                return;
+
             var x = Canvas.GetLeft(selectionRectangle);
             var y = Canvas.GetTop(selectionRectangle);
             var width = selectionRectangle.Width;
             var height = selectionRectangle.Height;
             var dragRect = new Rect(x, y, width, height);
 
+            SelectionMode mode;
             if (HasDefaultModifiers())
             {
-                // Clear the current selection.
-                AssociatedObject.SelectedItems.Clear(); 
+                mode = SelectionMode.Normal;
             }
-            
-            // Find and select all the list box items.
-            foreach (var item in AssociatedObject.Items)
+            else if (HasAdditiveModifiers())
             {
-                var container = AssociatedObject.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
-                if (container == null)
-                    continue;
-
-                var bounds = GetBounds(container);
-                if (!dragRect.IntersectsWith(bounds))
-                    continue;
-
-                var isItemSelected = AssociatedObject.SelectedItems.Contains(item);
-                var isSubstractive = HasSubstractiveModifiers();
-                if (isSubstractive && isItemSelected)
-                {
-                    AssociatedObject.SelectedItems.Remove(item);
-                }
-                else if (!isSubstractive && !isItemSelected)
-                {
-                    AssociatedObject.SelectedItems.Add(item);
-                }
+                mode = SelectionMode.Additive;
             }
-        }
+            else if (HasSubstractiveModifiers())
+            {
+                mode = SelectionMode.Substractive;
+            }
+            else
+            {
+                return;
+            }
 
-        private Rect GetBounds(Visual container)
-        {
-            var bounds = VisualTreeHelper.GetDescendantBounds(container);
-            if (itemsPanel == null)
-                return bounds;
-
-            var transform = container.TransformToAncestor(itemsPanel);
-            return transform.TransformBounds(bounds);
-        }
-
-        private static Panel GetItemsPanel(DependencyObject itemsControl)
-        {
-            var itemsPresenter = itemsControl.FindVisualChildOfType<ItemsPresenter>();
-            if (itemsPresenter == null)
-                return null;
-
-            return VisualTreeHelper.GetChild(itemsPresenter, 0) as Panel;
+            var result = new SelectionResult(dragRect, mode);
+            if (Command.CanExecute(result))
+            {
+                Command.Execute(result);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
