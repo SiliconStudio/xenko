@@ -40,10 +40,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// </summary>
         public CompilerParameters()
         {
+            SetDefaults();
         }
 
         public CompilerParameters(ParameterCollection parameterCollection) : base(parameterCollection)
         {
+            SetDefaults();
         }
 
         /// <summary>
@@ -122,6 +124,14 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
                 Set(OptimizationLevelKey, value);
             }
+        }
+
+        public void SetDefaults()
+        {
+            Platform = GraphicsPlatform.Direct3D11;
+            Profile = GraphicsProfile.Level_11_0;
+            OptimizationLevel = 0;
+            Debug = false;
         }
     }
 }
