@@ -39,7 +39,7 @@ using SiliconStudio.Presentation.Drawing;
 namespace SiliconStudio.Presentation.Controls
 {
     [TemplatePart(Name = GridPartName, Type = typeof(Grid))]
-    public sealed partial class CanvasView : Control, IDrawingView
+    public sealed class CanvasView : Control, IDrawingView
     {
         /// <summary>
         /// The name of the part for the <see cref="Canvas"/>.
@@ -143,11 +143,17 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <summary>
-        /// Invalidates the canvas (not blocking the UI thread). The <see cref="Model"/> will render it only once, after all non-idle operations are completed
-        /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
-        /// even when other operations are coming.
+        /// Invalidates the canvas (not blocking the UI thread). The <see cref="Model"/> will render it only once, after
+        /// all non-idle operations are completed (<see cref="DispatcherPriority.Background"/> priority).
+        /// Thus it is safe to call it every time the canvas should be redraw even when other operations are coming.
         /// </summary>
         public void InvalidateDrawing()
+        {
+            if (IsLoaded)
+                DoInvalidateDrawing();
+        }
+
+        private void DoInvalidateDrawing()
         {
             if (renderer == null || !IsCanvasValid)
                 return;
@@ -155,7 +161,9 @@ namespace SiliconStudio.Presentation.Controls
             IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
             {
-                // updates the model before rendering
+                // Makes sure the flag was not reset
+                IsCanvasValid = false;
+                // Updates the model before rendering
                 UpdateModel(true);
                 // Invalidate the arrange state for the element.
                 // After the invalidation, the element will have its layout updated,
@@ -174,7 +182,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             // Make sure InvalidateArrange is called when the canvas is invalidated
             IsCanvasValid = true;
-            InvalidateDrawing();
+            DoInvalidateDrawing();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
