@@ -1,4 +1,9 @@
-﻿namespace SiliconStudio.Xenko.Rendering
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+// AUTO-GENERATED, DO NOT EDIT!
+
+namespace SiliconStudio.Xenko.Rendering
 {
     public enum DataType
     {
@@ -93,11 +98,17 @@
             return new ViewObjectPropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public ViewObjectPropertyData<T> GetData<T>(ViewObjectPropertyKey<T> key)
         {
             return new ViewObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(ViewObjectPropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
@@ -186,11 +197,17 @@
             return new ObjectPropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public ObjectPropertyData<T> GetData<T>(ObjectPropertyKey<T> key)
         {
             return new ObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(ObjectPropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
@@ -279,11 +296,17 @@
             return new RenderPropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public RenderPropertyData<T> GetData<T>(RenderPropertyKey<T> key)
         {
             return new RenderPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(RenderPropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
@@ -372,11 +395,17 @@
             return new EffectObjectPropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public EffectObjectPropertyData<T> GetData<T>(EffectObjectPropertyKey<T> key)
         {
             return new EffectObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(EffectObjectPropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
@@ -465,11 +494,17 @@
             return new ViewPropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public ViewPropertyData<T> GetData<T>(ViewPropertyKey<T> key)
         {
             return new ViewPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(ViewPropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
@@ -558,11 +593,17 @@
             return new StaticObjectPropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public StaticObjectPropertyData<T> GetData<T>(StaticObjectPropertyKey<T> key)
         {
             return new StaticObjectPropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(StaticObjectPropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);
