@@ -54,9 +54,9 @@ namespace SiliconStudio.Xenko.Assets.Tests2
         private static void CheckTextureFormat(Game game, string textureUrl, AlphaFormat expectedFormat)
         {
             var expectedPixelFormat = PlaformAndAlphaToPixelFormats[Tuple.Create(Platform.Type, expectedFormat)];
-            var texture = game.Asset.Load<Texture>(textureUrl);
+            var texture = game.Content.Load<Texture>(textureUrl);
             Assert.AreEqual(expectedPixelFormat, texture.Format);
-            game.Asset.Unload(texture);
+            game.Content.Unload(texture);
         }
 
         [TestCase]
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets.Tests2
         private static void CheckSpriteTransparencies(Game game, string spriteSheetName, AlphaFormat alphaFormat)
         {
             var expectedPixelFormat = PlaformAndAlphaToPixelFormats[Tuple.Create(Platform.Type, alphaFormat)];
-            var spriteSheet = game.Asset.Load<SpriteSheet>(spriteSheetName);
+            var spriteSheet = game.Content.Load<SpriteSheet>(spriteSheetName);
 
             // check the textures pixel format
             foreach (var texture in spriteSheet.Sprites.Select(s => s.Texture))
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Assets.Tests2
                 var sprite = spriteSheet.Sprites[i];
                 Assert.AreEqual(i!=0 && alphaFormat != AlphaFormat.None, sprite.IsTransparent); // except sprite 0 all sprites have transparency expect if the texture alpha is 0
             }
-            game.Asset.Unload(spriteSheet);
+            game.Content.Unload(spriteSheet);
         }
 
         [TestCase]

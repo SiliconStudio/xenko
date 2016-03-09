@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Policy;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline

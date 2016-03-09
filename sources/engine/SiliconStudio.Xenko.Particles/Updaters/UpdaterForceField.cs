@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -9,17 +10,46 @@ using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
+    /// <summary>
+    /// The <see cref="UpdaterForceField"/> updates the particles' positions and velocity based on proximity and relative position to a bounding force field
+    /// </summary>
     [DataContract("UpdaterForceField")]
     [Display("ForceField")]
     public class UpdaterForceField : ParticleUpdater
     {
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
+        public UpdaterForceField()
+        {
+            // A force field operates over the particle's position and velocity, updating them as required
+            RequiredFields.Add(ParticleFields.Position);
+            RequiredFields.Add(ParticleFields.Velocity);
+        }
+
+        /// <summary>
+        /// Shows how much the force vector should scale when the bounding box also scales
+        /// </summary>
+        [DataMemberIgnore]
+        private float parentScale = 1f;
+
+        /// <summary>
+        /// The shape defines the force field's bounding shape, which influences the force vectors and magnitude for every given particle
+        /// </summary>
+        /// <userdoc>
+        /// The shape defines the force field's bounding shape, which influences the force vectors and magnitude for every given particle
+        /// </userdoc>
+        [DataMember(10)]
+        [Display("Shape")]
+        public FieldShape FieldShape { get; set; }
+
         /// <summary>
         /// Defines how and if the total magnitude of the force should change depending of how far away the particle is from the central axis
         /// </summary>
         /// <userdoc>
         /// Defines how and if the total magnitude of the force should change depending of how far away the particle is from the central axis
         /// </userdoc>
-        [DataMember(50)]
+        [DataMember(40)]
         [Display("Falloff")]
         public FieldFalloff FieldFalloff { get; set; } = new FieldFalloff();
 
@@ -66,7 +96,6 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [Display("Repulsive force")]
         public float ForceRepulsive { get; set; } = 1f;
 
-
         /// <summary>
         /// The fixed force doesn't scale or rotate with the the bounding shape
         /// </summary>
@@ -77,25 +106,18 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [Display("Fixed force")]
         public Vector3 ForceFixed { get; set; } = new Vector3(0, 0, 0);
 
-        public UpdaterForceField()
-        {
-            // A force field operates over the particle's position and velocity, updating them as required
-            RequiredFields.Add(ParticleFields.Position);
-            RequiredFields.Add(ParticleFields.Velocity);
-
-            // Test purposes only
-//            RequiredFields.Add(ParticleFields.Color);
-        }
-
+        /// <inheritdoc />
         public override unsafe void Update(float dt, ParticlePool pool)
         {
+            // The force field operates over position and velocity. If the particles don't have such fields we can't run this update
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
                 return;
 
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
-//            var colField = pool.GetField(ParticleFields.Color);
 
+            // Depending on our settings some of the energy will be lost (it directly translates to changes in position)
+            //  and some of the energy will be preserved (it translates to changes in velocity)
             var directToPosition = 1f - EnergyConservation;
 
             foreach (var particle in pool)
@@ -136,13 +158,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             }
         }
 
-        [DataMember(10)]
-        [Display("Shape")]
-        public FieldShape FieldShape { get; set; }
-
-        [DataMemberIgnore]
-        private float parentScale = 1f;
-
+        /// <inheritdoc />
         public override void SetParentTrs(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
             base.SetParentTrs(ref Translation, ref Rotation, Scale);
@@ -151,8 +167,22 @@ namespace SiliconStudio.Xenko.Particles.Modules
             parentScale = (hasScl) ? Scale : 1f;
         }
 
+        /// <summary>
+        /// Should this Particle Module's bounds be displayed as a debug draw
+        /// </summary>
+        /// <userdoc>
+        /// Display the Particle Module's bounds as a wireframe debug shape. Temporary feature (will be removed later)!
+        /// </userdoc>
+        [DataMember(-1)]
+        [DefaultValue(false)]
+        public bool DebugDraw { get; set; } = false;
+
+        /// <inheritdoc />
         public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
+            if (!DebugDraw)
+                return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
+
             rotation = new Quaternion(0, 0, 0, 1);
             scale = new Vector3(1, 1, 1);
             translation = new Vector3(0, 0, 0);

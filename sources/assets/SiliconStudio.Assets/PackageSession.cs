@@ -685,6 +685,26 @@ namespace SiliconStudio.Assets
                                             project.RemoveItem(item);
                                         }
                                     }
+                                    //delete any generated file as well
+                                    var generatorAsset = assetItem.Asset as ProjectCodeGeneratorAsset;
+                                    if (generatorAsset?.GeneratedAbsolutePath != null)
+                                    {
+                                        File.Delete((new UFile(generatorAsset.GeneratedAbsolutePath)).ToWindowsPath());
+
+                                        //and remove from project as well
+                                        Project project;
+                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                        {
+                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                            vsProjs.Add(assetItem.SourceProject, project);
+                                        }
+                                        var include = new UFile(new UFile(projectAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs").ToWindowsPath();
+                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
+                                        if (item != null)
+                                        {
+                                            project.RemoveItem(item);
+                                        }
+                                    }
                                 }
 
                                 File.Delete(assetPath);
@@ -1321,7 +1341,7 @@ namespace SiliconStudio.Assets
                 IsPackageCheckDependencies = true,
                 IsProcessingAssetReferences = true,
                 IsLoggingAssetNotFoundAsError = true,
-                EnableAssetTemplating = true
+                AssetTemplatingMergeModifiedAssets = true
             };
         }
 

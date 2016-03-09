@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class BasicMixinKeys
     {
-        public static readonly ParameterKey<float> myFloat = ParameterKeys.New<float>(0.2f);
-        public static readonly ParameterKey<Vector3> myPosition = ParameterKeys.New<Vector3>();
+        public static readonly ValueParameterKey<float> myFloat = ParameterKeys.NewValue<float>(0.2f);
+        public static readonly ValueParameterKey<Vector3> myPosition = ParameterKeys.NewValue<Vector3>();
     }
 }

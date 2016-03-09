@@ -291,7 +291,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// </summary>
         protected virtual void OnWindowSizeChanged()
         {
-            Camera.AspectRatio = GraphicsDevice.BackBuffer.Width / (float)GraphicsDevice.BackBuffer.Height;
+            Camera.AspectRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
         }
 
 

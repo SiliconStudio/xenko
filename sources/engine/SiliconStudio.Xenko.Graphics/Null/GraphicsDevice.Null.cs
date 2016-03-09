@@ -74,14 +74,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Presents the display with the contents of the next buffer in the sequence of back buffers owned by the GraphicsDevice.
-        /// </summary>
-        public void Present()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
         /// </summary>
         /// <value>

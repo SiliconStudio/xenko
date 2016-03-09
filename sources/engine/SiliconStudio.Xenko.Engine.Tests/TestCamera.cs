@@ -290,7 +290,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
         /// </summary>
         protected virtual void OnWindowSizeChanged()
         {
-            Camera.AspectRatio = GraphicsDevice.BackBuffer.Width / (float)GraphicsDevice.BackBuffer.Height;
+            // TODO GRAPHICS REFACTOR Need to get aspect ratio using graphics compositor
+            Camera.AspectRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
         }
 
 

@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class SimpleShaderKeys
     {
-        public static readonly ParameterKey<Vector4> BaseColor = ParameterKeys.New<Vector4>();
+        public static readonly ValueParameterKey<Vector4> BaseColor = ParameterKeys.NewValue<Vector4>();
     }
 }

@@ -34,8 +34,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            spriteUv = Asset.Load<SpriteSheet>("SpriteUV");
-            spriteSphere = Asset.Load<SpriteSheet>("SpriteSphere");
+            spriteUv = Content.Load<SpriteSheet>("SpriteUV");
+            spriteSphere = Content.Load<SpriteSheet>("SpriteSphere");
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
@@ -50,11 +50,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             const int spaceSpan = 5;
 
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(SpriteSortMode.Texture, GraphicsDevice.BlendStates.AlphaBlend);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, BlendStates.AlphaBlend);
 
             var spriteUvSize = new Vector2(spriteUv.Sprites[0].Region.Width, spriteUv.Sprites[0].Region.Height);
             var spriteSphereSize = new Vector2(spriteSphere.Sprites[0].Region.Width, spriteSphere.Sprites[0].Region.Height);

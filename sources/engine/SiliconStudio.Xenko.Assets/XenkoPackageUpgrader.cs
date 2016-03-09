@@ -266,7 +266,7 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.5.0-alpha03"))
+            if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.6.0-beta"))
             {
                 // Mark all assets dirty to force a resave
                 foreach (var assetItem in dependentPackage.Assets)

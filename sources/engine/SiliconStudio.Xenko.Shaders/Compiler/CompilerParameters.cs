@@ -18,30 +18,32 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// <summary>
         /// The compiler platform type.
         /// </summary>
-        public static readonly ParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.New<GraphicsPlatform>();
+        public static readonly PermutationParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.NewPermutation(GraphicsPlatform.Direct3D11);
 
         /// <summary>
         /// The graphics profile target type.
         /// </summary>
-        public static readonly ParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.New<GraphicsProfile>();
+        public static readonly PermutationParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.NewPermutation(GraphicsProfile.Level_11_0);
 
         /// <summary>
         /// The debug flag.
         /// </summary>
-        public static readonly ParameterKey<bool> DebugKey = ParameterKeys.New(true);
+        public static readonly PermutationParameterKey<bool> DebugKey = ParameterKeys.NewPermutation(true);
 
         /// <summary>
         /// The optimization level.
         /// </summary>
-        public static readonly ParameterKey<int> OptimizationLevelKey = ParameterKeys.New(0);
+        public static readonly PermutationParameterKey<int> OptimizationLevelKey = ParameterKeys.NewPermutation(0);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.
         /// </summary>
         public CompilerParameters()
         {
-            Platform = GraphicsPlatform.Direct3D11;
-            Profile = GraphicsProfile.Level_11_0;
+        }
+
+        public CompilerParameters(ParameterCollection parameterCollection) : base(parameterCollection)
+        {
         }
 
         /// <summary>

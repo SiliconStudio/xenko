@@ -39,14 +39,15 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(assetItem.Location);
 
                     var gameSettingsAsset = context.GetGameSettingsAsset();
+                    var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
 
                     // Select the best graphics profile
-                    var graphicsProfile = gameSettingsAsset.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? gameSettingsAsset.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
+                    var graphicsProfile = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? renderingSettings.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
 
                     var textureAssetItem = new AssetItem(textureUrl, textureAsset);
 
                     // Create and add the texture command.
-                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.TextureQuality, colorSpace);
+                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
                     result.BuildSteps.Add(new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
                 }
             }
@@ -98,7 +99,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                         return Task.FromResult(ResultStatus.Failed);
                     }
 
-                    context.Assets.Save(Url, result.Skybox);
+                    context.Content.Save(Url, result.Skybox);
                 }
 
                 return Task.FromResult(ResultStatus.Successful);

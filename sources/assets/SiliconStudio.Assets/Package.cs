@@ -424,7 +424,8 @@ namespace SiliconStudio.Assets
             {
                 SetDirtyFlagOnAssetWhenFixingUFile = false,
                 ConvertUPathTo = UPathType.Relative,
-                IsProcessingUPaths = true
+                IsProcessingUPaths = true,
+                AssetTemplatingRemoveUnusedBaseParts = true,
             });
             analysis.Run(log);
 
@@ -435,6 +436,13 @@ namespace SiliconStudio.Assets
 
                 if (IsDirty)
                 {
+                    List<UFile> filesToDeleteLocal;
+                    lock (filesToDelete)
+                    {
+                        filesToDeleteLocal = filesToDelete.ToList();
+                        filesToDelete.Clear();
+                    }
+
                     try
                     {
                         // Notifies the dependency manager that a package with the specified path is being saved
@@ -448,7 +456,7 @@ namespace SiliconStudio.Assets
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
                         {
-                            filesToDelete.Add(previousPackagePath);
+                            filesToDeleteLocal.Add(previousPackagePath);
                         }
                         previousPackagePath = packagePath;
 
@@ -461,7 +469,7 @@ namespace SiliconStudio.Assets
                     }
                     
                     // Delete obsolete files
-                    foreach (var file in filesToDelete)
+                    foreach (var file in filesToDeleteLocal)
                     {
                         if (File.Exists(file.FullPath))
                         {
@@ -475,7 +483,6 @@ namespace SiliconStudio.Assets
                             }
                         }
                     }
-                    filesToDelete.Clear();
                 }
 
                 //batch projects
@@ -510,21 +517,44 @@ namespace SiliconStudio.Assets
                                     vsProjs.Add(projectFullPath, project);
                                 }
 
-                                //check if the item is already there, this is possible when saving the first time when creating from a template
-                                if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
-                                {
-                                    project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", codeFile.ToWindowsPath());
-                                    //todo None case needs Generator and LastGenOutput properties support! (eg xksl)
-                                }
-
                                 asset.SourceProject = projectFullPath;
                                 asset.SourceFolder = RootDirectory.GetFullDirectory();
                                 sourceCodeAsset.ProjectInclude = codeFile;
                                 sourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath.ToWindowsPath());
                                 sourceCodeAsset.AbsoluteSourceLocation = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
                                 sourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
-
                                 assetPath = sourceCodeAsset.AbsoluteSourceLocation;
+
+                                //check if the item is already there, this is possible when saving the first time when creating from a template
+                                if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
+                                {
+                                    var generatorAsset = sourceCodeAsset as ProjectCodeGeneratorAsset;
+                                    if (generatorAsset != null)
+                                    {
+                                        generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs";
+                                        generatorAsset.GeneratedInclude = new UFile(generatorAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs";
+
+                                        project.AddItem("None", codeFile.ToWindowsPath(), 
+                                            new List<KeyValuePair<string, string>>
+                                            {
+                                                new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
+                                                new KeyValuePair<string, string>("LastGenOutput", new UFile(generatorAsset.GeneratedInclude).GetFileNameWithExtension())
+                                            });
+
+                                        project.AddItem("Compile", new UFile(generatorAsset.GeneratedInclude).ToWindowsPath(),
+                                            new List<KeyValuePair<string, string>>
+                                            {
+                                                new KeyValuePair<string, string>("AutoGen", "True"),
+                                                new KeyValuePair<string, string>("DesignTime", "True"),
+                                                new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
+                                                new KeyValuePair<string, string>("DependentUpon", new UFile(generatorAsset.ProjectInclude).GetFileNameWithExtension())
+                                            });
+                                    }
+                                    else
+                                    {
+                                        project.AddItem("Compile", codeFile.ToWindowsPath());
+                                    }                                
+                                }
                             }
 
                             // Notifies the dependency manager that an asset with the specified path is being saved
@@ -1041,6 +1071,12 @@ namespace SiliconStudio.Assets
                     projectSourceCodeAsset.ProjectInclude = projectInclude;
                     projectSourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath);
                 }
+
+                var generatorAsset = asset as ProjectCodeGeneratorAsset;
+                if (generatorAsset != null)
+                {
+                    generatorAsset.GeneratedAbsolutePath = new UFile(sourceCodeAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs"; //we generate only .cs so far
+                }
             }
 
             return asset;
@@ -1232,6 +1268,14 @@ namespace SiliconStudio.Assets
 
                         // If this kind of file an asset file?
                         var ext = fileUPath.GetFileExtension();
+
+                        //make sure to add default shaders in this case, since we don't have a csproj for them
+                        if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && package.IsSystem)
+                        {
+                            listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
+                            continue;
+                        }
+
                         if (!AssetRegistry.IsAssetFileExtension(ext) || AssetRegistry.IsProjectSourceCodeAssetFileExtension(ext)) //project source code assets follow the csproj pipeline
                         {
                             continue;

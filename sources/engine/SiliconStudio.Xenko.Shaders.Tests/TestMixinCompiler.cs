@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
 
             compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
-            compilerParameters.Set(LightingKeys.DirectLightGroups, new List<ShaderSource> { directionalLightGroup });
+            compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSourceCollection { directionalLightGroup });
             //compilerParameters.Set(LightingKeys.CastShadows, false);
             //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             using (var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath))
             {
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
-                AssetManager.GetFileProvider = () => database;
+                ContentManager.GetFileProvider = () => database;
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.xksl"))
                     CopyStream(database, shaderName);

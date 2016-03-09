@@ -36,17 +36,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Script.Add(camera);
 
             UIRoot.Transform.Rotation = Quaternion.RotationX(MathUtil.Pi / 3f);
-            UIComponent.RootElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv"))};
             UIComponent.IsFullScreen = false;
             UIComponent.IsBillboard = false;
             UIComponent.VirtualResolution = new Vector3(200, 200, 100);
 
-            var cube = new Entity { new ModelComponent { Model = Asset.Load<Model>("cube Model") } };
+            var cube = new Entity { new ModelComponent { Model = Content.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
             cube.Transform.Position = new Vector3(0, 0, 10);
             Scene.Entities.Add(cube);
             
-            var font = Asset.Load<SpriteFont>("CourierNew12");
+            var font = Content.Load<SpriteFont>("CourierNew12");
             var textBlockZ0 = new TextBlock { Font = font, TextColor = Color.Black, TextSize = 20, Text = "At depth 0", VerticalAlignment = VerticalAlignment.Center, SynchronousCharacterGeneration = true, BackgroundColor = Color.Red };
             var entity1 = new Entity { new UIComponent { RootElement = textBlockZ0, IsFullScreen = false, IsBillboard = false, VirtualResolution = new Vector3(150) } };
             entity1.Transform.Position = new Vector3(-500, 0, 0);

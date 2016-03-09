@@ -28,12 +28,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
 
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Asset.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("MSMincho10"),
                 Text = @"Text Block test
 にほんご ニホンゴ 人
 Several line of texts with different width.
@@ -56,7 +56,7 @@ This is the last line.",
             if (Input.IsKeyPressed(Keys.Up))
                 UIComponent.VirtualResolution = 4 * UIComponent.VirtualResolution / 3;
             if (Input.IsKeyPressed(Keys.R))
-                UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
+                UIComponent.VirtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
 
             if (Input.IsKeyPressed(Keys.Left))
                 textBlock.TextSize = 3 * textBlock.TextSize / 4;
@@ -194,7 +194,7 @@ This is the last line.",
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width / 2, GraphicsDevice.BackBuffer.Height / 2, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width / 2, GraphicsDevice.Presenter.BackBuffer.Height / 2, 500);
         }
         public void Draw14()
         {
@@ -202,7 +202,7 @@ This is the last line.",
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width * 2, GraphicsDevice.BackBuffer.Height * 2, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width * 2, GraphicsDevice.Presenter.BackBuffer.Height * 2, 500);
         }
 
         [Test]

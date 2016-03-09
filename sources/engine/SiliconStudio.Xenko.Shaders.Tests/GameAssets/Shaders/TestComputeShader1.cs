@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class TestComputeShaderKeys
     {
-        public static readonly ParameterKey<Vector3> ThreadGroupCountGlobal = ParameterKeys.New<Vector3>();
-        public static readonly ParameterKey<uint> ParticleCount = ParameterKeys.New<uint>();
-        public static readonly ParameterKey<uint> ParticleStartIndex = ParameterKeys.New<uint>();
-        public static readonly ParameterKey<Buffer> ParticleSortBuffer = ParameterKeys.New<Buffer>();
+        public static readonly ValueParameterKey<Vector3> ThreadGroupCountGlobal = ParameterKeys.NewValue<Vector3>();
+        public static readonly ValueParameterKey<uint> ParticleCount = ParameterKeys.NewValue<uint>();
+        public static readonly ValueParameterKey<uint> ParticleStartIndex = ParameterKeys.NewValue<uint>();
+        public static readonly ObjectParameterKey<Buffer> ParticleSortBuffer = ParameterKeys.NewObject<Buffer>();
     }
 }

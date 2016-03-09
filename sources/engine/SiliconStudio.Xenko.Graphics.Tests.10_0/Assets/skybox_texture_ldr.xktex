@@ -1,0 +1,7 @@
+!Texture
+Id: 10360b72-66be-48f0-b0e9-a013a352ee95
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../data/images/NewGame/skybox_texture_ldr.dds
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits

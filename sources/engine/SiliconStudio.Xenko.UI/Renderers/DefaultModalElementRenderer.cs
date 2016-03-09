@@ -14,12 +14,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
     {
         private Matrix identity = Matrix.Identity;
 
-        private readonly DepthStencilState noStencilNoDepth;
+        private readonly DepthStencilStateDescription noStencilNoDepth;
 
         public DefaultModalElementRenderer(IServiceRegistry services)
             : base(services)
         {
-            noStencilNoDepth = DepthStencilState.New(GraphicsDevice, new DepthStencilStateDescription(false, false));
+            noStencilNoDepth = new DepthStencilStateDescription(false, false);
         }
 
         public override void RenderColor(UIElement element, UIRenderingContext context)
@@ -30,12 +30,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
             Batch.End();
 
             var uiResolution = new Vector3(context.Resolution.X, context.Resolution.Y, 0);
-            Batch.Begin(ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, noStencilNoDepth, 0);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, BlendStates.AlphaBlend, noStencilNoDepth, 0);
             Batch.DrawRectangle(ref identity, ref uiResolution, ref modalElement.OverlayColorInternal, context.DepthBias);
             Batch.End(); // ensure that overlay is written before possible next transparent element.
 
             // restart the image batch session
-            Batch.Begin(ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
+            Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
 
             context.DepthBias += 1;
 
@@ -45,8 +45,6 @@ namespace SiliconStudio.Xenko.UI.Renderers
         protected override void Destroy()
         {
             base.Destroy();
-            
-            noStencilNoDepth.Dispose();
         }
     }
 }

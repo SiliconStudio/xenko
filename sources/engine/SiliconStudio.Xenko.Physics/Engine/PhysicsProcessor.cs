@@ -8,7 +8,9 @@ using SiliconStudio.Xenko.Games;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Physics.Engine;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -29,6 +31,8 @@ namespace SiliconStudio.Xenko.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private SceneSystem sceneSystem;
         private Simulation simulation;
+        private Scene debugScene;
+        private Entity debugEntityScene;
 
         private bool colliderShapesRendering;
 
@@ -38,16 +42,46 @@ namespace SiliconStudio.Xenko.Physics
             : base(typeof(TransformComponent))
         {
         }
+
         public Simulation Simulation => simulation;
 
         internal void RenderColliderShapes(bool enabled)
         {
             colliderShapesRendering = enabled;
 
-            foreach (var element in elements)
+            if (!colliderShapesRendering)
             {
-                if(enabled) element.AddDebugEntity(sceneSystem.SceneInstance.Scene);
-                else element.RemoveDebugEntity(sceneSystem.SceneInstance.Scene);
+                //this should be enough to remove everything
+                sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+            }
+            else
+            {
+                //we create a child scene to render the shapes, so that they are totally separated from the normal scene
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+
+                var graphicsCompositor = new SceneGraphicsCompositorLayers
+                {
+                    Cameras = { mainCompositor.Cameras[0] },
+                    Master =
+                    {
+                        Renderers =
+                        {
+                            new SceneCameraRenderer { Mode = new PhysicsDebugCameraRendererMode { Name = "Camera renderer" } },
+                        }
+                    }
+                };
+
+                debugScene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+
+                var childComponent = new ChildSceneComponent { Scene = debugScene };
+                debugEntityScene = new Entity { childComponent };
+                mainCompositor.Master.Add(new SceneChildRenderer(childComponent));
+                sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
+
+                foreach (var element in elements)
+                {
+                    element.AddDebugEntity(debugScene);
+                }
             }
         }
 
@@ -86,7 +120,7 @@ namespace SiliconStudio.Xenko.Physics
 
             if (colliderShapesRendering)
             {
-                component.AddDebugEntity(sceneSystem.SceneInstance.Scene);
+                component.AddDebugEntity(debugScene);
             }
 
             elements.Add(component);

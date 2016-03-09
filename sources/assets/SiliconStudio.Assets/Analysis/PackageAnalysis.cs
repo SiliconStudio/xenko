@@ -93,9 +93,13 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            if (Parameters.EnableAssetTemplating)
+            if (Parameters.AssetTemplatingMergeModifiedAssets || Parameters.AssetTemplatingRemoveUnusedBaseParts)
             {
-                var packageTemplating = new PackageAssetTemplatingAnalysis(package, log);
+                var packageTemplating = new PackageAssetTemplatingAnalysis(package, log)
+                {
+                    MergeModifiedAssets = Parameters.AssetTemplatingMergeModifiedAssets,
+                    RemoveUnusedBaseParts = Parameters.AssetTemplatingRemoveUnusedBaseParts
+                };
                 packageTemplating.Run();
             }
 

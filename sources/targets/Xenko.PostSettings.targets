@@ -23,7 +23,7 @@
                 </Reference>
               </ItemGroup>
             </When>
-            <When Condition="'$(XenkoGraphicsApi)' == 'Direct3D11'">
+            <When Condition="'$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12'">
               <ItemGroup>
                 <Reference Include="SharpDX">
                   <SpecificVersion>False</SpecificVersion>

@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightSimpleAmbient : EnvironmentLight, MaterialPixelShadingStream
     {
-        cbuffer PerObject
+        cbuffer PerLighting
         {
             [Color]
             float3 AmbientLight;

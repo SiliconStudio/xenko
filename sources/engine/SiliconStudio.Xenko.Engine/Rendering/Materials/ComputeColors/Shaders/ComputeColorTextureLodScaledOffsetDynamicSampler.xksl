@@ -17,15 +17,18 @@ class ComputeColorTextureLodScaledOffsetDynamicSampler<LinkType TTextureName,
                                              LinkType TScale, 
                                              LinkType TOffset,
 											 float TLod> : ComputeColor, 
-                                                               DynamicTexture<TTextureName>, 
-                                                               DynamicSampler<TSampler>, 
+                                                               DynamicTexture<TTextureName, PerMaterial>, 
+                                                               DynamicSampler<TSampler, PerMaterial>, 
                                                                DynamicTextureStream<TStream>
 {
-    [Link("TScale")]
-    stage float2 scale;
+    cbuffer PerMaterial
+    {
+        [Link("TScale")]
+        stage float2 scale;
 
-    [Link("TOffset")]
-    stage float2 offset;
+        [Link("TOffset")]
+        stage float2 offset;
+    }
     
     override float4 Compute() {
         return Texture.SampleLevel(Sampler, streams.TexCoord * scale + offset, TLod).TRgba;

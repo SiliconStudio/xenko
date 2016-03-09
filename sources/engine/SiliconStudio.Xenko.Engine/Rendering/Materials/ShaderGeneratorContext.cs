@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets
 
         private readonly Dictionary<ParameterKey, int> parameterKeyIndices;
 
-        private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
+        private readonly Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>> declaredSamplerStates;
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <value>
         /// The asset manager.
         /// </value>
-        public AssetManager Assets { get; set; }
+        public ContentManager Content { get; set; }
 
         
         public ShaderGeneratorContext(GraphicsDevice graphicsDevice = null)
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets
             this.graphicsDevice = graphicsDevice;
             Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
-            declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
+            declaredSamplerStates = new Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>>();
             currentOverrides = new MaterialOverrides();
         }
 
@@ -102,9 +102,9 @@ namespace SiliconStudio.Xenko.Assets
 
         public unsafe Texture GenerateTextureFromColor(Color color)
         {
-            if (Assets == null)
+            if (Content == null)
             {
-                Log.Error("Trying to generate a texture without an AssetManager");
+                Log.Error("Trying to generate a texture without an ContentManager");
                 return null;
             }
 
@@ -120,21 +120,21 @@ namespace SiliconStudio.Xenko.Assets
             texture = image.ToSerializableVersion();
 
             // Save texture
-            Assets.Save(string.Format("__material_internal__/color_texture_{0:X2}{1:X2}{2:X2}{3:X2}", color.R, color.G, color.B, color.A), texture);
+            Content.Save(string.Format("__material_internal__/color_texture_{0:X2}{1:X2}{2:X2}{3:X2}", color.R, color.G, color.B, color.A), texture);
 
             singleColorTextures.Add(color, texture);
 
             return texture;
         }
 
-        public ParameterKey<Texture> GetTextureKey(Texture texture, ParameterKey<Texture> key, Color? defaultTextureValue = null)
+        public ObjectParameterKey<Texture> GetTextureKey(Texture texture, ObjectParameterKey<Texture> key, Color? defaultTextureValue = null)
         {
-            var textureKey = (ParameterKey<Texture>)GetParameterKey(key);
+            var textureKey = (ObjectParameterKey<Texture>)GetParameterKey(key);
             if (texture != null)
             {
                 Parameters.Set(textureKey, texture);
             }
-            else if (defaultTextureValue != null && Assets != null)
+            else if (defaultTextureValue != null && Content != null)
             {
                 texture = GenerateTextureFromColor(defaultTextureValue.Value);
                 Parameters.Set(textureKey, texture);
@@ -142,9 +142,9 @@ namespace SiliconStudio.Xenko.Assets
             return textureKey;
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc, GraphicsDevice graphicsDevice)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc, GraphicsDevice graphicsDevice)
         {
-            ParameterKey<SamplerState> key;
+            ObjectParameterKey<SamplerState> key;
 
             if (!declaredSamplerStates.TryGetValue(samplerStateDesc, out key))
             {
@@ -157,13 +157,13 @@ namespace SiliconStudio.Xenko.Assets
             return key;
         }
 
-        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
+        public ObjectParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
-            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            var keyResolved = (ObjectParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
         {
             if (sampler == null) throw new ArgumentNullException("sampler");
 

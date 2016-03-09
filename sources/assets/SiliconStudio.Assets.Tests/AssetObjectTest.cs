@@ -103,7 +103,19 @@ namespace SiliconStudio.Assets.Tests
 
         public void AddPart(TestAssetWithParts assetBaseWithParts)
         {
-            AddPartCore(assetBaseWithParts);
+            if (assetBaseWithParts == null) throw new ArgumentNullException(nameof(assetBaseWithParts));
+
+            // The assetPartBase must be a plain child asset
+            if (assetBaseWithParts.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
+            if (assetBaseWithParts.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetBaseWithParts)}");
+
+            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
+            if (assetBaseWithParts.CollectParts().Any(it => !it.BaseId.HasValue))
+            {
+                throw new InvalidOperationException("An asset part base must contain only base assets");
+            }
+
+            AddBasePart(assetBaseWithParts.Base);
 
             for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
             {
