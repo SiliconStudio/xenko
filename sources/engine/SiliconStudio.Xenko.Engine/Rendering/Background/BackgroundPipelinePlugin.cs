@@ -5,10 +5,14 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
+    /// <summary>
+    /// Automatically registers background rendering.
+    /// </summary>
     public class BackgroundPipelinePlugin : PipelinePlugin<BackgroundRenderFeature>
     {
         private BackgroundRenderFeature registeredBackgroundRenderFeature;
 
+        /// <inheritdoc/>
         protected override BackgroundRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             // Mandatory render stages

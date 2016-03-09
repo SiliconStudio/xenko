@@ -1,8 +1,14 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Linq;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
+    /// <summary>
+    /// Automatically registers UI rendering.
+    /// </summary>
     public class UIPipelinePlugin : PipelinePlugin<UIRenderFeature>
     {
         protected override UIRenderFeature CreateRenderFeature(PipelinePluginContext context)

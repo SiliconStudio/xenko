@@ -13,6 +13,9 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Automatically registers mesh rendering.
+    /// </summary>
     public class MeshPipelinePlugin : PipelinePlugin<MeshRenderFeature>
     {
         public const string DefaultEffectName = "XenkoForwardShadingEffect";
@@ -38,6 +41,9 @@ namespace SiliconStudio.Xenko.Rendering
             return meshRenderFeature;
         }
 
+        /// <summary>
+        /// Gets or sets the effect that should be used when instantiating meshes.
+        /// </summary>
         public string ModelEffect
         {
             get { return modelEffect; }
@@ -55,6 +61,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <inheritdoc/>
         public override void Load(PipelinePluginContext context)
         {
             base.Load(context);
@@ -81,6 +88,7 @@ namespace SiliconStudio.Xenko.Rendering
             });
         }
 
+        /// <inheritdoc/>
         public override void Unload(PipelinePluginContext context)
         {
             meshRenderStageSelector = null;
@@ -89,7 +97,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
     }
 
-
+    /// <summary>
+    /// Automatically register mesh shadow rendering.
+    /// </summary>
     public class ShadowMeshPipelinePlugin : PipelinePlugin<MeshRenderFeature>
     {
         [ModuleInitializer]
@@ -98,6 +108,7 @@ namespace SiliconStudio.Xenko.Rendering
             PipelinePluginManager.RegisterAutomaticPlugin(typeof(ShadowMeshPipelinePlugin), typeof(MeshPipelinePlugin), typeof(ShadowPipelinePlugin));
         }
 
+        /// <inheritdoc/>
         public override void Load(PipelinePluginContext context)
         {
             base.Load(context);

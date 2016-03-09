@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Helper base class for writing <see cref="IPipelinePlugin"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class PipelinePlugin<T> : IPipelinePlugin where T : RootRenderFeature
     {
         protected T RenderFeature;
@@ -11,6 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
         private List<RenderStageSelector> renderStageSelectors = new List<RenderStageSelector>();
         private List<RootEffectRenderFeature.ProcessPipelineStateDelegate> postProcessPipelineStates = new List<RootEffectRenderFeature.ProcessPipelineStateDelegate>();
 
+        /// <inheritdoc/>
         public virtual void Load(PipelinePluginContext context)
         {
             RenderFeature = context.RenderSystem.RenderFeatures.OfType<T>().FirstOrDefault();
@@ -26,11 +31,17 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <summary>
+        /// If requested <see cref="RootRenderFeature"/> doesn't exist, provide a way to instantiate it.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected virtual T CreateRenderFeature(PipelinePluginContext context)
         {
             return null;
         }
 
+        /// <inheritdoc/>
         public virtual void Unload(PipelinePluginContext context)
         {
             // Clear RenderStageSelector

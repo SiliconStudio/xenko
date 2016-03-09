@@ -1,12 +1,16 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.ComponentModel;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// A forward rendering mode.
+    /// </summary>
     [DataContract("CameraRendererModeForward")]
     [Display("Forward")]
     public class CameraRendererModeForward : CameraRenderModeBase
@@ -19,6 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
 
         [DefaultValue(true)]
+        [DataMemberIgnore]
         public bool Shadows { get; set; } = true;
 
         //public bool GBuffer { get; set; } = false;

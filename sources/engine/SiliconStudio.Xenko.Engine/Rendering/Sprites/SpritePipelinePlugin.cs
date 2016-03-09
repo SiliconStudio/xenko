@@ -8,6 +8,9 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
+    /// <summary>
+    /// Automatically registers sprite rendering.
+    /// </summary>
     public class SpritePipelinePlugin : PipelinePlugin<SpriteRenderFeature>
     {
         protected override SpriteRenderFeature CreateRenderFeature(PipelinePluginContext context)

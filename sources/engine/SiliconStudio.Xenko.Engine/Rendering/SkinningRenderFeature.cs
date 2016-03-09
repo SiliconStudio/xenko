@@ -6,7 +6,7 @@ using SiliconStudio.Xenko.Rendering.Materials;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Compute and upload skinning info.
+    /// Computes and uploads skinning info.
     /// </summary>
     public class SkinningRenderFeature : SubRenderFeature
     {
