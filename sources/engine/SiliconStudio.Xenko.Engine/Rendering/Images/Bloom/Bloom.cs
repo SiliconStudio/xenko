@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -202,7 +203,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Switch to additive
-            Scaler.BlendState = GraphicsDevice.BlendStates.Additive;
+            Scaler.BlendState = BlendStates.Additive;
 
             Scaler.Color = new Color4(Amount);
             Scaler.SetInput(inputTextureDown4);
@@ -210,7 +211,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             ((RendererBase)Scaler).Draw(context);
             Scaler.Reset();
 
-            Scaler.BlendState = GraphicsDevice.BlendStates.Default;
+            Scaler.BlendState = BlendStates.Default;
         }
     }
 }

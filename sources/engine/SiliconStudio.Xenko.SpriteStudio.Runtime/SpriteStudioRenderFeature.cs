@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 var spriteState = (RenderSpriteStudio)renderNode.RenderObject;
 
                 var transfoComp = spriteState.TransformComponent;
-                var depthStencilState = device.DepthStencilStates.DepthRead;
+                var depthStencilState = DepthStencilStates.DepthRead;
 
                 foreach (var node in spriteState.SpriteStudioComponent.SortedNodes)
                 {
@@ -89,13 +89,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     switch (node.BaseNode.AlphaBlending)
                     {
                         case SpriteStudioBlending.Mix:
-                            spriteBlending = device.BlendStates.AlphaBlend;
+                            spriteBlending = BlendStates.AlphaBlend;
                             break;
                         case SpriteStudioBlending.Multiplication:
                             spriteBlending = MultBlendState;
                             break;
                         case SpriteStudioBlending.Addition:
-                            spriteBlending = device.BlendStates.Additive;
+                            spriteBlending = BlendStates.Additive;
                             break;
                         case SpriteStudioBlending.Subtraction:
                             spriteBlending = SubBlendState;
@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     Vector4.Transform(ref worldPosition, ref renderView.ViewProjection, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
 
-                    var blendState = isPicking ? device.BlendStates.Default : spriteBlending;
+                    var blendState = isPicking ? BlendStates.Default : spriteBlending;
                     var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : ShadowObject.IsObjectSelected(spriteState.SpriteStudioComponent) ? GetOrCreateSelectedSpriteEffect() : null;
                     // TODO remove this code when material are available
                     if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                         {
                             sprite3DBatch.End();
                         }
-                        sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                        sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, RasterizerStates.CullNone, currentEffect);
                         hasBegin = true;
                     }
 

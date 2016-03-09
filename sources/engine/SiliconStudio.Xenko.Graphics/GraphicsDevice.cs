@@ -86,9 +86,6 @@ namespace SiliconStudio.Xenko.Graphics
             InitializePostFeatures();
 
             SamplerStates = new SamplerStateFactory(this);
-            BlendStates = new BlendStateFactory(this);
-            RasterizerStates = new RasterizerStateFactory(this);
-            DepthStencilStates = new DepthStencilStateFactory(this);
 
             var defaultPipelineStateDescription = new PipelineStateDescription();
             defaultPipelineStateDescription.SetDefaults();
@@ -105,15 +102,9 @@ namespace SiliconStudio.Xenko.Graphics
                 Disposing(this, EventArgs.Empty);
 
             SamplerStates.Dispose();
-            BlendStates.Dispose();
-            RasterizerStates.Dispose();
-            DepthStencilStates.Dispose();
             PrimitiveQuad.Dispose();
 
             SamplerStates = null;
-            BlendStates = null;
-            RasterizerStates = null;
-            DepthStencilStates = null;
 
             base.Destroy();
         }
@@ -137,22 +128,6 @@ namespace SiliconStudio.Xenko.Graphics
         ///     Gets the adapter this instance is attached to.
         /// </summary>
         public GraphicsAdapter Adapter { get; private set; }
-
-        /// <summary>
-        ///     Gets the <see cref="BlendStates" /> factory.
-        /// </summary>
-        /// <value>
-        ///     The <see cref="BlendStates" /> factory.
-        /// </value>
-        public BlendStateFactory BlendStates { get; private set; }
-
-        /// <summary>
-        ///     Gets the <see cref="DepthStencilStateFactory" /> factory.
-        /// </summary>
-        /// <value>
-        ///     The <see cref="DepthStencilStateFactory" /> factory.
-        /// </value>
-        public DepthStencilStateFactory DepthStencilStates { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether this instance is in debug mode.
@@ -209,14 +184,6 @@ namespace SiliconStudio.Xenko.Graphics
                 presenter = value;
             }
         }
-
-        /// <summary>
-        ///     Gets the <see cref="RasterizerStates" /> factory.
-        /// </summary>
-        /// <value>
-        ///     The <see cref="RasterizerStates" /> factory.
-        /// </value>
-        public RasterizerStateFactory RasterizerStates { get; private set; }
 
         /// <summary>
         ///     Gets the <see cref="SamplerStateFactory" /> factory.

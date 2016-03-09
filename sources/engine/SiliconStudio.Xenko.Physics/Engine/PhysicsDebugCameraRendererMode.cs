@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
             {
                 if (renderNode.RenderStage == physicsDebugShapeRenderStage)
                 {
-                    pipelineState.RasterizerState = context.RenderContext.GraphicsDevice.RasterizerStates.Wireframe;
+                    pipelineState.RasterizerState = RasterizerStates.Wireframe;
                 }
             });
 

@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 if (renderNode.RenderStage == transparentRenderStage)
                 {
-                    pipelineState.BlendState = context.RenderContext.GraphicsDevice.BlendStates.AlphaBlend;
+                    pipelineState.BlendState = BlendStates.AlphaBlend;
                 }
             });
         }
