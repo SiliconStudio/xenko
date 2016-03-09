@@ -142,7 +142,14 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public void RecreateBuffers(GraphicsDevice graphicsDevice)
         {
-            ResourceContext = new DeviceResourceContext(graphicsDevice, VertexDeclaration, requiredQuads * verticesPerQuad, indexStructSize, requiredQuads * IndicesPerQuad);
+            if (requiredQuads == 0)
+            {
+                ResourceContext = null;
+            }
+            else
+            {
+                ResourceContext = new DeviceResourceContext(graphicsDevice, VertexDeclaration, requiredQuads * verticesPerQuad, indexStructSize, requiredQuads * IndicesPerQuad);
+            }
         }
 
         /// <summary>
