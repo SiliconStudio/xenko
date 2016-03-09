@@ -1,7 +1,13 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Implementation of <see cref="ResourceGroupLayout"/> specifically for <see cref="RenderSystem"/> use (contains some extra information).
+    /// </summary>
     public class RenderSystemResourceGroupLayout : ResourceGroupLayout
     {
         internal int[] ConstantBufferOffsets;
@@ -11,34 +17,5 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return ConstantBufferOffsets[offsetReference.Index];
         }
-    }
-
-    public struct ResourceGroupEntry
-    {
-        public int LastFrameUsed;
-        public ResourceGroup Resources;
-
-        /// <summary>
-        /// Mark resource group as used during this frame.
-        /// </summary>
-        /// <returns>True if state changed (object was not mark as used during this frame until now), otherwise false.</returns>
-        public bool MarkAsUsed(RenderSystem renderSystem)
-        {
-            if (LastFrameUsed == renderSystem.FrameCounter)
-                return false;
-
-            LastFrameUsed = renderSystem.FrameCounter;
-            return true;
-        }
-    }
-
-    public class FrameResourceGroupLayout : RenderSystemResourceGroupLayout
-    {
-        public ResourceGroupEntry Entry;
-    }
-
-    public class ViewResourceGroupLayout : RenderSystemResourceGroupLayout
-    {
-        public ResourceGroupEntry[] Entries;
     }
 }

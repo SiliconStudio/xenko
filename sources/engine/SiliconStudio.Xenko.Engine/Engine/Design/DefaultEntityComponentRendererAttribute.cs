@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
-    /// An attribute used to associate a default <see cref="IEntityComponentRenderer"/> to an entity component.
+    /// An attribute used to associate a default <see cref="IEntityComponentRenderProcessor"/> to an entity component.
     /// </summary>
     public class DefaultEntityComponentRendererAttribute : DynamicTypeAttributeBase
     {
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultEntityComponentRendererAttribute"/> class.
         /// </summary>
-        /// <param name="type">The type must derived from <see cref="IEntityComponentRenderer"/>.</param>
+        /// <param name="type">The type must derived from <see cref="IEntityComponentRenderProcessor"/>.</param>
         public DefaultEntityComponentRendererAttribute(Type type) : base(type)
         {
             order = 0;
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultEntityComponentRendererAttribute" /> class.
         /// </summary>
-        /// <param name="type">The type must derived from <see cref="IEntityComponentRenderer" />.</param>
+        /// <param name="type">The type must derived from <see cref="IEntityComponentRenderProcessor" />.</param>
         /// <param name="order">The order.</param>
         public DefaultEntityComponentRendererAttribute(Type type, int order) : base(type)
         {

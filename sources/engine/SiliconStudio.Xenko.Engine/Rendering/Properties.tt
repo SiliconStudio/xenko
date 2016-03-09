@@ -1,4 +1,9 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+// AUTO-GENERATED, DO NOT EDIT!
+
+<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -98,11 +103,17 @@ namespace SiliconStudio.Xenko.Rendering
             return new <#=type#>PropertyKey<T>(dataArraysIndex);
         }
 
+		/// <summary>
+        /// Get data from its key.
+        /// </summary>
 		public <#=type#>PropertyData<T> GetData<T>(<#=type#>PropertyKey<T> key)
         {
             return new <#=type#>PropertyData<T>((T[])dataArrays[key.Index].Array);
         }
 
+		/// <summary>
+        /// Change data multiplier (i.e. how many data entries per item there will be).
+        /// </summary>
         public void ChangeDataMultiplier<T>(<#=type#>PropertyKey<T> key, int multiplier)
         {
             dataArrays[key.Index].Info.ChangeMutiplier(ref dataArrays.Items[key.Index].Array, multiplier);

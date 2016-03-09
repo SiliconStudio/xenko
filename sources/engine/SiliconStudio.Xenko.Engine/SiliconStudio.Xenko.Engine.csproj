@@ -182,6 +182,7 @@
     </Compile>
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
+    <Compile Include="Rendering\FrameResourceGroupLayout.cs" />
     <Compile Include="Rendering\FrontToBackSortMode.cs" />
     <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
@@ -233,7 +234,6 @@
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
     <Compile Include="Rendering\Background\RenderBackground.cs" />
     <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
-    <Compile Include="Rendering\DataArrayInfo.cs" />
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\EffectValidator.cs" />
@@ -283,6 +283,7 @@
     <Compile Include="Rendering\RenderViewFeature.cs" />
     <Compile Include="Rendering\RenderViewFeatureStage.cs" />
     <Compile Include="Rendering\RenderViewStage.cs" />
+    <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
@@ -341,6 +342,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\ViewResourceGroupLayout.cs" />
     <Compile Include="Rendering\VisibilityGroup.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
