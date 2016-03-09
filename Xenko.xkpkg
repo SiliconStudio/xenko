@@ -16,7 +16,6 @@ Profiles:
     - Name: Shared
       AssetFolders:
         - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
-        - Path: sources/engine/SiliconStudio.Xenko.Engine.NextGen/Effects		
         - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
         - Path: sources/engine/SiliconStudio.Xenko.Particles/Shaders
