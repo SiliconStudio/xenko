@@ -65,6 +65,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public ShaderSource PixelStageSurfaceShaders;
             public ShaderSource PixelStageStreamInitializer;
 
+            public bool HasNormalMap;
+
             public MaterialInfo(Material material)
             {
                 Material = material;
@@ -191,6 +193,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                         materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
                         materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
+                        materialInfo.HasNormalMap = material.Parameters.Get(MaterialKeys.HasNormalMap);
 
                         materialInfo.MaterialParameters = material.Parameters;
                         materialInfo.PermutationCounter = material.Parameters.PermutationCounter;
@@ -217,6 +220,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageSurfaceShaders, materialInfo.PixelStageSurfaceShaders);
                     if (materialInfo.PixelStageStreamInitializer != null)
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageStreamInitializer, materialInfo.PixelStageStreamInitializer);
+                    if (materialInfo.HasNormalMap)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasNormalMap, materialInfo.HasNormalMap);
                 }
             }
         }
