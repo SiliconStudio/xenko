@@ -472,12 +472,12 @@
     <Compile Include="IndexElementSize.cs" />
     <Compile Include="MapMode.cs" />
     <Compile Include="RasterizerStateDescription.cs" />
-    <Compile Include="RasterizerStateFactory.cs" />
+    <Compile Include="RasterizerStates.cs" />
     <Compile Include="SamplerStateFactory.cs" />
     <Compile Include="SamplerState.cs" />
     <Compile Include="TextureDescription.cs" />
     <Compile Include="GraphicsDeviceFactory.cs" />
-    <Compile Include="DepthStencilStateFactory.cs" />
+    <Compile Include="DepthStencilStates.cs" />
     <Compile Include="GraphicsAdapter.cs" />
     <Compile Include="GraphicsFactory.cs" />
     <Compile Include="Buffer.cs" />
@@ -492,7 +492,7 @@
     <Compile Include="GraphicsResourceFactoryBase.cs" />
     <Compile Include="GraphicsResource.cs" />
     <Compile Include="GraphicsResourceUsage.cs" />
-    <Compile Include="BlendStateFactory.cs" />
+    <Compile Include="BlendStates.cs" />
     <Compile Include="BlendStateRenderTargetDescription.cs" />
     <Compile Include="PresentationParameters.cs" />
     <Compile Include="PresentInterval.cs" />

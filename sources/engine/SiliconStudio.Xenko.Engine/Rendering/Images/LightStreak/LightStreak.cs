@@ -303,13 +303,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
 
                 // Writes this streak to the accumulation buffer
-                if (streak > 0) combiner.BlendState = GraphicsDevice.BlendStates.Additive;
+                if (streak > 0) combiner.BlendState = BlendStates.Additive;
 
                 combiner.SetInput(0, currentOutput);
                 combiner.Factors[0] = (1f / StreakCount) * 0.2f * Amount;
                 combiner.SetOutput(accumulationBuffer);
                 ((RendererBase)combiner).Draw(contextParameters);
-                combiner.BlendState = GraphicsDevice.BlendStates.Default;
+                combiner.BlendState = BlendStates.Default;
             }
             
             // All the light streaks have been drawn to the accumulation buffer.
@@ -325,11 +325,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             ((RendererBase)blur).Draw(contextParameters);
 
             // Adds the result to the original color buffer.
-            Scaler.BlendState = GraphicsDevice.BlendStates.Additive;
+            Scaler.BlendState = BlendStates.Additive;
             Scaler.SetInput(accumulationUpscaled);
             Scaler.SetOutput(output);
             ((RendererBase)Scaler).Draw(contextParameters);
-            Scaler.BlendState = GraphicsDevice.BlendStates.Default;
+            Scaler.BlendState = BlendStates.Default;
         }
     }
 }

@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Graphics
             simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
             simpleEffect.Apply(graphicsContext);
 
-            pipelineState.State.BlendState = blendState ?? graphicsContext.CommandList.GraphicsDevice.BlendStates.Default;
+            pipelineState.State.BlendState = blendState ?? BlendStates.Default;
             pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
             pipelineState.Update(GraphicsDevice);
             graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);

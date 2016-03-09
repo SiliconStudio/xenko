@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 var world = Matrix.Scaling((float)Math.Sin(time * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(time) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
 
                 // Disable Cull only for the plane primitive, otherwise use standard culling
-                var defaultRasterizerState = i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack;
+                var defaultRasterizerState = i == 0 ? RasterizerStates.CullNone : RasterizerStates.CullBack;
                 // TODO GRAPHICS REFACTOR
                 //GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 

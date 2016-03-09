@@ -220,9 +220,9 @@ namespace SiliconStudio.Xenko.Graphics
             MutablePipeline.State.SetDefaults();
             MutablePipeline.State.RootSignature = Effect.RootSignature;
             MutablePipeline.State.EffectBytecode = Effect.Effect.Bytecode;
-            MutablePipeline.State.BlendState = BlendState ?? GraphicsDevice.BlendStates.AlphaBlend;
-            MutablePipeline.State.DepthStencilState = DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default;
-            MutablePipeline.State.RasterizerState = RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack;
+            MutablePipeline.State.BlendState = BlendState ?? BlendStates.AlphaBlend;
+            MutablePipeline.State.DepthStencilState = DepthStencilState ?? DepthStencilStates.Default;
+            MutablePipeline.State.RasterizerState = RasterizerState ?? RasterizerStates.CullBack;
             MutablePipeline.State.InputElements = ResourceContext.InputElements;
             MutablePipeline.State.PrimitiveType = PrimitiveType.TriangleList;
             MutablePipeline.State.Output.CaptureState(GraphicsContext.CommandList);

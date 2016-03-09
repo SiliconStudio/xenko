@@ -156,11 +156,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             ((RendererBase)flareReplicateEffect).Draw(contextParameters);
 
             // Adds the result to the scene
-            Scaler.BlendState = GraphicsDevice.BlendStates.Additive;
+            Scaler.BlendState = BlendStates.Additive;
             Scaler.SetInput(flareRenderTarget);
             Scaler.SetOutput(output);
             ((RendererBase)Scaler).Draw(contextParameters);
-            Scaler.BlendState = GraphicsDevice.BlendStates.Default;
+            Scaler.BlendState = BlendStates.Default;
         }
     }
 }

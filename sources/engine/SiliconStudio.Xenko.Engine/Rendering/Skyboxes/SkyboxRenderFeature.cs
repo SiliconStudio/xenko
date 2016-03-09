@@ -191,7 +191,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
 
             // Don't clip nor write Z value (we are writing at 1.0f = infinity)
-            pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.DepthRead;
+            pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)

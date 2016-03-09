@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, GraphicsDevice.BlendStates.AlphaBlend);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, BlendStates.AlphaBlend);
 
             var spriteUvSize = new Vector2(spriteUv.Sprites[0].Region.Width, spriteUv.Sprites[0].Region.Height);
             var spriteSphereSize = new Vector2(spriteSphere.Sprites[0].Region.Width, spriteSphere.Sprites[0].Region.Height);

@@ -78,13 +78,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.SetupPipeline(renderContext, pipelineState);
 
-            if (FaceCulling == ParticleMaterialCulling.CullNone) pipelineState.RasterizerState = renderContext.GraphicsDevice.RasterizerStates.CullNone;
-            else if (FaceCulling == ParticleMaterialCulling.CullBack) pipelineState.RasterizerState = renderContext.GraphicsDevice.RasterizerStates.CullBack;
-            else if (FaceCulling == ParticleMaterialCulling.CullFront) pipelineState.RasterizerState = renderContext.GraphicsDevice.RasterizerStates.CullFront;
+            if (FaceCulling == ParticleMaterialCulling.CullNone) pipelineState.RasterizerState = RasterizerStates.CullNone;
+            else if (FaceCulling == ParticleMaterialCulling.CullBack) pipelineState.RasterizerState = RasterizerStates.CullBack;
+            else if (FaceCulling == ParticleMaterialCulling.CullFront) pipelineState.RasterizerState = RasterizerStates.CullFront;
 
-            pipelineState.BlendState = renderContext.GraphicsDevice.BlendStates.AlphaBlend;
+            pipelineState.BlendState = BlendStates.AlphaBlend;
 
-            pipelineState.DepthStencilState = renderContext.GraphicsDevice.DepthStencilStates.DepthRead;
+            pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
         }
 
         /// <inheritdoc />
