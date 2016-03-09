@@ -60,6 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                         var compilerParameters = new CompilerParameters(effectCompileRequest.UsedParameters);
                         compilerParameters.Platform = context.GetGraphicsPlatform(package);
                         compilerParameters.Profile = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
+                        compilerParameters.OptimizationLevel = compilerParameters.OptimizationLevel;
                         steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters, package)));
                     }
                 }

@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         /// Seed offset. You can use this offset to bind the randomness to other random values, or to make them completely unrelated
         /// </userdoc>
         [DataMember(300)]
-        [Display("Seed offset")]
+        [Display("Random Seed")]
         public UInt32 SeedOffset { get; set; } = 0;
 
 

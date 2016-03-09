@@ -98,7 +98,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 foreach (var command in targetNode.Commands)
                 {
-                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath, Owner.Dirtiables);
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath);
                     AddCommand(commandWrapper);
                 }
             }
@@ -109,7 +109,7 @@ namespace SiliconStudio.Presentation.Quantum
                 // Add source commands that are not already provided by the target node
                 if (!targetCommandNames.Contains(command.Name))
                 {
-                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath, Owner.Dirtiables);
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath);
                     AddCommand(commandWrapper);
                 }
             }

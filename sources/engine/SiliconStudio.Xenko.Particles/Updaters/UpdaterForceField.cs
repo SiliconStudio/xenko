@@ -25,6 +25,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
             // A force field operates over the particle's position and velocity, updating them as required
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
+
+            DisplayParticlePosition = true;
+            DisplayParticleRotation = true;
+            DisplayParticleScale = true;
         }
 
         /// <summary>
@@ -162,9 +166,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         public override void SetParentTrs(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
             base.SetParentTrs(ref Translation, ref Rotation, Scale);
-
-            var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
-            parentScale = (hasScl) ? Scale : 1f;
+            parentScale = (InheritScale) ? Scale : 1f;
         }
 
         /// <summary>

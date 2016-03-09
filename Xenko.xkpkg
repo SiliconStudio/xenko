@@ -16,7 +16,6 @@ Profiles:
     - Name: Shared
       AssetFolders:
         - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
-        - Path: sources/engine/SiliconStudio.Xenko.Engine.NextGen/Effects		
         - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
         - Path: sources/engine/SiliconStudio.Xenko.Particles/Shaders
@@ -69,6 +68,7 @@ TemplateFolders:
         - samples\Particles\SimpleParticles\SimpleParticles.xktpl
         - samples\Particles\CustomParticles\CustomParticles.xktpl
         - samples\Particles\ParticleMaterialShader\ParticleMaterialShader.xktpl
+        - samples\Particles\AnimatedParticles\AnimatedParticles.xktpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\Physics\Raycasting\Raycasting.xktpl

@@ -128,8 +128,8 @@ Settings:
             CamFarClipPlane: 1000.0
             CamNearClipPlane: 0.1
             CamOrthographicSize: 10.0
-            CamPitchYaw: {X: -0.605724633, Y: 0.7024162}
-            CamPosition: {X: 3.454677, Y: 4.48052645, Z: 4.10888}
+            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
+            CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CameraPreviewVisible: true
@@ -178,8 +178,8 @@ Settings:
             CamFarClipPlane: 1000.0
             CamNearClipPlane: 0.1
             CamOrthographicSize: 10.0
-            CamPitchYaw: {X: -0.512037158, Y: -5.77516127}
-            CamPosition: {X: 4.28101349, Y: 4.89907742, Z: 3.57006836}
+            CamPitchYaw: {X: -0.548424363, Y: -6.19976473}
+            CamPosition: {X: 0.492624074, Y: 3.611972, Z: 5.891602}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CameraPreviewVisible: true
