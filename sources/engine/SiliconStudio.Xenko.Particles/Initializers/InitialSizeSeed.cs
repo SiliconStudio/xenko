@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             RequiredFields.Add(ParticleFields.Size);
             RequiredFields.Add(ParticleFields.RandomSeed);
 
-            InheritLocation = InheritLocation.Scale;
+            DisplayParticleScaleUniform = true;
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// The seed offset used to match or separate random values
         /// </userdoc>
         [DataMember(8)]
-        [Display("Seed offset")]
+        [Display("Random Seed")]
         public UInt32 SeedOffset { get; set; } = 0;
 
         /// <summary>

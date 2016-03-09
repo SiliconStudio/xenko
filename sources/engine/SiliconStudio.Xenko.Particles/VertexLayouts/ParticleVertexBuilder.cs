@@ -345,6 +345,15 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
                 VertexCount = vertexCount;
                 IndexCount  = indexCount;
 
+                // Workaround: due to graphics refactor sometimes empty emitters will try to draw 0 particles
+                // TODO Avoid calling this method if LivingParticles == 0
+                {
+                    if (VertexCount <= 0)
+                        VertexCount = 1;
+                    if (IndexCount <= 0)
+                        IndexCount = 1;
+                }
+
                 var vertexBuffer = Buffer.Vertex.New(device, VertexCount * vertexSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
                 var indexBuffer = Buffer.Index.New(device, IndexCount * indexStructSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
 
