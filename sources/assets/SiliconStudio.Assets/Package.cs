@@ -1244,7 +1244,7 @@ namespace SiliconStudio.Assets
             }
 
             var sharedProfile = package.Profiles.FindSharedProfile();
-            var hasProject = sharedProfile.ProjectReferences.Count > 0;
+            var hasProject = sharedProfile != null && sharedProfile.ProjectReferences.Count > 0;
 
             // Iterate on each source folders
             foreach (var sourceFolder in package.GetDistinctAssetFolderPaths())
