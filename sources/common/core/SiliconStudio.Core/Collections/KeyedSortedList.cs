@@ -170,7 +170,7 @@ namespace SiliconStudio.Core.Collections
         public int Count => Items.Count;
 
         /// <inheritdoc/>
-        object ICollection.SyncRoot => Items.Items.SyncRoot;
+        object ICollection.SyncRoot => this;
 
         /// <inheritdoc/>
         bool ICollection.IsSynchronized => false;
