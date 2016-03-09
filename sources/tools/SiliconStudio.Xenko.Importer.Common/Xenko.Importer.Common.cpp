@@ -23,10 +23,8 @@ public ref class MeshParameters
 public:
 	MeshParameters()
 	{
-		Parameters = gcnew ParameterCollection();
 	}
 
-	ParameterCollection^ Parameters;
 	String^ MaterialName;
 	String^ MeshName;
 	String^ NodeName;

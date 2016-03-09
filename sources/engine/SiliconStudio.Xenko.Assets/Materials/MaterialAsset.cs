@@ -44,7 +44,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
-            Parameters = new ParameterCollection();
         }
 
         protected override int InternalBuildOrder
@@ -83,13 +82,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
         [Category]
         [MemberCollection(CanReorderItems = true)]
         public MaterialBlendLayers Layers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; set; }
 
         public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
         {

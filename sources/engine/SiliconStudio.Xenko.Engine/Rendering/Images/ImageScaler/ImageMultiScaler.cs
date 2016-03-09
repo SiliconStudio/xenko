@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             EnableSetRenderTargets = false;
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var inputTexture = GetSafeInput(0);
 

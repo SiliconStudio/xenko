@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     internal static partial class ComputeShaderTestKeys
     {
-        public static readonly ParameterKey<Texture> input = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Texture> output = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> input = ParameterKeys.NewObject<Texture>();
+        public static readonly ObjectParameterKey<Texture> output = ParameterKeys.NewObject<Texture>();
     }
 }

@@ -17,10 +17,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     /// </summary>
     [DataSerializerGlobal(typeof(CloneSerializer<Effect>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<SpriteSheet>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<BlendState>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<RasterizerState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<SamplerState>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<DepthStencilState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<Texture>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<Mesh>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]

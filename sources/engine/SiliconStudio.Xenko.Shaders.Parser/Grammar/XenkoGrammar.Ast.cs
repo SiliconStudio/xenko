@@ -132,6 +132,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Grammar
             }
         }
 
+        protected override void CreateConstantBufferTypeAst(ParsingContext context, ParseTreeNode node)
+        {
+            node.AstNode = XenkoConstantBufferType.Parse(node.ChildNodes[0].Token.Text);
+        }
+
         protected void CreateClassIdentifierSubGenericAst(ParsingContext context, ParseTreeNode node)
         {
             var value = Ast<Variable>(node);

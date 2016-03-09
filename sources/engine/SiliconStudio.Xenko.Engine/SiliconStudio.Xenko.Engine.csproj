@@ -31,14 +31,10 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI">
       <SpecificVersion>False</SpecificVersion>
@@ -51,6 +47,14 @@
     <Reference Include="SharpDX.DXGI">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D12" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +129,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
+    <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
     <Compile Include="Engine\PrefabBase.cs" />
     <Compile Include="Engine\StartupScript.cs" />
@@ -132,6 +137,15 @@
     <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
+    <Compile Include="Rendering\ActiveRenderStage.cs" />
+    <Compile Include="Rendering\BackToFrontSortMode.cs" />
+    <Compile Include="Rendering\CameraRenderModeBase.cs" />
+    <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
+    <Compile Include="Rendering\Composers\Pipeline.cs" />
+    <Compile Include="Rendering\Composers\PipelineCollection.cs" />
+    <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
+    <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
+    <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
@@ -166,6 +180,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\DynamicEffectInstance.cs" />
+    <Compile Include="Rendering\EffectSelector.cs" />
+    <Compile Include="Rendering\FrameResourceGroupLayout.cs" />
+    <Compile Include="Rendering\FrontToBackSortMode.cs" />
+    <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -192,6 +211,8 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Rendering\IRenderCollector.cs" />
+    <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -209,6 +230,120 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
+    <Compile Include="Rendering\Background\BackgroundRenderProcessor.cs" />
+    <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
+    <Compile Include="Rendering\Background\RenderBackground.cs" />
+    <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
+    <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
+    <Compile Include="Rendering\EffectPermutationSlot.cs" />
+    <Compile Include="Rendering\EffectValidator.cs" />
+    <Compile Include="Rendering\IPipelinePlugin.cs" />
+    <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
+    <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
+    <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
+    <Compile Include="Rendering\Lights\LightDirectionalGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightGroupRendererBase.cs" />
+    <Compile Include="Rendering\Lights\LightPointGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightShaderGroup.cs" />
+    <Compile Include="Rendering\Lights\LightSkyboxRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
+    <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
+    <Compile Include="Rendering\MeshRenderFeature.cs" />
+    <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
+    <Compile Include="Rendering\MeshPipelinePlugin.cs" />
+    <Compile Include="Rendering\ModelRenderProcessor.cs" />
+    <Compile Include="Rendering\CameraRendererModeForward.cs" />
+    <Compile Include="Rendering\RenderSystem.cs" />
+    <Compile Include="Rendering\RenderSystemExtensions.cs" />
+    <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
+    <Compile Include="Rendering\Nodes\ObjectNode.cs" />
+    <Compile Include="Rendering\Nodes\RenderNode.cs" />
+    <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
+    <Compile Include="Rendering\PickingPipelinePlugin.cs" />
+    <Compile Include="Rendering\PipelinePluginContext.cs" />
+    <Compile Include="Rendering\PipelinePluginManager.cs" />
+    <Compile Include="Rendering\Properties.cs">
+      <DependentUpon>Properties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\RenderDataHolder.cs" />
+    <Compile Include="Rendering\RenderEffect.cs" />
+    <Compile Include="Rendering\RenderFeature.cs" />
+    <Compile Include="Rendering\RenderFeaturePipelinePlugin.cs" />
+    <Compile Include="Rendering\RenderMesh.cs" />
+    <Compile Include="Rendering\RenderModel.cs" />
+    <Compile Include="Rendering\RenderObject.cs" />
+    <Compile Include="Rendering\RenderObjectCollection.cs" />
+    <Compile Include="Rendering\RenderStage.cs" />
+    <Compile Include="Rendering\RenderStageSelector.cs" />
+    <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />
+    <Compile Include="Rendering\RenderView.cs" />
+    <Compile Include="Rendering\RenderViewFeature.cs" />
+    <Compile Include="Rendering\RenderViewFeatureStage.cs" />
+    <Compile Include="Rendering\RenderViewStage.cs" />
+    <Compile Include="Rendering\ResourceGroupEntry.cs" />
+    <Compile Include="Rendering\RootEffectRenderFeature.cs" />
+    <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
+    <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
+    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCascadeInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCascadeLevel.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
+    <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
+    <Compile Include="Rendering\SkinningRenderFeature.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxPipelinePlugin.cs" />
+    <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
+    <Compile Include="Rendering\SortKey.cs" />
+    <Compile Include="Rendering\SortMode.cs" />
+    <Compile Include="Rendering\SortModeDistance.cs" />
+    <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
+    <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
+    <Compile Include="Rendering\Sprites\RenderSprite.cs" />
+    <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\SpriteTransparentRenderStageSelector.cs" />
+    <Compile Include="Rendering\StateChangeSortMode.cs" />
+    <Compile Include="Rendering\SubRenderFeature.cs" />
+    <Compile Include="Rendering\TransformRenderFeature.cs" />
+    <Compile Include="Rendering\RenderDrawContext.cs" />
+    <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Utils\HighlightShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>HighlightShader.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\UI\RenderUIElement.cs" />
+    <Compile Include="Rendering\UI\UIPipelinePlugin.cs" />
+    <Compile Include="Rendering\UI\UIRenderFeature.cs" />
+    <Compile Include="Rendering\Utils\HighlightShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>HighlightShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Utils\Picking.cs">
+      <DependentUpon>Picking.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Utils\PickingShader.cs">
+      <DependentUpon>PickingShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\ViewResourceGroupLayout.cs" />
+    <Compile Include="Rendering\VisibilityGroup.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -226,9 +361,7 @@
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="Engine\TransformComponent.cs" />
     <Compile Include="Engine\UIComponent.cs" />
-    <Compile Include="Rendering\FallbackEffectType.cs" />
-    <Compile Include="Rendering\CameraRendererModeWireFrame.cs" />
-    <Compile Include="Rendering\EntityComponentRendererEventArgs.cs" />
+    <Compile Include="Rendering\RenderEffectState.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMax.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMaxShader.cs">
       <DependentUpon>DepthMinMaxShader.xksl</DependentUpon>
@@ -242,23 +375,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
-    <Compile Include="Rendering\Lights\LightComponentRenderer.cs" />
-    <Compile Include="Rendering\Lights\LightComponentForwardRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointGroup.cs">
       <DependentUpon>LightPointGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightPointGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightUtil.cs">
       <DependentUpon>LightUtil.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightSpotGroup.cs">
       <DependentUpon>LightSpotGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -296,19 +424,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\XenkoWireFrameShadingEffect.cs">
-      <DependentUpon>XenkoWireFrameShadingEffect.xkfx</DependentUpon>
+    <Compile Include="Rendering\XenkoWireframeShadingEffect.cs">
+      <DependentUpon>XenkoWireframeShadingEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\XenkoEffectBaseKeys.cs" />
     <Compile Include="Rendering\CameraComponentRendererExtensions.cs" />
-    <Compile Include="Rendering\DynamicEffectParameterUpdaterDefinition.cs" />
-    <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapTexture.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapAtlasTexture.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapReceiverBase.cs">
@@ -323,7 +446,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Rendering\VirtualResolutionMode.cs" />
     <Compile Include="Rendering\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.xksl</DependentUpon>
@@ -361,7 +483,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ThresholdAlphaCoCFront.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Processors\RenderModelCollection.cs" />
     <Compile Include="Engine\Processors\CameraProcessor.cs" />
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Composers\SceneCameraSlot.cs" />
@@ -374,10 +495,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSubtract.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\EntityComponentRendererBatch.cs" />
-    <Compile Include="Rendering\EntityComponentRendererCoreBase.cs" />
     <Compile Include="Rendering\GraphicsRendererCollectionBase.cs" />
-    <Compile Include="Rendering\IEntityComponentRendererCore.cs" />
     <Compile Include="Rendering\IGraphicsRendererCore.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\Noise\FilmGrain.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\Noise\FilmGrainShader.cs">
@@ -404,7 +522,6 @@
     <Compile Include="Rendering\Lights\DirectLightBase.cs" />
     <Compile Include="Rendering\Lights\IColorLight.cs" />
     <Compile Include="Rendering\Lights\ILightShadowMapFilterType.cs" />
-    <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPoint.cs" />
     <Compile Include="Rendering\Lights\LightShadowMapCascadeCount.cs" />
     <Compile Include="Rendering\Lights\LightShadowMapFilterTypePCF.cs" />
@@ -471,7 +588,6 @@
     <Compile Include="Rendering\Materials\MaterialTransparencyAdditiveFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyCutoffFeature.cs" />
     <Compile Include="Rendering\Materials\XenkoTessellationMethod.cs" />
-    <Compile Include="Rendering\EntityComponentRendererTypeCollection.cs" />
     <Compile Include="Engine\EntityTransformExtensions.cs" />
     <Compile Include="Rendering\BRDF\BRDFMicrofacet.cs">
       <DependentUpon>BRDFMicrofacet.xksl</DependentUpon>
@@ -1229,11 +1345,8 @@
     <Compile Include="Rendering\ProceduralModels\SphereProceduralModel.cs" />
     <Compile Include="Rendering\ProceduralModels\TeapotProceduralModel.cs" />
     <Compile Include="Rendering\ProceduralModels\TorusProceduralModel.cs" />
-    <Compile Include="Rendering\RenderContextExtensions.cs" />
     <Compile Include="Rendering\RendererCoreBase.cs" />
     <Compile Include="Rendering\RenderFrameProviderBase.cs" />
-    <Compile Include="Rendering\RenderItem.cs" />
-    <Compile Include="Rendering\RenderItemCollection.cs" />
     <Compile Include="Rendering\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\ClearRenderFrameFlags.cs" />
     <Compile Include="Rendering\ClearRenderFrameRenderer.cs" />
@@ -1248,11 +1361,9 @@
     <Compile Include="Rendering\SceneEffectRenderer.cs" />
     <Compile Include="Rendering\SceneRendererBase.cs" />
     <Compile Include="Rendering\SceneRendererCollection.cs" />
-    <Compile Include="Rendering\CameraRendererModeForward.cs" />
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
-    <Compile Include="Rendering\IEntityComponentRenderer.cs" />
     <Compile Include="Rendering\IGraphicsRenderer.cs" />
     <Compile Include="Rendering\CameraRendererMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAEffect.cs" />
@@ -1588,7 +1699,6 @@
     <Compile Include="Rendering\Lights\LightAmbient.cs" />
     <Compile Include="Rendering\Colors\ColorRgbProvider.cs" />
     <Compile Include="Engine\LightComponent.cs" />
-    <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
     <Compile Include="Rendering\Lights\LightDirectional.cs" />
     <Compile Include="Rendering\Lights\LightDirectionalGroup.cs">
       <DependentUpon>LightDirectionalGroup.xksl</DependentUpon>
@@ -1596,12 +1706,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightDirectionalGroupRenderer.cs" />
-    <Compile Include="Rendering\Lights\LightGroupRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightingKeys.cs" />
-    <Compile Include="Rendering\Lights\LightModelRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightProcessor.cs" />
-    <Compile Include="Rendering\Lights\LightShaderGroup.cs" />
     <Compile Include="Rendering\Lights\LightShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbient.cs">
       <DependentUpon>LightSimpleAmbient.xksl</DependentUpon>
@@ -1610,7 +1716,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Lights\LightSkybox.cs" />
-    <Compile Include="Rendering\Lights\LightSkyboxRenderer.cs" />
     <Compile Include="Rendering\Lights\LightSkyboxShader.cs">
       <DependentUpon>LightSkyboxShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1624,7 +1729,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ModelComponentAndPickingRenderer.cs" />
     <Compile Include="Rendering\RendererBase.cs" />
     <Compile Include="Rendering\RenderFrame.cs" />
     <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.cs">
@@ -1905,8 +2009,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapCascadeInfo.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapCascadeLevel.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapCaster.cs">
       <DependentUpon>ShadowMapCaster.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1962,8 +2064,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Shadows\ShadowMapKeys.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapReceiverInfo.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowStream.cs">
       <DependentUpon>ShadowStream.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2033,7 +2133,6 @@
     </Compile>
     <Compile Include="Rendering\Skyboxes\Skybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxBackground.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxComponentRenderer.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxEffect.cs">
       <DependentUpon>SkyboxEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2041,7 +2140,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Skyboxes\SkyboxKeys.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxShader.cs">
       <DependentUpon>SkyboxShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2201,8 +2299,6 @@
     </Compile>
     <Compile Include="Engine\Design\ISceneEditorGraphicsModeSettings.cs" />
     <Compile Include="Rendering\Sprites\ISpriteProvider.cs" />
-    <Compile Include="Engine\Processors\ModelProcessor.cs" />
-    <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Engine\Processors\ChildSceneComponentChangedEventArgs.cs" />
     <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
@@ -2213,13 +2309,12 @@
     <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />
     <Compile Include="Rendering\Sprites\SpriteType.cs" />
-    <Compile Include="Engine\Processors\UIComponentProcessor.cs" />
+    <Compile Include="Rendering\UI\UIRenderProcessor.cs" />
     <Compile Include="Engine\Design\DefaultEntityComponentProcessorAttribute.cs" />
     <Compile Include="Engine\Design\EntityComponentEventArgs.cs" />
     <Compile Include="Shaders.Compiler\EffectCompileRequest.cs" />
     <Compile Include="Extensions\GeometricPrimitiveExtension.cs" />
     <Compile Include="Engine\Design\DefaultEntityComponentRendererAttribute.cs" />
-    <Compile Include="Engine\Design\EntityComponentRendererType.cs" />
     <Compile Include="Engine\EntityGroupMask.cs" />
     <Compile Include="Engine\EntityGroupMaskExtensions.cs" />
     <Compile Include="Extensions\SimpleExtensions.cs" />
@@ -2227,18 +2322,11 @@
     <Compile Include="Extensions\SplitExtensions.cs" />
     <Compile Include="Extensions\TransformExtensions.cs" />
     <Compile Include="Animations\KeyFrameData.cs" />
-    <Compile Include="Rendering\BackgroundComponentRenderer.cs" />
-    <Compile Include="Rendering\CameraComponentRenderer.cs" />
-    <Compile Include="Rendering\DefaultEffectInstance.cs" />
-    <Compile Include="Rendering\DynamicEffectCompiler.cs" />
-    <Compile Include="Rendering\DynamicEffectInstance.cs" />
-    <Compile Include="Rendering\DynamicEffectParameterCollectionGroup.cs" />
     <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\MaterialAssetKeys.cs" />
     <Compile Include="Rendering\MeshBoneDefinition.cs" />
     <Compile Include="Rendering\MeshDraw.cs" />
     <Compile Include="Rendering\MeshKeys.cs" />
-    <Compile Include="Rendering\MeshSkinningUpdater.cs" />
     <Compile Include="Rendering\MeshSkinningDefinition.cs" />
     <Compile Include="Rendering\ModelNodeFlags.cs" />
     <Compile Include="Rendering\SkeletonUpdater.cs" />
@@ -2246,18 +2334,12 @@
     <Compile Include="Rendering\ModelNodeDefinition.cs" />
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
-    <Compile Include="Rendering\RenderModelEffectSlotManager.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
-    <Compile Include="Rendering\RendererExtensions.cs" />
     <Compile Include="Engine\EntityGroup.cs" />
-    <Compile Include="Rendering\EntityComponentRendererBase.cs" />
     <Compile Include="Rendering\Mesh.cs" />
     <Compile Include="Rendering\Model.cs" />
     <Compile Include="Rendering\EffectSystem.cs" />
-    <Compile Include="Rendering\ModelComponentRenderer.cs" />
-    <Compile Include="Rendering\SpriteComponentRenderer.cs" />
     <Compile Include="Rendering\TransformTRS.cs" />
-    <Compile Include="Rendering\UIComponentRenderer.cs" />
     <Compile Include="Animations\AnimationOperation.cs" />
     <Compile Include="Animations\AnimationOperationType.cs" />
     <Compile Include="Audio\AudioEmitterSoundController.cs" />
@@ -2281,7 +2363,6 @@
     <Compile Include="Engine\SceneSystem.cs" />
     <Compile Include="Engine\Game.cs" />
     <Compile Include="Rendering\Fonts\GameFontSystem.cs" />
-    <Compile Include="Rendering\Sprites\SpriteProcessor.cs" />
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Engine\Network\RouterClient.cs" />
@@ -2304,14 +2385,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\TessellationPermutation.cs" />
-    <Compile Include="Rendering\ParameterPath.cs" />
     <Compile Include="Engine\Design\EntityComponentProperty.cs" />
     <Compile Include="Engine\Design\EntityComponentPropertyType.cs" />
     <Compile Include="Engine\Design\ParameterContainerExtensions.cs" />
-    <Compile Include="Rendering\GraphicsResizeContext.cs" />
-    <Compile Include="Rendering\GraphicsResizeExtensions.cs" />
-    <Compile Include="Rendering\RenderMesh.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Animations\AnimationProcessor.cs" />
     <Compile Include="Engine\Processors\TransformProcessor.cs" />
@@ -3306,9 +3382,17 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\XenkoWireFrameShadingEffect.xkfx">
+    <None Include="Rendering\Utils\Picking.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>XenkoWireFrameShadingEffect.cs</LastGenOutput>
+      <LastGenOutput>Picking.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Utils\PickingShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>PickingShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\XenkoForwardShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -3616,6 +3700,12 @@
       <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Rendering\Properties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Properties.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">

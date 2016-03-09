@@ -116,11 +116,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             uniformGrid.Children.Remove(modal2);
         }
 
-        protected override void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
+        protected override void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
         {
             base.SpecificDrawBeforeUI(context, renderFrame);
 
-            GraphicsDevice.DrawTexture(Sprites["GameScreen"].Texture);
+            context.GraphicsContext.DrawTexture(Sprites["GameScreen"].Texture);
         }
 
         protected override void Update(GameTime gameTime)

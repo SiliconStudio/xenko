@@ -18,20 +18,20 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class TransformationKeys
     {
-        public static readonly ParameterKey<Matrix> View = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> ViewInverse = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> Projection = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> ProjectionInverse = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> ViewProjection = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Vector2> ProjScreenRay = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<Vector4> Eye = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<Vector4> EyeMS = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<Matrix> World = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> WorldInverseTranspose = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> WorldInverse = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> WorldView = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> WorldViewInverse = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> WorldViewProjection = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Vector3> WorldScale = ParameterKeys.New<Vector3>();
+        public static readonly ValueParameterKey<Matrix> View = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> ViewInverse = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> Projection = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> ProjectionInverse = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> ViewProjection = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Vector2> ProjScreenRay = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector4> Eye = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Matrix> World = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> WorldInverse = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> WorldInverseTranspose = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> WorldView = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> WorldViewInverse = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> WorldViewProjection = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Vector3> WorldScale = ParameterKeys.NewValue<Vector3>();
+        public static readonly ValueParameterKey<Vector4> EyeMS = ParameterKeys.NewValue<Vector4>();
     }
 }

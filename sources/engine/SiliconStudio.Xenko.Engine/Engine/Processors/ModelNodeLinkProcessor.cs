@@ -9,8 +9,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
 {
     public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent>
     {
-        internal ModelProcessor meshProcessor;
-
         public ModelNodeLinkProcessor()
             : base(typeof(TransformComponent))
         {

@@ -10,8 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     public static class DepthAwareDirectionalBlurKeys
     {
-        public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> Count = ParameterKeys.NewPermutation<int>();
 
-        public static readonly ParameterKey<int> TotalTap = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> TotalTap = ParameterKeys.NewPermutation<int>();
     }
 }

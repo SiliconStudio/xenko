@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>Gets the size of this resource.</summary>
         public Rectangle Bounds
         {
-            get { return new Rectangle((int)X, (int)Y, (int)Width, (int)Width); }
+            get { return new Rectangle((int)X, (int)Y, (int)Width, (int)Height); }
             set
             {
                 X = value.X;

@@ -10,9 +10,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         static SpriteBaseKeys()
         {
-            MatrixTransform = ParameterKeys.New(Matrix.Identity);
+            MatrixTransform = ParameterKeys.NewValue(Matrix.Identity);
         }
 
-        public static readonly ParameterKey<bool> ColorIsSRgb = ParameterKeys.New(false);
+        public static readonly PermutationParameterKey<bool> ColorIsSRgb = ParameterKeys.NewPermutation(false);
     }
 }

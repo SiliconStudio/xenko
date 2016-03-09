@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             return CharacterToGlyph.ContainsKey(c);
         }
 
-        protected override Glyph GetGlyph(char character, ref Vector2 fontSize, bool dumb)
+        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool dumb)
         {
             Glyph glyph = null;
 

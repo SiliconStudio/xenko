@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class GlobalKeys
     {
-        public static readonly ParameterKey<float> Time = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> TimeStep = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> Time = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> TimeStep = ParameterKeys.NewValue<float>();
     }
 }

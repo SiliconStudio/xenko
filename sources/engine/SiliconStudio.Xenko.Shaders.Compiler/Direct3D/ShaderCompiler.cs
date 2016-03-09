@@ -109,11 +109,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 var boundResourceDesc = shaderReflectionRaw.GetResourceBindingDescription(i);
 
                 string linkKeyName = null;
+                string resourceGroup = null;
                 foreach (var linkResource in effectReflection.ResourceBindings)
                 {
                     if (linkResource.Param.RawName == boundResourceDesc.Name && linkResource.Stage == ShaderStage.None)
                     {
                         linkKeyName = linkResource.Param.KeyName;
+                        resourceGroup = linkResource.Param.ResourceGroup;
                         break;
                     }
 
@@ -128,6 +130,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 
                     var binding = GetResourceBinding(boundResourceDesc, linkKeyName, log);
                     binding.Stage = shaderBytecode.Stage;
+                    binding.Param.ResourceGroup = resourceGroup;
 
                     effectReflection.ResourceBindings.Add(binding);
                 }

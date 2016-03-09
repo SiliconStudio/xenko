@@ -6,16 +6,19 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Glsl;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Writer.Hlsl;
 using ConstantBuffer = SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.LayoutQualifier;
 using ParameterQualifier = SiliconStudio.Shaders.Ast.Hlsl.ParameterQualifier;
+using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 {
@@ -57,7 +60,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 
-            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, sourceFilename);
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, reflection, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
@@ -74,7 +77,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, reflection, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -102,7 +105,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, string sourceFilename = null)
         {
             if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
@@ -170,6 +173,69 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     else
                     {
                         constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                    }
+                }
+
+                foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
+                {
+                    // Update constant buffer itself (first time only)
+                    var reflectionConstantBuffer = reflection.ConstantBuffers.FirstOrDefault(x => x.Name == constantBuffer.Name && x.Size == 0);
+                    if (reflectionConstantBuffer != null)
+                    {
+                        // Used to compute constant buffer size and member offsets (std140 rule)
+                        int constantBufferOffset = 0;
+
+                        // Fill members
+                        for (int index = 0; index < reflectionConstantBuffer.Members.Length; index++)
+                        {
+                            var member = reflectionConstantBuffer.Members[index];
+
+                            // Properly compute size and offset according to std140 rules
+                            int alignment;
+                            var memberSize = ComputeMemberSize(ref member, out alignment);
+
+                            // Align offset and store it as member offset
+                            constantBufferOffset = (constantBufferOffset + alignment - 1)/alignment*alignment;
+                            member.Offset = constantBufferOffset;
+                            member.Size = memberSize;
+
+                            // Adjust offset for next item
+                            constantBufferOffset += memberSize;
+
+                            reflectionConstantBuffer.Members[index] = member;
+                        }
+
+                        reflectionConstantBuffer.Size = constantBufferOffset;
+                        reflectionConstantBuffer.Stage = stage; // Should we store a flag/bitfield?
+                    }
+
+                    // Find binding
+                    var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == constantBuffer.Name);
+                    if (resourceBindingIndex != -1)
+                        MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
+                }
+
+                foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
+                {
+                    // Check if we have a variable that starts or ends with this name (in case of samplers)
+                    if (variable.Type == SamplerType.Sampler1D || variable.Type == SamplerType.Sampler2D || variable.Type == SamplerType.Sampler3D ||
+                        variable.Type.Name.Text.Equals(SamplerType.SamplerCube.Name.Text, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // TODO: Make more robust
+                        var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Param.RawName));
+                        var samplerBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().EndsWith(x.Param.RawName));
+
+                        if (textureBindingIndex != -1)
+                            MarkResourceBindingAsUsed(reflection, textureBindingIndex, stage);
+
+                        if (samplerBindingIndex != -1)
+                            MarkResourceBindingAsUsed(reflection, samplerBindingIndex, stage);
+                    }
+                    else
+                    {
+                        var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == variable.Name);
+                        if (resourceBindingIndex != -1)
+                            MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
                     }
                 }
 
@@ -263,6 +329,83 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 #endif
 
             return realShaderSource;
+        }
+
+        private static void MarkResourceBindingAsUsed(EffectReflection reflection, int resourceBindingIndex, ShaderStage stage)
+        {
+            var resourceBinding = reflection.ResourceBindings[resourceBindingIndex];
+            if (resourceBinding.Stage == ShaderStage.None)
+            {
+                resourceBinding.Stage = stage;
+                reflection.ResourceBindings[resourceBindingIndex] = resourceBinding;
+            }
+        }
+
+        private static int ComputeMemberSize(ref EffectParameterValueData member, out int alignment)
+        {
+            var elementSize = ComputeTypeSize(member.Param.Type);
+            int size;
+
+            switch (member.Param.Class)
+            {
+                case EffectParameterClass.Scalar:
+                    {
+                        size = elementSize;
+                        alignment = size;
+                        break;
+                    }
+                case EffectParameterClass.Color:
+                case EffectParameterClass.Vector:
+                    {
+                        size = elementSize * member.ColumnCount;
+                        alignment = (member.ColumnCount == 3 ? 4 : member.ColumnCount) * elementSize; // vec3 uses alignment of vec4
+                        break;
+                    }
+                case EffectParameterClass.MatrixColumns:
+                    {
+                        size = elementSize * 4 * member.RowCount;
+                        alignment = size;
+                        break;
+                    }
+                case EffectParameterClass.MatrixRows:
+                    {
+                        size = elementSize * 4 * member.ColumnCount;
+                        alignment = size;
+                        break;
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // Array
+            if (member.Count > 1)
+            {
+                var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
+                size = roundedSize * member.Count;
+                alignment = roundedSize * member.Count;
+            }
+
+            // Alignment is maxed up to vec4
+            if (alignment > 16)
+                alignment = 16;
+
+            return size;
+        }
+
+        private static int ComputeTypeSize(EffectParameterType type)
+        {
+            switch (type)
+            {
+                case EffectParameterType.Bool:
+                case EffectParameterType.Float:
+                case EffectParameterType.Int:
+                case EffectParameterType.UInt:
+                    return 4;
+                case EffectParameterType.Double:
+                    return 8;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, bool openGLES, bool es30, bool vertex)

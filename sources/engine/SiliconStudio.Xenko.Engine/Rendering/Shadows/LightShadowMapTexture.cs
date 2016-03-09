@@ -53,8 +53,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightShadowMapTexture
     {
-        public delegate void ApplyShadowMapParametersDelegate(LightShadowMapTexture shadowMapTexture, ParameterCollection parameters);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LightShadowMapTexture" /> struct.
         /// </summary>

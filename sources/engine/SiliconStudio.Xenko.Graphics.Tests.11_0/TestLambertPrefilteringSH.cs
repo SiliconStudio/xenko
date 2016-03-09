@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private Int2 screenSize = new Int2(768, 1024);
 
-        private Effect cubemapSpriteEffect;
+        private EffectInstance cubemapSpriteEffect;
 
         public TestLambertPrefilteringSH()
         {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite").WaitForResult();
+            cubemapSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("CubemapSprite").WaitForResult());
 
             drawEffectContext = RenderContext.GetShared(Services);
             lamberFilter = new LambertianPrefilteringSH(drawEffectContext);
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             displayedCubemap = outputCubemap;
         }
 
-        private void PrefilterCubeMap()
+        private void PrefilterCubeMap(RenderDrawContext context)
         {
             if (!shouldPrefilter)
                 return;
@@ -73,19 +73,19 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             { 
                 lamberFilter.HarmonicOrder = 5;
                 lamberFilter.RadianceMap = inputCubemap;
-                lamberFilter.Draw();
+                lamberFilter.Draw(context);
                 renderSHEffect.InputSH = lamberFilter.PrefilteredLambertianSH;
             }
             else
             {
                 lamberFilterNoCompute.HarmonicOrder = 5;
                 lamberFilterNoCompute.RadianceMap = inputCubemap;
-                lamberFilterNoCompute.Draw();
+                lamberFilterNoCompute.Draw(context);
                 renderSHEffect.InputSH = lamberFilterNoCompute.PrefilteredLambertianSH;
             }
 
             renderSHEffect.SetOutput(outputCubemap);
-            renderSHEffect.Draw();
+            renderSHEffect.Draw(context);
         }
 
         protected override void RegisterTests()
@@ -95,43 +95,43 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             FrameGameSystem.TakeScreenshot();
         }
 
-        private void RenderCubeMap()
+        private void RenderCubeMap(RenderDrawContext context)
         {
             if (displayedCubemap == null || spriteBatch == null)
                 return;
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Green);
-            
-            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 1);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
+            context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
+
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 1);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 2);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 2);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 4);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 4);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 3);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 3);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 2f * size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 5);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 5);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 3f * size.Y, size.X, size.Y), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipVertically);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 0);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 0);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(2f * size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
         }
@@ -153,13 +153,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 displayedCubemap = outputCubemap;
 
             if(Input.IsKeyPressed(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "LambertianPrefilteredImageCross.png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "LambertianPrefilteredImageCross.png");
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            PrefilterCubeMap();
-            RenderCubeMap();
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
+            PrefilterCubeMap(renderDrawContext);
+            RenderCubeMap(renderDrawContext);
 
             base.Draw(gameTime);
         }

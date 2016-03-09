@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class TripleRhombiCombineShaderKeys
     {
-        public static readonly ParameterKey<Vector2[]> RhombiTapOffsets = ParameterKeys.New<Vector2[]>();
+        public static readonly ValueParameterKey<Vector2> RhombiTapOffsets = ParameterKeys.NewValue<Vector2>();
     }
 }

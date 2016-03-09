@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
@@ -139,8 +139,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             allMasks.Clear();
 
             fixed (void* ptr = groupMasks)
-                Interop.memset(ptr, 0, groupMasks.Length * sizeof(uint));
-            
+                Utilities.ClearMemory((IntPtr)ptr, 0, groupMasks.Length * sizeof(uint));
+
             // Only clear collections that were previously allocated (no need to iterate on all collections from the pool)
             foreach (var collection in lightCollectionPool)
             {

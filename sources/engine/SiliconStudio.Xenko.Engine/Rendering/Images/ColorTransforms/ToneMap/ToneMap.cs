@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private float previousLuminance;
 
         private readonly Stopwatch timer;
-        private ToneMapOperator @operator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap"/> class.
@@ -55,24 +54,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [NotNull]
         public ToneMapOperator Operator
         {
-            get { return @operator; }
+            get
+            {
+                return Parameters.Get(ToneMapKeys.Operator);
+            }
             set
             {
-                // Hack: If operator actually changed, we need to make sure counter are increasing
-                // TODO: Make this gone with graphics refactor :)
-                if (value != null && @operator != null && @operator != value)
-                {
-                    foreach (var parameter in @operator.Parameters.InternalValues)
-                    {
-                        var internalValue = value.Parameters.GetInternalValue(parameter.Key);
-                        if (internalValue != null)
-                        {
-                            internalValue.Counter = parameter.Value.Counter + 1;
-                        }
-                    }
-                }
-
-                @operator = value;
+                Parameters.Set(ToneMapKeys.Operator, value);
+                Group?.NotifyPermutationChange();
             }
         }
 
@@ -91,6 +80,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             set
             {
                 Parameters.Set(ToneMapKeys.AutoKey, value);
+                Group?.NotifyPermutationChange();
             }
         }
 
@@ -127,6 +117,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             set
             {
                 Parameters.Set(ToneMapKeys.AutoExposure, value);
+                Group?.NotifyPermutationChange();
             }
         }
 
@@ -213,10 +204,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
+        public override void PrepareParameters(ColorTransformContext context, ParameterCollection parentCollection, string keyRoot)
+        {
+            base.PrepareParameters(context, parentCollection, keyRoot);
+
+            Operator.PrepareParameters(context, Parameters, ".ToneMapOperator");
+        }
+
         public override void UpdateParameters(ColorTransformContext context)
         {
-            base.UpdateParameters(context);
-
             if (Operator == null)
             {
                 throw new InvalidOperationException("Operator cannot be null on this instance");
@@ -252,17 +248,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Update operator parameters
             Operator.UpdateParameters(context);
 
-            // Copy sub parameters from composition to this transform
-            foreach (var key in Operator.Parameters.Keys)
-            {
-                ParameterKey tonemapKey;
-                if (!tonemapKeys.TryGetValue(key, out tonemapKey))
-                {
-                    tonemapKey = key.ComposeWith("ToneMapOperator");
-                    tonemapKeys.Add(key, tonemapKey);
-                }
-                Operator.Parameters.CopySharedTo(key, tonemapKey, Parameters);
-            }
+            // Copy parameters to parent
+            base.UpdateParameters(context);
         }
     }
 }
