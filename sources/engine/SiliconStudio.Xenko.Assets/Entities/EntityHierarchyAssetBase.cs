@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
         /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="EntityHierarchyData"/> corresponding to the cloned entities.</returns>
         public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference)
         {
             Dictionary<Guid, Guid> entityMapping;
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
         /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
         /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="EntityHierarchyData"/> corresponding to the cloned entities.</returns>
         public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
         {
             if (!Hierarchy.Entities.ContainsKey(sourceRootEntity))
@@ -84,6 +84,72 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // clone the entities of the sub-tree
             var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
             clonedHierarchy.Entities[sourceRootEntity].Entity.Transform.Parent = null;
+
+            if (cleanReference)
+            {
+                // set to null reference outside of the sub-tree
+                EntityAnalysis.FixupEntityReferences(clonedHierarchy);
+            }
+
+            // temporary nullify the hierarchy to avoid to clone it
+            var sourceHierarchy = Hierarchy;
+            Hierarchy = null;
+
+            // revert the source hierarchy
+            Hierarchy = sourceHierarchy;
+
+            // Generate entity mapping
+            entityMapping = new Dictionary<Guid, Guid>();
+            foreach (var entityDesign in clonedHierarchy.Entities)
+            {
+                // Generate new Id
+                var newEntityId = Guid.NewGuid();
+
+                // Update mappings
+                entityMapping.Add(entityDesign.Entity.Id, newEntityId);
+
+                // Update entity with new id
+                entityDesign.Entity.Id = newEntityId;
+            }
+
+            // Rewrite entity references
+            // Should we nullify invalid references?
+            EntityAnalysis.RemapEntitiesId(clonedHierarchy, entityMapping);
+
+            return clonedHierarchy;
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootEntities">The entities that are the roots of the sub-hierarchies to clone</param>
+        /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
+        /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
+        /// <returns>A <see cref="EntityHierarchyData"/> corresponding to the cloned entities.</returns>
+        /// <remarks>The entities passed to this methods must be independent in the hierarchy.</remarks>
+        public EntityHierarchyData CloneSubHierarchies(IEnumerable<Guid> sourceRootEntities, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
+        {
+            // Note: Instead of copying the whole asset (with its potentially big hierarchy),
+            // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
+            var subTreeHierarchy = new EntityHierarchyData();
+            foreach (var sourceRootEntity in sourceRootEntities)
+            {
+                if (!Hierarchy.Entities.ContainsKey(sourceRootEntity))
+                    throw new ArgumentException(@"The source root entities must be entities of this asset.", nameof(sourceRootEntities));
+
+                var subTreeRoot = Hierarchy.Entities[sourceRootEntity].Entity;
+                subTreeHierarchy.Entities.Add(subTreeRoot);
+                subTreeHierarchy.RootEntities.Add(sourceRootEntity);
+                foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
+                    subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Id]);
+            }
+
+            // clone the entities of the sub-tree
+            var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
+            foreach (var rootEntity in clonedHierarchy.RootEntities)
+            {
+                clonedHierarchy.Entities[rootEntity].Entity.Transform.Parent = null;
+            }
 
             if (cleanReference)
             {
