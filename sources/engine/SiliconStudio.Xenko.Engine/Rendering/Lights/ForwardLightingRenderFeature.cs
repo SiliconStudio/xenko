@@ -543,11 +543,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         LightShadowMapTexture shadowTexture = null;
                         LightShadowType shadowType = 0;
                         ILightShadowMapRenderer newShadowRenderer = null;
+                        bool allocateLightMaxCount = lightRenderer.AllocateLightMaxCount;
 
                         if (ShadowMapRenderer != null && renderViewData.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
                             newShadowRenderer = (ILightShadowMapRenderer)shadowTexture.Renderer;
+
+                            // Shadow lights with cascades are added one by one to avoid growing cbuffer and computations too much
+                            allocCountForNewLightType = 1;
+                            allocateLightMaxCount = false;
                         }
 
                         if (i == 0)
@@ -559,7 +564,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         {
                             if (currentShaderKey.LightRendererId == lightRendererId && currentShaderKey.ShadowType == shadowType)
                             {
-                                if (!lightRenderer.AllocateLightMaxCount)
+                                if (!allocateLightMaxCount)
                                 {
                                     currentShaderKey.LightCount++;
                                 }
