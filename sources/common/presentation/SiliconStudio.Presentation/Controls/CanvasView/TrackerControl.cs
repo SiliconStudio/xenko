@@ -147,9 +147,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            var p = e.GetPosition(this);
-            //TODO: add some validation logic
-            Position = p;
+            Position = e.GetPosition(this);
         }
         
         private void OnPositionChanged(DependencyPropertyChangedEventArgs e)
