@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 var index = collectionDescriptor.GetCollectionCount(Value);
                 NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
-                    collectionDescriptor.Add(Value, newItem);
+                collectionDescriptor.Add(Value, newItem);
 
                 UpdateReferences();
                 NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
@@ -123,8 +123,7 @@ namespace SiliconStudio.Quantum.Contents
         public override void Remove(object itemIndex, object item)
         {
             if (itemIndex == null) throw new ArgumentNullException(nameof(itemIndex));
-            var oldValue = Retrieve(itemIndex);
-            NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
+            NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, item, null);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
@@ -147,7 +146,7 @@ namespace SiliconStudio.Quantum.Contents
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
             UpdateReferences();
-            NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
+            NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, item, null);
         }
 
         private void UpdateReferences()
