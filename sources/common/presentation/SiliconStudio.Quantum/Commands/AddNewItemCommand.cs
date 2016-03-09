@@ -45,7 +45,7 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType == typeof(string));
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
         {
             var value = content.Retrieve();
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());

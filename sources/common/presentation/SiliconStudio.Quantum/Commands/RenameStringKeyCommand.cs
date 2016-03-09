@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
         {
             var oldName = (string)index;
             var newName = (string)parameter;

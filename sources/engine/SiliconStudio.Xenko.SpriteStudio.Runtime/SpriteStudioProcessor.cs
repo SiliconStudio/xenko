@@ -1,52 +1,87 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioRendererProcessor : EntityProcessor<SpriteStudioComponent, RenderSpriteStudio>, IEntityComponentRenderProcessor
+    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, SpriteStudioComponent>
     {
-        public SpriteStudioRendererProcessor()
-            : base(typeof(TransformComponent))
+        protected override SpriteStudioComponent GenerateComponentData(Entity entity, SpriteStudioComponent component)
         {
-            Order = 550;
+            return component;
         }
 
-        protected override RenderSpriteStudio GenerateComponentData(Entity entity, SpriteStudioComponent component)
-        {
-            return new RenderSpriteStudio
-            {
-                SpriteStudioComponent = component,
-                TransformComponent = entity.Transform
-            };
-        }
-
-        protected override bool IsAssociatedDataValid(Entity entity, SpriteStudioComponent component, RenderSpriteStudio associatedData)
-        {
-            return
-                component == associatedData.SpriteStudioComponent &&
-                entity.Transform == associatedData.TransformComponent;
-        }
-
-        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, RenderSpriteStudio data)
+        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, SpriteStudioComponent data)
         {
             PrepareNodes(data);
-            VisibilityGroup.RenderObjects.Add(data);
         }
 
-        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, RenderSpriteStudio data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, SpriteStudioComponent data)
         {
-            data.SpriteStudioComponent.Nodes.Clear();
-            VisibilityGroup.RenderObjects.Remove(data);
+            data.Nodes.Clear();
         }
 
-        internal static SpriteStudioNodeState InitializeNodes(SpriteStudioComponent spriteStudioComponent)
+        public override void Update(GameTime time)
         {
-            spriteStudioComponent.Nodes.Clear();
+            foreach (var data in ComponentDatas)
+            {
+                var spriteStudioComponent = data.Value;
+                if (!spriteStudioComponent.Enabled) continue;
 
+                spriteStudioComponent.ValidState = PrepareNodes(spriteStudioComponent);
+            }
+        }
+
+        public override void Draw(RenderContext context)
+        {
+            foreach (var componentData in ComponentDatas)
+            {
+                var component = componentData.Value;
+                if (!component.ValidState) continue;
+                SortNodes(component);
+                component.RootNode.UpdateTransformation();
+            }
+        }
+
+        internal static bool PrepareNodes(SpriteStudioComponent component)
+        {
+            var sheet = component.Sheet;
+            if (component.CurrentSheet != sheet) // sheet changed? force pre-process
+            {
+                component.RootNode = null;
+                component.Nodes.Clear();
+            }
+
+            var assetNodes = sheet?.NodesInfo;
+            if (assetNodes == null) return false;
+
+            if (component.RootNode == null)
+            {
+                component.RootNode = InitializeNodes(component);
+                component.CurrentSheet = sheet;
+            }
+
+            return (component.RootNode != null);
+        }
+
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
+        // Enumerables are Evil
+        private static void SortNodes(SpriteStudioComponent component)
+        {
+            component.SortedNodes.Clear();
+            var sortedNodes = component.Nodes.OrderBy(x => x.Priority);
+            foreach (var node in sortedNodes)
+            {
+                component.SortedNodes.Add(node);
+            }
+        }
+
+        private static SpriteStudioNodeState InitializeNodes(SpriteStudioComponent spriteStudioComponent)
+        {
             var nodes = spriteStudioComponent.Sheet?.NodesInfo;
             if (nodes == null)
                 return null;
@@ -108,60 +143,5 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
             return rootNode;
         }
-
-        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
-        // Enumerables are Evil
-        private static void SortNodes(RenderSpriteStudio data, List<SpriteStudioNodeState> nodes)
-        {
-            data.SpriteStudioComponent.SortedNodes.Clear();
-            var sortedNodes = nodes.OrderBy(x => x.Priority);
-            foreach (var node in sortedNodes)
-            {
-                data.SpriteStudioComponent.SortedNodes.Add(node);
-            }
-        }
-
-        public override void Draw(RenderContext context)
-        {
-            foreach (var spriteStateKeyPair in ComponentDatas)
-            {
-                var renderSpriteStudio = spriteStateKeyPair.Value;
-                renderSpriteStudio.Enabled = renderSpriteStudio.SpriteStudioComponent.Enabled;
-
-                if(!renderSpriteStudio.Enabled) continue;
-
-                renderSpriteStudio.BoundingBox = new BoundingBoxExt { Center = renderSpriteStudio.TransformComponent.WorldMatrix.TranslationVector };
-                renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.Entity.Group;
-
-                if (!PrepareNodes(renderSpriteStudio))
-                    continue;
-
-                SortNodes(renderSpriteStudio, renderSpriteStudio.SpriteStudioComponent.Nodes);
-                renderSpriteStudio.RootNode.UpdateTransformation();
-            }
-        }
-
-        private static bool PrepareNodes(RenderSpriteStudio data)
-        {
-            var sheet = data.SpriteStudioComponent.Sheet;
-            if (data.Sheet != sheet) // sheet changed? force pre-process
-            {
-                data.RootNode = null;
-                data.SpriteStudioComponent.Nodes.Clear();
-            }
-
-            var assetNodes = sheet?.NodesInfo;
-            if (assetNodes == null) return false;
-
-            if (data.RootNode == null)
-            {
-                data.RootNode = InitializeNodes(data.SpriteStudioComponent);
-                data.Sheet = sheet;
-            }
-
-            return (data.RootNode != null);
-        }
-
-        public VisibilityGroup VisibilityGroup { get; set; }
     }
 }

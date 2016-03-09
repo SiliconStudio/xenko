@@ -30,12 +30,11 @@ namespace SiliconStudio.Xenko.Engine
                 parentModelComponent.Entity.Transform.UpdateWorldMatrix();
             }
 
-            // Updated? (rare slow path)
-            if (skeleton != null)
+            if (parentModelComponent.Skeleton != skeleton)
             {
-                if (parentModelComponent.Skeleton != skeleton)
+                skeleton = parentModelComponent.Skeleton;
+                if (skeleton != null)
                 {
-                    skeleton = parentModelComponent.Skeleton;
                     // Find our node index
                     nodeIndex = int.MaxValue;
                     for (int index = 0; index < skeleton.Nodes.Length; index++)
@@ -47,7 +46,11 @@ namespace SiliconStudio.Xenko.Engine
                         }
                     }
                 }
+            }
 
+            // Updated? (rare slow path)
+            if (skeleton != null)
+            {
                 var nodes = skeleton.Nodes;
                 var nodeTransformations = skeleton.NodeTransformations;
                 if (nodeIndex < nodes.Length)
