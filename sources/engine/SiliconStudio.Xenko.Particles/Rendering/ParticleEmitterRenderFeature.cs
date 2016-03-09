@@ -231,6 +231,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
+                if (renderParticleEmitter.ParticleEmitter.VertexBuilder.ResourceContext == null)
+                    continue;
 
                 // Generate vertices
                 // TODO: Just just unmap/barrier here
