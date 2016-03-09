@@ -141,6 +141,11 @@ namespace SiliconStudio.Xenko.Engine
         protected internal abstract void OnSystemRemove();
 
         /// <summary>
+        /// Should be called prior removal, it will unregister all entities.
+        /// </summary>
+        protected internal abstract void RemoveAllEntities();
+
+        /// <summary>
         /// Checks if <see cref="Entity"/> needs to be either added or removed.
         /// </summary>
         /// <param name="entity">The entity.</param>
@@ -228,6 +233,19 @@ namespace SiliconStudio.Xenko.Engine
         /// <inheritdoc/>
         protected internal override void OnSystemRemove()
         {
+        }
+
+        protected internal override void RemoveAllEntities()
+        {
+            // Keep removing until empty
+            while (ComponentDatas.Count > 0)
+            {
+                foreach (var component in ComponentDatas)
+                {
+                    ProcessEntityComponent(component.Key.Entity, component.Key, true);
+                    break; // break right after since we remove from iterator
+                }
+            }
         }
 
         /// <inheritdoc/>

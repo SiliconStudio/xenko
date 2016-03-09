@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// The vertex builder is used for rendering, and it builds the actual vertex buffer stream from particle data
         /// </summary>
-        private ParticleVertexBuilder vertexBuilder = new ParticleVertexBuilder();
+        internal readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
 
 
         /// <summary>
@@ -821,28 +821,28 @@ namespace SiliconStudio.Xenko.Particles
 
         #endregion
 
-        #region Rendering
-
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
         /// </summary>
-        private void PrepareForDraw()
+        public void PrepareForDraw()
         {
-            Material.PrepareForDraw(vertexBuilder, ParticleSorter);
+            Material.PrepareForDraw(VertexBuilder, ParticleSorter);
 
-            ShapeBuilder.PrepareForDraw(vertexBuilder, ParticleSorter);
+            ShapeBuilder.PrepareForDraw(VertexBuilder, ParticleSorter);
 
             // Update the vertex builder and the vertex layout if needed
-            if (Material.VertexLayoutHasChanged || ShapeBuilder.VertexLayoutHasChanged)
+            if (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged)
             {
-                vertexBuilder.ResetVertexElementList();
+                VertexBuilder.ResetVertexElementList();
 
-                Material.UpdateVertexBuilder(vertexBuilder);
+                Material.UpdateVertexBuilder(VertexBuilder);
 
-                ShapeBuilder.UpdateVertexBuilder(vertexBuilder);
+                ShapeBuilder.UpdateVertexBuilder(VertexBuilder);
 
-                vertexBuilder.UpdateVertexLayout();
+                VertexBuilder.UpdateVertexLayout();
             }
+
+            VertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
         }
 
         /// <summary>
@@ -851,7 +851,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        public void BuildVertexBuffer(GraphicsDevice device, ref Matrix invViewMatrix)
+        public void BuildVertexBuffer(CommandList commandList, ref Matrix invViewMatrix)
         {
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
@@ -872,42 +872,16 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawScale;
             }
 
-            PrepareForDraw();
+            VertexBuilder.MapBuffer(commandList);
 
-            vertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+            ShapeBuilder.BuildVertexBuffer(VertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
-            vertexBuilder.MapBuffer(device);
+            VertexBuilder.RestartBuffer();
 
-            ShapeBuilder.BuildVertexBuffer(vertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            Material.PatchVertexBuffer(VertexBuilder, unitX, unitY, ParticleSorter);
 
-            vertexBuilder.RestartBuffer();
-
-            Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
-
-            vertexBuilder.UnmapBuffer(device);
+            VertexBuilder.UnmapBuffer(commandList);
         }
-
-        /// <summary>
-        /// Setup the material and kick the vertex buffer
-        /// Should come after <see cref="BuildVertexBuffer"/>
-        /// </summary>
-        /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
-        /// <param name="context">The rendering context</param>
-        /// <param name="viewMatrix">The current camera's view matrix</param>
-        /// <param name="projMatrix">The current camera's projection matrix</param>
-        /// <param name="color">Color scale (color shade) for all particles</param>
-        public void KickVertexBuffer(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, Color4 color)
-        {
-            // Calling the method here causes mismatching vertex declarations in the EffectInputSignature (correct) and VertexAttributeLayout (wrong)
-            if (Material.Effect != null) vertexBuilder.CreateVAO(device, Material.Effect);
-
-            Material.Setup(device, context, viewMatrix, projMatrix, color);
-
-            Material.ApplyEffect(device);
-
-            vertexBuilder.Draw(device);
-        }
-        #endregion
 
         #region Particles
 

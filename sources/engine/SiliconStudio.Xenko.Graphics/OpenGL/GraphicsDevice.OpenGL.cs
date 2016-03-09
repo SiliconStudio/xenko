@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 #if SILICONSTUDIO_PLATFORM_ANDROID
 extern alias opentkold;
 #endif
@@ -28,6 +28,7 @@ using OpenTK.Platform.iPhoneOS;
 using OpenTK.Graphics.ES30;
 using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using FramebufferAttachmentObjectType = OpenTK.Graphics.ES30.All;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
 #else
@@ -46,20 +47,6 @@ using WindowState = SiliconStudio.Xenko.Graphics.SDL.FormWindowState;
 using WindowState = OpenTK.WindowState;
 #endif
 
-// TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.PixelInternalFormat;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget;
-#else
-using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.TextureComponentCount;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget2d;
-#endif
-#else
-using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.OpenGL.PixelInternalFormat;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
-#endif
-
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
@@ -67,16 +54,25 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice
     {
-        private const int MaxBoundRenderTargets = 16;
+        private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
+
+        internal int FrameCounter;
 
         // Used when locking asyncCreationLockObject
-        private bool asyncCreationLockTaken;
+        internal bool asyncCreationLockTaken;
 
         internal bool ApplicationPaused = false;
+        internal bool ProfileEnabled = false;
 
         internal IWindowInfo deviceCreationWindowInfo;
         internal object asyncCreationLockObject = new object();
         internal OpenTK.Graphics.IGraphicsContext deviceCreationContext;
+
+        internal int defaultVAO;
+
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        DebugProc debugCallbackInstance = DebugCallback;
+#endif
 
         private const GraphicsPlatform GraphicPlatform =
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -86,11 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-        // If context was set before Begin(), try to keep it after End()
-        // (otherwise devices with no backbuffer flicker)
-        private bool keepContextOnEnd;
-
-        private IntPtr graphicsContextEglPtr;
+        internal IntPtr graphicsContextEglPtr;
         internal AndroidAsyncGraphicsContext androidAsyncDeviceCreationContext;
         internal bool AsyncPendingTaskWaiting; // Used when Workaround_Context_Tegra2_Tegra3
 
@@ -99,15 +91,18 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool Workaround_Context_Tegra2_Tegra3;
 #endif
 
-        internal SamplerState defaultSamplerState;
+        internal SamplerState DefaultSamplerState;
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
         internal int versionMajor, versionMinor; // queried version
         internal int currentVersionMajor, currentVersionMinor; // glGetVersion
-        internal Texture windowProvidedRenderTexture;
-        internal Texture windowProvidedDepthTexture;
+        internal Texture WindowProvidedRenderTexture;
 
         internal bool HasVAO;
+
+        internal bool HasDXT;
+
+        internal bool HasDepthClamp;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal bool HasDepth24;
@@ -119,17 +114,9 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
         private int windowProvidedFrameBuffer;
+        private bool isFramebufferSRGB;
 
         private Texture defaultRenderTarget;
-        private GraphicsDevice immediateContext;
-        private Rectangle[] _currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
-        private int contextBeginCounter = 0;
-
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private float[] _currentViewportsSetBuffer = new float[4 * MaxBoundRenderTargets];
-        private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
-#endif
-        private int activeTexture = 0;
 
         // TODO: Use some LRU scheme to clean up FBOs if not used frequently anymore.
         internal Dictionary<FBOKey, int> existingFBOs = new Dictionary<FBOKey,int>(); 
@@ -154,8 +141,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private OpenTK.Graphics.IGraphicsContext graphicsContext;
-        private OpenTK.Platform.IWindowInfo windowInfo;
+        internal OpenTK.Graphics.IGraphicsContext graphicsContext;
+        internal OpenTK.Platform.IWindowInfo windowInfo;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_UI_SDL
@@ -169,40 +156,15 @@ namespace SiliconStudio.Xenko.Graphics
         private iPhoneOSGameView gameWindow;
 #endif
 
-        private VertexArrayObject currentVertexArrayObject;
-        private VertexArrayObject boundVertexArrayObject;
-        internal uint enabledVertexAttribArrays;
-        private DepthStencilState boundDepthStencilState;
-        private int boundStencilReference;
-        private BlendState boundBlendState;
-        private RasterizerState boundRasterizerState;
-        private Texture boundDepthStencilBuffer;
-        private Texture[] boundRenderTargets = new Texture[MaxBoundRenderTargets];
-        private int boundFBO;
-        internal bool hasRenderTarget, hasDepthStencilBuffer;
-        private int boundFBOHeight;
-        private int boundProgram = 0;
-        private bool needUpdateFBO = true;
         private DrawElementsType drawElementsType;
-        private int indexElementSize;
-        private IntPtr indexBufferOffset;
-        private bool flipRenderTarget = false;
-        private FrontFaceDirection currentFrontFace = FrontFaceDirection.Cw;
-        private FrontFaceDirection boundFrontFace = FrontFaceDirection.Cw;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
         [DllImport("libEGL.dll", EntryPoint = "eglGetCurrentContext")]
         internal static extern IntPtr EglGetCurrentContext();
 #endif
-        internal EffectProgram effectProgram;
-        private Texture[] boundTextures = new Texture[64];
-        private Texture[] textures = new Texture[64];
-        private SamplerState[] samplerStates = new SamplerState[64];
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         public bool IsOpenGLES2 { get; private set; }
-
-        private Buffer constantBuffer;
 
         // Need to change sampler state depending on if texture has mipmap or not during PreDraw
         private bool[] hasMipmaps = new bool[64];
@@ -216,24 +178,27 @@ namespace SiliconStudio.Xenko.Graphics
         private int copyProgramSRgbOffsetLocation = -1;
         private int copyProgramSRgbScaleLocation = -1;
 
-        private float[] squareVertices = {
+        internal float[] SquareVertices = {
             0.0f, 0.0f,
             1.0f, 0.0f,
             0.0f, 1.0f, 
             1.0f, 1.0f,
         };
 
+        internal Buffer SquareBuffer;
+        internal CommandList MainCommandList; // temporary because of state changes done during UseOpenGLCreationContext
+
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-        private const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
-        private const TextureTarget3D TextureTargetTexture3D = TextureTarget3D.Texture3D;
+        internal const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
+        internal const TextureTarget3D TextureTargetTexture3D = TextureTarget3D.Texture3D;
 #else
-        private const TextureTarget2d TextureTargetTexture2D = TextureTarget2d.Texture2D;
-        private const TextureTarget3d TextureTargetTexture3D = TextureTarget3d.Texture3D;
+        internal const TextureTarget2d TextureTargetTexture2D = TextureTarget2d.Texture2D;
+        internal const TextureTarget3d TextureTargetTexture3D = TextureTarget3d.Texture3D;
 #endif
 #else
-        private const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
-        private const TextureTarget TextureTargetTexture3D = TextureTarget.Texture3D;
+        internal const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
+        internal const TextureTarget TextureTargetTexture3D = TextureTarget.Texture3D;
 #endif
 
         /// <summary>
@@ -280,425 +245,38 @@ namespace SiliconStudio.Xenko.Graphics
             return new UseOpenGLCreationContext(this);
         }
 
-        public void ApplyPlatformSpecificParams(Effect effect)
+        internal Buffer GetSquareBuffer()
         {
-            //effect.Parameters.Set(ShaderBaseKeys.XenkoFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
-            Parameters.Set(ShaderBaseKeys.XenkoFlipRendertarget, flipRenderTarget ? 1.0f : -1.0f);
+            if (SquareBuffer == null)
+            {
+                SquareBuffer = Buffer.New(this, SquareVertices, BufferFlags.VertexBuffer);
+            }
+
+            return SquareBuffer;
         }
 
-        /// <summary>
-        /// Marks context as active on the current thread.
-        /// </summary>
-        public void Begin()
+        internal int GetCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
         {
-            ++contextBeginCounter;
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            if (contextBeginCounter == 1)
+            if (srgb)
             {
-                if (Workaround_Context_Tegra2_Tegra3)
+                if (copyProgramSRgb == -1)
                 {
-                    Monitor.Enter(asyncCreationLockObject, ref asyncCreationLockTaken);
+                    copyProgramSRgb = CreateCopyProgram(true, out copyProgramSRgbOffsetLocation, out copyProgramSRgbScaleLocation);
                 }
-                else
-                {
-                    // On first set, check if context was not already set before,
-                    // in which case we won't unset it during End().
-                    keepContextOnEnd = graphicsContextEglPtr == EglGetCurrentContext();
-
-                    if (keepContextOnEnd)
-                    {
-                        return;
-                    }
-                }
-            }
-#endif
-
-            if (contextBeginCounter == 1)
-                graphicsContext.MakeCurrent(windowInfo);
-        }
-
-        public void BeginProfile(Color profileColor, string name)
-        {
-        }
-
-        public void EndProfile()
-        {
-        }
-
-        public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            // Device with no background loading context: check if some loading is pending
-            if (AsyncPendingTaskWaiting)
-                ExecutePendingTasks();
-#endif
-
-            var clearFBO = FindOrCreateFBO(depthStencilBuffer);
-            if (clearFBO != boundFBO)
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, clearFBO);
-
-            ClearBufferMask clearBufferMask =
-                ((options & DepthStencilClearOptions.DepthBuffer) == DepthStencilClearOptions.DepthBuffer ? ClearBufferMask.DepthBufferBit : 0)
-                | ((options & DepthStencilClearOptions.Stencil) == DepthStencilClearOptions.Stencil ? ClearBufferMask.StencilBufferBit : 0);
-            GL.ClearDepth(depth);
-            GL.ClearStencil(stencil);
-
-            var depthStencilState = boundDepthStencilState ?? DepthStencilStates.Default;
-            var depthMask = depthStencilState.Description.DepthBufferWriteEnable && hasDepthStencilBuffer;
-
-            if (!depthMask)
-                GL.DepthMask(true);
-            GL.Clear(clearBufferMask);
-            if (!depthMask)
-                GL.DepthMask(false);
-
-            if (clearFBO != boundFBO)
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-        }
-
-        public void Clear(Texture renderTarget, Color4 color)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            var clearFBO = FindOrCreateFBO(renderTarget);
-            if (clearFBO != boundFBO)
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, clearFBO);
-
-            var blendState = boundBlendState ?? BlendStates.Default;
-            var colorMask = hasRenderTarget && blendState.Description.RenderTargets[0].ColorWriteChannels == ColorWriteChannels.All;
-            if (!colorMask)
-                GL.ColorMask(true, true, true, true);
-
-            GL.ClearColor(color.R, color.G, color.B, color.A);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            // revert the color mask value as it was before
-            if (!colorMask)
-                blendState.ApplyColorMask();
-
-            if (clearFBO != boundFBO)
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-        }
-
-        public unsafe void ClearReadWrite(Buffer buffer, Vector4 value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            if((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
-                throw new ArgumentException("Buffer does not support unordered access");
-
-            GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
-            GL.ClearBufferData(buffer.bufferTarget, buffer.internalFormat, buffer.glPixelFormat, All.UnsignedInt8888, ref value);
-            GL.BindBuffer(buffer.bufferTarget, 0);
-#endif
-        }
-
-        public unsafe void ClearReadWrite(Buffer buffer, Int4 value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
-                throw new ArgumentException("Buffer does not support unordered access");
-
-            GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
-            GL.ClearBufferData(buffer.bufferTarget, buffer.internalFormat, buffer.glPixelFormat, All.UnsignedInt8888, ref value);
-            GL.BindBuffer(buffer.bufferTarget, 0);
-#endif
-        }
-
-        public unsafe void ClearReadWrite(Buffer buffer, UInt4 value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
-                throw new ArgumentException("Buffer does not support unordered access");
-
-            GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
-            GL.ClearBufferData(buffer.bufferTarget, buffer.internalFormat, buffer.glPixelFormat, All.UnsignedInt8888, ref value);
-            GL.BindBuffer(buffer.bufferTarget, 0);
-#endif
-        }
-
-        public unsafe void ClearReadWrite(Texture texture, Vector4 value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            GL.BindTexture(texture.Target, texture.resourceId);
-
-            GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
-
-            GL.BindTexture(texture.Target, 0);
-#endif
-        }
-
-        public unsafe void ClearReadWrite(Texture texture, Int4 value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            GL.BindTexture(texture.Target, texture.resourceId);
-
-            GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
-
-            GL.BindTexture(texture.Target, 0);
-#endif
-        }
-
-        public unsafe void ClearReadWrite(Texture texture, UInt4 value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            GL.BindTexture(texture.Target, texture.resourceId);
-
-            GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
-
-            GL.BindTexture(texture.Target, 0);
-#endif
-        }
-
-        private void ClearStateImpl()
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            UnbindVertexArrayObject();
-            currentVertexArrayObject = null;
-
-            SetDefaultStates();
-
-            // Clear sampler states
-            for (int i = 0; i < samplerStates.Length; ++i)
-                samplerStates[i] = null;
-
-            for (int i = 0; i < boundTextures.Length; ++i)
-            {
-                textures[i] = null;
-            }
-
-            // Clear active texture state
-            activeTexture = 0;
-            GL.ActiveTexture(TextureUnit.Texture0);
-
-            // set default states
-            SetBlendState(null);
-            SetRasterizerState(null);
-            SetDepthStencilState(null);
-
-            // Set default render targets
-            SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
-        }
-
-        /// <summary>
-        /// Copy a region of a <see cref="GraphicsResource"/> into another.
-        /// </summary>
-        /// <param name="source">The source from which to copy the data</param>
-        /// <param name="regionSource">The region of the source <see cref="GraphicsResource"/> to copy.</param>
-        /// <param name="destination">The destination into which to copy the data</param>
-        /// <remarks>This might alter some states such as currently bound texture.</remarks>
-        public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? regionSource, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            var sourceTexture = source as Texture;
-            var destTexture = destination as Texture;
-
-            if (sourceTexture == null || destTexture == null)
-                throw new NotImplementedException("Copy is only implemented for ITexture2D objects.");
-
-            if (sourceSubresource != 0 || destinationSubResource != 0)
-                throw new NotImplementedException("Copy is only implemented for subresource 0 in OpenGL.");
-
-            var sourceRegion = regionSource.HasValue? regionSource.Value : new ResourceRegion(0, 0, 0, sourceTexture.Description.Width, sourceTexture.Description.Height, 0);
-            var sourceRectangle = new Rectangle(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right - sourceRegion.Left, sourceRegion.Bottom - sourceRegion.Top);
-
-            if (sourceRectangle.Width == 0 || sourceRectangle.Height == 0)
-                return;
-
-            if (destTexture.Description.Usage == GraphicsResourceUsage.Staging)
-            {
-                if (dstX != 0 || dstY != 0 || dstZ != 0)
-                    throw new NotSupportedException("ReadPixels from staging texture using non-zero destination is not supported");
-
-                GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(source));
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (IsOpenGLES2)
-                {
-                    var format = destTexture.FormatGl;
-                    var type = destTexture.Type;
-
-                    var srcFormat = sourceTexture.Description.Format;
-                    var destFormat = destTexture.Description.Format;
-
-                    if (srcFormat == destFormat && destFormat.SizeInBytes() == 4)   // in this case we just want to copy the data we don't care about format conversion. 
-                    {                                                               // RGBA/Unsigned-byte is always a working combination whatever is the internal format (sRGB, etc...)
-                        format = PixelFormatGl.Rgba;
-                        type = PixelType.UnsignedByte;
-                    }
-
-                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, format, type, destTexture.StagingData);
-                }
-                else
-#endif
-                {
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, destTexture.PixelBufferObjectId);
-                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, IntPtr.Zero);
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
-                }
-                
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-                GL.Viewport((int)currentState.Viewports[0].X, (int)currentState.Viewports[0].Y, (int)currentState.Viewports[0].Width, (int)currentState.Viewports[0].Height);
-                return;
-            }
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            if (IsOpenGLES2)
-            {
-                CopyScaler2D(sourceTexture, destTexture, sourceRectangle, new Rectangle(dstX, dstY, sourceRectangle.Width, sourceRectangle.Height));
-            }
-            else
-#endif
-            {
-                // "FindOrCreateFBO" set the frameBuffer on FBO creation -> those 2 calls cannot be made directly in the following "GL.BindFramebuffer" function calls (side effects)
-                var sourceFBO = FindOrCreateFBO(source);
-                var destinationFBO = FindOrCreateFBO(destination);
-                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, sourceFBO);
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, destinationFBO);
-                GL.BlitFramebuffer(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right, sourceRegion.Bottom,
-                    dstX, dstY, dstX + sourceRegion.Right - sourceRegion.Left, dstY + sourceRegion.Bottom - sourceRegion.Top,
-                    ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-            }
-        }
-
-        internal void CopyScaler2D(Texture sourceTexture, Texture destTexture, Rectangle sourceRectangle, Rectangle destRectangle, bool flipY = false)
-        {
-            // Use rendering
-            GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(destTexture));
-
-            if (copyProgram == -1)
-            {
-                copyProgram = CreateCopyProgram(false, out copyProgramOffsetLocation, out copyProgramScaleLocation);
-                copyProgramSRgb = CreateCopyProgram(true, out copyProgramSRgbOffsetLocation, out copyProgramSRgbScaleLocation);
-            }
-
-            var sourceRegionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
-            var destRegionSize = new Vector2(destRectangle.Width, destRectangle.Height);
-
-            // Source
-            var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
-            var sourceRegionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
-            var sourceScale = new Vector2(sourceRegionSize.X / sourceSize.X, sourceRegionSize.Y / sourceSize.Y);
-            var sourceOffset = new Vector2(sourceRegionLeftTop.X / sourceSize.X, sourceRegionLeftTop.Y / sourceSize.Y);
-
-            // Dest
-            var destSize = new Vector2(destTexture.Width, destTexture.Height);
-            var destRegionLeftTop = new Vector2(destRectangle.X, flipY ? destRectangle.Bottom : destRectangle.Y);
-            var destScale = new Vector2(destRegionSize.X / destSize.X, destRegionSize.Y / destSize.Y);
-            var destOffset = new Vector2(destRegionLeftTop.X / destSize.X, destRegionLeftTop.Y / destSize.Y);
-
-            if (flipY)
-                destScale.Y = -destScale.Y;
-
-            var enabledColors = new bool[4];
-            GL.GetBoolean(GetPName.ColorWritemask, enabledColors);
-            var isDepthTestEnabled = GL.IsEnabled(EnableCap.DepthTest);
-            var isCullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
-            var isBlendEnabled = GL.IsEnabled(EnableCap.Blend);
-            var isStencilEnabled = GL.IsEnabled(EnableCap.StencilTest);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.Blend);
-            GL.Disable(EnableCap.StencilTest);
-            GL.ColorMask(true, true, true, true);
-
-            UnbindVertexArrayObject();
-
-            // If we are copying from an SRgb texture to a non SRgb texture, we use a special SRGb copy shader
-            var program = copyProgram;
-            var offsetLocation = copyProgramOffsetLocation;
-            var scaleLocation = copyProgramScaleLocation;
-            if (sourceTexture.Description.Format.IsSRgb() && destTexture == windowProvidedRenderTexture)
-            {
-                program = copyProgramSRgb;
                 offsetLocation = copyProgramSRgbOffsetLocation;
                 scaleLocation = copyProgramSRgbScaleLocation;
+                return copyProgramSRgb;
             }
-
-            GL.UseProgram(program);
-
-            activeTexture = 0;
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, sourceTexture.resourceId);
-            boundTextures[0] = null;
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            sourceTexture.BoundSamplerState = SamplerStates.PointClamp;
-
-            GL.EnableVertexAttribArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, squareVertices);
-            GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
-            GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
-            GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
-            GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
-            GL.DisableVertexAttribArray(0);
-            GL.UseProgram(boundProgram);
-
-            // Restore context
-            if (isDepthTestEnabled)
-                GL.Enable(EnableCap.DepthTest);
-            if (isCullFaceEnabled)
-                GL.Enable(EnableCap.CullFace);
-            if (isBlendEnabled)
-                GL.Enable(EnableCap.Blend);
-            if (isStencilEnabled)
-                GL.Enable(EnableCap.StencilTest);
-            GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-            GL.Viewport((int)currentState.Viewports[0].X, (int)currentState.Viewports[0].Y, (int)currentState.Viewports[0].Width, (int)currentState.Viewports[0].Height);
+            else
+            {
+                if (copyProgram == -1)
+                {
+                    copyProgram = CreateCopyProgram(false, out copyProgramOffsetLocation, out copyProgramScaleLocation);
+                }
+                offsetLocation = copyProgramOffsetLocation;
+                scaleLocation = copyProgramScaleLocation;
+                return copyProgram;
+            }
         }
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
@@ -759,257 +337,9 @@ namespace SiliconStudio.Xenko.Graphics
             return program;
         }
 
-        /// <summary>
-        /// Copy a <see cref="GraphicsResource"/> into another.
-        /// </summary>
-        /// <param name="source">The source from which to copy the data</param>
-        /// <param name="destination">The destination into which to copy the data</param>
-        /// <remarks>This might alter some states such as currently bound texture.</remarks>
-        public void Copy(GraphicsResource source, GraphicsResource destination)
-        {
-            CopyRegion(source, 0, null, destination, 0);
-        }
-
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetToDest)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            throw new NotImplementedException();
-        }
-
-        public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            GL.DispatchCompute(threadCountX, threadCountY, threadCountZ);
-#else
-            throw new NotImplementedException();
-#endif
-        }
-
-        public void Dispatch(Buffer indirectBuffer, int offsetInBytes)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            GL.BindBuffer(BufferTarget.DispatchIndirectBuffer, indirectBuffer.resourceId);
-
-            GL.DispatchComputeIndirect((IntPtr)offsetInBytes);
-
-            GL.BindBuffer(BufferTarget.DispatchIndirectBuffer, 0);
-#else
-            throw new NotImplementedException();
-#endif
-        }
-
-        public void Draw(PrimitiveType primitiveType, int vertexCount, int startVertex = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            PreDraw();
-
-            GL.DrawArrays(primitiveType.ToOpenGL(), startVertex, vertexCount);
-
-            FrameTriangleCount += (uint)vertexCount;
-            FrameDrawCalls++;
-        }
-
-        public void DrawAuto(PrimitiveType primitiveType)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            PreDraw();
-
-            //GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)0);
-            //FrameDrawCalls++;
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Draw indexed, non-instanced primitives.
-        /// </summary>
-        /// <param name="primitiveType">Type of the primitive to draw.</param>
-        /// <param name="indexCount">Number of indices to draw.</param>
-        /// <param name="startIndexLocation">The location of the first index read by the GPU from the index buffer.</param>
-        /// <param name="baseVertexLocation">A value added to each index before reading a vertex from the vertex buffer.</param>
-        public void DrawIndexed(PrimitiveType primitiveType, int indexCount, int startIndexLocation = 0, int baseVertexLocation = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            PreDraw();
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            if(baseVertexLocation != 0)
-                throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
-            GL.DrawElements(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize)); // conversion to IntPtr required on Android
-#else
-            GL.DrawElementsBaseVertex(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize), baseVertexLocation);
-#endif
-
-            FrameDrawCalls++;
-            FrameTriangleCount += (uint)indexCount;
-        }
-
-        /// <summary>
-        /// Draw indexed, instanced primitives.
-        /// </summary>
-        /// <param name="primitiveType">Type of the primitive to draw.</param>
-        /// <param name="indexCountPerInstance">Number of indices read from the index buffer for each instance.</param>
-        /// <param name="instanceCount">Number of instances to draw.</param>
-        /// <param name="startIndexLocation">The location of the first index read by the GPU from the index buffer.</param>
-        /// <param name="baseVertexLocation">A value added to each index before reading a vertex from the vertex buffer.</param>
-        /// <param name="startInstanceLocation">A value added to each index before reading per-instance data from a vertex buffer.</param>
-        public void DrawIndexedInstanced(PrimitiveType primitiveType, int indexCountPerInstance, int instanceCount, int startIndexLocation = 0, int baseVertexLocation = 0, int startInstanceLocation = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            PreDraw();
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            GL.DrawElementsInstancedBaseVertex(primitiveType.ToOpenGL(), indexCountPerInstance, DrawElementsType.UnsignedInt, (IntPtr)(startIndexLocation * indexElementSize), instanceCount, baseVertexLocation);
-#endif
-
-            FrameDrawCalls++;
-            FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
-        }
-
-        /// <summary>
-        /// Draw indexed, instanced, GPU-generated primitives.
-        /// </summary>
-        /// <param name="primitiveType">Type of the primitive to draw.</param>
-        /// <param name="argumentsBuffer">A buffer containing the GPU generated primitives.</param>
-        /// <param name="alignedByteOffsetForArgs">Offset in <em>pBufferForArgs</em> to the start of the GPU generated primitives.</param>
-        public void DrawIndexedInstanced(PrimitiveType primitiveType, Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
-        {
-
-            if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
-
-#if DEBUG
-            //EnsureContextActive();
-#endif
-            //PreDraw();
-
-            //FrameDrawCalls++;
-
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Draw non-indexed, instanced primitives.
-        /// </summary>
-        /// <param name="primitiveType">Type of the primitive to draw.</param>
-        /// <param name="vertexCountPerInstance">Number of vertices to draw.</param>
-        /// <param name="instanceCount">Number of instances to draw.</param>
-        /// <param name="startVertexLocation">Index of the first vertex.</param>
-        /// <param name="startInstanceLocation">A value added to each index before reading per-instance data from a vertex buffer.</param>
-        public void DrawInstanced(PrimitiveType primitiveType, int vertexCountPerInstance, int instanceCount, int startVertexLocation = 0, int startInstanceLocation = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            PreDraw();
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            if (IsOpenGLES2)
-                throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
-            GL.DrawArraysInstanced(primitiveType.ToOpenGLES(), startVertexLocation, vertexCountPerInstance, instanceCount);
-#else
-            GL.DrawArraysInstanced(primitiveType.ToOpenGL(), startVertexLocation, vertexCountPerInstance, instanceCount);
-#endif
-
-            FrameDrawCalls++;
-            FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
-        }
-
-        /// <summary>
-        /// Draw instanced, GPU-generated primitives.
-        /// </summary>
-        /// <param name="primitiveType">Type of the primitive to draw.</param>
-        /// <param name="argumentsBuffer">An arguments buffer</param>
-        /// <param name="alignedByteOffsetForArgs">Offset in <em>pBufferForArgs</em> to the start of the GPU generated primitives.</param>
-        public void DrawInstanced(PrimitiveType primitiveType, Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
-        {
-            if (argumentsBuffer == null) 
-                throw new ArgumentNullException("argumentsBuffer");
-
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            PreDraw();
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            GL.BindBuffer(BufferTarget.DrawIndirectBuffer, argumentsBuffer.resourceId);
-
-            GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)alignedByteOffsetForArgs);
-
-            GL.BindBuffer(BufferTarget.DrawIndirectBuffer, 0);
-#endif
-
-            FrameDrawCalls++;
-        }
-
         public void EnableProfile(bool enabledFlag)
         {
-        }
-
-        /// <summary>
-        /// Unmarks context as active on the current thread.
-        /// </summary>
-        public void End()
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            --contextBeginCounter;
-            if (contextBeginCounter == 0)
-            {
-                UnbindVertexArrayObject();
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                if (Workaround_Context_Tegra2_Tegra3)
-                {
-                    graphicsContext.MakeCurrent(null);
-
-                    // Notify that main context can be used from now on
-                    if (asyncCreationLockTaken)
-                    {
-                        Monitor.Exit(asyncCreationLockObject);
-                        asyncCreationLockTaken = false;
-                    }
-                }
-                else if (!keepContextOnEnd)
-                {
-                    UnbindGraphicsContext(graphicsContext);
-                }
-#else
-                UnbindGraphicsContext(graphicsContext);
-#endif
-            }
-            else if (contextBeginCounter < 0)
-            {
-                throw new Exception("End context was called more than Begin");
-            }
+            ProfileEnabled = true;
         }
 
         internal void EnsureContextActive()
@@ -1024,7 +354,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void ExecuteCommandList(ICommandList commandList)
+        public void ExecuteCommandList(CommandList commandList)
         {
 #if DEBUG
             EnsureContextActive();
@@ -1033,18 +363,9 @@ namespace SiliconStudio.Xenko.Graphics
             throw new NotImplementedException();
         }
 
-        internal void BindProgram(int program)
-        {
-            if (program != boundProgram)
-            {
-                boundProgram = program;
-                GL.UseProgram(program);
-            }
-        }
-
         internal int FindOrCreateFBO(GraphicsResourceBase graphicsResource)
         {
-            if (graphicsResource == RootDevice.windowProvidedRenderTexture)
+            if (graphicsResource == WindowProvidedRenderTexture)
                 return windowProvidedFrameBuffer;
 
             var texture = graphicsResource as Texture;
@@ -1059,9 +380,9 @@ namespace SiliconStudio.Xenko.Graphics
         internal int FindOrCreateFBO(Texture texture)
         {
             var isDepthBuffer = ((texture.Flags & TextureFlags.DepthStencil) != 0);
-            lock (RootDevice.existingFBOs)
+            lock (existingFBOs)
             {
-                foreach (var key in RootDevice.existingFBOs)
+                foreach (var key in existingFBOs)
                 {
                     if ((isDepthBuffer && key.Key.DepthStencilBuffer == texture)
                         || !isDepthBuffer && key.Key.LastRenderTarget == 1 && key.Key.RenderTargets[0] == texture)
@@ -1079,24 +400,23 @@ namespace SiliconStudio.Xenko.Graphics
             int framebufferId;
 
             // Check for existing FBO matching this configuration
-            lock (RootDevice.existingFBOs)
+            lock (existingFBOs)
             {
                 var fboKey = new FBOKey(depthStencilBuffer, renderTargets);
 
                 // Is it the default provided render target?
                 // TODO: Need to disable some part of rendering if either is null
-                var isProvidedDepthBuffer = RootDevice.windowProvidedDepthTexture != null && (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
-                var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
-                if ((isProvidedDepthBuffer || depthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
-                {
-                    return windowProvidedFrameBuffer;
-                }
-                if (isProvidedDepthBuffer || isProvidedRenderTarget)
+                var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == WindowProvidedRenderTexture);
+                if (isProvidedRenderTarget && depthStencilBuffer != null)
                 {
                     throw new InvalidOperationException("It is impossible to bind device provided and user created buffers with OpenGL");
                 }
+                if (depthStencilBuffer == null && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
+                {
+                    return windowProvidedFrameBuffer;
+                }
 
-                if (RootDevice.existingFBOs.TryGetValue(fboKey, out framebufferId))
+                if (existingFBOs.TryGetValue(fboKey, out framebufferId))
                     return framebufferId;
 
                 GL.GenFramebuffers(1, out framebufferId);
@@ -1172,724 +492,25 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new InvalidOperationException(string.Format("FBO is incomplete: RT {0} Depth {1} (error: {2})", renderTargets != null && renderTargets.Length > 0 ? renderTargets[0].ResourceId : 0, depthStencilBuffer != null ? depthStencilBuffer.ResourceId : 0, framebufferStatus));
                 }
 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-
-                RootDevice.existingFBOs.Add(new GraphicsDevice.FBOKey(depthStencilBuffer, renderTargets != null ? renderTargets.ToArray() : null), framebufferId);
+                existingFBOs.Add(new GraphicsDevice.FBOKey(depthStencilBuffer, renderTargets != null ? renderTargets.ToArray() : null), framebufferId);
             }
 
             return framebufferId;
         }
 
-        public ICommandList FinishCommandList()
+        private void InitializePostFeatures()
         {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            throw new NotImplementedException();
-        }
-
-        protected void InitializeFactories()
-        {
-        }
-
-        public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            var buffer = resource as Buffer;
-            if (buffer != null)
-            {
-                if (lengthInBytes == 0)
-                    lengthInBytes = buffer.Description.SizeInBytes;
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (buffer.StagingData != IntPtr.Zero)
-                {
-                    // Specific case for constant buffers
-                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes,
-                        lengthInBytes);
-                }
-                
-                if (IsOpenGLES2)
-                    throw new NotImplementedException();
-#endif
-                
-                IntPtr mapResult = IntPtr.Zero;
-
-                UnbindVertexArrayObject();
-                GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (mapMode != MapMode.WriteDiscard && mapMode != MapMode.WriteNoOverwrite)
-                    mapResult = GL.MapBuffer(buffer.bufferTarget, mapMode.ToOpenGL());
-                else
-#endif
-                {
-                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
-                }
-
-                GL.BindBuffer(buffer.bufferTarget, 0);
-
-                return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = 0, RowPitch = 0 });
-            }
-
-            var texture = resource as Texture;
-            if (texture != null)
-            {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (lengthInBytes == 0)
-                    lengthInBytes = texture.DepthPitch;
-#endif
-
-                if (mapMode == MapMode.Read)
-                {
-                    if (texture.Description.Usage != GraphicsResourceUsage.Staging)
-                        throw new NotSupportedException("Only staging textures can be mapped.");
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
-                    {
-                        return new MappedResource(resource, subResourceIndex,
-                            new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
-                    }
-                    else
-#endif
-                    {
-                        return MapTexture(texture, BufferTarget.PixelPackBuffer, mapMode, subResourceIndex, offsetInBytes, lengthInBytes);
-                    }
-                }
-                else if (mapMode == MapMode.WriteDiscard)
-                {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2)
-                        throw new NotImplementedException();
-#endif
-                    if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
-                        throw new NotSupportedException("Only dynamic texture can be mapped.");
-
-                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, mapMode, subResourceIndex, offsetInBytes, lengthInBytes);
-                }
-            }
-
-            throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
-        }
-
-        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
-        {
-            GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            
-            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
-            GL.BindBuffer(pixelPackUnpack, 0);
-#else
-            offsetInBytes = 0;
-            lengthInBytes = -1;
-            var mapResult = GL.MapBuffer(pixelPackUnpack, mapMode.ToOpenGL());
-#endif
-            GL.BindBuffer(pixelPackUnpack, 0);
-
-            return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
-        }
-
-        public GraphicsDevice NewDeferred()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void PreDraw()
-        {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            // Device with no background loading context: check if some loading is pending
-            if (AsyncPendingTaskWaiting)
-                ExecutePendingTasks();
-#endif
-
-            var inputSignature = effectProgram.InputSignature;
-            if (currentVertexArrayObject != boundVertexArrayObject || (currentVertexArrayObject != null && currentVertexArrayObject.RequiresApply(inputSignature)))
-            {
-                if (currentVertexArrayObject == null)
-                {
-                    UnbindVertexArrayObject();
-                }
-                else
-                {
-                    drawElementsType = currentVertexArrayObject.drawElementsType;
-                    indexBufferOffset = currentVertexArrayObject.indexBufferOffset;
-                    indexElementSize = currentVertexArrayObject.indexElementSize;
-                    currentVertexArrayObject.Apply(inputSignature);
-                    boundVertexArrayObject = currentVertexArrayObject;
-                }
-            }
-
-            foreach (var textureInfo in effectProgram.Textures)
-            {
-                var boundTexture = boundTextures[textureInfo.TextureUnit];
-                var texture = textures[textureInfo.TextureUnit];
-
-                if (texture != null)
-                {
-                    var boundSamplerState = texture.BoundSamplerState ?? defaultSamplerState;
-                    var samplerState = samplerStates[textureInfo.TextureUnit] ?? SamplerStates.LinearClamp;
-
-                    bool hasMipmap = texture.Description.MipLevels > 1;
-
-                    bool textureChanged = texture != boundTexture;
-                    bool samplerStateChanged = samplerState != boundSamplerState;
-
-                    // TODO: Lazy update for texture
-                    if (textureChanged || samplerStateChanged)
-                    {
-                        if (activeTexture != textureInfo.TextureUnit)
-                        {
-                            activeTexture = textureInfo.TextureUnit;
-                            GL.ActiveTexture(TextureUnit.Texture0 + textureInfo.TextureUnit);
-                        }
-
-                        // Lazy update for texture
-                        if (textureChanged)
-                        {
-                            boundTextures[textureInfo.TextureUnit] = texture;
-                            GL.BindTexture(texture.Target, texture.resourceId);
-                        }
-
-                        // Lazy update for sampler state
-                        if (samplerStateChanged)
-                        {
-                            samplerState.Apply(hasMipmap, boundSamplerState, texture.Target);
-                            texture.BoundSamplerState = samplerState;
-                        }
-                    }
-                }
-            }
-
-            // Change face culling if the rendertarget is flipped
-            var newFrontFace = currentFrontFace;
-            if (!flipRenderTarget)
-                newFrontFace = newFrontFace == FrontFaceDirection.Cw ? FrontFaceDirection.Ccw : FrontFaceDirection.Cw;
-
-            // Update viewports
-            SetViewportImpl();
-
-            if (newFrontFace != boundFrontFace)
-            {
-                boundFrontFace = newFrontFace;
-                GL.FrontFace(boundFrontFace);
-            }
-            
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            unsafe
-            {
-                fixed(byte* boundUniforms = effectProgram.BoundUniforms)
-                {
-                    if (constantBuffer != null)
-                    {
-                        var constantBufferData = constantBuffer.StagingData;
-                        foreach (var uniform in effectProgram.Uniforms)
-                        {
-                            var firstUniformIndex = uniform.UniformIndex;
-                            var lastUniformIndex = firstUniformIndex + uniform.Count;
-                            var offset = uniform.Offset;
-                            var boundData = (IntPtr)boundUniforms + offset;
-                            var currentData = constantBufferData + offset;
-
-                            // Already updated? Early exit.
-                            // TODO: Not optimal for float1/float2 arrays (rare?)
-                            // Better to do "sparse" comparison, not sure if C# code would behave well though
-                            if (SiliconStudio.Core.Utilities.CompareMemory(boundData, currentData, uniform.CompareSize))
-                                continue;
-
-                            // Update bound cache for early exit
-                            SiliconStudio.Core.Utilities.CopyMemory(boundData, currentData, uniform.CompareSize);
-
-                            switch (uniform.Type)
-                            {
-                                case ActiveUniformType.Float:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform1(uniformIndex, 1, (float*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.FloatVec2:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform2(uniformIndex, 1, (float*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.FloatVec3:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform3(uniformIndex, 1, (float*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.FloatVec4:
-                                    GL.Uniform4(firstUniformIndex, uniform.Count, (float*)currentData);
-                                    break;
-                                case ActiveUniformType.FloatMat4:
-                                    GL.UniformMatrix4(uniform.UniformIndex, uniform.Count, false, (float*)currentData);
-                                    break;
-                                case ActiveUniformType.Bool:
-                                case ActiveUniformType.Int:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform1(uniformIndex, 1, (int*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.BoolVec2:
-                                case ActiveUniformType.IntVec2:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform2(uniformIndex, 1, (int*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.BoolVec3:
-                                case ActiveUniformType.IntVec3:
-                                    for (int uniformIndex = firstUniformIndex; uniformIndex < lastUniformIndex; ++uniformIndex)
-                                    {
-                                        GL.Uniform3(uniformIndex, 1, (int*)currentData);
-                                        currentData += 16; // Each array element is spaced by 16 bytes
-                                    }
-                                    break;
-                                case ActiveUniformType.BoolVec4:
-                                case ActiveUniformType.IntVec4:
-                                    GL.Uniform4(firstUniformIndex, uniform.Count, (int*)currentData);
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
-                        }
-                    }
-                }                
-            }
-#endif
-        }
-
-        private void SetBlendStateImpl(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (multiSampleMask != -1)
-                throw new NotImplementedException();
-
-            if (blendState == null)
-                blendState = BlendStates.Default;
-
-            if (boundBlendState != blendState)
-            {
-                blendState.Apply(boundBlendState ?? BlendStates.Default);
-                boundBlendState = blendState;
-            }
-
-            GL.BlendColor(blendFactor.R, blendFactor.G, blendFactor.B, blendFactor.A);
-        }
-
-        /// <summary>
-        /// Sets a constant buffer to the shader pipeline.
-        /// </summary>
-        /// <param name="stage">The shader stage.</param>
-        /// <param name="slot">The binding slot.</param>
-        /// <param name="buffer">The constant buffer to set.</param>
-        internal void SetConstantBuffer(ShaderStage stage, int slot, Buffer buffer)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            // TODO: Dirty flags on both constant buffer content and if constant buffer changed
-            if (IsOpenGLES2)
-            {
-                if (stage != ShaderStage.Vertex || slot != 0)
-                    throw new InvalidOperationException("Only cbuffer slot 0 of vertex shader stage should be used on OpenGL ES 2.0.");
-
-                constantBuffer = buffer;
-            }
-            else
-#endif
-            {
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, slot, buffer != null ? buffer.resourceId : 0);
-            }
-        }
-
-        private void SetDepthStencilStateImpl(DepthStencilState depthStencilState, int stencilReference = 0)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (depthStencilState == null)
-                depthStencilState = DepthStencilStates.Default;
-
-            // Only apply a DepthStencilState if it is not already bound
-            if (boundDepthStencilState != depthStencilState || boundStencilReference != stencilReference)
-            {
-                boundDepthStencilState = depthStencilState;
-                boundStencilReference = stencilReference;
-                boundDepthStencilState.Apply(stencilReference);
-            }
-        }
-
-        private void SetRasterizerStateImpl(RasterizerState rasterizerState)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (rasterizerState == null)
-                rasterizerState = RasterizerStates.CullBack;
-
-            if (boundRasterizerState != rasterizerState)
-            {
-                boundRasterizerState = rasterizerState;
-                boundRasterizerState.Apply();
-            }
-        }
-
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, params Texture[] renderTargets)
-        {
-            var renderTargetsLength = 0;
-            if (renderTargets != null && renderTargets.Length > 0 && renderTargets[0] != null)
-            {
-                renderTargetsLength = renderTargets.Length;
-                // ensure size is coherent
-                var expectedWidth = renderTargets[0].Width;
-                var expectedHeight = renderTargets[0].Height;
-                if (depthStencilBuffer != null)
-                {
-                    if (expectedWidth != depthStencilBuffer.Width || expectedHeight != depthStencilBuffer.Height)
-                        throw new Exception("Depth buffer is not the same size as the render target");
-                }
-                for (int i = 1; i < renderTargets.Length; ++i)
-                {
-                    if (renderTargets[i] != null && (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height))
-                        throw new Exception("Render targets do nt have the same size");
-                }
-            }
-
-            flipRenderTarget = ChooseFlipRenderTarget(depthStencilBuffer, renderTargets);
-
-#if DEBUG
-            EnsureContextActive();
-#endif
-            for (int i = 0; i < renderTargetsLength; ++i)
-                boundRenderTargets[i] = renderTargets[i];
-            for (int i = renderTargetsLength; i < boundRenderTargets.Length; ++i)
-                boundRenderTargets[i] = null;
-
-            boundDepthStencilBuffer = depthStencilBuffer;
-
-            needUpdateFBO = true;
-
-            SetupTargets();
-
-            var renderTarget = renderTargetsLength > 0 ? renderTargets[0] : null;
-            if (renderTarget != null)
-            {
-                SetViewport(new Viewport(0, 0, renderTarget.Width, renderTarget.Height));
-            }
-            else if (depthStencilBuffer != null)
-            {
-                SetViewport(new Viewport(0, 0, depthStencilBuffer.Description.Width, depthStencilBuffer.Description.Height));
-            }
-        }
-
-        /// <summary>
-        /// Check if rendering has to be flipped.
-        /// </summary>
-        /// <param name="depthStencilBuffer">The depth buffer.</param>
-        /// <param name="renderTargets">The render targets.</param>
-        /// <returns>The value of flipRenderTarget.</returns>
-        private bool ChooseFlipRenderTarget(Texture depthStencilBuffer, params Texture[] renderTargets)
-        {
-            // TODO: Only OpenGL renders to backbuffer directly and uses defaultRenderTarget, right now
-            if (defaultRenderTarget != null)
-                return true;
-
-            if (renderTargets != null && renderTargets.Length > 0)
-            {
-                foreach (var rt in renderTargets)
-                {
-                    if (rt == BackBuffer)
-                    {
-                        return false;
-                    }
-                }
-            }
-            if (depthStencilBuffer == DepthStencilBuffer)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private void ResetTargetsImpl()
-        {
-            for (int i = 0; i < boundRenderTargets.Length; ++i)
-                boundRenderTargets[i] = null;
-        }
-
-        /// <summary>
-        /// Sets a sampler state to the shader pipeline.
-        /// </summary>
-        /// <param name="stage">The shader stage.</param>
-        /// <param name="slot">The binding slot.</param>
-        /// <param name="samplerState">The sampler state to set.</param>
-        public void SetSamplerState(ShaderStage stage, int slot, SamplerState samplerState)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            samplerStates[slot] = samplerState;
-        }
-
-        /// <summary>
-        /// Binds a single scissor rectangle to the rasterizer stage.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="right">The right.</param>
-        /// <param name="bottom">The bottom.</param>
-        public void SetScissorRectangles(int left, int top, int right, int bottom)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            _currentScissorRectangles[0].Left = left;
-            _currentScissorRectangles[0].Top = top;
-            _currentScissorRectangles[0].Width = right - left;
-            _currentScissorRectangles[0].Height = bottom - top;
-            
-            UpdateScissor(_currentScissorRectangles[0]);
-        }
-
-        /// <summary>
-        /// Binds a set of scissor rectangles to the rasterizer stage.
-        /// </summary>
-        /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public void SetScissorRectangles(params Rectangle[] scissorRectangles)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
-#else
-            var scissorCount = scissorRectangles.Length > _currentScissorRectangles.Length ? _currentScissorRectangles.Length : scissorRectangles.Length;
-
-            for (var i = 0; i < scissorCount; ++i)
-                _currentScissorRectangles[i] = scissorRectangles[i];
-
-            for (int i = 0; i < scissorCount; ++i)
-            {
-                var height = scissorRectangles[i].Height;
-                _currentScissorsSetBuffer[4*i] = scissorRectangles[i].X;
-                _currentScissorsSetBuffer[4 * i + 1] = GetScissorY(scissorRectangles[i].Y, height);
-                _currentScissorsSetBuffer[4 * i + 2] = scissorRectangles[i].Width;
-                _currentScissorsSetBuffer[4 * i + 3] = height;
-            }
-
-            GL.ScissorArray(0, scissorCount, _currentScissorsSetBuffer);
-#endif
-        }
-
-        private void UpdateScissor(Rectangle scissorRect)
-        {
-            var height = scissorRect.Height;
-            GL.Scissor(scissorRect.Left, GetScissorY(scissorRect.Bottom, height), scissorRect.Right - scissorRect.Left, height);
-        }
-
-        private int GetScissorY(int scissorY, int scissorHeight)
-        {
-            // if we flip the render target, we should modify the scissor accordingly
-            if (flipRenderTarget)
-                return scissorY;
-            return boundFBOHeight - scissorY - scissorHeight;
-        }
-
-        /// <summary>
-        /// Sets a shader resource view to the shader pipeline.
-        /// </summary>
-        /// <param name="stage">The shader stage.</param>
-        /// <param name="slot">The binding slot.</param>
-        /// <param name="shaderResourceView">The shader resource view.</param>
-        internal void SetShaderResourceView(ShaderStage stage, int slot, GraphicsResource shaderResourceView)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            if (textures[slot] != shaderResourceView)
-            {
-                textures[slot] = shaderResourceView as Texture;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void SetStreamTargets(params Buffer[] buffers)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Sets an unordered access view to the shader pipeline.
-        /// </summary>
-        /// <param name="stage">The stage.</param>
-        /// <param name="slot">The slot.</param>
-        /// <param name="unorderedAccessView">The unordered access view.</param>
-        /// <exception cref="System.ArgumentException">Invalid stage.;stage</exception>
-        internal void SetUnorderedAccessView(ShaderStage stage, int slot, GraphicsResource unorderedAccessView)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (stage != ShaderStage.Compute)
-                throw new ArgumentException("Invalid stage.", "stage");
-
-            throw new NotImplementedException();
-        }
-
-        internal void SetupTargets()
-        {
-            if (needUpdateFBO)
-            {
-                boundFBO = FindOrCreateFBO(boundDepthStencilBuffer, boundRenderTargets);
-            }
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-
-            UpdateHasRenderTarget();
-            UpdateHasDepthStencilBuffer();
-
-            // Update glViewport (new height)
-            if (boundRenderTargets[0] != null)
-                boundFBOHeight = (boundRenderTargets[0].Description).Height;
-            else if (boundDepthStencilBuffer != null)
-                boundFBOHeight = (boundDepthStencilBuffer.Description).Height;
-            else
-                boundFBOHeight = 0;
-
-            // TODO: support multiple viewports and scissors?
-            UpdateViewport(currentState.Viewports[0]);
-            UpdateScissor(_currentScissorRectangles[0]);
-        }
-
-        private void UpdateHasRenderTarget()
-        {
-            var hadRenderTarget = hasRenderTarget;
-            hasRenderTarget = boundFBO != 0 || boundRenderTargets[0] != null;
-
-            if (hasRenderTarget != hadRenderTarget)
-            {
-                var blendState = boundBlendState ?? BlendStates.Default;
-                blendState.ApplyColorMask();
-            }
-        }
-
-        private void UpdateHasDepthStencilBuffer()
-        {
-            var hadDepthStencilBuffer = hasDepthStencilBuffer;
-            hasDepthStencilBuffer = boundFBO != 0 || boundDepthStencilBuffer != null;
-
-            if (hasDepthStencilBuffer != hadDepthStencilBuffer)
-            {
-                var depthStencilState = boundDepthStencilState ?? DepthStencilStates.Default;
-                depthStencilState.ApplyDepthMask();
-            }
-        }
-
-        public void SetVertexArrayObject(VertexArrayObject vertexArrayObject)
-        {
-            currentVertexArrayObject = vertexArrayObject;
-        }
-
-        internal void UnbindVertexArrayObject()
-        {
-            boundVertexArrayObject = null;
+            // Create and bind default VAO
             if (HasVAO)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (IsOpenGLES2)
-                    OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
-                else
+                if (!IsOpenGLES2)
 #endif
                 {
-                    GL.BindVertexArray(0);
+                    GL.GenVertexArrays(1, out defaultVAO);
+                    GL.BindVertexArray(defaultVAO);
                 }
             }
-
-            // Disable all vertex attribs
-            int currentVertexAttribIndex = 0;
-            while (enabledVertexAttribArrays != 0)
-            {
-                if ((enabledVertexAttribArrays & 1) == 1)
-                {
-                    GL.DisableVertexAttribArray(currentVertexAttribIndex);
-                }
-
-                currentVertexAttribIndex++;
-                enabledVertexAttribArrays >>= 1;
-            }
-        }
-
-        private void SetViewportImpl()
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (!needViewportUpdate)
-                return;
-            needViewportUpdate = false;
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            // TODO: Check all non-empty viewports are identical and match what is active in FBO!
-            UpdateViewport(currentState.Viewports[0]);
-#else
-            UpdateViewports();
-#endif
-        }
-
-        private void UpdateViewport(Viewport viewport)
-        {
-            GL.Viewport((int)viewport.X, (int)GetViewportY(viewport), (int)viewport.Width, (int)viewport.Height);
-        }
-
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private void UpdateViewports()
-        {
-            int nbViewports = currentState.Viewports.Length;
-            for (int i = 0; i < nbViewports; ++i)
-            {
-                var currViewport = currentState.Viewports[i];
-                _currentViewportsSetBuffer[4 * i] = currViewport.X;
-                _currentViewportsSetBuffer[4 * i + 1] = GetViewportY(currViewport);
-                _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
-                _currentViewportsSetBuffer[4 * i + 3] = currViewport.Height;
-            }
-            GL.ViewportArray(0, nbViewports, _currentViewportsSetBuffer);
-        }
-#endif
-
-        private float GetViewportY(Viewport viewport)
-        {
-            // if we flip the render target, we should modify the viewport accordingly
-            if (flipRenderTarget)
-                return viewport.Y;
-            return boundFBOHeight - viewport.Y - viewport.Height;
         }
 
         internal int TryCompileShader(ShaderType shaderType, string sourceCode)
@@ -1907,230 +528,6 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new InvalidOperationException("Error while compiling GLSL shader: \n" + log);
 
             return shaderGL;
-        }
-
-        public void UnmapSubresource(MappedResource unmapped)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            var texture = unmapped.Resource as Texture;
-            if (texture != null)
-            {
-                if (texture.Description.Usage == GraphicsResourceUsage.Staging)
-                {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    // unmapping on OpenGL ES 2 means doing nothing since the buffer is on the CPU memory
-                    if (!IsOpenGLES2)
-#endif
-                    {
-                        GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.PixelBufferObjectId);
-                        GL.UnmapBuffer(BufferTarget.PixelPackBuffer);
-                        GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
-                    }
-                }
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                else if (!IsOpenGLES2 && texture.Description.Usage == GraphicsResourceUsage.Dynamic)
-#else
-                else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
-#endif
-                {
-                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
-                    GL.UnmapBuffer(BufferTarget.PixelUnpackBuffer);
-
-                    GL.BindTexture(texture.Target, texture.ResourceId);
-
-                    // Bind buffer to texture
-                    switch (texture.Target)
-                    {
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                        case TextureTarget.Texture1D:
-                            GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
-                            break;
-#endif
-                        case TextureTarget.Texture2D:
-                            GL.TexSubImage2D(TextureTargetTexture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
-                            break;
-                        case TextureTarget.Texture3D:
-                            GL.TexSubImage3D(TextureTargetTexture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
-                            break;
-                        default:
-                            throw new NotSupportedException("Invalid texture target: " + texture.Target);
-                    }
-                    GL.BindTexture(texture.Target, 0);
-                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
-                }
-                else
-                {
-                    throw new NotSupportedException("Not supported mapper operation for Usage: " + texture.Description.Usage);
-                }
-            }
-            else
-            {
-                var buffer = unmapped.Resource as Buffer;
-                if (buffer != null)
-                {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2)
-                    {
-                        // Only buffer with StagingData (fake cbuffer) could be mapped
-                        if (buffer.StagingData == null)
-                            throw new InvalidOperationException();
-
-                        // Is it a real buffer? (fake cbuffer have no real GPU counter-part in OpenGL ES 2.0
-                        if (buffer.ResourceId != 0)
-                        {
-                            UnbindVertexArrayObject();
-                            GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                            GL.BufferSubData(buffer.bufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
-                            GL.BindBuffer(buffer.bufferTarget, 0);
-                        }
-                    }
-                    else
-#endif
-                    {
-                        UnbindVertexArrayObject();
-                        GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                        GL.UnmapBuffer(buffer.bufferTarget);
-                        GL.BindBuffer(buffer.bufferTarget, 0);
-                    }
-                }
-                else // neither texture nor buffer
-                {
-                    throw new NotImplementedException("UnmapSubresource not implemented for type " + unmapped.Resource.GetType());
-                }
-            }
-        }
-
-        public void UnsetReadWriteBuffers()
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-        }
-
-        public void UnsetRenderTargets()
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            SetDepthAndRenderTargets((Texture)null, null);
-        }
-
-        internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            var buffer = resource as Buffer;
-            if (buffer != null)
-            {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (buffer.StagingData != IntPtr.Zero)
-                {
-                    // Specific case for constant buffers
-                    SiliconStudio.Core.Utilities.CopyMemory(buffer.StagingData, databox.DataPointer, buffer.Description.SizeInBytes);
-                    return;
-                }
-#endif
-
-                UnbindVertexArrayObject();
-
-                GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, databox.DataPointer,
-                    buffer.bufferUsageHint);
-                GL.BindBuffer(buffer.bufferTarget, 0);
-            }
-            else
-            {
-                var texture = resource as Texture;
-                if (texture != null)
-                {
-                    if (activeTexture != 0)
-                    {
-                        activeTexture = 0;
-                        GL.ActiveTexture(TextureUnit.Texture0);
-                    }
-
-                    // TODO: Handle pitchs
-                    // TODO: handle other texture formats
-                    var desc = texture.Description;
-                    GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
-                    boundTextures[0] = null; // bound active texture 0 has changed
-                    GL.TexImage2D(TextureTargetTexture2D, subResourceIndex, (PixelInternalFormat_TextureComponentCount)texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
-                }
-                else // neither texture nor buffer
-                {
-                    throw new NotImplementedException("UpdateSubresource not implemented for type " + resource.GetType());
-                }
-            }
-        }
-
-        internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-            var texture = resource as Texture;
-
-            if (texture != null)
-            {
-                var width = region.Right - region.Left;
-                var height = region.Bottom - region.Top;
-
-                // determine the opengl read Unpack Alignment
-                var packAlignment = 0;
-                if ((databox.RowPitch & 1) != 0)
-                {
-                    if (databox.RowPitch == width)
-                        packAlignment = 1; 
-                }
-                else if ((databox.RowPitch & 2) != 0)
-                {
-                    var diff = databox.RowPitch - width;
-                    if (diff >= 0 && diff < 2)
-                        packAlignment = 2;
-                }
-                else if ((databox.RowPitch & 4) != 0)
-                {
-                    var diff = databox.RowPitch - width;
-                    if (diff >= 0 && diff < 4)
-                        packAlignment = 4;
-                }
-                else if ((databox.RowPitch & 8) != 0)
-                {
-                    var diff = databox.RowPitch - width;
-                    if (diff >= 0 && diff < 8)
-                        packAlignment = 8;
-                }
-                else if(databox.RowPitch == width)
-                {
-                    packAlignment = 4;
-                }
-                if(packAlignment == 0)
-                    throw new NotImplementedException("The data box RowPitch is not compatible with the region width. This requires additional copy to be implemented.");
-
-                // change the Unpack Alignment
-                int previousPackAlignment;
-                GL.GetInteger(GetPName.UnpackAlignment, out previousPackAlignment);
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, packAlignment);
-
-                if (activeTexture != 0)
-                {
-                    activeTexture = 0;
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                }
-                
-                // Update the texture region
-                GL.BindTexture(texture.Target, texture.resourceId);
-                GL.TexSubImage2D((TextureTarget_TextureTarget2d)texture.Target, subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
-                boundTextures[0] = null; // bound active texture 0 has changed
-
-                // reset the Unpack Alignment
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, previousPackAlignment);
-            }
         }
 
         internal static void UnbindGraphicsContext(IGraphicsContext graphicsContext)
@@ -2187,10 +584,19 @@ namespace SiliconStudio.Xenko.Graphics
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
             // Enable OpenGL context sharing
-            GraphicsContext.ShareContexts = true;
+            OpenTK.Graphics.GraphicsContext.ShareContexts = true;
 
             // TODO: How to control Debug flags?
             var creationFlags = GraphicsContextFlags.Default;
+
+            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            {
+                creationFlags |= GraphicsContextFlags.Debug;
+                ProfileEnabled = true;
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+#endif
+            }
 
             // set default values
             versionMajor = 1;
@@ -2293,19 +699,44 @@ namespace SiliconStudio.Xenko.Graphics
             // a new one using the dummy one and invalidate the dummy one.
             graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, versionMajor, versionMinor, creationFlags);
             gameWindow.DummyGLContext.Dispose();
-    #else
+#else
             graphicsContext = gameWindow.Context;
-    #endif
+#endif
             deviceCreationWindowInfo = windowInfo;
-            deviceCreationContext = new GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
-            GraphicsContext.CurrentContext.MakeCurrent(null);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
+
+            OpenTK.Graphics.GraphicsContext.CurrentContext.MakeCurrent(null);
+#endif
+
+            // Restore main context
+            graphicsContext.MakeCurrent(windowInfo);
+
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+            // Setup GL debug log callback
+            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            {
+                GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+            }
 #endif
 
             // Create default OpenGL State objects
-            defaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
-
-            this.immediateContext = this;
+            DefaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
         }
+
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
+        }
+
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userparam)
+        {
+            if (severity == DebugSeverity.DebugSeverityHigh)
+            {
+                string msg = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message);
+                Log.Error("[GL] {0}; {1}; {2}; {3}; {4}", source, type, id, severity, msg);
+            }
+        }
+#endif
 
         protected void DestroyPlatformDevice()
         {
@@ -2324,50 +755,42 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void OnDestroyed()
         {
-            EffectInputSignature.OnDestroyed();
-
             // Clear existing FBOs
-            lock (RootDevice.existingFBOs)
+            lock (existingFBOs)
             {
-                RootDevice.existingFBOs.Clear();
-                RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
+                existingFBOs.Clear();
+                existingFBOs[new FBOKey(null, new[] { WindowProvidedRenderTexture })] = windowProvidedFrameBuffer;
             }
 
-            // Clear bound states
-            for (int i = 0; i < boundTextures.Length; ++i)
-                boundTextures[i] = null;
+            //// Clear bound states
+            //for (int i = 0; i < boundTextures.Length; ++i)
+                //boundTextures[i] = null;
 
-            boundFrontFace = FrontFaceDirection.Ccw;
+            //boundFrontFace = FrontFaceDirection.Ccw;
 
-            boundVertexArrayObject = null;
-            enabledVertexAttribArrays = 0;
-            boundDepthStencilState = null;
-            boundStencilReference = 0;
-            boundBlendState = null;
-            boundRasterizerState = null;
-            boundDepthStencilBuffer = null;
+            //boundVertexArrayObject = null;
+            //enabledVertexAttribArrays = 0;
+            //boundDepthStencilState = null;
+            //boundStencilReference = 0;
+            //boundBlendState = null;
+            //boundRasterizerState = null;
+            //boundDepthStencilBuffer = null;
 
-            for (int i = 0; i < boundRenderTargets.Length; ++i)
-                boundRenderTargets[i] = null;
+            //for (int i = 0; i < boundRenderTargets.Length; ++i)
+                //boundRenderTargets[i] = null;
 
-            boundFBO = 0;
-            boundFBOHeight = 0;
-            boundProgram = 0;
-        }
-
-        private void SetDefaultStates()
-        {
-            Begin();
-            SetDepthStencilState(null);
-            currentFrontFace = FrontFaceDirection.Cw;
-            boundFrontFace = FrontFaceDirection.Cw;
-            GL.FrontFace(currentFrontFace);
-            End();
+            //boundFBO = 0;
+            //boundFBOHeight = 0;
+            //boundProgram = 0;
         }
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
-// TODO: Provide unified ClientSize from GameWindow
+#if DEBUG
+            EnsureContextActive();
+#endif
+
+            // TODO: Provide unified ClientSize from GameWindow
 #if SILICONSTUDIO_PLATFORM_IOS
             windowProvidedFrameBuffer = gameWindow.Framebuffer;
 
@@ -2385,56 +808,37 @@ namespace SiliconStudio.Xenko.Graphics
             windowProvidedFrameBuffer = 0;
 #endif
 
-            boundFBO = windowProvidedFrameBuffer;
+            // TODO OPENGL detect if created framebuffer is sRGB or not (note: improperly reported by FramebufferParameterName.FramebufferAttachmentColorEncoding)
+            isFramebufferSRGB = true;
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
-            windowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
+            WindowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
                 // TODO: As a workaround, because OpenTK(+OpenGLES) doesn't support to create SRgb backbuffer, we fake it by creating a non-SRgb here and CopyScaler2D is responsible to transform it to non SRgb
-                presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
-            windowProvidedRenderTexture.Reload = graphicsResource => { };
+                isFramebufferSRGB ? presentationParameters.BackBufferFormat : presentationParameters.BackBufferFormat.ToNonSRgb(), TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
+            WindowProvidedRenderTexture.Reload = graphicsResource => { };
 
+            // Extract FBO render target
             if (windowProvidedFrameBuffer != 0)
             {
-                // Extract FBO render target
-                int renderTargetTextureId;
-                GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-                windowProvidedRenderTexture.resourceId = renderTargetTextureId;
+                int framebufferAttachmentType;
+                GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectType, out framebufferAttachmentType);
+                if (framebufferAttachmentType == (int)FramebufferAttachmentObjectType.Texture)
+                {
+                    int renderTargetTextureId;
+                    GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+                    WindowProvidedRenderTexture.resourceId = renderTargetTextureId;
+                }
             }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-            windowProvidedDepthTexture = Texture.New2D(this, width, height, 1, presentationParameters.DepthStencilFormat, TextureFlags.DepthStencil | Texture.TextureFlagsCustomResourceId);
-            windowProvidedDepthTexture.Reload = graphicsResource => { };
-
-            if (windowProvidedFrameBuffer != 0)
-            {
-                // Extract FBO depth target
-                int renderTargetTextureId;
-                GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-                windowProvidedDepthTexture.resourceId = renderTargetTextureId;
-            }
-#endif
-
-            RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
+            existingFBOs[new FBOKey(null, new[] { WindowProvidedRenderTexture })] = windowProvidedFrameBuffer;
 
             // TODO: Provide some flags to choose user prefers either:
             // - Auto-Blitting while allowing default RenderTarget to be associable with any DepthStencil
             // - No blitting, but default RenderTarget won't work with a custom FBO
             // - Later we should be able to detect that automatically?
-            //defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-            defaultRenderTarget = windowProvidedRenderTexture;
-#endif
-        }
-
-        public GraphicsDevice ImmediateContext
-        {
-            get { return this.immediateContext; }
-        }
-
-        public bool IsDeferredContextSupported
-        {
-            get { return false; }
+            defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, presentationParameters.BackBufferFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
         }
 
         private class SwapChainBackend
@@ -2519,14 +923,6 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new NotImplementedException();
 #endif
             }
-        }
-
-        // Notify render state that we used first texture and that it needs to be bound again
-        internal void UseTemporaryFirstTexture()
-        {
-            activeTexture = 0;
-            GL.ActiveTexture(TextureUnit.Texture0);
-            boundTextures[0] = null;
         }
 
 #if SILICONSTUDIO_PLATFORM_ANDROID

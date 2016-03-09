@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class HammersleyTestKeys
     {
-        public static readonly ParameterKey<int> SamplesCount = ParameterKeys.New<int>();
-        public static readonly ParameterKey<Texture> OutputTexture = ParameterKeys.New<Texture>();
+        public static readonly ValueParameterKey<int> SamplesCount = ParameterKeys.NewValue<int>();
+        public static readonly ObjectParameterKey<Texture> OutputTexture = ParameterKeys.NewObject<Texture>();
     }
 }

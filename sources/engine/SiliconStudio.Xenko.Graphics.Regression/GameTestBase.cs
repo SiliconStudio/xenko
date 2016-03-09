@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             TestGameLogger.Info(@"Saving non null image");
             testName = testName ?? CurrentTestContext?.Test.FullName;
             TestGameLogger.Info(@"saving remotely.");
-            using (var image = textureToSave.GetDataAsImage())
+            using (var image = textureToSave.GetDataAsImage(GraphicsContext.CommandList))
             {
                 try
                 {
@@ -114,7 +114,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public void SaveBackBuffer(string testName = null)
         {
             TestGameLogger.Info(@"Saving the backbuffer");
-            SaveImage(GraphicsDevice.BackBuffer, testName);
+            // TODO GRAPHICS REFACTOR switched to presenter backbuffer, need to check if it's good
+            SaveImage(GraphicsDevice.Presenter.BackBuffer, testName);
         }
 
         /// <summary>
@@ -249,7 +250,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             RunGameTest(game);
         }
 
-        protected void PerformDrawTest(Action<Game, RenderContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        protected void PerformDrawTest(Action<Game, RenderDrawContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
         {
             // create the game instance
             var typeGame = GetType();
@@ -320,7 +321,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         protected void SaveTexture(Texture texture, string filename)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            using (var image = texture.GetDataAsImage())
+            using (var image = texture.GetDataAsImage(GraphicsContext.CommandList))
             {
                 using (var resultFileStream = File.OpenWrite(filename))
                 {

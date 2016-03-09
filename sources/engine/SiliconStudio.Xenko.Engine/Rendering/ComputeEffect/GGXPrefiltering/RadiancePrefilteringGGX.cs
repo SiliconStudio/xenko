@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
             }
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var output = PrefilteredRadiance;
             if(output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                     {
                         var inputSubresource = inputLevel + f * input.MipLevels;
                         var outputSubresource = 0 + f * output.MipLevels;
-                        GraphicsDevice.CopyRegion(input, inputSubresource, null, output, outputSubresource);
+                        context.CommandList.CopyRegion(input, inputSubresource, null, output, outputSubresource);
                     }
                 }
                 else
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                     computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
                     computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
                     computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
-                    computeShader.Draw(context);
+                    ((RendererBase)computeShader).Draw(context);
 
                     outputView.Dispose();
                 }

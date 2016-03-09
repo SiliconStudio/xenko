@@ -75,6 +75,7 @@
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
+    <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
     <Compile Include="RuntimeIdHelper.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="IO\NativeFile.cs" />

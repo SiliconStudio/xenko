@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -75,14 +74,16 @@ namespace SiliconStudio.Xenko.Graphics
         // TODO: dispose vertex array when Effect is disposed
         protected readonly DeviceResourceContext ResourceContext;
 
+        protected MutablePipelineState MutablePipeline = new MutablePipelineState();
         protected GraphicsDevice GraphicsDevice;
-        protected BlendState BlendState;
-        protected RasterizerState RasterizerState;
+        protected BlendStateDescription? BlendState;
+        protected RasterizerStateDescription? RasterizerState;
         protected SamplerState SamplerState;
-        protected DepthStencilState DepthStencilState;
+        protected DepthStencilStateDescription? DepthStencilState;
         protected int StencilReferenceValue;
         protected SpriteSortMode SortMode;
-        private EffectParameterResourceBinding? textureUpdater;
+        private ObjectParameterAccessor<Texture>? textureUpdater;
+        private ObjectParameterAccessor<SamplerState>? samplerUpdater;
 
         private int[] sortIndices;
         private ElementInfo[] sortedDraws;
@@ -93,9 +94,6 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly int vertexStructSize;
         private readonly int indexStructSize;
 
-        private readonly ParameterCollection parameters;
-        private EffectParameterCollectionGroup defaultParameterCollectionGroup;
-
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
         /// </summary>
@@ -104,10 +102,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The effect used for the current Begin/End session.
         /// </summary>
-        protected Effect Effect { get; private set; }
-        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
-        protected readonly Effect DefaultEffect;
-        protected readonly Effect DefaultEffectSRgb;
+        protected EffectInstance Effect { get; private set; }
+        protected GraphicsContext GraphicsContext { get; private set; }
+        protected readonly EffectInstance DefaultEffect;
+        protected readonly EffectInstance DefaultEffectSRgb;
 
         protected TextureIdComparer TextureComparer { get; set; }
         protected QueueComparer<ElementInfo> BackToFrontComparer { get; set; }
@@ -123,8 +121,9 @@ namespace SiliconStudio.Xenko.Graphics
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
 
             GraphicsDevice = device;
-            DefaultEffect = new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"};
-            DefaultEffectSRgb = new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"};
+            // TODO GRAPHICS REFACTOR Should we initialize FX lazily?
+            DefaultEffect = new EffectInstance(new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"});
+            DefaultEffectSRgb = new EffectInstance(new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"});
 
             drawsQueue = new ElementInfo[resourceBufferInfo.BatchCapacity];
             drawTextures = new Texture[resourceBufferInfo.BatchCapacity];
@@ -137,32 +136,23 @@ namespace SiliconStudio.Xenko.Graphics
             indexStructSize = indexSize;
             vertexStructSize = vertexDeclaration.CalculateSize();
 
-            parameters = new ParameterCollection();
-            defaultParameterCollectionGroup = new EffectParameterCollectionGroup(device, DefaultEffect, new[] { parameters });
-            
             // Creates the vertex buffer (shared by within a device context).
-            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect.Effect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }
 
         /// <summary>
         /// Gets the parameters applied on the SpriteBatch effect.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public ParameterCollection Parameters => Effect.Parameters;
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect.
         /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, depthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp).
         /// Passing a null effect selects the default effect shader.
         /// </summary>
+        /// <param name="graphicsContext">The graphics context to use.</param>
         /// <param name="effect">The effect to use for this begin/end draw session (default effect if null)</param>
-        /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="sessionSortMode">Sprite drawing order used for the Begin/End session.</param>
         /// <param name="sessionBlendState">Blending state used for the Begin/End session</param>
         /// <param name="sessionSamplerState">Texture sampling used for the Begin/End session</param>
@@ -170,9 +160,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
         /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
-        protected void Begin(Effect effect, EffectParameterCollectionGroup parameterCollectionGroup, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        protected void Begin(GraphicsContext graphicsContext, EffectInstance effect, SpriteSortMode sessionSortMode, BlendStateDescription? sessionBlendState, SamplerState sessionSamplerState, DepthStencilStateDescription? sessionDepthStencilState, RasterizerStateDescription? sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
+
+            GraphicsContext = graphicsContext;
 
             SortMode = sessionSortMode;
             BlendState = sessionBlendState;
@@ -182,21 +174,21 @@ namespace SiliconStudio.Xenko.Graphics
             StencilReferenceValue = stencilValue;
 
             Effect = effect ?? (GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
-            ParameterCollectionGroup = parameterCollectionGroup ?? defaultParameterCollectionGroup;
-            if (ParameterCollectionGroup == defaultParameterCollectionGroup && ParameterCollectionGroup.Effect != Effect)
-            {
-                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
-                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                ParameterCollectionGroup = defaultParameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, Effect, new[] { parameters });
-            }
+
+            // Force the effect to update
+            Effect.UpdateEffect(GraphicsDevice);
 
             textureUpdater = null;
-            if (Effect.HasParameter(TexturingKeys.Texture0))
-                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.Texture0);
-            if (Effect.HasParameter(TexturingKeys.TextureCube0))
-                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube0);
-            if (Effect.HasParameter(TexturingKeys.Texture3D0))
-                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D0);
+            if (Effect.Effect.HasParameter(TexturingKeys.Texture0))
+                textureUpdater = Effect.Parameters.GetAccessor(TexturingKeys.Texture0);
+            if (Effect.Effect.HasParameter(TexturingKeys.TextureCube0))
+                textureUpdater = Effect.Parameters.GetAccessor(TexturingKeys.TextureCube0);
+            if (Effect.Effect.HasParameter(TexturingKeys.Texture3D0))
+                textureUpdater = Effect.Parameters.GetAccessor(TexturingKeys.Texture3D0);
+
+            samplerUpdater = null;
+            if (Effect.Effect.HasParameter(TexturingKeys.Sampler))
+                samplerUpdater = Effect.Parameters.GetAccessor(TexturingKeys.Sampler);
 
             // Immediate mode, then prepare for rendering here instead of End()
             if (sessionSortMode == SpriteSortMode.Immediate)
@@ -215,22 +207,36 @@ namespace SiliconStudio.Xenko.Graphics
             isBeginCalled = true;
         }
 
-        protected virtual void PrepareForRendering()
+        protected unsafe virtual void PrepareForRendering()
         {
             // Use LinearClamp for sampler state
             var localSamplerState = SamplerState ?? GraphicsDevice.SamplerStates.LinearClamp;
 
             // Sets the sampler state of the effect
-            Parameters.Set(TexturingKeys.Sampler, localSamplerState);
-            Effect.Apply(GraphicsDevice, ParameterCollectionGroup, false);
+            if (samplerUpdater.HasValue)
+                Parameters.Set(samplerUpdater.Value, localSamplerState);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
-            GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);
-            GraphicsDevice.SetDepthStencilState(DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default, StencilReferenceValue);
-            GraphicsDevice.SetRasterizerState(RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack);
+            MutablePipeline.State.SetDefaults();
+            MutablePipeline.State.RootSignature = Effect.RootSignature;
+            MutablePipeline.State.EffectBytecode = Effect.Effect.Bytecode;
+            MutablePipeline.State.BlendState = BlendState ?? BlendStates.AlphaBlend;
+            MutablePipeline.State.DepthStencilState = DepthStencilState ?? DepthStencilStates.Default;
+            MutablePipeline.State.RasterizerState = RasterizerState ?? RasterizerStates.CullBack;
+            MutablePipeline.State.InputElements = ResourceContext.InputElements;
+            MutablePipeline.State.PrimitiveType = PrimitiveType.TriangleList;
+            MutablePipeline.State.Output.CaptureState(GraphicsContext.CommandList);
+            MutablePipeline.Update(GraphicsDevice);
 
-            // Set VertexInputLayout
-            GraphicsDevice.SetVertexArrayObject(ResourceContext.VertexArrayObject);
+            // Bind pipeline
+            if (MutablePipeline.State.DepthStencilState.StencilEnable)
+                GraphicsContext.CommandList.SetStencilReference(StencilReferenceValue);
+            GraphicsContext.CommandList.SetPipelineState(MutablePipeline.CurrentState);
+
+            // Bind VB/IB
+            GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBufferBinding.Buffer, ResourceContext.VertexBufferBinding.Offset, ResourceContext.VertexBufferBinding.Stride);
+            if (ResourceContext.IndexBuffer != null)
+                GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBufferBinding.Buffer, ResourceContext.IndexBufferBinding.Offset, ResourceContext.IndexBufferBinding.Is32Bit);
 
             // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
             if (GraphicsDevice.IsDeferred)
@@ -393,7 +399,9 @@ namespace SiliconStudio.Xenko.Graphics
             // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
             // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
             // setup in the original BasicEffect.fx shader.
-            textureUpdater?.ApplyParameter(GraphicsDevice, texture);
+            if (textureUpdater.HasValue)
+                Effect.Parameters.Set(textureUpdater.Value, texture);
+            Effect.Apply(GraphicsContext);
 
             // Draw the batch of sprites
             DrawBatchPerTextureAndPass(sprites, offset, count);
@@ -470,9 +478,9 @@ namespace SiliconStudio.Xenko.Graphics
                 //else
                 {
                     var mappedIndices = new MappedResource();
-                    var mappedVertices = GraphicsDevice.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
+                    var mappedVertices = GraphicsContext.CommandList.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        mappedIndices = GraphicsDevice.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
+                        mappedIndices = GraphicsContext.CommandList.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
 
                     var vertexPointer = mappedVertices.DataBox.DataPointer;
                     var indexPointer = mappedIndices.DataBox.DataPointer;
@@ -488,13 +496,13 @@ namespace SiliconStudio.Xenko.Graphics
                         indexPointer += indexStructSize * sprites[spriteIndex].IndexCount;
                     }
 
-                    GraphicsDevice.UnmapSubresource(mappedVertices);
+                    GraphicsContext.CommandList.UnmapSubresource(mappedVertices);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        GraphicsDevice.UnmapSubresource(mappedIndices);
+                        GraphicsContext.CommandList.UnmapSubresource(mappedIndices);
                 }
 
                 // Draw from the specified index
-                GraphicsDevice.DrawIndexed(PrimitiveType.TriangleList, indexCount, ResourceContext.IndexBufferPosition);
+                GraphicsContext.CommandList.DrawIndexed(indexCount, ResourceContext.IndexBufferPosition);
 
                 // Update position, offset and remaining count
                 ResourceContext.IndexBufferPosition += indexCount;
@@ -738,9 +746,13 @@ namespace SiliconStudio.Xenko.Graphics
             public readonly bool IsIndexBufferDynamic;
 
             /// <summary>
-            /// The VertexArrayObject of the batch.
+            /// The VertexBufferBinding of the batch.
             /// </summary>
-            public readonly VertexArrayObject VertexArrayObject;
+            public readonly VertexBufferBinding VertexBufferBinding;
+
+            public readonly IndexBufferBinding IndexBufferBinding;
+
+            public readonly InputElementDescription[] InputElements;
 
             /// <summary>
             /// The current position in vertex into the vertex array buffer.
@@ -777,11 +789,9 @@ namespace SiliconStudio.Xenko.Graphics
                     IndexBuffer.Reload = graphicsResource => ((Buffer)graphicsResource).Recreate(resourceBufferInfo.StaticIndices);
                 }
 
-                var indexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
-                var vertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
-
-                // Creates a VAO
-                VertexArrayObject = VertexArrayObject.New(device, effect.InputSignature, indexBufferBinding, vertexBufferBinding).DisposeBy(this);
+                IndexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
+                InputElements = VertexBufferBinding.Declaration.CreateInputElements();
             }
         }
 

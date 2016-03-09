@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public static partial class DirectLightGroupKeys
     {
-        public static readonly ParameterKey<int> LightCount = ParameterKeys.New<int>();
+        public static readonly ValueParameterKey<int> LightCount = ParameterKeys.NewValue<int>();
     }
 }

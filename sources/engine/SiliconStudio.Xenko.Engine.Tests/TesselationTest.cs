@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private bool isWireframe;
 
-        private RasterizerState wireframeState;
+        private RasterizerStateDescription wireframeState;
 
         private SpriteBatch spriteBatch;
 
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Font");
 
-            wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
+            wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
             materials.Add(Content.Load<Material>("NoTessellation"));
             materials.Add(Content.Load<Material>("FlatTessellation"));
@@ -92,8 +92,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
-            LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
+            // TODO GRAPHICS REFACTOR
+            throw new System.NotImplementedException();
+            //LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
+            //GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
             ChangeModel(0);
             SetWireframe(true);
@@ -114,12 +116,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
             FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
         }
 
-        protected override void PostCameraRendererDraw(RenderContext context, RenderFrame frame)
+        protected override void PostCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
         {
             if (!debug)
                 return;
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
             spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();
@@ -155,8 +157,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             isWireframe = wireframeActivated;
 
-            if (currentMaterial != null)
-                currentMaterial.Parameters.Set(Effect.RasterizerStateKey, isWireframe ? wireframeState : GraphicsDevice.RasterizerStates.CullBack);
+            // TODO GRAPHICS REFACTOR
+            //if (currentMaterial != null)
+            //    currentMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, isWireframe ? wireframeState : GraphicsDevice.RasterizerStates.CullBack);
         }
 
         private void ChangeDesiredTriangleSize(float f)

@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
     public class ComputeEffectShaderKeys
     {
-        public static readonly ParameterKey<string> ComputeShaderName = ParameterKeys.New<string>();
-        public static readonly ParameterKey<Int3> ThreadNumbers = ParameterKeys.New<Int3>();
+        public static readonly PermutationParameterKey<string> ComputeShaderName = ParameterKeys.NewPermutation<string>();
+        public static readonly PermutationParameterKey<Int3> ThreadNumbers = ParameterKeys.NewPermutation<Int3>();
     }
 }

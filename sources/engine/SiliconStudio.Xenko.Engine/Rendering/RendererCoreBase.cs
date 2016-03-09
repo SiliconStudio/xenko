@@ -53,12 +53,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(true)]
         public virtual bool Enabled { get; set; }
 
-        /// <summary>
-        /// Gets if the system tried initialization but is unable to work in the current environment
-        /// </summary>
-        [DataMemberIgnore]
-        public bool Faulted { get; protected set; }
-
         [DataMemberIgnore]
         public bool Profiling { get; set; }
 
@@ -121,14 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
-            try
-            {
-                InitializeCore();
-            }
-            catch (Exception)
-            {
-                Faulted = true;
-            }         
+            InitializeCore();
 
             Initialized = true;
 
@@ -154,11 +141,11 @@ namespace SiliconStudio.Xenko.Rendering
             Context = null;
         }
 
-        protected virtual void PreDrawCore(RenderContext context)
+        protected virtual void PreDrawCore(RenderDrawContext context)
         {
         }
 
-        protected virtual void PostDrawCore(RenderContext context)
+        protected virtual void PostDrawCore(RenderDrawContext context)
         {
         }
 
@@ -233,25 +220,18 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
 
-        protected void PreDrawCoreInternal(RenderContext context)
+        protected void PreDrawCoreInternal(RenderDrawContext context)
         {
             if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
 
-            if (Context == null)
-            {
-                Initialize(context);
-            }
-            else if (Context != context)
-            {
-                throw new InvalidOperationException("Cannot use a different context between Load and Draw");
-            }
+            EnsureContext(context.RenderContext);
 
             if (Name != null && Profiling)
             {
-                context.GraphicsDevice.BeginProfile(Color.Green, Name);
+                context.CommandList.BeginProfile(Color.Green, Name);
             }
 
             PreDrawCore(context);
@@ -260,7 +240,19 @@ namespace SiliconStudio.Xenko.Rendering
             isInDrawCore = true;
         }
 
-        protected void PostDrawCoreInternal(RenderContext context)
+        protected void EnsureContext(RenderContext context)
+        {
+            if (Context == null)
+            {
+                Initialize(context);
+            }
+            else if (Context != context)
+            {
+                throw new InvalidOperationException("Cannot use a different context between Load and Draw");
+            }
+        }
+
+        protected void PostDrawCoreInternal(RenderDrawContext context)
         {
             isInDrawCore = false;
 
@@ -271,7 +263,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.GraphicsDevice.EndProfile();
+                context.CommandList.EndProfile();
             }
         }
     }

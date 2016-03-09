@@ -41,9 +41,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests.Regression
 
         public void DrawTexture()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.DrawTexture(texture, GraphicsDevice.SamplerStates.PointClamp);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.DrawTexture(texture, GraphicsDevice.SamplerStates.PointClamp);
         }
 
         protected override void Draw(GameTime gameTime)

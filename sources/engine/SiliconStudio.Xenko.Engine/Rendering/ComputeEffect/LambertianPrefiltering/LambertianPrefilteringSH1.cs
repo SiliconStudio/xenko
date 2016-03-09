@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     [DataContract]public partial class LambertianPrefilteringSHParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> BlockSize = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> BlockSize = ParameterKeys.NewPermutation<int>();
     };
     internal static partial class ShaderMixins
     {

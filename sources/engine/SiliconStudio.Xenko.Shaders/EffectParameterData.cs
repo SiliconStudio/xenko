@@ -29,6 +29,11 @@ namespace SiliconStudio.Xenko.Shaders
         public int KeyIndex;
 
         /// <summary>
+        /// Resource group this variable belongs to. This should later be directly grouped in EffectReflection.ResourceGroups.
+        /// </summary>
+        public string ResourceGroup;
+
+        /// <summary>
         /// Name of this parameter in the original shader
         /// </summary>
         public string RawName;

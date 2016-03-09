@@ -12,6 +12,5 @@ namespace SiliconStudio.Xenko.Particles.Shaders
         {
             return float4(1, 1, 1, 1);
         }
-
     };
 }

@@ -297,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Current.StreamInitializers[stage].Add(streamInitilizerSource);
         }
 
-        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
+        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             Current.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
@@ -307,7 +307,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             Current.SetStream(stage, stream, streamType, shaderSource);
         }
 
-        public void SetStream(string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
+        public void SetStream(string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
@@ -363,7 +363,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public MaterialShadingModelCollection ShadingModels { get; set; }
 
-            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
+            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
             {
                 if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
                 if (computeNode == null)
@@ -544,6 +544,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     var shadingModel = shadingModelKeyPair.Key;
                     if (shadingModel.IsLightDependent)
                     {
+                        context.Material.IsLightDependent = true;
+
                         if (mixinSource == null)
                         {
                             mixinSource = new ShaderMixinSource();

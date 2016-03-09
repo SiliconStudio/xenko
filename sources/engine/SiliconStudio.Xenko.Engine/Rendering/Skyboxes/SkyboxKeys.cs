@@ -9,23 +9,18 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     public static class SkyboxKeys
     {
-        public static readonly ParameterKey<float> Intensity = ParameterKeys.New(1.0f);
+        public static readonly ValueParameterKey<float> Intensity = ParameterKeys.NewValue(1.0f);
 
-        public static readonly ParameterKey<float> Rotation = ParameterKeys.New(0.0f);
+        public static readonly ValueParameterKey<float> Rotation = ParameterKeys.NewValue(0.0f);
 
-        public static readonly ParameterKey<Matrix> SkyMatrix = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, float>(Rotation, UpdateSkyMatrix));
+        public static readonly ValueParameterKey<Matrix> SkyMatrix = ParameterKeys.NewValue(Matrix.Identity);
 
-        public static readonly ParameterKey<ShaderSource> Shader = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> Shader = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly ParameterKey<ShaderSource> DiffuseLighting = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> DiffuseLighting = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly ParameterKey<ShaderSource> SpecularLighting = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> SpecularLighting = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly ParameterKey<Texture> CubeMap = ParameterKeys.New<Texture>();
-
-        private static void UpdateSkyMatrix(ref float angle, ref Matrix output)
-        {
-            Matrix.RotationY(MathUtil.DegreesToRadians(angle), out output);
-        }
+        public static readonly ObjectParameterKey<Texture> CubeMap = ParameterKeys.NewObject<Texture>();
     }
 }

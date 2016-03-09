@@ -3,14 +3,6 @@
 // Base class for all the graphics shaders
 class ShaderBase : ShaderBaseStream
 {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-    cbuffer OpenglFlags
-    {
-        // A variable used to flip the rendertarget in OpenGL - automatically managed by the engine
-        stage float XenkoFlipRendertarget;
-    };
-#endif
-
     // Declare Vertex shader main method
     stage void VSMain() {}
 

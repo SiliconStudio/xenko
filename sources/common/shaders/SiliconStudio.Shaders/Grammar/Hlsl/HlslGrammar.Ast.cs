@@ -814,7 +814,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
             value.Attributes.Add((Annotations)node.ChildNodes[2].AstNode);
         }
 
-        private static void CreateConstantBufferTypeAst(ParsingContext context, ParseTreeNode node)
+        protected virtual void CreateConstantBufferTypeAst(ParsingContext context, ParseTreeNode node)
         {
             node.AstNode = ConstantBufferType.Parse(node.ChildNodes[0].Token.Text);
         }

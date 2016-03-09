@@ -12,6 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
@@ -72,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                 permutationCount++;
                 PermutationCount[effectName] = permutationCount;
             }
-            commandContext.Logger.Verbose("Trying permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringDetailed());
+            commandContext.Logger.Verbose("Trying permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringPermutationsDetailed());
 
             var compilerResults = compiler.Compile(source, compilerParameters);
 

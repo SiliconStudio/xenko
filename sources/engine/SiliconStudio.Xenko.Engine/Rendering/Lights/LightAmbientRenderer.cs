@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightAmbientShaderGroup : LightShaderGroupAndDataPool<LightAmbientShaderGroupData>
         {
-            internal readonly ParameterKey<Color3> AmbientLightKey;
+            internal readonly ValueParameterKey<Color3> AmbientLightKey;
             public LightAmbientShaderGroup(ShaderMixinSource mixin, string compositionName)
                 : base(mixin, compositionName, null)
             {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightAmbientShaderGroupData : LightShaderGroupData
         {
-            private readonly ParameterKey<Color3> ambientLightKey;
+            private readonly ValueParameterKey<Color3> ambientLightKey;
             private Color3 color;
 
             public LightAmbientShaderGroupData(LightAmbientShaderGroup group)

@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class VignettingShaderKeys
     {
-        public static readonly ParameterKey<float> Amount = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> RadiusBegin = ParameterKeys.New<float>();
-        public static readonly ParameterKey<Color3> Color = ParameterKeys.New<Color3>();
+        public static readonly ValueParameterKey<float> Amount = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> RadiusBegin = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Color3> Color = ParameterKeys.NewValue<Color3>();
     }
 }

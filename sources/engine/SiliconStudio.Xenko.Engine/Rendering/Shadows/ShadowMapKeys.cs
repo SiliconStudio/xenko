@@ -15,16 +15,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Final shadow map texture.
         /// </summary>
-        public static readonly ParameterKey<Texture> Texture = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> Texture = ParameterKeys.NewObject<Texture>();
 
         /// <summary>
         /// Final shadow map texture size
         /// </summary>
-        public static readonly ParameterKey<Vector2> TextureSize = ParameterKeys.New<Vector2>();
+        public static readonly ValueParameterKey<Vector2> TextureSize = ParameterKeys.NewValue<Vector2>();
 
         /// <summary>
         /// Final shadow map texture texel size.
         /// </summary>
-        public static readonly ParameterKey<Vector2> TextureTexelSize = ParameterKeys.New<Vector2>();
+        public static readonly ValueParameterKey<Vector2> TextureTexelSize = ParameterKeys.NewValue<Vector2>();
     }
 }

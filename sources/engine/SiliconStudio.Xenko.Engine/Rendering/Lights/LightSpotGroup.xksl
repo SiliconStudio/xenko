@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightSpotGroup<int TMaxLightCount> : DirectLightGroup, NormalStream, PositionStream4, LightUtil
     {
-        cbuffer PerObject
+        cbuffer PerLighting
         {
             float3 LightPositionWS[TMaxLightCount];
             float3 LightDirectionsWS[TMaxLightCount];
