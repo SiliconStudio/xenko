@@ -56,11 +56,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public override void UpdateParameters(ColorTransformContext context)
         {
-            base.UpdateParameters(context);
-
             Parameters.Set(VignettingShaderKeys.Amount, Amount);
             Parameters.Set(VignettingShaderKeys.RadiusBegin, Radius);
             Parameters.Set(VignettingShaderKeys.Color, Color.ToColorSpace(context.RenderContext.GraphicsDevice.ColorSpace));
+
+            // Copy parameters to parent
+            base.UpdateParameters(context);
         }
     }
 }

@@ -57,8 +57,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
-            LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
+            // TODO GRAPHICS REFACTOR
+            throw new NotImplementedException();
+            //LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
+            //GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
             camera.Position = new Vector3(6.0f, 2.5f, 1.5f);
             camera.SetTarget(knight, true);

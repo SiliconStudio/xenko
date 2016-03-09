@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -123,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             afterimage = ToLoadAndUnload(afterimage);
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0) ?? input;
@@ -139,7 +140,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var persistenceBrightness = NewScopedRenderTarget2D(input.Description);
                 afterimage.SetInput(0, input);
                 afterimage.SetOutput(persistenceBrightness);
-                afterimage.Draw(context);
+                ((RendererBase)afterimage).Draw(context);
                 input = persistenceBrightness;
             }
 
@@ -176,7 +177,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 multiScaler.SetInput(inputTextureDown4);
                 multiScaler.SetOutput(blurTexture);
-                multiScaler.Draw(context);
+                ((RendererBase)multiScaler).Draw(context);
             }
 
             // Max blur size no more than 1/4 of input size
@@ -185,32 +186,32 @@ namespace SiliconStudio.Xenko.Rendering.Images
             blur.SigmaRatio = Math.Max(1.0f, SigmaRatio);
             blur.SetInput(blurTexture);
             blur.SetOutput(blurTexture);
-            blur.Draw(context);
+            ((RendererBase)blur).Draw(context);
 
             // TODO: Support automatic additional downscales 
             if (DownScale > 0)
             {
                 multiScaler.SetInput(blurTexture);
                 multiScaler.SetOutput(inputTextureDown4);
-                multiScaler.Draw(context);
+                ((RendererBase)multiScaler).Draw(context);
             }
 
             // Copy the input texture to the output
             if (ShowOnlyMip || ShowOnlyBloom)
             {
-                GraphicsDevice.Clear(output, Color.Black);
+                context.CommandList.Clear(output, Color.Black);
             }
 
             // Switch to additive
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
+            Scaler.BlendState = BlendStates.Additive;
 
             Scaler.Color = new Color4(Amount);
             Scaler.SetInput(inputTextureDown4);
             Scaler.SetOutput(output);
-            Scaler.Draw(context);
+            ((RendererBase)Scaler).Draw(context);
             Scaler.Reset();
 
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
+            Scaler.BlendState = BlendStates.Default;
         }
     }
 }

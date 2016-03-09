@@ -7,11 +7,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroup, NormalStream
     {
-        cbuffer PerObject
+        cbuffer PerLighting
         {
-            float3 LightDirectionsWS[TMaxLightCount] = null;
+            float3 LightDirectionsWS[TMaxLightCount];
             [Color]
-            float3 LightColor[TMaxLightCount] = null;
+            float3 LightColor[TMaxLightCount];
         }
 
         override int GetMaxLightCount()

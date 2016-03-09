@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets
 
         private readonly Dictionary<ParameterKey, int> parameterKeyIndices;
 
-        private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
+        private readonly Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>> declaredSamplerStates;
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets
             this.graphicsDevice = graphicsDevice;
             Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
-            declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
+            declaredSamplerStates = new Dictionary<SamplerStateDescription, ObjectParameterKey<SamplerState>>();
             currentOverrides = new MaterialOverrides();
         }
 
@@ -127,9 +127,9 @@ namespace SiliconStudio.Xenko.Assets
             return texture;
         }
 
-        public ParameterKey<Texture> GetTextureKey(Texture texture, ParameterKey<Texture> key, Color? defaultTextureValue = null)
+        public ObjectParameterKey<Texture> GetTextureKey(Texture texture, ObjectParameterKey<Texture> key, Color? defaultTextureValue = null)
         {
-            var textureKey = (ParameterKey<Texture>)GetParameterKey(key);
+            var textureKey = (ObjectParameterKey<Texture>)GetParameterKey(key);
             if (texture != null)
             {
                 Parameters.Set(textureKey, texture);
@@ -142,9 +142,9 @@ namespace SiliconStudio.Xenko.Assets
             return textureKey;
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc, GraphicsDevice graphicsDevice)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc, GraphicsDevice graphicsDevice)
         {
-            ParameterKey<SamplerState> key;
+            ObjectParameterKey<SamplerState> key;
 
             if (!declaredSamplerStates.TryGetValue(samplerStateDesc, out key))
             {
@@ -157,13 +157,13 @@ namespace SiliconStudio.Xenko.Assets
             return key;
         }
 
-        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
+        public ObjectParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
-            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            var keyResolved = (ObjectParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
+        public ObjectParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
         {
             if (sampler == null) throw new ArgumentNullException("sampler");
 

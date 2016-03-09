@@ -133,15 +133,6 @@ namespace SiliconStudio.Shaders.Visitor
                 CollectReferences(collectedReferences, entryPoint);
             }
 
-            if (KeepConstantBuffers)
-            {
-                // Include dependencies of cbuffer (i.e. dependent types)
-                foreach (var variable in shader.Declarations.OfType<ConstantBuffer>())
-                {
-                    CollectReferences(collectedReferences, variable);
-                }
-            }
-
             StripDeclarations(shader.Declarations, collectedReferences, StripUniforms);
         }
 
@@ -156,42 +147,58 @@ namespace SiliconStudio.Shaders.Visitor
             for (int i = 0; i < nodes.Count; i++)
             {
                 var declaration = nodes[i];
-                if (declaration is Variable)
-                {
-                    var variableDeclaration = (Variable)declaration;
-                    if ((!stripUniforms && variableDeclaration.Qualifiers.Contains(Ast.StorageQualifier.Uniform)) || variableDeclaration.Name.Text == "XenkoFlipRendertarget")
-                        continue;
 
-                    if (variableDeclaration.IsGroup)
+                // Strip constant buffer elements by elements only if "stripUniforms" is active (useful for API without constant buffers like OpenGL ES 2.0)
+                if (stripUniforms && declaration is ConstantBuffer)
+                {
+                    var constantBuffer = (ConstantBuffer)declaration;
+                    StripDeclarations(constantBuffer.Members, collectedReferences, stripUniforms);
+                }
+
+                if (CanStrip(declaration, collectedReferences, stripUniforms))
+                {
+                    nodes.RemoveAt(i--);
+                }
+            }
+        }
+
+        private static bool CanStrip(Node declaration, ICollection<Node> collectedReferences, bool stripUniforms)
+        {
+            if (declaration is Variable)
+            {
+                var variableDeclaration = (Variable)declaration;
+                if ((!stripUniforms && variableDeclaration.Qualifiers.Contains(Ast.StorageQualifier.Uniform)))
+                    return false;
+
+                if (variableDeclaration.IsGroup)
+                {
+                    variableDeclaration.SubVariables.RemoveAll(x => !collectedReferences.Contains(x));
+                    if (variableDeclaration.SubVariables.Count == 0)
                     {
-                        variableDeclaration.SubVariables.RemoveAll(x => !collectedReferences.Contains(x));
-                        if (variableDeclaration.SubVariables.Count == 0)
-                        {
-                            nodes.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                    else if (!collectedReferences.Contains(declaration))
-                    {
-                        nodes.RemoveAt(i);
-                        i--;                        
+                        return true;
                     }
                 }
-                else if (declaration is IDeclaration && !collectedReferences.Contains(declaration))
+                else if (!collectedReferences.Contains(declaration))
                 {
-                    nodes.RemoveAt(i);
-                    i--;
-                } 
-                else if (declaration is ConstantBuffer)
-                {
-                    // Do not stript constant buffer anymore, they should be kept as is
-                    if (stripUniforms)
-                    {
-                        var constantBuffer = (ConstantBuffer)declaration;
-                        StripDeclarations(constantBuffer.Members, collectedReferences, stripUniforms);
-                    }
+                    return true;
                 }
-            }            
+            }
+            else if (declaration is IDeclaration && !collectedReferences.Contains(declaration))
+            {
+                return true;
+            }
+            else if (declaration is ConstantBuffer)
+            {
+                // Strip cbuffer only if all of its member can be
+                var constantBuffer = (ConstantBuffer)declaration;
+                foreach (var member in constantBuffer.Members)
+                {
+                    if (!CanStrip(member, collectedReferences, stripUniforms))
+                        return false;
+                }
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

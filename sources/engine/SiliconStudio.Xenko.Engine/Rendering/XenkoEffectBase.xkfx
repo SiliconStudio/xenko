@@ -57,11 +57,6 @@ namespace SiliconStudio.Xenko.Rendering
         // -----------------------------------------------
         if (MaterialKeys.HasSkinningPosition)
         {
-            if (MaterialKeys.SkinningBones > MaterialKeys.SkinningMaxBones)
-            {
-                // TODO: We should use next power of two minus constant to limit shader permutations?
-                MaterialKeys.SkinningMaxBones = MaterialKeys.SkinningBones;
-            }
             mixin macro MaterialKeys.SkinningMaxBones;
             mixin TransformationSkinning;
 

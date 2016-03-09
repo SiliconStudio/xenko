@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ColorCombinerShaderKeys
     {
-        public static readonly ParameterKey<float[]> Factors = ParameterKeys.New<float[]>();
-        public static readonly ParameterKey<Color3[]> ModulateRGB = ParameterKeys.New<Color3[]>();
+        public static readonly ValueParameterKey<float> Factors = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Color3> ModulateRGB = ParameterKeys.NewValue<Color3>();
     }
 }

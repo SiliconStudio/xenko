@@ -63,6 +63,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public void Apply()
         {
+            // TODO GRAPHICS REFACTOR
             //Apply(parameters);
             throw new NotImplementedException();
         }

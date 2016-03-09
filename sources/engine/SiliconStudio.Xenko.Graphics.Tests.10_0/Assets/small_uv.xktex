@@ -1,0 +1,18 @@
+!Texture
+Id: 251fa408-98a7-4afb-9dee-bbe6f2eeb145
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../data/tests/small_uv.png
+ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+PremultiplyAlpha: false
+~Base:
+    ~Id: 819d04bb-e593-41fb-992d-78d43e46753d
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

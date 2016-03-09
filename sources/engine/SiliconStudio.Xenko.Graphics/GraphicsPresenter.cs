@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="presentationParameters"> </param>
         protected GraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters)
         {
-            GraphicsDevice = device.RootDevice;
+            GraphicsDevice = device;
             var description = presentationParameters.Clone();
 
             // If we are creating a GraphicsPresenter with 
@@ -140,6 +140,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get { return Description.PresentationInterval; }
             set { Description.PresentationInterval = value; }
+        }
+
+        public virtual void BeginDraw(CommandList commandList)
+        {
+        }
+
+        public virtual void EndDraw(CommandList commandList, bool present)
+        {
         }
 
         /// <summary>

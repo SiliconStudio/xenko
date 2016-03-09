@@ -31,8 +31,8 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             Compiler = new EffectCompiler();
             Compiler.SourceDirectories.Add("shaders");
             MixinParameters = new ShaderMixinParameters();
-            MixinParameters.Add(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
-            MixinParameters.Add(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
+            MixinParameters.Set(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
+            MixinParameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
             ResultLogger = new LoggerResult();
         }
 

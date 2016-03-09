@@ -23,8 +23,6 @@ namespace SiliconStudio.Xenko.Shaders
         private static object generatorLock = new object();
         private static ShaderMixinObjectId generator;
 
-        private static ParameterCollection parameters;
-
         private readonly NativeMemoryStream memStream;
         private readonly HashSerializationWriter writer;
         private ObjectIdBuilder objectIdBuilder;
@@ -37,9 +35,6 @@ namespace SiliconStudio.Xenko.Shaders
             memStream = new NativeMemoryStream(buffer, 65536);
             writer = new HashSerializationWriter(memStream);
             writer.Context.SerializerSelector = new SerializerSelector("Default", "Hash");
-
-            if (parameters == null)
-                parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -87,11 +82,9 @@ namespace SiliconStudio.Xenko.Shaders
             writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
             writer.Write(mixin);
 
-            parameters.Clear();
-            parameters.Set(CompilerParameters.GraphicsPlatformKey, mixinParameters.Get(CompilerParameters.GraphicsPlatformKey));
-            parameters.Set(CompilerParameters.GraphicsProfileKey, mixinParameters.Get(CompilerParameters.GraphicsProfileKey));
-            parameters.Set(CompilerParameters.DebugKey, mixinParameters.Get(CompilerParameters.DebugKey));
-            writer.Write(parameters);
+            writer.Write(mixinParameters.Get(CompilerParameters.GraphicsPlatformKey));
+            writer.Write(mixinParameters.Get(CompilerParameters.GraphicsProfileKey));
+            writer.Write(mixinParameters.Get(CompilerParameters.DebugKey));
 
             // Compute hash
             objectIdBuilder.Reset();

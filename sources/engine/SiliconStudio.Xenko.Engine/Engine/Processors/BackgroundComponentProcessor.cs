@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public List<BackgroundComponent> Backgrounds { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
+        /// Initializes a new instance of the <see cref="BackgroundComponentProcessor"/> class.
         /// </summary>
         public BackgroundComponentProcessor()
         {

@@ -175,6 +175,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="NextGen\NextGenTest1.cs" />
+    <Compile Include="NextGen\TestCamera.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />

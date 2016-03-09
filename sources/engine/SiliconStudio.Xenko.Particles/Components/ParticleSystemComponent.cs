@@ -6,6 +6,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Particles.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Components
 {
@@ -14,8 +15,8 @@ namespace SiliconStudio.Xenko.Particles.Components
     /// </summary>
     [DataContract("ParticleSystemComponent")]
     [Display("Particle System", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(ParticleSystemComponentRenderer))]
-    [DefaultEntityComponentProcessor(typeof(ParticleSystemProcessor))]
+    [DefaultEntityComponentProcessor(typeof(ParticleSystemSimulationProcessor))]
+    [DefaultEntityComponentRenderer(typeof(ParticleSystemRenderProcessor))]
     [ComponentOrder(10200)]
     public sealed class ParticleSystemComponent : ActivableEntityComponent
     {        

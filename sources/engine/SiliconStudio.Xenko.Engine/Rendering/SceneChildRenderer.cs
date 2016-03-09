@@ -60,27 +60,28 @@ namespace SiliconStudio.Xenko.Engine
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        private SceneInstance GetChildSceneInstance()
         {
             if (ChildScene == null || !ChildScene.Enabled)
             {
-                return;
+                return null;
             }
 
             currentSceneInstance = SceneInstance.GetCurrent(Context);
 
             childSceneProcessor = childSceneProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
 
-            if (childSceneProcessor == null)
-            {
-                return;
-            }
+            return childSceneProcessor?.GetSceneInstance(ChildScene);
+        }
 
-            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
-            if (sceneInstance != null)
-            {
-                sceneInstance.Draw(context, output, GraphicsCompositorOverride);
-            }
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
+        {
+            var sceneInstance = GetChildSceneInstance();
+            if (sceneInstance == null)
+                return;
+
+            // Draw scene recursively
+            sceneInstance.Draw(context, output, GraphicsCompositorOverride);
         }
     }
 }

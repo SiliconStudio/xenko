@@ -249,6 +249,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
             combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
             combineLevelsFrontEffect = ToLoadAndUnload(new ImageEffectShader("CombineFrontCoCEffect"));
+            combineLevelsFrontEffect.BlendState = BlendStates.AlphaBlend;
             textureScaler = ToLoadAndUnload(new ImageScaler());
             cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
             thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
@@ -341,7 +342,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         // Match: downscale level -> Texture
         private Dictionary<int, Texture> downscaledSources = new Dictionary<int, Texture>();
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var originalColorBuffer = GetSafeInput(0);
             var originalDepthBuffer = GetSafeInput(1);
@@ -358,7 +359,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Render target will contain "CoC"(16 bits) "Linear depth"(16bits).
             var cocLinearDepthTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f, PixelFormat.R16G16_Float);
 
-            var farPlane = context.Parameters.Get(CameraKeys.FarClipPlane);
+            var cameraState = context.RenderContext.GetCurrentCamera();
+            if (cameraState == null) throw new InvalidOperationException("No valid camera");
+
+            var farPlane = cameraState.FarClipPlane;
 
             var depthAreas = DOFAreas;
             if (AutoFocus)
@@ -375,6 +379,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
             coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, depthAreas);
+            var camera = context.RenderContext.GetCurrentCamera();
+            if (camera != null)
+                coclinearDepthMapEffect.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(camera.NearClipPlane, camera.FarClipPlane));
             coclinearDepthMapEffect.Draw(context, "CoC_LinearDepth");
 
             if (AutoFocus)
@@ -384,10 +391,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pointDepthShader.Parameters.Set(PointDepthKeys.Coordinate, new Vector2(0.5f, 0.5f));
                 pointDepthShader.SetInput(cocLinearDepthTexture);
                 pointDepthShader.SetOutput(depthCenter1x1);
-                pointDepthShader.Draw("Center Depth");
+                pointDepthShader.Draw(context, "Center Depth");
 
                 depthReadBack.SetInput(depthCenter1x1);
-                depthReadBack.Draw("Center_Depth_Readback");
+                depthReadBack.Draw(context, "Center_Depth_Readback");
                 var centerDepth = depthReadBack.Result[0];
                 autoFocusDistanceTarget = centerDepth;
             }
@@ -506,10 +513,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // TODO Quality up: instead of merging all the layers for each pixel, merge only
             // the relevant layer(s) closest to the pixel CoC. 
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.AlphaBlend);
             combineLevelsFrontEffect.SetOutput(outputTexture);
             combineLevelsFrontEffect.Draw(context, "CoCLevelCombineInterpolationFront");
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
 
             // Release any reference
             downscaledSources.Clear();

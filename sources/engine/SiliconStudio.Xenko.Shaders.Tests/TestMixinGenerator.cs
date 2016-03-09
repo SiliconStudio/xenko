@@ -187,46 +187,5 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             mixin = GenerateMixin("DefaultComplexParams", properties, out usedProperties);
             mixin.CheckMixin("A", "B", "C", "C1", "C3");
         }
-
-        public static ParameterKey<int> PropertyInt = ParameterKeys.New<int>();
-        public static ParameterKey<ShaderMixinParameters> PropertySub = ParameterKeys.New<ShaderMixinParameters>();
-        public static ParameterKey<ShaderMixinParameters[]> PropertySubs = ParameterKeys.New<ShaderMixinParameters[]>();
-
-        [Test]
-        public void TestShaderParametersSerialization()
-        {
-            // Test serialization
-            var shaderParameters = new ShaderMixinParameters("Test");
-            shaderParameters.Set(PropertyInt, 5);
-            var subShaderParameters = new ShaderMixinParameters("Sub");
-            subShaderParameters.Set(PropertyInt, 6);
-            shaderParameters.Set(PropertySub, subShaderParameters);
-
-            var subShaderParametersArray = new ShaderMixinParameters[1];
-            var subShaderParametersArray1 = new ShaderMixinParameters("InArray1");
-            subShaderParametersArray[0] = subShaderParametersArray1;
-            subShaderParametersArray1.Set(PropertyInt, 7);
-            shaderParameters.Set(PropertySubs, subShaderParametersArray);
-
-            var memoryStream = new MemoryStream();
-            var writer = new BinarySerializationWriter(memoryStream);
-            writer.Write(shaderParameters);
-            writer.Flush();
-            memoryStream.Position = 0;
-
-            var reader = new BinarySerializationReader(memoryStream);
-            var shaderParametersReloaded = reader.Read<ShaderMixinParameters>();
-
-            // They should be strictly equal
-            Assert.That(shaderParametersReloaded.IsSubsetOf(shaderParameters), Is.True);
-            Assert.That(shaderParameters.IsSubsetOf(shaderParametersReloaded), Is.True);
-
-            // Test subset
-            // Check that by removing one key from the original parameters, the reloaded version is
-            // no longer a subset
-            subShaderParametersArray1.Remove(PropertyInt);
-            Assert.That(shaderParametersReloaded.IsSubsetOf(shaderParameters), Is.False);
-        }
-
     }
 }

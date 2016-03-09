@@ -1,0 +1,16 @@
+﻿namespace SiliconStudio.Xenko.Rendering
+{
+    // TODO GRAPHICS REFACTOR: Unify passthrough color shaders (picking, highlight, etc.)
+    class HighlightShader : ShaderBase
+    {
+        cbuffer PerDraw
+        {
+            stage float4 HighlightColor;
+        }
+
+        stage override void PSMain()
+        {
+            streams.ColorTarget = HighlightColor;
+        }
+    };
+}

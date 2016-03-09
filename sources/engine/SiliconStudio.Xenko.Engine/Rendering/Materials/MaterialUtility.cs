@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors
         /// </summary>
         /// <param name="i">The id of the texture.</param>
         /// <returns>The corresponding ParameterKey.</returns>
-        public static ParameterKey<SamplerState> GetDefaultSamplerKey(int i)
+        public static ObjectParameterKey<SamplerState> GetDefaultSamplerKey(int i)
         {
             switch (i)
             {

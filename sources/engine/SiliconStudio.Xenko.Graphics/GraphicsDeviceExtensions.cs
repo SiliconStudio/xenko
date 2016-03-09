@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -19,34 +18,74 @@ namespace SiliconStudio.Xenko.Graphics
         /// Draws a fullscreen quad with the specified effect and parameters.
         /// </summary>
         /// <param name="device">The device.</param>
-        /// <param name="effect">The effect.</param>
-        /// <param name="effectParameterCollectionGroup">The shader parameter updater.</param>
+        /// <param name="effectInstance">The effect instance.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, EffectParameterCollectionGroup effectParameterCollectionGroup)
+        public static void DrawQuad(this GraphicsContext graphicsContext, EffectInstance effectInstance)
         {
-            if (effect == null) throw new ArgumentNullException("effect");
+            if (effectInstance == null) throw new ArgumentNullException("effectInstance");
 
             // Apply the effect
-            effect.Apply(device, effectParameterCollectionGroup, false);
+            effectInstance.Apply(graphicsContext);
 
             // Draw a full screen quad
-            device.DrawQuad();
+            graphicsContext.CommandList.DrawQuad();
+        }
 
-            // Unapply
-            effect.UnbindResources(device);
+        #region DrawQuad/DrawTexture Helpers
+        /// <summary>
+        /// Draws a full screen quad. An <see cref="Effect"/> must be applied before calling this method.
+        /// </summary>
+        public static void DrawQuad(this CommandList commandList)
+        {
+            commandList.GraphicsDevice.PrimitiveQuad.Draw(commandList);
         }
 
         /// <summary>
-        /// Resets the <see cref="BlendState"/>, <see cref="DepthStencilState"/> and <see cref="RasterizerState"/> to their 
-        /// default values.
+        /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
-        /// <param name="device">The device.</param>
-        public static void ResetStates(this GraphicsDevice device)
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, BlendStateDescription? blendState = null)
         {
-            device.SetBlendState(device.BlendStates.Default);
-            device.SetDepthStencilState(device.DepthStencilStates.Default);
-            device.SetRasterizerState(device.RasterizerStates.CullBack);
+            graphicsContext.DrawTexture(texture, null, Color4.White, blendState);
         }
+
+        /// <summary>
+        /// Draws a fullscreen texture using the specified sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
+        /// </summary>
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
+        /// <param name="sampler">The sampler.</param>
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, SamplerState sampler, BlendStateDescription? blendState = null)
+        {
+            graphicsContext.DrawTexture(texture, sampler, Color4.White, blendState);
+        }
+
+        /// <summary>
+        /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler
+        /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
+        /// </summary>
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, Color4 color, BlendStateDescription? blendState = null)
+        {
+            graphicsContext.DrawTexture(texture, null, color, blendState);
+        }
+
+        /// <summary>
+        /// Draws a fullscreen texture using the specified sampler
+        /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
+        /// </summary>
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
+        /// <param name="sampler">The sampler.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public static void DrawTexture(this GraphicsContext graphicsContext, Texture texture, SamplerState sampler, Color4 color, BlendStateDescription? blendState = null)
+        {
+            graphicsContext.CommandList.GraphicsDevice.PrimitiveQuad.Draw(graphicsContext, texture, sampler, color, blendState);
+        }
+        #endregion
 
         public static Texture GetSharedWhiteTexture(this GraphicsDevice device)
         {

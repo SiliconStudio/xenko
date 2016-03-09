@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ToneMapShader", context.GetParam(ToneMapKeys.AutoKey), context.GetParam(ToneMapKeys.AutoExposure));
+                context.PushParameters(context.GetParam(ToneMapKeys.Operator).Parameters);
 
                 {
                     var __mixinToCompose__ = context.GetParam(ColorTransformKeys.Shader);
@@ -31,6 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     context.Mixin(__subMixin, __mixinToCompose__);
                     context.PopComposition();
                 }
+                context.PopParameters();
             }
 
             [ModuleInitializer]

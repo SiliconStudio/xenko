@@ -26,7 +26,7 @@ namespace SiliconStudio.Core.Storage
         private uint H4;
         private uint length;
         
-        internal ObjectIdSimpleBuilder(uint seed = 0)
+        public ObjectIdSimpleBuilder(uint seed = 0)
         {
             this.seed = seed;
 

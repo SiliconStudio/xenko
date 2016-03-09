@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -256,13 +256,16 @@ namespace SiliconStudio.Xenko.Engine
             base.Initialize();
 
             //now we probably are capable of detecting the gpu so we try again settings
-            var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
-            if (renderingSettings != null)
+            if (AutoLoadDefaultSettings)
             {
-                var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
-                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+                if (renderingSettings != null)
+                {
+                    var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                    deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                }
             }
 
             // ---------------------------------------------------------
@@ -356,7 +359,7 @@ namespace SiliconStudio.Xenko.Engine
 
                     using (var stream = System.IO.File.Create(newFileName))
                     {
-                        GraphicsDevice.BackBuffer.Save(stream, ImageFileType.Png);
+                        GraphicsDevice.Presenter.BackBuffer.Save(GraphicsContext.CommandList, stream, ImageFileType.Png);
                     }
                 }
             }

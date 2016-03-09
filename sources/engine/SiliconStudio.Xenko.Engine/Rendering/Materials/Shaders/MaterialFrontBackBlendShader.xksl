@@ -3,15 +3,18 @@
 
 class MaterialFrontBackBlendShader<bool TUseNormalBackface> : ShadingBase, Transformation, PositionStream, NormalStream
 {
-    [Color]
-    stage float3 ColorFront;
+    cbuffer PerDraw
+    {
+        [Color]
+        stage float3 ColorFront;
     
-    [Color]
-    stage float3 ColorBack;
+        stage float ColorBlend;
 
-    stage float ColorBlend;
+        [Color]
+        stage float3 ColorBack;
     
-    stage float AlphaBlend;
+        stage float AlphaBlend;
+    }
 
     // method computing color
     stage override float4 Shading()
