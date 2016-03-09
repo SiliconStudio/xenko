@@ -341,7 +341,7 @@ namespace SiliconStudio.Xenko.Rendering
             NeedActiveRenderStageReevaluation = true;
         }
 
-        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderFeatures_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -375,7 +375,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderStages_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {

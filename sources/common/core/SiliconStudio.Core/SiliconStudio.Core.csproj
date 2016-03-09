@@ -62,6 +62,8 @@
     <Compile Include="BrowsableAttribute.cs" />
     <Compile Include="CategoryAttribute.cs" />
     <Compile Include="Collections\ArrayHelper.cs" />
+    <Compile Include="Collections\FastTrackingCollection.cs" />
+    <Compile Include="Collections\FastTrackingCollectionChangedEventArgs.cs" />
     <Compile Include="Collections\OrderedCollection.cs" />
     <Compile Include="Collections\FastCollection.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
