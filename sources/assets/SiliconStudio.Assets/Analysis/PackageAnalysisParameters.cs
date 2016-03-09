@@ -9,6 +9,8 @@ namespace SiliconStudio.Assets.Analysis
     {
         public bool IsPackageCheckDependencies { get; set; }
 
-        public bool EnableAssetTemplating { get; set; }
+        public bool AssetTemplatingMergeModifiedAssets { get; set; }
+
+        public bool AssetTemplatingRemoveUnusedBaseParts { get; set; }
     }
 }

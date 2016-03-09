@@ -3,9 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Runtime.InteropServices;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -14,10 +12,10 @@ namespace SiliconStudio.Core.Collections
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="T"></typeparam>
-    public abstract class KeyedSortedList<TKey, T> : IList<T>, IList
+    public abstract class KeyedSortedList<TKey, T> : ICollection<T>, ICollection
     {
         private readonly IComparer<TKey> comparer;
-        protected FastListStruct<T> items = new FastListStruct<T>(1);
+        protected FastListStruct<T> Items = new FastListStruct<T>(1);
 
         protected KeyedSortedList() : this(null)
         {
@@ -45,7 +43,7 @@ namespace SiliconStudio.Core.Collections
         /// <param name="item">The item.</param>
         protected virtual void InsertItem(int index, T item)
         {
-            items.Insert(index, item);
+            Items.Insert(index, item);
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace SiliconStudio.Core.Collections
         /// <param name="index">The index.</param>
         protected virtual void RemoveItem(int index)
         {
-            items.RemoveAt(index);
+            Items.RemoveAt(index);
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace SiliconStudio.Core.Collections
         /// </summary>
         public void Sort()
         {
-            Array.Sort(items.Items, 0, items.Count, new Comparer(this));
+            Array.Sort(Items.Items, 0, Items.Count, new Comparer(this));
         }
 
         /// <inheritdoc/>
@@ -96,8 +94,8 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         public T this[int index]
         {
-            get { return items[index]; }
-            set { items[index] = value; }
+            get { return Items[index]; }
+            set { Items[index] = value; }
         }
 
         public T this[TKey key]
@@ -107,15 +105,15 @@ namespace SiliconStudio.Core.Collections
                 int index = BinarySearch(key);
                 if (index < 0)
                     throw new KeyNotFoundException();
-                return items[index];
+                return Items[index];
             }
             set
             {
                 int index = BinarySearch(key);
                 if (index >= 0)
-                    items[index] = value;
+                    Items[index] = value;
                 else
-                    items.Insert(~index, value);
+                    Items.Insert(~index, value);
             }
         }
 
@@ -128,58 +126,26 @@ namespace SiliconStudio.Core.Collections
                 return false;
             }
 
-            value = items[index];
+            value = Items[index];
             return true;
         }
 
         /// <inheritdoc/>
         public void Clear()
         {
-            items.Clear();
+            Items.Clear();
         }
 
         /// <inheritdoc/>
         public bool Contains(T item)
         {
-            return items.Contains(item);
+            return Items.Contains(item);
         }
 
-        /// <inheritdoc/>
-        int IList.Add(object value)
-        {
-            int index = items.Count;
-            Add((T)value);
-            return index;
-        }
-
-        /// <inheritdoc/>
-        bool IList.Contains(object value)
-        {
-            return Contains((T)value);
-        }
-
-        /// <inheritdoc/>
-        int IList.IndexOf(object value)
-        {
-            return IndexOf((T)value);
-        }
-
-        /// <inheritdoc/>
-        void IList.Insert(int index, object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        void IList.Remove(object value)
-        {
-            throw new NotImplementedException();
-        }
-        
         /// <inheritdoc/>
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            foreach (var item in items)
+            foreach (var item in Items)
             {
                 array[arrayIndex++] = item;
             }
@@ -188,78 +154,69 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         bool ICollection<T>.Remove(T item)
         {
-            throw new NotImplementedException();
+            return Items.Remove(item);
         }
 
-        void ICollection.CopyTo(Array array, int index)
+        /// <inheritdoc/>
+        void ICollection.CopyTo(Array array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            foreach (var item in Items)
+            {
+                ((IList)array)[arrayIndex++] = item;
+            }
         }
         
         /// <inheritdoc/>
-        public int Count
-        {
-            get { return items.Count; }
-        }
-
-        public object SyncRoot { get; private set; }
-
-        public bool IsSynchronized { get; private set; }
+        public int Count => Items.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        object ICollection.SyncRoot => this;
 
-        public bool IsFixedSize { get; private set; }
+        /// <inheritdoc/>
+        bool ICollection.IsSynchronized => false;
+
+        /// <inheritdoc/>
+        bool ICollection<T>.IsReadOnly => false;
 
         /// <inheritdoc/>
         public int IndexOf(T item)
         {
-            return items.IndexOf(item);
+            return Items.IndexOf(item);
         }
 
-        /// <inheritdoc/>
-        void IList<T>.Insert(int index, T item)
-        {
-            throw new NotImplementedException();
-        }
+//        /// <inheritdoc/>
+//        public void RemoveAt(int index)
+//        {
+//            Items.RemoveAt(index);
+//        }
 
-        /// <inheritdoc/>
-        public void RemoveAt(int index)
+        public void Remove(T item)
         {
-            items.RemoveAt(index);
-        }
-
-        object IList.this[int index]
-        {
-            get { return items[index]; }
-            set { items[index] = (T)value; }
+            Items.Remove(item);
         }
 
         /// <inheritdoc/>
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return new Enumerator(items);
+            return new Enumerator(Items);
         }
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator(items);
+            return new Enumerator(Items);
         }
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(items);
+            return new Enumerator(Items);
         }
 
         public int BinarySearch(TKey searchKey)
         {
-            var values = items.Items;
+            var values = Items.Items;
             int start = 0;
-            int end = items.Count - 1;
+            int end = Items.Count - 1;
 
             while (start <= end)
             {
@@ -286,7 +243,7 @@ namespace SiliconStudio.Core.Collections
 
         struct Comparer : IComparer<T>
         {
-            private KeyedSortedList<TKey, T> list;
+            private readonly KeyedSortedList<TKey, T> list;
 
             internal Comparer(KeyedSortedList<TKey, T> list)
             {
@@ -302,7 +259,7 @@ namespace SiliconStudio.Core.Collections
         #region Nested type: Enumerator
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct Enumerator : IEnumerator<T>, IDisposable, IEnumerator
+        public struct Enumerator : IEnumerator<T>
         {
             private readonly FastListStruct<T> list;
             private int index;
@@ -337,15 +294,9 @@ namespace SiliconStudio.Core.Collections
                 return false;
             }
 
-            public T Current
-            {
-                get { return current; }
-            }
+            public T Current => current;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             void IEnumerator.Reset()
             {

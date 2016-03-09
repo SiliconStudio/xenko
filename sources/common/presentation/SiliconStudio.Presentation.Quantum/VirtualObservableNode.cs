@@ -29,12 +29,6 @@ namespace SiliconStudio.Presentation.Quantum
             Name = name;
         }
 
-        internal static VirtualObservableNode Create(ObservableViewModel owner, string name, Type contentType, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter)
-        {
-            var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), owner, name, isPrimitive, order, index, getter, setter);
-            return node;
-        }
-
         public override void Dispose()
         {
             if (associatedContent != null)

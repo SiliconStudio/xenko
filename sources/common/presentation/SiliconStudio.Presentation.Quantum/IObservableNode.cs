@@ -53,11 +53,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets whether this node can be modified in the view.
         /// </summary>
         bool IsReadOnly { get; set; }
-
-        /// <summary>
-        /// Gets whether this node contains a primitive value. A primitive value has no children node and does not need to refresh its hierarchy when its value is modified.
-        /// </summary>
-        bool IsPrimitive { get; }
         
         /// <summary>
         /// Gets or sets the value.

@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 assetManager.Save(Url, new ProceduralModelDescriptor(AssetParameters.Type));
 
                 return Task.FromResult(ResultStatus.Successful);

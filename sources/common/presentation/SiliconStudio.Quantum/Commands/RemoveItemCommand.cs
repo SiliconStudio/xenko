@@ -43,7 +43,8 @@ namespace SiliconStudio.Quantum.Commands
 
         protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            content.Remove(index);
+            var item = content.Retrieve(index);
+            content.Remove(index, item);
             return null;
         }
     }

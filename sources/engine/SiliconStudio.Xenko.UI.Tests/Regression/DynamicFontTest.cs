@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             textBlock = new TextBlock
                 {
-                    Font = Asset.Load<SpriteFont>("MSMincho10"), 
+                    Font = Content.Load<SpriteFont>("MSMincho10"), 
                     Text = "Simple Text - 簡単な文章。", 
                     TextColor = Color.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             {
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite")),
+                BackgroundImage = new Sprite(Content.Load<Texture>("DumbWhite")),
                 Content = textBlock
             };
 

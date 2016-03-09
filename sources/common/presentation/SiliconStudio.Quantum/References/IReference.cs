@@ -32,6 +32,14 @@ namespace SiliconStudio.Quantum.References
         ReferenceEnumerable AsEnumerable { get; }
 
         /// <summary>
+        /// Indicates whether the reference contains the given index.
+        /// </summary>
+        /// <param name="index">The index to check.</param>
+        /// <returns><c>True</c> if the reference contains the given index, <c>False</c> otherwise.</returns>
+        /// <remarks>If it is an <see cref="ObjectReference"/> it will return true only for <c>null</c>.</remarks>
+        bool HasIndex(object index);
+
+        /// <summary>
         /// Clear the reference, making it represent a null or empty object.
         /// </summary>
         void Clear();

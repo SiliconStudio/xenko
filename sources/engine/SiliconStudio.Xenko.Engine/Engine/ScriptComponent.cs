@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             Game = Services.GetSafeServiceAs<IGame>();
-            Asset = (AssetManager)Services.GetSafeServiceAs<IAssetManager>();
+            Content = (ContentManager)Services.GetSafeServiceAs<IAssetManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();
@@ -68,7 +68,11 @@ namespace SiliconStudio.Xenko.Engine
         public IGame Game { get; private set; }
 
         [DataMemberIgnore]
-        public AssetManager Asset { get; private set; }
+        public ContentManager Content { get; private set; }
+
+        [DataMemberIgnore]
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        public ContentManager Asset => Content;
 
         [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice => graphicsDeviceService?.GraphicsDevice;
