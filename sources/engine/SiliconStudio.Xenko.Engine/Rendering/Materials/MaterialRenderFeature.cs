@@ -131,6 +131,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         {
                             renderMeshesToGenerateAEN.Add(renderMesh);
                         }
+                        else
+                        {
+                            // Not using AEN tessellation anymore, dispose AEN indices if they were generated
+                            Utilities.Dispose(ref tessellationState.GeneratedIndicesAEN);
+                        }
                         tessellationState.MeshDraw = tessellationMeshDraw;
 
                         // Save back new state
@@ -139,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         // Reset pipeline states
                         for (int i = 0; i < effectSlotCount; ++i)
                         {
-                            var staticEffectObjectNode = staticObjectNode*effectSlotCount + i;
+                            var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                             var renderEffect = renderEffects[staticEffectObjectNode];
 
                             if (renderEffect != null)
@@ -148,6 +153,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     }
 
                     renderMesh.ActiveMeshDraw = tessellationState.MeshDraw;
+                }
+                else if (tessellationState.GeneratedIndicesAEN != null)
+                {
+                    // Not using tessellation anymore, dispose AEN indices if they were generated
+                    Utilities.Dispose(ref tessellationState.GeneratedIndicesAEN);
                 }
 
                 for (int i = 0; i < effectSlotCount; ++i)
@@ -252,14 +262,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 foreach (var renderMesh in renderMeshesToGenerateAEN)
                 {
                     var tessellationState = tessellationStates[renderMesh.StaticObjectNode];
-                    if (tessellationState.GeneratedIndices != null)
+                    if (tessellationState.GeneratedIndicesAEN != null)
                         continue;
 
                     var tessellationMeshDraw = tessellationState.MeshDraw;
 
                     var indicesAEN = IndexExtensions.GenerateIndexBufferAEN(tessellationMeshDraw.IndexBuffer, tessellationMeshDraw.VertexBuffers[0], context.CommandList);
-                    tessellationState.GeneratedIndices = Buffer.Index.New(Context.GraphicsDevice, indicesAEN);
-                    tessellationMeshDraw.IndexBuffer = new IndexBufferBinding(tessellationState.GeneratedIndices, true, tessellationMeshDraw.IndexBuffer.Count*12/3);
+                    tessellationState.GeneratedIndicesAEN = Buffer.Index.New(Context.GraphicsDevice, indicesAEN);
+                    tessellationMeshDraw.IndexBuffer = new IndexBufferBinding(tessellationState.GeneratedIndicesAEN, true, tessellationMeshDraw.IndexBuffer.Count*12/3);
                     tessellationMeshDraw.DrawCount = 12/3*tessellationMeshDraw.DrawCount;
                 }
 
@@ -327,15 +337,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         struct TessellationState : IDisposable
         {
             public XenkoTessellationMethod Method;
-            public Buffer GeneratedIndices;
+            public Buffer GeneratedIndicesAEN;
             public MeshDraw MeshDraw;
 
             public void Dispose()
             {
-                if (GeneratedIndices != null)
+                if (GeneratedIndicesAEN != null)
                 {
-                    GeneratedIndices.Dispose();
-                    GeneratedIndices = null;
+                    GeneratedIndicesAEN.Dispose();
+                    GeneratedIndicesAEN = null;
                 }
             }
         }
