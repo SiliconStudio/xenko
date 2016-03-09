@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
-        public TrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new TrackingCollection<RenderStageSelector>();
+        public FastTrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new FastTrackingCollection<RenderStageSelector>();
 
         /// <summary>
         /// Gets the type of render object supported by this <see cref="RootRenderFeature"/>.

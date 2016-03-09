@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render stages.
         /// </summary>
-        public TrackingCollection<RenderStage> RenderStages { get; } = new TrackingCollection<RenderStage>();
+        public FastTrackingCollection<RenderStage> RenderStages { get; } = new FastTrackingCollection<RenderStage>();
 
         /// <summary>
         /// Frame counter, mostly for internal use.
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render features
         /// </summary>
-        public TrackingCollection<RootRenderFeature> RenderFeatures { get; } = new TrackingCollection<RootRenderFeature>();
+        public FastTrackingCollection<RootRenderFeature> RenderFeatures { get; } = new FastTrackingCollection<RootRenderFeature>();
 
         /// <summary>
         /// The graphics device, used to create graphics resources.
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of views.
         /// </summary>
-        public TrackingCollection<RenderView> Views { get; } = new TrackingCollection<RenderView>();
+        public FastTrackingCollection<RenderView> Views { get; } = new FastTrackingCollection<RenderView>();
 
         public RenderContext RenderContextOld { get; private set; }
 
@@ -400,7 +400,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderStages_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -410,7 +410,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderFeatures_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             var renderFeature = (RootRenderFeature)e.Item;
 
@@ -435,12 +435,12 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderStageSelectors_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             RenderStageSelectorsChanged?.Invoke();
         }
 
-        private void Views_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void Views_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {

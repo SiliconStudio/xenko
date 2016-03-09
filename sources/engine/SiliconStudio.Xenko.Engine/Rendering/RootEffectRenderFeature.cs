@@ -740,7 +740,7 @@ namespace SiliconStudio.Xenko.Rendering
             return base.ComputeDataArrayExpectedSize(type);
         }
 
-        private void RenderStages_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        private void RenderStages_CollectionChanged(object sender, ref Core.Collections.FastTrackingCollectionChangedEventArgs e)
         {
             var renderStage = (RenderStage)e.Item;
 
