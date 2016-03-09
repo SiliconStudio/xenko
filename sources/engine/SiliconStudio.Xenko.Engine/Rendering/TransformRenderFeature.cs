@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -127,31 +128,34 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Copy Camera to PerView cbuffer
-                var cameraComponent = view.Camera;
-                if (cameraComponent != null)
+                foreach (var viewLayout in viewFeature.Layouts)
                 {
-                    foreach (var viewLayout in viewFeature.Layouts)
+                    var cameraOffset = viewLayout.GetConstantBufferOffset(camera);
+                    if (cameraOffset == -1)
+                        continue;
+
+                    var resourceGroup = viewLayout.Entries[view.Index].Resources;
+                    var mappedCB = resourceGroup.ConstantBuffer.Data;
+
+                    var perViewCamera = (PerViewCamera*)((byte*)mappedCB + cameraOffset);
+
+                    var cameraComponent = view.Camera;
+                    if (cameraComponent != null)
                     {
-                        var cameraOffset = viewLayout.GetConstantBufferOffset(camera);
-                        if (cameraOffset == -1)
-                            continue;
-
-                        var resourceGroup = viewLayout.Entries[view.Index].Resources;
-                        var mappedCB = resourceGroup.ConstantBuffer.Data;
-
-                        var perViewCamera = (PerViewCamera*)((byte*)mappedCB + cameraOffset);
-
                         perViewCamera->NearClipPlane = cameraComponent.NearClipPlane;
                         perViewCamera->FarClipPlane = cameraComponent.FarClipPlane;
                         perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(cameraComponent.NearClipPlane, cameraComponent.FarClipPlane);
-
-                        if (view.SceneCameraRenderer != null)
-                            perViewCamera->ViewSize = new Vector2(view.SceneCameraRenderer.ComputedViewport.Width, view.SceneCameraRenderer.ComputedViewport.Height);
-
                         perViewCamera->AspectRatio = cameraComponent.AspectRatio;
                         perViewCamera->VerticalFieldOfView = cameraComponent.VerticalFieldOfView;
                         perViewCamera->OrthoSize = cameraComponent.OrthographicSize;
                     }
+
+                    // TODO GRAPHICS REFACTOR better abstraction for shadow map rectangle
+                    var shadowMapRenderView = view as ShadowMapRenderView;
+                    if (shadowMapRenderView != null)
+                        perViewCamera->ViewSize = new Vector2(shadowMapRenderView.Rectangle.Width, shadowMapRenderView.Rectangle.Height);
+                    else if (view.SceneCameraRenderer != null)
+                        perViewCamera->ViewSize = new Vector2(view.SceneCameraRenderer.ComputedViewport.Width, view.SceneCameraRenderer.ComputedViewport.Height);
                 }
             }
 
