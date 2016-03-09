@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<AnimationClip>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<string>), Profile = "Clone")]
-    class EntityCloner
+    public class EntityCloner
     {
         private static CloneContext cloneContext = new CloneContext();
         private static SerializerSelector cloneSerializerSelector = null;
