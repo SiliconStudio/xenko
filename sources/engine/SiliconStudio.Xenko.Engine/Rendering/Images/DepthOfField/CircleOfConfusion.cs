@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class CircleOfConfusionKeys
     {
-        public static readonly ParameterKey<Vector4> depthAreas = ParameterKeys.New<Vector4>();
+        public static readonly ValueParameterKey<Vector4> depthAreas = ParameterKeys.NewValue<Vector4>();
     }
 }

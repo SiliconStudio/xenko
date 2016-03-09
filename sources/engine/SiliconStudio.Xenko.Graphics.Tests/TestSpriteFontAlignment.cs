@@ -67,11 +67,12 @@ One blank line below
 
         private void DrawText()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
 
             var dim1 = arial.MeasureString(Text1);
             var dim2 = arial.MeasureString(Text2);

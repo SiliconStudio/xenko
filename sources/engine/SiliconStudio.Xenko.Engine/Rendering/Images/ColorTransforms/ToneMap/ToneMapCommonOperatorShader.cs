@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ToneMapCommonOperatorShaderKeys
     {
-        public static readonly ParameterKey<float> LuminanceSaturation = ParameterKeys.New<float>(1.0f);
-        public static readonly ParameterKey<float> WhiteLevel = ParameterKeys.New<float>(5.0f);
+        public static readonly ValueParameterKey<float> LuminanceSaturation = ParameterKeys.NewValue<float>(1.0f);
+        public static readonly ValueParameterKey<float> WhiteLevel = ParameterKeys.NewValue<float>(5.0f);
     }
 }

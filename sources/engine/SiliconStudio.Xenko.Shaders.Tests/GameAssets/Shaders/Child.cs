@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ChildKeys
     {
-        public static readonly ParameterKey<SamplerState> childSampler = ParameterKeys.New<SamplerState>();
-        public static readonly ParameterKey<Texture> childTexture = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<SamplerState> childSampler = ParameterKeys.NewObject<SamplerState>();
+        public static readonly ObjectParameterKey<Texture> childTexture = ParameterKeys.NewObject<Texture>();
     }
 }

@@ -113,14 +113,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="renderContext">The render context.</param>
         /// <param name="enableDepth">if set to <c>true</c> [enable depth].</param>
         /// <exception cref="System.ArgumentNullException">renderContext</exception>
-        public void Activate(RenderContext renderContext, bool enableDepth = true)
+        public void Activate(RenderDrawContext renderContext, bool enableDepth = true)
         {
             if (renderContext == null) throw new ArgumentNullException("renderContext");
 
             // TODO: Handle support for shared depth stencil buffer
 
             // Sets the depth and render target
-            renderContext.GraphicsDevice.SetDepthAndRenderTargets(enableDepth ? DepthStencil : null, RenderTargets);
+            renderContext.CommandList.SetDepthAndRenderTargets(enableDepth ? DepthStencil : null, RenderTargets);
         }
 
         /// <summary>
@@ -148,16 +148,16 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 foreach (var renderTexture in renderTextures)
                 {
-                    if (renderTexture != null && !renderTexture.IsRenderTarget)
+                    if (!renderTexture.IsRenderTarget)
                     {
                         throw new ArgumentException("The texture must be a render target", "renderTextures");
                     }
 
-                    if (referenceTexture == null && renderTexture != null)
+                    if (referenceTexture == null)
                     {
                         referenceTexture = renderTexture;
                     }
-                    else if (renderTexture != null)
+                    else
                     {
                         if (referenceTexture.Width != renderTexture.Width || referenceTexture.Height != renderTexture.Height)
                         {
@@ -230,7 +230,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return null;
             }
 
-            return FromTexture(new [] { texture }, depthStencilTexture);
+            return FromTexture(texture != null ? new[] { texture } : null, depthStencilTexture);
         }
 
         /// <summary>
@@ -273,7 +273,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (description.DepthFormat == RenderFrameDepthFormat.None && description.Format == RenderFrameFormat.None)
                 return;
 
-            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.BackBuffer;
+            // TODO GRAPHICS REFACTOR check if it's OK to use Presenter targets
+            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.Presenter.BackBuffer;
 
             int width = description.Width;
             int height = description.Height;

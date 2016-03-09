@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private SpriteSheet rotatedImages;
 
-        private RasterizerState rasterizerState;
+        private RasterizerStateDescription rasterizerState;
 
         public TestSpriteBatch3D()
         {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             batch = new Sprite3DBatch(GraphicsDevice);
             sphere = Content.Load<Texture>("Sphere");
             rotatedImages = Content.Load<SpriteSheet>("RotatedImages");
-            rasterizerState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.None));
+            rasterizerState = new RasterizerStateDescription(CullMode.None);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -86,12 +86,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var cameraNear = 100;
             var projectionMatrix = Matrix.PerspectiveRH(cameraSize, cameraSize, cameraNear, 10000);
             var viewMatrix = Matrix.LookAtRH(cameraNear * Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
-            
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
-            batch.Begin(viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+
+            batch.Begin(GraphicsContext, viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
 
             var leftTopCorner = new Vector3(-320, -320, 0);
             var pos = leftTopCorner;

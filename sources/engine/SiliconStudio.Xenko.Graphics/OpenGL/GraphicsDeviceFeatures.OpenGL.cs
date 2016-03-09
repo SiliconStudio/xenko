@@ -85,6 +85,8 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             deviceRoot.HasVAO = true;
 
+            deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
+
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.versionMajor >= 4 && deviceRoot.versionMinor >= 3;
             HasDoublePrecision = SupportedExtensions.Contains("GL_ARB_vertex_attrib_64bit");
@@ -92,7 +94,9 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: from 4.0: tessellation, draw indirect
             // TODO: from 4.1: separate shader object
 #endif
-            
+
+            deviceRoot.HasDepthClamp = SupportedExtensions.Contains("GL_ARB_depth_clamp");
+
             HasDriverCommandLists = false;
             HasMultiThreadingConcurrentResources = false;
 

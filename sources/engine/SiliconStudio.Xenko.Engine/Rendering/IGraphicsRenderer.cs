@@ -13,6 +13,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="context">The context.</param>
         /// <remarks>The method <see cref="IGraphicsRendererCore.Initialize"/> should be called automatically by the implementation if it was not done before the first draw.</remarks>
-        void Draw(RenderContext context);
+        void Draw(RenderDrawContext context);
     }
 }

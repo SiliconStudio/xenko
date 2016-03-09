@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <userdoc>
         /// If checked, the material parameters will be used to generate effects.
         /// </userdoc>
-        public static readonly ParameterKey<bool> UseParameters = ParameterKeys.New<bool>();
+        public static readonly ValueParameterKey<bool> UseParameters = ParameterKeys.NewValue<bool>();
 
         /// <summary>
         /// Allow material compilation without mesh.
@@ -22,6 +22,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <userdoc>
         /// If checked, the materials will generate a shader even if they are not attached to a mesh.
         /// </userdoc>
-        public static readonly ParameterKey<bool> GenerateShader = ParameterKeys.New<bool>();
+        public static readonly ValueParameterKey<bool> GenerateShader = ParameterKeys.NewValue<bool>();
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -19,9 +19,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Handles rendering of shadow map casters.
     /// </summary>
-    public class ShadowMapRenderer : EntityComponentRendererCoreBase
+    public class ShadowMapRenderer
     {
         // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
+
+        public RenderSystem RenderSystem { get; set; }
+
+        private readonly RenderStage shadowMapRenderStage;
+
+        private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
 
         private FastListStruct<ShadowMapAtlasTexture> atlases;
 
@@ -29,225 +35,131 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private readonly int MaximumTextureSize = (int)(ReferenceShadowSize * ComputeSizeFactor(LightShadowMapSize.XLarge) * 2.0f);
 
-        private readonly static PropertyKey<ShadowMapRenderer> Current = new PropertyKey<ShadowMapRenderer>("ShadowMapRenderer.Current", typeof(ShadowMapRenderer));
-
         private const float ReferenceShadowSize = 1024;
 
-        internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
-        internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
-        internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
-        internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
-
-        /// <summary>
-        /// The shadow map caster extension a discard extension
-        /// </summary>
-        private static readonly ShaderMixinGeneratorSource ShadowMapCasterExtension = new ShaderMixinGeneratorSource("ShadowMapCaster") { Discard = true };
-
-        // rectangles to blur for each shadow map
-        private HashSet<LightShadowMapTexture> shadowMapTexturesToBlur = new HashSet<LightShadowMapTexture>();
-
-        private readonly string effectName;
-
-        private readonly ModelComponentRenderer shadowModelComponentRenderer;
-
-        private readonly RenderItemCollection opaqueRenderItems;
-
-        private readonly RenderItemCollection transparentRenderItems;
-
-        private readonly Dictionary<Type, ILightShadowMapRenderer> renderers;
-
-        private readonly ParameterCollection shadowCasterParameters;
-
-        public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
-
-        private List<LightComponent> visibleLights;
-
-        private readonly List<RenderModelCollection> shadowRenderModels = new List<RenderModelCollection>(); 
-
-        public ShadowMapRenderer(string effectName)
+        public ShadowMapRenderer(RenderSystem renderSystem, RenderStage shadowMapRenderStage)
         {
-            if (effectName == null) throw new ArgumentNullException("effectName");
-            this.effectName = effectName;
+            RenderSystem = renderSystem;
+            this.shadowMapRenderStage = shadowMapRenderStage;
+
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
+            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, CreateShadowRenderView);
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
-            LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
 
-            opaqueRenderItems = new RenderItemCollection(512, false);
-            transparentRenderItems = new RenderItemCollection(512, true);
-
-            renderers = new Dictionary<Type, ILightShadowMapRenderer>();
+            Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
             ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
+        }
 
-            // Creates a model renderer for the shadows casters
-            shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
-            {
-                CullingModeOverride =  CameraCullingMode.None,
-                Callbacks =
-                {
-                    UpdateMeshes = FilterCasters,
-                }
-            };
-
-            shadowCasterParameters = new ParameterCollection();
-            shadowCasterParameters.Set(XenkoEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
+        private ShadowMapRenderView CreateShadowRenderView()
+        {
+            return new ShadowMapRenderView { RenderStages = { shadowMapRenderStage }};
         }
 
         /// <summary>
-        /// Gets or sets the camera.
+        /// Gets or sets the render view.
         /// </summary>
-        /// <value>The camera.</value>
-        public CameraComponent Camera { get; private set; }
+        /// <value>The render view.</value>
+        public RenderView CurrentView { get; private set; }
 
         /// <summary>
         /// The shadow camera used for rendering from the shadow space.
         /// </summary>
         public readonly CameraComponent ShadowCamera;
 
-
-        public Dictionary<Type, ILightShadowMapRenderer> Renderers
-        {
-            get
-            {
-                return renderers;
-            }
-        }
+        public Dictionary<Type, ILightShadowMapRenderer> Renderers { get; }
 
         public ILightShadowMapRenderer FindRenderer(Type lightType)
         {
             ILightShadowMapRenderer shadowMapRenderer;
-            renderers.TryGetValue(lightType, out shadowMapRenderer);
+            Renderers.TryGetValue(lightType, out shadowMapRenderer);
             return shadowMapRenderer;
         }
 
-        public void Attach(ModelComponentRenderer modelRenderer)
+        public void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
         {
-            // TODO: Add logic to plug shadow mapping into 
-
-        }
-
-        /// <summary>
-        /// Draws the specified context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="visibleLights">The visible lights.</param>
-        public void Draw(RenderContext context, List<LightComponent> visibleLights)
-        {
-            var current = context.Tags.Get(Current);
-            if (current != null)
-            {
-                return;
-            }
-
-            if (Enabled)
-            {
-                this.visibleLights = visibleLights;
-
-                using (context.PushTagAndRestore(Current, this))
-                {
-                    PreDrawCoreInternal(context);
-                    DrawCore(context);
-                    PostDrawCoreInternal(context);
-                }
-            }
-        }
-
-        public void RenderCasters(RenderContext context, EntityGroupMask cullingMask)
-        {
-            context.GraphicsDevice.PushState();
-            context.PushParameters(shadowCasterParameters);
-            try
-            {
-                CameraComponentRenderer.UpdateParameters(context, ShadowCamera);
-
-                opaqueRenderItems.Clear();
-                transparentRenderItems.Clear();
-
-                // Query all models for the specified culling mask and collect render models
-                var modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
-                shadowRenderModels.Clear();
-                modelProcessor.QueryModelGroupsByMask(cullingMask, shadowRenderModels);
-
-                // Copy the ViewProjectionMatrix to the model renderer
-                shadowModelComponentRenderer.ViewProjectionMatrix = ShadowCamera.ViewProjectionMatrix;
-
-                foreach (var renderModelList in shadowRenderModels)
-                {
-                    shadowModelComponentRenderer.RenderModels = renderModelList;
-                    shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
-                }
-
-                // Render only Opaque items for now
-                // TODO: Add semi-transparent items with light
-                shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count - 1);
-            }
-            finally
-            {
-                // Make sure we clear any references left so that we don't hold them in memory
-                shadowRenderModels.Clear();
-                shadowModelComponentRenderer.RenderModels = null;
-
-                context.PopParameters();
-                context.GraphicsDevice.PopState();
-            }
-        }
-
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-
-            var shadowRenderState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
-
-            // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
-            // a shadow into the frustum)
-            shadowModelComponentRenderer.RasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
-            shadowModelComponentRenderer.ForceRasterizer = true;
-
-        }
-
-        protected void DrawCore(RenderContext context)
-        {
-            // We must be running inside the context of 
-            var sceneInstance = SceneInstance.GetCurrent(context);
-            if (sceneInstance == null)
-            {
-                throw new InvalidOperationException("ShadowMapRenderer expects to be used inside the context of a SceneInstance.Draw()");
-            }
-
-            // Gets the current camera
-            Camera = context.GetCurrentCamera();
-            if (Camera == null)
-            {
-                return;
-            }
+            // Cleanup previous shadow render views
+            foreach (var shadowRenderView in shadowRenderViews)
+                RenderSystem.Views.Remove(shadowRenderView);
+            shadowRenderViews.Clear();
 
             // Clear currently associated shadows
             shadowMapTextures.Clear();
-            LightComponentsWithShadows.Clear();
-
-            // Collect all required shadow maps
-            CollectShadowMaps();
-
-            // No shadow maps to render
-            if (shadowMapTextures.Count == 0)
-            {
-                return;
-            }
-
-            // Assign rectangles to shadow maps
-            AssignRectangles();
-
+            
             // Reset the state of renderers
-            foreach (var rendererKeyPairs in renderers)
+            foreach (var rendererKeyPairs in Renderers)
             {
                 var renderer = rendererKeyPairs.Value;
                 renderer.Reset();
             }
 
-            // Prepare and render shadow maps
-            foreach (var shadowMapTexture in shadowMapTextures)
+            foreach (var renderViewData in renderViewLightDatas)
             {
-                shadowMapTexture.Renderer.Render(context, this, shadowMapTexture);
+                renderViewData.Value.LightComponentsWithShadows.Clear();
+
+                // Gets the current camera
+                CurrentView = renderViewData.Key;
+
+                if (CurrentView.Camera == null)
+                {
+                    continue;
+                }
+
+                // Collect all required shadow maps
+                CollectShadowMaps(renderViewData.Key, renderViewData.Value);
+
+                // No shadow maps to render
+                if (shadowMapTextures.Count == 0)
+                {
+                    continue;
+                }
+
+                // Assign rectangles to shadow maps
+                AssignRectangles();
+
+                // Collect shadow render views
+                var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
+
+                foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
+                {
+                    var shadowMapTexture = lightShadowMapTexture.Value;
+                    shadowMapTexture.Renderer.Extract(RenderSystem.RenderContextOld, this, shadowMapTexture);
+                    for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
+                    {
+                        // Allocate shadow render view
+                        var shadowRenderView = shadowRenderViews.Add();
+                        shadowRenderView.RenderView = renderViewData.Key;
+                        shadowRenderView.ShadowMapTexture = shadowMapTexture;
+                        shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
+                        
+                        // Compute view parameters
+                        shadowMapTexture.Renderer.GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                        Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+
+                        // Add the render view for the current frame
+                        RenderSystem.Views.Add(shadowRenderView);
+
+                        // Collect objects in shadow views
+                        visibilityGroup.Collect(shadowRenderView);
+                    }
+                }
+            }
+        }
+
+        public void PrepareAtlasAsRenderTargets(CommandList commandList)
+        {
+            // Clear atlases
+            foreach (var atlas in atlases)
+            {
+                atlas.PrepareAsRenderTarget(commandList);
+            }
+        }
+
+        public void PrepareAtlasAsShaderResourceViews(CommandList commandList)
+        {
+            foreach (var atlas in atlases)
+            {
+                atlas.PrepareAsShaderResourceView(commandList);
             }
         }
 
@@ -288,7 +200,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // TODO: handle FilterType texture creation here
                 // TODO: This does not work for Omni lights
 
-                var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, shadowMapRenderStage.Output.DepthStencilFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
                 currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
                 atlases.Add(currentAtlas);
 
@@ -301,14 +213,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
 
             // Make sure the atlas cleared (will be clear just once)
-            currentAtlas.ClearRenderTarget(Context);
             lightShadowMapTexture.TextureId = (byte)currentAtlas.Id;
             lightShadowMapTexture.Atlas = currentAtlas;
         }
 
-        private void CollectShadowMaps()
+        private void CollectShadowMaps(RenderView renderView, ForwardLightingRenderFeature.RenderViewLightData renderViewLightData)
         {
-            foreach (var lightComponent in visibleLights)
+            // TODO GRAPHICS REFACTOR Only lights of current scene!
+
+            var sceneCameraRenderer = renderView.SceneCameraRenderer;
+            var viewport = sceneCameraRenderer.ComputedViewport;
+
+            foreach (var lightComponent in renderViewLightData.VisibleLightsWithShadows)
             {
                 var light = lightComponent.Type as IDirectLight;
                 if (light == null)
@@ -325,7 +241,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Check if the light has a shadow map renderer
                 var lightType = light.GetType();
                 ILightShadowMapRenderer renderer;
-                if (!renderers.TryGetValue(lightType, out renderer))
+                if (!Renderers.TryGetValue(lightType, out renderer))
                 {
                     continue;
                 }
@@ -334,7 +250,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var position = lightComponent.Position;
 
                 // Compute the coverage of this light on the screen
-                var size = light.ComputeScreenCoverage(Context, position, direction);
+                var size = light.ComputeScreenCoverage(renderView.Camera, position, direction, viewport.Width, viewport.Height);
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Size);
@@ -351,7 +267,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Get or allocate  a ShadowMapTexture
                 var shadowMapTexture = shadowMapTextures.Add();
                 shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
-                LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
+
+                renderViewLightData.LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
             }
         }
 
@@ -362,72 +279,31 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return factor;
         }
 
-        private static void FilterCasters(RenderContext context, ref FastListStruct<RenderMesh> meshes)
-        {
-            for (int i = 0; i < meshes.Count; i++)
-            {
-                // If there is no caster
-                if (!meshes[i].IsShadowCaster)
-                {
-                    meshes.SwapRemoveAt(i--);
-                }
-            }
-        }
-
         private static LightShadowMapTexture CreateLightShadowMapTexture()
         {
             return new LightShadowMapTexture();
         }
 
-        struct ShaderGroupDataKey : IEquatable<ShaderGroupDataKey>
+        public struct LightComponentKey : IEquatable<LightComponentKey>
         {
-            public readonly Texture Texture;
+            public readonly LightComponent LightComponent;
 
-            public readonly ILightShadowMapRenderer Renderer;
+            public readonly RenderView RenderView;
 
-            public readonly int CascadeCount;
-
-            public readonly int LightMaxCount;
-
-            public ShaderGroupDataKey(Texture texture, ILightShadowMapRenderer renderer, int cascadeCount, int lightMaxCount)
+            public LightComponentKey(LightComponent lightComponent, RenderView renderView)
             {
-                Texture = texture;
-                Renderer = renderer;
-                CascadeCount = cascadeCount;
-                LightMaxCount = lightMaxCount;
+                LightComponent = lightComponent;
+                RenderView = renderView;
             }
 
-            public bool Equals(ShaderGroupDataKey other)
+            public bool Equals(LightComponentKey other)
             {
-                return Texture.Equals(other.Texture) && Renderer.Equals(other.Renderer) && CascadeCount == other.CascadeCount && LightMaxCount == other.LightMaxCount;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is ShaderGroupDataKey && Equals((ShaderGroupDataKey)obj);
+                return LightComponent == other.LightComponent && RenderView == other.RenderView;
             }
 
             public override int GetHashCode()
             {
-                unchecked
-                {
-                    int hashCode = Texture.GetHashCode();
-                    hashCode = (hashCode * 397) ^ Renderer.GetHashCode();
-                    hashCode = (hashCode * 397) ^ CascadeCount;
-                    hashCode = (hashCode * 397) ^ LightMaxCount;
-                    return hashCode;
-                }
-            }
-
-            public static bool operator ==(ShaderGroupDataKey left, ShaderGroupDataKey right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(ShaderGroupDataKey left, ShaderGroupDataKey right)
-            {
-                return !left.Equals(right);
+                return LightComponent.GetHashCode() ^ (397 * RenderView.GetHashCode());
             }
         }
     }

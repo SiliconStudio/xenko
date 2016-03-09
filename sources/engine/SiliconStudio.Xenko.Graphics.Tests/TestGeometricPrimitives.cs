@@ -8,7 +8,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
@@ -16,20 +15,16 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     [TestFixture]
     public class TestGeometricPrimitives : GraphicTestGameBase
     {
-        private Effect simpleEffect;
+        private EffectInstance simpleEffect;
         private List<GeometricPrimitive> primitives;
         private Matrix view;
         private Matrix projection;
 
         private float timeSeconds;
 
-        private EffectParameterCollectionGroup parameterCollectionGroup;
-
-        private ParameterCollection parameterCollection;
-
         private bool isWireframe;
 
-        private RasterizerState wireframeState;
+        private RasterizerStateDescription wireframeState;
 
         private bool isPaused;
 
@@ -53,12 +48,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
+            wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
-            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
-            parameterCollection = new ParameterCollection();
-            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new [] { parameterCollection });
-            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+
+            // TODO GRAPHICS REFACTOR
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
 
             primitives = new List<GeometricPrimitive>();
 
@@ -98,9 +93,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (Input.IsKeyPressed(Keys.Right))
                 ChangePrimitiveStartOffset(1);
 
-            projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.ViewWidth / GraphicsDevice.BackBuffer.ViewHeight, 0.1f, 100.0f);
+            projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.Presenter.BackBuffer.ViewWidth / GraphicsDevice.Presenter.BackBuffer.ViewHeight, 0.1f, 100.0f);
 
-            if (GraphicsDevice.BackBuffer.ViewWidth < GraphicsDevice.BackBuffer.ViewHeight) // the screen is standing up on Android{
+            if (GraphicsDevice.Presenter.BackBuffer.ViewWidth < GraphicsDevice.Presenter.BackBuffer.ViewHeight) // the screen is standing up on Android{
                 view = Matrix.LookAtRH(new Vector3(0, 0, 10), new Vector3(0, 0, 0), Vector3.UnitX);
         }
 
@@ -131,10 +126,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void DrawPrimitives()
         {
             // Clears the screen with the Color.CornflowerBlue
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.CornflowerBlue);
-
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.CornflowerBlue);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render each primitive
             for (int i = 0; i < Math.Min(primitives.Count, 8); i++)
@@ -154,13 +148,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 var world = Matrix.Scaling((float)Math.Sin(time * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(time) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
 
                 // Disable Cull only for the plane primitive, otherwise use standard culling
-                var defaultRasterizerState = i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack;
-                GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
+                var defaultRasterizerState = i == 0 ? RasterizerStates.CullNone : RasterizerStates.CullBack;
+                // TODO GRAPHICS REFACTOR
+                //GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 
                 // Draw the primitive using BasicEffect
-                parameterCollection.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
-                simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
-                primitive.Draw();
+                simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
+                simpleEffect.Apply(GraphicsContext);
+                primitive.Draw(GraphicsContext.CommandList, simpleEffect);
             }
         }
         

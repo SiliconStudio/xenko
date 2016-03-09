@@ -18,10 +18,10 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ConstantBufferTestKeys
     {
-        public static readonly ParameterKey<float> a = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> c = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> b = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> d = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> e = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> a = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> c = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> b = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> d = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> e = ParameterKeys.NewValue<float>();
     }
 }

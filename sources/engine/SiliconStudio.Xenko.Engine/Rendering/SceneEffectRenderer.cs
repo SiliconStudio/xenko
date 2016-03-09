@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -50,9 +51,9 @@ namespace SiliconStudio.Xenko.Rendering
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
-            var input = Input.GetSafeRenderFrame(context);
+            var input = Input.GetSafeRenderFrame(context.RenderContext);
 
             // If RenderFrame input or output are null, we can't do anything
             if (input == null)
@@ -78,8 +79,11 @@ namespace SiliconStudio.Xenko.Rendering
                 var effect = context.GetSharedEffect<ImageScaler>();
                 effect.SetInput(0, input);
                 effect.SetOutput(output);
-                effect.Draw(context);
+                ((RendererBase)effect).Draw(context);
             }
+
+            // Switch back last output as render target
+            context.CommandList.ResourceBarrierTransition(output, GraphicsResourceState.RenderTarget);
         }
     }
 }

@@ -60,4 +60,5 @@ Profiles:
 ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
-RootAssets: []
+RootAssets:
+    - 6e52ca68-ba84-4521-a20c-b780ea2831da:CubeMap

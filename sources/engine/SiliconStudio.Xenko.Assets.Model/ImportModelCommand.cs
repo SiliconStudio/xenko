@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -12,6 +13,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Shaders;
+using System.Linq;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -153,7 +155,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 return true;
             if (localParams == null || newMesh.Parameters == null)
                 return false;
-            return AreCollectionsEqual(localParams, newMesh.Parameters);
+            return IsSubsetOf(localParams, newMesh.Parameters) && IsSubsetOf(newMesh.Parameters, localParams);
         }
         
         /// <summary>
@@ -179,18 +181,41 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <param name="parameters0">The first ParameterCollection.</param>
         /// <param name="parameters1">The second ParameterCollection.</param>
         /// <returns>True if the collections are the same, false otherwise.</returns>
-        private static bool AreCollectionsEqual(ParameterCollection parameters0, ParameterCollection parameters1)
+        private unsafe static bool IsSubsetOf(ParameterCollection parameters0, ParameterCollection parameters1)
         {
-            bool result = true;
-            foreach (var paramKey in parameters0)
+            foreach (var parameterKeyInfo in parameters0.ParameterKeyInfos)
             {
-                result &= parameters1.ContainsKey(paramKey.Key) && parameters1[paramKey.Key].Equals(paramKey.Value);
+                var otherParameterKeyInfo = parameters1.ParameterKeyInfos.FirstOrDefault(x => x.Key == parameterKeyInfo.Key);
+
+                // Nothing found?
+                if (otherParameterKeyInfo.Key == null || parameterKeyInfo.Count != otherParameterKeyInfo.Count)
+                    return false;
+
+                if (parameterKeyInfo.Offset != -1)
+                {
+                    // Data
+                    fixed (byte* dataValues0 = parameters0.DataValues)
+                    fixed (byte* dataValues1 = parameters1.DataValues)
+                        if (!Utilities.CompareMemory((IntPtr)dataValues0 + parameterKeyInfo.Offset, (IntPtr)dataValues1 + otherParameterKeyInfo.Offset, parameterKeyInfo.Count))
+                            return false;
+                }
+                else if (parameterKeyInfo.BindingSlot != -1)
+                {
+                    // Resource
+                    for (int i = 0; i < parameterKeyInfo.Count; ++i)
+                    {
+                        var object1 = parameters0.ObjectValues[parameterKeyInfo.BindingSlot + i];
+                        var object2 = parameters1.ObjectValues[otherParameterKeyInfo.BindingSlot + i];
+                        if (object1 == null && object2 == null)
+                            continue;
+                        if ((object1 == null && object2 != null) || (object2 == null && object1 != null))
+                            return false;
+                        if (object1.Equals(object2))
+                            return false;
+                    }
+                }
             }
-            foreach (var paramKey in parameters1)
-            {
-                result &= parameters0.ContainsKey(paramKey.Key) && parameters0[paramKey.Key].Equals(paramKey.Value);
-            }
-            return result;
+            return true;
         }
 
         public override string ToString()

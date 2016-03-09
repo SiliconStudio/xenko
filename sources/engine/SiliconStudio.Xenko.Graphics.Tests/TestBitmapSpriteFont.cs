@@ -51,11 +51,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawSpriteFont()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
 
             const string text = "test 0123456789";
             var dim = testFont.MeasureString(text);
@@ -74,7 +75,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             base.Update(gameTime);
 
             if (Input.IsKeyReleased(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "sprite-font-bitmap-test.png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "sprite-font-bitmap-test.png");
         }
 
         public static void Main()

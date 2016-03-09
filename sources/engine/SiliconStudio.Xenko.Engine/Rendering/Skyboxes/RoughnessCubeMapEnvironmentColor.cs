@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     public static partial class RoughnessCubeMapEnvironmentColorKeys
     {
-        public static readonly ParameterKey<Texture> CubeMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> MipCount = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> MipCount = ParameterKeys.NewValue<float>();
+        public static readonly ObjectParameterKey<Texture> CubeMap = ParameterKeys.NewObject<Texture>();
     }
 }
