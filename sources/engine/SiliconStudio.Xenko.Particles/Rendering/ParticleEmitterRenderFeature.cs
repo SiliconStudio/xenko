@@ -3,15 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Shaders;
-using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Particles.Rendering
 {

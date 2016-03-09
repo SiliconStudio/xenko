@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
-    /// Compute and upload skinning info.
+    /// Compute lighting shaders and data.
     /// </summary>
     public class ForwardLightingRenderFeature : SubRenderFeature
     {
