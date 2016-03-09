@@ -889,5 +889,71 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        private class ModelEffectUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var graphicsCompositor = asset.SceneSettings.GraphicsCompositor;
+
+                if (graphicsCompositor != null && graphicsCompositor.Node.Tag == "!SceneGraphicsCompositorLayers")
+                {
+                    string modelEffect = null;
+
+                    if (graphicsCompositor.Layers != null)
+                    {
+                        foreach (var layer in graphicsCompositor.Layers)
+                        {
+                            var layerModelEffect = RemoveModelEffectsFromLayer(layer);
+                            if (modelEffect == null)
+                            {
+                                modelEffect = layerModelEffect;
+                            }
+                        }
+                    }
+
+                    if (graphicsCompositor.Master != null)
+                    {
+                        var layerModelEffect = RemoveModelEffectsFromLayer(graphicsCompositor.Master);
+                        if (modelEffect == null)
+                        {
+                            modelEffect = layerModelEffect;
+                        }
+                    }
+
+                    if (modelEffect != null)
+                    {
+                        graphicsCompositor.ModelEffect = modelEffect;
+                    }
+                }
+            }
+
+            private string RemoveModelEffectsFromLayer(dynamic layer)
+            {
+                string modelEffect = null;
+
+                if (layer.Renderers != null)
+                {
+                    foreach (var renderer in layer.Renderers)
+                    {
+                        if (renderer.Node.Tag != "!SceneCameraRenderer")
+                            continue;
+
+                        var mode = renderer.Mode;
+                        if (mode != null && mode.Node.Tag == "!CameraRendererModeForward" && mode.ModelEffect != null)
+                        {
+                            if (modelEffect == null)
+                            {
+                                modelEffect = mode.ModelEffect;
+                            }
+
+                            mode.RemoveChild("ModelEffect");
+                        }
+                    }
+                }
+
+                return modelEffect;
+            }
+        }
     }
 }
