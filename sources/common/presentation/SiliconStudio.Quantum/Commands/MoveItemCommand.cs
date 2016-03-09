@@ -32,7 +32,7 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor != null && collectionDescriptor.HasInsert;
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
         {
             var indices = (Tuple<int, int>)parameter;
             var sourceIndex = indices.Item1;
