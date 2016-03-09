@@ -23,6 +23,15 @@ namespace SiliconStudio.Xenko.Assets.Serializers
             return CanVisit(type) ? this : null;
         }
 
+        protected override void WriteDictionaryItems(ref ObjectContext objectContext)
+        {
+            // Don't sort dictionary keys
+            var savedSettings = objectContext.Settings.SortKeyForMapping;
+            objectContext.Settings.SortKeyForMapping = false;
+            base.WriteDictionaryItems(ref objectContext);
+            objectContext.Settings.SortKeyForMapping = savedSettings;
+        }
+
         protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
         {
             var propertyKey = (PropertyKey)keyValue.Key;
