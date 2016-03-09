@@ -92,16 +92,16 @@ namespace SiliconStudio.Core.Serialization
             {
                 //if (State == ContentReferenceState.NeverLoad)
                 //    throw new InvalidOperationException("Value can't be read in this state.");
-                //lock (assetManager)
+                //lock (ContentManager)
                 //{
                 //    if (State == ContentReferenceState.LoadFirstAccess)
                 //    {
-                //        value = assetManager.Load<T>(Location);
+                //        value = ContentManager.Load<T>(Location);
                 //        State = ContentReferenceState.Loaded;
                 //    }
                 //    else if (State == ContentReferenceState.LoadEverytime)
                 //    {
-                //        return assetManager.Load<T>(Location);
+                //        return ContentManager.Load<T>(Location);
                 //    }
                 //}
                 return value;

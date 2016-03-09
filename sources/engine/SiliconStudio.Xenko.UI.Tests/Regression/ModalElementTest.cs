@@ -40,14 +40,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            Sprites = Asset.Load<SpriteSheet>("UIImages");
+            Sprites = Content.Load<SpriteSheet>("UIImages");
 
             var lifeBar = new ImageElement { Source = Sprites["Logo"], HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
 
             var quitGameButton = new Button
                 {
-                    Content = new TextBlock { Text = "Quit Game", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") },
+                    Content = new TextBlock { Text = "Quit Game", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") },
                     VerticalAlignment = VerticalAlignment.Bottom,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     Padding = Thickness.UniformRectangle(10),
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             quitGameButton.DependencyProperties.Set(GridBase.RowPropertyKey, 2);
             quitGameButton.Click += (sender, args) => Exit();
 
-            modalButton1Text = new TextBlock { Text = "Close Modal window 1", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") };
+            modalButton1Text = new TextBlock { Text = "Close Modal window 1", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
             var modalButton1 = new Button
             {
                 Name = "Button Modal 1",
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             modal1.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
             modal1.OutsideClick += Modal1OnOutsideClick;
 
-            modalButton2Text = new TextBlock { Text = "Close Modal window 2", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") };
+            modalButton2Text = new TextBlock { Text = "Close Modal window 2", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
             var modalButton2 = new Button
             {
                 Name = "Button Modal 2",

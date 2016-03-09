@@ -397,7 +397,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
         public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
-            var assetManager = new AssetManager();
+            var assetManager = new ContentManager();
 
             // Apply transformations
             textureTool.Decompress(texImage, parameters.IsSRgb);

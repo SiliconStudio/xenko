@@ -64,6 +64,7 @@
     <Compile Include="Drawing\IDrawingView.cs" />
     <Compile Include="Drawing\CanvasRenderer.cs" />
     <Compile Include="Collections\IObservableList.cs" />
+    <Compile Include="Collections\IReadOnlyObservableList.cs" />
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />

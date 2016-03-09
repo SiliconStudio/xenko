@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     [ContentSerializer(typeof(DataContentSerializer<Effect>))]
     [DataSerializer(typeof(EffectSerializer))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Content")]
     public class Effect : ComponentBase
     {
         private GraphicsDevice graphicsDeviceDefault;

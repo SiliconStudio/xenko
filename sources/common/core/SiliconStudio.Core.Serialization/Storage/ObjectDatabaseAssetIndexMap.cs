@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization.Assets;
 namespace SiliconStudio.Core.Storage
 {
     /// <summary>
-    /// Asset Index Map implementation which regroups all the asset index maps of every loaded file backend and asset bundle backends.
+    /// Content Index Map implementation which regroups all the asset index maps of every loaded file backend and asset bundle backends.
     /// </summary>
     public class ObjectDatabaseAssetIndexMap : IAssetIndexMap
     {

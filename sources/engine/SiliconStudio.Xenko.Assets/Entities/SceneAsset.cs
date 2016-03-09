@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
 
     [Display(200, "Scene")]
-    public partial class SceneAsset : EntityGroupAssetBase
+    public partial class SceneAsset : EntityHierarchyAssetBase
     {
         private const string CurrentVersion = "1.6.0-beta01";
 

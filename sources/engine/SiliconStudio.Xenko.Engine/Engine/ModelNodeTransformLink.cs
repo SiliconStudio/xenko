@@ -31,42 +31,36 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             // Updated? (rare slow path)
-            if (parentModelComponent.Skeleton != skeleton)
+            if (skeleton != null)
             {
-                skeleton = parentModelComponent.Skeleton;
-                if (skeleton == null)
+                if (parentModelComponent.Skeleton != skeleton)
                 {
-                    goto failed;
-                }
-
-                // Find our node index
-                nodeIndex = int.MaxValue;
-                for (int index = 0; index < skeleton.Nodes.Length; index++)
-                {
-                    var node = skeleton.Nodes[index];
-                    if (node.Name == nodeName)
+                    skeleton = parentModelComponent.Skeleton;
+                    // Find our node index
+                    nodeIndex = int.MaxValue;
+                    for (int index = 0; index < skeleton.Nodes.Length; index++)
                     {
-                        nodeIndex = index;
+                        var node = skeleton.Nodes[index];
+                        if (node.Name == nodeName)
+                        {
+                            nodeIndex = index;
+                        }
                     }
                 }
+
+                var nodes = skeleton.Nodes;
+                var nodeTransformations = skeleton.NodeTransformations;
+                if (nodeIndex < nodes.Length)
+                {
+                    // Hopefully, if ref locals gets merged in roslyn, this code can be refactored
+                    // Compute
+                    matrix = nodeTransformations[nodeIndex].WorldMatrix;
+                    return;
+                }
             }
 
-            var nodes = skeleton.Nodes;
-            var nodeTransformations = skeleton.NodeTransformations;
-            if (nodeIndex >= nodes.Length)
-            {
-                goto failed;
-            }
-
-            // Hopefully, if ref locals gets merged in roslyn, this code can be refactored
-            // Compute
-            matrix = nodeTransformations[nodeIndex].WorldMatrix;
-            return;
-
-        failed:
             // Fallback to TransformComponent
             matrix = parentModelComponent.Entity.Transform.WorldMatrix;
-            return;
         }
 
         public bool NeedsRecreate(Entity parentEntity, string targetNodeName)
