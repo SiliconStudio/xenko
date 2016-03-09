@@ -1243,6 +1243,9 @@ namespace SiliconStudio.Assets
                 return listFiles;
             }
 
+            var sharedProfile = package.Profiles.FindSharedProfile();
+            var hasProject = sharedProfile.ProjectReferences.Count > 0;
+
             // Iterate on each source folders
             foreach (var sourceFolder in package.GetDistinctAssetFolderPaths())
             {
@@ -1270,7 +1273,7 @@ namespace SiliconStudio.Assets
                         var ext = fileUPath.GetFileExtension();
 
                         //make sure to add default shaders in this case, since we don't have a csproj for them
-                        if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && package.IsSystem)
+                        if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && !hasProject)
                         {
                             listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
                             continue;
