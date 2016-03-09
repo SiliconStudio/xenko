@@ -7,6 +7,9 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
+    /// <summary>
+    /// Automatically registers skybox rendering.
+    /// </summary>
     public class SkyboxPipelinePlugin : PipelinePlugin<SkyboxRenderFeature>
     {
         protected override SkyboxRenderFeature CreateRenderFeature(PipelinePluginContext context)

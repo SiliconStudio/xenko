@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// Gets the render system used with this pipeline.
         /// </summary>
         [DataMemberIgnore]
-        public NextGenRenderSystem RenderSystem { get; } = new NextGenRenderSystem();
+        public RenderSystem RenderSystem { get; } = new RenderSystem();
 
         /// <summary>
         /// Gets or sets the effect to use to render the models in the scene.
@@ -53,28 +53,15 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentVisibilityGroup, visibilityGroup))
             using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))
             {
-                // Draw the layers
-                Layers.BeforeExtract(context.RenderContext);
-
-                // Draw the master track
-                Master.BeforeExtract(context.RenderContext);
-
-                // Update current camera to render view
-                // TODO GRAPHICS REFACTOR: Collect and update views every frame
-                foreach (var mainRenderView in RenderSystem.Views)
-                {
-                    mainRenderView.UpdateCameraToRenderView(context);
-                }
-
-                // TODO GRAPHICS REFACTOR: Should happen somewhere like RenderFeature.BeforeExtract
-                RenderSystem.forwardLightingRenderFeature?.BeforeExtract();
-
                 // Collect
-                // TODO GRAPHICS REFACTOR choose which views to collect
-                foreach (var view in RenderSystem.Views)
-                    visibilityGroup.Views.Add(view);
-                visibilityGroup.Collect();
-                visibilityGroup.Views.Clear();
+                visibilityGroup.Reset();
+
+                // Collect in layers. Setup features/stages, enumerate viewes and populates VisibilityGroup
+                Layers.Collect(context.RenderContext);
+                Master.Collect(context.RenderContext);
+
+                // Collect in render features
+                RenderSystem.Collect(context);
 
                 // Extract
                 RenderSystem.Extract(context);

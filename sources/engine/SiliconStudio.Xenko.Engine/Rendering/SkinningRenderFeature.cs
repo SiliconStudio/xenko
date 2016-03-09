@@ -6,7 +6,7 @@ using SiliconStudio.Xenko.Rendering.Materials;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Compute and upload skinning info.
+    /// Computes and uploads skinning info.
     /// </summary>
     public class SkinningRenderFeature : SubRenderFeature
     {
@@ -72,10 +72,8 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
 
-                        var skinningBones = renderMesh.Mesh.Skinning.Bones.Length;
-                        if (skinningBones > MaxBones)
-                            throw new NotImplementedException("Too many bones");
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, MaxBones);
+                        var skinningBones = Math.Min(MaxBones, renderMesh.Mesh.Skinning.Bones.Length);
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, skinningBones);
                     }
                 }
             }

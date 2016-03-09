@@ -1,24 +1,24 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Shaders;
 using System.Reflection;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Facility to perform rendering: extract rendering data from scene, determine effects and GPU states, compute and prepare data (i.e. matrices, buffers, etc...) and finally draw it.
     /// </summary>
-    public class NextGenRenderSystem : ComponentBase
+    public class RenderSystem : ComponentBase
     {
+        [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
+        public readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
+
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render stages.
         /// </summary>
-        public TrackingCollection<RenderStage> RenderStages { get; } = new TrackingCollection<RenderStage>();
+        public FastTrackingCollection<RenderStage> RenderStages { get; } = new FastTrackingCollection<RenderStage>();
 
         /// <summary>
         /// Frame counter, mostly for internal use.
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of render features
         /// </summary>
-        public TrackingCollection<RootRenderFeature> RenderFeatures { get; } = new TrackingCollection<RootRenderFeature>();
+        public FastTrackingCollection<RootRenderFeature> RenderFeatures { get; } = new FastTrackingCollection<RootRenderFeature>();
 
         /// <summary>
         /// The graphics device, used to create graphics resources.
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// List of views.
         /// </summary>
-        public TrackingCollection<RenderView> Views { get; } = new TrackingCollection<RenderView>();
+        public FastTrackingCollection<RenderView> Views { get; } = new FastTrackingCollection<RenderView>();
 
         public RenderContext RenderContextOld { get; private set; }
 
@@ -68,14 +68,23 @@ namespace SiliconStudio.Xenko.Rendering
 
         public PipelinePluginManager PipelinePlugins { get; }
 
-        // Render stages
-        internal ForwardLightingRenderFeature forwardLightingRenderFeature;
-
-        public NextGenRenderSystem()
+        public RenderSystem()
         {
             PipelinePlugins = new PipelinePluginManager(this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
+        }
+
+        /// <summary>
+        /// Performs pipeline initialization, enumerates views and populates visibility groups.
+        /// </summary>
+        /// <param name="context"></param>
+        public void Collect(RenderThreadContext context)
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Collect();
+            }
         }
 
         /// <summary>
@@ -343,6 +352,45 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <summary>
+        /// Adds a <see cref="RenderObject"/> to the rendering.
+        /// </summary>
+        /// An appropriate <see cref="RootRenderFeature"/> will be found and the object will be initialized with it.
+        /// If nothing could be found, <see cref="RenderObject.RenderFeature"/> will be null.
+        /// <param name="renderObject"></param>
+        public void AddRenderObject(RenderObject renderObject)
+        {
+            RootRenderFeature renderFeature;
+
+            if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
+            {
+                // Found it
+                renderFeature.AddRenderObject(renderObject);
+            }
+            else
+            {
+                // New type without render feature, let's do auto pipeline setup
+                if (InstantiateDefaultPipelinePlugin(renderObject.GetType()))
+                {
+                    // Try again, after pipeline plugin setup
+                    if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
+                    {
+                        renderFeature.AddRenderObject(renderObject);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a <see cref="RenderObject"/> from the rendering.
+        /// </summary>
+        /// <param name="renderObject"></param>
+        public void RemoveRenderObject(RenderObject renderObject)
+        {
+            var renderFeature = renderObject.RenderFeature;
+            renderFeature?.RemoveRenderObject(renderObject);
+        }
+
         private void PrepareDataArrays()
         {
             // Also do it for each render feature
@@ -352,7 +400,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderStages_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderStages_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -362,7 +410,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderFeatures_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             var renderFeature = (RootRenderFeature)e.Item;
 
@@ -387,41 +435,18 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void RenderStageSelectors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void RenderStageSelectors_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             RenderStageSelectorsChanged?.Invoke();
         }
 
-        private void Views_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void Views_CollectionChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
                     ((RenderView)e.Item).Index = e.Index;
                     break;
-            }
-        }
-
-        public void AddRenderObject(RenderObject renderObject)
-        {
-            RootRenderFeature renderFeature;
-
-            if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
-            {
-                // Found it
-                renderFeature.AddRenderObject(renderObject);
-            }
-            else
-            {
-                // New type without render feature, let's do auto pipeline setup
-                if (InstantiateDefaultPipelinePlugin(renderObject.GetType()))
-                {
-                    // Try again, after pipeline plugin setup
-                    if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
-                    {
-                        renderFeature.AddRenderObject(renderObject);
-                    }
-                }
             }
         }
 
@@ -439,12 +464,6 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             return false;
-        }
-
-        public void RemoveRenderObject(RenderObject renderObject)
-        {
-            var renderFeature = renderObject.RenderFeature;
-            renderFeature?.RemoveRenderObject(renderObject);
         }
 
         private class RenderNodeFeatureReferenceComparer : IComparer<RenderNodeFeatureReference>

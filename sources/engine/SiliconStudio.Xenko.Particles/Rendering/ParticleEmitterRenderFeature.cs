@@ -3,18 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Shaders;
-using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Particles.Rendering
 {
+    /// <summary>
+    /// Renders <see cref="RenderParticleEmitter"/>.
+    /// </summary>
     public class ParticleEmitterRenderFeature : RootEffectRenderFeature
     {
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
@@ -38,6 +37,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
         }
 
+        /// <inheritdoc/>
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -49,11 +49,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             perMaterialDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }
 
+        /// <inheritdoc/>
         public override void Extract()
         {
             base.Extract();
         }
 
+        /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
         {
             base.PrepareEffectPermutationsImpl(context);
@@ -104,6 +106,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
         }
 
+        /// <inheritdoc/>
         public override unsafe void Prepare(RenderThreadContext context)
         {
             // Reset pipeline states if necessary
@@ -199,6 +202,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             materialInfo.PerMaterialLayout = null;
         }
 
+        /// <inheritdoc/>
         protected override void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
             var renderParticleEmitter = (RenderParticleEmitter)renderObject;
@@ -210,6 +214,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             material.SetupPipeline(context, pipelineState);
         }
 
+        /// <inheritdoc/>
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var commandList = context.CommandList;

@@ -13,12 +13,17 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Automatically registers mesh rendering.
+    /// </summary>
     public class MeshPipelinePlugin : PipelinePlugin<MeshRenderFeature>
     {
         public const string DefaultEffectName = "XenkoForwardShadingEffect";
 
         private string modelEffect;
         private MeshTransparentRenderStageSelector meshRenderStageSelector;
+
+        public ForwardLightingRenderFeature ForwardLightingRenderFeature { get; private set; }
 
         protected override MeshRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
@@ -29,13 +34,16 @@ namespace SiliconStudio.Xenko.Rendering
                     new TransformRenderFeature(),
                     new SkinningRenderFeature(),
                     new MaterialRenderFeature(),
-                    (context.RenderSystem.forwardLightingRenderFeature = new ForwardLightingRenderFeature()),
+                    (ForwardLightingRenderFeature = new ForwardLightingRenderFeature()),
                 },
             };
 
             return meshRenderFeature;
         }
 
+        /// <summary>
+        /// Gets or sets the effect that should be used when instantiating meshes.
+        /// </summary>
         public string ModelEffect
         {
             get { return modelEffect; }
@@ -53,6 +61,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <inheritdoc/>
         public override void Load(PipelinePluginContext context)
         {
             base.Load(context);
@@ -74,11 +83,12 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 if (renderNode.RenderStage == transparentRenderStage)
                 {
-                    pipelineState.BlendState = context.RenderContext.GraphicsDevice.BlendStates.AlphaBlend;
+                    pipelineState.BlendState = BlendStates.AlphaBlend;
                 }
             });
         }
 
+        /// <inheritdoc/>
         public override void Unload(PipelinePluginContext context)
         {
             meshRenderStageSelector = null;
@@ -87,7 +97,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
     }
 
-
+    /// <summary>
+    /// Automatically register mesh shadow rendering.
+    /// </summary>
     public class ShadowMeshPipelinePlugin : PipelinePlugin<MeshRenderFeature>
     {
         [ModuleInitializer]
@@ -96,6 +108,7 @@ namespace SiliconStudio.Xenko.Rendering
             PipelinePluginManager.RegisterAutomaticPlugin(typeof(ShadowMeshPipelinePlugin), typeof(MeshPipelinePlugin), typeof(ShadowPipelinePlugin));
         }
 
+        /// <inheritdoc/>
         public override void Load(PipelinePluginContext context)
         {
             base.Load(context);

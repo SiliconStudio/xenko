@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 var spriteComp = renderSprite.SpriteComponent;
                 var transfoComp = renderSprite.TransformComponent;
-                var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? device.DepthStencilStates.None : device.DepthStencilStates.Default;
+                var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
 
                 var sprite = spriteComp.CurrentSprite;
                 if (sprite == null)
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                 // Update the sprite batch
-                var blendState = isPicking ? device.BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
+                var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
                 var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null; // TODO remove this code when material are available
                 if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
                 {
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     {
                         sprite3DBatch.End();
                     }
-                    sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                    sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
                 previousEffect = currentEffect;

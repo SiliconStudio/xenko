@@ -56,8 +56,10 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
 
+        internal int FrameCounter;
+
         // Used when locking asyncCreationLockObject
-        private bool asyncCreationLockTaken;
+        internal bool asyncCreationLockTaken;
 
         internal bool ApplicationPaused = false;
         internal bool ProfileEnabled = false;
@@ -80,11 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-        // If context was set before Begin(), try to keep it after End()
-        // (otherwise devices with no backbuffer flicker)
-        private bool keepContextOnEnd;
-
-        private IntPtr graphicsContextEglPtr;
+        internal IntPtr graphicsContextEglPtr;
         internal AndroidAsyncGraphicsContext androidAsyncDeviceCreationContext;
         internal bool AsyncPendingTaskWaiting; // Used when Workaround_Context_Tegra2_Tegra3
 
@@ -119,7 +117,6 @@ namespace SiliconStudio.Xenko.Graphics
         private bool isFramebufferSRGB;
 
         private Texture defaultRenderTarget;
-        private int contextBeginCounter = 0;
 
         // TODO: Use some LRU scheme to clean up FBOs if not used frequently anymore.
         internal Dictionary<FBOKey, int> existingFBOs = new Dictionary<FBOKey,int>(); 
@@ -144,8 +141,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private OpenTK.Graphics.IGraphicsContext graphicsContext;
-        private OpenTK.Platform.IWindowInfo windowInfo;
+        internal OpenTK.Graphics.IGraphicsContext graphicsContext;
+        internal OpenTK.Platform.IWindowInfo windowInfo;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_UI_SDL
@@ -165,7 +162,6 @@ namespace SiliconStudio.Xenko.Graphics
         [DllImport("libEGL.dll", EntryPoint = "eglGetCurrentContext")]
         internal static extern IntPtr EglGetCurrentContext();
 #endif
-        internal EffectProgram effectProgram;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         public bool IsOpenGLES2 { get; private set; }
@@ -247,38 +243,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal UseOpenGLCreationContext UseOpenGLCreationContext()
         {
             return new UseOpenGLCreationContext(this);
-        }
-
-        /// <summary>
-        /// Marks context as active on the current thread.
-        /// </summary>
-        public void Begin()
-        {
-            ++contextBeginCounter;
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            if (contextBeginCounter == 1)
-            {
-                if (Workaround_Context_Tegra2_Tegra3)
-                {
-                    Monitor.Enter(asyncCreationLockObject, ref asyncCreationLockTaken);
-                }
-                else
-                {
-                    // On first set, check if context was not already set before,
-                    // in which case we won't unset it during End().
-                    keepContextOnEnd = graphicsContextEglPtr == EglGetCurrentContext();
-
-                    if (keepContextOnEnd)
-                    {
-                        return;
-                    }
-                }
-            }
-#endif
-
-            if (contextBeginCounter == 1)
-                graphicsContext.MakeCurrent(windowInfo);
         }
 
         internal Buffer GetSquareBuffer()
@@ -376,46 +340,6 @@ namespace SiliconStudio.Xenko.Graphics
         public void EnableProfile(bool enabledFlag)
         {
             ProfileEnabled = true;
-        }
-
-        /// <summary>
-        /// Unmarks context as active on the current thread.
-        /// </summary>
-        public void End()
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            --contextBeginCounter;
-            if (contextBeginCounter == 0)
-            {
-                //UnbindVertexArrayObject();
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                if (Workaround_Context_Tegra2_Tegra3)
-                {
-                    graphicsContext.MakeCurrent(null);
-
-                    // Notify that main context can be used from now on
-                    if (asyncCreationLockTaken)
-                    {
-                        Monitor.Exit(asyncCreationLockObject);
-                        asyncCreationLockTaken = false;
-                    }
-                }
-                else if (!keepContextOnEnd)
-                {
-                    UnbindGraphicsContext(graphicsContext);
-                }
-#else
-                UnbindGraphicsContext(graphicsContext);
-#endif
-            }
-            else if (contextBeginCounter < 0)
-            {
-                throw new Exception("End context was called more than Begin");
-            }
         }
 
         internal void EnsureContextActive()
@@ -862,7 +786,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
-// TODO: Provide unified ClientSize from GameWindow
+#if DEBUG
+            EnsureContextActive();
+#endif
+
+            // TODO: Provide unified ClientSize from GameWindow
 #if SILICONSTUDIO_PLATFORM_IOS
             windowProvidedFrameBuffer = gameWindow.Framebuffer;
 

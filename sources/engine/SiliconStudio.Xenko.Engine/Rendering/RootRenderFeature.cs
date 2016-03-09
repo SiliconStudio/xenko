@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -8,9 +11,9 @@ using SiliconStudio.Core.Extensions;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// A top-level renderer that work on a specific kind of RenderObject. Example: Mesh, Particle, Sprite, etc...
+    /// A top-level renderer that work on a specific kind of <see cref="RenderObject"/>, such as Mesh, Particle, Sprite, etc...
     /// </summary>
-    public abstract partial class RootRenderFeature : RenderFeature
+    public abstract class RootRenderFeature : RenderFeature
     {
         private List<ViewObjectNode> viewObjectNodes = new List<ViewObjectNode>();
         private List<ObjectNode> objectNodes = new List<ObjectNode>();
@@ -21,6 +24,9 @@ namespace SiliconStudio.Xenko.Rendering
         // Index that will be used for collections such as RenderView.RenderNodes and RenderView.ViewObjectNodes
         public int Index { get; internal set; }
 
+        /// <summary>
+        /// Sort key used during rendering.
+        /// </summary>
         public byte SortKey { get; protected set; } = 128;
 
         /// <summary>
@@ -41,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
-        public TrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new TrackingCollection<RenderStageSelector>();
+        public FastTrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new FastTrackingCollection<RenderStageSelector>();
 
         /// <summary>
         /// Gets the type of render object supported by this <see cref="RootRenderFeature"/>.
@@ -53,6 +59,7 @@ namespace SiliconStudio.Xenko.Rendering
             RenderData.Initialize(ComputeDataArrayExpectedSize);
         }
 
+        /// <inheritdoc/>
         public override void Unload()
         {
             RenderData.Clear();

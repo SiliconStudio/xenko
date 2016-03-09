@@ -87,7 +87,10 @@ namespace SiliconStudio.Core.Mathematics
         {
             var bestRectangle = new Rectangle();
             tempFreeRectangles.Clear();
-            tempFreeRectangles.AddRange(freeRectangles);
+            foreach (var freeRectangle in freeRectangles)
+            {
+                tempFreeRectangles.Add(freeRectangle);
+            }
 
             for (var i = 0; i < count; ++i)
             {
@@ -102,7 +105,10 @@ namespace SiliconStudio.Core.Mathematics
 
             // if the insertion went well, use the new configuration
             freeRectangles.Clear();
-            freeRectangles.AddRange(tempFreeRectangles);
+            foreach (var tempFreeRectangle in tempFreeRectangles)
+            {
+                freeRectangles.Add(tempFreeRectangle);
+            }
             tempFreeRectangles.Clear();
 
             return true;

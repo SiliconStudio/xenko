@@ -15,11 +15,11 @@ namespace SiliconStudio.Xenko.Rendering
     /// Defines the type of rendering (Forward, Deferred...etc.)
     /// </summary>
     [DataContract("CameraRendererMode")]
-    public abstract class CameraRendererMode : RendererBase, INextGenRenderer
+    public abstract class CameraRendererMode : RendererBase, IRenderCollector
     {
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public virtual void BeforeExtract(RenderContext context)
+        public virtual void Collect(RenderContext context)
         {
             EnsureContext(context);
         }

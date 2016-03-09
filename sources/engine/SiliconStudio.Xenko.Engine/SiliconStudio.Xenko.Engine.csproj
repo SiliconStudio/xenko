@@ -138,6 +138,7 @@
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
+    <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\Pipeline.cs" />
@@ -181,6 +182,8 @@
     </Compile>
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
+    <Compile Include="Rendering\FrameResourceGroupLayout.cs" />
+    <Compile Include="Rendering\FrontToBackSortMode.cs" />
     <Compile Include="Rendering\IEntityComponentRenderProcessor.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
@@ -208,7 +211,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Rendering\INextGenRenderer.cs" />
+    <Compile Include="Rendering\IRenderCollector.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
@@ -231,7 +234,6 @@
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
     <Compile Include="Rendering\Background\RenderBackground.cs" />
     <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
-    <Compile Include="Rendering\DataArrayInfo.cs" />
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\EffectValidator.cs" />
@@ -252,8 +254,8 @@
     <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\CameraRendererModeForward.cs" />
-    <Compile Include="Rendering\NextGenRenderSystem.cs" />
-    <Compile Include="Rendering\NextGenRenderSystemExtensions.cs" />
+    <Compile Include="Rendering\RenderSystem.cs" />
+    <Compile Include="Rendering\RenderSystemExtensions.cs" />
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
@@ -280,6 +282,8 @@
     <Compile Include="Rendering\RenderView.cs" />
     <Compile Include="Rendering\RenderViewFeature.cs" />
     <Compile Include="Rendering\RenderViewFeatureStage.cs" />
+    <Compile Include="Rendering\RenderViewStage.cs" />
+    <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
@@ -302,11 +306,13 @@
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
     <Compile Include="Rendering\SortKey.cs" />
     <Compile Include="Rendering\SortMode.cs" />
+    <Compile Include="Rendering\SortModeDistance.cs" />
     <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
     <Compile Include="Rendering\Sprites\SpriteTransparentRenderStageSelector.cs" />
+    <Compile Include="Rendering\StateChangeSortMode.cs" />
     <Compile Include="Rendering\SubRenderFeature.cs" />
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
@@ -336,6 +342,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\ViewResourceGroupLayout.cs" />
     <Compile Include="Rendering\VisibilityGroup.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
@@ -2378,7 +2385,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\TessellationPermutation.cs" />
     <Compile Include="Engine\Design\EntityComponentProperty.cs" />
     <Compile Include="Engine\Design\EntityComponentPropertyType.cs" />
     <Compile Include="Engine\Design\ParameterContainerExtensions.cs" />

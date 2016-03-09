@@ -53,17 +53,10 @@ namespace SiliconStudio.Xenko.Graphics
             // Get a new allocator
             nativeCommandAllocator = GraphicsDevice.CommandAllocators.GetObject();
             NativeCommandList.Reset(nativeCommandAllocator, null);
-
-            // TODO D3D12 This should happen at beginning of frame only on main command list
-            ResourceBarrierTransition(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsResourceState.DepthWrite);
-            ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.RenderTarget);
         }
 
         public void Close()
         {
-            // TODO D3D12 This should happen at end of frame only on main command list
-            ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.Present);
-
             NativeCommandList.Close();
 
             // Recycle heaps
@@ -74,6 +67,14 @@ namespace SiliconStudio.Xenko.Graphics
 
             GraphicsDevice.CommandAllocators.RecycleObject(fenceValue, nativeCommandAllocator);
             nativeCommandAllocator = null;
+        }
+
+        public void Begin()
+        {
+        }
+
+        public void End()
+        {
         }
 
         private long FlushInternal(bool wait)

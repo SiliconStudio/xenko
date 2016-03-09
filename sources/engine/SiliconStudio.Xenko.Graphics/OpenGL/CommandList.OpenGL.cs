@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
+using System.Threading;
 using OpenTK.Graphics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Shaders;
@@ -40,7 +41,16 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class CommandList
     {
+#if SILICONSTUDIO_PLATFORM_ANDROID
+        // If context was set before Begin(), try to keep it after End()
+        // (otherwise devices with no backbuffer flicker)
+        private bool keepContextOnEnd;
+#endif
+
+        // How many frames to wait before allowing non-blocking texture readbacks
+        private const int ReadbackFrameDelay = 2;
         private const int MaxBoundRenderTargets = 16;
+        private int contextBeginCounter = 0;
 
         internal uint enabledVertexAttribArrays;
         private int boundProgram = 0;
@@ -103,6 +113,80 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Close()
         {
+        }
+
+        /// <summary>
+        /// Marks context as active on the current thread.
+        /// </summary>
+        public void Begin()
+        {
+            ++contextBeginCounter;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            if (contextBeginCounter == 1)
+            {
+                if (GraphicsDevice.Workaround_Context_Tegra2_Tegra3)
+                {
+                    Monitor.Enter(GraphicsDevice.asyncCreationLockObject, ref GraphicsDevice.asyncCreationLockTaken);
+                }
+                else
+                {
+                    // On first set, check if context was not already set before,
+                    // in which case we won't unset it during End().
+                    keepContextOnEnd = GraphicsDevice.graphicsContextEglPtr == GraphicsDevice.EglGetCurrentContext();
+
+                    if (keepContextOnEnd)
+                    {
+                        return;
+                    }
+                }
+            }
+#endif
+
+            if (contextBeginCounter == 1)
+            {
+                GraphicsDevice.graphicsContext.MakeCurrent(GraphicsDevice.windowInfo);
+            }
+        }
+
+        /// <summary>
+        /// Unmarks context as active on the current thread.
+        /// </summary>
+        public void End()
+        {
+#if DEBUG
+            GraphicsDevice.EnsureContextActive();
+#endif
+
+            --contextBeginCounter;
+            if (contextBeginCounter == 0)
+            {
+                //UnbindVertexArrayObject();
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                if (GraphicsDevice.Workaround_Context_Tegra2_Tegra3)
+                {
+                    GraphicsDevice.graphicsContext.MakeCurrent(null);
+
+                    // Notify that main context can be used from now on
+                    if (GraphicsDevice.asyncCreationLockTaken)
+                    {
+                        Monitor.Exit(GraphicsDevice.asyncCreationLockObject);
+                        GraphicsDevice.asyncCreationLockTaken = false;
+                    }
+                }
+                else if (!keepContextOnEnd)
+                {
+                    GraphicsDevice.UnbindGraphicsContext(GraphicsDevice.graphicsContext);
+                }
+#else
+                GraphicsDevice.UnbindGraphicsContext(GraphicsDevice.graphicsContext);
+#endif
+            }
+            else if (contextBeginCounter < 0)
+            {
+                throw new Exception("End context was called more than Begin");
+            }
         }
 
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
@@ -372,6 +456,8 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.BindBuffer(BufferTarget.PixelPackBuffer, destTexture.PixelBufferObjectId);
                     GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, IntPtr.Zero);
                     GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
+
+                    destTexture.PixelBufferFrame = GraphicsDevice.FrameCounter;
                 }
 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
@@ -744,7 +830,9 @@ namespace SiliconStudio.Xenko.Graphics
                         GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, IntPtr.Zero, buffer.bufferUsageHint);
                     }
 
-                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (doNotWait ? BufferAccessMask.MapUnsynchronizedBit : 0));
+                    var unsynchronized = doNotWait && mapMode != MapMode.Read && mapMode != MapMode.ReadWrite;
+
+                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (unsynchronized ? BufferAccessMask.MapUnsynchronizedBit : 0));
                 }
 
                 return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = 0, RowPitch = 0 });
@@ -771,7 +859,16 @@ namespace SiliconStudio.Xenko.Graphics
                     else
 #endif
                     {
-                        return MapTexture(texture, BufferTarget.PixelPackBuffer, subResourceIndex, mapMode, doNotWait, offsetInBytes, lengthInBytes);
+                        if (doNotWait)
+                        {
+                            // Wait at least 2 frames after last operation
+                            if (GraphicsDevice.FrameCounter < texture.PixelBufferFrame + ReadbackFrameDelay)
+                            {
+                                return new MappedResource(resource, subResourceIndex, new DataBox(), offsetInBytes, lengthInBytes);
+                            }
+                        }
+
+                        return MapTexture(texture, BufferTarget.PixelPackBuffer, subResourceIndex, mapMode, offsetInBytes, lengthInBytes);
                     }
                 }
                 else if (mapMode == MapMode.WriteDiscard)
@@ -783,25 +880,17 @@ namespace SiliconStudio.Xenko.Graphics
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
                         throw new NotSupportedException("Only dynamic texture can be mapped.");
 
-                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, subResourceIndex, mapMode, doNotWait, offsetInBytes, lengthInBytes);
+                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, subResourceIndex, mapMode, offsetInBytes, lengthInBytes);
                 }
             }
 
             throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
         }
 
-        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, int subResourceIndex, MapMode mapMode, bool doNotWait, int offsetInBytes, int lengthInBytes)
+        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, int subResourceIndex, MapMode mapMode, int offsetInBytes, int lengthInBytes)
         {
             GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            
-            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask() | (doNotWait ? BufferAccessMask.MapUnsynchronizedBit : 0));
-            GL.BindBuffer(pixelPackUnpack, 0);
-#else
-            offsetInBytes = 0;
-            lengthInBytes = -1;
-            var mapResult = GL.MapBuffer(pixelPackUnpack, mapMode.ToOpenGL());
-#endif
+            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
             GL.BindBuffer(pixelPackUnpack, 0);
 
             return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);

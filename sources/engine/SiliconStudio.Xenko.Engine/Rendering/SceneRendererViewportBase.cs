@@ -46,9 +46,9 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Viewport in %")]
         public bool IsViewportInPercentage { get; set; }
 
-        public override void BeforeExtract(RenderContext context)
+        public override void Collect(RenderContext context)
         {
-            base.BeforeExtract(context);
+            base.Collect(context);
 
             var rect = Viewport;
 

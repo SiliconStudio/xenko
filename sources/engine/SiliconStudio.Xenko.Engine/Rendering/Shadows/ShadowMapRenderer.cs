@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
 
-        public NextGenRenderSystem RenderSystem { get; set; }
+        public RenderSystem RenderSystem { get; set; }
 
         private readonly RenderStage shadowMapRenderStage;
 
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private const float ReferenceShadowSize = 1024;
 
-        public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowMapRenderStage)
+        public ShadowMapRenderer(RenderSystem renderSystem, RenderStage shadowMapRenderStage)
         {
             RenderSystem = renderSystem;
             this.shadowMapRenderStage = shadowMapRenderStage;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return shadowMapRenderer;
         }
 
-        public void Extract(Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
+        public void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
         {
             // Cleanup previous shadow render views
             foreach (var shadowRenderView in shadowRenderViews)
@@ -118,6 +118,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 AssignRectangles();
 
                 // Collect shadow render views
+                var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
+
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;
@@ -136,6 +138,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                         // Add the render view for the current frame
                         RenderSystem.Views.Add(shadowRenderView);
+
+                        // Collect objects in shadow views
+                        visibilityGroup.Collect(shadowRenderView);
                     }
                 }
             }

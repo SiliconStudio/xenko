@@ -332,8 +332,8 @@ namespace SiliconStudio.Quantum
                 }
             }
             return memberPath;
-
         }
+
         private GraphNodePath Clone(IGraphNode newRoot, bool newTargetIsRootNode)
         {
             var clone = new GraphNodePath(newRoot, newTargetIsRootNode);

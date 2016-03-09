@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -156,6 +156,7 @@
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
     <Compile Include="BufferPool.cs" />
+    <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
@@ -181,9 +182,9 @@
     <Compile Include="Direct3D12\SamplerState.Direct3D12.cs" />
     <Compile Include="Direct3D12\Texture.Direct3D12.cs" />
     <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
-    <Compile Include="EffectInstance.cs" />
-    <Compile Include="EffectParameterUpdater.cs" />
-    <Compile Include="EffectParameterUpdaterLayout.cs" />
+    <Compile Include="Rendering\EffectInstance.cs" />
+    <Compile Include="Rendering\EffectParameterUpdater.cs" />
+    <Compile Include="Rendering\EffectParameterUpdaterLayout.cs" />
     <Compile Include="GraphicsContext.cs" />
     <Compile Include="InputClassification.cs" />
     <Compile Include="InputElementDescription.cs" />
@@ -508,12 +509,12 @@
     <Compile Include="IndexElementSize.cs" />
     <Compile Include="MapMode.cs" />
     <Compile Include="RasterizerStateDescription.cs" />
-    <Compile Include="RasterizerStateFactory.cs" />
+    <Compile Include="RasterizerStates.cs" />
     <Compile Include="SamplerStateFactory.cs" />
     <Compile Include="SamplerState.cs" />
     <Compile Include="TextureDescription.cs" />
     <Compile Include="GraphicsDeviceFactory.cs" />
-    <Compile Include="DepthStencilStateFactory.cs" />
+    <Compile Include="DepthStencilStates.cs" />
     <Compile Include="GraphicsAdapter.cs" />
     <Compile Include="GraphicsFactory.cs" />
     <Compile Include="Buffer.cs" />
@@ -528,7 +529,7 @@
     <Compile Include="GraphicsResourceFactoryBase.cs" />
     <Compile Include="GraphicsResource.cs" />
     <Compile Include="GraphicsResourceUsage.cs" />
-    <Compile Include="BlendStateFactory.cs" />
+    <Compile Include="BlendStates.cs" />
     <Compile Include="BlendStateRenderTargetDescription.cs" />
     <Compile Include="PresentationParameters.cs" />
     <Compile Include="PresentInterval.cs" />

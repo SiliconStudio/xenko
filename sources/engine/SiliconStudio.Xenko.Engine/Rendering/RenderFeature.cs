@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         protected RenderContext Context { get; private set; }
 
-        public NextGenRenderSystem RenderSystem { get; internal set; }
+        public RenderSystem RenderSystem { get; internal set; }
 
         public bool Initialized { get; private set; }
 
@@ -59,6 +59,13 @@ namespace SiliconStudio.Xenko.Rendering
         /// Query for specific cbuffer (either new one, like PerMaterial, or parts of an existing one, like PerObject=>Skinning)
         /// </summary>
         protected virtual void InitializeCore()
+        {
+        }
+
+        /// <summary>
+        /// Performs pipeline initialization, enumerates views and populates visibility groups.
+        /// </summary>
+        public virtual void Collect()
         {
         }
 

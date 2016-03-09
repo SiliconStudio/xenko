@@ -20,9 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
-            device.Begin();
             device.InitDefaultRenderTarget(presentationParameters);
-            device.End();
             backBuffer = device.DefaultRenderTarget;
         }
 
@@ -50,19 +48,24 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        public override void EndDraw(CommandList commandList, bool present)
+        {
+            if (present)
+            {
+                // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
+                if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.WindowProvidedRenderTexture)
+                {
+                    commandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
+                        new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
+                        new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
+                }
+
+                OpenTK.Graphics.GraphicsContext.CurrentContext.SwapBuffers();
+            }
+        }
+
         public override void Present()
         {
-            GraphicsDevice.Begin();
-            
-            // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-            if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.WindowProvidedRenderTexture)
-            {
-                GraphicsDevice.MainCommandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
-                    new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
-                    new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
-            }
-            OpenTK.Graphics.GraphicsContext.CurrentContext.SwapBuffers();
-            GraphicsDevice.End();
         }
         
         protected override void ResizeBackBuffer(int width, int height, PixelFormat format)

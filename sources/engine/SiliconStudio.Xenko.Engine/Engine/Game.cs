@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Engine
             if (Context.InitializeDatabase)
             {
                 InitializeAssetDatabase();
-                
+
                 var renderingSettings = new RenderingSettings();
                 if (Content.Exists(GameSettings.AssetUrl))
                 {

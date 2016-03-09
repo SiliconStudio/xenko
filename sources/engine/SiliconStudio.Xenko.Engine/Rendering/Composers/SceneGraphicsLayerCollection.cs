@@ -9,10 +9,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// A Collection of <see cref="SceneGraphicsLayer"/>.
     /// </summary>
     [DataContract("SceneGraphicsLayerCollection")]
-    public sealed class SceneGraphicsLayerCollection : GraphicsRendererCollection<SceneGraphicsLayer>, INextGenRenderer
+    public sealed class SceneGraphicsLayerCollection : GraphicsRendererCollection<SceneGraphicsLayer>, IRenderCollector
     {
         /// <inheritdoc/>
-        public void BeforeExtract(RenderContext context)
+        public void Collect(RenderContext context)
         {
             InitializeRenderers(context);
 
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 if (renderer.Enabled)
                 {
                     // Draw the renderer
-                    renderer.BeforeExtract(context);
+                    renderer.Collect(context);
                 }
             }
         }

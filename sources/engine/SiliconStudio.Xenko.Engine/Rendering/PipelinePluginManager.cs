@@ -10,9 +10,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private static readonly List<AutomaticPipelinePlugin> automaticPlugins = new List<AutomaticPipelinePlugin>();
         private readonly Dictionary<Type, PipelinePluginInstantiation> pipelinePlugins = new Dictionary<Type, PipelinePluginInstantiation>();
-        private readonly NextGenRenderSystem renderSystem;
+        private readonly RenderSystem renderSystem;
 
-        public PipelinePluginManager(NextGenRenderSystem renderSystem)
+        public PipelinePluginManager(RenderSystem renderSystem)
         {
             this.renderSystem = renderSystem;
         }

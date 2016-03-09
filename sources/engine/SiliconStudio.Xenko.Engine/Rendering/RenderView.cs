@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
@@ -7,29 +9,6 @@ using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class RenderViewStage
-    {
-        public readonly RenderStage RenderStage;
-
-        /// <summary>
-        /// List of render nodes. It might cover multiple RenderStage and RootRenderFeature. RenderStages contains RenderStage range information.
-        /// Used mostly for sorting and rendering.
-        /// </summary>
-        public readonly List<RenderNodeFeatureReference> RenderNodes = new List<RenderNodeFeatureReference>();
-
-        public RenderNodeFeatureReference[] SortedRenderNodes;
-
-        public RenderViewStage(RenderStage renderStage)
-        {
-            RenderStage = renderStage;
-        }
-
-        public static implicit operator RenderViewStage(RenderStage renderStage)
-        {
-            return new RenderViewStage(renderStage);
-        }
-    }
-
     /// <summary>
     /// Defines a view used during rendering. This is usually a frustum and some camera parameters.
     /// </summary>
@@ -40,6 +19,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public List<RenderViewFeature> Features = new List<RenderViewFeature>();
 
+        /// <summary>
+        /// List of data sepcific to each <see cref="RenderStage"/> for this <see cref="RenderView"/>.
+        /// </summary>
         public List<RenderViewStage> RenderStages = new List<RenderViewStage>();
 
         /// <summary>
@@ -48,15 +30,9 @@ namespace SiliconStudio.Xenko.Rendering
         public List<RenderObject> RenderObjects = new List<RenderObject>();
 
         /// <summary>
-        /// The camera for this view. 
+        /// Index in <see cref="RenderSystem.Views"/>.
         /// </summary>
-        public CameraComponent Camera;
-
-        public SceneInstance SceneInstance;
-
-        public SceneCameraRenderer SceneCameraRenderer;
-
-        public SceneCameraSlotCollection SceneCameraSlotCollection;
+        public int Index = -1;
 
         internal float MinimumDistance;
 
@@ -77,19 +53,26 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Matrix ViewProjection;
 
+        // TODO GRAPHICS REFACTOR we might want to remove some of the following data
         /// <summary>
-        /// Index in <see cref="NextGenRenderSystem.Views"/>.
+        /// The camera for this view. 
         /// </summary>
-        public int Index = -1;
+        public CameraComponent Camera;
+
+        public SceneInstance SceneInstance;
+
+        public SceneCameraRenderer SceneCameraRenderer;
+
+        public SceneCameraSlotCollection SceneCameraSlotCollection;
 
         public override string ToString()
         {
             return $"RenderView ({Features.Sum(x => x.ViewObjectNodes.Count)} objects, {Features.Sum(x => x.RenderNodes.Count)} render nodes, {RenderStages.Count} stages)";
         }
 
-        public void UpdateCameraToRenderView(RenderDrawContext context)
+        public void UpdateCameraToRenderView()
         {
-            // TODO: Currently set up during BeforeExtract/Prepare/Draw. Should be initialized before
+            // TODO: Currently set up during Collect/Prepare/Draw. Should be initialized before
             if (SceneCameraRenderer == null)
                 return;
 

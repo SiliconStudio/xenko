@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Computes and upload World, View and Projection matrices for each views and for each objects.
+    /// A render feature that computes and upload World, View and Projection matrices for each views and for each objects.
     /// </summary>
     public class TransformRenderFeature : SubRenderFeature
     {

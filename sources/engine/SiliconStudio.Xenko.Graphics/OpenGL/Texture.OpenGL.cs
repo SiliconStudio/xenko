@@ -60,6 +60,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal const TextureFlags TextureFlagsCustomResourceId = (TextureFlags)0x1000;
 
         internal SamplerState BoundSamplerState;
+        internal int PixelBufferFrame;
         private int pixelBufferObjectId;
         private int resourceIdStencil;
 

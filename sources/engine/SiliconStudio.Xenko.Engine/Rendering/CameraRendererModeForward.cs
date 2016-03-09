@@ -1,21 +1,29 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// A forward rendering mode.
+    /// </summary>
     [DataContract("CameraRendererModeForward")]
     [Display("Forward")]
     public class CameraRendererModeForward : CameraRenderModeBase
     {
+        private MeshPipelinePlugin meshPipelinePlugin;
+
         [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
 
         [DefaultValue(true)]
+        [DataMemberIgnore]
         public bool Shadows { get; set; } = true;
 
         //public bool GBuffer { get; set; } = false;
@@ -46,6 +54,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                meshPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<MeshPipelinePlugin>();
             }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
@@ -70,7 +79,7 @@ namespace SiliconStudio.Xenko.Rendering
             //}
 
             // Shadow maps
-            var shadowMapRenderer = RenderSystem.forwardLightingRenderFeature?.ShadowMapRenderer;
+            var shadowMapRenderer = meshPipelinePlugin?.ForwardLightingRenderFeature?.ShadowMapRenderer;
             if (Shadows && shadowMapRenderer != null)
             {
                 // Clear atlases

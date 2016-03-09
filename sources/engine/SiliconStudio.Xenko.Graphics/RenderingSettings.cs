@@ -146,7 +146,10 @@ namespace SiliconStudio.Xenko.Graphics
                 case PlatformType.Windows10:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11;
                 case PlatformType.Windows:
-                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11 || preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D12 || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D12
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
                 case PlatformType.Android:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
                 case PlatformType.iOS:

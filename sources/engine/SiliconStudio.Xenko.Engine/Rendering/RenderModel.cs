@@ -5,6 +5,9 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Contains information related to the <see cref="Rendering.Model"/> so that the <see cref="RenderMesh"/> can access it.
+    /// </summary>
     public class RenderModel
     {
         public readonly ModelComponent ModelComponent;

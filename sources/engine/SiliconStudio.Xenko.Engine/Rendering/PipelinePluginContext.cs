@@ -6,9 +6,9 @@
     public struct PipelinePluginContext
     {
         public readonly RenderContext RenderContext;
-        public readonly NextGenRenderSystem RenderSystem;
+        public readonly RenderSystem RenderSystem;
 
-        public PipelinePluginContext(RenderContext renderContext, NextGenRenderSystem renderSystem)
+        public PipelinePluginContext(RenderContext renderContext, RenderSystem renderSystem)
         {
             RenderContext = renderContext;
             RenderSystem = renderSystem;

@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Mark effect as used during this frame.
         /// </summary>
         /// <returns>True if state changed (object was not mark as used during this frame until now), otherwise false.</returns>
-        public bool MarkAsUsed(NextGenRenderSystem renderSystem)
+        public bool MarkAsUsed(RenderSystem renderSystem)
         {
             if (LastFrameUsed == renderSystem.FrameCounter)
                 return false;
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering
             return true;
         }
 
-        public bool IsUsedDuringThisFrame(NextGenRenderSystem renderSystem)
+        public bool IsUsedDuringThisFrame(RenderSystem renderSystem)
         {
             return LastFrameUsed == renderSystem.FrameCounter;
         }

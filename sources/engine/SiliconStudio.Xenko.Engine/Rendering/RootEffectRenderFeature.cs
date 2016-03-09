@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering
         public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
 
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
-        public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
+        public Action<RenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
         public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
         public ProcessPipelineStateDelegate PostProcessPipelineState;
@@ -201,6 +204,16 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Not found?
             resourceGroupLayout.ConstantBufferOffsets[index] = -1;
+        }
+
+        /// <summary>
+        /// Gets the effect slot for a given render stage.
+        /// </summary>
+        /// <param name="renderStage"></param>
+        /// <returns></returns>
+        public EffectPermutationSlot GetEffectPermutationSlot(RenderStage renderStage)
+        {
+            return effectSlots[renderStage.Index];
         }
 
         /// <summary>
@@ -727,7 +740,7 @@ namespace SiliconStudio.Xenko.Rendering
             return base.ComputeDataArrayExpectedSize(type);
         }
 
-        private void RenderStages_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        private void RenderStages_CollectionChanged(object sender, ref Core.Collections.FastTrackingCollectionChangedEventArgs e)
         {
             var renderStage = (RenderStage)e.Item;
 
