@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             using (var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath))
             {
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
-                AssetManager.GetFileProvider = () => database;
+                ContentManager.GetFileProvider = () => database;
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.xksl"))
                     CopyStream(database, shaderName);

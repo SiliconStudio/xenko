@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var sprite = new Sprite(Asset.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
+            var sprite = new Sprite(Content.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
 
             var bi1 = new ImageElement { Source = sprite, Height = 150 };
             var bi2 = new ImageElement { Source = sprite, Height = 300 };

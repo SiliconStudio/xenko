@@ -147,10 +147,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (!TrackMouse)
                 return;
-
-            var p = e.GetPosition(this);
-            //TODO: add some validation logic
-            Position = p;
+            Position = e.GetPosition(this);
         }
         
         private void OnPositionChanged(DependencyPropertyChangedEventArgs e)

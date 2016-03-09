@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var sprites = Asset.Load<SpriteSheet>("RotatedImages");
+            var sprites = Content.Load<SpriteSheet>("RotatedImages");
             var img1 = new ImageElement { Source = sprites["NRNR"], StretchType = StretchType.Fill };
             var img2 = new ImageElement { Source = sprites["RNR"], StretchType = StretchType.Fill };
             var img3 = new ImageElement { Source = sprites["NRR"], StretchType = StretchType.Fill };

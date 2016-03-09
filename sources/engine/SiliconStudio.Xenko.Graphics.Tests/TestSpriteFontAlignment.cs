@@ -49,7 +49,7 @@ One blank line below
         {
             await base.LoadContent();
 
-            arial = Asset.Load<SpriteFont>(AssetPrefix + "Arial13");
+            arial = Content.Load<SpriteFont>(AssetPrefix + "Arial13");
 
             colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
 

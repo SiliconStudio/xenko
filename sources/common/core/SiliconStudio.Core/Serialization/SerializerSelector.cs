@@ -70,10 +70,10 @@ namespace SiliconStudio.Core.Serialization
             Default = new SerializerSelector(false, true, "Default");
             Default.Initialize();
 
-            Asset = new SerializerSelector(false, true, "Default", "Asset");
+            Asset = new SerializerSelector(false, true, "Default", "Content");
             Asset.Initialize();
 
-            AssetWithReuse = new SerializerSelector(true, true, "Default", "Asset");
+            AssetWithReuse = new SerializerSelector(true, true, "Default", "Content");
             AssetWithReuse.Initialize();
         }
 

@@ -12,6 +12,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract("AssetBase")]
     [DataSerializer(typeof(AssetBase.Serializer))]
+    [NonIdentifiable]
     public sealed class AssetBase : IContentReference
     {
         private readonly UFile location;

@@ -230,7 +230,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
                     // Load an image from a buffer
                     byte[] buffer;
-                    using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                    using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
                     {
                         var bufferSize = inStream.Length;
                         buffer = new byte[bufferSize];
@@ -263,13 +263,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
             var filePath = "ImageTypes/" + fileName;
             Image image;
-            using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+            using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
                 image = Image.Load(inStream);
             image.Dispose();
 
             // Load an image from a buffer
             byte[] buffer;
-            using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+            using (var inStream = game.Content.OpenAsStream(filePath, StreamFlags.None))
             {
                 var bufferSize = inStream.Length;
                 buffer = new byte[bufferSize];

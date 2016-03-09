@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// <summary>
         /// The asset manager used to load the ttf fonts.
         /// </summary>
-        private readonly AssetManager assetManager;
+        private readonly ContentManager contentManager;
 
         /// <summary>
         /// The size of the transparent border to add around the character bitmap.
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// </summary>
         public FontManager()
         {
-            assetManager = new AssetManager();
+            contentManager = new ContentManager();
 
             // Preload proper freetype native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("freetype.dll");
@@ -278,7 +278,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
                 return;
 
             // load the font from the data base
-            using (var fontStream = assetManager.OpenAsStream(fontPath, StreamFlags.None))
+            using (var fontStream = contentManager.OpenAsStream(fontPath, StreamFlags.None))
             {
                 // create the font data from the stream
                 var newFontData = new byte[fontStream.Length];

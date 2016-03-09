@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <returns>Task{ResultStatus}.</returns>
         protected override async Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
-            var assetManager = new AssetManager();
+            var assetManager = new ContentManager();
 
             while (Interlocked.Increment(ref spawnedCommands) >= 2)
             {
@@ -117,11 +117,11 @@ namespace SiliconStudio.Xenko.Assets.Model
             return result;
         }
         
-        protected abstract Rendering.Model LoadModel(ICommandContext commandContext, AssetManager assetManager);
+        protected abstract Rendering.Model LoadModel(ICommandContext commandContext, ContentManager contentManager);
 
-        protected abstract Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, AssetManager assetManager);
+        protected abstract Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager);
 
-        protected abstract Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager);
+        protected abstract Skeleton LoadSkeleton(ICommandContext commandContext, ContentManager contentManager);
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
