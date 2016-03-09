@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
-        private List<MeshDraw> meshDrawsToGenerateAEN = new List<MeshDraw>();
+        private List<RenderMesh> renderMeshesToGenerateAEN = new List<RenderMesh>();
 
         // Material instantiated
         private readonly Dictionary<Material, MaterialInfo> allMaterialInfos = new Dictionary<Material, MaterialInfo>();
@@ -54,6 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             // Permutation parameters
             public int PermutationCounter; // Dirty counter against material.Parameters.PermutationCounter
+            public ParameterCollection MaterialParameters; // Protect against changes of Material.Parameters instance (happens with editor fast reload)
 
             public ShaderSource VertexStageSurfaceShaders;
             public ShaderSource VertexStageStreamInitializer;
@@ -106,19 +107,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 var tessellationState = tessellationStates[staticObjectNode];
 
-                if (material.TessellationMethod != tessellationState.Method)
-                {
-                    // Tessellation state has just been changed, reset pipeline state
-                    for (int i = 0; i < effectSlotCount; ++i)
-                    {
-                        var staticEffectObjectNode = staticObjectNode*effectSlotCount + i;
-                        var renderEffect = renderEffects[staticEffectObjectNode];
-
-                        if (renderEffect != null)
-                            renderEffect.PipelineState = null;
-                    }
-                }
-
                 // Update draw data if tessellation is active
                 if (material.TessellationMethod != XenkoTessellationMethod.None)
                 {
@@ -128,28 +116,35 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     {
                         tessellationState.Method = material.TessellationMethod;
 
-                        if (tessellationMeshDraw == null)
+                        var oldMeshDraw = renderMesh.ActiveMeshDraw;
+                        tessellationMeshDraw = new MeshDraw
                         {
-                            var oldMeshDraw = renderMesh.ActiveMeshDraw;
-                            tessellationMeshDraw = new MeshDraw
-                            {
-                                VertexBuffers = oldMeshDraw.VertexBuffers,
-                                IndexBuffer = oldMeshDraw.IndexBuffer,
-                                DrawCount = oldMeshDraw.DrawCount,
-                                StartLocation = oldMeshDraw.StartLocation,
-                                PrimitiveType = tessellationState.Method.GetPrimitiveType(),
-                            };
+                            VertexBuffers = oldMeshDraw.VertexBuffers,
+                            IndexBuffer = oldMeshDraw.IndexBuffer,
+                            DrawCount = oldMeshDraw.DrawCount,
+                            StartLocation = oldMeshDraw.StartLocation,
+                            PrimitiveType = tessellationState.Method.GetPrimitiveType(),
+                        };
 
-                            // adapt the primitive type and index buffer to the tessellation used
-                            if (tessellationState.Method.PerformsAdjacentEdgeAverage())
-                            {
-                                meshDrawsToGenerateAEN.Add(tessellationMeshDraw);
-                            }
-                            tessellationState.MeshDraw = tessellationMeshDraw;
+                        // adapt the primitive type and index buffer to the tessellation used
+                        if (tessellationState.Method.PerformsAdjacentEdgeAverage())
+                        {
+                            renderMeshesToGenerateAEN.Add(renderMesh);
                         }
+                        tessellationState.MeshDraw = tessellationMeshDraw;
 
                         // Save back new state
                         tessellationStates[staticObjectNode] = tessellationState;
+
+                        // Reset pipeline states
+                        for (int i = 0; i < effectSlotCount; ++i)
+                        {
+                            var staticEffectObjectNode = staticObjectNode*effectSlotCount + i;
+                            var renderEffect = renderEffects[staticEffectObjectNode];
+
+                            if (renderEffect != null)
+                                renderEffect.PipelineState = null;
+                        }
                     }
 
                     renderMesh.ActiveMeshDraw = tessellationState.MeshDraw;
@@ -175,7 +170,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderMesh.MaterialInfo = materialInfo;
                     }
 
-                    if (materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
+                    if (materialInfo.MaterialParameters != material.Parameters // parameter fast reload?
+                        || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
                     {
                         materialInfo.VertexStageSurfaceShaders = material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders);
                         materialInfo.VertexStageStreamInitializer = material.Parameters.Get(MaterialKeys.VertexStageStreamInitializer);
@@ -188,6 +184,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
                         materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
 
+                        materialInfo.MaterialParameters = material.Parameters;
                         materialInfo.PermutationCounter = material.Parameters.PermutationCounter;
                     }
 
@@ -248,14 +245,26 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            foreach (var tessellationMeshDraw in meshDrawsToGenerateAEN)
+            if (renderMeshesToGenerateAEN.Count > 0)
             {
-                var indicesAEN = IndexExtensions.GenerateIndexBufferAEN(tessellationMeshDraw.IndexBuffer, tessellationMeshDraw.VertexBuffers[0], context.CommandList);
-                tessellationMeshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(Context.GraphicsDevice, indicesAEN), true, tessellationMeshDraw.IndexBuffer.Count * 12 / 3);
-                tessellationMeshDraw.DrawCount = 12 / 3 * tessellationMeshDraw.DrawCount;
-            }
+                var tessellationStates = RootRenderFeature.RenderData.GetData(tessellationStateKey);
 
-            meshDrawsToGenerateAEN.Clear();
+                foreach (var renderMesh in renderMeshesToGenerateAEN)
+                {
+                    var tessellationState = tessellationStates[renderMesh.StaticObjectNode];
+                    if (tessellationState.GeneratedIndices != null)
+                        continue;
+
+                    var tessellationMeshDraw = tessellationState.MeshDraw;
+
+                    var indicesAEN = IndexExtensions.GenerateIndexBufferAEN(tessellationMeshDraw.IndexBuffer, tessellationMeshDraw.VertexBuffers[0], context.CommandList);
+                    tessellationState.GeneratedIndices = Buffer.Index.New(Context.GraphicsDevice, indicesAEN);
+                    tessellationMeshDraw.IndexBuffer = new IndexBufferBinding(tessellationState.GeneratedIndices, true, tessellationMeshDraw.IndexBuffer.Count*12/3);
+                    tessellationMeshDraw.DrawCount = 12/3*tessellationMeshDraw.DrawCount;
+                }
+
+                renderMeshesToGenerateAEN.Clear();
+            }
         }
 
         public static unsafe bool UpdateMaterial(RenderSystem renderSystem, RenderThreadContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
@@ -315,10 +324,20 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             return true;
         }
 
-        struct TessellationState
+        struct TessellationState : IDisposable
         {
             public XenkoTessellationMethod Method;
+            public Buffer GeneratedIndices;
             public MeshDraw MeshDraw;
+
+            public void Dispose()
+            {
+                if (GeneratedIndices != null)
+                {
+                    GeneratedIndices.Dispose();
+                    GeneratedIndices = null;
+                }
+            }
         }
     }
 }
