@@ -8,8 +8,5 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
     {
         public SpriteStudioComponent SpriteStudioComponent;
         public TransformComponent TransformComponent;
-        public AnimationComponent AnimationComponent;
-        public SpriteStudioNodeState RootNode;
-        public SpriteStudioSheet Sheet;
     }
 }
