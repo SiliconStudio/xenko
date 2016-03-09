@@ -3,14 +3,25 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
+    [Flags]
+    public enum EventReceiverOptions
+    {
+        None,
+        Buffered = 1 << 0,
+        ClearEveryFrame = 1 << 1
+    }
+
     public class EventReceiver<T> : IDisposable
     {
         private readonly IDisposable link;
+        private readonly ScriptComponent attachedScript;
+        private readonly CancellationTokenSource cancellationTokenSource;
         internal readonly BufferBlock<T> BufferBlock;
 
         // ReSharper disable once StaticMemberInGenericType
@@ -23,11 +34,39 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Creates an event receiver, ready to receive broadcasts from the key
         /// </summary>
         /// <param name="key">The event key to listen from</param>
-        /// <param name="buffered">If we want to process things in a deferred way buffering might become necessary, in that case set this parameter to true</param>
-        public EventReceiver(EventKey<T> key, bool buffered = false)
+        /// <param name="options"></param>
+        public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            BufferBlock = buffered ? new BufferBlock<T>(CapacityOptions) : new BufferBlock<T>();
+            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>(CapacityOptions) : new BufferBlock<T>();
             link = key.Connect(this);
+        }
+
+        /// <summary>
+        /// Creates an event receiver, ready to receive broadcasts from the key
+        /// </summary>
+        /// <param name="key">The event key to listen from</param>
+        /// <param name="attachedScript"></param>
+        /// <param name="options"></param>
+        public EventReceiver(EventKey<T> key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None)
+        {
+            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>(CapacityOptions) : new BufferBlock<T>();
+            link = key.Connect(this);
+            this.attachedScript = attachedScript;
+            var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && attachedScript != null;
+            if (!clearEveryFrame) return;
+
+            cancellationTokenSource = new CancellationTokenSource();
+            attachedScript.Script.AddTask(async () =>
+            {
+                while(!cancellationTokenSource.IsCancellationRequested)
+                {
+                    //Todo this is not really optimal probably
+                    IList<T> result;
+                    BufferBlock.TryReceiveAll(out result);
+                        
+                    await this.attachedScript.Script.NextFrame();
+                }
+            }, attachedScript.Priority + 1);
         }
 
         /// <summary>
@@ -73,6 +112,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         public void Dispose()
         {
             link.Dispose();
+            cancellationTokenSource.Cancel();
         }     
     }
 }
