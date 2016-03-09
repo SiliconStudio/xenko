@@ -894,6 +894,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
+                // TODO: Asset upgraders are called for BaseParts too, which might not be of the same type. Upgraders should be aware of this.
+                if (asset.Node.Tag != "!SceneAsset")
+                    return;
+
                 var graphicsCompositor = asset.SceneSettings.GraphicsCompositor;
 
                 if (graphicsCompositor != null && graphicsCompositor.Node.Tag == "!SceneGraphicsCompositorLayers")
