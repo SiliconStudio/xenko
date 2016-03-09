@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
         {
             await base.LoadContent();
 
-            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+            var assetManager = Services.GetSafeServiceAs<ContentManager>();
 
             // Make sure you have created a Scene with the same name (testName) in your XenkoGameStudio project.
             // The scene should be included in the build as Root and copied together with the other 

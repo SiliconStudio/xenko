@@ -11,13 +11,13 @@ using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Default serializer for <see cref="EntityGroupAsset"/> and <see cref="SceneAsset"/>
+    /// Default serializer for <see cref="PrefabAsset"/> and <see cref="SceneAsset"/>
     /// </summary>
     /// <remarks>
     /// This serializer handle the case where Entity/Components used inside an <see cref="EntityComponent"/> 
     /// or a <see cref="SceneSettings"/>, should be serialized as references instead of by value.
     /// </remarks>
-    public class EntityGroupAssetSerializer : ObjectSerializer
+    public class PrefabAssetSerializer : ObjectSerializer
     {
         // Entity (level -> 1)
         //   Component (level -> 2)
@@ -139,10 +139,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var result = base.ReadYaml(ref objectContext);
 
-                if (typeof(EntityGroupAssetBase).IsAssignableFrom(type))
+                if (typeof(EntityHierarchyAssetBase).IsAssignableFrom(type))
                 {
                     // Let's fixup entity references after serialization
-                    EntityAnalysis.FixupEntityReferences((EntityGroupAssetBase)objectContext.Instance);
+                    EntityAnalysis.FixupEntityReferences((EntityHierarchyAssetBase)objectContext.Instance);
                 }
 
                 return result;
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private static bool CanVisit(Type type)
         {
-            return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
+            return typeof(EntityHierarchyAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
     }
 }

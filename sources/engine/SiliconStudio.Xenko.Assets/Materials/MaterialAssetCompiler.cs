@@ -93,10 +93,10 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 //}
 
                 // Check with Ben why DoCommandOverride is called without going through the constructor?
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
                 var materialContext = new MaterialGeneratorContext
                 {
-                    Assets = assetManager,
+                    Content = assetManager,
                     ColorSpace = colorSpace
                 };
                 materialContext.AddLoadingFromSession(package);

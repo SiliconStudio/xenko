@@ -54,7 +54,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns>A list of references.</returns>
         public static List<AssetReferenceLink> Visit(object obj)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             List<AssetReferenceLink> assetReferences = null;
 
@@ -108,7 +108,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(item,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(descriptor.ElementType, guid.HasValue ? guid.Value : assetReference.Id, location);
+                            var newValue = AssetReference.New(descriptor.ElementType, guid ?? assetReference.Id, location);
                             array.SetValue(newValue, index);
                             return newValue;
                         });
@@ -161,31 +161,55 @@ namespace SiliconStudio.Assets.Analysis
                 var assetReference = item as AssetReference;
                 var assetBase = item as AssetBase;
                 var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
-                // TODO force support for IList in CollectionDescriptor
+
+                // We cannot set links if we do not have indexer accessor
+                if (!descriptor.HasIndexerAccessors)
+                    return;
+
                 if (assetReference != null)
                 {
-                    var list = (IList)collection;
-                    AddLink(assetReference, (guid, location) => list[index] = AssetReference.New(descriptor.ElementType, guid.HasValue ? guid.Value : assetReference.Id, location));
+                    AddLink(assetReference, (guid, location) =>
+                    {
+                        var link = AssetReference.New(descriptor.ElementType, guid ?? assetReference.Id, location);
+                        descriptor.SetValue(collection, index, link);
+                        return link;
+                    });
                 }
                 else if (assetBase != null)
                 {
-                    var list = (IList)collection;
-                    AddLink(assetBase, (guid, location) => list[index] = new AssetBase(location, assetBase.Asset));
+                    AddLink(assetBase, (guid, location) =>
+                    {
+                        var link = new AssetBase(location, assetBase.Asset);
+                        descriptor.SetValue(collection, index, link);
+                        return link;
+                    });
                 }
                 else if (attachedReference != null)
                 {
-                    var list = (IList)collection;
-                    AddLink(attachedReference, (guid, location) => list[index] = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null);
+                    AddLink(attachedReference, (guid, location) =>
+                    {
+                        var link = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
+                        descriptor.SetValue(collection, index, link);
+                        return link;
+                    });
                 }
                 else if (item is UFile)
                 {
-                    var list = (IList)collection;
-                    AddLink(item, (guid, location) => list[index] = new UFile(location));
+                    AddLink(item, (guid, location) =>
+                    {
+                        var link = new UFile(location);
+                        descriptor.SetValue(collection, index, link);
+                        return link;
+                    });
                 }
                 else if (item is UDirectory)
                 {
-                    var list = (IList)collection;
-                    AddLink(item, (guid, location) => list[index] = new UDirectory(location));
+                    AddLink(item, (guid, location) =>
+                    {
+                        var link = new UDirectory(location);
+                        descriptor.SetValue(collection, index, link);
+                        return link;
+                    });
                 }
             }
 
@@ -200,7 +224,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(descriptor.ValueType, guid.HasValue ? guid.Value : assetReference.Id, location);
+                            var newValue = AssetReference.New(descriptor.ValueType, guid ?? assetReference.Id, location);
                             descriptor.SetValue(dictionaryObj, key, newValue);
                             return newValue;
                         });
@@ -258,7 +282,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(member.Type, guid.HasValue ? guid.Value : assetReference.Id, location);
+                            var newValue = AssetReference.New(member.Type, guid ?? assetReference.Id, location);
                             member.Set(container, newValue);
                             return newValue;
                         });

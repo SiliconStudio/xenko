@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 DesiredCharacterNumber = 25, 
                 Text = InitialText,
                 TextColor = Color.Black,
-                Font = Asset.Load<SpriteFont>("CourierNew12"), 
+                Font = Content.Load<SpriteFont>("CourierNew12"), 
                 IsEnabled = IsAutomatic,
                 SynchronousCharacterGeneration = true
             };
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Content = textScroller, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit1 = new EditText(Services)
             {
                 Name = "TestEdit1",
-                Font = Asset.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("MSMincho10"),
                 MinimumWidth = 100,
                 Text = "Sample Text1",
                 MaxLength = 35,
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit2 = new EditText(Services)
             {
                 Name = "TestEdit2",
-                Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"),
+                Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"),
                 MinimumWidth = 100,
                 Text = "Sample2 Text2",
                 MaxLength = 10,
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit3 = new EditText(Services)
             {
                 Name = "TestEdit3",
-                Font = Asset.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("MSMincho10"),
                 MinimumWidth = 100,
                 Text = "secret",
                 MaxLength = 15,
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit4 = new EditText(Services)
             {
                 Name = "TestEdit4",
-                Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"),
+                Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"),
                 MinimumWidth = 200,
                 Text = "aligned text",
                 TextSize = 24,
