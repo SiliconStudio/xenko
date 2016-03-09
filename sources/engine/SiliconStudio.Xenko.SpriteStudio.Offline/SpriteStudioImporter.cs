@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline

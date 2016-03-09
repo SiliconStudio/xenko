@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ComputeColorParameterKeys
     {
-        public static readonly ParameterKey<Color4> ColorParameter = ParameterKeys.New<Color4>();
+        public static readonly ValueParameterKey<Color4> ColorParameter = ParameterKeys.NewValue<Color4>();
     }
 }

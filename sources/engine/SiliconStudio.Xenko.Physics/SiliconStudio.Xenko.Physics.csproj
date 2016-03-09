@@ -70,6 +70,7 @@
     <Compile Include="Elements\RigidbodyComponent.cs" />
     <Compile Include="Elements\StaticColliderComponent.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
+    <Compile Include="Engine\PhysicsDebugCameraRendererMode.cs" />
     <Compile Include="Engine\PhysicsDebugShapeMaterial.cs" />
     <Compile Include="Engine\PhysicsDebugShapeRendering.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
@@ -79,6 +80,7 @@
     </Compile>
     <Compile Include="IRelative.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="PhysicsConfiguration.cs" />
     <Compile Include="PhysicsProfilingKeys.cs" />
     <Compile Include="PhysicsScriptComponentExtensions.cs" />
     <Compile Include="XenkoMotionState.cs" />

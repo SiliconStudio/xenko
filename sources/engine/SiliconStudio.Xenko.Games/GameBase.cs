@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
@@ -53,6 +52,7 @@ namespace SiliconStudio.Xenko.Games
         private bool isEndRunRequired;
         private bool isExiting;
         private bool suppressDraw;
+        private bool beginDrawOk;
 
         private TimeSpan totalUpdateTime;
         private TimeSpan totalDrawTime;
@@ -106,8 +106,8 @@ namespace SiliconStudio.Xenko.Games
             // Externals
             Services = new ServiceRegistry();
 
-            // Asset manager
-            Asset = new AssetManager(Services);
+            // Content manager
+            Content = new ContentManager(Services);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection();
@@ -202,10 +202,15 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="AssetManager"/>.
+        /// Gets the <see cref="ContentManager"/>.
         /// </summary>
-        /// <value>The content manager.</value>
-        public AssetManager Asset { get; private set; }
+        public ContentManager Content { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="ContentManager"/>.
+        /// </summary>
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        public ContentManager Asset => Content;
 
         /// <summary>
         /// Gets the game components registered by this game.
@@ -223,18 +228,9 @@ namespace SiliconStudio.Xenko.Games
         /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
-        public GraphicsDevice GraphicsDevice
-        {
-            get
-            {
-                if (graphicsDeviceService == null)
-                {
-                    throw new InvalidOperationException("GraphicsDeviceService is not yet initialized");
-                }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
-                return graphicsDeviceService.GraphicsDevice;
-            }
-        }
+        public GraphicsContext GraphicsContext { get; private set; }
 
         /// <summary>
         /// Gets or sets the inactive sleep time.
@@ -321,6 +317,11 @@ namespace SiliconStudio.Xenko.Games
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets the full name of the device this game is running if available
+        /// </summary>
+        public string FullPlatformName => gamePlatform.FullName;
 
         public GameState State { get; set; }
         
@@ -449,6 +450,7 @@ namespace SiliconStudio.Xenko.Games
                 Context.RequestedBackBufferFormat = graphicsDeviceManagerImpl.PreferredBackBufferFormat;
                 Context.RequestedDepthStencilFormat = graphicsDeviceManagerImpl.PreferredDepthStencilFormat;
                 Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
+                Context.DeviceCreationFlags = graphicsDeviceManagerImpl.DeviceCreationFlags;
 
                 gamePlatform.Run(Context);
 
@@ -677,9 +679,41 @@ namespace SiliconStudio.Xenko.Games
         /// <returns><c>true</c> to continue drawing, false to not call <see cref="Draw"/> and <see cref="EndDraw"/></returns>
         protected virtual bool BeginDraw()
         {
+            beginDrawOk = false;
+
             if ((graphicsDeviceManager != null) && !graphicsDeviceManager.BeginDraw())
             {
                 return false;
+            }
+
+            // Setup default command list
+            if (GraphicsContext == null)
+            {
+                GraphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
+                Services.AddService(typeof(GraphicsContext), GraphicsContext);
+            }
+            else
+            {
+                // Reset allocator
+                GraphicsContext.ResourceGroupAllocator.Reset();
+                GraphicsContext.CommandList.Reset();
+            }
+
+            // Bind context
+            GraphicsContext.CommandList.Begin();
+
+            beginDrawOk = true;
+
+            // Clear states
+            GraphicsContext.CommandList.ClearState();
+
+            // Perform begin of frame presenter operations
+            if (GraphicsDevice.Presenter != null)
+            {
+                GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsResourceState.DepthWrite);
+                GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.RenderTarget);
+
+                GraphicsDevice.Presenter.BeginDraw(GraphicsContext.CommandList);
             }
 
             return true;
@@ -743,18 +777,35 @@ namespace SiliconStudio.Xenko.Games
             // but due to the fact that a GameSystem can modify the state of GraphicsDevice
             // we need to restore the default render targets
             // TODO: Check how we can handle this more cleanly
-            if (GraphicsDevice != null && GraphicsDevice.BackBuffer != null)
+            if (GraphicsDevice != null && GraphicsDevice.Presenter.BackBuffer != null)
             {
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+                GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             }
         }
 
         /// <summary>Ends the drawing of a frame. This method is preceeded by calls to Draw and BeginDraw.</summary>
         protected virtual void EndDraw(bool present)
         {
-            if (graphicsDeviceManager != null)
+            if (beginDrawOk)
             {
+                if (GraphicsDevice.Presenter != null)
+                {
+                    // Perform end of frame presenter operations
+                    GraphicsDevice.Presenter.EndDraw(GraphicsContext.CommandList, present);
+
+                    GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.Present);
+                }
+
+                // Unbind context
+                GraphicsContext.CommandList.End();
+
+                // Close command list
+                GraphicsContext.CommandList.Close();
+
+                // Present (if necessary)
                 graphicsDeviceManager.EndDraw(present);
+
+                beginDrawOk = false;
             }
         }
 
@@ -947,6 +998,7 @@ namespace SiliconStudio.Xenko.Games
 
             resumeManager = new ResumeManager(Services);
 
+            GraphicsDevice = graphicsDeviceService.GraphicsDevice;
             graphicsDeviceService.DeviceCreated += graphicsDeviceService_DeviceCreated;
             graphicsDeviceService.DeviceResetting += graphicsDeviceService_DeviceResetting;
             graphicsDeviceService.DeviceReset += graphicsDeviceService_DeviceReset;
@@ -961,11 +1013,14 @@ namespace SiliconStudio.Xenko.Games
                 graphicsDeviceService.DeviceResetting -= graphicsDeviceService_DeviceResetting;
                 graphicsDeviceService.DeviceReset -= graphicsDeviceService_DeviceReset;
                 graphicsDeviceService.DeviceDisposing -= graphicsDeviceService_DeviceDisposing;
+                GraphicsDevice = null;
             }
         }
 
         private void graphicsDeviceService_DeviceCreated(object sender, EventArgs e)
         {
+            GraphicsDevice = graphicsDeviceService.GraphicsDevice;
+
             if (GameSystems.State != GameSystemState.ContentLoaded)
             {
                 LoadContentInternal();
@@ -975,12 +1030,14 @@ namespace SiliconStudio.Xenko.Games
         private void graphicsDeviceService_DeviceDisposing(object sender, EventArgs e)
         {
             // TODO: Unload all assets
-            //Asset.UnloadAll();
+            //Content.UnloadAll();
 
             if (GameSystems.State == GameSystemState.ContentLoaded)
             {
                 UnloadContent();
             }
+
+            GraphicsDevice = null;
         }
 
         private void graphicsDeviceService_DeviceReset(object sender, EventArgs e)

@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             var resolution = (Vector3)UIComponent.VirtualResolution;
 
             var canvas = new Canvas();
-            var imgElt = new ImageElement { Name = "UV image", Source = new Sprite(Asset.Load<Texture>("uv")), Width = resolution.X / 5, Height = resolution.Y / 5, StretchType = StretchType.Fill };
+            var imgElt = new ImageElement { Name = "UV image", Source = new Sprite(Content.Load<Texture>("uv")), Width = resolution.X / 5, Height = resolution.Y / 5, StretchType = StretchType.Fill };
             imgElt.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             imgElt.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(resolution.X / 10, resolution.Y / 10, 0));
             imgElt.DependencyProperties.Set(Panel.ZIndexPropertyKey, -1);
@@ -53,27 +53,27 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             scrollViewer.Content = stackPanel;
 
             var button1 = new Button { Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5), LocalMatrix = Matrix.Scaling(2, 2, 2) };
-            var textOnly = new TextBlock { Text = "Text only button", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), TextColor = new Color(1f, 0, 0, 0.5f) };
+            var textOnly = new TextBlock { Text = "Text only button", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextColor = new Color(1f, 0, 0, 0.5f) };
             button1.Content = textOnly;
 
             var button2 = new Button { Name = "Button2", Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5) };
-            var imageContent = new ImageElement { Name = "Image Button2", Source = new Sprite(Asset.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 50 };
+            var imageContent = new ImageElement { Name = "Image Button2", Source = new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 50 };
             button2.Content = imageContent;
 
             var button3 = new Button { Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5) };
             var stackContent = new StackPanel { Orientation = Orientation.Horizontal };
-            var stackImage = new ImageElement { Name = "Image stack panel", Source = new Sprite(Asset.Load<Texture>("uv")), MaximumHeight = 50 };
-            var stackText = new TextBlock { Text = "button text", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), Margin = Thickness.UniformRectangle(5) };
+            var stackImage = new ImageElement { Name = "Image stack panel", Source = new Sprite(Content.Load<Texture>("uv")), MaximumHeight = 50 };
+            var stackText = new TextBlock { Text = "button text", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), Margin = Thickness.UniformRectangle(5) };
             stackContent.Children.Add(stackImage);
             stackContent.Children.Add(stackText);
             button3.Content = stackContent;
 
             var button4 = new Button { Margin = Thickness.UniformRectangle(5), HorizontalAlignment = HorizontalAlignment.Right, Padding = Thickness.UniformRectangle(5) };
-            var imageContent2 = new ImageElement { Name = "button 4 uv image", Source = new Sprite(Asset.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 40, Opacity = 0.5f };
+            var imageContent2 = new ImageElement { Name = "button 4 uv image", Source = new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 40, Opacity = 0.5f };
             button4.Content = imageContent2;
 
             var button5 = new Button { Margin = Thickness.UniformRectangle(5), HorizontalAlignment = HorizontalAlignment.Left, Padding = Thickness.UniformRectangle(5) };
-            var textOnly2 = new TextBlock { Text = "Left aligned", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") };
+            var textOnly2 = new TextBlock { Text = "Left aligned", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
             button5.Content = textOnly2;
 
             var button6 = new ImageButton
@@ -81,25 +81,25 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Height = 50,
                 Margin = Thickness.UniformRectangle(5),
                 HorizontalAlignment = HorizontalAlignment.Center,
-                PressedImage = new Sprite(Asset.Load<Texture>("ImageButtonPressed")),
-                NotPressedImage = new Sprite(Asset.Load<Texture>("ImageButtonNotPressed")),
+                PressedImage = new Sprite(Content.Load<Texture>("ImageButtonPressed")),
+                NotPressedImage = new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
             };
 
             toggle = new ToggleButton
             {
-                Content = new TextBlock { Text = "Toggle button test", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") },
+                Content = new TextBlock { Text = "Toggle button test", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") },
                 IsThreeState = true
             };
 
-            scrollingText = new ScrollingText { Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), Text = "<<<--- Scrolling text in a button ", IsEnabled = IsUpdateAutomatic };
+            scrollingText = new ScrollingText { Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), Text = "<<<--- Scrolling text in a button ", IsEnabled = IsUpdateAutomatic };
             var button7 = new Button { Margin = Thickness.UniformRectangle(5), Content = scrollingText };
 
             var uniformGrid = new UniformGrid { Rows = 2, Columns = 2 };
-            var gridText = new TextBlock { Text = "Uniform grid", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center};
+            var gridText = new TextBlock { Text = "Uniform grid", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center};
             gridText.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 2);
-            var buttonLeft = new Button { Content = new TextBlock { Text = "unif-grid left", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center } };
+            var buttonLeft = new Button { Content = new TextBlock { Text = "unif-grid left", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center } };
             buttonLeft.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
-            var buttonRight = new Button { Content = new TextBlock { Text = "unif-grid right", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center } };
+            var buttonRight = new Button { Content = new TextBlock { Text = "unif-grid right", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center } };
             buttonRight.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
             buttonRight.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);
             uniformGrid.Children.Add(gridText);

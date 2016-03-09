@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
 
             compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
 
             var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix", UsedParameters = parameters };
 
-            var result = effectCompiler.Compile(mixinTree, new CompilerParameters()).WaitForResult();
+            var result = effectCompiler.Compile(mixinTree, null).WaitForResult();
 
             Assert.IsFalse(result.CompilationLog.HasErrors);
             Assert.IsNotNull(result);

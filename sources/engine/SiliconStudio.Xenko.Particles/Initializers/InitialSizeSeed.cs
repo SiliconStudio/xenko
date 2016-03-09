@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialSizeSeed")]
-    [Display("Initial Size by seed")]
+    [Display("Initial Size")]
     public class InitialSizeSeed : ParticleInitializer
     {
         public InitialSizeSeed()
@@ -42,10 +42,22 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
 
+        /// <summary>
+        /// Minimum and maximum values for the size field
+        /// </summary>
+        /// <userdoc>
+        /// Minimum and maximum values for the size field
+        /// </userdoc>
         [DataMember(30)]
         [Display("Random size")]
         public Vector2 RandomSize { get; set; } = new Vector2(0.5f, 1);

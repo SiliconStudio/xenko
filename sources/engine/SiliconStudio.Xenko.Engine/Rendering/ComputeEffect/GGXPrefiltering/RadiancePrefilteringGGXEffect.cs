@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     [DataContract]public partial class RadiancePrefilteringGGXParams : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> NbOfSamplings = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> NbOfSamplings = ParameterKeys.NewPermutation<int>();
     };
     internal static partial class ShaderMixins
     {

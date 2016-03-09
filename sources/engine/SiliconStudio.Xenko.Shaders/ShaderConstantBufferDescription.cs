@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Xenko.Shaders
 {
@@ -36,6 +37,9 @@ namespace SiliconStudio.Xenko.Shaders
         /// The members of this constant buffer.
         /// </summary>
         public EffectParameterValueData[] Members;
+
+        [DataMemberIgnore]
+        public ObjectId Hash;
 
         /// <summary>
         /// Clone the current instance of the constant buffer description.

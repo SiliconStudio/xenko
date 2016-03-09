@@ -5,14 +5,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
     internal class GamePlatformiOS : GamePlatform<iOSWindow>, IGraphicsDeviceFactory
     {
+        [DllImport("/usr/lib/libSystem.dylib")]
+        private static unsafe extern int sysctlbyname([MarshalAs(UnmanagedType.LPStr)] string name, IntPtr oldp, int* oldlenp, IntPtr newp, uint newlen);
+
+        private unsafe void PopulateFullName()
+        {
+            int len;
+            sysctlbyname("hw.machine", IntPtr.Zero, &len, IntPtr.Zero, 0);
+            if (len == 0) return;
+
+            var output = Marshal.AllocHGlobal(len);
+            sysctlbyname("hw.machine", output, &len, IntPtr.Zero, 0);
+            FullName = Marshal.PtrToStringAnsi(output);
+            Marshal.FreeHGlobal(output);
+        }
+
         public GamePlatformiOS(GameBase game) : base(game)
         {
+            PopulateFullName();
         }
 
         public override string DefaultAppDirectory

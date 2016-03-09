@@ -31,6 +31,12 @@ namespace SiliconStudio.Xenko.Rendering
         public RectangleF Viewport { get; set; }
 
         /// <summary>
+        /// Gets the actual viewport size (only valid after <see cre=f"ActivateOutput"/>).
+        /// </summary>
+        [DataMemberIgnore]
+        public Viewport ComputedViewport { get; private set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the viewport is in fixed pixels instead of percentage.
         /// </summary>
         /// <value><c>true</c> if the viewport is in pixels instead of percentage; otherwise, <c>false</c>.</value>
@@ -40,24 +46,30 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Viewport in %")]
         public bool IsViewportInPercentage { get; set; }
 
-        protected override void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
+        public override void Collect(RenderContext context)
         {
-            base.ActivateOutputCore(context, output, disableDepth);
+            base.Collect(context);
 
-            Viewport viewport;
             var rect = Viewport;
+
             // Setup the viewport
             if (IsViewportInPercentage)
             {
+                var output = GetOutput(context);
                 var width = output.Width;
                 var height = output.Height;
-                viewport = new Viewport((int)(rect.X * width / 100.0f), (int)(rect.Y * height / 100.0f), (int)(rect.Width * width / 100.0f), (int)(rect.Height * height / 100.0f));
+                ComputedViewport = new Viewport((int)(rect.X * width / 100.0f), (int)(rect.Y * height / 100.0f), (int)(rect.Width * width / 100.0f), (int)(rect.Height * height / 100.0f));
             }
             else
             {
-                viewport = new Viewport((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+                ComputedViewport = new Viewport((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
             }
-            context.GraphicsDevice.SetViewport(viewport);
+        }
+
+        protected override void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
+        {
+            base.ActivateOutputCore(context, output, disableDepth);
+            context.CommandList.SetViewport(ComputedViewport);
         }
     }
 }

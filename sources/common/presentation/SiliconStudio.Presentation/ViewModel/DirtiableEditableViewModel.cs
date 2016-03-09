@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -37,8 +36,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            var dirtiableManager = ServiceProvider.TryGet<DirtiableManager>();
-            dirtiableManager?.UnregisterDirtiableDependency(this, null);
+            // intentionally do nothing
         }
 
         protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)

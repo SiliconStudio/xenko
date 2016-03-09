@@ -7,11 +7,14 @@ class SpriteBase : ShaderBase, Texturing
     // -------------------------------------
     stage stream float4 Position : POSITION;
 
-    // -------------------------------------
-    // uniforms
-    // -------------------------------------
-    // A general transformation matrix
-    stage float4x4 MatrixTransform;
+    cbuffer PerDraw
+    {
+        // -------------------------------------
+        // uniforms
+        // -------------------------------------
+        // A general transformation matrix
+        stage float4x4 MatrixTransform;
+    }
         
     // -------------------------------------
     // VertexShader

@@ -28,16 +28,6 @@ namespace SiliconStudio.Xenko.Particles
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Should the Particle System's bounds be displayed as a debug draw
-        /// </summary>
-        /// <userdoc>
-        /// Display the Particle System's boinds as a wireframe debug shape. Temporary feature (will be removed later)!
-        /// </userdoc>
-        [DataMember(-1)]
-        [DefaultValue(false)]
-        public bool DebugDraw { get; set; } = false;
-
-        /// <summary>
         /// Fixes local space location back to world space location. Used for debug drawing.
         /// </summary>
         /// <param name="translation">The locator's translation</param>
@@ -71,7 +61,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 foreach (var initializer in particleEmitter.Initializers)
                 {
-                    if (initializer.DebugDraw && initializer.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
+                    if (initializer.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
                         if (particleEmitter.SimulationSpace == EmitterSimulationSpace.Local)
@@ -83,7 +73,7 @@ namespace SiliconStudio.Xenko.Particles
 
                 foreach (var updater in particleEmitter.Updaters)
                 {
-                    if (updater.DebugDraw && updater.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
+                    if (updater.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
                         if (particleEmitter.SimulationSpace == EmitterSimulationSpace.Local)
@@ -94,7 +84,7 @@ namespace SiliconStudio.Xenko.Particles
                 }
             }
 
-            if (DebugDraw && BoundingShape.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
+            if (BoundingShape.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                 return ToWorldSpace(ref translation, ref rotation, ref scale);
 
             return false;
@@ -245,25 +235,6 @@ namespace SiliconStudio.Xenko.Particles
                     particleEmitter.Update(dt, this);
                 }
             }            
-        }
-
-        /// <summary>
-        /// Render all particles in this particle system. Particles might have different materials assigned.
-        /// </summary>
-        /// <userdoc>
-        /// Render all particles in this particle system. Particles might have different materials assigned.
-        /// </userdoc>
-        public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
-        {
-            foreach (var particleEmitter in Emitters)
-            {
-                if (particleEmitter.Enabled)
-                {
-                    particleEmitter.BuildVertexBuffer(device, ref invViewMatrix);
-
-                    particleEmitter.KickVertexBuffer(device, context, ref viewMatrix, ref projMatrix, color);
-                }
-            }
         }
 
         /// <summary>

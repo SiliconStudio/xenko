@@ -65,6 +65,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
+
             base.Draw(gameTime);
 
             pass2.ThreadNumbers = new Int3(NbOfSums, 1, 1);
@@ -73,10 +75,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             pass2.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, Order);
             pass2.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, inputBuffer);
             pass2.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, outputBuffer);
-            pass2.Draw();
+            pass2.Draw(renderDrawContext);
 
             // Get the data out of the final buffer
-            var finalsValues = outputBuffer.GetData<Vector4>();
+            var finalsValues = outputBuffer.GetData<Vector4>(GraphicsContext.CommandList);
 
             // performs last possible additions, normalize the result and store it in the SH
             var result = new Vector4[NbOfCoeffs];

@@ -9,17 +9,12 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public static partial class CameraKeys
     {
-        static CameraKeys()
-        {
-            ZProjection = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector2, float, float>(NearClipPlane, FarClipPlane, ZProjectionACalculate));
-        }
-
         /// <summary>
         /// Camera focus distance
         /// </summary>
-        public static readonly ParameterKey<float> FocusDistance = ParameterKeys.New(0.0f);
+        public static readonly ValueParameterKey<float> FocusDistance = ParameterKeys.NewValue(0.0f);
 
-        private static void ZProjectionACalculate(ref float nearClipPlane, ref float farClipPlane, ref Vector2 output)
+        public static Vector2 ZProjectionACalculate(float nearClipPlane, float farClipPlane)
         {
             // Formuluas to retro project a non-linear zdepth in the range [0.0 - 1.0] to a linear-depth in view space.
 
@@ -31,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
             // From (2) and (1): B = (-FarClipPlane * NearClipPlane) / (FarClipPlane - NearClipPlane)
             //
             // From (0) z = B / (depth - A)
-            output = new Vector2(farClipPlane / (farClipPlane - nearClipPlane), (-farClipPlane * nearClipPlane) / (farClipPlane - nearClipPlane));
+            return new Vector2(farClipPlane / (farClipPlane - nearClipPlane), (-farClipPlane * nearClipPlane) / (farClipPlane - nearClipPlane));
         }
     }
 }

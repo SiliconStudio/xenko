@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display("Camera", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
+    //[DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     [ComponentOrder(13000)]
     public sealed class CameraComponent : ActivableEntityComponent
     {

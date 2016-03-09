@@ -1,8 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -193,7 +192,7 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = new SpriteAnimationSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
 
-            Asset.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
+            Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -220,16 +219,19 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
-                if (Asset.Exists(GameSettings.AssetUrl))
+                var renderingSettings = new RenderingSettings();
+                if (Content.Exists(GameSettings.AssetUrl))
                 {
-                    Settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                    Settings = Content.Load<GameSettings>(GameSettings.AssetUrl);
+
+                    renderingSettings = Settings.Configurations.Get<RenderingSettings>();
 
                     // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
-                    if (Settings.DefaultGraphicsProfileUsed > 0)
+                    if (renderingSettings.DefaultGraphicsProfile > 0)
                     {
                         var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                         if (!deviceManager.ShaderProfile.HasValue)
-                            deviceManager.ShaderProfile = Settings.DefaultGraphicsProfileUsed;
+                            deviceManager.ShaderProfile = renderingSettings.DefaultGraphicsProfile;
                     }
                 }
 
@@ -237,14 +239,14 @@ namespace SiliconStudio.Xenko.Engine
                 if (AutoLoadDefaultSettings)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (Settings.DefaultGraphicsProfileUsed > 0)
+                    if (renderingSettings.DefaultGraphicsProfile > 0)
                     {
-                        deviceManager.PreferredGraphicsProfile = new[] { Settings.DefaultGraphicsProfileUsed };
+                        deviceManager.PreferredGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
                     }
-                    if (Settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = Settings.DefaultBackBufferWidth;
-                    if (Settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = Settings.DefaultBackBufferHeight;
-                    deviceManager.PreferredColorSpace = Settings.ColorSpace;
-                    SceneSystem.InitialSceneUrl = Settings.DefaultSceneUrl;
+                    if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
+                    if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
+                    deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
+                    SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                 }
             }
         }
@@ -252,6 +254,19 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Initialize()
         {
             base.Initialize();
+
+            //now we probably are capable of detecting the gpu so we try again settings
+            if (AutoLoadDefaultSettings)
+            {
+                var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+                if (renderingSettings != null)
+                {
+                    var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                    deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                }
+            }
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important
@@ -295,9 +310,9 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(SceneSystem);
 
             // TODO: data-driven?
-            Asset.Serializer.RegisterSerializer(new ImageSerializer());
-            Asset.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
-            Asset.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
+            Content.Serializer.RegisterSerializer(new ImageSerializer());
+            Content.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
+            Content.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
 
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
@@ -316,7 +331,7 @@ namespace SiliconStudio.Xenko.Engine
                 var mountPath = VirtualFileSystem.ResolveProviderUnsafe("/asset", true).Provider == null ? "/asset" : null;
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase, mountPath);
 
-                AssetManager.GetFileProvider = () => databaseFileProvider;
+                ContentManager.GetFileProvider = () => databaseFileProvider;
             }
         }
 
@@ -344,7 +359,7 @@ namespace SiliconStudio.Xenko.Engine
 
                     using (var stream = System.IO.File.Create(newFileName))
                     {
-                        GraphicsDevice.BackBuffer.Save(stream, ImageFileType.Png);
+                        GraphicsDevice.Presenter.BackBuffer.Save(GraphicsContext.CommandList, stream, ImageFileType.Png);
                     }
                 }
             }

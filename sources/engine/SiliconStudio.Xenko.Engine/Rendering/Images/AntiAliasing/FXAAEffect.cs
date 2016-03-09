@@ -15,8 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public class FXAAEffect : ImageEffectShader, IScreenSpaceAntiAliasingEffect
     {
         private const int DefaultQuality = 15;
-        internal static readonly ParameterKey<int> GreenAsLumaKey = ParameterKeys.New(0);
-        internal static readonly ParameterKey<int> QualityKey = ParameterKeys.New(15);
+        internal static readonly PermutationParameterKey<int> GreenAsLumaKey = ParameterKeys.NewPermutation(0);
+        internal static readonly PermutationParameterKey<int> QualityKey = ParameterKeys.NewPermutation(15);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FXAAEffect"/> class.
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (antialiasShaderName == null) throw new ArgumentNullException("antialiasShaderName");
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
             Parameters.Set(GreenAsLumaKey, InputLuminanceInAlpha ? 0 : 1);

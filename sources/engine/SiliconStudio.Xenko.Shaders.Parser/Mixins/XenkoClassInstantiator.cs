@@ -59,6 +59,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             foreach (var member in shaderClassType.Members)
                 VisitDynamic(member); // look for IdentifierGeneric and Variable
 
+            // Process each constant buffer encoded as tag
+            foreach (var constantBuffer in shaderClassType.Members.OfType<Variable>().Select(x => (ConstantBuffer)x.GetTag(XenkoTags.ConstantBuffer)).Where(x => x != null).Distinct())
+                VisitDynamic(constantBuffer);
+
             int insertIndex = 0;
             foreach (var variable in shaderClassType.ShaderGenerics)
             {
@@ -101,6 +105,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     memberReferenceExpression.TypeInference.Declaration = variableGenerics[memberVariableName];
                 }
             }
+        }
+
+        [Visit]
+        public void Visit(ConstantBuffer constantBuffer)
+        {
+            string remappedConstantBufferName;
+            if (stringGenerics.TryGetValue(constantBuffer.Name.Text, out remappedConstantBufferName))
+                constantBuffer.Name = new Identifier(remappedConstantBufferName);
+
+            Visit((Node)constantBuffer);
         }
 
         [Visit]

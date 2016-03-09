@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public static partial class ShadowMapFilterVsmKeys
     {
-        public static readonly ParameterKey<float> BleedingFactor = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> MinVariance = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> BleedingFactor = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> MinVariance = ParameterKeys.NewValue<float>();
     }
 }

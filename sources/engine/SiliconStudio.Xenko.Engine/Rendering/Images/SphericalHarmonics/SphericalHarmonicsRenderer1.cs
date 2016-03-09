@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class SphericalHarmonicsRendererKeys
     {
-        public static readonly ParameterKey<Color3[]> SHCoefficients = ParameterKeys.New<Color3[]>();
+        public static readonly ValueParameterKey<Color3> SHCoefficients = ParameterKeys.NewValue<Color3>();
     }
 }

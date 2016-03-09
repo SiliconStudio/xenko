@@ -8,6 +8,7 @@ _ReSharper.*
 *.opensdf
 *.i.cs
 *.cache
+*.Cache
 *.tlog
 *.log
 *.obj
@@ -38,6 +39,7 @@ xenko_doc_output
 doc/doxygen/html
 Tools/bin
 Temp/
+bin/
 Bin/
 ipch/
 obj/

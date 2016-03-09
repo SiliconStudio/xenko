@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
@@ -73,7 +72,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             // Compile the whole mixin tree
             var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", mixinToCompile.Name) };
-            var bytecode = Compile(mixinToCompile, compilerParameters);
+            var bytecode = Compile(mixinToCompile, new EffectCompilerParameters { TaskPriority = compilerParameters.TaskPriority });
 
             // Since bytecode.Result is a struct, we check if any of its member has been set to know if it's valid
             if (bytecode.Result.CompilationLog != null || bytecode.Task != null)
@@ -84,6 +83,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
                 compilerResults.Bytecode = bytecode;
                 compilerResults.UsedParameters = mixinToCompile.UsedParameters;
+                compilerResults.SourceParameters = new CompilerParameters(compilerParameters);
             }
             return compilerResults;
         }
@@ -92,9 +92,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// Compiles the ShaderMixinSource into a platform bytecode.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
-        /// <param name="compilerParameters">The compiler parameters.</param>
+        /// <param name="effectCompilerParameters"></param>
         /// <returns>The platform-dependent bytecode.</returns>
-        public abstract TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
+        public abstract TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters? effectCompilerParameters);
 
         public static readonly string DefaultSourceShaderFolder = "shaders";
 

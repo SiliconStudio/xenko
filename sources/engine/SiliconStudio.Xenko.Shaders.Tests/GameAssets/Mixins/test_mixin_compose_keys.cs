@@ -18,8 +18,8 @@ namespace TestABC
 {
     [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<bool> UseComputeColor2 = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<bool> UseComputeColorRedirect = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> UseComputeColor2 = ParameterKeys.NewPermutation<bool>();
+        public static readonly PermutationParameterKey<bool> UseComputeColorRedirect = ParameterKeys.NewPermutation<bool>();
     };
     internal static partial class ShaderMixins
     {

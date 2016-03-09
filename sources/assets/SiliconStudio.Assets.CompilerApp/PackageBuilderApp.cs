@@ -58,7 +58,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             //Thread.Sleep(10000);
             //var spriteFontAsset = StaticFontAsset.New();
-            //Asset.Save("test.xkfnt", spriteFontAsset);
+            //Content.Save("test.xkfnt", spriteFontAsset);
             //project.Refresh();
 
             //args = new string[] { "test.xkpkg", "-o:app_data", "-b:tmp", "-t:1" };

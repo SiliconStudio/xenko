@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ParticleBaseKeys
     {
-        public static readonly ParameterKey<Matrix> MatrixTransform = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Vector4> ColorScale = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<float> AlphaAdditive = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<Matrix> MatrixTransform = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Vector4> ColorScale = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<float> AlphaAdditive = ParameterKeys.NewValue<float>();
     }
 }

@@ -6,18 +6,4 @@
 // and re-save the associated .xkfx.
 // </auto-generated>
 
-using System;
-using SiliconStudio.Core;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Shaders;
-using SiliconStudio.Core.Mathematics;
-using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
-
-namespace SiliconStudio.Xenko.Rendering
-{
-    public static partial class ShaderBaseKeys
-    {
-        public static readonly ParameterKey<float> XenkoFlipRendertarget = ParameterKeys.New<float>();
-    }
-}
+// Nothing to generate
