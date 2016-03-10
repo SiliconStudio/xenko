@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             var settings = package.GetGameSettingsAsset();
-            return RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>().PreferredGraphicsPlatform);
+            return RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>(context.Profile).PreferredGraphicsPlatform);
         }
 
         public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
