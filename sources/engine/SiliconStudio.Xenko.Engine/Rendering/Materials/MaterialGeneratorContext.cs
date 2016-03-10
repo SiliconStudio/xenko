@@ -438,6 +438,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public ShaderSource GenerateStreamInilizer(MaterialShaderStage stage)
             {
+                // Early exit if nothing to do
+                if (StreamInitializers[stage].Count == 0 && SurfaceShaders[stage].Count == 0 && stage != MaterialShaderStage.Pixel)
+                {
+                    return null;
+                }
+
                 var mixin = new ShaderMixinSource();
 
                 // the basic streams contained by every materials

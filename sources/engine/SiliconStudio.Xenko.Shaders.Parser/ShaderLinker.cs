@@ -433,6 +433,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                                 break;
 
                             case "samplerstate":
+                            case "samplercomparisonstate":
                                 parameterKey.Class = EffectParameterClass.Sampler;
                                 parameterKey.Type = EffectParameterType.Sampler;
                                 break;

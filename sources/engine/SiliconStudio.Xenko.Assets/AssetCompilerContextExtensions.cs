@@ -2,14 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Diagnostics;
-using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Settings;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
@@ -36,14 +31,8 @@ namespace SiliconStudio.Xenko.Assets
 
         public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context, Package package)
         {
-            var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == context.Profile);
-            if (buildProfile == null)
-            {
-                return context.Platform.GetDefaultGraphicsPlatform();
-            }
-
             var settings = package.GetGameSettingsAsset();
-            return RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>().PreferredGraphicsPlatform);
+            return settings == null ? context.Platform.GetDefaultGraphicsPlatform() : RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>(context.Profile).PreferredGraphicsPlatform);
         }
 
         public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
@@ -66,18 +55,5 @@ namespace SiliconStudio.Xenko.Assets
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        /*public static TextureQuality GetTextureQuality(this AssetCompilerContext context)
-        {
-            return context.PackageProperties.Get(XenkoConfig.TextureQuality);
-        }
-
-        public static GraphicsProfile GetGraphicsProfile(this AssetCompilerContext context)
-        {
-            var gameSettingsAsset = context.Package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            return gameSettingsAsset != null
-                ? ((GameSettingsAsset)gameSettingsAsset.Asset).DefaultGraphicsProfile
-                : GraphicsProfile.Level_10_0;
-        }*/
     }
 }

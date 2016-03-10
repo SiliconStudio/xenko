@@ -67,9 +67,38 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(40)]
         public List<string> PlatformFilters { get; } = new List<string>(); 
 
-        public T Get<T>() where T : Configuration, new()
+        public T Get<T>(string profile = null) where T : Configuration, new()
         {
-            var settings = (T)Defaults.FirstOrDefault(x => x != null && x.GetType() == typeof(T));
+            Configuration first = null;
+            if (profile != null)
+            {
+                foreach (var configurationOverride in Overrides)
+                {
+                    if (configurationOverride.SpecificFilter == -1) continue;
+                    var filter = PlatformFilters[configurationOverride.SpecificFilter];
+                    if (filter == profile)
+                    {
+                        var x = configurationOverride.Configuration;
+                        if (x != null && x.GetType() == typeof(T))
+                        {
+                            first = x;
+                            break;
+                        }
+                    } 
+                }
+            }
+            if (first == null)
+            {
+                foreach (var x in Defaults)
+                {
+                    if (x != null && x.GetType() == typeof(T))
+                    {
+                        first = x;
+                        break;
+                    }
+                }
+            }
+            var settings = (T)first;
             if (settings != null) return settings;
             settings = new T();
             Defaults.Add(settings);

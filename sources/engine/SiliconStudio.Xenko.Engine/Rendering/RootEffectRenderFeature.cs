@@ -342,7 +342,9 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         // Reset pending effect, as it is now obsolete anyway
                         renderEffect.PendingEffect = null;
+                        renderEffect.State = RenderEffectState.Normal;
 
+                        staticCompilerParameters.SetDefaults();
                         foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
                         {
                             staticCompilerParameters.SetObject(effectValue.Key, effectValue.Value);
