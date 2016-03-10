@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../../samples/Graphics/MaterialSample/RawAssets/stone4_nml.jpeg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
+Hint: NormalMap
 ~Base:
     ~Id: a7660c75-63b1-4689-9633-60849058f154
     Location: --import--
