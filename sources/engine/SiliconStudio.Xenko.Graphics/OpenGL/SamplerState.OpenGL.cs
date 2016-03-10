@@ -5,6 +5,7 @@ using System;
 using SiliconStudio.Core.Mathematics;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+using TextureCompareMode = OpenTK.Graphics.ES30.All;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
