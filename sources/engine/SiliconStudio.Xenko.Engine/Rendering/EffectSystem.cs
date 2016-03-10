@@ -199,14 +199,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
             // Setup compilation parameters
-            if (!compilerParameters.ContainsKey(CompilerParameters.DebugKey))
-            {
-                compilerParameters.Debug = CompilationDebugInfo;
-            }
-            if (!compilerParameters.ContainsKey(CompilerParameters.OptimizationLevelKey))
-            {
-                compilerParameters.OptimizationLevel = CompilationOptimizationLevel;
-            }
+            compilerParameters.Debug = CompilationDebugInfo;
+            compilerParameters.OptimizationLevel = CompilationOptimizationLevel;
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);
@@ -310,14 +304,22 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (compilerResult == null)
             {
-                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
-                compilerResult = compiler.Compile(source, compilerParameters);
-
                 var effectRequested = EffectUsed;
                 if (effectRequested != null)
                 {
-                    effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
+                    var mixinParameters = new ShaderMixinParameters();
+                    foreach (var parameterKeyInfo in compilerParameters.ParameterKeyInfos)
+                    {
+                        if (parameterKeyInfo.Key.Type != ParameterKeyType.Permutation)
+                            continue;
+
+                        mixinParameters.SetObject(parameterKeyInfo.Key, compilerParameters.GetObject(parameterKeyInfo.Key));
+                    }
+                    effectRequested(new EffectCompileRequest(effectName, mixinParameters));
                 }
+
+                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
+                compilerResult = compiler.Compile(source, compilerParameters);
                 
                 if (!compilerResult.HasErrors && isXkfx)
                 {

@@ -326,7 +326,7 @@ namespace SiliconStudio.Xenko.Engine
         public Simulation Simulation { get; internal set; }
 
         [DataMemberIgnore]
-        internal PhysicsDebugShapeRendering DebugShapeRendering;
+        internal PhysicsShapesRenderingService DebugShapeRendering;
 
         [DataMemberIgnore]
         public bool ColliderShapeChanged { get; private set; }

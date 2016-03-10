@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Shaders
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Shaders
     /// <summary>
     /// Parameters used for mixin.
     /// </summary>
-    [DataContract]
+    [DataSerializer(typeof(DictionaryAllSerializer<ShaderMixinParameters, ParameterKey, object>))]
     public class ShaderMixinParameters : ParameterCollection, IDictionary<ParameterKey, object>
     {
         /// <summary>
@@ -43,7 +44,21 @@ namespace SiliconStudio.Xenko.Shaders
             throw new NotImplementedException();
         }
 
-        public int Count => ParameterKeyInfos.Count;
+        public int Count
+        {
+            get
+            {
+                var count = 0;
+
+                foreach (var parameterKeyInfo in ParameterKeyInfos)
+                {
+                    if (parameterKeyInfo.Key.Type == ParameterKeyType.Permutation)
+                        count++;
+                }
+
+                return count;
+            }
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
