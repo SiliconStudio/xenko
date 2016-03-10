@@ -13,8 +13,6 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class ConvexHullColliderShape : ColliderShape
     {
-        private MeshDraw cachedDebugPrimitive;
-
         private readonly IReadOnlyList<Vector3> pointsList;
         private readonly IReadOnlyCollection<uint> indicesList; 
 
@@ -36,8 +34,6 @@ namespace SiliconStudio.Xenko.Physics
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            if (cachedDebugPrimitive != null) return cachedDebugPrimitive;
-
             var verts = new VertexPositionNormalTexture[pointsList.Count];
             for (var i = 0; i < pointsList.Count; i++)
             {
@@ -65,9 +61,7 @@ namespace SiliconStudio.Xenko.Physics
 
             var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
 
-            cachedDebugPrimitive = new GeometricPrimitive(device, meshData).ToMeshDraw();
-
-            return cachedDebugPrimitive;
+            return new GeometricPrimitive(device, meshData).ToMeshDraw();
         }
     }
 }
