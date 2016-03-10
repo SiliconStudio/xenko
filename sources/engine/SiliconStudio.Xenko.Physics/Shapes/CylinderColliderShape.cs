@@ -12,8 +12,6 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class CylinderColliderShape : ColliderShape
     {
-        private static MeshDraw cachedDebugPrimitive;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
         /// </summary>
@@ -59,7 +57,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cylinder.New(device).ToMeshDraw());
+            return GeometricPrimitive.Cylinder.New(device).ToMeshDraw();
         }
     }
 }

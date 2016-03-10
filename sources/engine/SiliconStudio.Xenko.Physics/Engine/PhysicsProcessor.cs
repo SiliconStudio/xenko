@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -36,7 +37,7 @@ namespace SiliconStudio.Xenko.Physics
 
         private bool colliderShapesRendering;
 
-        private PhysicsDebugShapeRendering debugShapeRendering;
+        private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
             : base(typeof(TransformComponent))
@@ -148,13 +149,18 @@ namespace SiliconStudio.Xenko.Physics
                 game.GameSystems.Add(physicsSystem);
             }
 
-            simulation = physicsSystem.Create(this);
-
-            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
-            if (gfxDevice != null)
+            try
             {
-                debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
+                debugShapeRendering = Services.GetSafeServiceAs<PhysicsShapesRenderingService>();
             }
+            catch (ServiceNotFoundException)
+            {
+                debugShapeRendering = new PhysicsShapesRenderingService(Services);
+                var game = Services.GetSafeServiceAs<IGame>();
+                game.GameSystems.Add(debugShapeRendering);
+            }
+
+            simulation = physicsSystem.Create(this);
 
             sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
         }

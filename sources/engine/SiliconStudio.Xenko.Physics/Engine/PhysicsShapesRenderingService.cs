@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -9,24 +11,30 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics.Engine
 {
-    public class PhysicsDebugShapeRendering : IDisposable
+    public class PhysicsShapesRenderingService : GameSystem
     {
-        private readonly Material triggerMaterial;
-        private readonly Material staticMaterial;
-        private readonly Material dynamicMaterial;
-        private readonly Material kinematicMaterial;
-        private readonly Material characterMaterial;
-        private readonly GraphicsDevice graphicsDevice;
+        private Material triggerMaterial;
+        private Material staticMaterial;
+        private Material dynamicMaterial;
+        private Material kinematicMaterial;
+        private Material characterMaterial;
+        private GraphicsDevice graphicsDevice;
 
-        public PhysicsDebugShapeRendering(GraphicsDevice device)
+        private Dictionary<Type, MeshDraw> debugMeshCache = new Dictionary<Type, MeshDraw>(); 
+
+        public override void Initialize()
         {
-            graphicsDevice = device;
+            graphicsDevice = Services.GetServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
             triggerMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Purple, 0.77f), 1);
             staticMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Red, 0.77f), 1);
             dynamicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Green, 0.77f), 1);
             kinematicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Blue, 0.77f), 1);
             characterMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Yellow, 0.77f), 1);
+        }
+
+        public PhysicsShapesRenderingService(IServiceRegistry registry) : base(registry)
+        {            
         }
 
         public Entity CreateDebugEntity(PhysicsComponent component)
@@ -119,6 +127,13 @@ namespace SiliconStudio.Xenko.Physics.Engine
                             mat = staticMaterial;
                         }
 
+                        MeshDraw draw;
+                        if (!debugMeshCache.TryGetValue(shape.GetType(), out draw))
+                        {
+                            draw = shape.CreateDebugPrimitive(graphicsDevice);
+                            debugMeshCache[shape.GetType()] = draw;
+                        }
+
                         var entity = new Entity
                         {
                             new ModelComponent
@@ -128,7 +143,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                                     mat,
                                     new Mesh
                                     {
-                                        Draw = shape.CreateDebugPrimitive(graphicsDevice)
+                                        Draw = draw
                                     }
                                 }
                             }
@@ -151,10 +166,6 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         return entity;
                     }
             }
-        }
-
-        public void Dispose()
-        {
         }
     }
 }
