@@ -6,10 +6,3 @@ BackBufferHeight: 720
 DefaultGraphicsProfile: Level_9_1
 DisplayOrientation: LandscapeRight
 TextureQuality: Fast
-Profiles:
-    Windows: !WindowsGameSettingsProfile
-        GraphicsPlatform: Direct3D11
-    Windows-OpenGL: !WindowsGameSettingsProfile
-        GraphicsPlatform: OpenGL
-    Windows-OpenGLES: !WindowsGameSettingsProfile
-        GraphicsPlatform: OpenGLES

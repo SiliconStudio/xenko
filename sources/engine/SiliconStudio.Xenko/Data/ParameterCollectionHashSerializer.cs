@@ -19,8 +19,9 @@ namespace SiliconStudio.Xenko.Rendering.Data
         {
             foreach (var parameter in parameterCollection.ParameterKeyInfos)
             {
+                // CompilerParameters should only contain permutation parameters
                 if (parameter.Key.Type != ParameterKeyType.Permutation)
-                    throw new InvalidOperationException("CompilerParameters should only contain permutation parameters");
+                    continue;
 
                 parameterKeySerializer.Serialize(parameter.Key, stream);
 
