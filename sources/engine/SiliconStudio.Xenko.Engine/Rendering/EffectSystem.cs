@@ -199,14 +199,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
             // Setup compilation parameters
-            if (!compilerParameters.ContainsKey(CompilerParameters.DebugKey))
-            {
-                compilerParameters.Debug = CompilationDebugInfo;
-            }
-            if (!compilerParameters.ContainsKey(CompilerParameters.OptimizationLevelKey))
-            {
-                compilerParameters.OptimizationLevel = CompilationOptimizationLevel;
-            }
+            compilerParameters.Debug = CompilationDebugInfo;
+            compilerParameters.OptimizationLevel = CompilationOptimizationLevel;
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);
