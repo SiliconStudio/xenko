@@ -126,12 +126,6 @@ namespace SiliconStudio.Xenko.Shaders
             // Gets the value from a source parameters
             var value = Get(sourceParameters, selectedKey);
 
-            // Sore only used parameters when they are taken from compilerParameters
-            if (sourceParameters == compilerParameters)
-            {
-                currentMixinSourceTree.UsedParameters.Set(selectedKey, value);
-            }
-
             return value;
         }
 

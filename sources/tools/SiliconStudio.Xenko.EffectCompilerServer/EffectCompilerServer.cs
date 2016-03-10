@@ -109,14 +109,11 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
 
             Console.WriteLine("Compiling shader");
 
-            // Restore MixinTree.UsedParameters (since it is DataMemberIgnore)
-            remoteEffectCompilerEffectRequest.MixinTree.UsedParameters = remoteEffectCompilerEffectRequest.UsedParameters;
-
             // A shader has been requested, compile it (asynchronously)!
             var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, null).AwaitResult();
 
             // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(remoteEffectCompilerEffectRequest.MixinTree.Name, remoteEffectCompilerEffectRequest.MixinTree.UsedParameters)] = true;
+            recordedEffectCompile[new EffectCompileRequest(remoteEffectCompilerEffectRequest.MixinTree.Name, remoteEffectCompilerEffectRequest.CompilerParameters)] = true;
             
             // Send compiled shader
             socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });

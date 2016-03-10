@@ -344,7 +344,6 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.PendingEffect = null;
                         renderEffect.State = RenderEffectState.Normal;
 
-                        staticCompilerParameters.SetDefaults();
                         foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
                         {
                             staticCompilerParameters.SetObject(effectValue.Key, effectValue.Value);
