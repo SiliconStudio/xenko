@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -30,6 +31,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets or sets the name of the xkfx effect linked to this node.
         /// </summary>
         /// <value>The name of the xkfx effect.</value>
+        [DefaultValue(null)]
         public string Name { get; set; }
 
         [DataMemberIgnore]
