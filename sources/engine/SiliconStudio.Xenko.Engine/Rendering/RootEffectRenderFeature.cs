@@ -447,6 +447,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                         renderEffects[staticEffectObjectNode] = renderEffect;
                     }
+                    else
+                    {
+                        renderEffect.Reflection = RenderEffectReflection.Empty;
+                        renderEffect.PipelineState = null;
+                    }
                 }
             }
         }
@@ -488,7 +493,13 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Not compiled yet?
                     if (renderEffect.Effect == null)
+                    {
+                        renderNode.RenderEffect = renderEffect;
+                        renderNode.EffectObjectNode = EffectObjectNodeReference.Invalid;
+                        renderNode.Resources = null;
+                        RenderNodes[renderNodeReference.Index] = renderNode;
                         continue;
+                    }
 
                     var renderEffectReflection = renderEffect.Reflection;
 

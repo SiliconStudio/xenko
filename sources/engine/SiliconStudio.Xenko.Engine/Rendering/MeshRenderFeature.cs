@@ -127,6 +127,8 @@ namespace SiliconStudio.Xenko.Rendering
                 // Get effect
                 // TODO: Use real effect slot
                 var renderEffect = renderNode.RenderEffect;
+                if (renderEffect.Effect == null)
+                    continue;
 
                 // Bind VB
                 if (currentDrawData != drawData)
