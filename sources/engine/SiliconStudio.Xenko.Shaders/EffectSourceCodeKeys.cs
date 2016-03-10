@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <summary>
         /// When compiling a xksl, this will generate a source code file
         /// </summary>
-        public static readonly ValueParameterKey<bool> Enable = ParameterKeys.NewValue<bool>();
+        public static readonly ObjectParameterKey<bool> Enable = ParameterKeys.NewObject<bool>();
 
         /// <summary>
         /// The class modifier declaration (Default: "public partial")
