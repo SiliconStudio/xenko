@@ -8,6 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Shaders
 {
@@ -23,6 +24,9 @@ namespace SiliconStudio.Xenko.Shaders
         public ShaderMixinParameters()
         {
         }
+
+        [DataMemberIgnore]
+        public EffectCompilerParameters EffectParameters = EffectCompilerParameters.Default;
 
         #region IDictionary<ParameterKey, object> implementation
         public void Add(ParameterKey key, object value)

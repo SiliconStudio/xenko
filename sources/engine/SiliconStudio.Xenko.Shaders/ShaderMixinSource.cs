@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.Shaders
             Mixins = new List<ShaderClassSource>();
             Compositions = new Core.Collections.SortedList<string, ShaderSource>();
             Macros = new List<ShaderMacro>();
-            UsedParameters = new ShaderMixinParameters();
         }
 
         /// <summary>
@@ -61,13 +60,6 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         /// <value>The compositions.</value>
         public Core.Collections.SortedList<string, ShaderSource> Compositions { get; set; }
-
-        /// <summary>
-        /// Gets the used parameters for this mixin tree.
-        /// </summary>
-        /// <value>The used parameters.</value>
-        [DataMemberIgnore]
-        public ShaderMixinParameters UsedParameters { get; set; }
 
         /// <summary>
         /// Adds a composition to this mixin.
