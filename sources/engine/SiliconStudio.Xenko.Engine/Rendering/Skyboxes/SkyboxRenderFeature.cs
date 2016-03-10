@@ -145,10 +145,12 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 skyboxInfo.ParameterCollectionCopier.Copy();
 
+                // Setup the intensity
+                parameters.Set(SkyboxKeys.Intensity, renderSkybox.Intensity);
+
                 // Update SkyMatrix
-                var rotation = parameters.Get(SkyboxKeys.Rotation);
                 Matrix skyMatrix;
-                Matrix.RotationY(MathUtil.DegreesToRadians(rotation), out skyMatrix);
+                Matrix.RotationQuaternion(ref renderSkybox.Rotation, out skyMatrix);
                 parameters.Set(SkyboxKeys.SkyMatrix, ref skyMatrix);
 
                 // Update MatrixTransform
