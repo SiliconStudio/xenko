@@ -153,13 +153,13 @@ namespace SiliconStudio.Xenko.Particles
 
             initialDefaultFields = new InitialDefaultFields();
 
-            Initializers = new TrackingCollection<ParticleInitializer>();
+            Initializers = new FastTrackingCollection<ParticleInitializer>();
             Initializers.CollectionChanged += ModulesChanged;
 
-            Updaters = new TrackingCollection<ParticleUpdater>();
+            Updaters = new FastTrackingCollection<ParticleUpdater>();
             Updaters.CollectionChanged += ModulesChanged;
 
-            Spawners = new TrackingCollection<ParticleSpawner>();
+            Spawners = new FastTrackingCollection<ParticleSpawner>();
             Spawners.CollectionChanged += SpawnersChanged;        
         }
 
@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Spawners")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleSpawner> Spawners;
+        public readonly FastTrackingCollection<ParticleSpawner> Spawners;
 
         /// <summary>
         /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
@@ -327,7 +327,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Initializers")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleInitializer> Initializers;
+        public readonly FastTrackingCollection<ParticleInitializer> Initializers;
 
         /// <summary>
         /// List of <see cref="ParticleUpdater"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
@@ -339,7 +339,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Updaters")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleUpdater> Updaters;
+        public readonly FastTrackingCollection<ParticleUpdater> Updaters;
 
 
         #region Dispose
@@ -414,7 +414,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event arguments</param>
-        private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void ModulesChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             var module = e.Item as ParticleModule;
             if (module == null)
@@ -443,7 +443,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SpawnersChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void SpawnersChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             DirtyParticlePool = true;
         }
