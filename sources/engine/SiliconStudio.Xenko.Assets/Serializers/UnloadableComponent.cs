@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
                     {
                         throw new InvalidOperationException($"Unexpected null {nameof(UnloadableComponent)} while cloning");
                     }
-                    // Create a new object instead
+                    // Create a new UnloadableComponent to avoid exception when adding the previous component to another entity(EntityComponentCollection is validating that a component cannot be added more than once to an entity)
                     obj = new UnloadableComponent(new List<ParsingEvent>(invariant.ParsingEvents), invariant.TypeName);
                 }
             }
