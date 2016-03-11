@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace SiliconStudio.Presentation
+namespace SiliconStudio.Presentation.Drawing
 {
     /// <summary>
     /// Provides a hosting <see cref="FrameworkElement"/> for a collection of <see cref="Visual"/>.
