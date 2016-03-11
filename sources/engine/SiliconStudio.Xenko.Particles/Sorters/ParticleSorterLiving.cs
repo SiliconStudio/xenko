@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
                 {
                     if (particle.Get(lifeField) > 0)
                     {
-                        particleList[i].Particle = particle;
+                        particleList[i] = new SortedParticle(particle, 0);
                         i++;
                     }
                 }
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             {
                 foreach (var particle in ParticlePool)
                 {
-                    particleList[i].Particle = particle;
+                    particleList[i] = new SortedParticle(particle, 0);
                     i++;
                 }
             }

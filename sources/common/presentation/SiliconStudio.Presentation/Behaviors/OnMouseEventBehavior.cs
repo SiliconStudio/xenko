@@ -41,7 +41,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Identifies the <see cref="Modifiers"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ModifiersProperty =
-               DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys), typeof(OnMouseEventBehavior), new PropertyMetadata(ModifierKeys.None));
+               DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys?), typeof(OnMouseEventBehavior), new PropertyMetadata(null));
 
         public MouseEventType EventType { get { return (MouseEventType)GetValue(EventTypeProperty); } set { SetValue(EventTypeProperty, value); } }
 
@@ -55,10 +55,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
 
-        public ModifierKeys Modifiers { get { return (ModifierKeys)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
+        public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
-        protected bool HasModifiers()
+        protected bool AreModifiersValid()
         {
+            if (Modifiers == null)
+                return true;
             return Modifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(Modifiers);
         }
 
@@ -186,7 +188,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void MouseButtonHandler(object sender, MouseButtonEventArgs e)
         {
-            if (!HasModifiers())
+            if (!AreModifiersValid())
                 return;
 
             MouseMoveHandler(sender, e);
@@ -194,7 +196,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void MouseMoveHandler(object sender, MouseEventArgs e)
         {
-            if (!HasModifiers())
+            if (!AreModifiersValid())
                 return;
 
             if (HandleEvent)

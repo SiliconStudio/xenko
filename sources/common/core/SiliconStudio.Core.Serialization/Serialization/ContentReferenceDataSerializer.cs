@@ -57,9 +57,12 @@ namespace SiliconStudio.Core.Serialization
                         }
 
                         // First time, let's create it
-                        obj = (T)contentSerializer.Construct(contentSerializerContext);
-                        contentSerializerContext.ContentManager.RegisterDeserializedObject(contentReference.Location, obj);
-                        contentReference.Value = obj;
+                        if (contentSerializerContext.ContentManager.Exists(contentReference.Location))
+                        {
+                            obj = (T)contentSerializer.Construct(contentSerializerContext);
+                            contentSerializerContext.ContentManager.RegisterDeserializedObject(contentReference.Location, obj);
+                            contentReference.Value = obj;
+                        }
                     }
                 }
             }

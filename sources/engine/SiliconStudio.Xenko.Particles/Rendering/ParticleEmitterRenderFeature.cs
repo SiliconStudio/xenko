@@ -240,6 +240,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // Get effect
                 var renderEffect = renderNode.RenderEffect;
+                if (renderEffect.Effect == null)
+                    continue;
 
                 // TODO GRAPHICS REFACTOR: Extract data
                 var particleSystemComponent = renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent;
