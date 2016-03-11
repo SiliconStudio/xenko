@@ -28,8 +28,6 @@ namespace SiliconStudio.Xenko.Graphics
                     var layoutEntry = layout.Entries[resourceIndex];
 
                     // Find it in shader reflection
-                    bool bindingFound = false;
-                    Buffer preallocatedCBuffer = null;
                     foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings)
                     {
                         if (resourceBinding.Param.Key == layoutEntry.Key)

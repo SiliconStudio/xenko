@@ -523,7 +523,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Find the same parameter in old collection
                 // Is this parameter already added?
-                bool memberFound = false;
                 for (int i = 0; i < parameterKeyInfos.Count; ++i)
                 {
                     if (parameterKeyInfos[i].Key == layoutParameterKeyInfo.Key)
@@ -693,7 +692,6 @@ namespace SiliconStudio.Xenko.Rendering
                 if (destinationLayout == null)
                     throw new NotImplementedException();
 
-            TryCopy:
                 if (destinationLayout == source.Layout)
                 {
                     // Easy, let's do a full copy!
