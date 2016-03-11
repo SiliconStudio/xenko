@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             {
                 while(!cancellationTokenSource.IsCancellationRequested)
                 {
-                    //Todo this is not really optimal probably
+                    //Todo this is not really optimal probably but its the only proper way with dataflow
                     IList<T> result;
                     BufferBlock.TryReceiveAll(out result);
                         
