@@ -49,6 +49,9 @@ namespace SiliconStudio.Xenko.Data
                 case PlatformType.Windows10:
                     platform = ConfigPlatforms.Windows10;
                     break;
+                case PlatformType.Linux:
+                    platform = ConfigPlatforms.Linux;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
