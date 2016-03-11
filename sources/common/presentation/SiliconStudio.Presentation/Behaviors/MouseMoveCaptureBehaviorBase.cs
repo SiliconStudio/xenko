@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,12 +25,20 @@ namespace SiliconStudio.Presentation.Behaviors
         [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
         public static readonly DependencyProperty IsInProgressProperty = IsInProgressPropertyKey.DependencyProperty;
 
+        /// <summary>
+        /// Identifies the <see cref="Modifiers"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ModifiersProperty =
+            DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys?), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(null));
+
         public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
         
         /// <summary>
         /// True if an operation is in progress, False otherwise.
         /// </summary>
         public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } protected set { SetValue(IsInProgressPropertyKey, value); } }
+
+        public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
         private static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -38,6 +47,14 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 behavior.Cancel();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool AreModifiersValid()
+        {
+            if (Modifiers == null)
+                return true;
+            return Modifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(Modifiers);
         }
 
         protected void Cancel()
