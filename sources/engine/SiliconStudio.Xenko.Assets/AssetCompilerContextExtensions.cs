@@ -47,10 +47,8 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.Android:
                 case PlatformType.iOS:
                     return GraphicsPlatform.OpenGLES;
-#if SILICONSTUDIO_RUNTIME_CORECLR
                 case PlatformType.Linux:
                     return GraphicsPlatform.OpenGL;
-#endif
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -10,8 +10,6 @@ namespace SiliconStudio.Xenko.Rendering.Background
     /// </summary>
     public class BackgroundPipelinePlugin : PipelinePlugin<BackgroundRenderFeature>
     {
-        private BackgroundRenderFeature registeredBackgroundRenderFeature;
-
         /// <inheritdoc/>
         protected override BackgroundRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {

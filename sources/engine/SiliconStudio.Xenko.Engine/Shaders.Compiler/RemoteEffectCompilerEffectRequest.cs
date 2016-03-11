@@ -10,5 +10,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         public ShaderMixinSource MixinTree { get; set; }
         
         public CompilerParameters CompilerParameters { get; set; }
+
+        public EffectCompilerParameters EffectParameters { get; set; }
     }
 }

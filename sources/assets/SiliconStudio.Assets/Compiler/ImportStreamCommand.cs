@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Compiler
 
         public bool SaveSourcePath { get; set; }
 
-        protected TagSymbol DisableCompressionSymbol;
+        private TagSymbol DisableCompressionSymbol;
 
         public ImportStreamCommand() : this(null, null)
         {
