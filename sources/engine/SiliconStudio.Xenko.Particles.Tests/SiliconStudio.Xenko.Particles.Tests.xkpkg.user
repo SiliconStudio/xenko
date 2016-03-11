@@ -178,8 +178,8 @@ Settings:
             CamFarClipPlane: 1000.0
             CamNearClipPlane: 0.1
             CamOrthographicSize: 10.0
-            CamPitchYaw: {X: -0.548424363, Y: -6.19976473}
-            CamPosition: {X: 0.492624074, Y: 3.611972, Z: 5.891602}
+            CamPitchYaw: {X: -0.657592058, Y: -7.379918}
+            CamPosition: {X: -9.645969, Y: 8.372444, Z: 4.94923639}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CameraPreviewVisible: true
