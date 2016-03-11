@@ -74,6 +74,24 @@ namespace SiliconStudio.Xenko.Rendering
             return a.Index == b.Index;
         }
 
+		public override bool Equals(object other)
+		{
+			if (other is ViewObjectNodeReference)
+			{
+				ViewObjectNodeReference p = (ViewObjectNodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
+
 		public static bool operator !=(ViewObjectNodeReference a, ViewObjectNodeReference b)
         {
             return a.Index != b.Index;
@@ -172,6 +190,24 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return a.Index == b.Index;
         }
+
+		public override bool Equals(object other)
+		{
+			if (other is ObjectNodeReference)
+			{
+				ObjectNodeReference p = (ObjectNodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
 
 		public static bool operator !=(ObjectNodeReference a, ObjectNodeReference b)
         {
@@ -272,6 +308,24 @@ namespace SiliconStudio.Xenko.Rendering
             return a.Index == b.Index;
         }
 
+		public override bool Equals(object other)
+		{
+			if (other is RenderNodeReference)
+			{
+				RenderNodeReference p = (RenderNodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
+
 		public static bool operator !=(RenderNodeReference a, RenderNodeReference b)
         {
             return a.Index != b.Index;
@@ -370,6 +424,24 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return a.Index == b.Index;
         }
+
+		public override bool Equals(object other)
+		{
+			if (other is EffectObjectNodeReference)
+			{
+				EffectObjectNodeReference p = (EffectObjectNodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
 
 		public static bool operator !=(EffectObjectNodeReference a, EffectObjectNodeReference b)
         {
@@ -470,6 +542,24 @@ namespace SiliconStudio.Xenko.Rendering
             return a.Index == b.Index;
         }
 
+		public override bool Equals(object other)
+		{
+			if (other is ViewNodeReference)
+			{
+				ViewNodeReference p = (ViewNodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
+
 		public static bool operator !=(ViewNodeReference a, ViewNodeReference b)
         {
             return a.Index != b.Index;
@@ -568,6 +658,24 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return a.Index == b.Index;
         }
+
+		public override bool Equals(object other)
+		{
+			if (other is StaticObjectNodeReference)
+			{
+				StaticObjectNodeReference p = (StaticObjectNodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
 
 		public static bool operator !=(StaticObjectNodeReference a, StaticObjectNodeReference b)
         {
