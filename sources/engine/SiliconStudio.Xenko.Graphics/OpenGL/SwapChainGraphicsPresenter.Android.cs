@@ -81,12 +81,9 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.WindowProvidedRenderTexture.InternalSetSize(gameWindow.Width, gameWindow.Height);
 
                 // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-                if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.WindowProvidedRenderTexture)
-                {
-                    commandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
-                        new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
-                        new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
-                }
+                commandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
+                    new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
+                    new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
 
                 ((AndroidGraphicsContext)gameWindow.GraphicsContext).Swap();
             }

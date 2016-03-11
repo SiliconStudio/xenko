@@ -116,8 +116,6 @@ namespace SiliconStudio.Xenko.Graphics
         private int windowProvidedFrameBuffer;
         private bool isFramebufferSRGB;
 
-        private Texture defaultRenderTarget;
-
         // TODO: Use some LRU scheme to clean up FBOs if not used frequently anymore.
         internal Dictionary<FBOKey, int> existingFBOs = new Dictionary<FBOKey,int>(); 
 
@@ -833,12 +831,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             existingFBOs[new FBOKey(null, new[] { WindowProvidedRenderTexture })] = windowProvidedFrameBuffer;
-
-            // TODO: Provide some flags to choose user prefers either:
-            // - Auto-Blitting while allowing default RenderTarget to be associable with any DepthStencil
-            // - No blitting, but default RenderTarget won't work with a custom FBO
-            // - Later we should be able to detect that automatically?
-            defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, presentationParameters.BackBufferFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
         }
 
         private class SwapChainBackend
@@ -878,25 +870,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        /// <summary>
-        /// Gets the default render target associated with this graphics device.
-        /// </summary>
-        /// <value>The default render target.</value>
-        internal Texture DefaultRenderTarget => defaultRenderTarget;
-
-        /// <summary>
-        /// Presents the display with the contents of the next buffer in the sequence of back buffers owned by the GraphicsDevice.
-        /// </summary>
-        /*public void Present()
-        {
-            ImmediateContext.Copy(DefaultRenderTarget.Texture, windowProvidedRenderTarget.Texture);
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            ((AndroidGraphicsContext)graphicsContext).Swap();
-#else
-            GraphicsContext.CurrentContext.SwapBuffers();
-#endif
-            //throw new NotImplementedException();
-        }*/
         /// <summary>
         /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
         /// </summary>
