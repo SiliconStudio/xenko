@@ -10,12 +10,11 @@ using SiliconStudio.Xenko.Shaders;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using BeginMode = OpenTK.Graphics.ES30.BeginMode;
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
 #else
-using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 #endif
 using DebugSourceExternal = OpenTK.Graphics.ES30.All;
 #else
@@ -470,7 +469,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
             GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
-            GL.DrawArrays((BeginMode)PrimitiveTypeGl.TriangleStrip, 0, 4);
+            GL.DrawArrays(PrimitiveTypeGl.TriangleStrip, 0, 4);
             GL.UseProgram(boundProgram);
 
             // Restore context
@@ -551,7 +550,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
             PreDraw();
 
-            GL.DrawArrays((BeginMode)newPipelineState.PrimitiveType, startVertex, vertexCount);
+            GL.DrawArrays(newPipelineState.PrimitiveType, startVertex, vertexCount);
 
             GraphicsDevice.FrameTriangleCount += (uint)vertexCount;
             GraphicsDevice.FrameDrawCalls++;
@@ -585,7 +584,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if(baseVertexLocation != 0)
                 throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
-            GL.DrawElements((BeginMode)newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
+            GL.DrawElements(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
 #else
             GL.DrawElementsBaseVertex(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize), baseVertexLocation);
 #endif
@@ -658,7 +657,12 @@ namespace SiliconStudio.Xenko.Graphics
             if (GraphicsDevice.IsOpenGLES2)
                 throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
 #endif
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+            // On Mobile platform we have to use PrimitiveType and not BeginMode for the API call, thus the #ifdef
+            GL.DrawArraysInstanced((OpenTK.Graphics.ES30.PrimitiveType)newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
+#else
             GL.DrawArraysInstanced(newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
+#endif
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
@@ -1572,6 +1576,27 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 return !(left == right);
             }
+
+            public override bool Equals(object other)
+            {
+                if (other is VertexBufferView)
+                {
+                    VertexBufferView p = (VertexBufferView) other;
+                    return Equals(Buffer, p.Buffer) && Offset == p.Offset && Stride == p.Stride;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                int result = Buffer.GetHashCode();
+                result = (result * 397) ^ Offset;
+                result = (result * 397) ^ Stride;
+                return result;
+            }
         }
 
         struct IndexBufferView
@@ -1597,6 +1622,28 @@ namespace SiliconStudio.Xenko.Graphics
             public static bool operator !=(IndexBufferView left, IndexBufferView right)
             {
                 return !(left == right);
+            }
+
+            public override bool Equals(object other)
+            {
+                if (other is IndexBufferView)
+                {
+                    IndexBufferView p = (IndexBufferView)other;
+                    return Equals(Buffer, p.Buffer) && Offset == p.Offset && Type == p.Type && ElementSize == p.ElementSize;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                int result = Buffer.GetHashCode();
+                result = (result * 397) ^ Offset;
+                result = (result * 397) ^ Type.GetHashCode();
+                result = (result * 397) ^ ElementSize;
+                return result;
             }
         }
     }
