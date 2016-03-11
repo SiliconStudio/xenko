@@ -623,7 +623,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            IsOpenGLES2 = (versionMajor < 3);
+            IsOpenGLES2 = (currentVersionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
@@ -675,7 +675,7 @@ namespace SiliconStudio.Xenko.Graphics
                     deviceCreationContext.Dispose();
                     deviceCreationWindowInfo.Dispose();
                 }
-                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, versionMajor);
+                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, currentVersionMajor);
                 deviceCreationContext = OpenTK.Graphics.GraphicsContext.CreateDummyContext(androidAsyncDeviceCreationContext.Context);
                 deviceCreationWindowInfo = OpenTK.Platform.Utilities.CreateDummyWindowInfo();
             }
