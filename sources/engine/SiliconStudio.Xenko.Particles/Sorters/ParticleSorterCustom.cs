@@ -41,8 +41,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
                 {
                     foreach (var particle in ParticlePool)
                     {
-                        particleList[i].Particle = particle;
-                        particleList[i].SortIndex = getIndex(particle.Get(posField));
+                        particleList[i] = new SortedParticle(particle, getIndex(particle.Get(posField)));
                         i++;
                     }
                 }
@@ -51,8 +50,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             {
                 foreach (var particle in ParticlePool)
                 {
-                    particleList[i].Particle = particle;
-                    particleList[i].SortIndex = 0;
+                    particleList[i] = new SortedParticle(particle, 0);
                     i++;
                 }
             }
