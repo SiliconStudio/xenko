@@ -16,27 +16,10 @@ namespace SiliconStudio.Xenko.Assets
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, GameSettingsAsset asset, AssetCompilerResult result)
         {
-            var compilationMode = CompilationMode.Debug;
-            switch (context.BuildConfiguration)
-            {
-                case "Debug":
-                    compilationMode = CompilationMode.Debug;
-                    break;
-                case "Release":
-                    compilationMode = CompilationMode.Release;
-                    break;
-                case "AppStore":
-                    compilationMode = CompilationMode.AppStore;
-                    break;
-                case "Testing":
-                    compilationMode = CompilationMode.Testing;
-                    break;
-            }
-
             // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
-                new GameSettingsCompileCommand(urlInStorage, AssetItem.Package, context.Platform, compilationMode, asset),
+                new GameSettingsCompileCommand(urlInStorage, AssetItem.Package, context.Platform, context.GetCompilationMode(), asset),
             };
         }
 

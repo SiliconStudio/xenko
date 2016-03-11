@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                     }
                 }
 
-                var outputClassFile = effectName + "." + fieldName + "." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
+                var outputClassFile = effectName + "." + fieldName + "." + compilerParameters.EffectParameters.Platform + "." + compilerParameters.EffectParameters.Profile + ".cs";
                 var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
                 commandContext.Logger.Verbose("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);

@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, EffectCompilerParameters? effectCompilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, CompilerParameters compilerParameters)
         {
             var database = (FileProvider ?? ContentManager.FileProvider) as DatabaseFileProvider;
             if (database == null)
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             // Note: this system might need an overhaul... (too many states?)
             base.FileProvider = database;
 
-            var usedParameters = mixin.UsedParameters;
+            var usedParameters = compilerParameters;
             var mixinObjectId = ShaderMixinObjectId.Compute(mixin, usedParameters);
 
             // Final url of the compiled bytecode
@@ -140,7 +140,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // Compile the mixin in a Task
                 if (CompileEffectAsynchronously)
                 {
-                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, effectCompilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, effectCompilerParameters) : TaskScheduler.Default);
+                    var compilerParametersCopy = new CompilerParameters(compilerParameters);
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, compilerParametersCopy, mixinObjectId, database, compiledUrl), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, compilerParametersCopy.EffectParameters) : TaskScheduler.Default);
 
                     compilingShaders.Add(mixinObjectId, resultTask);
 
@@ -148,12 +149,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
                 else
                 {
-                    return CompileBytecode(mixin, effectCompilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
+                    return CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl);
                 }
             }
         }
 
-        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
+        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl)
         {
             // Open the database for writing
             var log = new LoggerResult();
@@ -195,7 +196,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 if (!bytecodes.ContainsKey(newBytecodeId))
                 {
-                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringPermutationsDetailed());
+                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, compilerParameters.ToStringPermutationsDetailed());
                     Interlocked.Increment(ref effectCompileCount);
 
                     // Replace or add new bytecode

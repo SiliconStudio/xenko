@@ -368,7 +368,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="value"></param>
         public void Set<T>(PermutationParameter<T> parameter, T value)
         {
-            PermutationCounter++;
+            if (!EqualityComparer<T>.Default.Equals((T)ObjectValues[parameter.BindingSlot], value))
+                PermutationCounter++;
+
             ObjectValues[parameter.BindingSlot] = value;
         }
 
@@ -422,10 +424,15 @@ namespace SiliconStudio.Xenko.Rendering
             if (key.Type != ParameterKeyType.Permutation && key.Type != ParameterKeyType.Object)
                 throw new InvalidOperationException("SetObject can only be used for Permutation or Object keys");
 
-            if (key.Type == ParameterKeyType.Permutation)
-                PermutationCounter++;
-
             var accessor = GetObjectParameterHelper(key);
+
+            if (key.Type == ParameterKeyType.Permutation)
+            {
+                var oldValue = ObjectValues[accessor.Offset];
+                if (oldValue != null && (value == null || !oldValue.Equals(value)) // oldValue non null => check equality
+                    || (oldValue == null && value != null)) // oldValue null => check if value too
+                        PermutationCounter++;
+            }
             ObjectValues[accessor.Offset] = value;
         }
 
@@ -516,7 +523,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Find the same parameter in old collection
                 // Is this parameter already added?
-                bool memberFound = false;
                 for (int i = 0; i < parameterKeyInfos.Count; ++i)
                 {
                     if (parameterKeyInfos[i].Key == layoutParameterKeyInfo.Key)
@@ -686,7 +692,6 @@ namespace SiliconStudio.Xenko.Rendering
                 if (destinationLayout == null)
                     throw new NotImplementedException();
 
-            TryCopy:
                 if (destinationLayout == source.Layout)
                 {
                     // Easy, let's do a full copy!

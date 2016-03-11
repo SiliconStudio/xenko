@@ -3763,6 +3763,7 @@
   </Style>
 
   <Style TargetType="{x:Type ctrl:CanvasView}">
+    <Setter Property="Background" Value="Transparent" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:CanvasView}">

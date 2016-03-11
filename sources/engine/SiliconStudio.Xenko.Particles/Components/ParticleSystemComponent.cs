@@ -70,12 +70,6 @@ namespace SiliconStudio.Xenko.Particles.Components
         [Display("Speed Scale")]
         public float Speed { get; set; } = 1f;
 
-        [DataMemberIgnore]
-        internal double ElapsedTime;
-
-        [DataMemberIgnore]
-        internal bool IsPaused;
-
         public ParticleSystemComponent()
         {
             particleSystem = new ParticleSystem();

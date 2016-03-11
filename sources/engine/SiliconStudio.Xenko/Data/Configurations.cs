@@ -14,9 +14,7 @@ namespace SiliconStudio.Xenko.Data
         WindowsPhone = 1 << PlatformType.WindowsPhone,
         iOS = 1 << PlatformType.iOS,
         Android = 1 << PlatformType.Android,
-#if SILICONSTUDIO_RUNTIME_CORECLR
         Linux = 1 << PlatformType.Linux
-#endif
     }
 
     [DataContract]

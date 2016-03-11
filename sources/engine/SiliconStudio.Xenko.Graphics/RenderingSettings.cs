@@ -126,10 +126,8 @@ namespace SiliconStudio.Xenko.Graphics
                 case PlatformType.Android:
                 case PlatformType.iOS:
                     return GraphicsPlatform.OpenGLES;
-#if SILICONSTUDIO_RUNTIME_CORECLR
                 case PlatformType.Linux:
                     return GraphicsPlatform.OpenGL;
-#endif
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -140,7 +138,7 @@ namespace SiliconStudio.Xenko.Graphics
             switch (platform)
             {
                 case PlatformType.Shared:
-                    return false;                
+                    return false;
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
                 case PlatformType.Windows10:
@@ -154,10 +152,8 @@ namespace SiliconStudio.Xenko.Graphics
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
                 case PlatformType.iOS:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
-#if SILICONSTUDIO_RUNTIME_CORECLR
                 case PlatformType.Linux:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
-#endif
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }

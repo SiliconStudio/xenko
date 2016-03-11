@@ -31,12 +31,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// Parameters used to create this shader.
         /// </summary>
         /// <value>The ParameterCollection.</value>
-        public ShaderMixinParameters UsedParameters { get; set; }
-
-        /// <summary>
-        /// Parameters used to create this shader.
-        /// </summary>
-        /// <value>The ParameterCollection.</value>
         public CompilerParameters SourceParameters { get; set; }
     }
 }
