@@ -475,8 +475,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             EffectObjectNodes.Clear();
 
-            int requiredDescriptorSets = 0;
-
             // Make sure descriptor set pool is large enough
             var expectedDescriptorSetPoolSize = RenderNodes.Count * effectDescriptorSetSlots.Count;
             if (ResourceGroupPool.Length < expectedDescriptorSetPoolSize)
