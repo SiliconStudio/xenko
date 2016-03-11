@@ -34,13 +34,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
-
-    using WindowsPoint = System.Windows.Point;
+    using MathUtil = SiliconStudio.Core.Mathematics.MathUtil;
 
     [TemplatePart(Name = HorizontalLinePartName, Type = typeof(Line))]
     [TemplatePart(Name = VerticalLinePartName, Type = typeof(Line))]
@@ -84,7 +82,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="Position"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PositionProperty =
-            DependencyProperty.Register(nameof(Position), typeof(WindowsPoint), typeof(TrackerControl), new PropertyMetadata(new WindowsPoint(), OnPositionChanged));
+            DependencyProperty.Register(nameof(Position), typeof(Point), typeof(TrackerControl), new PropertyMetadata(new Point(), OnPositionChanged));
 
         /// <summary>
         /// Identifies the <see cref="TrackMouse"/> dependency property.
@@ -115,7 +113,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public Thickness LineThickness { get { return (Thickness)GetValue(LineThicknessProperty); } set { SetValue(LineThicknessProperty, value); } }
 
-        public WindowsPoint Position { get { return (WindowsPoint)GetValue(PositionProperty); } set { SetValue(PositionProperty, value); } }
+        public Point Position { get { return (Point)GetValue(PositionProperty); } set { SetValue(PositionProperty, value); } }
 
         public bool TrackMouse { get { return (bool)GetValue(TrackMouseProperty); } set { SetValue(TrackMouseProperty, value); } }
         
@@ -147,9 +145,9 @@ namespace SiliconStudio.Presentation.Controls
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            var p = e.GetPosition(this);
-            //TODO: add some validation logic
-            Position = p;
+            if (!TrackMouse)
+                return;
+            Position = e.GetPosition(this);
         }
         
         private void OnPositionChanged(DependencyPropertyChangedEventArgs e)

@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <param name="mixin">The mixin.</param>
         /// <param name="mixinParameters">The mixin parameters.</param>
         /// <returns>EffectObjectIds.</returns>
-        public static ObjectId Compute(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
+        public static ObjectId Compute(ShaderMixinSource mixin, CompilerParameters compilerParameters)
         {
             lock (generatorLock)
             {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Shaders
                 {
                     generator = new ShaderMixinObjectId();
                 }
-                return generator.ComputeInternal(mixin, mixinParameters);
+                return generator.ComputeInternal(mixin, compilerParameters);
             }
         }
 
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <returns>
         /// EffectObjectIds.
         /// </returns>
-        public static ObjectId Compute(string effectName, ShaderMixinParameters compilerParameters)
+        public static ObjectId Compute(string effectName, CompilerParameters compilerParameters)
         {
             lock (generatorLock)
             {
@@ -75,16 +75,17 @@ namespace SiliconStudio.Xenko.Shaders
             }
         }
 
-        private unsafe ObjectId ComputeInternal(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
+        private unsafe ObjectId ComputeInternal(ShaderMixinSource mixin, CompilerParameters compilerParameters)
         {
             // Write to memory stream
             memStream.Position = 0;
             writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
             writer.Write(mixin);
 
-            writer.Write(mixinParameters.Get(CompilerParameters.GraphicsPlatformKey));
-            writer.Write(mixinParameters.Get(CompilerParameters.GraphicsProfileKey));
-            writer.Write(mixinParameters.Get(CompilerParameters.DebugKey));
+            writer.Write(compilerParameters.EffectParameters.Platform);
+            writer.Write(compilerParameters.EffectParameters.Profile);
+            writer.Write(compilerParameters.EffectParameters.Debug);
+            writer.Write(compilerParameters.EffectParameters.OptimizationLevel);
 
             // Compute hash
             objectIdBuilder.Reset();
@@ -93,12 +94,17 @@ namespace SiliconStudio.Xenko.Shaders
             return objectIdBuilder.ComputeHash();
         }
 
-        private unsafe ObjectId ComputeInternal(string effectName, ShaderMixinParameters compilerParameters)
+        private unsafe ObjectId ComputeInternal(string effectName, CompilerParameters compilerParameters)
         {
             // Write to memory stream
             memStream.Position = 0;
             writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
             writer.Write(effectName);
+
+            writer.Write(compilerParameters.EffectParameters.Platform);
+            writer.Write(compilerParameters.EffectParameters.Profile);
+            writer.Write(compilerParameters.EffectParameters.Debug);
+            writer.Write(compilerParameters.EffectParameters.OptimizationLevel);
 
             writer.Write(compilerParameters);
 

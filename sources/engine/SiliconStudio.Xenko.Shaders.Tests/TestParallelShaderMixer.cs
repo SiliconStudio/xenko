@@ -81,13 +81,13 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         {
             Console.WriteLine(@"Inside Thread");
             
-            var parameters = new ShaderMixinParameters();
-            parameters.Set(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
-            parameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
+            var parameters = new CompilerParameters();
+            parameters.EffectParameters.Platform = GraphicsPlatform.Direct3D11;
+            parameters.EffectParameters.Profile = GraphicsProfile.Level_11_0;
 
-            var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix", UsedParameters = parameters };
+            var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix" };
 
-            var result = effectCompiler.Compile(mixinTree, null).WaitForResult();
+            var result = effectCompiler.Compile(mixinTree, parameters).WaitForResult();
 
             Assert.IsFalse(result.CompilationLog.HasErrors);
             Assert.IsNotNull(result);

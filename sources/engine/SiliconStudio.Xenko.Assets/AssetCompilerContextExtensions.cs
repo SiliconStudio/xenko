@@ -55,5 +55,27 @@ namespace SiliconStudio.Xenko.Assets
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        // TODO: Move that as extension method?
+        public static CompilationMode GetCompilationMode(this AssetCompilerContext context)
+        {
+            var compilationMode = CompilationMode.Debug;
+            switch (context.BuildConfiguration)
+            {
+                case "Debug":
+                    compilationMode = CompilationMode.Debug;
+                    break;
+                case "Release":
+                    compilationMode = CompilationMode.Release;
+                    break;
+                case "AppStore":
+                    compilationMode = CompilationMode.AppStore;
+                    break;
+                case "Testing":
+                    compilationMode = CompilationMode.Testing;
+                    break;
+            }
+            return compilationMode;
+        }
     }
 }

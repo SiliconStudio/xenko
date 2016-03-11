@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public override void Draw(RenderContext context)
         {
             var previousSkybox = ActiveSkybox;
+            ActiveSkybox = null;
 
             // Start by making it not visible
             foreach (var entityKeyPair in ComponentDatas)
@@ -50,6 +51,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     // Select the first active skybox
                     renderSkybox.Skybox = skyboxComponent.Skybox;
                     renderSkybox.Background = skyboxComponent.Background;
+                    renderSkybox.Intensity = skyboxComponent.Intensity;
+                    renderSkybox.Rotation = skyboxComponent.Entity.Transform.Rotation;
 
                     renderSkybox.RenderGroup = skyboxComponent.Entity.Group;
 
