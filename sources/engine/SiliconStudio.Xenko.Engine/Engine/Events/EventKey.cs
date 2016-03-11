@@ -6,6 +6,10 @@ using System.Threading.Tasks.Dataflow;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
+    /// <summary>
+    /// Creates a new EventKey used to broadcast T type events.
+    /// </summary>
+    /// <typeparam name="T">The data type of the event you wish to send</typeparam>
     public class EventKey<T>
     {
         private readonly BroadcastBlock<T> broadcastBlock = new BroadcastBlock<T>(null);
