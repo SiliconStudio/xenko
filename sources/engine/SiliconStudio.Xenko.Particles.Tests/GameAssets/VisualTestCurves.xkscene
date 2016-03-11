@@ -1,6 +1,6 @@
 !SceneAsset
 Id: d8bf8c60-f185-4383-8c94-94b468749609
-SerializedVersion: {Xenko: 1.6.0-beta01}
+SerializedVersion: {Xenko: 1.6.0-beta02}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -82,24 +82,34 @@ Hierarchy:
                                     Initializers:
                                         - !InitialVelocitySeed
                                             ~Id: 589eef0c-43c4-4bc0-b99b-d8a217838aae
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 9f577c31-4289-4fee-bc60-0843b810119a
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: 7.0, Y: 0.0, Z: 0.0}
                                             VelocityMax: {X: 7.0, Y: 0.0, Z: 0.0}
                                     Updaters:
                                         - !UpdaterColorOverTime
                                             ~Id: a8094a21-d1e9-4d8c-ab33-5a89c8f67ff0
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 59708ce5-41b1-4c22-a351-1ca1b56f8800
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerVector4
                                                 ~Id: 66bb6b80-7c20-4e57-ae88-d7f9ece4dc96
                                                 Curve: !ComputeAnimationCurveVector4
@@ -129,12 +139,17 @@ Hierarchy:
                                             SeedOffset: 0
                                         - !UpdaterSizeOverTime
                                             ~Id: f77822a0-90a3-415c-883f-71a0552390ad
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 0469db9f-d462-4d52-9ce2-53d99af9d133
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerFloat
                                                 ~Id: 189b153d-4085-4c6c-9a76-68c505819e03
                                                 Curve: !ComputeAnimationCurveFloat
@@ -175,7 +190,7 @@ Hierarchy:
                         Children: []
                     - !ModelComponent
                         ~Id: fcdd2da4-ea61-45e9-b00f-a0f90009719c
-                        Model: a72697c2-f6a3-4f24-982c-570b3662500b:ProceduralModelGround
+                        Model: cea4134a-3f2f-402d-9a42-006e95a18304/a72697c2-f6a3-4f24-982c-570b3662500b:ProceduralModelGround
                         Materials:
                             - null
             Design: {}
@@ -310,24 +325,34 @@ Hierarchy:
                                     Initializers:
                                         - !InitialVelocitySeed
                                             ~Id: 589eef0c-43c4-4bc0-b99b-d8a217838aae
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 9f577c31-4289-4fee-bc60-0843b810119a
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: 7.0, Y: 0.0, Z: 0.0}
                                             VelocityMax: {X: 7.0, Y: 0.0, Z: 0.0}
                                     Updaters:
                                         - !UpdaterColorOverTime
                                             ~Id: a8094a21-d1e9-4d8c-ab33-5a89c8f67ff0
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 59708ce5-41b1-4c22-a351-1ca1b56f8800
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerVector4
                                                 ~Id: 66bb6b80-7c20-4e57-ae88-d7f9ece4dc96
                                                 Curve: !ComputeAnimationCurveVector4
@@ -357,12 +382,17 @@ Hierarchy:
                                             SeedOffset: 0
                                         - !UpdaterSizeOverTime
                                             ~Id: f77822a0-90a3-415c-883f-71a0552390ad
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 0469db9f-d462-4d52-9ce2-53d99af9d133
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerFloat
                                                 ~Id: 189b153d-4085-4c6c-9a76-68c505819e03
                                                 Curve: !ComputeAnimationCurveFloat
@@ -401,6 +431,7 @@ SceneSettings:
                 Camera:
                     Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
                     Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
+        ModelEffect: null
         Layers: []
         Master:
             ~Id: 64bf7052-c17e-438a-9984-77ac4ca25966
