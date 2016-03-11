@@ -160,8 +160,6 @@ namespace SiliconStudio.Xenko.Graphics
         private iPhoneOSGameView gameWindow;
 #endif
 
-        private DrawElementsType drawElementsType;
-
 #if SILICONSTUDIO_PLATFORM_ANDROID
         [DllImport("libEGL.dll", EntryPoint = "eglGetCurrentContext")]
         internal static extern IntPtr EglGetCurrentContext();
