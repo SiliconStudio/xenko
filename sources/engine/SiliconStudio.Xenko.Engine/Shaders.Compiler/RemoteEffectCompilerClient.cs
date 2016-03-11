@@ -65,6 +65,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
                 MixinTree = mixinTree,
                 CompilerParameters = compilerParameters,
+                EffectParameters = compilerParameters.EffectParameters,
             });
 
             // TODO: Get LoggerResult as well
