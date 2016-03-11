@@ -1,7 +1,4 @@
-﻿using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Materials;
-
-namespace SiliconStudio.Xenko.Rendering
+﻿namespace SiliconStudio.Xenko.Rendering
 {
     partial shader Picking
     {
