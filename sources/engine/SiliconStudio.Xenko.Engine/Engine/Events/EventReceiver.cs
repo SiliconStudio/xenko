@@ -12,11 +12,26 @@ namespace SiliconStudio.Xenko.Engine.Events
     [Flags]
     public enum EventReceiverOptions
     {
+        /// <summary>
+        /// If no flags are present only the most recent event will be buffered
+        /// </summary>
         None,
+        /// <summary>
+        /// If this flag is present the events will be buffered into a queue,
+        /// receivers might decide to consume at any pace they wish as long as they consume them at some point
+        /// </summary>
         Buffered = 1 << 0,
+        /// <summary>
+        /// If this flag is present at the end of each frame the events queue will be cleared,
+        /// this will ensure that consumers will have always up-to-date events (from previous/current frame)
+        /// </summary>
         ClearEveryFrame = 1 << 1
     }
 
+    /// <summary>
+    /// Creates an event receiver that is used to receive T type events from an EventKey
+    /// </summary>
+    /// <typeparam name="T">The type of data the EventKey will send</typeparam>
     public class EventReceiver<T> : IDisposable
     {
         private readonly IDisposable link;
@@ -34,10 +49,10 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Creates an event receiver, ready to receive broadcasts from the key
         /// </summary>
         /// <param name="key">The event key to listen from</param>
-        /// <param name="options"></param>
+        /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>(CapacityOptions) : new BufferBlock<T>();
+            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
             link = key.Connect(this);
         }
 
@@ -45,12 +60,13 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Creates an event receiver, ready to receive broadcasts from the key
         /// </summary>
         /// <param name="key">The event key to listen from</param>
-        /// <param name="attachedScript"></param>
-        /// <param name="options"></param>
+        /// <param name="attachedScript">The script from where this receiver is created, useful if we have the ClearEveryFrame option set</param>
+        /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>(CapacityOptions) : new BufferBlock<T>();
+            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
             link = key.Connect(this);
+
             this.attachedScript = attachedScript;
             var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && attachedScript != null;
             if (!clearEveryFrame) return;
