@@ -128,15 +128,13 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.Windows10:
                     configPlatform = ConfigPlatforms.Windows10;
                     break;
-#if SILICONSTUDIO_RUNTIME_CORECLR
                 case PlatformType.Linux:
                     configPlatform = ConfigPlatforms.Linux;
                     break;
-#endif
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
-            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(configPlatform) && x.GetType() == typeof(T) && x.Configuration != null);
+            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(configPlatform) && x.Configuration is T);
             if (platVersion != null)
             {
                 return (T)platVersion.Configuration;

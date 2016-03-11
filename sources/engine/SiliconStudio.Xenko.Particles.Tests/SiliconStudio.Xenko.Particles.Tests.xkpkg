@@ -58,7 +58,6 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
-    - 1fd5f460-a348-8fdb-11a0-05833fd7b79a:EffectCompileLog
     - 2281b29e-cfae-4a65-ba18-ffa926b92b68:VisualTestGeneral
     - 9a462c4a-207b-4a29-8ea3-748cb3dad8da:Scene01
     - 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
