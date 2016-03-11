@@ -32,10 +32,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 var registry = new ServiceRegistry();
                 var entityManager = new CustomEntityManager(registry);
 
-                int dataCount = 0;
-                int entityAddedCount = 0;
-                int entityRemovedCount = 0;
-
                 clock.Restart();
                 for (int i = 0; i < TestEntityCount; i++)
                 {
@@ -78,10 +74,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 for (int j = 0; j < TestCount; j++)
                 {
-                    int dataCount = 0;
-                    int entityAddedCount = 0;
-                    int entityRemovedCount = 0;
-
                     clock.Restart();
                     foreach (var entity in entityManager)
                     {
