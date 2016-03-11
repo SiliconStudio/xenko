@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Data
         public T Get<T>() where T : Configuration, new()
         {
             //find default
-            var config = Configurations.Where(x => x.Platforms == ConfigPlatforms.None).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            var config = Configurations.Where(x => x.Platforms == ConfigPlatforms.None).FirstOrDefault(x => x.Configuration is T);
             
             //perform logic by platform and if required even gpu/cpu/specs
 
@@ -57,21 +57,21 @@ namespace SiliconStudio.Xenko.Data
             }
 
             //find per platform if available
-            var platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == -1).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            var platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == -1).FirstOrDefault(x => x.Configuration is T);
             if (platformConfig != null)
             {
                 config = platformConfig;
             }
 
             //find per specific renderer settings
-            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter != -1 && new Regex(PlatformFilters[x.SpecificFilter], RegexOptions.IgnoreCase).IsMatch(RendererName)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter != -1 && new Regex(PlatformFilters[x.SpecificFilter], RegexOptions.IgnoreCase).IsMatch(RendererName)).FirstOrDefault(x => x.Configuration is T);
             if (platformConfig != null)
             {
                 config = platformConfig;
             }
 
             //find per specific device settings
-            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter != -1 && new Regex(PlatformFilters[x.SpecificFilter], RegexOptions.IgnoreCase).IsMatch(DeviceModel)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter != -1 && new Regex(PlatformFilters[x.SpecificFilter], RegexOptions.IgnoreCase).IsMatch(DeviceModel)).FirstOrDefault(x => x.Configuration is T);
             if (platformConfig != null)
             {
                 config = platformConfig;

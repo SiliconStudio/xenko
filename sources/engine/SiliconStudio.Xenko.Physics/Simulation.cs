@@ -157,8 +157,6 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void RemoveContact(ContactPoint point)
         {
-            point.Valid = false;
-
             var collision = point.Collision;
 
             if (collision == null || collision.Contacts.Count == 0) return;
@@ -235,7 +233,6 @@ namespace SiliconStudio.Xenko.Physics
                         info.NewContact = true;
                     }
 
-                    info.ContactPoint.Valid = true;
                     info.ContactPoint.LifeTime = cp.LifeTime;
                     info.ContactPoint.Distance = cp.Distance;
                     info.ContactPoint.Normal = cp.NormalWorldOnB;
