@@ -79,6 +79,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class RenderEffectReflection
     {
+        public static readonly RenderEffectReflection Empty = new RenderEffectReflection();
+
         public RootSignature RootSignature;
 
         public FrameResourceGroupLayout PerFrameLayout;

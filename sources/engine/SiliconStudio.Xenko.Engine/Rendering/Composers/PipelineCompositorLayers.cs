@@ -56,27 +56,32 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 // Collect
                 visibilityGroup.Reset();
 
-                // Collect in layers. Setup features/stages, enumerate viewes and populates VisibilityGroup
-                Layers.Collect(context.RenderContext);
-                Master.Collect(context.RenderContext);
+                try
+                {
+                    // Collect in layers. Setup features/stages, enumerate viewes and populates VisibilityGroup
+                    Layers.Collect(context.RenderContext);
+                    Master.Collect(context.RenderContext);
 
-                // Collect in render features
-                RenderSystem.Collect(context);
+                    // Collect in render features
+                    RenderSystem.Collect(context);
 
-                // Extract
-                RenderSystem.Extract(context);
+                    // Extract
+                    RenderSystem.Extract(context);
 
-                // Prepare
-                RenderSystem.Prepare(context);
+                    // Prepare
+                    RenderSystem.Prepare(context);
 
-                // Draw the layers
-                Layers.Draw(context);
+                    // Draw the layers
+                    Layers.Draw(context);
 
-                // Draw the master track
-                Master.Draw(context);
-
-                // Reset render context data
-                RenderSystem.Reset();
+                    // Draw the master track
+                    Master.Draw(context);
+                }
+                finally
+                {
+                    // Reset render context data
+                    RenderSystem.Reset();
+                }
             }
         }
     }

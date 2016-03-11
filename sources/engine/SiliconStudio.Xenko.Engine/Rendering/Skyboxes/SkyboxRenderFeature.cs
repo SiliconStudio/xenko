@@ -109,7 +109,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var parameters = skyboxInfo.ParameterCollection;
 
                 var renderEffect = renderNode.RenderEffect;
-
+                if (renderEffect.State != RenderEffectState.Normal)
+                    continue;
 
                 // TODO GRAPHICS REFACTOR current system is not really safe with multiple renderers (parameters come from Skybox which is shared but ResourceGroupLayout from RenderSkybox is per RenderNode)
                 if (skyboxInfo.ResourceGroupLayout == null || skyboxInfo.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
@@ -210,6 +211,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // Get effect
                 // TODO: Use real effect slot
                 var renderEffect = renderNode.RenderEffect;
+                if (renderEffect.Effect == null)
+                    continue;
 
                 commandList.SetPipelineState(renderEffect.PipelineState);
 

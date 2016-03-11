@@ -1,13 +1,13 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Physics.Engine
 {
@@ -20,7 +20,8 @@ namespace SiliconStudio.Xenko.Physics.Engine
         private Material characterMaterial;
         private GraphicsDevice graphicsDevice;
 
-        private Dictionary<Type, MeshDraw> debugMeshCache = new Dictionary<Type, MeshDraw>(); 
+        private readonly Dictionary<Type, MeshDraw> debugMeshCache = new Dictionary<Type, MeshDraw>();
+        private readonly Dictionary<ColliderShape, MeshDraw> debugMeshCache2 = new Dictionary<ColliderShape, MeshDraw>();
 
         public override void Initialize()
         {
@@ -34,7 +35,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         }
 
         public PhysicsShapesRenderingService(IServiceRegistry registry) : base(registry)
-        {            
+        {
         }
 
         public Entity CreateDebugEntity(PhysicsComponent component)
@@ -78,16 +79,11 @@ namespace SiliconStudio.Xenko.Physics.Engine
 
         private Entity CreateChildEntity(PhysicsComponent component, ColliderShape shape, bool addOffset = false)
         {
-            if (shape  == null)
+            if (shape == null)
                 return null;
 
             switch (shape.Type)
             {
-                case ColliderShapeTypes.StaticPlane:
-                    {
-                        //Hmm TODO maybe can draw an infinite plane??
-                        return null;
-                    }
                 case ColliderShapeTypes.Compound:
                     {
                         var entity = new Entity();
@@ -108,7 +104,11 @@ namespace SiliconStudio.Xenko.Physics.Engine
 
                         return entity;
                     }
-                default:
+                case ColliderShapeTypes.Box:
+                case ColliderShapeTypes.Capsule:
+                case ColliderShapeTypes.ConvexHull:
+                case ColliderShapeTypes.Cylinder:
+                case ColliderShapeTypes.Sphere:
                     {
                         var mat = triggerMaterial;
 
@@ -117,7 +117,6 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         {
                             mat = rigidbodyComponent.IsKinematic ? kinematicMaterial : dynamicMaterial;
                         }
-
                         else if (component is CharacterComponent)
                         {
                             mat = characterMaterial;
@@ -128,10 +127,22 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         }
 
                         MeshDraw draw;
-                        if (!debugMeshCache.TryGetValue(shape.GetType(), out draw))
+                        var type = shape.GetType();
+                        if (type == typeof(CapsuleColliderShape) || type == typeof(ConvexHullColliderShape))
                         {
-                            draw = shape.CreateDebugPrimitive(graphicsDevice);
-                            debugMeshCache[shape.GetType()] = draw;
+                            if (!debugMeshCache2.TryGetValue(shape, out draw))
+                            {
+                                draw = shape.CreateDebugPrimitive(graphicsDevice);
+                                debugMeshCache2[shape] = draw;
+                            }
+                        }
+                        else
+                        {
+                            if (!debugMeshCache.TryGetValue(shape.GetType(), out draw))
+                            {
+                                draw = shape.CreateDebugPrimitive(graphicsDevice);
+                                debugMeshCache[shape.GetType()] = draw;
+                            }
                         }
 
                         var entity = new Entity
@@ -149,7 +160,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                             }
                         };
 
-                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation)*Matrix.Translation(shape.LocalOffset) : Matrix.Identity;
+                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset) : Matrix.Identity;
 
                         if (shape.Type == ColliderShapeTypes.ConvexHull)
                         {
@@ -165,6 +176,8 @@ namespace SiliconStudio.Xenko.Physics.Engine
 
                         return entity;
                     }
+                default:
+                    return null;
             }
         }
     }

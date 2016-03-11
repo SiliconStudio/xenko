@@ -344,7 +344,6 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.PendingEffect = null;
                         renderEffect.State = RenderEffectState.Normal;
 
-                        staticCompilerParameters.SetDefaults();
                         foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
                         {
                             staticCompilerParameters.SetObject(effectValue.Key, effectValue.Value);
@@ -448,6 +447,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                         renderEffects[staticEffectObjectNode] = renderEffect;
                     }
+                    else
+                    {
+                        renderEffect.Reflection = RenderEffectReflection.Empty;
+                        renderEffect.PipelineState = null;
+                    }
                 }
             }
         }
@@ -489,7 +493,13 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Not compiled yet?
                     if (renderEffect.Effect == null)
+                    {
+                        renderNode.RenderEffect = renderEffect;
+                        renderNode.EffectObjectNode = EffectObjectNodeReference.Invalid;
+                        renderNode.Resources = null;
+                        RenderNodes[renderNodeReference.Index] = renderNode;
                         continue;
+                    }
 
                     var renderEffectReflection = renderEffect.Reflection;
 

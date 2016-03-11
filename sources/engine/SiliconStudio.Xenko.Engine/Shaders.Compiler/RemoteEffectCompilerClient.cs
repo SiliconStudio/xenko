@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             return socketMessageLayer;
         }
 
-        public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters)
+        public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             // Make sure we are connected
             // TODO: Handle reconnections, etc...
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             var shaderCompilerAnswer = (RemoteEffectCompilerEffectAnswer)await socketMessageLayer.SendReceiveAsync(new RemoteEffectCompilerEffectRequest
             {
                 MixinTree = mixinTree,
-                UsedParameters = mixinTree.UsedParameters,
+                CompilerParameters = compilerParameters,
             });
 
             // TODO: Get LoggerResult as well
