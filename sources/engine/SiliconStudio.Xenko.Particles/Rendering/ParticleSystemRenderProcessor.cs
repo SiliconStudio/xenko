@@ -29,6 +29,10 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 if (componentData.Value.ParticleSystemComponent.Enabled)
                 {
                     // Update render objects
+                    foreach (var emitter in componentData.Value.Emitters)
+                    {
+                        emitter.BoundingBox.Center = emitter.RenderParticleSystem.TransformComponent.Position;
+                    }
                 }
             }
         }
