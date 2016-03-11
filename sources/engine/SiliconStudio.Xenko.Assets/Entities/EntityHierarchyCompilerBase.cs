@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public abstract class PrefabCompilerBase<T> : AssetCompilerBase<T> where T : EntityHierarchyAssetBase
+    public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase<T> where T : EntityHierarchyAssetBase
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
         {
@@ -49,14 +49,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
             result.BuildSteps = new AssetBuildStep(AssetItem) { Create(urlInStorage, AssetItem.Package, context, asset) };
         }
 
-        protected abstract PrefabCommandBase Create(string url, Package package, AssetCompilerContext context, T assetParameters);
+        protected abstract EntityHierarchyCommandBase Create(string url, Package package, AssetCompilerContext context, T assetParameters);
 
-        protected abstract class PrefabCommandBase : AssetCommand<T>
+        protected abstract class EntityHierarchyCommandBase : AssetCommand<T>
         {
             private readonly Package package;
             private readonly AssetCompilerContext context;
 
-            public PrefabCommandBase(string url, Package package, AssetCompilerContext context, T assetParameters) : base(url, assetParameters)
+            public EntityHierarchyCommandBase(string url, Package package, AssetCompilerContext context, T assetParameters) : base(url, assetParameters)
             {
                 this.package = package;
                 this.context = context;

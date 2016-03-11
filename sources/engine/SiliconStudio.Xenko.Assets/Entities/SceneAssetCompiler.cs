@@ -6,14 +6,14 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public class SceneAssetCompiler : PrefabCompilerBase<SceneAsset>
+    public class SceneAssetCompiler : EntityHierarchyCompilerBase<SceneAsset>
     {
-        protected override PrefabCommandBase Create(string url, Package package, AssetCompilerContext context, SceneAsset assetParameters)
+        protected override EntityHierarchyCommandBase Create(string url, Package package, AssetCompilerContext context, SceneAsset assetParameters)
         {
             return new SceneCommand(url, package, context, assetParameters);
         }
 
-        private class SceneCommand : PrefabCommandBase
+        private class SceneCommand : EntityHierarchyCommandBase
         {
             public SceneCommand(string url, Package package, AssetCompilerContext context, SceneAsset assetParameters) : base(url, package, context, assetParameters)
             {
