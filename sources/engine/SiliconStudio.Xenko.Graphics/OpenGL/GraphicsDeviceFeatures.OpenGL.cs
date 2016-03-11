@@ -104,6 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Find shader model based on OpenGL version (might need to check extensions more carefully)
             Profile = OpenGLUtils.GetFeatureLevel(deviceRoot.versionMajor, deviceRoot.versionMinor);
+            CurrentProfile = OpenGLUtils.GetFeatureLevel(deviceRoot.currentVersionMajor, deviceRoot.currentVersionMinor);
         }
     }
 }
