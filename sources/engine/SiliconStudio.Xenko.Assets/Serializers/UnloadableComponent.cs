@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using SharpYaml.Events;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Annotations;
@@ -15,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     /// Represents a Script that could not be loaded properly (usually due to missing/broken assemblies).
     /// Yaml representation is kept as is, so that it can be properly saved again.
     /// </summary>
-    [DataSerializerGlobal(typeof(InvariantObjectCloneSerializer<UnloadableComponent>), Profile = "AssetClone")]
+    [DataSerializerGlobal(typeof(UnloadableComponentSerializer), Profile = "AssetClone")]
     [Display("Error: unable to load this script")]
     [AllowMultipleComponents]
     [NonInstantiable]
@@ -35,6 +37,39 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         {
             ParsingEvents = parsingEvents;
             TypeName = typeName;
+        }
+
+        /// <summary>
+        /// Speciailize serializer only valid when cloning
+        /// </summary>
+        internal class UnloadableComponentSerializer : DataSerializer<UnloadableComponent>
+        {
+            public override void Serialize(ref UnloadableComponent obj, ArchiveMode mode, SerializationStream stream)
+            {
+                var invariantObjectList = stream.Context.Get(AssetCloner.InvariantObjectListProperty);
+                if (mode == ArchiveMode.Serialize)
+                {
+                    stream.Write(invariantObjectList.Count);
+                    invariantObjectList.Add(obj);
+                }
+                else
+                {
+                    var index = stream.Read<int>();
+
+                    if (index >= invariantObjectList.Count)
+                    {
+                        throw new InvalidOperationException($"The type [{nameof(UnloadableComponent)}] cannot be only be used for clone serialization");
+                    }
+
+                    var invariant = invariantObjectList[index] as UnloadableComponent;
+                    if (invariant == null)
+                    {
+                        throw new InvalidOperationException($"Unexpected null {nameof(UnloadableComponent)} while cloning");
+                    }
+                    // Create a new object instead
+                    obj = new UnloadableComponent(new List<ParsingEvent>(invariant.ParsingEvents), invariant.TypeName);
+                }
+            }
         }
     }
 }
