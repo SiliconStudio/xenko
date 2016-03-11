@@ -1,0 +1,189 @@
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments:
+                                    - Material.DiffuseValue
+                        Macros: []
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments:
+                                            - false
+                        Macros: []
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Macros: []
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Compositions: {}
+        Macros: []
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups: []
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            Compositions: {}
+            Macros: []
+            Mixins:
+                -   ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorFromStream
+        GenericArguments:
+            - COLOR0
+            - rgba
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorFromStream
+        GenericArguments:
+            - COLOR0
+            - rgba
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments:
+                                    - Material.DiffuseValue
+                        Macros: []
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments:
+                                            - false
+                        Macros: []
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Macros: []
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Compositions: {}
+        Macros: []
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups: []
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            Compositions: {}
+            Macros: []
+            Mixins:
+                -   ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorConstantColorLink
+        GenericArguments:
+            - ParticleBase.EmissiveValue
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.BaseColor: !ShaderMixinSource
+        Compositions:
+            color1: !ShaderClassSource
+                ClassName: ComputeColorFromStream
+                GenericArguments:
+                    - COLOR0
+                    - rgba
+            color2: !ShaderClassSource
+                ClassName: ComputeColorConstantColorLink
+                GenericArguments:
+                    - ParticleBase.EmissiveValue
+        Macros: []
+        Mixins:
+            -   ClassName: ComputeColorMultiply
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+        GenericArguments:
+            - ParticleBase.EmissiveMap
+            - TEXCOORD0
+            - Material.Sampler.i0
+            - rgba
+            - Material.TextureScale
+            - Material.TextureOffset
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments:
+                                    - Material.DiffuseValue
+                        Macros: []
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments:
+                                            - false
+                        Macros: []
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Macros: []
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Compositions: {}
+        Macros: []
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups: []
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            Compositions: {}
+            Macros: []
+            Mixins:
+                -   ClassName: LightSimpleAmbient
