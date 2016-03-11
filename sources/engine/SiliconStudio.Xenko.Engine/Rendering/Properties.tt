@@ -79,6 +79,24 @@ namespace SiliconStudio.Xenko.Rendering
             return a.Index == b.Index;
         }
 
+		public override bool Equals(object other)
+		{
+			if (other is <#=type#>NodeReference)
+			{
+				<#=type#>NodeReference p = (<#=type#>NodeReference) other;
+				return Index == p.Index;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public override int GetHashCode()
+		{
+			return Index;
+		}
+
 		public static bool operator !=(<#=type#>NodeReference a, <#=type#>NodeReference b)
         {
             return a.Index != b.Index;
