@@ -208,7 +208,7 @@
     <Compile Include="Entities\PrefabAssetCompiler.cs" />
     <Compile Include="Entities\PrefabAssetMerge.cs" />
     <Compile Include="Entities\EntityHierarchyData.cs" />
-    <Compile Include="Entities\PrefabCompilerBase.cs" />
+    <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityReference.cs" />
@@ -301,6 +301,7 @@
     <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
