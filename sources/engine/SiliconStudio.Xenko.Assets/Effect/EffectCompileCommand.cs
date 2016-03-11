@@ -50,6 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
             writer.Serialize(ref effectbyteCodeMagicNumber, ArchiveMode.Serialize);
             writer.Serialize(ref effectName, ArchiveMode.Serialize);
             writer.Serialize(ref compilerParameters, ArchiveMode.Serialize);
+            writer.Serialize(ref compilerParameters.EffectParameters, ArchiveMode.Serialize);
         }
 
         protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
