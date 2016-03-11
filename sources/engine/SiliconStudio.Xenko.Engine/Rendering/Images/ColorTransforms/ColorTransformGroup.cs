@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Color Transforms")]
     public class ColorTransformGroup : ImageEffect
     {
-        private readonly ParameterCollection transformsParameters;
+        // TODO GRAPHICS REFACTOR
+        // private readonly ParameterCollection transformsParameters;
         private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
         private readonly ColorTransformCollection preTransforms;
