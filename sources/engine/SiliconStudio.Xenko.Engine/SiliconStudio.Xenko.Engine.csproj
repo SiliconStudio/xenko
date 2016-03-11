@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -19,7 +19,7 @@
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <XenkoBuildTags>*</XenkoBuildTags>
-	<RestorePackages>true</RestorePackages>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
@@ -110,6 +110,7 @@
     <Compile Include="Engine\EntityProcessorCollection.cs" />
     <Compile Include="Engine\Events\EventKey.cs" />
     <Compile Include="Engine\Events\EventReceiver.cs" />
+    <Compile Include="Engine\Events\EventReceiverOptions.cs" />
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
