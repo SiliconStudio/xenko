@@ -41,12 +41,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         }
 
         /// <inheritdoc/>
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters? effectCompilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
-            return CompileAsync(mixinTree, effectCompilerParameters);
+            return CompileAsync(mixinTree, compilerParameters);
         }
 
-        private async Task<EffectBytecodeCompilerResult> CompileAsync(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters)
+        private async Task<EffectBytecodeCompilerResult> CompileAsync(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             return await remoteEffectCompilerClient.Compile(mixinTree, compilerParameters);
         }

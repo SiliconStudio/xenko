@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -23,13 +24,13 @@ namespace SiliconStudio.Xenko.Shaders
             Mixins = new List<ShaderClassSource>();
             Compositions = new Core.Collections.SortedList<string, ShaderSource>();
             Macros = new List<ShaderMacro>();
-            UsedParameters = new ShaderMixinParameters();
         }
 
         /// <summary>
         /// Gets or sets the name of the xkfx effect linked to this node.
         /// </summary>
         /// <value>The name of the xkfx effect.</value>
+        [DefaultValue(null)]
         public string Name { get; set; }
 
         [DataMemberIgnore]
@@ -59,13 +60,6 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         /// <value>The compositions.</value>
         public Core.Collections.SortedList<string, ShaderSource> Compositions { get; set; }
-
-        /// <summary>
-        /// Gets the used parameters for this mixin tree.
-        /// </summary>
-        /// <value>The used parameters.</value>
-        [DataMemberIgnore]
-        public ShaderMixinParameters UsedParameters { get; set; }
 
         /// <summary>
         /// Adds a composition to this mixin.
