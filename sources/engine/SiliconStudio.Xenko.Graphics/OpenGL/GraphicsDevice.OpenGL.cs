@@ -288,7 +288,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void End()
         {
 #if DEBUG
-            GraphicsDevice.EnsureContextActive();
+            EnsureContextActive();
 #endif
 
             --contextBeginCounter;
