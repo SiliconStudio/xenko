@@ -49,27 +49,26 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Use aspect ratio of device
             gameWindow = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
-            var panelWidth = gameWindow.Size.Width;
-            var panelHeight = gameWindow.Size.Height;
-            var panelRatio = (float)panelWidth / panelHeight;
+            var windowWidth = gameWindow.Size.Width;
+            var windowHeight = gameWindow.Size.Height;
 
             var handler = ProcessPresentationParametersOverride; // TODO remove this hack when swap chain creation process is properly designed and flexible.
             if(handler != null) // override
             {
-                handler(panelWidth, panelHeight, Description);
+                handler(windowWidth, windowHeight, Description);
             }
             else // default behavior
             {
                 var desiredWidth = Description.BackBufferWidth;
                 var desiredHeight = Description.BackBufferHeight;
 
-                if (panelRatio >= 1.0f) // Landscape => use height as base
+                if (windowWidth >= windowHeight) // Landscape => use height as base
                 {
-                    Description.BackBufferHeight = (int)(desiredWidth / panelRatio);
+                    Description.BackBufferHeight = (int)(desiredWidth * (float)windowHeight / (float)windowWidth);
                 }
                 else // Portrait => use width as base
                 {
-                    Description.BackBufferWidth = (int)(desiredHeight * panelRatio);
+                    Description.BackBufferWidth = (int)(desiredHeight * (float)windowWidth / (float)windowHeight);
                 }
             }
         }
