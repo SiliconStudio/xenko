@@ -553,7 +553,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             var constantBuffer = effectReflection.ConstantBuffers.FirstOrDefault(buffer => buffer.Name == cbName);
             if (constantBuffer == null)
             {
-                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName};
+                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName, Type = ConstantBufferType.ConstantBuffer};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
                 var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, ResourceGroup = cbName }, SlotStart = -1, SlotCount = 1 };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);

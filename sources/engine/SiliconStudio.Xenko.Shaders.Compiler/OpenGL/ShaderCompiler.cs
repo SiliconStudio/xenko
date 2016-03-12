@@ -191,11 +191,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             var member = reflectionConstantBuffer.Members[index];
 
                             // Properly compute size and offset according to std140 rules
-                            int alignment;
-                            var memberSize = ComputeMemberSize(ref member, out alignment);
+                            var memberSize = ComputeMemberSize(ref member, ref constantBufferOffset);
 
-                            // Align offset and store it as member offset
-                            constantBufferOffset = (constantBufferOffset + alignment - 1)/alignment*alignment;
                             member.Offset = constantBufferOffset;
                             member.Size = memberSize;
 
@@ -344,10 +341,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
-        private static int ComputeMemberSize(ref EffectParameterValueData member, out int alignment)
+        private static int ComputeMemberSize(ref EffectParameterValueData member, ref int constantBufferOffset)
         {
             var elementSize = ComputeTypeSize(member.Param.Type);
             int size;
+            int alignment;
 
             switch (member.Param.Class)
             {
@@ -391,6 +389,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             // Alignment is maxed up to vec4
             if (alignment > 16)
                 alignment = 16;
+
+            // Align offset and store it as member offset
+            constantBufferOffset = (constantBufferOffset + alignment - 1) / alignment * alignment;
 
             return size;
         }

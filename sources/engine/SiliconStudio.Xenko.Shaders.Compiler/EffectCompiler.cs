@@ -387,8 +387,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
             {
-                var cBuffer = reflection.ConstantBuffers[i];
-                if (cBuffer.Stage == ShaderStage.None)
+                var cbuffer = reflection.ConstantBuffers[i];
+                if (cbuffer.Stage == ShaderStage.None && !(hasMaterialGroup && cbuffer.Name == "PerMaterial") && !(hasLightingGroup && cbuffer.Name == "PerLighting"))
                 {
                     reflection.ConstantBuffers.RemoveAt(i);
                 }
