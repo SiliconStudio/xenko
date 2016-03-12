@@ -21,12 +21,12 @@ namespace SiliconStudio.Xenko.ConnectionRouter
         private Dictionary<string, TaskCompletionSource<Service>> registeredServices = new Dictionary<string, TaskCompletionSource<Service>>();
         private Dictionary<Guid, TaskCompletionSource<SimpleSocket>> pendingServers = new Dictionary<Guid, TaskCompletionSource<SimpleSocket>>();
 
-        public void Listen(int port)
+        public async Task Listen(int port)
         {
             Log.Info("Start to listen on port {0}", port);
 
             var socketContext = CreateSocketContext();
-            Task.Run(() => socketContext.StartServer(port, false));
+            await socketContext.StartServer(port, false);
         }
 
         /// <summary>
