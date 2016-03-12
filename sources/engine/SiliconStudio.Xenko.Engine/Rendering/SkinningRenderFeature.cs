@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
 
-                        var skinningBones = Math.Min(MaxBones, renderMesh.Mesh.Skinning.Bones.Length);
+                        var skinningBones = Math.Max(MaxBones, renderMesh.Mesh.Skinning.Bones.Length);
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, skinningBones);
                     }
                 }
