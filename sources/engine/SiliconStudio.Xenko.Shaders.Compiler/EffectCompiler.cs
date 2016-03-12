@@ -369,6 +369,22 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
         private static void CleanupReflection(EffectReflection reflection)
         {
+            // TODO GRAPHICS REFACTOR we hardcode several resource group we want to preserve or optimize completly
+            // Somehow this should be handled some other place (or probably we shouldn't cleanup reflection at all?)
+            bool hasMaterialGroup = false;
+            bool hasLightingGroup = false;
+
+            foreach (var resourceBinding in reflection.ResourceBindings)
+            {
+                if (resourceBinding.Stage != ShaderStage.None)
+                {
+                    if (!hasLightingGroup && resourceBinding.Param.ResourceGroup == "PerLighting")
+                        hasLightingGroup = true;
+                    else if (!hasMaterialGroup && resourceBinding.Param.ResourceGroup == "PerMaterial")
+                        hasMaterialGroup = true;
+                }
+            }
+
             for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
             {
                 var cBuffer = reflection.ConstantBuffers[i];
@@ -381,7 +397,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             for (int i = reflection.ResourceBindings.Count - 1; i >= 0; i--)
             {
                 var resourceBinding = reflection.ResourceBindings[i];
-                if (resourceBinding.Stage == ShaderStage.None)
+                if (resourceBinding.Stage == ShaderStage.None && !(hasMaterialGroup && resourceBinding.Param.ResourceGroup == "PerMaterial") && !(hasLightingGroup && resourceBinding.Param.ResourceGroup == "PerLighting"))
                 {
                     reflection.ResourceBindings.RemoveAt(i);
                 }
