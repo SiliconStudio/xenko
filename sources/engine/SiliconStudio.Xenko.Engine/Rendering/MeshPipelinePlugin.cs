@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public string ModelEffect
         {
-            get { return modelEffect; }
+            get { return modelEffect ?? DefaultEffectName; }
             set
             {
                 modelEffect = value;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Set default stage selector
             RegisterRenderStageSelector(meshRenderStageSelector = new MeshTransparentRenderStageSelector
             {
-                EffectName = modelEffect ?? DefaultEffectName,
+                EffectName = ModelEffect,
                 MainRenderStage = mainRenderStage,
                 TransparentRenderStage = transparentRenderStage,
             });
