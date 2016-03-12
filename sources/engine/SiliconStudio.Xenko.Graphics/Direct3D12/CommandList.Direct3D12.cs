@@ -69,14 +69,6 @@ namespace SiliconStudio.Xenko.Graphics
             nativeCommandAllocator = null;
         }
 
-        public void Begin()
-        {
-        }
-
-        public void End()
-        {
-        }
-
         private long FlushInternal(bool wait)
         {
             NativeCommandList.Close();
