@@ -146,8 +146,6 @@ namespace SiliconStudio.Xenko.Engine
 
             var commandList = context.CommandList;
 
-            bool hasGraphicsBegin = false;
-
             var previousRenderContext = currentRenderContext;
             currentRenderContext = context.RenderContext;
 
@@ -159,9 +157,6 @@ namespace SiliconStudio.Xenko.Engine
 
             try
             {
-                commandList.Begin();
-                hasGraphicsBegin = true;
-
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 commandList.ClearState();
 
@@ -186,10 +181,6 @@ namespace SiliconStudio.Xenko.Engine
             finally
             {
                 currentRenderContext = previousRenderContext;
-                if (hasGraphicsBegin)
-                {
-                    commandList.End();
-                }
             }
         }
 
