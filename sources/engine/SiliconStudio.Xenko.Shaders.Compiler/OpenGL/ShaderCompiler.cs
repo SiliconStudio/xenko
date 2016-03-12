@@ -366,13 +366,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     }
                 case EffectParameterClass.MatrixColumns:
                     {
-                        size = elementSize * 4 * member.RowCount;
+                        size = elementSize * 4 * member.ColumnCount;
                         alignment = size;
                         break;
                     }
                 case EffectParameterClass.MatrixRows:
                     {
-                        size = elementSize * 4 * member.ColumnCount;
+                        size = elementSize * 4 * member.RowCount;
                         alignment = size;
                         break;
                     }

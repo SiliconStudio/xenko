@@ -235,7 +235,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
                 for (var dimX = 1; dimX <= 4; dimX++)
                     for (var dimY = 1; dimY <= 4; dimY++)
                     {
-                        var matrixTypeInstance = new MatrixType(scalarTypeIt, dimY, dimX);
+                        var matrixTypeInstance = new MatrixType(scalarTypeIt, dimX, dimY);
                         var nonGenericType = matrixTypeInstance.ToNonGenericType();
                         var name = nonGenericType.Name.Text;
 

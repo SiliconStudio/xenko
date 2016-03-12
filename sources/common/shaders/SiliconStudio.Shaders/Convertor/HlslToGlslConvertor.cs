@@ -1876,6 +1876,15 @@ namespace SiliconStudio.Shaders.Convertor
             {
                 var swizzles = HlslSemanticAnalysis.MatrixSwizzleDecode(expression);
 
+                // When NoSwapForBinaryMatrixOperation, we need to transpose accessor
+                if (NoSwapForBinaryMatrixOperation)
+                {
+                    for (int i = 0; i < swizzles.Count; ++i)
+                    {
+                        swizzles[i] = new MatrixType.Indexer(swizzles[i].Column, swizzles[i].Row);
+                    }
+                }
+
                 if (swizzles.Count == 1)
                     return new IndexerExpression(new IndexerExpression(expression.Target, new LiteralExpression(swizzles[0].Row)), new LiteralExpression(swizzles[0].Column));
 
@@ -4259,7 +4268,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        newInitializers.Add(initializers[rowCount * rowIndex + columnIndex]);
+                        newInitializers.Add(initializers[columnCount * rowIndex + columnIndex]);
                     }
                 }
             }
