@@ -469,6 +469,8 @@ namespace SiliconStudio.Xenko.Games
             if (!CheckDeviceState())
                 return false;
 
+            GraphicsDevice.Begin();
+
             // TODO GRAPHICS REFACTOR
             //// Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
             //// An application should not rely on previous state (last frame...etc.) after BeginDraw.
@@ -534,11 +536,13 @@ namespace SiliconStudio.Xenko.Games
                     finally
                     {
                         beginDrawOk = false;
+                        GraphicsDevice.End();
                     }
                 }
                 else
                 {
                     beginDrawOk = false;
+                    GraphicsDevice.End();
                 }
             }
         }
