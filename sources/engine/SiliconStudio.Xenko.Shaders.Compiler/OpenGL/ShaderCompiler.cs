@@ -379,7 +379,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
 
             // Array
-            if (member.Count > 1)
+            if (member.Count > 0)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
                 size = roundedSize * member.Count;

@@ -543,7 +543,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
         private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey, int slotCount)
         {
-            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount };
+            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1 };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -594,7 +594,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             public int ColumnCount;
 
-            public int Count = 1;
+            public int Count = 0;
         }
     }
 }

@@ -344,7 +344,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                     },
                         Offset = variableDescription.StartOffset,
                         Size = variableDescription.Size,
-                        Count = variableTypeDescription.ElementCount == 0 ? 1 : variableTypeDescription.ElementCount,
+                        Count = variableTypeDescription.ElementCount,
                         RowCount = (byte)variableTypeDescription.RowCount,
                         ColumnCount = (byte)variableTypeDescription.ColumnCount,
                     };
@@ -399,7 +399,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             }
 
             // Array
-            if (member.Count > 1)
+            if (member.Count > 0)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
                 size += roundedSize * (member.Count - 1);
