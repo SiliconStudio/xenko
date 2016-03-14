@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -18,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private MutablePipelineState pipelineState = new MutablePipelineState();
         private bool pipelineStateDirty = true;
         private BlendStateDescription blendState = BlendStateDescription.Default;
+        private EffectBytecode previousBytecode;
 
         [DataMemberIgnore]
         public BlendStateDescription BlendState
@@ -108,8 +110,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty)
+            if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty || previousBytecode != EffectInstance.Effect.Bytecode)
             {
+                // The EffectInstance might have been updated from outside
+                previousBytecode = EffectInstance.Effect.Bytecode;
+
                 pipelineState.State.SetDefaults();
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
