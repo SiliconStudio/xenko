@@ -45,30 +45,9 @@ namespace SiliconStudio.Assets.Analysis
                 items = inputItems.Select(item => item.Clone()).ToList();
             }
 
-            // Check if locations are conflicting
-            var locationConflicts = new Dictionary<UFile, UFile>();
-            foreach (var item in items)
-            {
-                UFile newLocation;
-                if (assetResolver.RegisterLocation(item.Location, out newLocation))
-                {
-                    locationConflicts[item.Location] = newLocation;
-                }
-            }
-
-            // Check if ids are conflicting
-            var idConflicts = new Dictionary<Guid, Guid>();
-            foreach (var item in items)
-            {
-                Guid newGuid;
-                if (assetResolver.RegisterId(item.Id, out newGuid))
-                {
-                    idConflicts[item.Id] = newGuid;
-                }
-            }
-
             // idRemap should contain only assets that have either 1) their id remapped or 2) their location remapped
             var idRemap = new Dictionary<Guid, Tuple<Guid, UFile>>();
+            var itemRemap = new Dictionary<AssetItem, Tuple<Guid, UFile>>();
             foreach (var item in items)
             {
                 if (outputItems.Contains(item))
@@ -79,15 +58,23 @@ namespace SiliconStudio.Assets.Analysis
                 outputItems.Add(item);
 
                 Guid newGuid;
-                idConflicts.TryGetValue(item.Id, out newGuid);
+                assetResolver.RegisterId(item.Id, out newGuid);
 
                 UFile newLocation;
-                locationConflicts.TryGetValue(item.Location, out newLocation);
+                assetResolver.RegisterLocation(item.Location, out newLocation);
 
                 bool changed = newGuid != Guid.Empty || newLocation != null;
-                if (!idRemap.ContainsKey(item.Id) && changed)
+                if (changed)
                 {
-                    idRemap.Add(item.Id, new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location));
+                    var tuple = new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location);
+                    if (!itemRemap.ContainsKey(item))
+                    {
+                        itemRemap.Add(item, tuple);
+                    }
+                    if (!idRemap.ContainsKey(item.Id))
+                    {
+                        idRemap.Add(item.Id, tuple);
+                    }
                 }
             }
 
@@ -95,7 +82,7 @@ namespace SiliconStudio.Assets.Analysis
             foreach (var item in outputItems)
             {
                 Tuple<Guid, UFile> remap;
-                if (idRemap.TryGetValue(item.Id, out remap))
+                if (itemRemap.TryGetValue(item, out remap))
                 {
                     item.Asset.Id = remap.Item1;
                     item.Location = remap.Item2;
