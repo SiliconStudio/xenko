@@ -57,13 +57,19 @@ namespace SiliconStudio.Assets.Analysis
 
                 outputItems.Add(item);
 
+                bool changed = false;
                 Guid newGuid;
-                assetResolver.RegisterId(item.Id, out newGuid);
+                if (assetResolver.RegisterId(item.Id, out newGuid))
+                {
+                    changed = true;
+                }
 
                 UFile newLocation;
-                assetResolver.RegisterLocation(item.Location, out newLocation);
+                if (assetResolver.RegisterLocation(item.Location, out newLocation))
+                {
+                    changed = true;
+                }
 
-                bool changed = newGuid != Guid.Empty || newLocation != null;
                 if (changed)
                 {
                     var tuple = new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location);
