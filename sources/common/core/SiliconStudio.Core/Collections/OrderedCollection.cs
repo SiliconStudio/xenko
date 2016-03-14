@@ -169,7 +169,7 @@ namespace SiliconStudio.Core.Collections
             var index = Array.BinarySearch(items, 0, size, item, comparer);
             if (index < 0)
             {
-                index = size; // insert at the end of the list
+                index = ~index; // insert at the end of the list
             }
             if (size == items.Length)
             {
