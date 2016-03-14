@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
         private static CompilerParameters staticCompilerParameters;
 
         // Helper class to build pipeline state
-        protected MutablePipelineState MutablePipeline = new MutablePipelineState();
+        protected MutablePipelineState MutablePipeline;
 
         private readonly List<string> effectDescriptorSetSlots = new List<string>();
         private readonly Dictionary<string, int> effectPermutationSlots = new Dictionary<string, int>();
@@ -84,6 +84,8 @@ namespace SiliconStudio.Xenko.Rendering
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            MutablePipeline = new MutablePipelineState(Context.GraphicsDevice);
 
             // Create RenderEffectKey
             RenderEffectKey = RenderData.CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
@@ -604,7 +606,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                         PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
-                        MutablePipeline.Update(Context.GraphicsDevice);
+                        MutablePipeline.Update();
                         renderEffect.PipelineState = MutablePipeline.CurrentState;
                     }
 

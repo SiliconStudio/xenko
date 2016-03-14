@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("ImageEffectShader")]
     public class ImageEffectShader : ImageEffect
     {
-        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private MutablePipelineState pipelineState;
         private bool pipelineStateDirty = true;
         private BlendStateDescription blendState = BlendStateDescription.Default;
         private EffectBytecode previousBytecode;
@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            pipelineState = new MutablePipelineState(Context.GraphicsDevice);
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
@@ -122,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
                 pipelineState.State.BlendState = blendState;
                 pipelineState.State.Output.CaptureState(context.CommandList);
-                pipelineState.Update(GraphicsDevice);
+                pipelineState.Update();
                 pipelineStateDirty = false;
             }
 
