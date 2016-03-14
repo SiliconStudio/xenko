@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics
                         // Find matching resource bindings
                         foreach (var binding in effectReflection.ResourceBindings)
                         {
-                            if (binding.Param.Key != item.Key)
+                            if (binding.Stage == ShaderStage.None || binding.Param.Key != item.Key)
                                 continue;
 
                             List<DescriptorRange> descriptorRanges;
