@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Physics
                 }
                 else
                 {
-                    if (NativeCollisionObject.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse))
+                    if ((NativeCollisionObject.CollisionFlags & BulletSharp.CollisionFlags.NoContactResponse) != 0)
                     {
                         NativeCollisionObject.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
                     }

@@ -205,14 +205,7 @@ namespace SiliconStudio.Xenko.Physics
 
             UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
-            if (IsDefaultGroup)
-            {
-                Simulation.AddCharacter(this, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
-            }
-            else
-            {
-                Simulation.AddCharacter(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
-            }
+            Simulation.AddCharacter(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
         }
 
         protected override void OnDetach()
