@@ -147,7 +147,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // TODO: Shadow mapping is currently disabled in new render system
                 // TODO: Make this pluggable
                 // TODO: Shadows should work on mobile platforms
-                if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
+                if (RenderSystem.RenderContextOld.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0
                     && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
                 {
                     ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowMapRenderStage);

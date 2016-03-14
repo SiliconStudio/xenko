@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)
         {
-            return device.Features.Profile >= GraphicsProfile.Level_11_0;
+            return device.Features.CurrentProfile >= GraphicsProfile.Level_11_0;
         }
 
         /// <summary>
@@ -515,14 +515,14 @@ namespace SiliconStudio.Xenko.Graphics
             // If the texture is going to be bound on the depth stencil, for to use TypeLess format
             if (IsDepthStencil)
             {
-                if (IsShaderResource && GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0)
+                if (IsShaderResource && GraphicsDevice.Features.CurrentProfile < GraphicsProfile.Level_10_0)
                 {
-                    throw new NotSupportedException(String.Format("ShaderResourceView for DepthStencil Textures are not supported for Graphics profile < 10.0 (Current: [{0}])", GraphicsDevice.Features.Profile));
+                    throw new NotSupportedException(String.Format("ShaderResourceView for DepthStencil Textures are not supported for Graphics profile < 10.0 (Current: [{0}])", GraphicsDevice.Features.CurrentProfile));
                 }
                 else
                 {
                     // Determine TypeLess Format and ShaderResourceView Format
-                    if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0)
+                    if (GraphicsDevice.Features.CurrentProfile < GraphicsProfile.Level_10_0)
                     {
                         switch (textureDescription.Format)
                         {
@@ -638,7 +638,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The updated texture description.</returns>
         private static TextureDescription CheckMipLevels(GraphicsDevice device, ref TextureDescription description)
         {
-            if (device.Features.Profile < GraphicsProfile.Level_10_0 && (description.Flags & TextureFlags.DepthStencil) == 0 && description.Format.IsCompressed())
+            if (device.Features.CurrentProfile < GraphicsProfile.Level_10_0 && (description.Flags & TextureFlags.DepthStencil) == 0 && description.Format.IsCompressed())
             {
                 description.MipLevels = Math.Min(CalculateMipCount(description.Width, description.Height), description.MipLevels);
             }

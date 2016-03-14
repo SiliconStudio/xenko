@@ -616,7 +616,7 @@ namespace SiliconStudio.Xenko.Games
         protected virtual bool CanResetDevice(GraphicsDeviceInformation newDeviceInfo)
         {
             // By default, a reset is compatible when we stay under the same graphics profile.
-            return GraphicsDevice.Features.Profile == newDeviceInfo.GraphicsProfile;
+            return GraphicsDevice.Features.RequestedProfile == newDeviceInfo.GraphicsProfile;
         }
 
         /// <summary>
@@ -962,8 +962,7 @@ namespace SiliconStudio.Xenko.Games
 
 
             // Use the shader profile returned by the GraphicsDeviceInformation otherwise use the one coming from the GameSettings
-            // NOTE: If the GraphicsDevice has rewritten the ShaderProfile, we need to pickup this one (specially for INTEL device)
-            GraphicsDevice.ShaderProfile = newInfo.ShaderProfile.HasValue ? newInfo.ShaderProfile : ShaderProfile;
+            GraphicsDevice.ShaderProfile = ShaderProfile;
 
             // TODO HANDLE Device Resetting/Reset/Lost
             //GraphicsDevice.DeviceResetting += GraphicsDevice_DeviceResetting;

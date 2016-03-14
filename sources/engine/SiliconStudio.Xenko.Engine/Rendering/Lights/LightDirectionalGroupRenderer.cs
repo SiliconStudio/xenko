@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void Initialize(RenderContext context)
         {
-            var isLowProfile = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0;
+            var isLowProfile = context.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0;
             LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
             AllocateLightMaxCount = !isLowProfile;
         }
