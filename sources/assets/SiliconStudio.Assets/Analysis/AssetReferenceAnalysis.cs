@@ -129,6 +129,10 @@ namespace SiliconStudio.Assets.Analysis
                         (guid, location) =>
                         {
                             object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
+                            if (newValue != null)
+                            {
+                                IdentifiableHelper.SetId(newValue, IdentifiableHelper.GetId(item));
+                            }
                             array.SetValue(newValue, index);
                             return newValue;
                         });
@@ -189,6 +193,10 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference, (guid, location) =>
                     {
                         var link = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
+                        if (link != null)
+                        {
+                            IdentifiableHelper.SetId(link, IdentifiableHelper.GetId(item));
+                        }
                         descriptor.SetValue(collection, index, link);
                         return link;
                     });
@@ -245,6 +253,10 @@ namespace SiliconStudio.Assets.Analysis
                         (guid, location) =>
                         {
                             object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ValueType, guid.Value, location) : null;
+                            if (newValue != null)
+                            {
+                                IdentifiableHelper.SetId(newValue, IdentifiableHelper.GetId(value));
+                            }
                             descriptor.SetValue(dictionaryObj, key, newValue);
                             return newValue;
                         });
@@ -303,6 +315,10 @@ namespace SiliconStudio.Assets.Analysis
                         (guid, location) =>
                         {
                             object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(member.Type, guid.Value, location) : null;
+                            if (newValue != null)
+                            {
+                                IdentifiableHelper.SetId(newValue, IdentifiableHelper.GetId(value));
+                            }
                             member.Set(container, newValue);
                             return newValue;
                         });
