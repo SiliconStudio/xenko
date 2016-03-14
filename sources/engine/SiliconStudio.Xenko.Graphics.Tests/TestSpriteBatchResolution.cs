@@ -40,12 +40,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            var virtualResolution = new Vector3(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, 200);
+            var virtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.ViewWidth, GraphicsDevice.Presenter.BackBuffer.ViewHeight, 200);
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
-            spheres = Asset.Load<SpriteSheet>("SpriteSphere");
-            round = Asset.Load<Texture>("round");
-            staticFont = Asset.Load<SpriteFont>("StaticFonts/CourierNew10");
-            dynamicFont = Asset.Load<SpriteFont>("DynamicFonts/CourierNew10");
+            spheres = Content.Load<SpriteSheet>("SpriteSphere");
+            round = Content.Load<Texture>("round");
+            staticFont = Content.Load<SpriteFont>("StaticFonts/CourierNew10");
+            dynamicFont = Content.Load<SpriteFont>("DynamicFonts/CourierNew10");
             colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
         }
 
@@ -69,18 +69,18 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void SetVirtualResolutionAndDraw(Vector2 factor)
         {
-            spriteBatch.VirtualResolution = new Vector3(factor.X * GraphicsDevice.BackBuffer.ViewWidth, factor.Y*GraphicsDevice.BackBuffer.ViewHeight, 100);
+            spriteBatch.VirtualResolution = new Vector3(factor.X * GraphicsDevice.Presenter.BackBuffer.ViewWidth, factor.Y*GraphicsDevice.Presenter.BackBuffer.ViewHeight, 100);
 
             DrawSprites();
         }
 
         private void DrawSprites()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
             
             var x = 20f;
             var y = 20f;
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             var fontName = useDynamicFont ? "Dynamic" : "Static";
             var spriteFont = useDynamicFont ? dynamicFont : staticFont;
-            var targetSize = new Vector2(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight);
+            var targetSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.ViewWidth, GraphicsDevice.Presenter.BackBuffer.ViewHeight);
             var resolutionRatio = Vector2.One;
             if (useDynamicFont && spriteBatch.VirtualResolution.HasValue)
             {

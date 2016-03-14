@@ -24,12 +24,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Graphics.Display;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10
 using Windows.Foundation;
-#endif
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -53,6 +52,10 @@ namespace SiliconStudio.Xenko.Games
         private int currentHeight;
         private readonly CoreWindow coreWindow;
         private static readonly Windows.Devices.Input.MouseCapabilities mouseCapabilities = new Windows.Devices.Input.MouseCapabilities();
+        private readonly DispatcherTimer resizeTimer;
+        private double requiredRatio;
+        private ApplicationView applicationView;
+        private bool canResize;
         #endregion
 
         #region Public Properties
@@ -60,7 +63,9 @@ namespace SiliconStudio.Xenko.Games
         public GameWindowWindowsRuntimeSwapChainPanel()
         {
             coreWindow = CoreWindow.GetForCurrentThread();
-        }
+            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            resizeTimer.Tick += ResizeTimerOnTick;
+        } 
 
         public override bool AllowUserResizing
         {
@@ -195,22 +200,25 @@ namespace SiliconStudio.Xenko.Games
             windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_10
-            var appView = ApplicationView.GetForCurrentView();
-            if (appView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
-                appView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
+            applicationView = ApplicationView.GetForCurrentView();            
+            if (applicationView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
+            {
+                applicationView.SetPreferredMinSize(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
+                canResize = applicationView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
+            }
 #endif
 
-            //clientBounds = new DrawingRectangle(0, 0, (int)swapChainPanel.ActualWidth, (int)swapChainPanel.ActualHeight);
+            requiredRatio = windowContext.RequestedWidth/(double)windowContext.RequestedHeight;
+
             swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
             swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
-
             coreWindow.SizeChanged += CurrentWindowOnSizeChanged;
         }
 
         private void CurrentWindowOnSizeChanged(object sender, WindowSizeChangedEventArgs windowSizeChangedEventArgs)
         {
-            var bounds = windowSizeChangedEventArgs.Size;
-            HandleSizeChanged(sender, bounds);
+            var newBounds = windowSizeChangedEventArgs.Size;
+            HandleSizeChanged(sender, newBounds);
         }
 
         void swapChainPanel_CompositionScaleChanged(SwapChainPanel sender, object args)
@@ -218,53 +226,64 @@ namespace SiliconStudio.Xenko.Games
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
-        private void HandleSizeChanged(object sender, Windows.Foundation.Size newSize)
+        private void ResizeTimerOnTick(object sender, object o)
+        {
+            resizeTimer.Stop();
+            OnClientSizeChanged(sender, EventArgs.Empty);
+        }
+
+        private void HandleSizeChanged(object sender, Size newSize)
         {
             var bounds = newSize;
 
-            // Only apply SwapChain resize when effective orientation is matching current orientation
-            // TODO: We might want to handle borders if excplitiely asked in game user settings asset (fixed aspect ratio)
-            var currentOrientation = ApplicationView.GetForCurrentView().Orientation;
-            var rotationPreferences = DisplayInformation.AutoRotationPreferences;
-
-            // If user clicked only portraits or only landscapes mode (or nothing at all?), let's check against current orientation if it is matching
-            bool isOrientationMatchingPreferences =
-                (currentOrientation == ApplicationViewOrientation.Portrait && (rotationPreferences & PortraitOrientations) != 0)
-                || (currentOrientation == ApplicationViewOrientation.Landscape && (rotationPreferences & LandscapeOrientations) != 0);
-
-            if (!isOrientationMatchingPreferences && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
+            if (bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
             {
-                // Need to add border (display forces us to have another orientation, i.e. a portrait-only game running on Windows Store computer screen)
                 double panelWidth;
                 double panelHeight;
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
-                var panelRatio = panelWidth / panelHeight;
-                var currentRatio = currentWidth / currentHeight;
 
-                if (panelRatio < currentRatio)
+                if (canResize)
                 {
-                    panelWidth = bounds.Width;
-                    panelHeight = (int)(currentHeight * bounds.Width / currentWidth);
+                    if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
+                    {
+                        // Center the panel
+                        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
+
+                        swapChainPanel.Width = panelWidth;
+                        swapChainPanel.Height = panelHeight;
+                    }
                 }
                 else
                 {
-                    panelHeight = bounds.Height;
-                    panelWidth = (int)(currentWidth * bounds.Height / currentHeight);
-                }
+                    //mobile device, keep aspect fine
+                    var aspect = panelWidth/panelHeight;
+                    if (aspect < requiredRatio)
+                    {
+                        panelWidth = bounds.Width; //real screen width
+                        panelHeight = panelWidth / requiredRatio;
+                    }
+                    else
+                    {
+                        panelHeight = bounds.Height;
+                        panelWidth = panelHeight * requiredRatio;
+                    }
 
-                if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
-                {
-                    // Center the panel
-                    swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
-                    swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
+                    if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
+                    {
+                        // Center the panel
+                        swapChainPanel.HorizontalAlignment = HorizontalAlignment.Center;
+                        swapChainPanel.VerticalAlignment = VerticalAlignment.Center;
 
-                    swapChainPanel.Width = panelWidth;
-                    swapChainPanel.Height = panelHeight;
+                        swapChainPanel.Width = panelWidth;
+                        swapChainPanel.Height = panelHeight;
+                    }
                 }
             }
 
-            OnClientSizeChanged(sender, EventArgs.Empty);
+            resizeTimer.Stop();
+            resizeTimer.Start();
         }
 
         private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)

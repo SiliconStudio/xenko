@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             await base.LoadContent();
 
-            var debugSheet = Asset.Load<SpriteSheet>("DebugSpriteSheet");
+            var debugSheet = Content.Load<SpriteSheet>("DebugSpriteSheet");
 
             // normal reference one
             var normal = CreateSpriteEntity(debugSheet, "Normal");

@@ -476,7 +476,7 @@ namespace SiliconStudio.Xenko.Graphics
             return new VertexElement("BITANGENT", semanticIndex, format, offsetInBytes);
         }
 
-        private static PixelFormat ConvertTypeToFormat<T>() where T : struct
+        public static PixelFormat ConvertTypeToFormat<T>() where T : struct
         {
             return ConvertTypeToFormat(typeof(T));
         }

@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -17,8 +18,9 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display("Model", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
-    [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
+    // TODO GRAPHICS REFACTOR
+    [DefaultEntityComponentProcessor(typeof(ModelTransformProcessor))]
+    [DefaultEntityComponentRenderer(typeof(ModelRenderProcessor))]
     [ComponentOrder(11000)]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
@@ -39,7 +41,6 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="model">The model.</param>
         public ModelComponent(Model model)
         {
-            Parameters = new ParameterCollection();
             Model = model;
             IsShadowCaster = true;
             IsShadowReceiver = true;
@@ -120,13 +121,6 @@ namespace SiliconStudio.Xenko.Engine
         public bool IsShadowReceiver { get; set; }
 
         /// <summary>
-        /// Gets the parameters used to render this mesh.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; }
-
-        /// <summary>
         /// Gets the bounding box in world space.
         /// </summary>
         /// <value>The bounding box.</value>
@@ -139,6 +133,40 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>The bounding sphere.</value>
         [DataMemberIgnore]
         public BoundingSphere BoundingSphere;
+
+        /// <summary>
+        /// Gets the material at the specified index. If the material is not overriden by this component, it will try to get it from <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/>
+        /// </summary>
+        /// <param name="index">The index of the material</param>
+        /// <returns>The material at the specified index or null if not found</returns>
+        public Material GetMaterial(int index)
+        {
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index cannot be < 0");
+
+            Material material = null;
+            if (index < Materials.Count)
+            {
+                material = Materials[index];
+            }
+            if (material == null && Model != null && index < Model.Materials.Count)
+            {
+                material = Model.Materials[index].Material;
+            }
+            return material;
+        }
+
+        /// <summary>
+        /// Gets the number of materials (computed from <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/>)
+        /// </summary>
+        /// <returns></returns>
+        public int GetMaterialCount()
+        {
+            if (Model != null)
+            {
+                return Model.Materials.Count;
+            }
+            return 0;
+        }
 
         private void ModelUpdated()
         {

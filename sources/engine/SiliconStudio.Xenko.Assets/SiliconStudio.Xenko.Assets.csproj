@@ -192,6 +192,7 @@
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
+    <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompositorAsset.cs" />
@@ -202,15 +203,16 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
-    <Compile Include="Entities\EntityGroupAsset.cs" />
-    <Compile Include="Entities\EntityGroupAssetBase.cs" />
-    <Compile Include="Entities\EntityGroupAssetMerge.cs" />
+    <Compile Include="Entities\PrefabAsset.cs" />
+    <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
+    <Compile Include="Entities\PrefabAssetCompiler.cs" />
+    <Compile Include="Entities\PrefabAssetMerge.cs" />
     <Compile Include="Entities\EntityHierarchyData.cs" />
+    <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
-    <Compile Include="Entities\EntityGroupAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityReference.cs" />
-    <Compile Include="Entities\EntityGroupAssetSerializer.cs" />
+    <Compile Include="Entities\PrefabAssetSerializer.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\IEntityComponentReference.cs" />
     <Compile Include="Entities\IEntityScriptReference.cs" />
@@ -226,12 +228,14 @@
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
+    <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
+    <Compile Include="Textures\TextureSettings.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
     <Compile Include="RenderingMode.cs" />
     <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
@@ -298,6 +302,7 @@
     <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

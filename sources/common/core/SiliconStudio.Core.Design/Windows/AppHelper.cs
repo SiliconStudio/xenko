@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Text;
@@ -90,5 +91,30 @@ namespace SiliconStudio.Core.Windows
                 writer.AppendLine("An error occurred while trying to retrieve video configuration.");
             }
         }
+
+        public static Dictionary<string, string> GetVideoConfig()
+        {
+            var result = new Dictionary<string, string>();
+
+            try
+            {
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DisplayConfiguration");
+                foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
+                {
+                    foreach (var property in managementObject.Properties)
+                    {
+                        if(property.Value == null) continue;
+                        
+                        result.Add(property.Name, property.Value.ToString());
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            return result;
+        } 
     }
 }

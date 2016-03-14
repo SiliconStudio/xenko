@@ -27,8 +27,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             imageButton = new ImageButton
             {
-                PressedImage = new Sprite(Asset.Load<Texture>("ImageButtonPressed")),
-                NotPressedImage = new Sprite(Asset.Load<Texture>("ImageButtonNotPressed")),
+                PressedImage = new Sprite(Content.Load<Texture>("ImageButtonPressed")),
+                NotPressedImage = new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
             };
 
             UIComponent.RootElement = imageButton;

@@ -20,11 +20,11 @@ namespace SiliconStudio.Xenko.UI
 
         internal UIBatch Batch { get; private set; }
 
-        internal DepthStencilState KeepStencilValueState { get; private set; }
+        internal DepthStencilStateDescription KeepStencilValueState { get; private set; }
 
-        internal DepthStencilState IncreaseStencilValueState { get; private set; }
+        internal DepthStencilStateDescription IncreaseStencilValueState { get; private set; }
 
-        internal DepthStencilState DecreaseStencilValueState { get; private set; }
+        internal DepthStencilStateDescription DecreaseStencilValueState { get; private set; }
 
         private InputManagerBase input;
 
@@ -90,15 +90,15 @@ namespace SiliconStudio.Xenko.UI
                         StencilFunction = CompareFunction.Equal
                     },
                 };
-            KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
+            KeepStencilValueState = depthStencilDescription;
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
             depthStencilDescription.BackFace.StencilPass = StencilOperation.Increment;
-            IncreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
+            IncreaseStencilValueState = depthStencilDescription;
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Decrement;
             depthStencilDescription.BackFace.StencilPass = StencilOperation.Decrement;
-            DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
+            DecreaseStencilValueState = depthStencilDescription;
 
             // set the default design of the UI elements.
             var designsTexture = TextureExtensions.FromFileData(GraphicsDevice, DefaultDesigns.Designs);

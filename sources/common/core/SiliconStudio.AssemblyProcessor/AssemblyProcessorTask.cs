@@ -31,6 +31,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             if (result != 0)
             {
+                Log.LogError($"Failed to run assembly processor with parameters: {Arguments}");
                 Log.LogError("Check the previous logs");
             }
 

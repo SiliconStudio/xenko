@@ -15,7 +15,6 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 using SiliconStudio.Xenko.Rendering.Data;
-
 namespace SiliconStudio.Xenko.Rendering.Utils
 {
     internal static partial class ShaderMixins

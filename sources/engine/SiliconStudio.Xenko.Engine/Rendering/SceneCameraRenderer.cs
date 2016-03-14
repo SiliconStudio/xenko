@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMember(20)]
         public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
+        // TODO GRAPHICS REFACTOR should we mark this obsolete? should we hide this from editor?
         /// <summary>
         /// Gets or sets the culling mask.
         /// </summary>
@@ -71,12 +72,6 @@ namespace SiliconStudio.Xenko.Rendering
         public CameraCullingMode CullingMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating the current rendering is for picking or not.
-        /// </summary>
-        [DataMemberIgnore]
-        public bool IsPickingMode { get; set; }
-
-        /// <summary>
         /// Gets the pre-renderers attached to this instance that are called before rendering this camera.
         /// </summary>
         /// <value>The pre renderers.</value>
@@ -90,8 +85,10 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public SafeList<IGraphicsRenderer> PostRenderers { get; private set; }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        public override void Collect(RenderContext context)
         {
+            base.Collect(context);
+
             // Early exit if some properties are null
             if (Mode == null)
             {
@@ -103,7 +100,26 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
-            using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
+            using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
+            {
+                Mode.Collect(context);
+            }
+        }
+
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
+        {
+            // Early exit if some properties are null
+            if (Mode == null)
+            {
+                return; 
+            }
+
+            // Gets the current camera state from the slot
+            var camera = context.RenderContext.GetCameraFromSlot(Camera);
+
+            // Draw this camera.
+            using (context.RenderContext.PushTagAndRestore(Current, this))
+            using (context.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 // Run all pre-renderers
                 foreach (var renderer in PreRenderers)

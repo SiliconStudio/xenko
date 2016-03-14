@@ -1,7 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+using System.Linq;
 using SiliconStudio.Xenko.Graphics.OpenGL;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
@@ -38,7 +39,11 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     if (int.TryParse(splitVersion[i], out versionMajor))
                     {
-                        int.TryParse(splitVersion[i + 1], out versionMinor);
+                        // Note: minor version might have stuff concat, take only until not digits
+                        var versionMinorString = splitVersion[i + 1];
+                        versionMinorString = new string(versionMinorString.TakeWhile(c => char.IsDigit(c)).ToArray());
+
+                        int.TryParse(versionMinorString, out versionMinor);
                         break;
                     }
                 }

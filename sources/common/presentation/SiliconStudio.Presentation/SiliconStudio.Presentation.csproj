@@ -48,21 +48,30 @@
     <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\MenuItemCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\MouseMoveCaptureBehaviorBase.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
     <Compile Include="Behaviors\OnMouseEventBehavior.cs" />
     <Compile Include="Behaviors\MultiOverrideCursorBehavior.cs" />
     <Compile Include="Behaviors\OverrideCursorBehavior.cs" />
+    <Compile Include="Behaviors\SelectionRectangleBehavior.cs" />
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
+    <Compile Include="Drawing\IDrawingContext.cs" />
+    <Compile Include="Drawing\IDrawingView.cs" />
+    <Compile Include="Drawing\CanvasRenderer.cs" />
     <Compile Include="Collections\IObservableList.cs" />
+    <Compile Include="Collections\IReadOnlyObservableList.cs" />
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
     <Compile Include="Commands\UtilityCommands.cs" />
+    <Compile Include="Controls\CanvasView\CanvasView.cs" />
+    <Compile Include="Drawing\IDrawingModel.cs" />
+    <Compile Include="Controls\CanvasView\TrackerControl.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />
@@ -105,7 +114,6 @@
     <Compile Include="Commands\ICommandBase.cs" />
     <Compile Include="Behaviors\DropCommandParameters.cs" />
     <Compile Include="Behaviors\GridViewAutoSizeBehavior.cs" />
-    <Compile Include="Behaviors\ListBoxRectangleSelectionBehavior.cs" />
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />
@@ -117,16 +125,26 @@
     <Compile Include="Core\AutoUnsubscribeHandler.cs" />
     <Compile Include="Core\BindingProxy.cs" />
     <Compile Include="Core\DependencyPropertyWatcher.cs" />
+    <Compile Include="Drawing\TextMeasurementMethod.cs" />
+    <Compile Include="Extensions\DrawingContextExtensions.cs" />
+    <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
+    <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
+    <Compile Include="MarkupExtensions\MinDoubleExtension.cs" />
+    <Compile Include="MarkupExtensions\MinIntExtension.cs" />
+    <Compile Include="Drawing\VisualHost.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
+    <Compile Include="ValueConverters\SumMultiConverter.cs" />
+    <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
@@ -193,7 +211,6 @@
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
-    <Compile Include="Extensions\DrawingContextExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\NativeHelper.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />
@@ -347,6 +364,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\ruler-triangle.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

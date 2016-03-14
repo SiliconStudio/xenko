@@ -6,7 +6,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
@@ -26,15 +25,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             public SamplerState Sampler;
         };
 
-        private Effect simpleEffect;
+        private EffectInstance simpleEffect;
 
-        private VertexArrayObject vao;
+        // TODO GRAPHICS REFACTOR
+        //private VertexArrayObject vao;
 
         private DrawOptions[] myDraws;
-
-        private EffectParameterCollectionGroup parameterCollectionGroup;
-
-        private ParameterCollection parameterCollection;
 
         public TestTextureSampling()
         {
@@ -81,12 +77,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 Draw = meshDraw,
             };
 
-            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
-            parameterCollection = new ParameterCollection();
-            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new[] { parameterCollection });
-            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
 
-            vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
+            // TODO GRAPHICS REFACTOR
+            //vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
 
             myDraws = new DrawOptions[3];
             myDraws[0] = new DrawOptions { Sampler = GraphicsDevice.SamplerStates.LinearClamp, Transform = Matrix.Multiply(Matrix.Scaling(0.4f), Matrix.Translation(-0.5f, 0.5f, 0f)) };
@@ -108,21 +103,26 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void DrawTextureSampling()
         {
             // Clears the screen 
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.LightBlue);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LightBlue);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            GraphicsDevice.SetVertexArrayObject(vao);
+            // TODO GRAPHICS REFACTOR
+            //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
+
+            // TODO GRAPHICS REFACTOR
+            //GraphicsDevice.SetVertexArrayObject(vao);
 
             for (var i = 0; i < myDraws.Length; ++i)
             {
-                parameterCollection.Set(TexturingKeys.Sampler, myDraws[i].Sampler);
-                parameterCollection.Set(SpriteBaseKeys.MatrixTransform, myDraws[i].Transform);
-                simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
-                GraphicsDevice.DrawIndexed(PrimitiveType.TriangleList, 6);
+                simpleEffect.Parameters.Set(TexturingKeys.Sampler, myDraws[i].Sampler);
+                simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, myDraws[i].Transform);
+                simpleEffect.Apply(GraphicsContext);
+                GraphicsContext.CommandList.DrawIndexed(6);
             }
-            GraphicsDevice.SetVertexArrayObject(null);
+
+            // TODO GRAPHICS REFACTOR
+            //GraphicsDevice.SetVertexArrayObject(null);
         }
 
         public static void Main()

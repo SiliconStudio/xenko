@@ -14,18 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         static TexturingKeys()
         {
-            Texture0TexelSize = CreateDynamicTexelSizeParameterKey(Texture0);
-            Texture1TexelSize = CreateDynamicTexelSizeParameterKey(Texture1);
-            Texture2TexelSize = CreateDynamicTexelSizeParameterKey(Texture2);
-            Texture3TexelSize = CreateDynamicTexelSizeParameterKey(Texture3);
-            Texture4TexelSize = CreateDynamicTexelSizeParameterKey(Texture4);
-            Texture5TexelSize = CreateDynamicTexelSizeParameterKey(Texture5);
-            Texture6TexelSize = CreateDynamicTexelSizeParameterKey(Texture6);
-            Texture7TexelSize = CreateDynamicTexelSizeParameterKey(Texture7);
-            Texture8TexelSize = CreateDynamicTexelSizeParameterKey(Texture8);
-            Texture9TexelSize = CreateDynamicTexelSizeParameterKey(Texture9);
-
-            DefaultTextures = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            DefaultTextures = new ReadOnlyCollection<ObjectParameterKey<Texture>>(new List<ObjectParameterKey<Texture>>()
             {
                 Texture0,
                 Texture1,
@@ -38,56 +27,54 @@ namespace SiliconStudio.Xenko.Rendering
                 Texture8,
                 Texture9,
             });
-            TextureCubes = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            TextureCubes = new ReadOnlyCollection<ObjectParameterKey<Texture>>(new List<ObjectParameterKey<Texture>>()
             {
                 TextureCube0,
                 TextureCube1,
                 TextureCube2,
                 TextureCube3,
             });
-            Textures3D = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            Textures3D = new ReadOnlyCollection<ObjectParameterKey<Texture>>(new List<ObjectParameterKey<Texture>>()
             {
                 Texture3D0,
                 Texture3D1,
                 Texture3D2,
                 Texture3D3,
             });
+
+            TexturesTexelSize = new ReadOnlyCollection<ValueParameterKey<Vector2>>(new List<ValueParameterKey<Vector2>>()
+            {
+                Texture0TexelSize,
+                Texture1TexelSize,
+                Texture2TexelSize,
+                Texture3TexelSize,
+                Texture4TexelSize,
+                Texture5TexelSize,
+                Texture6TexelSize,
+                Texture7TexelSize,
+                Texture8TexelSize,
+                Texture9TexelSize,
+            });
         }
 
         /// <summary>
         /// Default textures used by this class (<see cref="Texture0"/>, <see cref="Texture1"/>...etc.)
         /// </summary>
-        public static readonly IReadOnlyList<ParameterKey<Texture>> DefaultTextures;
+        public static readonly IReadOnlyList<ObjectParameterKey<Texture>> DefaultTextures;
 
         /// <summary>
         /// The cube textures used by this class (<see cref="TextureCube0"/>, <see cref="TextureCube1"/>...etc.)
         /// </summary>
-        public static readonly IReadOnlyList<ParameterKey<Texture>> TextureCubes;
+        public static readonly IReadOnlyList<ObjectParameterKey<Texture>> TextureCubes;
 
         /// <summary>
         /// The 3d textures used by this class (<see cref="Texture3D0"/>, <see cref="Texture3D1"/>...etc.)
         /// </summary>
-        public static readonly IReadOnlyList<ParameterKey<Texture>> Textures3D;
+        public static readonly IReadOnlyList<ObjectParameterKey<Texture>> Textures3D;
 
         /// <summary>
-        /// Creates a dynamic parameter key for texel size updated from the texture size.
+        /// Default textures size used by this class (<see cref="Texture0TexelSize"/>, <see cref="Texture1TexelSize"/>...etc.)
         /// </summary>
-        /// <param name="textureKey">Key of the texture to take the size from</param>
-        /// <returns>A dynamic TexelSize parameter key updated according to the specified texture</returns>
-        public static ParameterKey<Vector2> CreateDynamicTexelSizeParameterKey(ParameterKey<Texture> textureKey)
-        {
-            if (textureKey == null) throw new ArgumentNullException("textureKey");
-            return ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector2, Texture>(textureKey, UpdateTexelSize));
-        }
-
-        /// <summary>
-        /// Updates the size of the texel from a texture.
-        /// </summary>
-        /// <param name="param1">The param1.</param>
-        /// <param name="output">The output.</param>
-        private static void UpdateTexelSize(ref Texture param1, ref Vector2 output)
-        {
-            output = (param1 != null) ? new Vector2(1.0f/param1.ViewWidth, 1.0f/param1.ViewHeight) : Vector2.Zero;
-        }
+        public static readonly IReadOnlyList<ValueParameterKey<Vector2>> TexturesTexelSize;
     }
 }

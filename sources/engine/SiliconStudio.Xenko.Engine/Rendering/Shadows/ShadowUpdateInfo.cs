@@ -16,8 +16,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public ParameterKey ShadowMapLevelReceiverInfoKey;
 
-        public ParameterKey<int> ShadowMapLightCountKey;
+        public ValueParameterKey<int> ShadowMapLightCountKey;
 
-        public ParameterKey<Texture> ShadowMapTextureKey;
+        public ObjectParameterKey<Texture> ShadowMapTextureKey;
     };
 }

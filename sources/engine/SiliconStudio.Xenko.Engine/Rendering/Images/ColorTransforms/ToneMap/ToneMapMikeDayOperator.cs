@@ -97,6 +97,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
             Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
             Parameters.Set(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
+
+            // Copy parameters to parent
+            base.UpdateParameters(context);
         }
     }
 }

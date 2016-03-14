@@ -16,9 +16,9 @@ namespace SiliconStudio.Xenko.Assets.Model
         public string SkeletonUrl { get; set; }
         public List<KeyValuePair<string, bool>> SkeletonNodesWithPreserveInfo { get; set; }
 
-        private object ExportSkeleton(ICommandContext commandContext, AssetManager assetManager)
+        private object ExportSkeleton(ICommandContext commandContext, ContentManager contentManager)
         {
-            var skeleton = LoadSkeleton(commandContext, assetManager);
+            var skeleton = LoadSkeleton(commandContext, contentManager);
 
             var modelNodes = new HashSet<string>(skeleton.Nodes.Select(x => x.Name));
             var skeletonNodes = new HashSet<string>(SkeletonNodesWithPreserveInfo.Select(x => x.Key));

@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
@@ -470,15 +471,16 @@ namespace SiliconStudio.Xenko.Games
 
             GraphicsDevice.Begin();
 
-            // Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
-            // An application should not rely on previous state (last frame...etc.) after BeginDraw.
-            GraphicsDevice.ClearState();
-
-            // By default, we setup the render target to the back buffer, and the viewport as well.
-            if (GraphicsDevice.BackBuffer != null)
-            {
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            }
+            // TODO GRAPHICS REFACTOR
+            //// Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
+            //// An application should not rely on previous state (last frame...etc.) after BeginDraw.
+            //GraphicsDevice.ClearState();
+            //
+            //// By default, we setup the render target to the back buffer, and the viewport as well.
+            //if (GraphicsDevice.BackBuffer != null)
+            //{
+            //    GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            //}
 
             beginDrawOk = true;
             return beginDrawOk;
@@ -536,6 +538,11 @@ namespace SiliconStudio.Xenko.Games
                         beginDrawOk = false;
                         GraphicsDevice.End();
                     }
+                }
+                else
+                {
+                    beginDrawOk = false;
+                    GraphicsDevice.End();
                 }
             }
         }
@@ -953,7 +960,10 @@ namespace SiliconStudio.Xenko.Games
             if (deviceRecreate)
                 OnDeviceReset(this, EventArgs.Empty);
 
-            GraphicsDevice.ShaderProfile = ShaderProfile;
+
+            // Use the shader profile returned by the GraphicsDeviceInformation otherwise use the one coming from the GameSettings
+            // NOTE: If the GraphicsDevice has rewritten the ShaderProfile, we need to pickup this one (specially for INTEL device)
+            GraphicsDevice.ShaderProfile = newInfo.ShaderProfile.HasValue ? newInfo.ShaderProfile : ShaderProfile;
 
             // TODO HANDLE Device Resetting/Reset/Lost
             //GraphicsDevice.DeviceResetting += GraphicsDevice_DeviceResetting;

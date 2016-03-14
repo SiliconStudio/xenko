@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
                     if (contentSerializerContext != null)
                     {
-                        var assetManager = contentSerializerContext.AssetManager;
+                        var assetManager = contentSerializerContext.ContentManager;
                         var url = contentSerializerContext.Url;
 
                         texture.Reload = (graphicsResource) =>

@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
@@ -49,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             return "Color";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
 
@@ -58,23 +59,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             if (PremultiplyAlpha)
                 color = Color4.PremultiplyAlpha(color);
             
-            if (key is ParameterKey<Color4>)
+            if (key is ValueParameterKey<Color4>)
             {
-                context.Parameters.Set((ParameterKey<Color4>)key, color);
+                context.Parameters.Set((ValueParameterKey<Color4>)key, color);
             }
-            else if (key is ParameterKey<Vector4>)
+            else if (key is ValueParameterKey<Vector4>)
             {
-                context.Parameters.Set((ParameterKey<Vector4>)key, color);
+                context.Parameters.Set((ValueParameterKey<Vector4>)key, color);
             }
-            else if (key is ParameterKey<Color3>)
+            else if (key is ValueParameterKey<Color3>)
             {
                 
-                context.Parameters.Set((ParameterKey<Color3>)key, (Color3)color);
+                context.Parameters.Set((ValueParameterKey<Color3>)key, (Color3)color);
             }
-            else if (key is ParameterKey<Vector3>)
+            else if (key is ValueParameterKey<Vector3>)
             {
 
-                context.Parameters.Set((ParameterKey<Vector3>)key, (Vector3)color);
+                context.Parameters.Set((ValueParameterKey<Vector3>)key, (Vector3)color);
             }
             else
             {

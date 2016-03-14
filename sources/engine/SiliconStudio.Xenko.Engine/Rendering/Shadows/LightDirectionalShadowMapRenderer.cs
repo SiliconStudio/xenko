@@ -2,11 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -88,18 +86,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return new LightDirectionalShadowMapGroupShaderData(compositionKey, shadowType, maxLightCount);
         }
 
-        public override void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+        public override void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var camera = shadowMapRenderer.Camera;
+            var camera = shadowMapRenderer.CurrentView.Camera;
             var shadowCamera = shadowMapRenderer.ShadowCamera;
 
             var viewToWorld = camera.ViewMatrix;
             viewToWorld.Invert();
 
             // Update the frustum infos
-            UpdateFrustum(shadowMapRenderer.Camera);
+            UpdateFrustum(camera);
 
             // Computes the cascade splits
             var minMaxDistance = ComputeCascadeSplits(context, shadowMapRenderer, ref lightShadowMap);
@@ -142,10 +140,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.Texture = lightShadowMap.Atlas.Texture;
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
-
-            // Push a new graphics state
-            var graphicsDevice = context.GraphicsDevice;
-            graphicsDevice.PushState();
 
             float splitMaxRatio = (minMaxDistance.X - camera.NearClipPlane) / (camera.FarClipPlane - camera.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
@@ -240,6 +234,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     shadowCamera.Update();
                 }
 
+                shaderData.ViewMatrix[cascadeLevel] = shadowCamera.ViewMatrix;
+                shaderData.ProjectionMatrix[cascadeLevel] = shadowCamera.ProjectionMatrix;
+
                 // Cascade splits in light space using depth: Store depth on first CascaderCasterMatrix in last column of each row
                 shaderData.CascadeSplits[cascadeLevel] = MathUtil.Lerp(camera.NearClipPlane, camera.FarClipPlane, cascadeSplitRatios[cascadeLevel]);
 
@@ -267,18 +264,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
                 Matrix.Multiply(ref shadowCamera.ViewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
-
-                // Render to the atlas
-                lightShadowMap.Atlas.RenderFrame.Activate(context);
-                graphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
-
-                // Render the scene for this cascade
-                shadowMapRenderer.RenderCasters(context, lightShadowMap.LightComponent.CullingMask);
-                //// Copy texture coords with border
-                //cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
             }
+        }
 
-            graphicsDevice.PopState();
+        public override void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
+        {
+            var shaderData = (LightDirectionalShadowMapShaderData)shadowMapTexture.ShaderData;
+            view = shaderData.ViewMatrix[cascadeIndex];
+            projection = shaderData.ProjectionMatrix[cascadeIndex];
         }
 
         private void UpdateFrustum(CameraComponent camera)
@@ -308,9 +301,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private Vector2 ComputeCascadeSplits(RenderContext context, ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
+            var camera = shadowContext.CurrentView.Camera;
 
-            var cameraNear = shadowContext.Camera.NearClipPlane;
-            var cameraFar = shadowContext.Camera.FarClipPlane;
+            var cameraNear = camera.NearClipPlane;
+            var cameraFar = camera.FarClipPlane;
             var cameraRange = cameraFar - cameraNear;
 
             var minDistance = cameraNear + LightDirectionalShadowMap.DepthRangeParameters.DefaultMinDistance;
@@ -318,20 +312,27 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             if (shadow.DepthRange.IsAutomatic)
             {
-                var depthReadBack = DepthReadback.GetDepthReadback(context);
-                if (depthReadBack.IsResultAvailable)
-                {
-                    var depthMinMax = depthReadBack.DepthMinMax;
+                //var depthReadBack = DepthReadback.GetDepthReadback(context);
+                //if (depthReadBack.IsResultAvailable)
+                //{
+                //    var depthMinMax = depthReadBack.DepthMinMax;
                     
-                    minDistance = ToLinearDepth(depthMinMax.X, ref shadowContext.Camera.ProjectionMatrix);
-                    // Reserve 1/3 of the guard distance for the min distance
-                    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
+                //    minDistance = ToLinearDepth(depthMinMax.X, ref camera.ProjectionMatrix);
+                //    // Reserve 1/3 of the guard distance for the min distance
+                //    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
 
-                    // Reserve 2/3 of the guard distance for the max distance
-                    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
-                    maxDistance = ToLinearDepth(depthMinMax.Y, ref shadowContext.Camera.ProjectionMatrix);
-                    maxDistance = Math.Max(maxDistance, guardMaxDistance);
-                }
+                //    // Reserve 2/3 of the guard distance for the max distance
+                //    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
+                //    maxDistance = ToLinearDepth(depthMinMax.Y, ref camera.ProjectionMatrix);
+                //    maxDistance = Math.Max(maxDistance, guardMaxDistance);
+                //}
+
+                // Reserve 1/3 of the guard distance for the min distance
+                minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
+
+                // Reserve 2/3 of the guard distance for the max distance
+                var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
+                maxDistance = Math.Max(shadowContext.CurrentView.MaximumDistance, guardMaxDistance);
             }
             else
             {
@@ -422,13 +423,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public Vector2 DepthMinMax { get; private set; }
 
-            protected override void DrawCore(RenderContext context)
+            protected override void DrawCore(RenderDrawContext context)
             {
                 try
                 {
-                    context.GraphicsDevice.PushState();
-                    minMax.SetInput(context.GraphicsDevice.DepthStencilBuffer);
-                    minMax.Draw(context);
+                    context.PushRenderTargets();
+                    minMax.SetInput(context.CommandList.DepthStencilBuffer);
+                    ((RendererBase)minMax).Draw(context);
 
                     IsResultAvailable = minMax.IsResultAvailable;
                     if (IsResultAvailable)
@@ -438,7 +439,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
                 finally 
                 {
-                    context.GraphicsDevice.PopState();
+                    context.PopRenderTargets();
                 }
             }
         }
@@ -449,6 +450,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 CascadeSplits = new float[cascadeCount];
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
+                ViewMatrix = new Matrix[cascadeCount];
+                ProjectionMatrix = new Matrix[cascadeCount];
             }
 
             public Texture Texture;
@@ -460,6 +463,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public float OffsetScale;
 
             public readonly Matrix[] WorldToShadowCascadeUV;
+
+            public readonly Matrix[] ViewMatrix;
+
+            public readonly Matrix[] ProjectionMatrix;
         }
 
         private class LightDirectionalShadowMapGroupShaderData : ILightShadowMapShaderGroupData
@@ -486,19 +493,19 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private readonly ShaderMixinSource shadowShader;
 
-            private readonly ParameterKey<Texture> shadowMapTextureKey;
+            private readonly ObjectParameterKey<Texture> shadowMapTextureKey;
 
-            private readonly ParameterKey<float[]> cascadeSplitsKey;
+            private readonly ValueParameterKey<float> cascadeSplitsKey;
 
-            private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
+            private readonly ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
 
-            private readonly ParameterKey<float[]> depthBiasesKey;
+            private readonly ValueParameterKey<float> depthBiasesKey;
 
-            private readonly ParameterKey<float[]> offsetScalesKey;
+            private readonly ValueParameterKey<float> offsetScalesKey;
 
-            private readonly ParameterKey<Vector2> shadowMapTextureSizeKey;
+            private readonly ValueParameterKey<Vector2> shadowMapTextureSizeKey;
 
-            private readonly ParameterKey<Vector2> shadowMapTextureTexelSizeKey;
+            private readonly ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData" /> class.

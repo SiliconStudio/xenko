@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            testFont = Asset.Load<SpriteFont>("StaticFonts/ExternFont");
+            testFont = Content.Load<SpriteFont>("StaticFonts/ExternFont");
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -55,11 +55,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawText()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
 
             const string text = "This is a font created from an external font file.";
             var dim = testFont.MeasureString(text);
@@ -78,7 +79,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             base.Update(gameTime);
 
             if (Input.IsKeyReleased(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "sprite-font-extern-test.png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "sprite-font-extern-test.png");
         }
 
         public static void Main()

@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles", "..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj", "{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
@@ -437,6 +439,30 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Win32.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Win32.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Win32.Build.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Win32.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Win32.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Win32.Build.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -506,6 +532,7 @@ Global
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection

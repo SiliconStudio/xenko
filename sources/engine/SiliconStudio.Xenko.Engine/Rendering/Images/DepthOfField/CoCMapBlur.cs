@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </remarks>
     public class CoCMapBlur : ImageEffect
     {
-        private ImageEffect cocBlurEffect;
+        private ImageEffectShader cocBlurEffect;
 
         private float radius;
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             cocBlurEffect = ToLoadAndUnload(new ImageEffectShader("CoCMapBlurEffect"));
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             // Updates the weight array if necessary
             if (weightsDirty || tapCount == 0)

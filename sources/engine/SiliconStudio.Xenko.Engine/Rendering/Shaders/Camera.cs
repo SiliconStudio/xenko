@@ -18,12 +18,12 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class CameraKeys
     {
-        public static readonly ParameterKey<float> NearClipPlane = ParameterKeys.New<float>(1.0f);
-        public static readonly ParameterKey<float> FarClipPlane = ParameterKeys.New<float>(100.0f);
-        public static readonly ParameterKey<Vector2> ZProjection = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<float> AspectRatio = ParameterKeys.New<float>();
-        public static readonly ParameterKey<Vector2> ViewSize = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<float> VerticalFieldOfView = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> OrthoSize = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> NearClipPlane = ParameterKeys.NewValue<float>(1.0f);
+        public static readonly ValueParameterKey<float> FarClipPlane = ParameterKeys.NewValue<float>(100.0f);
+        public static readonly ValueParameterKey<Vector2> ZProjection = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> ViewSize = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<float> AspectRatio = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> VerticalFieldOfView = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> OrthoSize = ParameterKeys.NewValue<float>();
     }
 }

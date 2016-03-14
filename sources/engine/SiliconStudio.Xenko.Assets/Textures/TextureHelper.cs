@@ -259,6 +259,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
                             switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:
+                                case GraphicsPlatform.Direct3D12:
+                                case GraphicsPlatform.OpenGL:
 
 
                                     // https://msdn.microsoft.com/en-us/library/windows/desktop/hh308955%28v=vs.85%29.aspx
@@ -297,11 +299,11 @@ namespace SiliconStudio.Xenko.Assets.Textures
                                     // Support some specific optimized formats based on the hint or input type
                                     if (parameters.GraphicsProfile >= GraphicsProfile.Level_10_0)
                                     {
-                                        if (hint == TextureHint.NormalMap)
+                                        if (parameters.GraphicsPlatform != GraphicsPlatform.OpenGL && hint == TextureHint.NormalMap)
                                         {
                                             outputFormat = PixelFormat.BC5_SNorm;
                                         }
-                                        else if (hint == TextureHint.Grayscale)
+                                        else if (parameters.GraphicsPlatform != GraphicsPlatform.OpenGL && hint == TextureHint.Grayscale)
                                         {
                                             outputFormat = PixelFormat.BC4_UNorm;
                                         }
@@ -395,7 +397,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
         public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
-            var assetManager = new AssetManager();
+            var assetManager = new ContentManager();
 
             // Apply transformations
             textureTool.Decompress(texImage, parameters.IsSRgb);

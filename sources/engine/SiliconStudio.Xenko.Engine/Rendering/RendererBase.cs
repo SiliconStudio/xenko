@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Main drawing method for this renderer that must be implemented. 
         /// </summary>
         /// <param name="context">The context.</param>
-        protected abstract void DrawCore(RenderContext context);
+        protected abstract void DrawCore(RenderDrawContext context);
 
         /// <summary>
         /// Draws this renderer with the specified context.
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="context">The context.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
         /// <exception cref="System.InvalidOperationException">Cannot use a different context between Load and Draw</exception>
-        public void Draw(RenderContext context)
+        public void Draw(RenderDrawContext context)
         {
             if (Enabled)
             {

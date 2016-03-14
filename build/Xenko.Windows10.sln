@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles", "..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj", "{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
@@ -305,6 +307,18 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Windows10.ActiveCfg = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Windows10.Build.0 = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Windows10.Deploy.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Windows10.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Windows10.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Windows10.Deploy.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Windows10.ActiveCfg = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Windows10.Build.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|Windows10.Deploy.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Windows10.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Windows10.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|Windows10.Deploy.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Windows10.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Windows10.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|Windows10.Deploy.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|Windows10.ActiveCfg = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|Windows10.Build.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|Windows10.Deploy.0 = Release|Any CPU
@@ -350,6 +364,7 @@ Global
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection

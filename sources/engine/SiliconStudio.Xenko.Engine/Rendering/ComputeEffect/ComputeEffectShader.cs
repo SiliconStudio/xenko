@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
@@ -13,44 +14,26 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
     /// </summary>
     public class ComputeEffectShader : DrawEffect
     {
-        /// <summary>
-        /// The current effect instance.
-        /// </summary>
-        protected readonly DefaultEffectInstance EffectInstance;
-
-        private readonly DynamicEffectCompiler effectCompiler;
-
-        private readonly List<ParameterCollection> parameterCollections;
-
-        private readonly List<ParameterCollection> appliedParameterCollections;
-        private EffectParameterCollectionGroup effectParameterCollections;
+        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private bool pipelineStateDirty = true;
 
         public ComputeEffectShader(RenderContext context)
-            : this(context, null)
-        {
-        }
-
-        public ComputeEffectShader(RenderContext context, params ParameterCollection[] sharedParameterCollections)
             : base(context, null)
         {
-            parameterCollections = new List<ParameterCollection> { context.Parameters };
-            if (sharedParameterCollections != null)
-            {
-                parameterCollections.AddRange(sharedParameterCollections);
-            }
-            parameterCollections.Add(Parameters);
-
-            appliedParameterCollections = new List<ParameterCollection>();
-
             // Setup the effect compiler
-            EffectInstance = new DefaultEffectInstance(parameterCollections);
-            effectCompiler = new DynamicEffectCompiler(context.Services, "ComputeEffectShader");
+            EffectInstance = new DynamicEffectInstance("ComputeEffectShader", Parameters);
+            EffectInstance.Initialize(context.Services);
 
             ThreadNumbers = new Int3(1);
             ThreadGroupCounts = new Int3(1);
 
             SetDefaultParameters();
         }
+
+        /// <summary>
+        /// The current effect instance.
+        /// </summary>
+        public DynamicEffectInstance EffectInstance { get; private set; }
 
         /// <summary>
         /// Gets or sets the number of group counts the shader should be dispatched to.
@@ -68,25 +51,13 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         public string ShaderSourceName { get; set; }
 
         /// <summary>
-        /// Gets the parameter collections used by this effect.
-        /// </summary>
-        /// <value>The parameter collections.</value>
-        public List<ParameterCollection> ParameterCollections
-        {
-            get
-            {
-                return parameterCollections;
-            }
-        }
-
-        /// <summary>
         /// Sets the default parameters (called at constructor time and if <see cref="DrawEffect.Reset"/> is called)
         /// </summary>
         protected override void SetDefaultParameters()
         {
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
 
@@ -101,13 +72,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         {
         }
 
-        protected void UpdateEffect()
-        {
-            // Dynamically update/compile the effect based on the current parameters.
-            effectCompiler.Update(EffectInstance, null);
-        }
-
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;
@@ -116,28 +81,29 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             Parameters.Set(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
             Parameters.Set(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
 
-            UpdateEffect();
-
-            if (effectParameterCollections == null || effectParameterCollections.Effect != EffectInstance.Effect)
+            if (pipelineStateDirty)
             {
-                appliedParameterCollections.Clear();
-                if (context != null)
-                {
-                    appliedParameterCollections.Add(context.Parameters);
-                }
-                appliedParameterCollections.AddRange(parameterCollections);
+                EffectInstance.UpdateEffect(GraphicsDevice);
 
-                effectParameterCollections = new EffectParameterCollectionGroup(GraphicsDevice, EffectInstance.Effect, appliedParameterCollections);
+                pipelineState.State.SetDefaults();
+                pipelineState.State.RootSignature = EffectInstance.RootSignature;
+                pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
+                pipelineState.Update(GraphicsDevice);
+                pipelineStateDirty = false;
             }
 
+            // Apply pipeline state
+            context.CommandList.SetPipelineState(pipelineState.CurrentState);
+
             // Apply the effect
-            EffectInstance.Effect.Apply(GraphicsDevice, effectParameterCollections, false);
+            EffectInstance.Apply(context.GraphicsContext);
 
             // Draw a full screen quad
-            GraphicsDevice.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);
+            context.CommandList.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);
 
             // Un-apply
-            EffectInstance.Effect.UnbindResources(GraphicsDevice);
+            //throw new InvalidOperationException();
+            //EffectInstance.Effect.UnbindResources(GraphicsDevice);
         }
     }
 }

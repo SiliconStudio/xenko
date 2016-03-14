@@ -9,9 +9,8 @@
 
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
-    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">OPENTK</SiliconStudioUI>
-    <!-- Comment the line below and uncomment this to have the OpenGL implementation target SDL
     <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">SDL;OPENTK</SiliconStudioUI>
+    <!-- Comment the line below and uncomment this to have the audio implementation target SDL
     <SiliconStudioAudio>SDL</SiliconStudioAudio>
     -->
   </PropertyGroup>

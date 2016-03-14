@@ -98,7 +98,7 @@ namespace SiliconStudio.Quantum.Contents
         public abstract void Add(object itemIndex, object newItem);
 
         /// <inheritdoc/>
-        public abstract void Remove(object itemIndex);
+        public abstract void Remove(object itemIndex, object item);
 
         /// <inheritdoc/>
         public override string ToString()

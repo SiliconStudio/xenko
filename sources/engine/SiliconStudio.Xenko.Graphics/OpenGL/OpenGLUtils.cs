@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
                     major = 4;
-                    minor = 3;
+                    minor = 1;
                     return;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
             {
                 if (minor >= 4)
                     return GraphicsProfile.Level_11_0;
-                if (minor >= 3)
+                if (minor >= 1)
                     return GraphicsProfile.Level_10_0;
             }
             return GraphicsProfile.Level_9_1;

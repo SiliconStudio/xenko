@@ -1,45 +1,54 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Collections;
+using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    /// <summary>
-    /// A dynamic effect instance updated by <see cref="DynamicEffectCompiler"/>.
-    /// </summary>
-    public abstract class DynamicEffectInstance : IDisposable
+    public class DynamicEffectInstance : EffectInstance
     {
-        internal DynamicEffectParameterUpdaterDefinition UpdaterDefinition;
-        internal DynamicEffectParameterCollectionGroup ParameterCollectionGroup;
+        // Parameter keys used for effect permutation
+        //private KeyValuePair<ParameterKey, object>[] effectParameterKeys;
 
-        // There is 2 states: compiling when CurrentlyCompilingEffect != null (will be glowing green, except if previously an error) or not
-        internal Task<Effect> CurrentlyCompilingEffect;
-        internal ParameterCollection CurrentlyCompilingUsedParameters;
+        private string effectName;
+        private EffectSystem effectSystem;
 
-        // There is 2 states: errors (will be glowing red) or not
-        internal bool HasErrors;
-        internal DateTime LastErrorCheck = DateTime.MinValue;
-
-        protected DynamicEffectInstance()
+        public DynamicEffectInstance(string effectName, ParameterCollection parameters = null) : base(null, parameters)
         {
+            this.effectName = effectName;
         }
 
-        /// <summary>
-        /// Gets the effect currently being compiled.
-        /// </summary>
-        /// <value>The effect.</value>
-        public Effect Effect { get; internal set; }
+        public string EffectName
+        {
+            get { return effectName; }
+            set { effectName = value; }
+        }
 
-        /// <summary>
-        /// Fills the parameter collections used by this instance.
-        /// </summary>
-        /// <param name="parameterCollections">The parameter collections.</param>
-        public abstract void FillParameterCollections(ref FastListStruct<ParameterCollection> parameterCollections);
+        public void Initialize(IServiceRegistry services)
+        {
+            this.effectSystem = services.GetSafeServiceAs<EffectSystem>();
+        }
 
-        public abstract void Dispose();
+        protected override void ChooseEffect(GraphicsDevice graphicsDevice)
+        {
+            // TODO: Free previous descriptor sets and layouts?
+
+            // Looks like the effect changed, it needs a recompilation
+            var compilerParameters = new CompilerParameters();
+            foreach (var effectParameterKey in Parameters.ParameterKeyInfos)
+            {
+                if (effectParameterKey.Key.Type == ParameterKeyType.Permutation)
+                {
+                    // TODO GRAPHICS REFACTOR avoid direct access, esp. since permutation values might be separated from Objects at some point
+                    compilerParameters.SetObject(effectParameterKey.Key, Parameters.ObjectValues[effectParameterKey.BindingSlot]);
+                }
+            }
+
+            effect = effectSystem.LoadEffect(effectName, compilerParameters).WaitForResult();
+        }
     }
 }

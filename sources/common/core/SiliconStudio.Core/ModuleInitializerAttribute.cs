@@ -4,8 +4,8 @@ using System;
 
 namespace SiliconStudio.Core
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public class ModuleInitializerAttribute : Attribute
     {
-         
     }
 }

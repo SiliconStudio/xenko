@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.SetDefaultParameters();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             
             brightPassFilter.SetInput(input);
             brightPassFilter.SetOutput(output);
-            brightPassFilter.Draw(context);
+            ((RendererBase)brightPassFilter).Draw(context);
         }
     }
 }

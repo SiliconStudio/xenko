@@ -1,13 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -22,6 +25,8 @@ namespace SiliconStudio.Xenko.Rendering
     public class EffectSystem : GameSystemBase
     {
         private readonly static Logger Log = GlobalLogger.GetLogger("EffectSystem");
+
+        private EffectCompilerParameters effectCompilerParameters = EffectCompilerParameters.Default;
 
         private IGraphicsDeviceService graphicsDeviceService;
         private EffectCompilerBase compiler;
@@ -49,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </value>
         public IVirtualFileProvider FileProvider
         {
-            get { return compiler.FileProvider ?? AssetManager.FileProvider; }
+            get { return compiler.FileProvider ?? ContentManager.FileProvider; }
         }
 
         /// <summary>
@@ -71,12 +76,27 @@ namespace SiliconStudio.Xenko.Rendering
             // Get graphics device service
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            effectCompilerParameters.Platform = GraphicsPlatform.Direct3D11;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
+            effectCompilerParameters.Platform = GraphicsPlatform.OpenGL;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            effectCompilerParameters.Platform = GraphicsPlatform.OpenGLES;
+#endif
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             Enabled = true;
             directoryWatcher = new DirectoryWatcher("*.xksl");
             directoryWatcher.Modified += FileModifiedEvent;
             // TODO: xkfx too
 #endif
+
+            // Setup shader compiler settings from a compilation mode. 
+            // TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
+            if (Game != null && (((Game)Game).Settings != null))
+            {
+                effectCompilerParameters.ApplyCompilationMode(((Game)Game).Settings.CompilationMode);
+            }
 
             // Make sure default compiler is created (local if possible otherwise none) if nothing else was explicitely set/requested (i.e. by GameSettings)
             if (Compiler == null)
@@ -127,20 +147,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return cachedEffects.ContainsKey(effect.Bytecode);
             }
         }
-
-        /// <summary>
-        /// Loads the effect.
-        /// </summary>
-        /// <param name="effectName">Name of the effect.</param>
-        /// <param name="compilerParameters">The compiler parameters.</param>
-        /// <returns>A new instance of an effect.</returns>
-        /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
-        {
-            ParameterCollection usedParameters;
-            return LoadEffect(effectName, compilerParameters, out usedParameters);
-        }
-
+        
         /// <summary>
         /// Loads the effect.
         /// </summary>
@@ -149,10 +156,15 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="usedParameters">The used parameters.</param>
         /// <returns>A new instance of an effect.</returns>
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out ParameterCollection usedParameters)
+        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
+
+            // Setup compilation parameters
+            // GraphicsDevice might have been not valid until this point, which is why we set this only here
+            effectCompilerParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.Profile;
+            compilerParameters.EffectParameters = effectCompilerParameters;
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);
@@ -160,7 +172,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Only take the sub-effect
             var bytecode = compilerResult.Bytecode;
-            usedParameters = compilerResult.UsedParameters;
 
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
@@ -190,9 +201,7 @@ namespace SiliconStudio.Xenko.Rendering
             lock (cachedEffects)
             {
                 if (!isInitialized)
-                    throw new InvalidOperationException("EffectSystem has been disposed. This Effect compilation has been cancelled.");
-
-                var usedParameters = compilerResult.UsedParameters;
+                    throw new ObjectDisposedException(nameof(EffectSystem), "EffectSystem has been disposed. This Effect compilation has been cancelled.");
 
                 if (effectBytecodeCompilerResult.CompilationLog.HasErrors)
                 {
@@ -212,7 +221,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 if (!cachedEffects.TryGetValue(bytecode, out effect))
                 {
-                    effect = new Effect(graphicsDeviceService.GraphicsDevice, bytecode, usedParameters) { Name = effectName };
+                    effect = new Effect(graphicsDeviceService.GraphicsDevice, bytecode) { Name = effectName };
                     cachedEffects.Add(bytecode, effect);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -234,14 +243,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters)
         {
-            compilerParameters.Profile = GraphicsDevice.ShaderProfile.HasValue ? GraphicsDevice.ShaderProfile.Value : GraphicsDevice.Features.Profile;
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-            compilerParameters.Platform = GraphicsPlatform.OpenGL;
-#endif
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES 
-            compilerParameters.Platform = GraphicsPlatform.OpenGLES;
-#endif
-
             // Compile shader
             var isXkfx = ShaderMixinManager.Contains(effectName);
 
@@ -258,14 +259,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (compilerResult == null)
             {
-                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
-                compilerResult = compiler.Compile(source, compilerParameters);
-
                 var effectRequested = EffectUsed;
                 if (effectRequested != null)
                 {
-                    effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
+                    effectRequested(new EffectCompileRequest(effectName, new CompilerParameters(compilerParameters)));
                 }
+
+                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
+                compilerResult = compiler.Compile(source, compilerParameters);
                 
                 if (!compilerResult.HasErrors && isXkfx)
                 {
@@ -369,14 +370,49 @@ namespace SiliconStudio.Xenko.Rendering
                 if (!earlyCompilerCache.TryGetValue(effectName, out compilerResultsList))
                     return null;
 
-                // TODO: Optimize it so that search is not linear?
-                // Probably not trivial for subset testing
+                // Compiler Parameters are supposed to be created in the same order every time, so we just check if they were created in the same order (ParameterKeyInfos) with same values (ObjectValues)
+                
+                // TODO GRAPHICS REFACTOR we could probably compute a hash for faster lookup
                 foreach (var compiledResults in compilerResultsList)
                 {
-                    if (parameters.Contains(compiledResults.UsedParameters))
+                    var compiledParameters = compiledResults.SourceParameters;
+
+                    var compiledParameterKeyInfos = compiledParameters.ParameterKeyInfos;
+                    var parameterKeyInfos = parameters.ParameterKeyInfos;
+
+                    // Early check
+                    if (parameterKeyInfos.Count != compiledParameterKeyInfos.Count)
+                        continue;
+
+                    for (int index = 0; index < parameterKeyInfos.Count; ++index)
                     {
-                        return compiledResults;
+                        var parameterKeyInfo = parameterKeyInfos[index];
+                        var compiledParameterKeyInfo = compiledParameterKeyInfos[index];
+
+                        if (parameterKeyInfo != compiledParameterKeyInfo)
+                            goto different;
+
+                        // Should not happen in practice (CompilerParameters should only consist of permutation values)
+                        if (parameterKeyInfo.Key.Type != ParameterKeyType.Permutation)
+                            continue;
+
+                        for (int i = 0; i < parameterKeyInfo.Count; ++i)
+                        {
+                            var object1 = parameters.ObjectValues[parameterKeyInfo.BindingSlot + i];
+                            var object2 = compiledParameters.ObjectValues[compiledParameterKeyInfo.BindingSlot + i];
+                            if (object1 == null && object2 == null)
+                                continue;
+                            if ((object1 == null && object2 != null) || (object2 == null && object1 != null))
+                                goto different;
+                            if (!object1.Equals(object2))
+                                goto different;
+                        }
                     }
+
+                    return compiledResults;
+
+                different:
+                    ;
                 }
             }
 
@@ -396,7 +432,7 @@ namespace SiliconStudio.Xenko.Rendering
                     SourceDirectories = { EffectCompilerBase.DefaultSourceShaderFolder },
                 };
             }
-#endif               
+#endif
 
             // Nothing to do remotely
             bool needRemoteCompiler = (compiler == null && (effectCompilationMode & EffectCompilationMode.Remote) != 0);

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
 {
     public static class ShaderGeneratorContextExtensions
     {
-        public static void AddLoadingFromSession(this ShaderGeneratorContextBase context, Package package)
+        public static void AddLoadingFromSession(this ShaderGeneratorContext context, Package package)
         {
             var previousGetAssetFriendlyName = context.GetAssetFriendlyName;
             var previousFindAsset = context.FindAsset;

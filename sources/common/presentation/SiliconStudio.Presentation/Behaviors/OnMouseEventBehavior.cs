@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -11,24 +10,38 @@ namespace SiliconStudio.Presentation.Behaviors
         MouseDown,
         MouseUp,
         MouseMove,
+        MouseLeftButtonDown,
+        MouseLeftButtonUp,
+        MouseRightButtonDown,
+        MouseRightButtonUp,
         PreviewMouseDown,
         PreviewMouseUp,
-        PreviewMouseMove
+        PreviewMouseMove,
+        PreviewMouseLeftButtonDown,
+        PreviewMouseLeftButtonUp,
+        PreviewMouseRightButtonDown,
+        PreviewMouseRightButtonUp,
     }
 
     public class OnMouseEventBehavior : Behavior<FrameworkElement>
     {
-        public static readonly DependencyProperty EventTypeProperty = DependencyProperty.Register("EventType", typeof(MouseEventType), typeof(OnMouseEventBehavior), new FrameworkPropertyMetadata(MouseEventType.None, EventTypeChanged));
+        public static readonly DependencyProperty EventTypeProperty = DependencyProperty.Register(nameof(EventType), typeof(MouseEventType), typeof(OnMouseEventBehavior), new FrameworkPropertyMetadata(MouseEventType.None, EventTypeChanged));
 
         /// <summary>
         /// Identifies the <see cref="Command"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(OnMouseEventBehavior));
+        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(OnMouseEventBehavior));
 
         /// <summary>
         /// Identifies the <see cref="HandleEvent"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HandleEventProperty = DependencyProperty.Register("HandleEvent", typeof(bool), typeof(OnMouseEventBehavior));
+        public static readonly DependencyProperty HandleEventProperty = DependencyProperty.Register(nameof(HandleEvent), typeof(bool), typeof(OnMouseEventBehavior));
+
+        /// <summary>
+        /// Identifies the <see cref="Modifiers"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ModifiersProperty =
+               DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys?), typeof(OnMouseEventBehavior), new PropertyMetadata(null));
 
         public MouseEventType EventType { get { return (MouseEventType)GetValue(EventTypeProperty); } set { SetValue(EventTypeProperty, value); } }
 
@@ -41,6 +54,15 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Gets or sets whether to set the event as handled.
         /// </summary>
         public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
+
+        public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
+
+        protected bool AreModifiersValid()
+        {
+            if (Modifiers == null)
+                return true;
+            return Modifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(Modifiers);
+        }
 
         protected override void OnAttached()
         {
@@ -71,22 +93,46 @@ namespace SiliconStudio.Presentation.Behaviors
             switch (type)
             {
                 case MouseEventType.MouseDown:
-                    AssociatedObject.MouseDown += MouseMoveHandler;
+                    AssociatedObject.MouseDown += MouseButtonHandler;
                     break;
                 case MouseEventType.MouseUp:
-                    AssociatedObject.MouseUp += MouseMoveHandler;
+                    AssociatedObject.MouseUp += MouseButtonHandler;
                     break;
                 case MouseEventType.MouseMove:
                     AssociatedObject.MouseMove += MouseMoveHandler;
                     break;
+                case MouseEventType.MouseLeftButtonDown:
+                    AssociatedObject.MouseLeftButtonDown += MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseLeftButtonUp:
+                    AssociatedObject.MouseLeftButtonUp += MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonDown:
+                    AssociatedObject.MouseRightButtonDown += MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonUp:
+                    AssociatedObject.MouseRightButtonUp += MouseMoveHandler;
+                    break;
                 case MouseEventType.PreviewMouseDown:
-                    AssociatedObject.PreviewMouseDown += MouseMoveHandler;
+                    AssociatedObject.PreviewMouseDown += MouseButtonHandler;
                     break;
                 case MouseEventType.PreviewMouseUp:
-                    AssociatedObject.PreviewMouseUp += MouseMoveHandler;
+                    AssociatedObject.PreviewMouseUp += MouseButtonHandler;
                     break;
                 case MouseEventType.PreviewMouseMove:
                     AssociatedObject.PreviewMouseMove += MouseMoveHandler;
+                    break;
+                case MouseEventType.PreviewMouseLeftButtonDown:
+                    AssociatedObject.PreviewMouseLeftButtonDown += MouseButtonHandler;
+                    break;
+                case MouseEventType.PreviewMouseLeftButtonUp:
+                    AssociatedObject.PreviewMouseLeftButtonUp += MouseButtonHandler;
+                    break;
+                case MouseEventType.PreviewMouseRightButtonDown:
+                    AssociatedObject.PreviewMouseRightButtonDown += MouseButtonHandler;
+                    break;
+                case MouseEventType.PreviewMouseRightButtonUp:
+                    AssociatedObject.PreviewMouseRightButtonUp += MouseButtonHandler;
                     break;
             }
         }
@@ -104,6 +150,18 @@ namespace SiliconStudio.Presentation.Behaviors
                 case MouseEventType.MouseMove:
                     AssociatedObject.MouseMove -= MouseMoveHandler;
                     break;
+                case MouseEventType.MouseLeftButtonDown:
+                    AssociatedObject.MouseLeftButtonDown -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseLeftButtonUp:
+                    AssociatedObject.MouseLeftButtonUp -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonDown:
+                    AssociatedObject.MouseRightButtonDown -= MouseMoveHandler;
+                    break;
+                case MouseEventType.MouseRightButtonUp:
+                    AssociatedObject.MouseRightButtonUp -= MouseMoveHandler;
+                    break;
                 case MouseEventType.PreviewMouseDown:
                     AssociatedObject.PreviewMouseDown -= MouseButtonHandler;
                     break;
@@ -113,25 +171,42 @@ namespace SiliconStudio.Presentation.Behaviors
                 case MouseEventType.PreviewMouseMove:
                     AssociatedObject.PreviewMouseMove -= MouseMoveHandler;
                     break;
+                case MouseEventType.PreviewMouseLeftButtonDown:
+                    AssociatedObject.PreviewMouseLeftButtonDown -= MouseButtonHandler;
+                    break;
+                case MouseEventType.PreviewMouseLeftButtonUp:
+                    AssociatedObject.PreviewMouseLeftButtonUp -= MouseButtonHandler;
+                    break;
+                case MouseEventType.PreviewMouseRightButtonDown:
+                    AssociatedObject.PreviewMouseRightButtonDown -= MouseButtonHandler;
+                    break;
+                case MouseEventType.PreviewMouseRightButtonUp:
+                    AssociatedObject.PreviewMouseRightButtonUp -= MouseButtonHandler;
+                    break;
             }
         }
 
         private void MouseButtonHandler(object sender, MouseButtonEventArgs e)
         {
+            if (!AreModifiersValid())
+                return;
+
             MouseMoveHandler(sender, e);
         }
 
         private void MouseMoveHandler(object sender, MouseEventArgs e)
         {
+            if (!AreModifiersValid())
+                return;
+
             if (HandleEvent)
             {
                 e.Handled = true;
             }
             var cmd = Command;
             var position = e.GetPosition(AssociatedObject);
-            var vectorPosition = new Vector2((float)position.X, (float)position.Y);
-            if (cmd != null && cmd.CanExecute(vectorPosition))
-                cmd.Execute(vectorPosition);
+            if (cmd != null && cmd.CanExecute(position))
+                cmd.Execute(position);
         }
     }
 }

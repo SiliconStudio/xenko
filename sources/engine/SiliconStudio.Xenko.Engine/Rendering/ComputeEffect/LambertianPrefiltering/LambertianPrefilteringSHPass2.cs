@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class LambertianPrefilteringSHPass2Keys
     {
-        public static readonly ParameterKey<Buffer> InputBuffer = ParameterKeys.New<Buffer>();
-        public static readonly ParameterKey<Buffer> OutputBuffer = ParameterKeys.New<Buffer>();
+        public static readonly ObjectParameterKey<Buffer> InputBuffer = ParameterKeys.NewObject<Buffer>();
+        public static readonly ObjectParameterKey<Buffer> OutputBuffer = ParameterKeys.NewObject<Buffer>();
     }
 }

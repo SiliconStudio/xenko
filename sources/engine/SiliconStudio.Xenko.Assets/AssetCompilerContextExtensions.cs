@@ -1,12 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
@@ -22,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets
 
         public static ColorSpace GetColorSpace(this AssetCompilerContext context)
         {
-            var settings = context.GetGameSettingsAsset();
+            var settings = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform);
             return settings.ColorSpace;
         }
 
@@ -31,26 +29,13 @@ namespace SiliconStudio.Xenko.Assets
             context.Properties.Set(GameSettingsAssetKey, gameSettingsAsset);
         }
 
-        public static IGameSettingsProfile GetGameSettingsForCurrentProfile(this AssetCompilerContext context)
+        public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context, Package package)
         {
-            var gameSettings = context.GetGameSettingsAsset();
-            IGameSettingsProfile gameSettingsProfile = null;
-            if (gameSettings != null && gameSettings.Profiles != null)
-            {
-                gameSettings.Profiles.TryGetValue(context.Profile, out gameSettingsProfile);
-            }
-            // TODO: Return default game settings profile based on the platform
-            return gameSettingsProfile;
+            var settings = package.GetGameSettingsAsset();
+            return settings == null ? context.Platform.GetDefaultGraphicsPlatform() : RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>(context.Profile).PreferredGraphicsPlatform);
         }
 
-        public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context)
-        {
-            var  gameSettingsProfile = GetGameSettingsForCurrentProfile(context);
-            var graphicsPlatform =  gameSettingsProfile?.GraphicsPlatform ?? context.Platform.GetDefaultGraphicsPlatform();
-            return graphicsPlatform;
-        }
-
-        public static Xenko.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
+        public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
         {
             switch (platformType)
             {
@@ -58,28 +43,37 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
                 case PlatformType.Windows10:
-                    return Xenko.Graphics.GraphicsPlatform.Direct3D11;
+                    return GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:
-                    return Xenko.Graphics.GraphicsPlatform.OpenGLES;
+                    return GraphicsPlatform.OpenGLES;
                 case PlatformType.Linux:
-                    return Xenko.Graphics.GraphicsPlatform.OpenGL;
+                    return GraphicsPlatform.OpenGL;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        /*public static TextureQuality GetTextureQuality(this AssetCompilerContext context)
+        // TODO: Move that as extension method?
+        public static CompilationMode GetCompilationMode(this AssetCompilerContext context)
         {
-            return context.PackageProperties.Get(XenkoConfig.TextureQuality);
+            var compilationMode = CompilationMode.Debug;
+            switch (context.BuildConfiguration)
+            {
+                case "Debug":
+                    compilationMode = CompilationMode.Debug;
+                    break;
+                case "Release":
+                    compilationMode = CompilationMode.Release;
+                    break;
+                case "AppStore":
+                    compilationMode = CompilationMode.AppStore;
+                    break;
+                case "Testing":
+                    compilationMode = CompilationMode.Testing;
+                    break;
+            }
+            return compilationMode;
         }
-
-        public static GraphicsProfile GetGraphicsProfile(this AssetCompilerContext context)
-        {
-            var gameSettingsAsset = context.Package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            return gameSettingsAsset != null
-                ? ((GameSettingsAsset)gameSettingsAsset.Asset).DefaultGraphicsProfile
-                : GraphicsProfile.Level_10_0;
-        }*/
     }
 }

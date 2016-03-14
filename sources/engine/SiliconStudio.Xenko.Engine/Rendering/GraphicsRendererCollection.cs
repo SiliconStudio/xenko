@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     public abstract class GraphicsRendererCollection<T> : GraphicsRendererCollectionBase<T> where T : class, IGraphicsRenderer
     {
-        protected override void DrawRenderer(RenderContext context, T renderer)
+        protected override void DrawRenderer(RenderDrawContext context, T renderer)
         {
             renderer.Draw(context);
         }

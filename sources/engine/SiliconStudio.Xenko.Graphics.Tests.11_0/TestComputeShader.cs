@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private Int2 screenSize = new Int2(1200, 900);
 
-        private DrawEffect computeShaderEffect;
+        private ComputeEffectShader computeShaderEffect;
         private RenderContext drawEffectContext;
 
         public TestComputeShader()
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             
-            inputTexture = Asset.Load<Texture>("uv");
+            inputTexture = Content.Load<Texture>("uv");
             var groupCounts = new Int3(inputTexture.Width / ReductionRatio, inputTexture.Height / ReductionRatio, 1);
             outputTexture = Texture.New2D(GraphicsDevice, groupCounts.X, groupCounts.Y, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.UnorderedAccess | TextureFlags.ShaderResource);
             displayedTexture = outputTexture;
@@ -71,15 +71,17 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
+
             computeShaderEffect.Parameters.Set(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
             computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.input, inputTexture);
             computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.output, outputTexture);
-            computeShaderEffect.Draw();
+            computeShaderEffect.Draw(renderDrawContext);
 
             if (displayedTexture == null || spriteBatch == null)
                 return;
 
-            GraphicsDevice.DrawTexture(displayedTexture);
+            GraphicsContext.DrawTexture(displayedTexture);
 
             base.Draw(gameTime);
         }

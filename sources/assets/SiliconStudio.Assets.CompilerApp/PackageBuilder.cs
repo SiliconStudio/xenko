@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 
@@ -15,8 +14,6 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Settings;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 
@@ -57,7 +54,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private static void PrepareDatabases()
         {
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
+            ContentManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
         }
 
         private BuildResultCode BuildMaster()
@@ -69,6 +66,7 @@ namespace SiliconStudio.Assets.CompilerApp
             }
 
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
+            AssetCompilerContext context = null;
             GlobalLogger.GlobalMessageLogged += assetLogger;
             PackageSession projectSession = null;
             try
@@ -118,10 +116,11 @@ namespace SiliconStudio.Assets.CompilerApp
                 }
 
                 // Create context
-                var context = new AssetCompilerContext
+                context = new AssetCompilerContext
                 {
                     Profile = builderOptions.BuildProfile,
-                    Platform = builderOptions.Platform
+                    Platform = builderOptions.Platform,
+                    BuildConfiguration =  builderOptions.ProjectConfiguration
                 };
                 context.SetGameSettingsAsset(gameSettingsAsset);
 
@@ -163,17 +162,10 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             finally
             {
-                if (builder != null)
-                {
-                    builder.Dispose();
-                }
-
+                builder?.Dispose();
                 // Dispose the session (in order to unload assemblies)
-                if (projectSession != null)
-                {
-                    projectSession.Dispose();
-                }
-
+                projectSession?.Dispose();
+                context?.Dispose();
                 // Flush and close logger
                 GlobalLogger.GlobalMessageLogged -= assetLogger;
                 assetLogger.Dispose();
@@ -183,13 +175,16 @@ namespace SiliconStudio.Assets.CompilerApp
         private BuildResultCode BuildGetGraphicsPlatform()
         {
             var localLogger = new LoggerResult();
-            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false });
+            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = true, LoadAssemblyReferences = false, AutoCompileProjects = false });
             if (simplePackage == null
                 || localLogger.HasErrors)
             {
                 localLogger.CopyTo(builderOptions.Logger);
                 return BuildResultCode.BuildError;
             }
+        
+            var settings = simplePackage.GetGameSettingsAsset();
+            var renderingSettings = settings.Get<RenderingSettings>();
 
             var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
@@ -198,12 +193,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 return BuildResultCode.BuildError;
             }
 
-            // For now, graphics platform is implicit.
-            // It will need to be readded to GameSettingsAsset at some point.
-            var graphicsPlatformKey = new SettingsKey<GraphicsPlatform>("Xenko.GraphicsPlatform", buildProfile.Properties.Container, builderOptions.Platform.GetDefaultGraphicsPlatform());
-            var graphicsPlatform = graphicsPlatformKey.GetValue(buildProfile.Properties, true);
-
-            Console.WriteLine(graphicsPlatform);
+            Console.WriteLine(RenderingSettings.GetGraphicsPlatform(builderOptions.Platform, renderingSettings.PreferredGraphicsPlatform));
             return BuildResultCode.Successful;
         }
 
@@ -275,7 +265,10 @@ namespace SiliconStudio.Assets.CompilerApp
                     var message = assetMessage != null ? new AssetSerializableLogMessage(assetMessage) : new SerializableLogMessage((LogMessage)logMessage);
 
                     processBuilderRemote.ForwardLog(message);
-                } catch { }
+                }
+                catch
+                {
+                }
             };
             // ReSharper restore EmptyGeneralCatchClause
         }
@@ -310,24 +303,24 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 var logger = builderOptions.Logger;
                 MicroThread microthread = scheduler.Add(async () =>
-                    {
-                        // Deserialize command and parameters
-                        Command command = processBuilderRemote.GetCommandToExecute();
-                        BuildParameterCollection parameters = processBuilderRemote.GetBuildParameters();
+                {
+                    // Deserialize command and parameters
+                    Command command = processBuilderRemote.GetCommandToExecute();
+                    BuildParameterCollection parameters = processBuilderRemote.GetBuildParameters();
 
-                        // Run command
-                        var inputHashes = FileVersionTracker.GetDefault();
-                        var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
+                    // Run command
+                    var inputHashes = FileVersionTracker.GetDefault();
+                    var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
 
-                        var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
-                        IndexFileCommand.MountDatabase(commandContext.GetOutputObjectsGroups());
-                        command.PreCommand(commandContext);
-                        status = await command.DoCommand(commandContext);
-                        command.PostCommand(commandContext, status);
+                    var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
+                    IndexFileCommand.MountDatabase(commandContext.GetOutputObjectsGroups());
+                    command.PreCommand(commandContext);
+                    status = await command.DoCommand(commandContext);
+                    command.PostCommand(commandContext, status);
 
-                        // Returns result to master builder
-                        processBuilderRemote.RegisterResult(commandContext.ResultEntry);
-                    });
+                    // Returns result to master builder
+                    processBuilderRemote.RegisterResult(commandContext.ResultEntry);
+                });
 
                 while (true)
                 {
@@ -363,7 +356,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 // ReSharper restore SuspiciousTypeConversion.Global
             }
         }
-        
+
         /// <summary>
         /// Cancels this build.
         /// </summary>

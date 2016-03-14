@@ -6,8 +6,11 @@
 /// <remarks>
 /// TEXTURE_KEY: generic LinkType - the name of the ParameterKey that will link to this texture.
 /// </remarks>
-class DynamicTexture<LinkType TTexture>
+class DynamicTexture<LinkType TTexture, MemberName LocalResourceGroup>
 {
-    [Link("TTexture")]
-    stage Texture2D Texture;
+    rgroup LocalResourceGroup
+    {
+        [Link("TTexture")]
+        stage Texture2D Texture;
+    }
 };

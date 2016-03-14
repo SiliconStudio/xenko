@@ -145,6 +145,18 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>
 
+  <Target Name="BuildWindowsDirect3D12" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Direct3D12.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildWindowsOpenGL" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).OpenGL.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildWindowsOpenGLES" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).OpenGLES.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
   <Target Name="BuildWindowsCoreCLR" DependsOnTargets="CopyXenkoKey">
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).CoreCLR.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>

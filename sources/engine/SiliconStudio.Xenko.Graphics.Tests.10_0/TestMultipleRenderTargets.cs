@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             CreatePipeline();
 
             var primitive = GeometricPrimitive.Teapot.New(GraphicsDevice);
-            var material = Asset.Load<Material>("BasicMaterial");
+            var material = Content.Load<Material>("BasicMaterial");
 
             teapot = new Entity
             {
@@ -123,12 +123,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     GraphicsCompositor = new SceneGraphicsCompositorLayers
                     {
                         Cameras = { mainCamera.Get<CameraComponent>() },
+                        ModelEffect = "MultipleRenderTargetsEffect",
                         Master =
                         {
                             Renderers =
                             {
                                 new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                                new SceneCameraRenderer { Mode = new CameraRendererModeForward { ModelEffect = "MultipleRenderTargetsEffect" }, Output = multipleRenderFrames}, 
+                                new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames}, 
                                 new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
                                 new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
                             }
@@ -140,9 +141,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
         }
 
-        private void DisplayGBuffer(RenderContext context, RenderFrame frame)
+        private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)
         {
-            GraphicsDevice.DrawTexture(textures[renderTargetToDisplayIndex]);
+            GraphicsContext.DrawTexture(textures[renderTargetToDisplayIndex]);
         }
 
         private async Task GameScript1()

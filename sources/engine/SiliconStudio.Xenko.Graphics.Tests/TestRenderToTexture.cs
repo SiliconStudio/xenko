@@ -8,7 +8,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
@@ -21,15 +20,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private Texture depthBuffer;
         private Matrix worldViewProjection;
         private GeometricPrimitive geometry;
-        private Effect simpleEffect;
+        private EffectInstance simpleEffect;
         private bool firstSave;
 
         private int width;
         private int height;
-
-        private EffectParameterCollectionGroup parameterCollectionGroup;
-
-        private ParameterCollection parameterCollection;
 
         public TestRenderToTexture()
         {
@@ -48,14 +43,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             var view = Matrix.LookAtRH(new Vector3(2,2,2), new Vector3(0, 0, 0), Vector3.UnitY);
-            var projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.ViewWidth / GraphicsDevice.BackBuffer.ViewHeight, 0.1f, 100.0f);
+            var projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.Presenter.BackBuffer.ViewWidth / GraphicsDevice.Presenter.BackBuffer.ViewHeight, 0.1f, 100.0f);
             worldViewProjection = Matrix.Multiply(view, projection);
 
             geometry = GeometricPrimitive.Cube.New(GraphicsDevice);
-            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
-            parameterCollection = new ParameterCollection();
-            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new[] { parameterCollection });
-            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
             
             // TODO DisposeBy is not working with device reset
             offlineTarget0 = Texture.New2D(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
@@ -65,8 +58,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             depthBuffer = Texture.New2D(GraphicsDevice, 512, 512, PixelFormat.D16_UNorm, TextureFlags.DepthStencil).DisposeBy(this);
 
-            width = GraphicsDevice.BackBuffer.ViewWidth;
-            height = GraphicsDevice.BackBuffer.ViewHeight;
+            width = GraphicsDevice.Presenter.BackBuffer.ViewWidth;
+            height = GraphicsDevice.Presenter.BackBuffer.ViewHeight;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -87,50 +80,50 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void RenderToTexture()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.Clear(offlineTarget0, Color.Black);
-            GraphicsDevice.Clear(offlineTarget1, Color.Black);
-            GraphicsDevice.Clear(offlineTarget2, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(offlineTarget0, Color.Black);
+            GraphicsContext.CommandList.Clear(offlineTarget1, Color.Black);
+            GraphicsContext.CommandList.Clear(offlineTarget2, Color.Black);
 
             // direct render
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
-            GraphicsDevice.SetViewport(new Viewport(0, 0, width / 2, height / 2));
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetViewport(new Viewport(0, 0, width / 2, height / 2));
             DrawGeometry();
 
             // 1 intermediate RT
-            GraphicsDevice.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(depthBuffer, offlineTarget0);
+            GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(depthBuffer, offlineTarget0);
             DrawGeometry();
 
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
-            GraphicsDevice.SetViewport(new Viewport(width / 2, 0, width / 2, height / 2));
-            GraphicsDevice.DrawTexture(offlineTarget0);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetViewport(new Viewport(width / 2, 0, width / 2, height / 2));
+            GraphicsContext.DrawTexture(offlineTarget0);
 
             // 2 intermediate RTs
-            GraphicsDevice.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(depthBuffer, offlineTarget1);
+            GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(depthBuffer, offlineTarget1);
             DrawGeometry();
 
-            GraphicsDevice.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(depthBuffer, offlineTarget2);
-            GraphicsDevice.DrawTexture(offlineTarget1);
+            GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(depthBuffer, offlineTarget2);
+            GraphicsContext.DrawTexture(offlineTarget1);
 
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
-            GraphicsDevice.SetViewport(new Viewport(0, height / 2, width / 2, height / 2));
-            GraphicsDevice.DrawTexture(offlineTarget2);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetViewport(new Viewport(0, height / 2, width / 2, height / 2));
+            GraphicsContext.DrawTexture(offlineTarget2);
 
             // draw quad on screen
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
-            GraphicsDevice.SetViewport(new Viewport(width / 2, height / 2, width / 2, height / 2));
-            GraphicsDevice.DrawTexture(UVTexture);
+            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetViewport(new Viewport(width / 2, height / 2, width / 2, height / 2));
+            GraphicsContext.DrawTexture(UVTexture);
         }
 
         private void DrawGeometry()
         {
-            parameterCollection.Set(SpriteBaseKeys.MatrixTransform, worldViewProjection);
-            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
-            geometry.Draw();
+            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, worldViewProjection);
+            simpleEffect.Apply(GraphicsContext);
+            geometry.Draw(GraphicsContext.CommandList, simpleEffect);
         }
 
         public static void Main()
