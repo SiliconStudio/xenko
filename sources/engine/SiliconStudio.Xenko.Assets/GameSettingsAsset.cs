@@ -54,17 +54,20 @@ namespace SiliconStudio.Xenko.Assets
         /// Gets or sets the default scene.
         /// </summary>
         /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
-        [DataMember(10)]
+        [DataMember(1000)]
         public Scene DefaultScene { get; set; }
 
-        [DataMember(20)]
+        [DataMember(2000)]
         [NotNullItems]
+        [MemberCollectionAttribute(ReadOnly = true)]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
 
-        [DataMember(30)]
+        [DataMember(3000)]
+        [Category]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
-        [DataMember(40)]
+        [DataMember(4000)]
+        [Category]
         public List<string> PlatformFilters { get; } = new List<string>(); 
 
         public T Get<T>(string profile = null) where T : Configuration, new()

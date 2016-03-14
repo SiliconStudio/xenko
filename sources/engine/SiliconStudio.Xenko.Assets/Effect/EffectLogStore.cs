@@ -22,14 +22,14 @@ namespace SiliconStudio.Xenko.Assets.Effect
         protected override void WriteEntry(Stream stream, KeyValuePair<EffectCompileRequest, bool> value)
         {
             stream.Write(documentMarker, 0, documentMarker.Length);
-            YamlSerializer.Serialize(stream, value.Key);
+            YamlSerializer.Serialize(stream, value.Key, false);
         }
 
         protected override List<KeyValuePair<EffectCompileRequest, bool>> ReadEntries(Stream localStream)
         {
             var result = new List<KeyValuePair<EffectCompileRequest, bool>>();
 
-            foreach (var effectCompileRequest in YamlSerializer.DeserializeMultiple<EffectCompileRequest>(localStream))
+            foreach (var effectCompileRequest in YamlSerializer.DeserializeMultiple<EffectCompileRequest>(localStream, false))
             {
                 result.Add(new KeyValuePair<EffectCompileRequest, bool>(effectCompileRequest, true));
             }

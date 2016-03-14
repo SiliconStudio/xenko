@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Data
 {
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Data
     public class ConfigurationOverride
     {
         [DataMember(10)]
+        [InlineProperty]
         public ConfigPlatforms Platforms;
 
         [DataMember(20)]

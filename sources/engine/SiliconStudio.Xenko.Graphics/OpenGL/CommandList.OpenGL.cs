@@ -41,16 +41,9 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class CommandList
     {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-        // If context was set before Begin(), try to keep it after End()
-        // (otherwise devices with no backbuffer flicker)
-        private bool keepContextOnEnd;
-#endif
-
         // How many frames to wait before allowing non-blocking texture readbacks
         private const int ReadbackFrameDelay = 2;
         private const int MaxBoundRenderTargets = 16;
-        private int contextBeginCounter = 0;
 
         internal uint enabledVertexAttribArrays;
         private int boundProgram = 0;
@@ -113,80 +106,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Close()
         {
-        }
-
-        /// <summary>
-        /// Marks context as active on the current thread.
-        /// </summary>
-        public void Begin()
-        {
-            ++contextBeginCounter;
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            if (contextBeginCounter == 1)
-            {
-                if (GraphicsDevice.Workaround_Context_Tegra2_Tegra3)
-                {
-                    Monitor.Enter(GraphicsDevice.asyncCreationLockObject, ref GraphicsDevice.asyncCreationLockTaken);
-                }
-                else
-                {
-                    // On first set, check if context was not already set before,
-                    // in which case we won't unset it during End().
-                    keepContextOnEnd = GraphicsDevice.graphicsContextEglPtr == GraphicsDevice.EglGetCurrentContext();
-
-                    if (keepContextOnEnd)
-                    {
-                        return;
-                    }
-                }
-            }
-#endif
-
-            if (contextBeginCounter == 1)
-            {
-                GraphicsDevice.graphicsContext.MakeCurrent(GraphicsDevice.windowInfo);
-            }
-        }
-
-        /// <summary>
-        /// Unmarks context as active on the current thread.
-        /// </summary>
-        public void End()
-        {
-#if DEBUG
-            GraphicsDevice.EnsureContextActive();
-#endif
-
-            --contextBeginCounter;
-            if (contextBeginCounter == 0)
-            {
-                //UnbindVertexArrayObject();
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                if (GraphicsDevice.Workaround_Context_Tegra2_Tegra3)
-                {
-                    GraphicsDevice.graphicsContext.MakeCurrent(null);
-
-                    // Notify that main context can be used from now on
-                    if (GraphicsDevice.asyncCreationLockTaken)
-                    {
-                        Monitor.Exit(GraphicsDevice.asyncCreationLockObject);
-                        GraphicsDevice.asyncCreationLockTaken = false;
-                    }
-                }
-                else if (!keepContextOnEnd)
-                {
-                    GraphicsDevice.UnbindGraphicsContext(GraphicsDevice.graphicsContext);
-                }
-#else
-                GraphicsDevice.UnbindGraphicsContext(GraphicsDevice.graphicsContext);
-#endif
-            }
-            else if (contextBeginCounter < 0)
-            {
-                throw new Exception("End context was called more than Begin");
-            }
         }
 
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)

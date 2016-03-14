@@ -44,25 +44,6 @@ namespace SiliconStudio.Shaders.Ast
         #region Public Properties
 
         /// <summary>
-        ///   Gets or sets the column count.
-        /// </summary>
-        /// <value>
-        ///   The column count.
-        /// </value>
-        public int ColumnCount
-        {
-            get
-            {
-                return (int)((Literal)Parameters[2]).Value;
-            }
-
-            set
-            {
-                Parameters[2] = new Literal(value);
-            }
-        }
-
-        /// <summary>
         ///   Gets or sets the row count.
         /// </summary>
         /// <value>
@@ -78,6 +59,25 @@ namespace SiliconStudio.Shaders.Ast
             set
             {
                 Parameters[1] = new Literal(value);
+            }
+        }
+
+        /// <summary>
+        ///   Gets or sets the column count.
+        /// </summary>
+        /// <value>
+        ///   The column count.
+        /// </value>
+        public int ColumnCount
+        {
+            get
+            {
+                return (int)((Literal)Parameters[2]).Value;
+            }
+
+            set
+            {
+                Parameters[2] = new Literal(value);
             }
         }
 
@@ -105,7 +105,7 @@ namespace SiliconStudio.Shaders.Ast
         public override TypeBase ToNonGenericType(SourceSpan? span = null)
         {
             var typeName = new TypeName();
-            var name = string.Format("{0}{1}x{2}", Type.Name, ColumnCount, RowCount);
+            var name = string.Format("{0}{1}x{2}", Type.Name, RowCount, ColumnCount);
             typeName.Name = new Identifier(name);
             if (span.HasValue)
             {

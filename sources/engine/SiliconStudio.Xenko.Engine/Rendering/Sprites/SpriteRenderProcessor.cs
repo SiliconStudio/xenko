@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, RenderSprite>, IEntityComponentRenderProcessor
+    internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, SpriteRenderProcessor.SpriteInfo>, IEntityComponentRenderProcessor
     {
         public VisibilityGroup VisibilityGroup { get; set; }
 
@@ -25,7 +25,18 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
-                var renderSprite = spriteStateKeyPair.Value;
+                var renderSprite = spriteStateKeyPair.Value.RenderSprite;
+
+                // TODO Should we allow adding RenderSprite without a CurrentSprite instead? (if yes, need some improvement in RenderSystem)
+                if (spriteStateKeyPair.Value.Active != (spriteStateKeyPair.Key.CurrentSprite != null))
+                {
+                    spriteStateKeyPair.Value.Active = (spriteStateKeyPair.Key.CurrentSprite != null);
+                    if (spriteStateKeyPair.Value.Active)
+                        VisibilityGroup.RenderObjects.Add(renderSprite);
+                    else
+                        VisibilityGroup.RenderObjects.Remove(renderSprite);
+                }
+
                 renderSprite.Enabled = renderSprite.SpriteComponent.Enabled;
 
                 if (renderSprite.Enabled)
@@ -40,30 +51,29 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
-        protected override void OnEntityComponentAdding(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
+        protected override SpriteInfo GenerateComponentData(Entity entity, SpriteComponent spriteComponent)
         {
-            VisibilityGroup.RenderObjects.Add(data);
-        }
-
-        protected override void OnEntityComponentRemoved(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
-        {
-            VisibilityGroup.RenderObjects.Remove(data);
-        }
-
-        protected override RenderSprite GenerateComponentData(Entity entity, SpriteComponent spriteComponent)
-        {
-            return new RenderSprite
+            return new SpriteInfo
             {
-                SpriteComponent = spriteComponent,
-                TransformComponent = entity.Transform,
+                RenderSprite = new RenderSprite
+                {
+                    SpriteComponent = spriteComponent,
+                    TransformComponent = entity.Transform,
+                }
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponent spriteComponent, RenderSprite associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponent spriteComponent, SpriteInfo associatedData)
         {
             return
-                spriteComponent == associatedData.SpriteComponent &&
-                entity.Transform == associatedData.TransformComponent;
+                spriteComponent == associatedData.RenderSprite.SpriteComponent &&
+                entity.Transform == associatedData.RenderSprite.TransformComponent;
+        }
+
+        public class SpriteInfo
+        {
+            public bool Active;
+            public RenderSprite RenderSprite;
         }
     }
 }

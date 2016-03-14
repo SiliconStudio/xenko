@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Particles.Components;
 using SiliconStudio.Xenko.Rendering;
@@ -29,6 +30,12 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 if (componentData.Value.ParticleSystemComponent.Enabled)
                 {
                     // Update render objects
+                    foreach (var emitter in componentData.Value.Emitters)
+                    {
+                        var aabb = emitter.RenderParticleSystem.ParticleSystemComponent.ParticleSystem.GetAABB();
+                        emitter.BoundingBox = new BoundingBoxExt(aabb.Minimum, aabb.Maximum);
+
+                    }
                 }
             }
         }

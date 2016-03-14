@@ -140,6 +140,9 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
+            if (model == null)
+                return;
+
             // Create render meshes
             var renderMeshes = new RenderMesh[model.Meshes.Count];
             var modelComponent = renderModel.ModelComponent;
