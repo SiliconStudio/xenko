@@ -70,17 +70,18 @@ namespace SiliconStudio.Assets.Analysis
                     changed = true;
                 }
 
+                var tuple = new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location);
                 if (changed)
                 {
-                    var tuple = new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location);
                     if (!itemRemap.ContainsKey(item))
                     {
                         itemRemap.Add(item, tuple);
                     }
-                    if (!idRemap.ContainsKey(item.Id))
-                    {
-                        idRemap.Add(item.Id, tuple);
-                    }
+                }
+
+                if (!idRemap.ContainsKey(item.Id))
+                {
+                    idRemap.Add(item.Id, tuple);
                 }
             }
 
@@ -88,7 +89,7 @@ namespace SiliconStudio.Assets.Analysis
             foreach (var item in outputItems)
             {
                 Tuple<Guid, UFile> remap;
-                if (itemRemap.TryGetValue(item, out remap))
+                if (itemRemap.TryGetValue(item, out remap) && (remap.Item1 != item.Asset.Id || remap.Item2 != item.Location))
                 {
                     item.Asset.Id = remap.Item1;
                     item.Location = remap.Item2;
@@ -106,7 +107,7 @@ namespace SiliconStudio.Assets.Analysis
                     var assetReference = (IContentReference)assetLink.Reference;
 
                     var newId = assetReference.Id;
-                    if (idRemap.TryGetValue(newId, out remap))
+                    if (idRemap.TryGetValue(newId, out remap) && IsNewReference(remap, assetReference))
                     {
                         assetLink.UpdateReference(remap.Item1, remap.Item2);
                         item.IsDirty = true;
@@ -114,7 +115,7 @@ namespace SiliconStudio.Assets.Analysis
                 }
 
                 // Fix base if there are any
-                if (item.Asset.Base != null && idRemap.TryGetValue(item.Asset.Base.Id, out remap))
+                if (item.Asset.Base != null && idRemap.TryGetValue(item.Asset.Base.Id, out remap) && IsNewReference(remap, item.Asset.Base))
                 {
                     item.Asset.Base.Asset.Id = remap.Item1;
                     item.Asset.Base = new AssetBase(remap.Item2, item.Asset.Base.Asset);
@@ -127,7 +128,7 @@ namespace SiliconStudio.Assets.Analysis
                     for (int i = 0; i < item.Asset.BaseParts.Count; i++)
                     {
                         var basePart = item.Asset.BaseParts[i];
-                        if (idRemap.TryGetValue(basePart.Id, out remap))
+                        if (idRemap.TryGetValue(basePart.Id, out remap) && IsNewReference(remap, basePart))
                         {
                             basePart.Asset.Id = remap.Item1;
                             item.Asset.BaseParts[i] = new AssetBase(remap.Item2, basePart.Asset);
@@ -164,13 +165,19 @@ namespace SiliconStudio.Assets.Analysis
                 var id = rootAsset.Id;
                 Tuple<Guid, UFile> remap;
 
-                if (idRemap.TryGetValue(id, out remap))
+                if (idRemap.TryGetValue(id, out remap) && IsNewReference(remap, rootAsset))
                 {
                     var newRootAsset = new AssetReference<Asset>(remap.Item1, remap.Item2);
                     rootAssetCollection.Remove(rootAsset.Id);
                     rootAssetCollection.Add(newRootAsset);
                 }
             }
+        }
+
+        private static bool IsNewReference(Tuple<Guid, UFile> newReference, IContentReference previousReference)
+        {
+            return newReference.Item1 != previousReference.Id ||
+                   newReference.Item2 != previousReference.Location;
         }
     }
 }
