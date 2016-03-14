@@ -760,10 +760,8 @@ namespace SiliconStudio.Xenko.Graphics
             var texture = resource as Texture;
             if (texture != null)
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (lengthInBytes == 0)
                     lengthInBytes = texture.DepthPitch;
-#endif
 
                 if (mapMode == MapMode.Read)
                 {
