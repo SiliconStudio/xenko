@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (boundPipelineState != null)
                 SetPipelineState(boundPipelineState);
             NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
-            SetDepthAndRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
 
             return fenceValue;
         }
