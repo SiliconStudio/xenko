@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The pipeline state.
         /// </summary>
-        private readonly MutablePipelineState pipelineState = new MutablePipelineState();
+        private readonly MutablePipelineState pipelineState;
 
         private readonly EffectInstance simpleEffect;
         private readonly SharedData sharedData;
@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.Graphics
             simpleEffect.UpdateEffect(graphicsDevice);
             simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
 
+            pipelineState = new MutablePipelineState(GraphicsDevice);
             pipelineState.State.SetDefaults();
             pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
             pipelineState.State.PrimitiveType = PrimitiveType;
@@ -98,7 +99,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             pipelineState.State.BlendState = blendState ?? BlendStates.Default;
             pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
-            pipelineState.Update(GraphicsDevice);
+            pipelineState.Update();
             graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             Draw(graphicsContext.CommandList);
