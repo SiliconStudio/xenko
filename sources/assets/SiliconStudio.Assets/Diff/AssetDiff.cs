@@ -344,10 +344,10 @@ namespace SiliconStudio.Assets.Diff
             return diff3;
         }
 
-        private static bool IsComparableType(bool hasMembers, Type type)
+        private bool IsComparableType(bool hasMembers, Type type)
         {
             // A comparable type doesn't have any members, is not a collection or dictionary or array.
-            bool isComparableType = (type.IsValueType || !hasMembers) && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
+            bool isComparableType = ((UseOverrideMode && type.IsValueType) || !hasMembers) && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
             return isComparableType;
         }
 
@@ -1025,7 +1025,7 @@ namespace SiliconStudio.Assets.Diff
                         hashCode = hashCode * 17 + node.Items.Count;
                     else if (node.HasMembers)
                         hashCode = hashCode * 11 + node.Members.Count;
-                    else if (IsComparableType(false, node.InstanceType) && node.InstanceType.IsPrimitive && node.Instance != null) // Ignore non-primitive types, to be safe (GetHashCode doesn't do deep comparison)
+                    else if (diffManager.IsComparableType(false, node.InstanceType) && node.InstanceType.IsPrimitive && node.Instance != null) // Ignore non-primitive types, to be safe (GetHashCode doesn't do deep comparison)
                         hashCode = hashCode * 13 + node.Instance.GetHashCode();
                 }
 
