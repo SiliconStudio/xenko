@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 
-            context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
+            context.CommandList.SetRenderTargetsAndViewport(null, GraphicsDevice.Presenter.BackBuffer);
             context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
             cubemapSpriteEffect.Parameters.Set(CubemapSpriteKeys.ViewIndex, 1);
