@@ -21,6 +21,11 @@ namespace SiliconStudio.Xenko.Rendering
         private int effectValuesValidated; // This is used when validating
         private bool effectChanged;
 
+        /// <summary>
+        /// Sets this property to <c>true</c> to skip this effect.
+        /// </summary>
+        public bool ShouldSkip { get; set; }
+
         public void Initialize()
         {
             EffectValues = new FastListStruct<EffectParameterEntry>(4);
@@ -30,6 +35,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             effectValuesValidated = 0;
             effectChanged = false;
+            ShouldSkip = false;
         }
 
         [RemoveInitLocals]

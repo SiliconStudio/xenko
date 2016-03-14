@@ -21,5 +21,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// There was an error while compiling the effect.
         /// </summary>
         Error = 2,
+
+        /// <summary>
+        /// The effect is skipped.
+        /// </summary>
+        Skip = 3,
     }
 }
