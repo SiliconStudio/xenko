@@ -76,10 +76,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
-            var subTreeRoot = Hierarchy.Entities[sourceRootEntity].Entity;
+            var subTreeRoot = Hierarchy.Entities[sourceRootEntity];
             var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntities = { sourceRootEntity } };
             foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
-                subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Id]);
+                subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Entity.Id]);
 
             // clone the entities of the sub-tree
             var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
