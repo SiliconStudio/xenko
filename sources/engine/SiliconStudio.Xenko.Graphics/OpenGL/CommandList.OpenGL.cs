@@ -609,13 +609,15 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
             PreDraw();
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            GraphicsDevice.FrameDrawCalls++;
+            GraphicsDevice.FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
             throw new NotImplementedException();
 #else
             GL.DrawElementsInstancedBaseVertex(newPipelineState.PrimitiveType, indexCountPerInstance, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize), instanceCount, baseVertexLocation);
-#endif
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
+#endif
         }
 
         /// <summary>
@@ -679,6 +681,7 @@ namespace SiliconStudio.Xenko.Graphics
             PreDraw();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            GraphicsDevice.FrameDrawCalls++;
             throw new NotImplementedException();
 #else
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, argumentsBuffer.resourceId);
@@ -686,9 +689,9 @@ namespace SiliconStudio.Xenko.Graphics
             GL.DrawArraysIndirect(newPipelineState.PrimitiveType, (IntPtr)alignedByteOffsetForArgs);
 
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, 0);
-#endif
 
             GraphicsDevice.FrameDrawCalls++;
+#endif
         }
 
         public void BeginProfile(Color profileColor, string name)
