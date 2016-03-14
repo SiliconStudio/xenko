@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
-                    context.CommandList.SetRenderTargets(createdOutputRenderTargetViews);
+                    context.CommandList.SetRenderTargetsAndViewport(createdOutputRenderTargetViews);
 
                     if (viewport.HasValue)
                     {
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
                 else
                 {
-                    context.CommandList.SetRenderTarget(outputRenderTargetView);
+                    context.CommandList.SetRenderTargetsAndViewport(null, outputRenderTargetView);
                     if (viewport.HasValue)
                     {
                         context.CommandList.SetViewport(viewport.Value);
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 foreach (var renderTarget in outputRenderTargetViews)
                     context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
 
-                context.CommandList.SetRenderTargets(outputRenderTargetViews);
+                context.CommandList.SetRenderTargetsAndViewport(outputRenderTargetViews);
 
                 if (viewport.HasValue)
                 {

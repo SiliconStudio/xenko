@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Handle support for shared depth stencil buffer
 
             // Sets the depth and render target
-            renderContext.CommandList.SetDepthAndRenderTargets(enableDepth ? DepthStencil : null, RenderTargets);
+            renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth ? DepthStencil : null, RenderTargets);
         }
 
         /// <summary>

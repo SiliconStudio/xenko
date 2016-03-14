@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             public void Restore(CommandList commandList)
             {
-                commandList.SetDepthAndRenderTargets(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
+                commandList.SetRenderTargetsAndViewport(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
                 if (RenderTargetCount > 0)
                     commandList.SetViewports(Viewports);
             }
