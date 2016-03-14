@@ -31,6 +31,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         //private VertexArrayObject vao;
 
         private DrawOptions[] myDraws;
+        private Mesh mesh;
+        private MutablePipelineState pipelineState;
 
         public TestTextureSampling()
         {
@@ -47,6 +49,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+
+            pipelineState = new MutablePipelineState(GraphicsDevice);
 
             var vertices = new Vertex[4];
             vertices[0] = new Vertex { Position = new Vector3(-1, -1, 0.5f), TexCoords = new Vector2(0, 0) };
@@ -72,7 +76,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 IndexBuffer = new IndexBufferBinding(indexBuffer, false, indices.Length),
             };
 
-            var mesh = new Mesh
+            mesh = new Mesh
             {
                 Draw = meshDraw,
             };
@@ -107,11 +111,25 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            // TODO GRAPHICS REFACTOR
-            //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
+            // Update effect
+            simpleEffect.UpdateEffect(GraphicsDevice);
 
-            // TODO GRAPHICS REFACTOR
-            //GraphicsDevice.SetVertexArrayObject(vao);
+            // Create pipeline state
+            pipelineState.State.SetDefaults();
+            pipelineState.State.RootSignature = simpleEffect.RootSignature;
+            pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
+            pipelineState.State.InputElements = mesh.Draw.VertexBuffers.CreateInputElements();
+            pipelineState.State.PrimitiveType = PrimitiveType.TriangleList;
+            pipelineState.State.RasterizerState = RasterizerStates.CullNone;
+            pipelineState.State.Output.CaptureState(GraphicsContext.CommandList);
+            pipelineState.Update();
+
+            // Set pipeline state
+            GraphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
+
+            // Set vertex/index buffers
+            GraphicsContext.CommandList.SetVertexBuffer(0, mesh.Draw.VertexBuffers[0].Buffer, mesh.Draw.VertexBuffers[0].Offset, mesh.Draw.VertexBuffers[0].Stride);
+            GraphicsContext.CommandList.SetIndexBuffer(mesh.Draw.IndexBuffer.Buffer, mesh.Draw.IndexBuffer.Offset, mesh.Draw.IndexBuffer.Is32Bit);
 
             for (var i = 0; i < myDraws.Length; ++i)
             {
@@ -120,9 +138,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 simpleEffect.Apply(GraphicsContext);
                 GraphicsContext.CommandList.DrawIndexed(6);
             }
-
-            // TODO GRAPHICS REFACTOR
-            //GraphicsDevice.SetVertexArrayObject(null);
         }
 
         public static void Main()
