@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 }
 
                 // TODO: ParticleMaterial should set this up
-                materialInfo.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
+                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
             }
 
             base.Prepare(context);
