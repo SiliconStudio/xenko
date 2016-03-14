@@ -626,7 +626,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawIndexedInstanced(Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
 
-            if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
+            if (argumentsBuffer == null) throw new ArgumentNullException(nameof(argumentsBuffer));
 
 #if DEBUG
             //GraphicsDevice.EnsureContextActive();
@@ -670,7 +670,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawInstanced(Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
             if (argumentsBuffer == null)
-                throw new ArgumentNullException("argumentsBuffer");
+                throw new ArgumentNullException(nameof(argumentsBuffer));
 
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
@@ -1222,7 +1222,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
             if (stage != ShaderStage.Compute)
-                throw new ArgumentException("Invalid stage.", "stage");
+                throw new ArgumentException("Invalid stage.", nameof(stage));
 
             throw new NotImplementedException();
         }
