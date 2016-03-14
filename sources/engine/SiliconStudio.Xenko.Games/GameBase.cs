@@ -776,7 +776,7 @@ namespace SiliconStudio.Xenko.Games
             // TODO: Check how we can handle this more cleanly
             if (GraphicsDevice != null && GraphicsDevice.Presenter.BackBuffer != null)
             {
-                GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+                GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             }
         }
 

@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Setup the default render target
             var deviceDepthStencilBuffer = GraphicsDevice.Presenter?.DepthStencilBuffer;
             var deviceBackBuffer = GraphicsDevice.Presenter?.BackBuffer;
-            SetRenderTargetsAndViewport(deviceDepthStencilBuffer, deviceBackBuffer);
+            SetRenderTargetAndViewport(deviceDepthStencilBuffer, deviceBackBuffer);
         }
 
         /// <summary>
@@ -121,13 +121,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
         /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetRenderTargetsAndViewport(Texture depthStencilView, Texture renderTargetView)
+        public void SetRenderTargetAndViewport(Texture depthStencilView, Texture renderTargetView)
         {
             depthStencilBuffer = depthStencilView;
             renderTargets[0] = renderTargetView;
             renderTargetCount = renderTargetView != null ? 1 : 0;
 
-            CommonSetDepthAndRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
+            CommonSetRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Graphics
                 renderTargetCount = 0;
             }
 
-            CommonSetDepthAndRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
+            CommonSetRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
         /// <summary>
@@ -170,13 +170,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
         /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetRenderTargets(Texture depthStencilView, Texture renderTargetView)
+        public void SetRenderTarget(Texture depthStencilView, Texture renderTargetView)
         {
             depthStencilBuffer = depthStencilView;
             renderTargets[0] = renderTargetView;
             renderTargetCount = renderTargetView != null ? 1 : 0;
 
-            SetDepthAndRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
         /// <summary>
@@ -211,10 +211,10 @@ namespace SiliconStudio.Xenko.Graphics
                 renderTargetCount = 0;
             }
 
-            SetDepthAndRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
-        private void CommonSetDepthAndRenderTargetsAndViewport(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
+        private void CommonSetRenderTargetsAndViewport(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
         {
             if (depthStencilView != null)
             {
@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Graphics
                 SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
 
-            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
+            SetRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
         }
     }
 }

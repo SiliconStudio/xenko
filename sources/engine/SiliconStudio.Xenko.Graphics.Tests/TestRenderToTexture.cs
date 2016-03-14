@@ -87,34 +87,34 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsContext.CommandList.Clear(offlineTarget2, Color.Black);
 
             // direct render
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsContext.CommandList.SetViewport(new Viewport(0, 0, width / 2, height / 2));
             DrawGeometry();
 
             // 1 intermediate RT
             GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(depthBuffer, offlineTarget0);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(depthBuffer, offlineTarget0);
             DrawGeometry();
 
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsContext.CommandList.SetViewport(new Viewport(width / 2, 0, width / 2, height / 2));
             GraphicsContext.DrawTexture(offlineTarget0);
 
             // 2 intermediate RTs
             GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(depthBuffer, offlineTarget1);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(depthBuffer, offlineTarget1);
             DrawGeometry();
 
             GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(depthBuffer, offlineTarget2);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(depthBuffer, offlineTarget2);
             GraphicsContext.DrawTexture(offlineTarget1);
 
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsContext.CommandList.SetViewport(new Viewport(0, height / 2, width / 2, height / 2));
             GraphicsContext.DrawTexture(offlineTarget2);
 
             // draw quad on screen
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsContext.CommandList.SetViewport(new Viewport(width / 2, height / 2, width / 2, height / 2));
             GraphicsContext.DrawTexture(UVTexture);
         }

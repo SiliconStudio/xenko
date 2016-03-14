@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 
-            context.CommandList.SetRenderTargetsAndViewport(null, GraphicsDevice.Presenter.BackBuffer);
+            context.CommandList.SetRenderTargetAndViewport(null, GraphicsDevice.Presenter.BackBuffer);
             context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
             spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, spriteEffect);

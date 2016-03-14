@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
-                context.CommandList.SetRenderTargetsAndViewport(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetRenderTargetAndViewport(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
