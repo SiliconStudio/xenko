@@ -310,7 +310,7 @@ namespace SiliconStudio.Xenko.Graphics
             currentPipelineState.RasterizerState.Apply(this);
 
             // Set default render targets
-            SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            SetRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             GL.Enable(EnableCap.FramebufferSrgb);
@@ -1058,7 +1058,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, params Texture[] renderTargets)
+        private void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, params Texture[] renderTargets)
         {
             var renderTargetsLength = 0;
             if (renderTargetCount > 0)
@@ -1433,7 +1433,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
-            SetDepthAndRenderTargets((Texture)null, null);
+            SetRenderTargets(null, null);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)

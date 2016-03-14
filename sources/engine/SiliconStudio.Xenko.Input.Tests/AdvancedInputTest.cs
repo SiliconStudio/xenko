@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             // clear the screen
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.White);
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             spriteBatch.Begin(GraphicsContext);
 

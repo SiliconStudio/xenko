@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
                 else
                 {
-                    context.CommandList.SetRenderTargetsAndViewport(null, outputRenderTargetView);
+                    context.CommandList.SetRenderTargetAndViewport(null, outputRenderTargetView);
                     if (viewport.HasValue)
                     {
                         context.CommandList.SetViewport(viewport.Value);

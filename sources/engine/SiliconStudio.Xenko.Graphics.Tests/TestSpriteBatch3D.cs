@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetRenderTargetsAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             batch.Begin(GraphicsContext, viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
 
