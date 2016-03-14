@@ -1180,7 +1180,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void UpdateScissor(Rectangle scissorRect)
         {
-            var height = scissorRect.Height;
             GL.Scissor(scissorRect.Left, scissorRect.Top, scissorRect.Width, scissorRect.Height);
         }
 
