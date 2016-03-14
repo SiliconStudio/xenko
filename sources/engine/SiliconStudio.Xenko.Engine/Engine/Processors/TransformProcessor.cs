@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// </summary>
         public TransformProcessor()
         {
-            Order = -1000;            
+            Order = -200;            
         }
 
         /// <inheritdoc/>
