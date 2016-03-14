@@ -42,6 +42,11 @@ namespace SiliconStudio.Xenko.Graphics
         public GraphicsProfile Profile;
 
         /// <summary>
+        /// Features level of the current device.
+        /// </summary>
+        public GraphicsProfile CurrentProfile;
+
+        /// <summary>
         /// Boolean indicating if this device supports compute shaders, unordered access on structured buffers and raw structured buffers.
         /// </summary>
         public readonly bool HasComputeShaders;

@@ -58,14 +58,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        public void Begin()
-        {
-        }
-
-        public void End()
-        {
-        }
-
         private void ClearStateImpl()
         {
             NativeDeviceContext.ClearState();

@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int FrameCounter;
 
         // Used when locking asyncCreationLockObject
-        internal bool asyncCreationLockTaken;
+        private bool asyncCreationLockTaken;
 
         internal bool ApplicationPaused = false;
         internal bool ProfileEnabled = false;
@@ -82,12 +82,15 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-        internal IntPtr graphicsContextEglPtr;
+        // If context was set before Begin(), try to keep it after End()
+        // (otherwise devices with no backbuffer flicker)
+        private bool keepContextOnEnd;
+
+        private IntPtr graphicsContextEglPtr;
         internal AndroidAsyncGraphicsContext androidAsyncDeviceCreationContext;
         internal bool AsyncPendingTaskWaiting; // Used when Workaround_Context_Tegra2_Tegra3
 
         // Workarounds for specific GPUs
-        internal bool Workaround_VAO_PowerVR_SGX_540;
         internal bool Workaround_Context_Tegra2_Tegra3;
 #endif
 
@@ -116,7 +119,7 @@ namespace SiliconStudio.Xenko.Graphics
         private int windowProvidedFrameBuffer;
         private bool isFramebufferSRGB;
 
-        private Texture defaultRenderTarget;
+        private int contextBeginCounter = 0;
 
         // TODO: Use some LRU scheme to clean up FBOs if not used frequently anymore.
         internal Dictionary<FBOKey, int> existingFBOs = new Dictionary<FBOKey,int>(); 
@@ -141,8 +144,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal OpenTK.Graphics.IGraphicsContext graphicsContext;
-        internal OpenTK.Platform.IWindowInfo windowInfo;
+        private OpenTK.Graphics.IGraphicsContext graphicsContext;
+        private OpenTK.Platform.IWindowInfo windowInfo;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_UI_SDL
@@ -243,6 +246,80 @@ namespace SiliconStudio.Xenko.Graphics
         internal UseOpenGLCreationContext UseOpenGLCreationContext()
         {
             return new UseOpenGLCreationContext(this);
+        }
+
+        /// <summary>
+        /// Marks context as active on the current thread.
+        /// </summary>
+        public void Begin()
+        {
+            ++contextBeginCounter;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            if (contextBeginCounter == 1)
+            {
+                if (Workaround_Context_Tegra2_Tegra3)
+                {
+                    Monitor.Enter(asyncCreationLockObject, ref asyncCreationLockTaken);
+                }
+                else
+                {
+                    // On first set, check if context was not already set before,
+                    // in which case we won't unset it during End().
+                    keepContextOnEnd = graphicsContextEglPtr == GraphicsDevice.EglGetCurrentContext();
+
+                    if (keepContextOnEnd)
+                    {
+                        return;
+                    }
+                }
+            }
+#endif
+
+            if (contextBeginCounter == 1)
+            {
+                graphicsContext.MakeCurrent(windowInfo);
+            }
+        }
+
+        /// <summary>
+        /// Unmarks context as active on the current thread.
+        /// </summary>
+        public void End()
+        {
+#if DEBUG
+            EnsureContextActive();
+#endif
+
+            --contextBeginCounter;
+            if (contextBeginCounter == 0)
+            {
+                //UnbindVertexArrayObject();
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                if (Workaround_Context_Tegra2_Tegra3)
+                {
+                    graphicsContext.MakeCurrent(null);
+
+                    // Notify that main context can be used from now on
+                    if (asyncCreationLockTaken)
+                    {
+                        Monitor.Exit(asyncCreationLockObject);
+                        asyncCreationLockTaken = false;
+                    }
+                }
+                else if (!keepContextOnEnd)
+                {
+                    GraphicsDevice.UnbindGraphicsContext(graphicsContext);
+                }
+#else
+                UnbindGraphicsContext(graphicsContext);
+#endif
+            }
+            else if (contextBeginCounter < 0)
+            {
+                throw new Exception("End context was called more than Begin");
+            }
         }
 
         internal Buffer GetSquareBuffer()
@@ -625,7 +702,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            IsOpenGLES2 = (versionMajor < 3);
+            IsOpenGLES2 = (currentVersionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
@@ -653,7 +730,6 @@ namespace SiliconStudio.Xenko.Graphics
             gameWindow.Load += OnApplicationResumed;
             gameWindow.Unload += OnApplicationPaused;
             
-            Workaround_VAO_PowerVR_SGX_540 = renderer == "PowerVR SGX 540";
             Workaround_Context_Tegra2_Tegra3 = renderer == "NVIDIA Tegra 3" || renderer == "NVIDIA Tegra 2";
 
             var androidGraphicsContext = (AndroidGraphicsContext)graphicsContext;
@@ -677,7 +753,7 @@ namespace SiliconStudio.Xenko.Graphics
                     deviceCreationContext.Dispose();
                     deviceCreationWindowInfo.Dispose();
                 }
-                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, versionMajor);
+                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, currentVersionMajor);
                 deviceCreationContext = OpenTK.Graphics.GraphicsContext.CreateDummyContext(androidAsyncDeviceCreationContext.Context);
                 deviceCreationWindowInfo = OpenTK.Platform.Utilities.CreateDummyWindowInfo();
             }
@@ -833,12 +909,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             existingFBOs[new FBOKey(null, new[] { WindowProvidedRenderTexture })] = windowProvidedFrameBuffer;
-
-            // TODO: Provide some flags to choose user prefers either:
-            // - Auto-Blitting while allowing default RenderTarget to be associable with any DepthStencil
-            // - No blitting, but default RenderTarget won't work with a custom FBO
-            // - Later we should be able to detect that automatically?
-            defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, presentationParameters.BackBufferFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
         }
 
         private class SwapChainBackend
@@ -878,25 +948,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        /// <summary>
-        /// Gets the default render target associated with this graphics device.
-        /// </summary>
-        /// <value>The default render target.</value>
-        internal Texture DefaultRenderTarget => defaultRenderTarget;
-
-        /// <summary>
-        /// Presents the display with the contents of the next buffer in the sequence of back buffers owned by the GraphicsDevice.
-        /// </summary>
-        /*public void Present()
-        {
-            ImmediateContext.Copy(DefaultRenderTarget.Texture, windowProvidedRenderTarget.Texture);
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            ((AndroidGraphicsContext)graphicsContext).Swap();
-#else
-            GraphicsContext.CurrentContext.SwapBuffers();
-#endif
-            //throw new NotImplementedException();
-        }*/
         /// <summary>
         /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
         /// </summary>

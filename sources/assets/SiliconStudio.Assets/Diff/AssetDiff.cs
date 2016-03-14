@@ -347,7 +347,7 @@ namespace SiliconStudio.Assets.Diff
         private static bool IsComparableType(bool hasMembers, Type type)
         {
             // A comparable type doesn't have any members, is not a collection or dictionary or array.
-            bool isComparableType = !hasMembers && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
+            bool isComparableType = (type.IsValueType || !hasMembers) && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
             return isComparableType;
         }
 

@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var router = new Router();
 
                     // Start router (in listen server mode)
-                    router.Listen(RouterClient.DefaultPort);
+                    router.Listen(RouterClient.DefaultPort).Wait();
 
                     // Start Android management thread
                     new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();

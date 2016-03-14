@@ -191,11 +191,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             var member = reflectionConstantBuffer.Members[index];
 
                             // Properly compute size and offset according to std140 rules
-                            int alignment;
-                            var memberSize = ComputeMemberSize(ref member, out alignment);
+                            var memberSize = ComputeMemberSize(ref member, ref constantBufferOffset);
 
-                            // Align offset and store it as member offset
-                            constantBufferOffset = (constantBufferOffset + alignment - 1)/alignment*alignment;
                             member.Offset = constantBufferOffset;
                             member.Size = memberSize;
 
@@ -344,10 +341,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
-        private static int ComputeMemberSize(ref EffectParameterValueData member, out int alignment)
+        private static int ComputeMemberSize(ref EffectParameterValueData member, ref int constantBufferOffset)
         {
             var elementSize = ComputeTypeSize(member.Param.Type);
             int size;
+            int alignment;
 
             switch (member.Param.Class)
             {
@@ -366,13 +364,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     }
                 case EffectParameterClass.MatrixColumns:
                     {
-                        size = elementSize * 4 * member.RowCount;
+                        size = elementSize * 4 * member.ColumnCount;
                         alignment = size;
                         break;
                     }
                 case EffectParameterClass.MatrixRows:
                     {
-                        size = elementSize * 4 * member.ColumnCount;
+                        size = elementSize * 4 * member.RowCount;
                         alignment = size;
                         break;
                     }
@@ -381,7 +379,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
 
             // Array
-            if (member.Count > 1)
+            if (member.Count > 0)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
                 size = roundedSize * member.Count;
@@ -391,6 +389,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             // Alignment is maxed up to vec4
             if (alignment > 16)
                 alignment = 16;
+
+            // Align offset and store it as member offset
+            constantBufferOffset = (constantBufferOffset + alignment - 1) / alignment * alignment;
 
             return size;
         }
@@ -444,7 +445,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 {
                     IntPtr log = glslopt_get_log(shader);
                     var logAsString = Marshal.PtrToStringAnsi(log);
-                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", logAsString);
+                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n    glsl_opt: {0}", string.Join("\r\n    glsl_opt: ", logAsString.Split(new[] { "\n", "\r", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)));
                 }
 
                 glslopt_shader_delete(shader);

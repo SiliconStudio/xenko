@@ -213,5 +213,23 @@ namespace SiliconStudio.Xenko.Shaders
             }
             return result.ToString();
         }
+
+        internal bool ShouldSerializeMacros()
+        {
+            // If collection is non-null and empty, skip serialization
+            return Macros == null || Macros.Count != 0;
+        }
+
+        internal bool ShouldSerializeMixins()
+        {
+            // If collection is non-null and empty, skip serialization
+            return Mixins == null || Mixins.Count != 0;
+        }
+
+        internal bool ShouldSerializeCompositions()
+        {
+            // If collection is non-null and empty, skip serialization
+            return Compositions == null || Compositions.Count != 0;
+        }
     }
 }

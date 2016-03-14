@@ -30,6 +30,9 @@ namespace SiliconStudio.Xenko.Graphics
                     // Find it in shader reflection
                     foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings)
                     {
+                        if (resourceBinding.Stage == ShaderStage.None)
+                            continue;
+
                         if (resourceBinding.Param.Key == layoutEntry.Key)
                         {
                             bindingOperations.Add(new BindingOperation

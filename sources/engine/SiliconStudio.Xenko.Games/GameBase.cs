@@ -699,9 +699,6 @@ namespace SiliconStudio.Xenko.Games
                 GraphicsContext.CommandList.Reset();
             }
 
-            // Bind context
-            GraphicsContext.CommandList.Begin();
-
             beginDrawOk = true;
 
             // Clear states
@@ -795,9 +792,6 @@ namespace SiliconStudio.Xenko.Games
 
                     GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.Present);
                 }
-
-                // Unbind context
-                GraphicsContext.CommandList.End();
 
                 // Close command list
                 GraphicsContext.CommandList.Close();
