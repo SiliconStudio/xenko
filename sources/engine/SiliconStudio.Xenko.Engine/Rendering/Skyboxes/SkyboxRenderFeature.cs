@@ -82,7 +82,14 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         continue;
 
                     var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
-                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, parameters.Get(SkyboxKeys.Shader));
+
+                    var shader = parameters.Get(SkyboxKeys.Shader);
+
+                    if (shader == null)
+                    {
+                        renderEffect.EffectValidator.ShouldSkip = true;
+                    }
+                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, shader);
                 }
             }
 

@@ -315,7 +315,14 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Skip if nothing changed
                     Effect effect;
-                    if (renderEffect.EffectValidator.EndEffectValidation())
+                    if (renderEffect.EffectValidator.ShouldSkip)
+                    {
+                        // Reset pending effect, as it is now obsolete anyway
+                        effect = null;
+                        renderEffect.Effect = null;
+                        renderEffect.State = RenderEffectState.Skip;
+                    }
+                    else if (renderEffect.EffectValidator.EndEffectValidation())
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);
                     
