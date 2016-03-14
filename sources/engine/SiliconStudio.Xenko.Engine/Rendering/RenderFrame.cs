@@ -324,7 +324,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
             else if (description.DepthFormat == RenderFrameDepthFormat.Depth || description.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
             {
-                var depthStencilExtraFlag = device.Features.Profile >= GraphicsProfile.Level_10_0 ? TextureFlags.ShaderResource : TextureFlags.None;
+                var depthStencilExtraFlag = device.Features.CurrentProfile >= GraphicsProfile.Level_10_0 ? TextureFlags.ShaderResource : TextureFlags.None;
                 depthStencil = Texture.New2D(device, width, height, 1, depthFormat, TextureFlags.DepthStencil | depthStencilExtraFlag);
             }
 

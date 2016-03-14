@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: Enum supported formats in mapFeaturesPerFormat
 
             // Find shader model based on OpenGL version (might need to check extensions more carefully)
-            Profile = OpenGLUtils.GetFeatureLevel(deviceRoot.versionMajor, deviceRoot.versionMinor);
+            RequestedProfile = deviceRoot.requestedGraphicsProfile;
             CurrentProfile = OpenGLUtils.GetFeatureLevel(deviceRoot.currentVersionMajor, deviceRoot.currentVersionMinor);
         }
     }

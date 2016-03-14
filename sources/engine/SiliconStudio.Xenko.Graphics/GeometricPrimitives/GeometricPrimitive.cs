@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             }
             else
             {
-                if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
+                if (graphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_9_3)
                 {
                     throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
                 }

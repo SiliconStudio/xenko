@@ -76,14 +76,6 @@ namespace SiliconStudio.Xenko.Rendering
             // Get graphics device service
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
-            effectCompilerParameters.Platform = GraphicsPlatform.Direct3D11;
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-            effectCompilerParameters.Platform = GraphicsPlatform.OpenGL;
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            effectCompilerParameters.Platform = GraphicsPlatform.OpenGLES;
-#endif
-
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             Enabled = true;
             directoryWatcher = new DirectoryWatcher("*.xksl");
@@ -163,7 +155,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Setup compilation parameters
             // GraphicsDevice might have been not valid until this point, which is why we set this only here
-            effectCompilerParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.Profile;
+            effectCompilerParameters.Platform = GraphicsDevice.Platform;
+            effectCompilerParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.RequestedProfile;
             compilerParameters.EffectParameters = effectCompilerParameters;
 
             // Get the compiled result
