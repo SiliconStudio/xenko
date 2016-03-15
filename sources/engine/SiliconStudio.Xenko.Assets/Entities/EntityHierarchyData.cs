@@ -95,6 +95,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         [DataMember(20)]
         public EntityDesignData Design { get; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"EntityDesign {Entity.Name}";
+        }
     }
 
     [DataContract("EntityHierarchyData")]
