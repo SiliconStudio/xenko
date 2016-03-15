@@ -138,14 +138,17 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Converting:
                     ConvertingRequest converting = (ConvertingRequest)request;
-                    return SupportFormat(converting.Format) && SupportFormat(converting.Format);
+                    return SupportFormat(converting.Format) && SupportFormat(image.Format);
 
                 case RequestType.Export:
                     return SupportFormat(image.Format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
 
                 case RequestType.Rescaling:
                     RescalingRequest rescale = (RescalingRequest)request;
-                    return rescale.Filter == Filter.Rescaling.Box || rescale.Filter == Filter.Rescaling.Bicubic || rescale.Filter == Filter.Rescaling.Bicubic || rescale.Filter == Filter.Rescaling.Nearest;
+                    return rescale.Filter == Filter.Rescaling.Box ||
+                        rescale.Filter == Filter.Rescaling.Bicubic ||
+                        rescale.Filter == Filter.Rescaling.Bicubic ||
+                        rescale.Filter == Filter.Rescaling.Nearest;
 
                 case RequestType.Decompressing:
                     return SupportFormat(image.Format);
