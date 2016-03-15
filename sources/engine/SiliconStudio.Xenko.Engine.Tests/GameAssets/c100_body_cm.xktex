@@ -6,6 +6,7 @@ Source: ../../../data/tests/knight/sourceimages/c100_body_cm.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 PremultiplyAlpha: false
 ~Base:
+    ~Id: 7fd40179-3640-4f42-8776-11fa4d13cd35
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

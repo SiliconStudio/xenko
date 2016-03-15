@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Interface for input management system, including keyboard, mouse, gamepads and touch.
     /// </summary>
-    public abstract class InputManagerBase : GameSystemBase
+    public abstract partial class InputManagerBase : GameSystemBase
     {
         #region Constants and Fields
 
@@ -44,6 +44,16 @@ namespace SiliconStudio.Xenko.Input
         private readonly HashSet<Keys> pressedKeysSet = new HashSet<Keys>();
 
         private readonly HashSet<Keys> releasedKeysSet = new HashSet<Keys>();
+
+        private readonly HashSet<GamePadButton>[] pressedGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
+
+        private readonly HashSet<GamePadButton>[] releasedGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
+
+        private readonly HashSet<GamePadButton>[] currentGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
+
+        private readonly HashSet<GamePadButton>[] activeGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
+
+        private readonly List<GamePadButton> supportedGamePadButtons = new List<GamePadButton>(); 
         
         internal List<KeyboardInputEvent> KeyboardInputEvents = new List<KeyboardInputEvent>();
 
@@ -209,6 +219,29 @@ namespace SiliconStudio.Xenko.Input
             Sensors.Add(UserAcceleration);
             Sensors.Add(Gravity);
             Sensors.Add(Orientation);
+
+            supportedGamePadButtons.Add(GamePadButton.A);
+            supportedGamePadButtons.Add(GamePadButton.B);
+            supportedGamePadButtons.Add(GamePadButton.X);
+            supportedGamePadButtons.Add(GamePadButton.Y);
+            supportedGamePadButtons.Add(GamePadButton.Start);           
+            supportedGamePadButtons.Add(GamePadButton.Back);
+            supportedGamePadButtons.Add(GamePadButton.LeftShoulder);
+            supportedGamePadButtons.Add(GamePadButton.RightShoulder);
+            supportedGamePadButtons.Add(GamePadButton.RightThumb);
+            supportedGamePadButtons.Add(GamePadButton.LeftThumb);
+            supportedGamePadButtons.Add(GamePadButton.PadUp);
+            supportedGamePadButtons.Add(GamePadButton.PadDown);
+            supportedGamePadButtons.Add(GamePadButton.PadLeft);
+            supportedGamePadButtons.Add(GamePadButton.PadRight);
+
+            for (var i = 0; i < MaximumGamePadCount; i++)
+            {
+                pressedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+                releasedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+                currentGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+                activeGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+            }
         }
 
         public override void Initialize()
@@ -482,6 +515,39 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
+        /// Determines whether the specified game pad button is being pressed down.
+        /// </summary>
+        /// <param name="gamepadIndex">A valid game pad index</param>
+        /// <param name="button">The button to check</param>
+        /// <returns></returns>
+        public bool IsPadButtonDown(int gamepadIndex, GamePadButton button)
+        {
+            return activeGamePadButtonsSet[gamepadIndex].Contains(button);
+        }
+
+        /// <summary>
+        /// Determines whether the specified game pad button is pressed since the previous update.
+        /// </summary>
+        /// <param name="gamepadIndex">A valid game pad index</param>
+        /// <param name="button">The button to check</param>
+        /// <returns></returns>
+        public bool IsPadButtonPressed(int gamepadIndex, GamePadButton button)
+        {
+            return pressedGamePadButtonsSet[gamepadIndex].Contains(button);
+        }
+
+        /// <summary>
+        /// Determines whether the specified game pad button is released since the previous update.
+        /// </summary>
+        /// <param name="gamepadIndex">A valid game pad index</param>
+        /// <param name="button">The button to check</param>
+        /// <returns></returns>
+        public bool IsPadButtonReleased(int gamepadIndex, GamePadButton button)
+        {
+            return releasedGamePadButtonsSet[gamepadIndex].Contains(button);
+        }
+
+        /// <summary>
         /// Determines whether the specified key is being pressed down.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -707,6 +773,14 @@ namespace SiliconStudio.Xenko.Input
         {
         }
 
+        internal void InjectPointerEvent(PointerEvent e)
+        {
+            lock (pointerEvents)
+            {
+                pointerEvents.Add(e);
+            }
+        }
+
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
         {
             currentGestureEvents.Clear();
@@ -765,6 +839,14 @@ namespace SiliconStudio.Xenko.Input
 
         private void UpdateGamePads()
         {
+            for (var i = 0; i < MaximumGamePadCount; i++)
+            {
+                pressedGamePadButtonsSet[i].Clear();
+                releasedGamePadButtonsSet[i].Clear();
+                currentGamePadButtonsSet[i].Clear();
+                gamePadStates[i].IsConnected = false;
+            }
+
             lock (gamePads)
             {
                 for (int i = 0, j = gamePadCount; i < gamePads.Length && j > 0; i++, j--)
@@ -774,6 +856,38 @@ namespace SiliconStudio.Xenko.Input
                         // Get the state of the gamepad
                         gamePadStates[i] = gamePads[i].GetState();
                     }
+                }  
+            }
+
+            for (var i = 0; i < MaximumGamePadCount; i++)
+            {
+                if(!gamePadStates[i].IsConnected) continue;
+
+                foreach (var supportedGamePadButton in supportedGamePadButtons)
+                {
+                    if (gamePadStates[i].Buttons.HasFlag(supportedGamePadButton))
+                    {
+                        if (!activeGamePadButtonsSet[i].Contains(supportedGamePadButton))
+                        {
+                            pressedGamePadButtonsSet[i].Add(supportedGamePadButton); //newly pressed button
+                            activeGamePadButtonsSet[i].Add(supportedGamePadButton);
+                        }
+
+                        currentGamePadButtonsSet[i].Add(supportedGamePadButton);
+                    }
+                }
+
+                foreach (var button in activeGamePadButtonsSet[i])
+                {
+                    if (!currentGamePadButtonsSet[i].Contains(button))
+                    {
+                        releasedGamePadButtonsSet[i].Add(button); //newly released button
+                    }
+                }
+
+                foreach (var gamePadButton in releasedGamePadButtonsSet[i])
+                {
+                    activeGamePadButtonsSet[i].Remove(gamePadButton);
                 }
             }
         }

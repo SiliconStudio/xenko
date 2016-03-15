@@ -61,6 +61,11 @@
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="BrowsableAttribute.cs" />
     <Compile Include="CategoryAttribute.cs" />
+    <Compile Include="Collections\ArrayHelper.cs" />
+    <Compile Include="Collections\FastTrackingCollection.cs" />
+    <Compile Include="Collections\FastTrackingCollectionChangedEventArgs.cs" />
+    <Compile Include="Collections\OrderedCollection.cs" />
+    <Compile Include="Collections\FastCollection.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
     <Compile Include="Collections\PoolListStruct.cs" />
@@ -71,7 +76,10 @@
     <Compile Include="Diagnostics\ProfilingCustomValue.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
-    <Compile Include="GuidExtensions.cs" />
+    <Compile Include="Reflection\TypeHelper.cs" />
+    <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
+    <Compile Include="RuntimeIdHelper.cs" />
+    <Compile Include="IIdentifiable.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
     <Compile Include="NativeLibraryInternal.cs" />
@@ -123,8 +131,6 @@
     <Compile Include="Diagnostics\CollectionDebugView.cs" />
     <Compile Include="Diagnostics\ComponentEventInfo.cs" />
     <Compile Include="Diagnostics\ComponentEventType.cs" />
-    <Compile Include="Diagnostics\ComponentReference.cs" />
-    <Compile Include="Diagnostics\ComponentTracker.cs" />
     <Compile Include="Diagnostics\ConsoleLogListener.cs" />
     <Compile Include="Diagnostics\DebugLogListener.cs" />
     <Compile Include="Diagnostics\GlobalLogger.cs" />

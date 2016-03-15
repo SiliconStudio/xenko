@@ -1,0 +1,16 @@
+!Texture
+Id: d94d9299-3bc8-4531-952f-703e6b80d38d
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../data/tests/SmallJpeg.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: 20c6299a-b258-4981-babd-83d0b51fa4c2
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

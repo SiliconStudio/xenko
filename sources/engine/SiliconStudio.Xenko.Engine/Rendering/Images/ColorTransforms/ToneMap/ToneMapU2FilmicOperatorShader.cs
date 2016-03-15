@@ -18,12 +18,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ToneMapU2FilmicOperatorShaderKeys
     {
-        public static readonly ParameterKey<float> ShoulderStrength = ParameterKeys.New<float>(0.22f);
-        public static readonly ParameterKey<float> LinearStrength = ParameterKeys.New<float>(0.25f);
-        public static readonly ParameterKey<float> LinearAngle = ParameterKeys.New<float>(0.1f);
-        public static readonly ParameterKey<float> ToeStrength = ParameterKeys.New<float>(0.2f);
-        public static readonly ParameterKey<float> ToeNumerator = ParameterKeys.New<float>(0.01f);
-        public static readonly ParameterKey<float> ToeDenominator = ParameterKeys.New<float>(0.3f);
-        public static readonly ParameterKey<float> LinearWhite = ParameterKeys.New<float>(11.2f);
+        public static readonly ValueParameterKey<float> ShoulderStrength = ParameterKeys.NewValue<float>(0.22f);
+        public static readonly ValueParameterKey<float> LinearStrength = ParameterKeys.NewValue<float>(0.25f);
+        public static readonly ValueParameterKey<float> LinearAngle = ParameterKeys.NewValue<float>(0.1f);
+        public static readonly ValueParameterKey<float> ToeStrength = ParameterKeys.NewValue<float>(0.2f);
+        public static readonly ValueParameterKey<float> ToeNumerator = ParameterKeys.NewValue<float>(0.01f);
+        public static readonly ValueParameterKey<float> ToeDenominator = ParameterKeys.NewValue<float>(0.3f);
+        public static readonly ValueParameterKey<float> LinearWhite = ParameterKeys.NewValue<float>(11.2f);
     }
 }

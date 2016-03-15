@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace SiliconStudio.Presentation.Collections
 {
-    public class ObservableList<T> : IList<T>, IObservableCollection<T>, IReadOnlyObservableCollection<T>
+    public class ObservableList<T> : IObservableList<T>, IReadOnlyObservableList<T>
     {
         private readonly List<T> list;
 
@@ -102,6 +103,11 @@ namespace SiliconStudio.Presentation.Collections
         public void CopyTo(T[] array, int arrayIndex)
         {
             list.CopyTo(array, arrayIndex);
+        }
+
+        public int FindIndex(Predicate<T> match)
+        {
+            return list.FindIndex(match);
         }
 
         public bool Remove(T item)

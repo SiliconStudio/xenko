@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Input;
+using SiliconStudio.Presentation.Commands;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDisposable
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.
@@ -53,11 +53,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets whether this node can be modified in the view.
         /// </summary>
         bool IsReadOnly { get; set; }
-
-        /// <summary>
-        /// Gets whether this node contains a primitive value. A primitive value has no children node and does not need to refresh its hierarchy when its value is modified.
-        /// </summary>
-        bool IsPrimitive { get; }
         
         /// <summary>
         /// Gets or sets the value.
@@ -136,7 +131,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
-        ICommand GetCommand(string name);
+        ICommandBase GetCommand(string name);
 
         /// <summary>
         /// Indicates whether this node can be moved.

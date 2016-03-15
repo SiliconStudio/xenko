@@ -29,14 +29,14 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="System.ArgumentException">List cannot contain null items;inputItems</exception>
         public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput)
         {
-            if (inputItems == null) throw new ArgumentNullException("inputItems");
-            if (outputItems == null) throw new ArgumentNullException("outputItems");
-            if (assetResolver == null) throw new ArgumentNullException("assetResolver");
+            if (inputItems == null) throw new ArgumentNullException(nameof(inputItems));
+            if (outputItems == null) throw new ArgumentNullException(nameof(outputItems));
+            if (assetResolver == null) throw new ArgumentNullException(nameof(assetResolver));
 
             // Check that all items are non-null
             if (inputItems.Any(item => item == null))
             {
-                throw new ArgumentException("List cannot contain null items", "inputItems");
+                throw new ArgumentException("List cannot contain null items", nameof(inputItems));
             }
 
             var items = inputItems;
@@ -45,33 +45,9 @@ namespace SiliconStudio.Assets.Analysis
                 items = inputItems.Select(item => item.Clone()).ToList();
             }
 
-            // Check if locations are conflicting
-            var locationConflicts = new Dictionary<AssetItem, UFile>();
-            foreach (var item in items)
-            {
-                UFile newLocation;
-                if (assetResolver.RegisterLocation(item.Location, out newLocation))
-                {
-                    locationConflicts[item] = newLocation;
-                }
-            }
-
-            // Check if ids are conflicting
-            var idConflicts = new Dictionary<AssetItem, Guid>();
-            foreach (var item in items)
-            {
-                Guid newGuid;
-                if (assetResolver.RegisterId(item.Id, out newGuid))
-                {
-                    idConflicts[item] = newGuid;
-                }
-            }
-
-            // Calculate final guid => guid remapping
-            // Because several asset items can have the same id, we are only using the first one for remapping
+            // idRemap should contain only assets that have either 1) their id remapped or 2) their location remapped
             var idRemap = new Dictionary<Guid, Tuple<Guid, UFile>>();
-            var locationRemap = new Dictionary<UFile, UFile>();
-
+            var itemRemap = new Dictionary<AssetItem, Tuple<Guid, UFile>>();
             foreach (var item in items)
             {
                 if (outputItems.Contains(item))
@@ -81,39 +57,42 @@ namespace SiliconStudio.Assets.Analysis
 
                 outputItems.Add(item);
 
+                bool changed = false;
                 Guid newGuid;
-                if (!idConflicts.TryGetValue(item, out newGuid))
+                if (assetResolver.RegisterId(item.Id, out newGuid))
                 {
-                    newGuid = item.Id;
+                    changed = true;
                 }
 
                 UFile newLocation;
-                if (locationConflicts.TryGetValue(item, out newLocation) && !locationRemap.ContainsKey(item.Location))
+                if (assetResolver.RegisterLocation(item.Location, out newLocation))
                 {
-                    locationRemap.Add(item.Location, newLocation);
+                    changed = true;
+                }
+
+                var tuple = new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location);
+                if (changed)
+                {
+                    if (!itemRemap.ContainsKey(item))
+                    {
+                        itemRemap.Add(item, tuple);
+                    }
                 }
 
                 if (!idRemap.ContainsKey(item.Id))
                 {
-                    idRemap.Add(item.Id, new Tuple<Guid, UFile>(newGuid, newLocation ?? item.Location));
+                    idRemap.Add(item.Id, tuple);
                 }
             }
 
             // Process assets
             foreach (var item in outputItems)
             {
-                // Replace Id
-                Guid newGuid;
-                if (idConflicts.TryGetValue(item, out newGuid))
+                Tuple<Guid, UFile> remap;
+                if (itemRemap.TryGetValue(item, out remap) && (remap.Item1 != item.Asset.Id || remap.Item2 != item.Location))
                 {
-                    item.Asset.Id = newGuid;
-                    item.IsDirty = true;
-                }
-
-                // Replace location
-                if (locationConflicts.ContainsKey(item))
-                {
-                    item.Location = locationConflicts[item];
+                    item.Asset.Id = remap.Item1;
+                    item.Location = remap.Item2;
                     item.IsDirty = true;
                 }
 
@@ -128,29 +107,33 @@ namespace SiliconStudio.Assets.Analysis
                     var assetReference = (IContentReference)assetLink.Reference;
 
                     var newId = assetReference.Id;
-                    var newLocation = assetReference.Location;
-
-                    bool requireUpdate = false;
-
-                    Tuple<Guid, UFile> newRemap;
-                    if (idRemap.TryGetValue(newId, out newRemap) && (newId != newRemap.Item1 || newLocation != newRemap.Item2))
+                    if (idRemap.TryGetValue(newId, out remap) && IsNewReference(remap, assetReference))
                     {
-                        newId = newRemap.Item1;
-                        newLocation = newRemap.Item2;
-                        requireUpdate = true;
-                    }
-
-                    UFile remapLocation;
-                    if (!requireUpdate && locationRemap.TryGetValue(newLocation, out remapLocation))
-                    {
-                        newLocation = remapLocation;
-                        requireUpdate = true;
-                    }
-
-                    if (requireUpdate)
-                    {
-                        assetLink.UpdateReference(newId, newLocation);
+                        assetLink.UpdateReference(remap.Item1, remap.Item2);
                         item.IsDirty = true;
+                    }
+                }
+
+                // Fix base if there are any
+                if (item.Asset.Base != null && idRemap.TryGetValue(item.Asset.Base.Id, out remap) && IsNewReference(remap, item.Asset.Base))
+                {
+                    item.Asset.Base.Asset.Id = remap.Item1;
+                    item.Asset.Base = new AssetBase(remap.Item2, item.Asset.Base.Asset);
+                    item.IsDirty = true;
+                }
+
+                // Fix base parts if there are any remap for them as well
+                if (item.Asset.BaseParts != null)
+                {
+                    for (int i = 0; i < item.Asset.BaseParts.Count; i++)
+                    {
+                        var basePart = item.Asset.BaseParts[i];
+                        if (idRemap.TryGetValue(basePart.Id, out remap) && IsNewReference(remap, basePart))
+                        {
+                            basePart.Asset.Id = remap.Item1;
+                            item.Asset.BaseParts[i] = new AssetBase(remap.Item2, basePart.Asset);
+                            item.IsDirty = true;
+                        }
                     }
                 }
             }
@@ -158,53 +141,43 @@ namespace SiliconStudio.Assets.Analysis
             // Process roots (until references in package are handled in general)
             if (package != null)
             {
-                UpdateRootAssets(package.RootAssets, idRemap, locationRemap);
+                UpdateRootAssets(package.RootAssets, idRemap);
 
                 // We check dependencies to be consistent with other places, but nothing should be changed in there
                 // (except if we were to instantiate multiple packages referencing each other at once?)
                 foreach (var dependency in package.LocalDependencies)
                 {
                     if (dependency.RootAssets != null)
-                        UpdateRootAssets(dependency.RootAssets, idRemap, locationRemap);
+                        UpdateRootAssets(dependency.RootAssets, idRemap);
                 }
                 foreach (var dependency in package.Meta.Dependencies)
                 {
                     if (dependency.RootAssets != null)
-                        UpdateRootAssets(dependency.RootAssets, idRemap, locationRemap);
+                        UpdateRootAssets(dependency.RootAssets, idRemap);
                 }
             }
         }
 
-        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, Dictionary<Guid, Tuple<Guid, UFile>> idRemap, Dictionary<UFile, UFile> locationRemap)
+        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, Dictionary<Guid, Tuple<Guid, UFile>> idRemap)
         {
             foreach (var rootAsset in rootAssetCollection.ToArray())
             {
-                var location = (UFile)rootAsset.Location;
                 var id = rootAsset.Id;
+                Tuple<Guid, UFile> remap;
 
-                Tuple<Guid, UFile> newId;
-                UFile newLocation;
-
-                bool changed = false;
-                if (idRemap.TryGetValue(id, out newId))
+                if (idRemap.TryGetValue(id, out remap) && IsNewReference(remap, rootAsset))
                 {
-                    id = newId.Item1;
-                    location = newId.Item2;
-                    changed = true;
-                }
-                if (!changed && locationRemap.TryGetValue(location, out newLocation))
-                {
-                    location = newLocation;
-                    changed = true;
-                }
-
-                if (changed)
-                {
-                    var newRootAsset = new AssetReference<Asset>(id, location);
+                    var newRootAsset = new AssetReference<Asset>(remap.Item1, remap.Item2);
                     rootAssetCollection.Remove(rootAsset.Id);
                     rootAssetCollection.Add(newRootAsset);
                 }
             }
+        }
+
+        private static bool IsNewReference(Tuple<Guid, UFile> newReference, IContentReference previousReference)
+        {
+            return newReference.Item1 != previousReference.Id ||
+                   newReference.Item2 != previousReference.Location;
         }
     }
 }

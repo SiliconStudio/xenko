@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.CompilerServices;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Serialization
     {
         // Binary format version, needs to be bumped in case of big changes in serialization formats (i.e. primitive types).
         // Format: major version * 10000 + minor version * 1000 + patch version * 100 + bump ID
-        public const int BinaryFormatVersion = 15000;
+        public const int BinaryFormatVersion = 16001;
 
         public ObjectId SerializationTypeId;
 

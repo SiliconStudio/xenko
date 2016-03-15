@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         private static void TestSoundEffectLoadingImpl(Game game)
         {
             SoundEffect sound = null;
-            Assert.DoesNotThrow(() => sound = game.Asset.Load<SoundEffect>("EffectBip"), "Failed to load the soundEffect.");
+            Assert.DoesNotThrow(() => sound = game.Content.Load<SoundEffect>("EffectBip"), "Failed to load the soundEffect.");
             Assert.IsNotNull(sound, "The soundEffect loaded is null.");
             sound.Play();
             // Should hear the sound here.
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         private static void TestSoundMusicLoadingImpl(Game game)
         {
             SoundMusic sound = null;
-            Assert.DoesNotThrow(() => sound = game.Asset.Load<SoundMusic>("EffectBip"), "Failed to load the SoundMusic.");
+            Assert.DoesNotThrow(() => sound = game.Content.Load<SoundMusic>("EffectBip"), "Failed to load the SoundMusic.");
             Assert.IsNotNull(sound, "The SoundMusic loaded is null.");
             sound.Play();
             // Should hear the sound here.

@@ -1,0 +1,16 @@
+!Texture
+Id: 632355e6-4fc9-4606-a5e8-199dab4ba729
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../data/tests/SmallDdsNoAlpha.dds
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: 2a7822e0-ae99-4745-9c3b-193a4b2220aa
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

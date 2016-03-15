@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<Sprite>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Sprite>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Sprite>), Profile = "Content")]
     public class Sprite
     {
         public const int DefaultPixelsPerUnit = 100;

@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Engine.Design
             return true;
         }
 
-        public override PostProcessingEffects GetSceneEditorPostProcessingEffects()
+        public override PostProcessingEffects GetEditorPostProcessingEffects()
         {
             return PostProcessingEffects;
         }

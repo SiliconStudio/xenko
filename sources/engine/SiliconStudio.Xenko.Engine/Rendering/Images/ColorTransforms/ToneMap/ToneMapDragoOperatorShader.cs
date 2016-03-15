@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ToneMapDragoOperatorShaderKeys
     {
-        public static readonly ParameterKey<float> DragoBias = ParameterKeys.New<float>(0.5f);
+        public static readonly ValueParameterKey<float> DragoBias = ParameterKeys.NewValue<float>(0.5f);
     }
 }

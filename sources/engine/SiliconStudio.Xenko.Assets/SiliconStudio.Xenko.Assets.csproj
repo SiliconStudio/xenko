@@ -21,24 +21,24 @@
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.1.1.1\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.1.1\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -50,8 +50,8 @@
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -85,8 +85,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.Reflection.Metadata, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="VHACDSharp">
@@ -192,6 +192,7 @@
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
+    <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompositorAsset.cs" />
@@ -202,19 +203,20 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
-    <Compile Include="Entities\EntityAsset.cs" />
+    <Compile Include="Entities\PrefabAsset.cs" />
+    <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
+    <Compile Include="Entities\PrefabAssetCompiler.cs" />
+    <Compile Include="Entities\PrefabAssetMerge.cs" />
+    <Compile Include="Entities\EntityHierarchyData.cs" />
+    <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
-    <Compile Include="Entities\EntityAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
-    <Compile Include="Entities\EntityDiffNode.cs" />
-    <Compile Include="Entities\EntityHierarchyDiffNodeBuilder.cs" />
     <Compile Include="Entities\EntityReference.cs" />
-    <Compile Include="Entities\EntityScriptReference.cs" />
-    <Compile Include="Entities\EntitySerializer.cs" />
-    <Compile Include="Entities\EntityTreeAsset.cs" />
+    <Compile Include="Entities\PrefabAssetSerializer.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\IEntityComponentReference.cs" />
     <Compile Include="Entities\IEntityScriptReference.cs" />
+    <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
@@ -226,16 +228,15 @@
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
-    <Compile Include="IModelAsset.cs" />
+    <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
+    <Compile Include="Textures\TextureSettings.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
-    <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
-    <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="RenderingMode.cs" />
     <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
     <Compile Include="Sprite\SpriteSheetAsset.cs" />
@@ -252,8 +253,8 @@
     <Compile Include="RenderFrames\RenderFrameAsset.cs" />
     <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
-    <Compile Include="Serializers\ScriptCollectionSerializer.cs" />
-    <Compile Include="Serializers\UnloadableScript.cs" />
+    <Compile Include="Serializers\EntityComponentCollectionSerializer.cs" />
+    <Compile Include="Serializers\UnloadableComponent.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />
@@ -301,11 +302,12 @@
     <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

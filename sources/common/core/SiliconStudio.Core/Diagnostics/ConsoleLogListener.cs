@@ -19,7 +19,9 @@ namespace SiliconStudio.Core.Diagnostics
     /// </summary>
     public class ConsoleLogListener : LogListener
     {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private bool isConsoleActive;
+#endif
 
         /// <summary>
         /// Gets or sets the minimum log level handled by this listener.
@@ -149,7 +151,7 @@ namespace SiliconStudio.Core.Diagnostics
 
         private void EnsureConsole()
         {
-            if (Debugger.IsAttached || isConsoleActive || Environment.OSVersion.Platform != PlatformID.Win32NT)
+            if (Debugger.IsAttached || isConsoleActive || !Platform.IsWindowsDesktop)
             {
                 return;
             }

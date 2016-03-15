@@ -154,15 +154,9 @@ namespace SiliconStudio.Xenko.Rendering
             base.Unload();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
-            // Initialize all renderer first
-            foreach (var renderer in currentRenderers)
-            {
-                // initialize the renderer if needed.
-                if(!renderer.Initialized)
-                    renderer.Initialize(context);
-            }
+            InitializeRenderers(context.RenderContext);
 
             // Draw all renderers
             foreach (var renderer in currentRenderers)
@@ -175,6 +169,17 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected abstract void DrawRenderer(RenderContext context, T renderer);
+        protected void InitializeRenderers(RenderContext context)
+        {
+            // Initialize all renderer first
+            foreach (var renderer in currentRenderers)
+            {
+                // initialize the renderer if needed.
+                if (!renderer.Initialized)
+                    renderer.Initialize(context);
+            }
+        }
+
+        protected abstract void DrawRenderer(RenderDrawContext context, T renderer);
     }
 }

@@ -9,7 +9,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     {
         public ShaderMixinSource MixinTree { get; set; }
         
-        // MixinTree.UsedParameters is DataMemberIgnore, so transmit it manually
-        public ShaderMixinParameters UsedParameters { get; set; }
+        public CompilerParameters CompilerParameters { get; set; }
+
+        public EffectCompilerParameters EffectParameters { get; set; }
     }
 }

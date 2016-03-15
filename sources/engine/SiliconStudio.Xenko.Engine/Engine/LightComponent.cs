@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -15,12 +16,14 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("LightComponent")]
-    [Display(12000, "Light", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
+    [Display("Light", Expand = ExpandRule.Once)]
+    // TODO GRAPHICS REFACTOR
+    //[DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
+    [ComponentOrder(12000)]
     public sealed class LightComponent : ActivableEntityComponent
     {
-        public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
+        private static int LightComponentIds;
 
         /// <summary>
         /// The default direction of a light vector is (x,y,z) = (0,0,-1)
@@ -35,7 +38,13 @@ namespace SiliconStudio.Xenko.Engine
             Type = new LightDirectional();
             Intensity = 1.0f;
             CullingMask = EntityGroupMask.All;
+            Id = Interlocked.Increment(ref LightComponentIds);
         }
+
+        /// <summary>
+        /// Internal id used to identify a light component
+        /// </summary>
+        internal readonly int Id;
 
         /// <summary>
         /// Gets or sets the type of the light.
@@ -142,11 +151,6 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             return true;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

@@ -1,32 +1,43 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class VirtualObservableNode : SingleObservableNode
     {
+        protected readonly Func<object> Getter;
+        protected readonly Action<object> Setter;
+        private IContent associatedContent;
+        private bool updatingValue;
+
         static VirtualObservableNode()
         {
             typeof(VirtualObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object index, NodeCommandWrapperBase valueChangedCommand)
-            : base(ownerViewModel, name, index)
+        protected VirtualObservableNode(ObservableViewModel owner, string name, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter)
+            : base(owner, name, index)
         {
+            if (getter == null) throw new ArgumentNullException(nameof(getter));
+            Getter = getter;
+            Setter = setter;
             Order = order;
             IsPrimitive = isPrimitive;
             Name = name;
-            ValueChangedCommand = valueChangedCommand;
         }
 
-        internal static VirtualObservableNode Create(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, Type contentType, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand)
+        public override void Dispose()
         {
-            var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, order, isPrimitive, initialValue, index, valueChangedCommand);
-            return node;
+            if (associatedContent != null)
+            {
+                associatedContent.Changing -= ContentChanging;
+                associatedContent.Changed -= ContentChanged;
+                associatedContent = null;
+            }
+            base.Dispose();
         }
 
         public override int? Order { get; }
@@ -36,11 +47,6 @@ namespace SiliconStudio.Presentation.Quantum
         public override bool HasDictionary => typeof(IDictionary).IsAssignableFrom(Type);
 
         public override bool IsPrimitive { get; }
-
-        /// <summary>
-        /// Gets the command to execute when the value of this node is changed.
-        /// </summary>
-        public NodeCommandWrapperBase ValueChangedCommand { get; }
 
         /// <summary>
         /// Clears the list of children from this <see cref="VirtualObservableNode"/>.
@@ -53,39 +59,59 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
+        /// <summary>
+        /// Registers an <see cref="IContent"/> object to this virtual node so when the content is modified, this node will trigger notifications
+        /// of property changes for the <see cref="VirtualObservableNode{T}.TypedValue"/> property.
+        /// </summary>
+        /// <param name="content">The content to register.</param>
+        /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
+        public void RegisterContentForNotifications(IContent content)
+        {
+            if (associatedContent != null)
+                throw new InvalidOperationException("A content has already been registered to this virtual node");
+
+            associatedContent = content;
+            associatedContent.Changing += ContentChanging;
+            associatedContent.Changed += ContentChanged;
+        }
+
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
+        }
+
+        protected void SetTypedValue(object value)
+        {
+            updatingValue = true;
+            SetValue(() => Setter(value), nameof(VirtualObservableNode<object>.TypedValue));
+            updatingValue = false;
+        }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
+            if (!updatingValue)
+                OnPropertyChanging(nameof(VirtualObservableNode<object>.TypedValue));
+        }
+
+        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        {
+            if (!updatingValue)
+                OnPropertyChanged(nameof(VirtualObservableNode<object>.TypedValue));
         }
     }
 
     public class VirtualObservableNode<T> : VirtualObservableNode
     {
-        private T value;
-
-        public VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand = null)
-            : base(ownerViewModel, name, order, isPrimitive, index, valueChangedCommand)
+        public VirtualObservableNode(ObservableViewModel owner, string name, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter)
+            : base(owner, name, isPrimitive, order, index, getter, setter)
         {
-            DependentProperties.Add("TypedValue", new[] { "Value" });
-            value = (T)initialValue;
+            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
         }
 
         /// <summary>
         /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
         /// </summary>
-        public T TypedValue
-        {
-            get { return value; }
-            set
-            {
-                bool hasChanged = SetValue(ref this.value, value);
-                if (hasChanged)
-                {
-                    ValueChangedCommand?.Execute(value);
-                    OnValueChanged();
-                }
-            }
-        }
+        public T TypedValue { get { return (T)Getter(); } set { SetTypedValue(value); } }
 
         /// <inheritdoc/>
         public override Type Type => typeof(T);

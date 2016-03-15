@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class BrightFilterShaderKeys
     {
-        public static readonly ParameterKey<Color3> ColorModulator = ParameterKeys.New<Color3>();
-        public static readonly ParameterKey<float> BrightPassThreshold = ParameterKeys.New<float>(2.0f);
+        public static readonly ValueParameterKey<Color3> ColorModulator = ParameterKeys.NewValue<Color3>();
+        public static readonly ValueParameterKey<float> BrightPassThreshold = ParameterKeys.NewValue<float>(2.0f);
     }
 }

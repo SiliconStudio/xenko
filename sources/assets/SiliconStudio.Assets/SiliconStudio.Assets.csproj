@@ -60,10 +60,13 @@
     <Compile Include="Analysis\ContentLinkType.cs" />
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
+    <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetClonerFlags.cs" />
+    <Compile Include="AssetComposite.cs" />
+    <Compile Include="AssetHash.cs" />
     <Compile Include="AssetImport.cs" />
     <Compile Include="AssetImporterParameters.cs" />
     <Compile Include="AssetImportExtensions.cs" />
@@ -106,7 +109,6 @@
     <Compile Include="Diff\DiffMemberAttribute.cs" />
     <Compile Include="Diff\IDiffKey.cs" />
     <Compile Include="Diff\IDiffProxy.cs" />
-    <Compile Include="Diff\IDiffResolver.cs" />
     <Compile Include="DirectoryHelper.cs" />
     <Compile Include="EmptyAssetUpgrader.cs" />
     <Compile Include="FileVersionManager.cs" />
@@ -122,7 +124,7 @@
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="Diff\MergeResult.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
-    <Compile Include="IAssetPartContainer.cs" />
+    <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
@@ -166,6 +168,7 @@
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="ProjectCodeGeneratorAsset.cs" />
     <Compile Include="ProjectSourceCodeAsset.cs" />
     <Compile Include="RawAsset.cs" />
     <Compile Include="PackageSaveParameters.cs" />
@@ -300,6 +303,10 @@
       <LastGenOutput>AssetMessageStrings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Diagrams\AssetsDiagram.cd" />
+    <None Include="Diagrams\BuildCommands.cd" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

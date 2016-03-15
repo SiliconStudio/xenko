@@ -24,9 +24,6 @@
   </PropertyGroup>
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
-  <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Assets.Tests.xkpkg</SiliconStudioCurrentPackagePath>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -87,6 +84,7 @@
     <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
       <Project>{7F7BFF79-C400-435F-B359-56A2EF8956E0}</Project>
       <Name>SiliconStudio.TextureConverter</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
@@ -106,6 +104,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
       <Project>{d002feb1-00a6-4ab1-a83f-1f253465e64d}</Project>
       <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
@@ -138,15 +137,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoAlphaTests.cs" />
+    <Compile Include="TestPrefabAssetMerge.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetImportTests.cs" />
     <Compile Include="TestDependencyResolver.cs" />
-    <Compile Include="EntityTests.cs" />
+    <Compile Include="TestPrefabAsset.cs" />
     <Compile Include="ModelAssetTests.cs" />
     <Compile Include="TestPackageArchive.cs" />
+    <Compile Include="TestSceneUpgrader.cs" />
     <Compile Include="TexturePackerTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +162,7 @@
       <Link>app_data\SiliconStudio.Xenko.Assets.Tests\TX-Factory_Ground.dds</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="GameAssets\MainScene.xkscene" />
+    <None Include="app.config" />
     <None Include="materials\testConstantValueKey.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -178,10 +178,10 @@
     <None Include="materials\testTextureGeneric.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="readme.md" />
     <None Include="scenes\goblin.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SiliconStudio.Xenko.Assets.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Projects\**\*.*">

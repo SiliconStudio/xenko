@@ -46,13 +46,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            arial13 = Asset.Load<SpriteFont>(assetPrefix+"Arial13");
-            msSansSerif10 = Asset.Load<SpriteFont>(assetPrefix+"MicrosoftSansSerif10");
-            arial16 = Asset.Load<SpriteFont>(assetPrefix+"Arial16");
-            arial16ClearType = Asset.Load<SpriteFont>(assetPrefix+"Arial16ClearType");
-            arial16Bold = Asset.Load<SpriteFont>(assetPrefix+"Arial16Bold");
-            calibri64 = Asset.Load<SpriteFont>(assetPrefix+"Calibri64");
-            courrierNew10 = Asset.Load<SpriteFont>(assetPrefix+"CourierNew10");
+            arial13 = Content.Load<SpriteFont>(assetPrefix+"Arial13");
+            msSansSerif10 = Content.Load<SpriteFont>(assetPrefix+"MicrosoftSansSerif10");
+            arial16 = Content.Load<SpriteFont>(assetPrefix+"Arial16");
+            arial16ClearType = Content.Load<SpriteFont>(assetPrefix+"Arial16ClearType");
+            arial16Bold = Content.Load<SpriteFont>(assetPrefix+"Arial16Bold");
+            calibri64 = Content.Load<SpriteFont>(assetPrefix+"Calibri64");
+            courrierNew10 = Content.Load<SpriteFont>(assetPrefix+"CourierNew10");
             
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -82,11 +82,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawSpriteFont()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
 
             var text = "This text is in Arial 16 with anti-alias\nand multiline...";
             var dim = arial16.MeasureString(text);
@@ -161,7 +162,7 @@ ABCDEFGHIJ - ABCDEFGHIJ - A1C3E5G7I9
             base.Update(gameTime);
 
             if(Input.IsKeyReleased(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "sprite-font-" + saveImageSuffix + ".png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "sprite-font-" + saveImageSuffix + ".png");
         }
     }
 }

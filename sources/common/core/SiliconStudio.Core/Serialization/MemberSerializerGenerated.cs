@@ -997,6 +997,7 @@ namespace SiliconStudio.Core.Serialization
                 flags = (SerializeClassFlags)stream.ReadByte();
                 bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
+                var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
@@ -1063,6 +1064,12 @@ namespace SiliconStudio.Core.Serialization
                     {
                         // Register object so that later references to it are working.
                         objectReferences[index] = obj;
+
+                        // Call Reference Callback
+                        if (referenceCallback != null)
+                        {
+                            referenceCallback(index, obj);
+                        }
                     }
                 }
             }
@@ -1180,6 +1187,7 @@ namespace SiliconStudio.Core.Serialization
                 flags = (SerializeClassFlags)stream.ReadByte();
                 bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
+                var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
@@ -1239,6 +1247,12 @@ namespace SiliconStudio.Core.Serialization
                     {
                         // Register object so that later references to it are working.
                         objectReferences[index] = obj;
+
+                        // Call Reference Callback
+                        if (referenceCallback != null)
+                        {
+                            referenceCallback(index, obj);
+                        }
                     }
                 }
             }
@@ -1375,6 +1389,7 @@ namespace SiliconStudio.Core.Serialization
                 flags = (SerializeClassFlags)stream.ReadByte();
                 bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
+                var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
@@ -1443,6 +1458,12 @@ namespace SiliconStudio.Core.Serialization
                     {
                         // Register object so that later references to it are working.
                         objectReferences[index] = obj;
+
+                        // Call Reference Callback
+                        if (referenceCallback != null)
+                        {
+                            referenceCallback(index, obj);
+                        }
                     }
                 }
             }
@@ -1569,6 +1590,7 @@ namespace SiliconStudio.Core.Serialization
                 flags = (SerializeClassFlags)stream.ReadByte();
                 bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
+                var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
@@ -1628,6 +1650,12 @@ namespace SiliconStudio.Core.Serialization
                     {
                         // Register object so that later references to it are working.
                         objectReferences[index] = obj;
+
+                        // Call Reference Callback
+                        if (referenceCallback != null)
+                        {
+                            referenceCallback(index, obj);
+                        }
                     }
                 }
             }

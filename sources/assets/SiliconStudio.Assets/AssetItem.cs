@@ -169,7 +169,7 @@ namespace SiliconStudio.Assets
         {
             // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
             // package
-            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset), copyPackage ? Package : null)
+            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset, AssetClonerFlags.KeepBases), copyPackage ? Package : null)
                 {
                     isDirty = isDirty,
                     SourceFolder = SourceFolder,

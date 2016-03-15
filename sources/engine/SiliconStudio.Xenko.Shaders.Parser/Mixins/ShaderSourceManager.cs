@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
         /// </summary>
         public ShaderSourceManager()
-            : this(AssetManager.FileProvider)
+            : this(ContentManager.FileProvider)
         {
         }
 
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                     if (File.Exists(shaderSourcePath))
                                     {
                                         // Replace path with a local path
-                                        shaderSource.Path = Path.Combine(Environment.CurrentDirectory, shaderSourcePath);
+                                        shaderSource.Path = Path.Combine(Directory.GetCurrentDirectory(), shaderSourcePath);
 
                                         // Optimization: It currently reads the source file twice
                                         shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(shaderSourcePath));
@@ -277,10 +277,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("kernel32.dll", EntryPoint = "GetLongPathNameW", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint GetLongPathName(string shortPath, StringBuilder sb, int buffer);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", EntryPoint = "GetShortPathNameW", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint GetShortPathName(string longpath, StringBuilder sb, int buffer);
 
         private static string GetWindowsPhysicalPath(string path)

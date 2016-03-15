@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             return new BoundingBox(positionWS - Radius, positionWS + Radius);
         }
 
-        protected override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
+        public override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
         {
             // http://stackoverflow.com/questions/21648630/radius-of-projected-sphere-in-screen-space
             var targetPosition = new Vector4(position, 1.0f);

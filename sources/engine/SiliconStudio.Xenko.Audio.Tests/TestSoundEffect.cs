@@ -27,9 +27,9 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            defaultEngine = new AudioEngine();
+            defaultEngine = AudioEngineFactory.NewAudioEngine();
 
-            validWavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read);
+            validWavStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read);
         }
 
         [TestFixtureTearDown]
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             // 2. Check that the load function throws "ObjectDisposedException" when the audio engine is disposed.
-            var disposedEngine = new AudioEngine();
+            var disposedEngine = AudioEngineFactory.NewAudioEngine();
             disposedEngine.Dispose();
             validWavStream.Seek(0, SeekOrigin.Begin);
             Assert.Throws<ObjectDisposedException>(() => SoundEffect.Load(disposedEngine, validWavStream), "SoundEffect.Load did not throw 'ObjectDisposedException' when called with a displosed audio engine.");
@@ -64,26 +64,26 @@ namespace SiliconStudio.Xenko.Audio.Tests
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 3. Check that the load function throws "InvalidOperationException" when the audio file stream is not valid
             // 3.1 Invalid audio file format.
-            var otherFileFormatStream = AssetManager.FileProvider.OpenStream("EffectStereoOgg", VirtualFileMode.Open, VirtualFileAccess.Read);
+            var otherFileFormatStream = ContentManager.FileProvider.OpenStream("EffectStereoOgg", VirtualFileMode.Open, VirtualFileAccess.Read);
             Assert.Throws<InvalidOperationException>(() => SoundEffect.Load(defaultEngine, otherFileFormatStream), "SoundEffect.Load did not throw 'InvalidOperationException' when called with an invalid file extension.");
             otherFileFormatStream.Dispose();
             // 3.2 Corrupted Header wav file
-            var corruptedWavFormatStream = AssetManager.FileProvider.OpenStream("EffectHeaderCorrupted", VirtualFileMode.Open, VirtualFileAccess.Read);
+            var corruptedWavFormatStream = ContentManager.FileProvider.OpenStream("EffectHeaderCorrupted", VirtualFileMode.Open, VirtualFileAccess.Read);
             Assert.Throws<InvalidOperationException>(() => SoundEffect.Load(defaultEngine, corruptedWavFormatStream), "SoundEffect.Load did not throw 'InvalidOperationException' when called with a corrupted wav stream.");
             corruptedWavFormatStream.Dispose();
             // 3.3 Invalid wav file format (4-channels)
-            var invalidChannelWavFormatStream = AssetManager.FileProvider.OpenStream("Effect4Channels", VirtualFileMode.Open, VirtualFileAccess.Read);
+            var invalidChannelWavFormatStream = ContentManager.FileProvider.OpenStream("Effect4Channels", VirtualFileMode.Open, VirtualFileAccess.Read);
             Assert.Throws<InvalidOperationException>(() => SoundEffect.Load(defaultEngine, invalidChannelWavFormatStream), "SoundEffect.Load did not throw 'InvalidOperationException' when called with an invalid 4-channels wav format.");
             invalidChannelWavFormatStream.Dispose();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 4. Check that the load function throws "NotSupportedException" when the audio file stream is not supported
             // 4.1 extented wav file format (5-channels)
-            var extendedChannelWavFormatStream = AssetManager.FileProvider.OpenStream("EffectSurround5Dot1", VirtualFileMode.Open, VirtualFileAccess.Read);
+            var extendedChannelWavFormatStream = ContentManager.FileProvider.OpenStream("EffectSurround5Dot1", VirtualFileMode.Open, VirtualFileAccess.Read);
             Assert.Throws<NotSupportedException>(() => SoundEffect.Load(defaultEngine, extendedChannelWavFormatStream), "SoundEffect.Load did not throw 'NotSupportedException' when called with an extended 5-channels wav format.");
             extendedChannelWavFormatStream.Dispose();
             // 4.2 Invalid wav file format (24bits encoding)
-            var invalidEncodingWavFormatStream = AssetManager.FileProvider.OpenStream("Effect24bits", VirtualFileMode.Open, VirtualFileAccess.Read);
+            var invalidEncodingWavFormatStream = ContentManager.FileProvider.OpenStream("Effect24bits", VirtualFileMode.Open, VirtualFileAccess.Read);
             Assert.Throws<NotSupportedException>(() => SoundEffect.Load(defaultEngine, invalidEncodingWavFormatStream), "SoundEffect.Load did not throw 'NotSupportedException' when called with an invalid ieeefloat encoding wav format.");
             invalidEncodingWavFormatStream.Dispose();
 

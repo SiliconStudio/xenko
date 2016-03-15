@@ -15,10 +15,14 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionToolLow)</TargetFrameworkVersion>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <!-- Include platform dependent assembly when specified -->
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone' or '$(SiliconStudioPlatform)' == 'Windows10'">
@@ -80,10 +84,7 @@
     <Compile Include="Reflection\PrimitiveDescriptor.cs" />
     <Compile Include="Reflection\PropertyDescriptor.cs" />
     <Compile Include="Reflection\MemberPath.cs" />
-    <Compile Include="Reflection\ShadowAttributes.cs" />
-    <Compile Include="Reflection\ShadowContainer.cs" />
-    <Compile Include="Reflection\ShadowId.cs" />
-    <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ShadowObjectExtensions.cs" />
     <Compile Include="Reflection\ThisDescriptor.cs" />
     <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />

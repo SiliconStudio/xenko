@@ -4,7 +4,9 @@ Tags: []
 Source: ../../../data/tests/audio/FishLampByUlrick-EvensSalies.wav
 ImporterId: 5adcb5b0-7011-4d28-9741-23ec7c3df617
 ~Base:
+    ~Id: 7c3dfac4-7f1e-483c-a685-fd1b47cf04e1
     Location: --import--
     Asset: !SoundMusic
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 

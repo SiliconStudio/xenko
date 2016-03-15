@@ -9,9 +9,19 @@ namespace SiliconStudio.Core.Storage
     /// A hash to uniquely identify data.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+#if ASSEMBLY_PROCESSOR
+    internal unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
+#else
     [DataContract("ObjectId")]
     public unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
+#endif
     {
+        // ***************************************************************
+        // NOTE: This file is shared with the AssemblyProcessor.
+        // If this file is modified, the AssemblyProcessor has to be
+        // recompiled separately. See build\Xenko-AssemblyProcessor.sln
+        // ***************************************************************
+
         public static readonly ObjectId Empty = new ObjectId();
 
         // Murmurshash3 ahsh size is 128 bits.
@@ -50,6 +60,30 @@ namespace SiliconStudio.Core.Storage
             this.hash2 = hash2;
             this.hash3 = hash3;
             this.hash4 = hash4;
+        }
+
+        public static ObjectId Combine(ObjectId left, ObjectId right)
+        {
+            // Note: we don't carry (probably not worth the performance hit)
+            return new ObjectId
+            {
+                hash1 = left.hash1 * 3 + right.hash1,
+                hash2 = left.hash2 * 3 + right.hash2,
+                hash3 = left.hash3 * 3 + right.hash3,
+                hash4 = left.hash4 * 3 + right.hash4,
+            };
+        }
+
+        public static void Combine(ref ObjectId left, ref ObjectId right, out ObjectId result)
+        {
+            // Note: we don't carry (probably not worth the performance hit)
+            result = new ObjectId
+            {
+                hash1 = left.hash1 * 3 + right.hash1,
+                hash2 = left.hash2 * 3 + right.hash2,
+                hash3 = left.hash3 * 3 + right.hash3,
+                hash4 = left.hash4 * 3 + right.hash4,
+            };
         }
 
         /// <summary>

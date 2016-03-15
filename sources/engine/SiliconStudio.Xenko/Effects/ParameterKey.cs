@@ -41,11 +41,15 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public int Length { get; private set; }
 
+        public ParameterKeyType Type { get; protected set; }
+
+        public abstract int Size { get; }
+
         internal void SetName(string name)
         {
             if (name == null) throw new ArgumentNullException("name");
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME || SILICONSTUDIO_RUNTIME_CORECLR
             Name = name;
 #else
             Name = string.Intern(name);
@@ -114,11 +118,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         //public abstract ParameterKey AppendKeyOverride(object obj);
 
-        public virtual ParameterKey CloneLength(int length)
-        {
-            throw new InvalidOperationException();
-        }
-
         private unsafe void UpdateName()
         {
             fixed (char* bufferStart = Name)
@@ -177,19 +176,24 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        internal abstract ParameterCollection.InternalValue CreateInternalValue();
+        internal abstract void SerializeHash(SerializationStream stream, object value);
+    }
+
+    public enum ParameterKeyType
+    {
+        Value,
+        Object,
+        Permutation,
     }
 
     /// <summary>
     /// Key of an gereric effect parameter.
     /// </summary>
     /// <typeparam name="T">Type of the parameter key.</typeparam>
-    [DataSerializer(typeof(ParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    public sealed class ParameterKey<T> : ParameterKey
+    public abstract class ParameterKey<T> : ParameterKey
     {
+        private static DataSerializer<T> dataSerializer;
         private static bool isValueType = typeof(T).GetTypeInfo().IsValueType;
-        private static bool isValueArrayType = typeof(T).GetTypeInfo().IsArray && typeof(T).GetElementType().GetTypeInfo().IsValueType;
-        private static Type internalValueArrayType = isValueArrayType ? typeof(ParameterCollection.InternalValueArray<>).MakeGenericType(typeof(T).GetElementType()) : null;
 
         public override bool IsValueType
         {
@@ -199,53 +203,47 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="name">The name.</param>
         /// <param name="length">The length.</param>
         /// <param name="metadata">The metadata.</param>
-        public ParameterKey(string name, int length, PropertyKeyMetadata metadata)
-            : this(name, length, new []{ metadata })
+        protected ParameterKey(ParameterKeyType type, string name, int length, PropertyKeyMetadata metadata)
+            : this(type, name, length, new []{ metadata })
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="name">The name.</param>
         /// <param name="length">The length.</param>
         /// <param name="metadatas">The metadatas.</param>
-        public ParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas)
+        protected ParameterKey(ParameterKeyType type, string name, int length = 1, params PropertyKeyMetadata[] metadatas)
             : base(typeof(T), name, length, metadatas.Length > 0 ? metadatas : new PropertyKeyMetadata[]{ new ParameterKeyValueMetadata<T>() })
         {
+            Type = type;
         }
 
         [DataMemberIgnore]
         public ParameterKeyValueMetadata<T> DefaultValueMetadataT { get; private set; }
+
+        public override int Size => Interop.SizeOf<T>();
 
         public override string ToString()
         {
             return string.Format("{0}", Name);
         }
 
-        public override ParameterKey CloneLength(int length)
+        internal override void SerializeHash(SerializationStream stream, object value)
         {
-            if (!typeof(T).IsArray)
-                throw new InvalidOperationException("Operation not valid on ParameterKey<T> if T is not an array type.");
-            var elementType = typeof(T).GetElementType();
-            return new ParameterKey<T>(Name, length, new ParameterKeyValueMetadata<T>((T)(object)Array.CreateInstance(elementType, length)));
-        }
-
-        internal override ParameterCollection.InternalValue CreateInternalValue()
-        {
-            if (isValueType)
-                return new ParameterCollection.InternalValue<T>();
-
-            if (isValueArrayType)
+            var currentDataSerializer = dataSerializer;
+            if (currentDataSerializer == null)
             {
-                // Still a slow path for arrays due to generic constraints...
-                return (ParameterCollection.InternalValue)Activator.CreateInstance(internalValueArrayType, Length);
+                dataSerializer = currentDataSerializer = MemberSerializer<T>.Create(stream.Context.SerializerSelector);
             }
 
-            return new ParameterCollection.InternalValueBase<T>();
+            currentDataSerializer.Serialize(ref value, ArchiveMode.Serialize, stream);
         }
 
         protected override void SetupMetadata(PropertyKeyMetadata metadata)
@@ -261,6 +259,54 @@ namespace SiliconStudio.Xenko.Rendering
         internal override PropertyContainer.ValueHolder CreateValueHolder(object value)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// A blittable value effect key, usually for use by shaders (.xksl).
+    /// </summary>
+    /// <typeparam name="T">Type of the parameter key.</typeparam>
+    [DataSerializer(typeof(ValueParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
+    public sealed class ValueParameterKey<T> : ParameterKey<T> where T : struct
+    {
+        public ValueParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(ParameterKeyType.Value, name, length, metadata)
+        {
+        }
+
+        public ValueParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Value, name, length, metadatas)
+        {
+        }
+    }
+
+    /// <summary>
+    /// An object (or boxed value) effect key, usually for use by shaders (.xksl).
+    /// </summary>
+    /// <typeparam name="T">Type of the parameter key.</typeparam>
+    [DataSerializer(typeof(ObjectParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
+    public sealed class ObjectParameterKey<T> : ParameterKey<T>
+    {
+        public ObjectParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(ParameterKeyType.Object, name, length, metadata)
+        {
+        }
+
+        public ObjectParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Object, name, length, metadatas)
+        {
+        }
+    }
+
+    /// <summary>
+    /// An effect permutation key, usually for use by effects (.xkfx).
+    /// </summary>
+    /// <typeparam name="T">Type of the parameter key.</typeparam>
+    [DataSerializer(typeof(PermutationParameterKeySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
+    public sealed class PermutationParameterKey<T> : ParameterKey<T>
+    {
+        public PermutationParameterKey(string name, int length, PropertyKeyMetadata metadata) : base(ParameterKeyType.Permutation, name, length, metadata)
+        {
+        }
+
+        public PermutationParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Permutation, name, length, metadatas)
+        {
         }
     }
 }

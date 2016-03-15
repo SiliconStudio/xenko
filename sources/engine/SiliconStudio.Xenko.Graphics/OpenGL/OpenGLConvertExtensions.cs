@@ -6,6 +6,12 @@ using System;
 using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
+#else
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
+#endif
 #if SILICONSTUDIO_PLATFORM_IOS
 using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
 using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;
@@ -13,6 +19,7 @@ using OesPackedDepthStencil = OpenTK.Graphics.ES30.All;
 #elif SILICONSTUDIO_PLATFORM_ANDROID
 using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES20.ExtTextureFormatBgra8888;
 using OesCompressedEtc1Rgb8Texture = OpenTK.Graphics.ES20.OesCompressedEtc1Rgb8Texture;
+#else
 #endif
 #else
 using OpenTK.Graphics.OpenGL;
@@ -24,36 +31,11 @@ namespace SiliconStudio.Xenko.Graphics
 {
     internal static class OpenGLConvertExtensions
     {
-        // Define missing constants
-        // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
+
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)0x81A5;
-        private const PixelInternalFormat Depth24Stencil8 = (PixelInternalFormat)0x88F0;
-        private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)0x8CAC;
-        private const PixelInternalFormat R8 = (PixelInternalFormat)0x8229;
-        private const PixelInternalFormat R16f = (PixelInternalFormat)0x822D;
-        private const PixelInternalFormat Rg16f = (PixelInternalFormat)0x822F;
-        private const PixelInternalFormat Rgba16f = (PixelInternalFormat)0x881A;
-        private const PixelInternalFormat R32ui = (PixelInternalFormat)0x8236;
-        private const PixelInternalFormat R32f = (PixelInternalFormat)0x822E;
-        private const PixelInternalFormat Rg32f = (PixelInternalFormat)0x8230;
-        private const PixelInternalFormat Rgb32f = (PixelInternalFormat)0x8815;
-        private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
         private const PixelInternalFormat SrgbAlpha = (PixelInternalFormat)0x8C42;
         private const PixelInternalFormat Srgb8Alpha8 = (PixelInternalFormat)0x8C43;
 #else
-        private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
-        private const PixelInternalFormat Depth24Stencil8 = PixelInternalFormat.Depth24Stencil8;
-        private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
-        private const PixelInternalFormat R8 = PixelInternalFormat.R8;
-        private const PixelInternalFormat R16f = PixelInternalFormat.R16f;
-        private const PixelInternalFormat Rg16f = PixelInternalFormat.Rg16f;
-        private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
-        private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
-        private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
-        private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
-        private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
-        private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
         private const PixelInternalFormat SrgbAlpha = PixelInternalFormat.SrgbAlpha;
         private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
 #endif
@@ -73,33 +55,6 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-        public static ES30.PrimitiveType ToOpenGL(this PrimitiveType primitiveType)
-        {
-            return primitiveType.ToOpenGLES();
-        }
-#else
-        public static BeginMode ToOpenGL(this PrimitiveType primitiveType)
-        {
-            switch (primitiveType)
-            {
-                case PrimitiveType.PointList:
-                    return BeginMode.Points;
-                case PrimitiveType.LineList:
-                    return BeginMode.Lines;
-                case PrimitiveType.LineStrip:
-                    return BeginMode.LineStrip;
-                case PrimitiveType.TriangleList:
-                    return BeginMode.Triangles;
-                case PrimitiveType.TriangleStrip:
-                    return BeginMode.TriangleStrip;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-#endif
-#else
         public static PrimitiveTypeGl ToOpenGL(this PrimitiveType primitiveType)
         {
             switch (primitiveType)
@@ -115,10 +70,10 @@ namespace SiliconStudio.Xenko.Graphics
                 case PrimitiveType.TriangleStrip:
                     return PrimitiveTypeGl.TriangleStrip;
                 default:
-                    throw new NotImplementedException();
+                    // Undefined
+                    return PrimitiveTypeGl.Triangles;
             }
         }
-#endif
 
         public static BufferAccessMask ToOpenGLMask(this MapMode mapMode)
         {
@@ -289,10 +244,9 @@ namespace SiliconStudio.Xenko.Graphics
                     case PixelFormat.R32G32B32A32_Float:
                     case PixelFormat.D32_Float:
                         throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
-                    case PixelFormat.D24_UNorm_S8_UInt:
-                        if (!(graphicsDevice.HasDepth24 && graphicsDevice.HasPackedDepthStencilExtension))
-                            throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
-                        break;
+
+                    // NOTE: We always allow PixelFormat.D24_UNorm_S8_UInt.
+                    // If it is not supported we will fall back to separate D24/D16 and S8 resources when creating a texture.
                 }
             }
 #endif
@@ -351,7 +305,7 @@ namespace SiliconStudio.Xenko.Graphics
                         internalFormat = PixelInternalFormat.Luminance;
                         format = PixelFormatGl.Luminance;
 #else
-                        internalFormat = R8;
+                        internalFormat = PixelInternalFormat.R8;
                         format = PixelFormatGl.Red;
 #endif
                     }
@@ -384,74 +338,142 @@ namespace SiliconStudio.Xenko.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.R8G8B8A8_UNorm_SRgb:
-                    internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;
-                    format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Rgba;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    internalFormat = graphicsDevice.IsOpenGLES2 ? SrgbAlpha : Srgb8Alpha8;
+                    format = graphicsDevice.IsOpenGLES2 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Rgba;
+#else
+                    internalFormat = Srgb8Alpha8;
+                    format = PixelFormatGl.Rgba;
+#endif
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
+                case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                    // TODO: Check on iOS/Android and OpenGL 3
+                    internalFormat = Srgb8Alpha8;
+                    format = PixelFormatGl.Bgra;
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.BC1_UNorm:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC1_UNorm_SRgb:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC2_UNorm:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC2_UNorm_SRgb:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC3_UNorm:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC3_UNorm_SRgb:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+#endif
                 case PixelFormat.R16_Float:
-                    internalFormat = R16f;
+                    internalFormat = PixelInternalFormat.R16f;
                     format = PixelFormatGl.Red;
                     type = PixelType.HalfFloat;
                     pixelSize = 2;
                     break;
                 case PixelFormat.R16G16_Float:
-                    internalFormat = Rg16f;
+                    internalFormat = PixelInternalFormat.Rg16f;
                     format = PixelFormatGl.Rg;
                     type = PixelType.HalfFloat;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R16G16B16A16_Float:
-                    internalFormat = Rgba16f;
+                    internalFormat = PixelInternalFormat.Rgba16f;
                     format = PixelFormatGl.Rgba;
                     type = PixelType.HalfFloat;
                     pixelSize = 8;
                     break;
                 case PixelFormat.R32_UInt:
-                    internalFormat = R32ui;
+                    internalFormat = PixelInternalFormat.R32ui;
                     format = PixelFormatGl.RedInteger;
                     type = PixelType.UnsignedInt;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R32_Float:
-                    internalFormat = R32f;
+                    internalFormat = PixelInternalFormat.R32f;
                     format = PixelFormatGl.Red;
                     type = PixelType.Float;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R32G32_Float:
-                    internalFormat = Rg32f;
+                    internalFormat = PixelInternalFormat.Rg32f;
                     format = PixelFormatGl.Rg;
                     type = PixelType.Float;
                     pixelSize = 8;
                     break;
                 case PixelFormat.R32G32B32_Float:
-                    internalFormat = Rgb32f;
+                    internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormatGl.Rgb;
                     type = PixelType.Float;
                     pixelSize = 12;
                     break;
                 case PixelFormat.R32G32B32A32_Float:
-                    internalFormat = Rgba32f;
+                    internalFormat = PixelInternalFormat.Rgba32f;
                     format = PixelFormatGl.Rgba;
                     type = PixelType.Float;
                     pixelSize = 16;
                     break;
                 case PixelFormat.D16_UNorm:
-                    internalFormat = DepthComponent16;
+                    internalFormat = PixelInternalFormat.DepthComponent16;
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.UnsignedShort;
                     pixelSize = 2;
                     break;
                 case PixelFormat.D24_UNorm_S8_UInt:
-                    internalFormat = Depth24Stencil8;
+                    internalFormat = PixelInternalFormat.Depth24Stencil8;
                     format = PixelFormatGl.DepthStencil;
                     type = PixelType.UnsignedInt248;
                     pixelSize = 4;
                     break;
                 // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
                 case PixelFormat.D32_Float:
-                    internalFormat = DepthComponent32f;
+                    internalFormat = PixelInternalFormat.DepthComponent32f;
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.Float;
                     pixelSize = 4;

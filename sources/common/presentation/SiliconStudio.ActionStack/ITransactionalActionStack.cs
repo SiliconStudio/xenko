@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.ActionStack
 {
+    public delegate IActionItem AggregateActionItemDelegate(IReadOnlyCollection<IActionItem> actionItems, bool reverseOrderOnUndo = true);
+
     /// <summary>
     /// Base interface for a transactional action stack.
     /// </summary>
@@ -47,7 +49,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="name">The name given to the transaction at the end.</param>
         /// <returns>An EndTransaction subscription.</returns>
         /// <seealso cref="BeginTransaction"/>
-        /// <seealso cref="EndTransaction(string)"/>
+        /// <seealso cref="EndTransaction(string, bool)"/>
         IDisposable BeginEndTransaction(string name);
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="getName">A delegate that late-evaluate the name given to the transaction at the end.</param>
         /// <returns>Returns a end transaction subscription.</returns>
         /// <seealso cref="BeginTransaction"/>
-        /// <seealso cref="EndTransaction(string)"/>
+        /// <seealso cref="EndTransaction(string, bool)"/>
         IDisposable BeginEndTransaction(Func<string> getName);
 
         /// <summary>
@@ -80,28 +82,30 @@ namespace SiliconStudio.ActionStack
 
         /// <summary>
         /// Begins a transaction. <see cref="IActionItem"/> added after a call to BeginTransaction are stored in a temporary transaction stack,
-        /// until a call to <see cref="EndTransaction(string)"/>, <see cref="CancelTransaction"/>, or <see cref="DiscardTransaction"/> is done.
+        /// until a call to <see cref="EndTransaction(string, bool)"/>, <see cref="CancelTransaction"/>, or <see cref="DiscardTransaction"/> is done.
         /// </summary>
         void BeginTransaction();
 
         /// <summary>
         /// Ends a transaction started with <see cref="BeginTransaction"/>.
         /// </summary>
-        /// <param name="displayName"></param>
+        /// <param name="displayName">The name to give to the created transaction</param>
+        /// <param name="reverseOrderOnUndo">Indicate whether the order of contained action items should be reversed when undoing this action.</param>
         /// <remarks>Once the transaction is ended, an aggregate action is created with all action items that were added during the transaction. This aggregate is added to the action stack.</remarks>
-        void EndTransaction(string displayName);
+        void EndTransaction(string displayName, bool reverseOrderOnUndo = true);
 
         /// <summary>
         /// Ends a transaction started with <see cref="BeginTransaction"/>.
         /// </summary>
-        /// <param name="displayName"></param>
+        /// <param name="displayName">The name to give to the created transaction</param>
         /// <param name="aggregateActionItems">A function that will aggregate an enumeration of action items into a single action item.</param>
+        /// <param name="reverseOrderOnUndo">Indicate whether the order of contained action items should be reversed when undoing this action.</param>
         /// <remarks>
         /// Once the transaction is ended, an aggregate action is created with all action items that were added during the transaction.
         /// This aggregate is added to the action stack. If no action item was added during the transaction, the transaction is then discarded instead,
         /// as it would be if <see cref="DiscardTransaction"/> was called instead.
         /// </remarks>
-        void EndTransaction(string displayName, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems);
+        void EndTransaction(string displayName, AggregateActionItemDelegate aggregateActionItems, bool reverseOrderOnUndo = true);
 
         /// <summary>
         /// Cancels a transaction started with <see cref="BeginTransaction"/>. Every action from the cancelled transaction will be undone.

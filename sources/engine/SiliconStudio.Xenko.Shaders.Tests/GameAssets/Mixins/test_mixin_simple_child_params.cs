@@ -16,15 +16,14 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace Test4
 {
-    [DataContract]
-    public partial class TestParameters : ShaderMixinParameters
+    [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> TestCount = ParameterKeys.New<int>();
-        public static readonly ParameterKey<bool> UseComputeColorEffect = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<int> TestCount = ParameterKeys.NewPermutation<int>();
+        public static readonly PermutationParameterKey<bool> UseComputeColorEffect = ParameterKeys.NewPermutation<bool>();
     };
     internal static partial class ShaderMixins
     {
-        internal partial class ChildParamsMixin : IShaderMixinBuilder
+        internal partial class ChildParamsMixin  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
@@ -35,6 +34,7 @@ namespace Test4
 
             [ModuleInitializer]
             internal static void __Initialize__()
+
             {
                 ShaderMixinManager.Register("ChildParamsMixin", new ChildParamsMixin());
             }
@@ -42,7 +42,7 @@ namespace Test4
     }
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimpleChildParams : IShaderMixinBuilder
+        internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
@@ -60,6 +60,7 @@ namespace Test4
 
             [ModuleInitializer]
             internal static void __Initialize__()
+
             {
                 ShaderMixinManager.Register("DefaultSimpleChildParams", new DefaultSimpleChildParams());
             }

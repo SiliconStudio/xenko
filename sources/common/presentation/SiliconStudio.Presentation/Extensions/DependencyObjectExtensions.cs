@@ -21,21 +21,20 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns an array of DependencyProperty owned by the DependencyObject.</returns>
         public static DependencyProperty[] GetDependencyProperties(this DependencyObject source, bool includingParentProperties = false)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             // there is probably a better way using TypeDescriptor
 
-            Type dependencyPropertyType = typeof(DependencyProperty);
+            var dependencyPropertyType = typeof(DependencyProperty);
 
-            BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
+            var flags = BindingFlags.Public | BindingFlags.Static;
             if (includingParentProperties)
                 flags |= BindingFlags.FlattenHierarchy;
 
             return source.DependencyObjectType.SystemType.GetFields(flags)
                 .Where(fi => fi.MemberType == MemberTypes.Field && fi.FieldType == dependencyPropertyType)
                 .Select(fi => (DependencyProperty)fi.GetValue(source))
-                .OrderBy(fi => fi.Name)
+                .OrderBy(dp => dp.Name)
                 .ToArray();
         }
 
@@ -47,30 +46,25 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="value">Value to set.</param>
         public static void DeepSetValue(this DependencyObject source, DependencyProperty property, object value)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (property == null)
-                throw new ArgumentNullException("property");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (property == null) throw new ArgumentNullException(nameof(property));
 
             source.SetValue(property, value);
             foreach (object child in LogicalTreeHelper.GetChildren(source as dynamic))
             {
                 var depChild = child as DependencyObject;
-                if (depChild != null)
-                    depChild.DeepSetValue(property, value);
+                depChild?.DeepSetValue(property, value);
             }
         }
 
         /// <summary>
-        /// Find the root parent that match the given type, along the visual tree.
+        /// Find the root parent, along the visual tree.
         /// </summary>
-        /// <typeparam name="T">Type of parent to find.</typeparam>
-        /// <param name="source">Base node from where to start looking for parent.</param>
-        /// <returns>Returns the retrieved parent, or null otherwise.</returns>
+        /// <param name="source">Base node from where to start looking for root.</param>
+        /// <returns>Returns the retrieved root, or null otherwise.</returns>
         public static Visual FindVisualRoot(this DependencyObject source)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             Visual root = null;
             while (source != null)
@@ -89,8 +83,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved parent, or null otherwise.</returns>
         public static T FindVisualParentOfType<T>(this DependencyObject source) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             return FindParentOfType<T>(source, VisualTreeHelper.GetParent);
         }
@@ -103,8 +96,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved child, or null otherwise.</returns>
         public static T FindVisualChildOfType<T>(this DependencyObject source) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             return FindChildOfType<T>(source, VisualTreeHelper.GetChildrenCount, VisualTreeHelper.GetChild);
         }
@@ -117,8 +109,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved children, or empty otherwise.</returns>
         public static IEnumerable<T> FindVisualChildrenOfType<T>(this DependencyObject source) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             return FindChildrenOfType<T>(source, VisualTreeHelper.GetChildrenCount, VisualTreeHelper.GetChild);
         }
@@ -130,7 +121,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>The child if the given object has children, <c>null</c> otherwise.</returns>
         public static DependencyObject FindFirstVisualChild(this DependencyObject source)
         {
-            int childrenCount = VisualTreeHelper.GetChildrenCount(source);
+            var childrenCount = VisualTreeHelper.GetChildrenCount(source);
             return childrenCount > 0 ? VisualTreeHelper.GetChild(source, 0) : null;
         }
 
@@ -142,8 +133,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved parent, or null otherwise.</returns>
         public static T FindLogicalParentOfType<T>(this DependencyObject source) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             return FindParentOfType<T>(source, LogicalTreeHelper.GetParent);
         }
@@ -157,8 +147,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved child, or null otherwise.</returns>
         public static T FindLogicalChildOfType<T>(this DependencyObject source) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             return FindChildOfType<T>(source,
                 d => LogicalTreeHelper.GetChildren(d).Cast<DependencyObject>().Count(),
@@ -174,8 +163,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved children, or empty otherwise.</returns>
         public static IEnumerable<T> FindLogicalChildrenOfType<T>(this DependencyObject source) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             return FindChildrenOfType<T>(source,
                 d => LogicalTreeHelper.GetChildren(d).Cast<DependencyObject>().Count(),
@@ -194,28 +182,30 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved parent, or null otherwise.</returns>
         private static T FindParentOfType<T>(DependencyObject source, Func<DependencyObject, DependencyObject> getParentFunc) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (getParentFunc == null)
-                throw new ArgumentNullException("getParentFunc");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (getParentFunc == null) throw new ArgumentNullException(nameof(getParentFunc));
 
-            // try to get visual parent
-            var parent = getParentFunc(source);
-
-            if (parent != null)
+            while (true)
             {
-                if (parent is T)
+                // try to get visual parent
+                var parent = getParentFunc(source);
+
+                if (parent != null)
                 {
-                    // parent is of requested type, returned casted
-                    return parent as T;
+                    if (parent is T)
+                    {
+                        // parent is of requested type, returned casted
+                        return parent as T;
+                    }
+
+                    // there is a parent but not of request type, let's keep traversing the tree up
+                    source = parent;
+                    continue;
                 }
 
-                // there is a parent but not of request type, let's keep traversing the tree up
-                return FindParentOfType<T>(parent, getParentFunc);
+                // failed to find visual parent
+                return null;
             }
-
-            // failed to find visual parent
-            return null;
         }
 
         /// <summary>
@@ -228,12 +218,9 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved child, or null otherwise.</returns>
         private static T FindChildOfType<T>(DependencyObject source, Func<DependencyObject, int> getChildrenCountFunc, Func<DependencyObject, int, DependencyObject> getChildFunc) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (getChildrenCountFunc == null)
-                throw new ArgumentNullException("getChildrenCountFunc");
-            if (getChildFunc == null)
-                throw new ArgumentNullException("getChildFunc");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (getChildrenCountFunc == null) throw new ArgumentNullException(nameof(getChildrenCountFunc));
+            if (getChildFunc == null) throw new ArgumentNullException(nameof(getChildFunc));
 
             var childCount = getChildrenCountFunc(source);
             for (var i = 0; i < childCount; i++)
@@ -261,12 +248,9 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns>Returns the retrieved children, empty otherwise.</returns>
         private static IEnumerable<T> FindChildrenOfType<T>(DependencyObject source, Func<DependencyObject, int> getChildrenCountFunc, Func<DependencyObject, int, DependencyObject> getChildFunc) where T : DependencyObject
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (getChildrenCountFunc == null)
-                throw new ArgumentNullException("getChildrenCountFunc");
-            if (getChildFunc == null)
-                throw new ArgumentNullException("getChildFunc");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (getChildrenCountFunc == null) throw new ArgumentNullException(nameof(getChildrenCountFunc));
+            if (getChildFunc == null) throw new ArgumentNullException(nameof(getChildFunc));
 
             var childCount = getChildrenCountFunc(source);
             for (var i = 0; i < childCount; i++)

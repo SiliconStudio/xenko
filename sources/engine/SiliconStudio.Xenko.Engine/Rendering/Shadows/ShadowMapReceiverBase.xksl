@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </remarks>
     internal class ShadowMapReceiverBase<int TCascadeCountBase, int TLightCountBase> : MaterialPixelShadingStream, ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
-        cbuffer PerPass // TODO: Use a proper cbuffer for this?
+        cbuffer PerLighting // TODO: Use a proper cbuffer for this?
         {
             float4x4 WorldToShadowCascadeUV[TCascadeCountBase * TLightCountBase];
             float DepthBiases[TLightCountBase];

@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     internal static partial class ShadowMapReceiverBaseKeys
     {
-        public static readonly ParameterKey<Matrix[]> WorldToShadowCascadeUV = ParameterKeys.New<Matrix[]>();
-        public static readonly ParameterKey<float[]> DepthBiases = ParameterKeys.New<float[]>();
-        public static readonly ParameterKey<float[]> OffsetScales = ParameterKeys.New<float[]>();
+        public static readonly ValueParameterKey<Matrix> WorldToShadowCascadeUV = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<float> DepthBiases = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> OffsetScales = ParameterKeys.NewValue<float>();
     }
 }

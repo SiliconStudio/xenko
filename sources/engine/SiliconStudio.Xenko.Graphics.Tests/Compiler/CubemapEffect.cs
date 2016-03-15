@@ -8,7 +8,7 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -22,16 +22,17 @@ namespace Test
     {
         internal partial class CubemapDisplayEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "TransformationWAndVP");
                 context.Mixin(mixin, "AlbedoFlatShading");
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __mixinToCompose__ = "ComputeColorTextureCubeBasic";
+                    var __subMixin = new ShaderMixinSource();
                     context.PushComposition(mixin, "albedoDiffuse", __subMixin);
-                    context.Mixin(__subMixin, "ComputeColorTextureCubeBasic", TexturingKeys.TextureCube0);
+                    context.Mixin(__subMixin, __mixinToCompose__, TexturingKeys.TextureCube0);
                     context.PopComposition();
                 }
             }
@@ -48,7 +49,7 @@ namespace Test
     {
         internal partial class CubemapEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "TransformationWAndVP");
@@ -56,17 +57,19 @@ namespace Test
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(MaterialParameters.AlbedoDiffuse);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "albedoDiffuse", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 else
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = "ComputeColorTextureCubeReflect";
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "albedoDiffuse", __subMixin);
-                        context.Mixin(__subMixin, "ComputeColorTextureCubeReflect", TexturingKeys.TextureCube0);
+                        context.Mixin(__subMixin, __mixinToCompose__, TexturingKeys.TextureCube0);
                         context.PopComposition();
                     }
             }
@@ -83,19 +86,20 @@ namespace Test
     {
         internal partial class CubemapGeomEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "TransformationWAndVP");
-                mixin.Mixin.AddMacro("MAX_VERTEX_COUNT", 9);
+                mixin.AddMacro("MAX_VERTEX_COUNT", 9);
                 context.Mixin(mixin, "CameraCube");
                 context.Mixin(mixin, "AlbedoFlatShading");
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(MaterialParameters.AlbedoDiffuse);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "albedoDiffuse", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
             }
@@ -112,15 +116,13 @@ namespace Test
     {
         internal partial class CubemapIBLEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "XenkoBaseShader");
-
+                if (context.ChildEffectName == "XenkoGBufferShaderPass")
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "XenkoGBufferShaderPass" };
-                    context.BeginChild(__subMixin);
-                    context.Mixin(__subMixin, "XenkoGBufferShaderPass");
-                    context.EndChild();
+                    context.Mixin(mixin, "XenkoGBufferShaderPass");
+                    return;
                 }
             }
 

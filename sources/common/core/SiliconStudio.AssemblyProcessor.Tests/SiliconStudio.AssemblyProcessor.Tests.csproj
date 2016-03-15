@@ -1,29 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-  </PropertyGroup>
-  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
-  <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F69132EA-484B-48D5-9FEC-B4B3C7361C68}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>ASSEMBLY_PROCESSOR;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>ASSEMBLY_PROCESSOR;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>$(SiliconStudioDependenciesDir)Mono.Cecil\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\deps\Mono.Cecil\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core.interfaces">
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
+      <HintPath>..\..\deps\NUnit\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+      <HintPath>..\..\deps\NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -38,33 +55,13 @@
     <Compile Include="TestCecilExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SiliconStudio.AssemblyProcessor.Common\SiliconStudio.AssemblyProcessor.Common.csproj">
+    <ProjectReference Include="..\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj">
       <Project>{5D778003-7C87-47AC-A6C2-358CCCD8416E}</Project>
-      <Name>SiliconStudio.AssemblyProcessor.Common</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
-      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
-      <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
-      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
-      <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
-      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
-      <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
-      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
-      <Name>SiliconStudio.Core.Serialization</Name>
+      <Name>SiliconStudio.AssemblyProcessor</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

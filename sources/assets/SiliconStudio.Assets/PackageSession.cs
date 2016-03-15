@@ -278,6 +278,30 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Adds an existing package to the current session and runs the package analysis before adding it.
+        /// </summary>
+        /// <param name="package">The package to add</param>
+        /// <param name="logger">The logger</param>
+        public void AddExistingPackage(Package package, ILogger logger)
+        {
+            if (package == null) throw new ArgumentNullException(nameof(package));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
+            if (packages.Contains(package))
+            {
+                return;
+            }
+
+            // Preset the session on the package to allow the session to look for existing asset
+            this.Packages.Add(package);
+
+            // Run analysis after
+            var analysis = new PackageAnalysis(package, GetPackageAnalysisParametersForLoad());
+            analysis.Run(logger);
+
+        }
+
+        /// <summary>
         /// Loads a package from specified file path.
         /// </summary>
         /// <param name="filePath">The file path to a package file.</param>
@@ -661,6 +685,26 @@ namespace SiliconStudio.Assets
                                             project.RemoveItem(item);
                                         }
                                     }
+                                    //delete any generated file as well
+                                    var generatorAsset = assetItem.Asset as ProjectCodeGeneratorAsset;
+                                    if (generatorAsset?.GeneratedAbsolutePath != null)
+                                    {
+                                        File.Delete((new UFile(generatorAsset.GeneratedAbsolutePath)).ToWindowsPath());
+
+                                        //and remove from project as well
+                                        Project project;
+                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                        {
+                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                            vsProjs.Add(assetItem.SourceProject, project);
+                                        }
+                                        var include = new UFile(new UFile(projectAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs").ToWindowsPath();
+                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
+                                        if (item != null)
+                                        {
+                                            project.RemoveItem(item);
+                                        }
+                                    }
                                 }
 
                                 File.Delete(assetPath);
@@ -698,7 +742,7 @@ namespace SiliconStudio.Assets
                         package.Save(log);
 
                         // Clone the package (but not all assets inside, just the structure)
-                        var packageClone = package.Clone(false);
+                        var packageClone = package.Clone();
                         packagesCopy.Add(packageClone);
                     }
 
@@ -913,7 +957,7 @@ namespace SiliconStudio.Assets
             if (package.State < PackageState.AssetsReady)
                 return;
 
-            packagesCopy.Add(package.Clone(false));
+            packagesCopy.Add(package.Clone());
         }
 
         private void UnRegisterPackage(Package package)
@@ -1297,6 +1341,7 @@ namespace SiliconStudio.Assets
                 IsPackageCheckDependencies = true,
                 IsProcessingAssetReferences = true,
                 IsLoggingAssetNotFoundAsError = true,
+                AssetTemplatingMergeModifiedAssets = true
             };
         }
 

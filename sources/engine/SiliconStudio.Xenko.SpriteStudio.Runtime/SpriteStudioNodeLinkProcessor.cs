@@ -2,25 +2,24 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioNodeLinkProcessor : EntityProcessor<SpriteStudioNodeLinkComponent>
+    public class SpriteStudioNodeLinkProcessor : EntityProcessor<SpriteStudioNodeLinkComponent, SpriteStudioNodeLinkComponent>
     {
         public SpriteStudioNodeLinkProcessor()
-            : base(TransformComponent.Key, SpriteStudioNodeLinkComponent.Key)
+            : base(typeof(TransformComponent))
         {
             Order = 551;
         }
 
-        protected override SpriteStudioNodeLinkComponent GenerateAssociatedData(Entity entity)
+        protected override SpriteStudioNodeLinkComponent GenerateComponentData(Entity entity, SpriteStudioNodeLinkComponent component)
         {
-            return entity.Get(SpriteStudioNodeLinkComponent.Key);
+            return component;
         }
 
-        protected override void OnEntityRemoved(Entity entity, SpriteStudioNodeLinkComponent data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioNodeLinkComponent component, SpriteStudioNodeLinkComponent data)
         {
             // Reset TransformLink
             if (entity.Transform.TransformLink is SpriteStudioNodeTransformLink)
@@ -29,10 +28,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override void Draw(RenderContext context)
         {
-            foreach (var item in enabledEntities)
+            foreach (var item in ComponentDatas)
             {
                 var modelNodeLink = item.Value;
-                var transformComponent = item.Key.Transform;
+                var transformComponent = item.Key.Entity.Transform;
                 var transformLink = transformComponent.TransformLink as SpriteStudioNodeTransformLink;
 
                 // Try to use Target, otherwise Parent
@@ -44,7 +43,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 {
                     // In case we use parent, modelComponent still needs to be resolved
                     if (modelComponent == null)
-                        modelComponent = modelEntity?.Get(SpriteStudioComponent.Key);
+                        modelComponent = modelEntity?.Get<SpriteStudioComponent>(); // TODO: Add support for multiple components?
 
                     // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
                     transformComponent.TransformLink = modelComponent != null ? new SpriteStudioNodeTransformLink(modelComponent, modelNodeLink.NodeName) : null;

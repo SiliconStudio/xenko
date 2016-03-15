@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
 
                 AssetParameters.ColliderShapes = AssetParameters.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
                     var loadSettings = new AssetManagerLoaderSettings
                     {
-                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh))
+                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
                     };
 
                     var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);
@@ -94,30 +94,38 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     var nodeTransforms = new List<Matrix>();
 
                     //pre-compute all node transforms, assuming nodes are ordered... see ModelViewHierarchyUpdater
-                    var nodesLength = modelAsset.Skeleton.Nodes.Length;
-                    for (var i = 0; i < nodesLength; i++)
+                    
+                    if (modelAsset.Skeleton == null)
                     {
-                        Matrix localMatrix;
-                        TransformComponent.CreateMatrixTRS(
-                            ref modelAsset.Skeleton.Nodes[i].Transform.Position,
-                            ref modelAsset.Skeleton.Nodes[i].Transform.Rotation,
-                            ref modelAsset.Skeleton.Nodes[i].Transform.Scale, out localMatrix);
-
-                        Matrix worldMatrix;
-                        if (modelAsset.Skeleton.Nodes[i].ParentIndex != -1)
+                        nodeTransforms.Add(Matrix.Identity);
+                    }
+                    else
+                    {
+                        var nodesLength = modelAsset.Skeleton.Nodes.Length;
+                        for (var i = 0; i < nodesLength; i++)
                         {
-                            var nodeTransform = nodeTransforms[modelAsset.Skeleton.Nodes[i].ParentIndex];
-                            Matrix.Multiply(ref localMatrix, ref nodeTransform, out worldMatrix);
-                        }
-                        else
-                        {
-                            worldMatrix = localMatrix;
-                        }
+                            Matrix localMatrix;
+                            TransformComponent.CreateMatrixTRS(
+                                ref modelAsset.Skeleton.Nodes[i].Transform.Position,
+                                ref modelAsset.Skeleton.Nodes[i].Transform.Rotation,
+                                ref modelAsset.Skeleton.Nodes[i].Transform.Scale, out localMatrix);
 
-                        nodeTransforms.Add(worldMatrix);
+                            Matrix worldMatrix;
+                            if (modelAsset.Skeleton.Nodes[i].ParentIndex != -1)
+                            {
+                                var nodeTransform = nodeTransforms[modelAsset.Skeleton.Nodes[i].ParentIndex];
+                                Matrix.Multiply(ref localMatrix, ref nodeTransform, out worldMatrix);
+                            }
+                            else
+                            {
+                                worldMatrix = localMatrix;
+                            }
+
+                            nodeTransforms.Add(worldMatrix);
+                        }
                     }
 
-                    for (var i = 0; i < nodesLength; i++)
+                    for (var i = 0; i < nodeTransforms.Count; i++)
                     {
                         var i1 = i;
                         if (modelAsset.Meshes.All(x => x.NodeIndex != i1)) continue; // no geometry in the node

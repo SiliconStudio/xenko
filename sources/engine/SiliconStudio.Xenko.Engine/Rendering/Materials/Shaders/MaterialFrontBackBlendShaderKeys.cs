@@ -5,6 +5,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public partial class MaterialFrontBackBlendShaderKeys
     {
-        public static readonly ParameterKey<bool> UseNormalBackFace = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> UseNormalBackFace = ParameterKeys.NewPermutation<bool>(true);
     }
 }

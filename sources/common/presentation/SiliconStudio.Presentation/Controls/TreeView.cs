@@ -273,7 +273,10 @@ namespace SiliconStudio.Presentation.Controls
             if (item.IsEditing)
                 return;
 
-            SelectSingleItem(item);
+            if (!SelectedItems.Contains(item.DataContext))
+            {
+                SelectSingleItem(item);
+            }
 
             item.ForceFocus();
         }

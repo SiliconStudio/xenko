@@ -44,7 +44,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
         protected readonly NonTerminal class_specifier = T("class_specifier", CreateClassDeclarationAst);
         protected readonly NonTerminal compile_expression = T("compile_expression", CreateCompileExpressionAst);
         protected readonly NonTerminal constant_buffer_resource = T("constant_buffer_resource", CreateConstantBufferAst);
-        protected readonly NonTerminal constant_buffer_resource_type = T("constant_buffer_resource_type", CreateConstantBufferTypeAst);
+        protected readonly NonTerminal constant_buffer_resource_type = T("constant_buffer_resource_type");
         protected readonly NonTerminal float_qualifier = T("float_qualifier", CreateFloatQualifier);
         protected readonly NonTerminal geometry_stream = TT("geomery_stream");
         protected readonly NonTerminal identifier_dot = T("identifier_dot", CreateIdentifierDotAst);
@@ -235,7 +235,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
                 for (var dimX = 1; dimX <= 4; dimX++)
                     for (var dimY = 1; dimY <= 4; dimY++)
                     {
-                        var matrixTypeInstance = new MatrixType(scalarTypeIt, dimY, dimX);
+                        var matrixTypeInstance = new MatrixType(scalarTypeIt, dimX, dimY);
                         var nonGenericType = matrixTypeInstance.ToNonGenericType();
                         var name = nonGenericType.Name.Text;
 
@@ -469,7 +469,8 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
             class_base_type.Rule = (ToTerm(":") + class_base_type_list).Opt();
 
             // buffer definition
-            constant_buffer_resource_type.Rule = Keyword("cbuffer") | Keyword("tbuffer");
+            constant_buffer_resource_type.Rule = Keyword("cbuffer") | Keyword("tbuffer") | Keyword("rgroup");
+            constant_buffer_resource_type.AstNodeCreator = CreateConstantBufferTypeAst;
 
             constant_buffer_resource.Rule = attribute_qualifier_pre + constant_buffer_resource_type + identifier.Opt() + register.Opt() + "{" + declaration.ListOpt() + "}" + semi_opt;
 

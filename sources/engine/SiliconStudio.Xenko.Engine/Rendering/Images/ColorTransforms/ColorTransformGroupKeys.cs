@@ -9,6 +9,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     internal static class ColorTransformGroupKeys
     {
-        public static readonly ParameterKey<List<ColorTransform>> Transforms = ParameterKeys.New<List<ColorTransform>>();
+        public static readonly PermutationParameterKey<List<ColorTransform>> Transforms = ParameterKeys.NewPermutation<List<ColorTransform>>();
     }
 }

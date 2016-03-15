@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Mono.Options;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Windows;
@@ -84,13 +85,24 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var router = new Router();
 
                     // Start router (in listen server mode)
-                    router.Listen(RouterClient.DefaultPort);
+                    router.Listen(RouterClient.DefaultPort).Wait();
 
                     // Start Android management thread
                     new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
 
                     // Start Windows Phone management thread
                     new Thread(() => WindowsPhoneTracker.TrackDevices(router)) { IsBackground = true }.Start();
+
+                    //Start iOS device discovery and proxy launcher
+                    //Currently this is used only internally for QA testing... as we cannot attach the debugger from windows for normal usages..
+                    if (IosTracker.CanProxy())
+                    {
+                        new Thread(async () =>
+                        {
+                            var iosTracker = new IosTracker(router);
+                            await iosTracker.TrackDevices();
+                        }) { IsBackground = true }.Start();
+                    }
 
                     // Start WinForms loop
                     System.Windows.Forms.Application.Run();

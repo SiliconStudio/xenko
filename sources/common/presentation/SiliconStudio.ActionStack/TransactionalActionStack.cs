@@ -107,22 +107,22 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public void EndTransaction(string name)
+        public void EndTransaction(string name, bool reverseOrderOnUndo = true)
         {
-            EndTransaction(name, x => AggregateActionItems(x, name));
+            EndTransaction(name, (items, reverse) => AggregateActionItems(items, name, reverse), reverseOrderOnUndo);
         }
 
         /// <inheritdoc/>
-        public virtual void EndTransaction(string name, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems)
+        public virtual void EndTransaction(string name, AggregateActionItemDelegate aggregateActionItems, bool reverseOrderOnUndo = true)
         {
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.CannotEndNoTransactionInProgress);
 
             var currentTransaction = TransactionStack.Pop();
             if (currentTransaction.Count > 0)
             {
-                var aggregateActionItem = aggregateActionItems(currentTransaction);
-                Add(aggregateActionItem);
-                TransactionEnded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(aggregateActionItem));
+                var result = aggregateActionItems(currentTransaction, reverseOrderOnUndo);
+                Add(result);
+                TransactionEnded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(result));
             }
             else
             {
@@ -171,7 +171,7 @@ namespace SiliconStudio.ActionStack
             }
         }
 
-        private static IActionItem AggregateActionItems(IReadOnlyCollection<IActionItem> actionItems, string name = null)
+        private static IActionItem AggregateActionItems(IReadOnlyCollection<IActionItem> actionItems, string name = null, bool reverseOrderOnUndo = true)
         {
             if (actionItems.Count == 1)
             {
@@ -180,7 +180,7 @@ namespace SiliconStudio.ActionStack
                     actionItem.Name = name;
                 return actionItem;
             }
-            return new AggregateActionItem(name, actionItems);
+            return new AggregateActionItem(name, actionItems.ToArray()) { ReverseOrderOnUndo = reverseOrderOnUndo };
         }
     }
 }

@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "30-Core", "30-Core", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
+		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets
+		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
@@ -28,8 +30,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\store.config = ..\store.config
 		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
 		Xenko.build = Xenko.build
+		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
 		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
 		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
 		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
 		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
@@ -37,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
 		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
 		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
+		..\sources\targets\Xenko.UnitTests.DisableBuild.targets = ..\sources\targets\Xenko.UnitTests.DisableBuild.targets
+		..\sources\targets\Xenko.UnitTests.targets = ..\sources\targets\Xenko.UnitTests.targets
 		..\Xenko.xkpkg = ..\Xenko.xkpkg
 	EndProjectSection
 EndProject
@@ -51,6 +57,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Xenko.Android.targets = ..\Targets\Xenko.Android.targets
 		..\Targets\Xenko.iOS.targets = ..\Targets\Xenko.iOS.targets
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
+		..\Targets\Xenko.Windows.CoreCLR.targets = ..\Targets\Xenko.Windows.CoreCLR.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
 		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
 		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
@@ -92,12 +99,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles", "..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj", "{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{7662CECF-2A3D-4DBA-AB3D-77FD8536E7A3}"
+	ProjectSection(SolutionItems) = preProject
+		..\sources\shared\SharedAssemblyInfo.cs = ..\sources\shared\SharedAssemblyInfo.cs
+		..\Xenko.xkpkg = ..\Xenko.xkpkg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
+		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
@@ -301,6 +321,42 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|WindowsStore.ActiveCfg = Release|WindowsStore
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|WindowsStore.Build.0 = Release|WindowsStore
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|WindowsStore.Deploy.0 = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|WindowsStore.ActiveCfg = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|WindowsStore.Build.0 = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|WindowsStore.Deploy.0 = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|WindowsStore.ActiveCfg = Debug|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|WindowsStore.Build.0 = Debug|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|WindowsStore.Deploy.0 = Debug|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|WindowsStore.ActiveCfg = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|WindowsStore.Build.0 = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Release|WindowsStore.Deploy.0 = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|WindowsStore.ActiveCfg = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|WindowsStore.Build.0 = Release|WindowsStore
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Testing|WindowsStore.Deploy.0 = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|WindowsStore.ActiveCfg = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|WindowsStore.Build.0 = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|WindowsStore.Deploy.0 = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Debug|WindowsStore.ActiveCfg = Debug|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Debug|WindowsStore.Build.0 = Debug|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Debug|WindowsStore.Deploy.0 = Debug|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Release|WindowsStore.ActiveCfg = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Release|WindowsStore.Build.0 = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Release|WindowsStore.Deploy.0 = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|WindowsStore.ActiveCfg = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|WindowsStore.Build.0 = Release|WindowsStore
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|WindowsStore.Deploy.0 = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|WindowsStore.ActiveCfg = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|WindowsStore.Build.0 = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|WindowsStore.Deploy.0 = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|WindowsStore.ActiveCfg = Debug|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|WindowsStore.Build.0 = Debug|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|WindowsStore.Deploy.0 = Debug|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|WindowsStore.ActiveCfg = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|WindowsStore.Build.0 = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|WindowsStore.Deploy.0 = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|WindowsStore.ActiveCfg = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|WindowsStore.Build.0 = Release|WindowsStore
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|WindowsStore.Deploy.0 = Release|WindowsStore
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,5 +379,8 @@ Global
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
+		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

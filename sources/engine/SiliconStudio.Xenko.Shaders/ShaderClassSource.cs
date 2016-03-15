@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets the generic parameters.
         /// </summary>
         /// <value>The generic parameters.</value>
-        [DefaultValue(null)]
+        [DefaultValue(null), DataStyle(DataStyle.Compact)]
         public string[] GenericArguments { get; set; }
 
         [DefaultValue(null)]

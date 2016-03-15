@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class PointDepthKeys
     {
-        public static readonly ParameterKey<Vector2> Coordinate = ParameterKeys.New<Vector2>();
+        public static readonly ValueParameterKey<Vector2> Coordinate = ParameterKeys.NewValue<Vector2>();
     }
 }

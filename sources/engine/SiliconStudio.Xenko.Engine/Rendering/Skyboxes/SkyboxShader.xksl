@@ -8,11 +8,14 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// </summary>
     class SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
     {
-        [Link("Skybox.Intensity")]
-        stage float Intensity;
+        cbuffer PerLighting
+        {
+            [Link("Skybox.Intensity")]
+            stage float Intensity;
 
-        [Link("Skybox.SkyMatrix")]
-        stage float4x4 SkyMatrix;
+            [Link("Skybox.SkyMatrix")]
+            stage float4x4 SkyMatrix;
+        }
 
         compose IComputeEnvironmentColor skyboxColor;
 

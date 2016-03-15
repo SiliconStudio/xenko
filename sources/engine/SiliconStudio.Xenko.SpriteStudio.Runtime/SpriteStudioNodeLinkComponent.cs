@@ -8,12 +8,11 @@ using SiliconStudio.Xenko.Engine.Design;
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     [DataContract("SpriteStudioNodeLinkComponent")]
-    [Display(1400, "Sprite Studio Node Link", Expand = ExpandRule.Once)]
+    [Display("Sprite Studio Node Link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioNodeLinkProcessor))]
+    [ComponentOrder(1400)]
     public sealed class SpriteStudioNodeLinkComponent : EntityComponent
     {
-        public static PropertyKey<SpriteStudioNodeLinkComponent> Key = new PropertyKey<SpriteStudioNodeLinkComponent>("Key", typeof(SpriteStudioNodeLinkComponent));
-
         /// <summary>
         /// Gets or sets the model which contains the hierarchy to use.
         /// </summary>
@@ -32,10 +31,5 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         /// </value>
         /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
         public string NodeName { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

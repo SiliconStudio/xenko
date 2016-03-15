@@ -21,8 +21,9 @@ namespace SiliconStudio.Xenko.Animations
             if (typeof(T) == typeof(float))
                 return new AnimationCurveEvaluatorOptimizedFloatGroup();
 
-            if (typeof(T) == typeof(Vector3))
-                return new AnimationCurveEvaluatorOptimizedVector3Group();
+            // TODO: Reintroduces explicit int path for now, since generic path does not work on iOS
+            if (typeof(T) == typeof(int))
+                return new AnimationCurveEvaluatorOptimizedIntGroup();
 
             if (typeof(T) == typeof(Quaternion))
                 return new AnimationCurveEvaluatorOptimizedQuaternionGroup();

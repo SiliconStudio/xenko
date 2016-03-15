@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class FilmGrainShaderKeys
     {
-        public static readonly ParameterKey<float> Amount = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> Time = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> GrainSize = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> LuminanceFactor = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> Amount = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> Time = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> GrainSize = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> LuminanceFactor = ParameterKeys.NewValue<float>();
     }
 }
