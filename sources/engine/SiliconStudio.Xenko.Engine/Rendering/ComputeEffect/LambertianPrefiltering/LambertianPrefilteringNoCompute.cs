@@ -59,13 +59,12 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             if (inputTexture == null)
                 return;
 
-            // Gets and checks the input texture
-            if (inputTexture.Dimension != TextureDimension.TextureCube)
-                throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringSH' effect.");
-
-            var faceCount = inputTexture.Dimension == TextureDimension.TextureCube ? 6 : 1;
             var coefficientsCount = harmonicalOrder * harmonicalOrder;
-
+            var faceCount = inputTexture.Dimension == TextureDimension.TextureCube ? 6 : 1;
+            if (faceCount == 1)
+            {
+                throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringNoCompute' effect.");
+            }
             firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHNoComputePass1Keys.RadianceMap, inputTexture);
 
