@@ -341,21 +341,7 @@ namespace SiliconStudio.Xenko.Particles
         [MemberCollection(CanReorderItems = true)]
         public readonly FastTrackingCollection<ParticleUpdater> Updaters;
 
-
-        #region Dispose
-
-        ~ParticleEmitter()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
         {
             if (disposed)
                 return;
@@ -364,13 +350,9 @@ namespace SiliconStudio.Xenko.Particles
             // Dispose unmanaged resources
             ResetSimulation(); // Will set particle count = 0, freeing unmanaged and graphics memory
 
-            if (!disposing)
-                return;
-
             // Dispose managed resources
             pool?.Dispose();
         }
-        #endregion Dispose
 
         /// <summary>
         /// If the particle pool has changed the sorter must also be updated to reflect those changes
