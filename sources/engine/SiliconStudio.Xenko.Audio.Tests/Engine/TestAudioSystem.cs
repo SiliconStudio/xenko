@@ -63,20 +63,20 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             entity.Add(addedToEntityListener);
             throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(entity);
-            Assert.DoesNotThrow(() => audio.AddListener(addedToEntityListener), "Adding a listener present in the entity system failed");
-            Assert.IsTrue(audio.Listeners.ContainsKey(addedToEntityListener), "The list of listeners of AudioSystem does not contains the addedToEntityListener.");
+            //Assert.DoesNotThrow(() => audio.AddListener(addedToEntityListener), "Adding a listener present in the entity system failed");
+            //Assert.IsTrue(audio.Listeners.ContainsKey(addedToEntityListener), "The list of listeners of AudioSystem does not contains the addedToEntityListener.");
 
-            // Add a listenerComponent already added to audio System and check that it does not crash
-            Assert.DoesNotThrow(()=>audio.AddListener(addedToEntityListener), "Adding a listener already added to the audio system failed.");
+            //// Add a listenerComponent already added to audio System and check that it does not crash
+            //Assert.DoesNotThrow(()=>audio.AddListener(addedToEntityListener), "Adding a listener already added to the audio system failed.");
 
-            // Remove the listeners from the AudioSystem and check that they are removed from internal data structures.
-            Assert.DoesNotThrow(() => audio.RemoveListener(notAddedToEntityListener), "Removing an listener not present in the entity system failed.");
-            Assert.IsFalse(audio.Listeners.ContainsKey(notAddedToEntityListener), "The list of listeners of AudioSystem still contains the notAddedToEntityListener.");
-            Assert.DoesNotThrow(() => audio.RemoveListener(addedToEntityListener), "Removing an listener present in the entity system fails");
-            Assert.IsFalse(audio.Listeners.ContainsKey(addedToEntityListener), "The list of listeners of AudioSystem still contains the addedToEntityListener.");
+            //// Remove the listeners from the AudioSystem and check that they are removed from internal data structures.
+            //Assert.DoesNotThrow(() => audio.RemoveListener(notAddedToEntityListener), "Removing an listener not present in the entity system failed.");
+            //Assert.IsFalse(audio.Listeners.ContainsKey(notAddedToEntityListener), "The list of listeners of AudioSystem still contains the notAddedToEntityListener.");
+            //Assert.DoesNotThrow(() => audio.RemoveListener(addedToEntityListener), "Removing an listener present in the entity system fails");
+            //Assert.IsFalse(audio.Listeners.ContainsKey(addedToEntityListener), "The list of listeners of AudioSystem still contains the addedToEntityListener.");
 
-            // Remove a listener not present in the AudioSystem anymore and check the thrown exception
-            Assert.Throws<ArgumentException>(() => audio.RemoveListener(addedToEntityListener), "Removing the a non-existing listener did not throw ArgumentException.");
+            //// Remove a listener not present in the AudioSystem anymore and check the thrown exception
+            //Assert.Throws<ArgumentException>(() => audio.RemoveListener(addedToEntityListener), "Removing the a non-existing listener did not throw ArgumentException.");
         }
 
         private List<AudioListenerComponent> listComps;
@@ -241,8 +241,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 //game.Entities.Add(listCompEntities[2]);
 
                 // check the sounds are heard by the two listeners.
-                soundControllers[0].Play();
-                soundControllers[2].Play();
+                //soundControllers[0].Play();
+                //soundControllers[2].Play();
             }
             // here we should hear the soundEffect 0 on left ear and the soundEffect 2 on right ear
             else if(loopCount > 240)
@@ -277,15 +277,15 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             // isolate the two listeners such that emitter 1 can be heard only by listener 1 and emitter 2 by listener 3
             // and place emitters such that emitters 1 output on left ear and emitter 2 on right ear.
-            listCompEntities[0].Transform.Position = listCompEntities[0].Transform.Position - new Vector3(1000,0,0);
-            emitCompEntities[0].Transform.Position = emitCompEntities[0].Transform.Position - new Vector3(1, 0, 0);
-            emitCompEntities[1].Transform.Position = emitCompEntities[1].Transform.Position + new Vector3(1, 0, 0);
+            //listCompEntities[0].Transform.Position = listCompEntities[0].Transform.Position - new Vector3(1000,0,0);
+            //emitCompEntities[0].Transform.Position = emitCompEntities[0].Transform.Position - new Vector3(1, 0, 0);
+            //emitCompEntities[1].Transform.Position = emitCompEntities[1].Transform.Position + new Vector3(1, 0, 0);
 
-            game.Audio.AddListener(listComps[2]);
-            game.Audio.AddListener(listComps[0]);
+            //game.Audio.AddListener(listComps[2]);
+            //game.Audio.AddListener(listComps[0]);
 
-            soundControllers[0].IsLooped = true;
-            soundControllers[2].IsLooped = true;
+            //soundControllers[0].IsLooped = true;
+            //soundControllers[2].IsLooped = true;
         }
 
         private void TestRemoveListenerLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -362,8 +362,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 //game.Entities.Add(emitCompEntities[0]);
 
                 // check that emitter 1 can now be heard.
-                soundControllers[0].Play();
-                soundControllers[2].Play();
+                //soundControllers[0].Play();
+                //soundControllers[2].Play();
             }
             // here we should hear the soundEffect 0 on left ear only
             else if (loopCount == 120)
@@ -373,8 +373,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 //game.Entities.Add(emitCompEntities[1]);
 
                 // test that now both emitters can be heard.
-                soundControllers[0].Play();
-                soundControllers[2].Play();
+                //soundControllers[0].Play();
+                //soundControllers[2].Play();
             }
             // here we should hear the soundEffect 0 on left ear and the soundEffect 2 on right ear
             else if (loopCount == 180)
@@ -384,8 +384,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 //game.Entities.Remove(emitCompEntities[1]);
 
                 // test that now only emitter 1 can be heard.
-                soundControllers[0].Play();
-                soundControllers[2].Play();
+                //soundControllers[0].Play();
+                //soundControllers[2].Play();
             }
             // here we should hear the soundEffect 0 on left ear only
             else if (loopCount == 240)
@@ -395,8 +395,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 //game.Entities.Remove(emitCompEntities[0]);
 
                 // check that there is not more audio output at all
-                soundControllers[0].Play();
-                soundControllers[2].Play();
+                //soundControllers[0].Play();
+                //soundControllers[2].Play();
             }
             // here we should hear nothing.
             else if (loopCount == 320)
