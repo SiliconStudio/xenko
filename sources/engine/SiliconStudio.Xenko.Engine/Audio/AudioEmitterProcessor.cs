@@ -222,29 +222,29 @@ namespace SiliconStudio.Xenko.Audio
 
         private void OnSoundControllerListChanged(object o, AudioEmitterComponent.ControllerCollectionChangedEventArgs args)
         {
-            throw new NotImplementedException();
-            //AssociatedData associatedData = null;
+            AssociatedData associatedData = null;
+            Internal.Refactor.ThrowNotImplementedException(null);
             //if (!ComponentDatas.TryGetValue(args.Entity, out associatedData))
             //    return;
 
             // A new SoundEffect have been associated to the AudioEmitterComponenent or an old SoundEffect have been deleted.
             // We need to create/destroy the corresponding SoundEffectInstances.
 
-            //var listeners = audioSystem.Listeners.Keys;
-            //foreach (var listener in listeners)
-            //{
-            //    var currentTuple = Tuple.Create(listener, args.Controller);
+            var listeners = audioSystem.Listeners.Keys;
+            foreach (var listener in listeners)
+            {
+                var currentTuple = Tuple.Create(listener, args.Controller);
 
-            //    if (args.Action == NotifyCollectionChangedAction.Add)
-            //    {
-            //        associatedData.ListenerControllerToSoundInstance[currentTuple] = args.Controller.CreateSoundInstance();
-            //    }
-            //    else if(args.Action == NotifyCollectionChangedAction.Remove )
-            //    {
-            //        args.Controller.DestroySoundInstance(associatedData.ListenerControllerToSoundInstance[currentTuple]);
-            //        associatedData.ListenerControllerToSoundInstance.Remove(currentTuple);
-            //    }
-            //}
+                if (args.Action == NotifyCollectionChangedAction.Add)
+                {
+                    associatedData.ListenerControllerToSoundInstance[currentTuple] = args.Controller.CreateSoundInstance();
+                }
+                else if(args.Action == NotifyCollectionChangedAction.Remove )
+                {
+                    args.Controller.DestroySoundInstance(associatedData.ListenerControllerToSoundInstance[currentTuple]);
+                    associatedData.ListenerControllerToSoundInstance.Remove(currentTuple);
+                }
+            }
         }
     }
 }
