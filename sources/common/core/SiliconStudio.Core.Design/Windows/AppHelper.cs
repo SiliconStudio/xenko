@@ -76,13 +76,13 @@ namespace SiliconStudio.Core.Windows
             try
             {
                 int i = 0;
-                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DisplayConfiguration");
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
                 foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
                 {
                     writer.AppendLine(string.Format("GPU {0}", ++i));
                     foreach (PropertyData property in managementObject.Properties)
                     {
-                        writer.AppendLine(string.Format("{0}: {1}", property.Name, property.Value));
+                        writer.AppendLine(string.Format("  {0}: {1}", property.Name, property.Value));
                     }
                 }
             }
@@ -98,15 +98,17 @@ namespace SiliconStudio.Core.Windows
 
             try
             {
-                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DisplayConfiguration");
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
+                int deviceId = 0;
                 foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
                 {
                     foreach (var property in managementObject.Properties)
                     {
                         if(property.Value == null) continue;
                         
-                        result.Add(property.Name, property.Value.ToString());
+                        result.Add($"GPU{deviceId}.{property.Name}", property.Value.ToString());
                     }
+                    deviceId++;
                 }
             }
             catch (Exception)
