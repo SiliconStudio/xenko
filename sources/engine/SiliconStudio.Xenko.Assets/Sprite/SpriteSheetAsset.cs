@@ -162,6 +162,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </userdoc>
         [DataMember(150)]
         [Category]
+        [NotNullItems]
         public List<SpriteInfo> Sprites { get; set; }
         
         /// <summary>

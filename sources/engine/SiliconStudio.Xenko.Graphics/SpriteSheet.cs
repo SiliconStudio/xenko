@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -10,7 +11,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// A sheet (group) of sprites.
     /// </summary>
-    [DataContract]
+    [DataContract(" SpriteSheet")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteSheet>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<SpriteSheet>))]
     public class SpriteSheet
@@ -18,7 +19,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The list of sprites.
         /// </summary>
-        public List<Sprite> Sprites = new List<Sprite>();
+        [NotNullItems]
+        public List<Sprite> Sprites { get; } = new List<Sprite>();
 
         /// <summary>
         /// Find the index of a sprite in the group using its name.
