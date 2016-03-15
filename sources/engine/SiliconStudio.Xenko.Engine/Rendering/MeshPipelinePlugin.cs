@@ -85,6 +85,32 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     pipelineState.BlendState = BlendStates.AlphaBlend;
                 }
+
+                var renderMesh = (RenderMesh)renderObject;
+                var cullModeOverride = renderMesh.MaterialInfo.CullMode;
+                var cullMode = pipelineState.RasterizerState.CullMode;
+
+                // No override, or already two-sided?
+                if (cullModeOverride.HasValue && cullMode != CullMode.None)
+                {
+                    if (cullModeOverride.Value == CullMode.None)
+                    {
+                        // Override to two-sided
+                        cullMode = CullMode.None;
+                    }
+                    else if (cullModeOverride.Value == cullMode)
+                    {
+                        // No or double flipping
+                        cullMode = CullMode.Back;
+                    }
+                    else
+                    {
+                        // Single flipping
+                        cullMode = CullMode.Front;
+                    }
+
+                    pipelineState.RasterizerState.CullMode = cullMode;
+                }
             });
         }
 
