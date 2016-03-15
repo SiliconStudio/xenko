@@ -137,7 +137,7 @@ namespace SiliconStudio.Presentation.Behaviors
                         mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
                         // Get maximum width and height from WPF
                         var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
-                        var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxWidth;
+                        var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
                         mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
                         mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
                         mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;

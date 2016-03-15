@@ -289,25 +289,20 @@
     <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <!--<Setter Property="MinHeight" Value="120" />-->
-    <!--<Setter Property="MinWidth" Value="320" />-->
-    <!--<Setter Property="MaxHeight" Value="768" />-->
-    <Setter Property="MaxWidth" Value="10000" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+    <Setter Property="MinHeight" Value="120" />
+    <Setter Property="MinWidth" Value="320" />
+    <Setter Property="MaxHeight" Value="768" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
     <Setter Property="ResizeMode" Value="NoResize" />
-    <Setter Property="interactivity:Interaction.Behaviors">
-      <Setter.Value>
-        <interactivity:BehaviorCollection>
-          <behaviors:ResizeBehavior SizeRatio="4,3" />
-        </interactivity:BehaviorCollection>
-      </Setter.Value>
-    </Setter>
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <DockPanel LastChildFill="True">
+          <DockPanel LastChildFill="True" MinWidth="120" MaxHeight="748" >
+            <i:Interaction.Behaviors>
+              <behaviors:ResizeBehavior SizeRatio="5,3"/>
+            </i:Interaction.Behaviors>
             <Image DockPanel.Dock="Left" Source="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
