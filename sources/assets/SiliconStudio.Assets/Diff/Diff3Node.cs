@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Diff
 
         private static bool CheckVisitChildren(Diff3Node diff3)
         {
-            return diff3.ChangeType == Diff3ChangeType.Children || diff3.ChangeType != Diff3ChangeType.None;
+            return diff3.ChangeType == Diff3ChangeType.Children;
         }
 
         private static bool CheckVisitChildrenWithWeights(Diff3Node diff3)
