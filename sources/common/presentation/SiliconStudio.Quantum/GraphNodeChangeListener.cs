@@ -69,12 +69,10 @@ namespace SiliconStudio.Quantum
 
         protected virtual void RegisterNode(IGraphNode node, GraphNodePath path)
         {
-#if DEBUG
             if (registeredNodes.ContainsKey(node))
                 throw new InvalidOperationException("Node already registered");
 
             registeredNodes.Add(node, path);
-#endif
 
             node.Content.PrepareChange += ContentPrepareChange;
             node.Content.FinalizeChange += ContentFinalizeChange;
@@ -84,10 +82,8 @@ namespace SiliconStudio.Quantum
 
         protected virtual void UnregisterNode(IGraphNode node)
         {
-#if DEBUG
             if (!registeredNodes.ContainsKey(node))
                 throw new InvalidOperationException("Node not registered");
-#endif
 
             registeredNodes.Remove(node);
             node.Content.PrepareChange -= ContentPrepareChange;

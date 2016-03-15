@@ -27,14 +27,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             foreach (var componentData in ComponentDatas)
             {
-                if (componentData.Value.ParticleSystemComponent.Enabled)
+                // Update render objects
+                foreach (var emitter in componentData.Value.Emitters)
                 {
-                    // Update render objects
-                    foreach (var emitter in componentData.Value.Emitters)
+                    if ((emitter.Enabled = componentData.Value.ParticleSystemComponent.Enabled) == true)
                     {
                         var aabb = emitter.RenderParticleSystem.ParticleSystemComponent.ParticleSystem.GetAABB();
                         emitter.BoundingBox = new BoundingBoxExt(aabb.Minimum, aabb.Maximum);
-
                     }
                 }
             }
@@ -42,8 +41,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         protected override void OnEntityComponentAdding(Entity entity, ParticleSystemComponent particleSystemComponent, RenderParticleSystem renderParticleSystem)
         {
-            // TODO GRAPHICS REFACTOR: Handle enabled emitters (in visibility system)
-
             var emitters = particleSystemComponent.ParticleSystem.Emitters;
             var emitterCount = emitters.Count;
             var renderEmitters = new RenderParticleEmitter[emitterCount];

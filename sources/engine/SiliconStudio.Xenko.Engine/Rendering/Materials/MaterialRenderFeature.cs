@@ -58,6 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Permutation parameters
             public int PermutationCounter; // Dirty counter against material.Parameters.PermutationCounter
             public ParameterCollection MaterialParameters; // Protect against changes of Material.Parameters instance (happens with editor fast reload)
+            public CullMode? CullMode;
 
             public ShaderSource VertexStageSurfaceShaders;
             public ShaderSource VertexStageStreamInitializer;
@@ -183,6 +184,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             allMaterialInfos.Add(material, materialInfo);
                         }
                         renderMesh.MaterialInfo = materialInfo;
+                    }
+
+                    if (materialInfo.CullMode != material.CullMode)
+                    {
+                        materialInfo.CullMode = material.CullMode;
+                        renderEffect.PipelineState = null;
                     }
 
                     var isMaterialParametersChanged = materialInfo.MaterialParameters != material.Parameters;
