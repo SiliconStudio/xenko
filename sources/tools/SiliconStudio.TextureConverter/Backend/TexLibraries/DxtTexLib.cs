@@ -146,7 +146,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 case RequestType.Rescaling:
                     RescalingRequest rescale = (RescalingRequest)request;
                     return rescale.Filter == Filter.Rescaling.Box ||
-                        rescale.Filter == Filter.Rescaling.Bicubic ||
+                        rescale.Filter == Filter.Rescaling.Bilinear ||
                         rescale.Filter == Filter.Rescaling.Bicubic ||
                         rescale.Filter == Filter.Rescaling.Nearest;
 
