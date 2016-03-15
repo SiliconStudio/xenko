@@ -290,7 +290,7 @@
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Left" />
-    <Setter Property="VerticalContentAlignment" Value="Top" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="MinHeight" Value="120" />
     <Setter Property="MinWidth" Value="320" />
     <Setter Property="MaxHeight" Value="768" />
@@ -299,7 +299,9 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <DockPanel LastChildFill="True" MinWidth="120" MaxHeight="748" >
+          <DockPanel LastChildFill="True"
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
             <i:Interaction.Behaviors>
               <behaviors:ResizeBehavior SizeRatio="5,3"/>
             </i:Interaction.Behaviors>
@@ -317,7 +319,9 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <DockPanel LastChildFill="True" MinWidth="120" MaxHeight="748" >
+          <DockPanel LastChildFill="True"
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
             <i:Interaction.Behaviors>
               <behaviors:ResizeBehavior SizeRatio="5,3"/>
             </i:Interaction.Behaviors>
