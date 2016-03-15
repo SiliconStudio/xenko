@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <summary>
         /// Restarts the spawner setting it to inactive state and elapsed time = 0
         /// </summary>
-        internal virtual void RestartSimulation()
+        internal virtual void ResetSimulation()
         {
             state = SpawnerState.Inactive;
             stateDuration = 0f;
