@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Some parameters should be initialized when the emitter first runs, rather than in the constructor
         /// </summary>
         [DataMemberIgnore]
-        private bool delayInit;
+        private bool hasBeenInitialized;
 
         /// <summary>
         /// Particles will live for a number of seconds between these two values
@@ -261,7 +261,7 @@ namespace SiliconStudio.Xenko.Particles
             set
             {
                 randomSeedMethod = value;
-                delayInit = false;
+                hasBeenInitialized = false;
             }
         }
 
@@ -362,6 +362,7 @@ namespace SiliconStudio.Xenko.Particles
             disposed = true;
 
             // Dispose unmanaged resources
+            ResetSimulation(); // Will set particle count = 0, freeing unmanaged and graphics memory
 
             if (!disposing)
                 return;
@@ -467,7 +468,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
-            if (!delayInit)
+            if (!hasBeenInitialized)
             {
                 DelayedInitialization(parentSystem);
             }
@@ -490,10 +491,10 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         protected unsafe void DelayedInitialization(ParticleSystem parentSystem)
         {
-            if (delayInit)
+            if (hasBeenInitialized)
                 return;
 
-            delayInit = true;
+            hasBeenInitialized = true;
 
             // RandomNumberGenerator creation
             {
@@ -529,24 +530,30 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Restarts the simulation, deleting all particles and starting from Time = 0
+        /// Resets the simulation, deleting all particles and starting from Time = 0
         /// </summary>
-        public void RestartSimulation()
+        public void ResetSimulation()
         {
+            // Reset the particle pool which allocates unmanaged memory
             DirtyParticlePool = true;
             pool.SetCapacity(0);
+
+            // Reset the vertex builder which allocates graphics memory
+            VertexBuilder.Reset();
 
             // Restart all spawners
             foreach (var spawner in Spawners)
             {
-                spawner.RestartSimulation();
+                spawner.ResetSimulation();
             }
 
             // Restart all updaters
             foreach (var updater in Updaters)
             {
-                updater.RestartSimulation();
+                updater.ResetSimulation();
             }
+
+            hasBeenInitialized = false;
         }
 
         /// <summary>
