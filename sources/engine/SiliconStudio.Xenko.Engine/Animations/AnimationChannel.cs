@@ -311,7 +311,7 @@ namespace SiliconStudio.Xenko.Animations
                         UpdateAnimation(ref data, ref data.ValueNext);
                         break;
                     }
-                    var keyFrame = moveNextFrame ? currentKeyFrame.Current : data.ValueNext;
+                    var keyFrame = currentKeyFrame.Current;
                     UpdateAnimation(ref data, ref keyFrame);
                 }
 
