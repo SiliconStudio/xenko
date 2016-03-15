@@ -112,6 +112,7 @@
     <Compile Include="Effects\ParameterKeys.cs" />
     <Compile Include="Effects\ParameterKeySerializer.cs" />
     <Compile Include="Data\PlatformConfigurations.cs" />
+    <Compile Include="Internal\Refactor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\ParameterCollection.cs" />
     <Compile Include="Rendering\ParameterCollectionLayout.cs" />
