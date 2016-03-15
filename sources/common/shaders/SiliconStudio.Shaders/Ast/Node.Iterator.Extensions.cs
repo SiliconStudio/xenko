@@ -53,9 +53,9 @@ namespace SiliconStudio.Shaders.Ast
                     var temp = nodeProcessor(previousValue, ref nodeProcessorContext);
 
                     // Recover the position as the list can be modified while processing a node
-                    for (i = 0; i < list.Count; i++)
+                    for (int j = 0; j < list.Count; j++)
                     {
-                        if (ReferenceEquals(previousValue, list[i]))
+                        if (ReferenceEquals(previousValue, list[j]))
                             break;
                     }
 
