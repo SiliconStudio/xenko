@@ -9,6 +9,6 @@
     <Import_RootNamespace>SiliconStudio.Xenko.Internal</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Internal\Refactor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Refactor.cs" />
   </ItemGroup>
 </Project>
