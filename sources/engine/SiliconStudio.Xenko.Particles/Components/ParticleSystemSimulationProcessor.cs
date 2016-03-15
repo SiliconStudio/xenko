@@ -47,6 +47,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         {
             // TODO: Reset low-level data only. This method also gets called when moving the entity in the hierarchy!
             // component.ParticleSystem.Dispose();
+            component.ParticleSystem.ResetSimulation();
         }
 
         public List<ParticleSystemComponentState> ParticleSystems { get; private set; }
