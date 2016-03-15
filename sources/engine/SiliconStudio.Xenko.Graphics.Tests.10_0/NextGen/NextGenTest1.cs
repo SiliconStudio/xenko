@@ -45,9 +45,9 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //Profiler.Enable(GameProfilingKeys.GameDrawFPS);
             ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
 
-            model = Asset.Load<Model>("Model");
-            material1 = Asset.Load<Material>("Material1");
-            material2 = Asset.Load<Material>("Material2");
+            model = Content.Load<Model>("Model");
+            material1 = Content.Load<Material>("Material1");
+            material2 = Content.Load<Material>("Material2");
 
             SetupScene();
 
