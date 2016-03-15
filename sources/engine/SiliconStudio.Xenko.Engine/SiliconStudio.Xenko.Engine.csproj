@@ -3719,6 +3719,7 @@
       <LastGenOutput>Properties.cs</LastGenOutput>
     </Content>
   </ItemGroup>
+  <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">
       <ItemGroup Condition="'$(XenkoEffectCompiler)' == 'true'">

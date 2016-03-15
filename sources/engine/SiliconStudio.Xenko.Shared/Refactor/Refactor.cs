@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Internal
     /// <summary>
     /// Set of methods to help in refactoring that can be easily tracked by finding usages.
     /// </summary>
-    internal static class Refactor
+    static class Refactor
     {
         /// <summary>
         /// Throw a not implemented exception. Useful to avoid warnings about non-reachable code.
