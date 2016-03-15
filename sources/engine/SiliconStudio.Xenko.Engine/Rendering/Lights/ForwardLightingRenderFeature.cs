@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
-                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderViewObjectInfo.ShaderPermutationEntry.Resources;
+                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderViewObjectInfo.Resources;
             }
         }
 
@@ -317,20 +317,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightGroup.ApplyParameters(parameters);
             }
 
-            context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
+            context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightParameterEntry.Resources);
 
             // Set resource bindings in PerLighting resource set
             for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
             {
-                lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
+                lightParameterEntry.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
             }
 
             // Process PerMaterial cbuffer
             if (lightShadersPermutation.ConstantBufferReflection != null)
             {
-                var mappedCB = lightShadersPermutation.Resources.ConstantBuffer.Data;
+                var mappedCB = lightParameterEntry.Resources.ConstantBuffer.Data;
                 fixed (byte* dataValues = parameters.DataValues)
-                    Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
+                    Utilities.CopyMemory(mappedCB, (IntPtr)dataValues, lightParameterEntry.Resources.ConstantBuffer.Size);
             }
 
             return true;
@@ -823,8 +823,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public ResourceGroupLayout PerLightingLayout;
 
-            public readonly ResourceGroup Resources = new ResourceGroup();
-
             public int ResourceCount;
 
             public ShaderConstantBufferDescription ConstantBufferReflection;
@@ -873,6 +871,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public readonly List<LightShaderGroupData> EnvironmentLightDatas;
 
             public readonly ParameterCollection Parameters;
+
+            public readonly ResourceGroup Resources = new ResourceGroup();
 
             public void ApplyEffectPermutations(RenderEffect renderEffect)
             {
