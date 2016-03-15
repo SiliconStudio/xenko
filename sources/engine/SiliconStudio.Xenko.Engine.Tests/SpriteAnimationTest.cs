@@ -212,7 +212,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private static SpriteComponent CreateSpriteComponent(int nbOfFrames)
         {
-            var spriteGroup = new SpriteSheet { Sprites = new List<Sprite>() };
+            var spriteGroup = new SpriteSheet();
             var sprite = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = spriteGroup } };
 
             // add a few sprites
