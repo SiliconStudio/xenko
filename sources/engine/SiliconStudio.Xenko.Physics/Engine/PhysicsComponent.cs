@@ -117,10 +117,21 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (value)
                 {
+                    //allow collisions
+                    if ((NativeCollisionObject.CollisionFlags & BulletSharp.CollisionFlags.NoContactResponse) != 0)
+                    {
+                        NativeCollisionObject.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
+                    }
+
+                    //allow simulation
                     NativeCollisionObject.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
                 else
                 {
+                    //prevent collisions
+                    NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
+
+                    //prevent simulation
                     NativeCollisionObject.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
                 }
             }
