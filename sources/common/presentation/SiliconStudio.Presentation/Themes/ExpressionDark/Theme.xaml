@@ -317,7 +317,10 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <DockPanel LastChildFill="True">
+          <DockPanel LastChildFill="True" MinWidth="120" MaxHeight="748" >
+            <i:Interaction.Behaviors>
+              <behaviors:ResizeBehavior SizeRatio="5,3"/>
+            </i:Interaction.Behaviors>
             <CheckBox DockPanel.Dock="Bottom" Margin="20,15,5,5"
                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
                       Content="{Binding CheckedMessage, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"
