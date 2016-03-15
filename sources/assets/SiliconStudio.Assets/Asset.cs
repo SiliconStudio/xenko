@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.Build.Framework.XamlTypes;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
 {
@@ -98,6 +99,7 @@ namespace SiliconStudio.Assets
         /// <value>The part assets.</value>
         [DataMember(BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
+        [NotNullItems]
         public List<AssetBase> BaseParts { get; set; }
 
         /// <summary>
@@ -123,6 +125,7 @@ namespace SiliconStudio.Assets
         /// </value>
         [DataMember(-900)]
         [Display(Browsable = false)]
+        [NotNullItems]
         public TagCollection Tags { get; private set; }
 
         /// <summary>

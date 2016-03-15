@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [DataMember(20)]
         [Category]
         [MemberCollection(CanReorderItems = true)]
+        [NotNullItems]
         public SceneGraphicsLayerCollection Layers { get; private set; }
 
         /// <summary>

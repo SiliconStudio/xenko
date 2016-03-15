@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Animations
         //[DataMemberIgnore]
         //public AnimationCurve<T> Animation { get; set; } = new AnimationCurve<T>();
         
+        [NotNullItems]
         public TrackingCollection<AnimationKeyFrame<T>> KeyFrames { get; set; } = new TrackingCollection<AnimationKeyFrame<T>>();
 
         // TODO This list will become AnimationCurve<T>
