@@ -999,7 +999,6 @@ namespace FreeImageAPI
 			FIURational difference = this - other;
 			difference.Normalize();
 			if (difference.numerator > 0) return 1;
-			if (difference.numerator < 0) return -1;
 			else return 0;
 		}
 
