@@ -29,25 +29,23 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             if (IsSizeRatioInValid() || !e.HeightChanged || !e.WidthChanged)
                 return;
-            
-            var height = double.PositiveInfinity;
-            var width = double.PositiveInfinity;
+
             // Measure the required size
-            AssociatedObject.Measure(new Size(width, height));
+            AssociatedObject.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             var desiredSize = AssociatedObject.DesiredSize;
-
             var surface = desiredSize.Height*desiredSize.Width;
-            height = Math.Round(Math.Sqrt(SizeRatio.Height*surface/SizeRatio.Width));
-            width = Math.Round(SizeRatio.Width*height/SizeRatio.Height);
 
+            var height = Math.Round(Math.Sqrt(SizeRatio.Height*surface/SizeRatio.Width));
+            height = MathUtil.Clamp(height, AssociatedObject.MinHeight, AssociatedObject.MaxHeight);
+
+            var width = Math.Round(SizeRatio.Width*height/SizeRatio.Height);
+            AssociatedObject.Width = MathUtil.Clamp(width, AssociatedObject.MinWidth, AssociatedObject.MaxWidth);
             if (width < AssociatedObject.MinWidth)
             {
-                // Keep default size
-                AssociatedObject.Width = AssociatedObject.MinWidth;
+                // Keep default value for height
                 return;
             }
-            AssociatedObject.Height = MathUtil.Clamp(height, AssociatedObject.MinHeight, AssociatedObject.MaxHeight);
-            AssociatedObject.Width = MathUtil.Clamp(width, AssociatedObject.MinWidth, AssociatedObject.MaxWidth);
+            AssociatedObject.Height = height;
         }
 
         private bool IsSizeRatioInValid()
