@@ -122,7 +122,7 @@ namespace SiliconStudio.Presentation.Behaviors
                 if (removedItems != null)
                 {
                     // Optimize removal if most of the selected items are removed
-                    if (removedItems.Count > SelectedItems.Count / 2)
+                    if (removedItems.Count > 2 && removedItems.Count > SelectedItems.Count / 2)
                     {
                         var remainingItems = SelectedItems.Where(x => !removedItems.Contains(x)).ToList();
                         SelectedItems.Clear();
@@ -221,6 +221,9 @@ namespace SiliconStudio.Presentation.Behaviors
                 return;
 
             if (updatingCollection)
+                return;
+
+            if (SelectedItems == null)
                 return;
 
             if (AssociatedObject != null)

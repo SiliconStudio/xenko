@@ -18,14 +18,14 @@ namespace Test1
 {
     [DataContract]public partial class SubParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<bool> param1 = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<int> param2 = ParameterKeys.New<int>(1);
-        public static readonly ParameterKey<string> param3 = ParameterKeys.New<string>("ok");
+        public static readonly PermutationParameterKey<bool> param1 = ParameterKeys.NewPermutation<bool>();
+        public static readonly PermutationParameterKey<int> param2 = ParameterKeys.NewPermutation<int>(1);
+        public static readonly PermutationParameterKey<string> param3 = ParameterKeys.NewPermutation<string>("ok");
     };
     [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<SubParameters> subParam1 = ParameterKeys.New<SubParameters>();
-        public static readonly ParameterKey<SubParameters[]> subParameters = ParameterKeys.New<SubParameters[]>();
+        public static readonly PermutationParameterKey<SubParameters> subParam1 = ParameterKeys.NewPermutation<SubParameters>();
+        public static readonly PermutationParameterKey<SubParameters[]> subParameters = ParameterKeys.NewPermutation<SubParameters[]>();
     };
     internal static partial class ShaderMixins
     {

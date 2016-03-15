@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -8,7 +10,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// Describes the blend state for a render target.
     /// </summary>
     [DataContract]
-    public struct BlendStateRenderTargetDescription
+    public struct BlendStateRenderTargetDescription : IEquatable<BlendStateRenderTargetDescription>
     {
         /// <summary>
         /// Enable (or disable) blending. 
@@ -49,5 +51,42 @@ namespace SiliconStudio.Xenko.Graphics
         /// A write mask. 
         /// </summary>
         public ColorWriteChannels ColorWriteChannels;
+
+        public bool Equals(BlendStateRenderTargetDescription other)
+        {
+            return BlendEnable == other.BlendEnable && ColorSourceBlend == other.ColorSourceBlend && ColorDestinationBlend == other.ColorDestinationBlend && ColorBlendFunction == other.ColorBlendFunction && AlphaSourceBlend == other.AlphaSourceBlend && AlphaDestinationBlend == other.AlphaDestinationBlend && AlphaBlendFunction == other.AlphaBlendFunction && ColorWriteChannels == other.ColorWriteChannels;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is BlendStateRenderTargetDescription && Equals((BlendStateRenderTargetDescription)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = BlendEnable.GetHashCode();
+                hashCode = (hashCode*397) ^ (int)ColorSourceBlend;
+                hashCode = (hashCode*397) ^ (int)ColorDestinationBlend;
+                hashCode = (hashCode*397) ^ (int)ColorBlendFunction;
+                hashCode = (hashCode*397) ^ (int)AlphaSourceBlend;
+                hashCode = (hashCode*397) ^ (int)AlphaDestinationBlend;
+                hashCode = (hashCode*397) ^ (int)AlphaBlendFunction;
+                hashCode = (hashCode*397) ^ (int)ColorWriteChannels;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(BlendStateRenderTargetDescription left, BlendStateRenderTargetDescription right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(BlendStateRenderTargetDescription left, BlendStateRenderTargetDescription right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

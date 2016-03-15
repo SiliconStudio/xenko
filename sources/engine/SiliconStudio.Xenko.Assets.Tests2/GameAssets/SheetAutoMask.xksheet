@@ -1,0 +1,38 @@
+!SpriteSheet
+Id: 915ede20-6202-4e2b-a667-2bd4c22da6ba
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Packing:
+    ~Id: 01fe741a-34e5-46d3-8dc4-b2392c1efc06
+    Enabled: false
+Sprites:
+    -   ~Id: e37b7a1f-48eb-476f-9f5e-a58d7d76146f
+        Source: ../../../data/tests/SmallPngMask.png
+        Name: Frame 0
+        TextureRegion: {X: 0, Y: 0, Width: 32, Height: 32}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 824efe8c-a0ea-44c5-a1c1-a3083a20ce84
+        Source: ../../../data/tests/SmallPngMask.png
+        Name: Frame 0
+        TextureRegion: {X: 34, Y: 2, Width: 30, Height: 30}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: b897385e-b6ef-4d2e-83fc-efcc72756aaa
+        Source: ../../../data/tests/SmallPngMask.png
+        Name: Frame 0
+        TextureRegion: {X: 2, Y: 36, Width: 26, Height: 26}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 4b94db58-aa1c-4a4b-994c-e65dd7e526b2
+        Source: ../../../data/tests/SmallPngMask.png
+        Name: Frame 0
+        TextureRegion: {X: 33, Y: 34, Width: 31, Height: 28}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

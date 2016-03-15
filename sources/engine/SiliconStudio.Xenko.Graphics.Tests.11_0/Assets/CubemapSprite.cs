@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class CubemapSpriteKeys
     {
-        public static readonly ParameterKey<float> ViewIndex = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> ViewIndex = ParameterKeys.NewValue<float>();
     }
 }

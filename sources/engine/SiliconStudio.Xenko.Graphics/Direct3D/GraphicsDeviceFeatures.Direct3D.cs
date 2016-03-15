@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -48,13 +48,8 @@ namespace SiliconStudio.Xenko.Graphics
             mapFeaturesPerFormat = new FeaturesPerFormat[256];
 
             // Set back the real GraphicsProfile that is used
-            Profile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
-
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            IsProfiled = PixHelper.IsCurrentlyProfiled;
-#else
-            IsProfiled = false;
-#endif
+            RequestedProfile = deviceRoot.RequestedProfile;
+            CurrentProfile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
 
             HasComputeShaders = nativeDevice.CheckFeatureSupport(Feature.ComputeShaders);
             HasDoublePrecision = nativeDevice.CheckFeatureSupport(Feature.ShaderDoubles);

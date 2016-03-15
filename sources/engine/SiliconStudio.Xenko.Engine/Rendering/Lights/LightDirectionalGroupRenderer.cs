@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void Initialize(RenderContext context)
         {
-            var isLowProfile = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0;
+            var isLowProfile = context.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0;
             LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
             AllocateLightMaxCount = !isLowProfile;
         }
@@ -55,9 +55,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class DirectionalLightShaderGroup : LightShaderGroupAndDataPool<DirectionalLightShaderGroupData>
         {
-            internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> DirectionsKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ValueParameterKey<int> CountKey;
+            internal readonly ValueParameterKey<Vector3> DirectionsKey;
+            internal readonly ValueParameterKey<Color3> ColorsKey;
 
             public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
@@ -75,9 +75,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class DirectionalLightShaderGroupData : LightShaderGroupData
         {
-            private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Vector3[]> directionsKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
+            private readonly ValueParameterKey<int> countKey;
+            private readonly ValueParameterKey<Vector3> directionsKey;
+            private readonly ValueParameterKey<Color3> colorsKey;
             private readonly Vector3[] lightDirections;
             private readonly Color3[] lightColors;
 
@@ -101,8 +101,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, lightDirections);
-                parameters.Set(colorsKey, lightColors);
+                parameters.Set(directionsKey, Count, ref lightDirections[0]);
+                parameters.Set(colorsKey, Count, ref lightColors[0]);
             }
         }
     }

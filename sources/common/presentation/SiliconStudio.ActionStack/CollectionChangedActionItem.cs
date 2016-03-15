@@ -8,31 +8,57 @@ using System.Linq;
 
 namespace SiliconStudio.ActionStack
 {
-    public class CollectionChangedActionItem : ActionItem
+    /// <summary>
+    /// A <see cref="DirtiableActionItem"/> representing a change in a collection.
+    /// </summary>
+    public class CollectionChangedActionItem : DirtiableActionItem
     {
         private readonly int index;
         private IList list;
         private IReadOnlyCollection<object> items;
-        private NotifyCollectionChangedAction actionToUndo;
 
-        private CollectionChangedActionItem(IList list, NotifyCollectionChangedAction actionToUndo)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CollectionChangedActionItem"/> class.
+        /// </summary>
+        /// <param name="name">The name of this action item.</param>
+        /// <param name="list">The collection that has been modified.</param>
+        /// <param name="actionToUndo">The type of change done in the collection.</param>
+        /// <param name="dirtiables">The <see cref="IDirtiable"/> objects that are affected by this action.</param>
+        private CollectionChangedActionItem(string name, IList list, NotifyCollectionChangedAction actionToUndo, IEnumerable<IDirtiable> dirtiables)
+            : base(name, dirtiables)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             if (actionToUndo == NotifyCollectionChangedAction.Reset) throw new ArgumentException("Reset is not supported by the undo stack.");
+            ActionToUndo = actionToUndo;
             this.list = list;
-            this.actionToUndo = actionToUndo;
         }
 
-        public CollectionChangedActionItem(IList list, NotifyCollectionChangedAction actionToUndo, IReadOnlyCollection<object> items, int index)
-            : this(list, actionToUndo)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CollectionChangedActionItem"/> class.
+        /// </summary>
+        /// <param name="name">The name of this action item.</param>
+        /// <param name="list">The collection that has been modified.</param>
+        /// <param name="actionToUndo">The type of change done in the collection.</param>
+        /// <param name="items">The items affected by the change, either removed or added.</param>
+        /// <param name="index">The index at which the change occurred.</param>
+        /// <param name="dirtiables">The <see cref="IDirtiable"/> objects that are affected by this action.</param>
+        public CollectionChangedActionItem(string name, IList list, NotifyCollectionChangedAction actionToUndo, IReadOnlyCollection<object> items, int index, IEnumerable<IDirtiable> dirtiables)
+            : this(name, list, actionToUndo, dirtiables)
         {
-            if (items == null) throw new ArgumentNullException("items");
+            if (items == null) throw new ArgumentNullException(nameof(items));
             this.items = items;
             this.index = index;
         }
 
-        public CollectionChangedActionItem(IList list, NotifyCollectionChangedEventArgs args)
-            : this(list, args.Action)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CollectionChangedActionItem"/> class.
+        /// </summary>
+        /// <param name="name">The name of this action item.</param>
+        /// <param name="list">The collection that has been modified.</param>
+        /// <param name="args">The arguments of an <see cref="INotifyCollectionChanged.CollectionChanged"/> event corresponding to the change.</param>
+        /// <param name="dirtiables">The <see cref="IDirtiable"/> objects that are affected by this action.</param>
+        public CollectionChangedActionItem(string name, IList list, NotifyCollectionChangedEventArgs args, IEnumerable<IDirtiable> dirtiables)
+            : this(name, list, args.Action, dirtiables)
         {
             switch (args.Action)
             {
@@ -60,9 +86,9 @@ namespace SiliconStudio.ActionStack
             }
         }
 
-        public NotifyCollectionChangedAction ActionToUndo { get { return actionToUndo; } }
+        public NotifyCollectionChangedAction ActionToUndo { get; private set; }
 
-        public int ItemCount { get { return items.Count; } }
+        public int ItemCount => items.Count;
 
         /// <inheritdoc/>
         protected override void FreezeMembers()
@@ -75,17 +101,17 @@ namespace SiliconStudio.ActionStack
         protected override void UndoAction()
         {
             int i = 0;
-            switch (actionToUndo)
+            switch (ActionToUndo)
             {
                 case NotifyCollectionChangedAction.Add:
-                    actionToUndo = NotifyCollectionChangedAction.Remove;
-                    for (i = 0; i < items.Count(); ++i)
+                    ActionToUndo = NotifyCollectionChangedAction.Remove;
+                    for (i = 0; i < items.Count; ++i)
                     {
                         list.RemoveAt(index);
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    actionToUndo = NotifyCollectionChangedAction.Add;
+                    ActionToUndo = NotifyCollectionChangedAction.Add;
                     foreach (var item in items)
                     {
                         list.Insert(index + i, item);

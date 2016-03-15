@@ -48,17 +48,17 @@ namespace SiliconStudio.Xenko.Engine.Tests
             await base.LoadContent();
             
             // sets the virtual resolution
-            areaSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            areaSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
 
             // Creates the camera
             CameraComponent.UseCustomProjectionMatrix = true;
             CameraComponent.ProjectionMatrix = Matrix.OrthoRH(areaSize.X, areaSize.Y, -2, 2);
 
             // Load assets
-            groundSprites = Asset.Load<SpriteSheet>("GroundSprite");
-            ballSprite1 = Asset.Load<SpriteSheet>("BallSprite1");
-            ballSprite2 = Asset.Load<SpriteSheet>("BallSprite2");
-            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("BallSprite1") } } };
+            groundSprites = Content.Load<SpriteSheet>("GroundSprite");
+            ballSprite1 = Content.Load<SpriteSheet>("BallSprite1");
+            ballSprite2 = Content.Load<SpriteSheet>("BallSprite2");
+            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Content.Load<SpriteSheet>("BallSprite1") } } };
 
             // create fore/background entities
             foreground = new Entity();
@@ -70,14 +70,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Scene.Entities.Add(foreground);
             Scene.Entities.Add(background);
 
-            spriteComponent = ball.Get(SpriteComponent.Key);
-            transfoComponent = ball.Get(TransformComponent.Key);
+            spriteComponent = ball.Get<SpriteComponent>();
+            transfoComponent = ball.Get<TransformComponent>();
             
             var decorationScalings = new Vector3(areaSize.X, areaSize.Y, 1);
-            background.Get(TransformComponent.Key).Scale = decorationScalings;
-            foreground.Get(TransformComponent.Key).Scale = decorationScalings/2;
-            background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
-            foreground.Get(TransformComponent.Key).Position = new Vector3(0, 0, 1);
+            background.Get<TransformComponent>().Scale = decorationScalings;
+            foreground.Get<TransformComponent>().Scale = decorationScalings/2;
+            background.Get<TransformComponent>().Position = new Vector3(0, 0, -1);
+            foreground.Get<TransformComponent>().Position = new Vector3(0, 0, 1);
 
             SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteProvider.SpritesCount-1, AnimationRepeatMode.LoopInfinite, 30);
         }

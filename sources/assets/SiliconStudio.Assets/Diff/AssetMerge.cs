@@ -40,14 +40,9 @@ namespace SiliconStudio.Assets.Diff
                     }
                     key.Close();
                 }
-                if (DefaultMergeTool == null)
-                {
-                    Log.Error("Unable to find a default merge tool");
-                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Log.Error("Unable to find a default merge tool", ex);
             }
         }
 
@@ -70,11 +65,11 @@ namespace SiliconStudio.Assets.Diff
         /// or
         /// mergePolicy
         /// </exception>
-        public static MergeResult Merge(Asset assetBase, Asset assetFrom1, Asset assetFrom2, MergePolicyDelegate mergePolicy)
+        public static MergeResult Merge(object assetBase, object assetFrom1, object assetFrom2, MergePolicyDelegate mergePolicy)
         {
             if (assetFrom1 == null) throw new ArgumentNullException("assetFrom1");
             if (mergePolicy == null) throw new ArgumentNullException("mergePolicy");
-            return Merge(new AssetDiff((Asset)AssetCloner.Clone(assetBase), (Asset)AssetCloner.Clone(assetFrom1), (Asset)AssetCloner.Clone(assetFrom2)), mergePolicy);
+            return Merge(new AssetDiff(AssetCloner.Clone(assetBase), AssetCloner.Clone(assetFrom1), AssetCloner.Clone(assetFrom2)), mergePolicy);
         }
 
         /// <summary>
@@ -117,15 +112,22 @@ namespace SiliconStudio.Assets.Diff
                         continue;
                     }
 
-                    object dataInstance;
-                    bool replaceValue;
+                    object dataInstance = null;
+                    bool replaceValue = false;
 
                     switch (changeType)
                     {
                         case Diff3ChangeType.MergeFromAsset2:
-                            // As we are merging into asset1, the only relevant changes can only come from asset2
-                            dataInstance = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
-                            replaceValue = true;
+
+                            // Because for collection, the merge is performed by the MergeContainer
+                            // Skip any merge for individual items, as they should have been merged by MergeContainer
+                            // TODO: This is a workaround as FindDifferences().ToList() is giving changes inside collection while we rebuild collection with MergeContainer
+                            if (diff3Node.Parent == null || diff3Node.Parent.Type != Diff3NodeType.Collection)
+                            {
+                                // As we are merging into asset1, the only relevant changes can only come from asset2
+                                dataInstance = diff3Node.Asset2Node?.Instance;
+                                replaceValue = true;
+                            }
                             break;
                         case Diff3ChangeType.Children:
                             MergeContainer(diff3Node, out dataInstance);
@@ -138,6 +140,9 @@ namespace SiliconStudio.Assets.Diff
                     // Sets the value on the node
                     if (replaceValue)
                         diff3Node.ReplaceValue(dataInstance, node => node.Asset1Node);
+
+                    // Applies the override for this node
+                    diff3Node.ApplyOverride();
                 }
                 catch (Exception ex)
                 {
@@ -235,7 +240,7 @@ namespace SiliconStudio.Assets.Diff
                 return result;
             }
 
-            if (!File.Exists(DefaultMergeTool))
+            if (DefaultMergeTool == null || !File.Exists(DefaultMergeTool))
             {
                 result.Error("Unable to use external diff3 merge tool [{0}]. File not found", DefaultMergeTool);
                 return result;

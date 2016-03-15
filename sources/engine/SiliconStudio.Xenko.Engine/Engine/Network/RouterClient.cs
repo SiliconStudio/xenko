@@ -107,11 +107,11 @@ namespace SiliconStudio.Xenko.Engine.Network
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    // Connection should happen within 5 seconds, otherwise consider there is no connection router trying to connect back to us
-                    if (!socketContextTCS.Task.Wait(TimeSpan.FromSeconds(5)))
+                    // Connection should happen within 10 seconds, otherwise consider there is no connection router trying to connect back to us
+                    if (!socketContextTCS.Task.Wait(TimeSpan.FromSeconds(10)))
                         throw new InvalidOperationException("Connection router did not connect back to our listen socket");
 
-                    return socketContext;
+                    return socketContextTCS.Task.Result;
                 }
                 catch (Exception e)
                 {

@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Collection of <see cref="Mesh"/>, each one usually being a different LOD of the same Model.
     /// The effect system will select the appropriate LOD depending on distance, current pass, and other effect-specific requirements.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Model>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Model>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Model>))]
     [DataContract]
     public class Model : IEnumerable
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Rendering
         //}
 
         /// <summary>
-        /// Adds the specified model view (for collection initializers).
+        /// Adds the specified model view (for collection Initializers).
         /// </summary>
         /// <param name="model">The model view.</param>
         public void Add(Model model)
@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Adds the specified mesh (for collection initializers).
+        /// Adds the specified mesh (for collection Initializers).
         /// </summary>
         /// <param name="mesh">The mesh.</param>
         public void Add(Mesh mesh)
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Adds the specified material (for collection initializers).
+        /// Adds the specified material (for collection Initializers).
         /// </summary>
         /// <param name="material">The mesh.</param>
         public void Add(MaterialInstance material)

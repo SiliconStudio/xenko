@@ -15,10 +15,17 @@
 
     <!-- Default values -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
+    <SiliconStudioUI Condition="'$(SiliconStudioUI)' == '' AND '$(SiliconStudioPlatform)' == 'Windows'">SDL;WINFORMS;WPF</SiliconStudioUI>
 
     <SiliconStudioGlobalSettingsTargets Condition="'$(SiliconStudioGlobalSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.GlobalSettings.targets</SiliconStudioGlobalSettingsTargets>
     <SiliconStudioPostSettingsTargets Condition="'$(SiliconStudioPostSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.targets</SiliconStudioPostSettingsTargets>
   </PropertyGroup>
+
+  <!-- Build the SiliconStudioUIList using the value of SiliconStudioUI -->
+  <ItemGroup Condition="'$(SiliconStudioUIList)' == ''">
+    <SiliconStudioUIList Condition="'$(SiliconStudioUI)' != ''" Include="$(SiliconStudioUI)" />
+    <SiliconStudioUIList Condition="'$(SiliconStudioUI)' == ''" Include="None" />
+  </ItemGroup>
 
   <!-- Ensure appropriate Solution Platform are available -->
   <Choose>
@@ -46,6 +53,19 @@
     <CreateProperty Condition=" '$(Platform)' == 'WindowsStore' or '$(Platform)' == 'WindowsPhone'" Value="AnyCPU">
       <Output TaskParameter="Value" PropertyName="Platform" />
     </CreateProperty>
+  </Target>
+
+  <ItemGroup>
+    <SiliconStudioUIListDefines Include="SDL"><Argument>SILICONSTUDIO_XENKO_UI_SDL</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="OPENTK"><Argument>SILICONSTUDIO_XENKO_UI_OPENTK</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="WINFORMS"><Argument>SILICONSTUDIO_XENKO_UI_WINFORMS</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="WPF"><Argument>SILICONSTUDIO_XENKO_UI_WPF</Argument></SiliconStudioUIListDefines>
+  </ItemGroup>
+ 
+  <Target Name="SiliconStudioForceUI" AfterTargets="SiliconStudioForcePlatform">
+    <FindInList CaseSensitive="false" List="@(SiliconStudioUIListDefines)" ItemSpecToFind="%(SiliconStudioUIList.Identity)">
+      <Output TaskParameter="ItemFound" ItemName="SiliconStudioUIDefineConstants"/>
+    </FindInList>
   </Target>
 
   <!--Import Global Settings-->

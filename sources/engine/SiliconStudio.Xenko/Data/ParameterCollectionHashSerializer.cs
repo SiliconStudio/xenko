@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Rendering.Data
@@ -15,13 +17,16 @@ namespace SiliconStudio.Xenko.Rendering.Data
 
         public override void Serialize(ref ParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
         {
-            foreach (var parameter in parameterCollection.InternalValues)
+            foreach (var parameter in parameterCollection.ParameterKeyInfos)
             {
-                if (parameterCollection.IsValueOwner(parameter.Value))
-                {
-                    parameterKeySerializer.Serialize(parameter.Key, stream);
-                    parameter.Value.SerializeHash(stream);
-                }
+                // CompilerParameters should only contain permutation parameters
+                if (parameter.Key.Type != ParameterKeyType.Permutation)
+                    continue;
+
+                parameterKeySerializer.Serialize(parameter.Key, stream);
+
+                var value = parameterCollection.ObjectValues[parameter.BindingSlot];
+                parameter.Key.SerializeHash(stream, value);
             }
         }
     }

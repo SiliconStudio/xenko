@@ -11,5 +11,6 @@ namespace SiliconStudio.Core.Annotations
         AttributeTargets.Method | AttributeTargets.Parameter |
         AttributeTargets.Property | AttributeTargets.Delegate |
         AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+    // TODO: move this to MemberCollectionAttribute
     public sealed class NotNullItemsAttribute : Attribute { }
 }

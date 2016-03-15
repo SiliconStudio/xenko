@@ -39,7 +39,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Features level of the current device.
         /// </summary>
-        public GraphicsProfile Profile;
+        public GraphicsProfile RequestedProfile;
+
+        /// <summary>
+        /// Features level of the current device.
+        /// </summary>
+        public GraphicsProfile CurrentProfile;
 
         /// <summary>
         /// Boolean indicating if this device supports compute shaders, unordered access on structured buffers and raw structured buffers.
@@ -67,11 +72,6 @@ namespace SiliconStudio.Xenko.Graphics
         public readonly bool HasSRgb;
 
         /// <summary>
-        /// Is the device being profiled.
-        /// </summary>
-        public readonly bool IsProfiled;
-
-        /// <summary>
         /// Gets the <see cref="FeaturesPerFormat" /> for the specified <see cref="SharpDX.DXGI.Format" />.
         /// </summary>
         /// <param name="dxgiFormat">The dxgi format.</param>
@@ -80,6 +80,13 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get { return this.mapFeaturesPerFormat[(int)dxgiFormat]; }
         }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        // Defined here to avoid CS0282 warning if defined in GraphicsDeviceFeatures.OpenGL.cs
+        internal string Vendor;
+        internal string Renderer;
+        internal IList<string> SupportedExtensions;
+#endif
 
         /// <summary>
         /// The features exposed for a particular format.
@@ -124,7 +131,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public override string ToString()
         {
-            return string.Format("Level: {0}, HasComputeShaders: {1}, HasDoublePrecision: {2}, HasMultiThreadingConcurrentResources: {3}, HasDriverCommandLists: {4}", Profile, HasComputeShaders, HasDoublePrecision, HasMultiThreadingConcurrentResources, this.HasDriverCommandLists);
+            return string.Format("Level: {0}, HasComputeShaders: {1}, HasDoublePrecision: {2}, HasMultiThreadingConcurrentResources: {3}, HasDriverCommandLists: {4}", RequestedProfile, HasComputeShaders, HasDoublePrecision, HasMultiThreadingConcurrentResources, this.HasDriverCommandLists);
         }
     }
 }

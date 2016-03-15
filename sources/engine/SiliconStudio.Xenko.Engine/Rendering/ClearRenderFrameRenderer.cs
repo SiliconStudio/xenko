@@ -82,15 +82,15 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
-            var graphicsDevice = context.GraphicsDevice;
+            var commandList = context.CommandList;
 
             // clear the targets
             if (output.DepthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
             {
                 const DepthStencilClearOptions ClearOptions = DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil;
-                graphicsDevice.Clear(output.DepthStencil, ClearOptions, Depth, Stencil);
+                commandList.Clear(output.DepthStencil, ClearOptions, Depth, Stencil);
             }
 
             if (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.ColorOnly)
@@ -101,8 +101,8 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         // If color is in GammeSpace and rendertarget is either SRgb or HDR, use a linear value to clear the buffer.
                         // TODO: We will need to move this color transform code to a shareable component
-                        var color = Color.ToColorSpace(ColorSpace, (renderTarget.Format.IsSRgb() || renderTarget.Format.IsHDR()) ? ColorSpace.Linear : graphicsDevice.ColorSpace);
-                        graphicsDevice.Clear(renderTarget, color);
+                        var color = Color.ToColorSpace(ColorSpace, (renderTarget.Format.IsSRgb() || renderTarget.Format.IsHDR()) ? ColorSpace.Linear : context.GraphicsDevice.ColorSpace);
+                        commandList.Clear(renderTarget, color);
                     }
                 }
             }

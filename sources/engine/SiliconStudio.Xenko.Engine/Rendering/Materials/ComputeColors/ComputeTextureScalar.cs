@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
 using SiliconStudio.Xenko.Shaders;
@@ -64,9 +65,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             return MaterialUtility.GetAsShaderString(Channel);
         }
 
-        public override ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderFromFallbackValue(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            return FallbackValue.GenerateShaderSource(context, baseKeys);
+            return FallbackValue?.GenerateShaderSource(context, baseKeys);
         }
+
+
+
     }
 }

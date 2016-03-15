@@ -1,18 +1,26 @@
 !Package
 Id: 1640a0bf-e632-42ad-8d94-36fb6bd716fc
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
 Meta:
     Name: Xenko.Physics
     Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    RootNamespace: EditorPackage
     Dependencies:
         -   Name: Xenko
-            Version: 1.0.0.0
+            Version: 1.6.0-beta
+            RootAssets: []
 Profiles:
-    - Name: Shared
-      AssetFolders:
-        - Path: ../Shaders
-        - Path: .
+    -   Name: Shared
+        AssetFolders:
+            - Path: ../Shaders
+            - Path: .
     -   Name: Windows
         Platform: Windows
-        Properties:
-            Xenko.GraphicsPlatform: !GraphicsPlatform Direct3D11
-            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_3
+    -   Name: Windows-OpenGL
+        Platform: Windows
+    -   Name: Windows-OpenGLES
+        Platform: Windows
+

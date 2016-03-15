@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
@@ -11,9 +10,9 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Base class for <see cref="Entity"/> components.
     /// </summary>
-    [DataSerializer(typeof(EntityComponent.Serializer))]
-    [DataContract]
-    public abstract class EntityComponent : ComponentBase
+    [DataSerializer(typeof(Serializer))]
+    [DataContract(Inherited = true)]
+    public abstract class EntityComponent
     {
         /// <summary>
         /// Gets or sets the owner entity.
@@ -22,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The owner entity.
         /// </value>
         [DataMemberIgnore]
-        public Entity Entity { get; set; }
+        public Entity Entity { get; internal set; }
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.
@@ -35,30 +34,9 @@ namespace SiliconStudio.Xenko.Engine
             get
             {
                 if (Entity == null)
-                    throw new InvalidOperationException(string.Format("Entity on this instance [{0}] cannot be null", GetType().Name));
+                    throw new InvalidOperationException($"Entity on this instance [{GetType().Name}] cannot be null");
                 return Entity;
             }
-        }
-
-        /// <summary>
-        /// The default key this component is associated to.
-        /// </summary>
-        public abstract PropertyKey GetDefaultKey();
-
-        /// <summary>
-        /// Gets the default key for the specified entity component type.
-        /// </summary>
-        /// <typeparam name="T">An entity component type</typeparam>
-        /// <returns>PropertyKey.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static PropertyKey GetDefaultKey<T>() where T : EntityComponent, new()
-        {
-            return EntityComponentHelper<T>.DefaultKey;
-        }
-
-        struct EntityComponentHelper<T> where T : EntityComponent, new()
-        {
-            public static readonly PropertyKey DefaultKey = new T().GetDefaultKey();
         }
 
         internal class Serializer : DataSerializer<EntityComponent>

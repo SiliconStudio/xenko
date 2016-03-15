@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class LightStreakShaderKeys
     {
-        public static readonly ParameterKey<Vector2[]> TapOffsetsWeights = ParameterKeys.New<Vector2[]>();
-        public static readonly ParameterKey<Vector2> Direction = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<Vector3> ColorAberrationCoefficients = ParameterKeys.New<Vector3>();
-        public static readonly ParameterKey<Vector3[]> AnamorphicOffsetsWeight = ParameterKeys.New<Vector3[]>();
+        public static readonly ValueParameterKey<Vector2> TapOffsetsWeights = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> Direction = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector3> ColorAberrationCoefficients = ParameterKeys.NewValue<Vector3>();
+        public static readonly ValueParameterKey<Vector3> AnamorphicOffsetsWeight = ParameterKeys.NewValue<Vector3>();
     }
 }

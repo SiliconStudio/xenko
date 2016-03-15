@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using SharpDiff;
 using SiliconStudio.Assets.Visitors;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Diff
@@ -17,9 +17,9 @@ namespace SiliconStudio.Assets.Diff
     {
         private readonly static List<DataVisitNode> EmptyNodes = new List<DataVisitNode>();
 
-        private readonly Asset baseAsset;
-        private readonly Asset asset1;
-        private readonly Asset asset2;
+        private readonly object baseAsset;
+        private readonly object asset1;
+        private readonly object asset2;
         private readonly NodeEqualityComparer equalityComparer;
         private Diff3Node computed;
 
@@ -29,16 +29,19 @@ namespace SiliconStudio.Assets.Diff
         /// <param name="baseAsset">The base asset.</param>
         /// <param name="asset1">The asset1.</param>
         /// <param name="asset2">The asset2.</param>
-        public AssetDiff(Asset baseAsset, Asset asset1, Asset asset2)
+        public AssetDiff(object baseAsset, object asset1, object asset2)
         {
             // TODO handle some null values (no asset2....etc.)
             this.baseAsset = baseAsset;
             this.asset1 = asset1;
             this.asset2 = asset2;
             this.equalityComparer = new NodeEqualityComparer(this);
+            CustomVisitorsBase = new List<IDataCustomVisitor>();
+            CustomVisitorsAsset1 = new List<IDataCustomVisitor>();
+            CustomVisitorsAsset2 = new List<IDataCustomVisitor>();
         }
 
-        public Asset BaseAsset
+        public object BaseAsset
         {
             get
             {
@@ -46,7 +49,7 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        public Asset Asset1
+        public object Asset1
         {
             get
             {
@@ -54,7 +57,7 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        public Asset Asset2
+        public object Asset2
         {
             get
             {
@@ -62,15 +65,21 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
+        /// <summary>
+        /// Gets or sets a boolean indicating whether the diff is assuming that it is in a base/child context using override informations.
+        /// </summary>
+        public bool UseOverrideMode { get; set; }
+
+        /// <summary>
+        /// Custom visitors that can be registered when visiting object tree.
+        /// </summary>
+        public List<IDataCustomVisitor> CustomVisitorsBase { get; private set; }
+        public List<IDataCustomVisitor> CustomVisitorsAsset1 { get; private set; }
+        public List<IDataCustomVisitor> CustomVisitorsAsset2 { get; private set; }
+
         public void Reset()
         {
             computed = null;
-        }
-
-        public static Diff3Node Compute(Asset baseAsset, Asset asset1, Asset asset2)
-        {
-            var diff3 = new AssetDiff(baseAsset, asset1, asset2);
-            return diff3.Compute();
         }
 
         /// <summary>
@@ -86,20 +95,25 @@ namespace SiliconStudio.Assets.Diff
             }
 
             // If asset implement IDiffResolver, run callback
-            if (baseAsset is IDiffResolver)
-            {
-                ((IDiffResolver)baseAsset).BeforeDiff(baseAsset, asset1, asset2);
-            }
+            //if (baseAsset is IDiffResolver)
+            //{
+            //    ((IDiffResolver)baseAsset).BeforeDiff(baseAsset, asset1, asset2);
+            //}
 
-            var baseNodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, baseAsset);
-            var asset1Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset1);
-            var asset2Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset2);
+            var baseNodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, baseAsset, CustomVisitorsBase);
+            var asset1Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset1, CustomVisitorsAsset1);
+            var asset2Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset2, CustomVisitorsAsset2);
             computed =  DiffNode(baseNodes, asset1Nodes, asset2Nodes);
             return computed;
         }
 
         private Diff3Node DiffNode(DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
         {
+            if (UseOverrideMode)
+            {
+                return DiffNodeByOverride(baseNode, asset1Node, asset2Node);
+            }
+
             var diff3 = new Diff3Node(baseNode, asset1Node, asset2Node);
 
             var baseNodeDesc = GetNodeDescription(baseNode);
@@ -154,6 +168,137 @@ namespace SiliconStudio.Assets.Diff
                     diff3.ChangeType = Diff3ChangeType.ConflictType;
                 }
             }
+            return diff3;
+        }
+
+        private Diff3Node DiffNodeByOverride(DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        {
+            var diff3 = new Diff3Node(baseNode, asset1Node, asset2Node);
+
+            // TODO Add merge when types are non uniform but we are in UseOverrideMode
+
+            var baseNodeDesc = GetNodeDescription(baseNode);
+            var asset1NodeDesc = GetNodeDescription(asset1Node);
+            var asset2NodeDesc = GetNodeDescription(asset2Node);
+
+            var memberBase = (diff3.BaseNode) as DataVisitMember;
+            var memberAsset1 = (diff3.Asset1Node) as DataVisitMember;
+            var memberAsset2 = (diff3.Asset2Node) as DataVisitMember;
+            var dataVisitMember = memberBase ?? memberAsset1 ?? memberAsset2;
+
+            // Currently, only properties/fields can have override information, so we process them separately here
+            if (dataVisitMember != null)
+            {
+                var type = baseNodeDesc.Type ?? asset1NodeDesc.Type ?? asset2NodeDesc.Type;
+                diff3.InstanceType = type;
+
+                if (IsComparableType(dataVisitMember.HasMembers, type))
+                {
+                    ApplyOverrideOnValue(diff3);
+                }
+                else
+                {
+                    var baseOverride = memberBase?.Parent?.Instance?.GetOverride(memberBase.MemberDescriptor) ?? OverrideType.Base;
+                    var member1Override = memberAsset1?.Parent?.Instance?.GetOverride(memberAsset1.MemberDescriptor) ?? OverrideType.Base;
+                    var member2Override = memberAsset2?.Parent?.Instance?.GetOverride(memberAsset2.MemberDescriptor) ?? OverrideType.Base;
+
+                    //            base         asset1       asset2
+                    //            ----         ------       ------
+                    // Type:       TB            T1           T2
+                    // Override: whatever    base|whatever     (new|base)+sealed    -> If member on asset2 is sealed, or member on asset1 is base
+                    // 
+                    //   if T1 == T2 and TB == T1,  merge all of them
+                    //   If T1 == T2
+                    //       merge T1-T2
+                    //   if T1 != T2
+                    //       replace asset1 by asset2 value, don't perform merge on instance
+                    //
+                    //   In all case, replace override on asset1 by Base|Sealed
+
+                    if (member2Override.IsSealed() || member1Override.IsBase())
+                    {
+                        if (asset1NodeDesc.Type == asset2NodeDesc.Type)
+                        {
+                            diff3 = DiffNodeWithUniformType(baseNodeDesc.Type == asset1NodeDesc.Type ? baseNode : asset2Node, asset1Node, asset2Node);
+                        }
+                        else
+                        {
+                            diff3.InstanceType = asset2NodeDesc.Type;
+                            diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                        }
+
+                        // Force asset1 override to be base|sealed
+                        diff3.FinalOverride = OverrideType.Base;
+                        if (member2Override.IsSealed())
+                        {
+                            diff3.FinalOverride |= OverrideType.Sealed;
+                        }
+                    }
+                    else
+                    {
+                        if (asset1NodeDesc.Type == asset2NodeDesc.Type)
+                        {
+                            diff3 = DiffNodeWithUniformType(baseNodeDesc.Type == asset1NodeDesc.Type ? baseNode : asset2Node, asset1Node, asset2Node);
+                        }
+                        else
+                        {
+                            diff3.InstanceType = asset1NodeDesc.Type;
+                            diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                        }
+
+                        diff3.FinalOverride = member1Override;
+                    }
+
+                    // If base changed from Sealed to non-sealed, and asset1 was base|sealed, change it back to plain base.
+                    if (baseOverride.IsSealed() && !member2Override.IsSealed() && member1Override == (OverrideType.Base | OverrideType.Sealed))
+                    {
+                        diff3.FinalOverride = OverrideType.Base;
+                    }
+                }
+            }
+            else
+            {
+                if (baseNodeDesc.Type != null &&
+                    asset1NodeDesc.Type != null &&
+                    asset2NodeDesc.Type != null)
+                {
+                    // cases : base  asset1  asset2
+                    // case 1:  T      T       T      => Merge all instances
+                    if (baseNodeDesc.Type == asset1NodeDesc.Type && baseNodeDesc.Type == asset2NodeDesc.Type)
+                    {
+                        // If all types are the same, perform a normal diff.
+                        return DiffNodeWithUniformType(baseNode, asset1Node, asset2Node);
+                    }
+
+                    // case 2:  T      T1      T      => Only from asset1
+                    if (baseNodeDesc.Type != asset1NodeDesc.Type && baseNodeDesc.Type == asset2NodeDesc.Type)
+                    {
+                        diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                        diff3.InstanceType = asset1NodeDesc.Type;
+                        return diff3;
+                    }
+
+                    // case 3:  T      T       T1     => Only from asset2
+                    if (baseNodeDesc.Type == asset1NodeDesc.Type && baseNodeDesc.Type != asset2NodeDesc.Type)
+                    {
+                        diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                        diff3.InstanceType = asset2NodeDesc.Type;
+                        return diff3;
+                    }
+                }
+                else if (baseNodeDesc.Type != null && asset1NodeDesc.Type != null && baseNodeDesc.Type == asset1NodeDesc.Type)
+                {
+                    // case 3:  T      T       null     => Merge from asset2 (set null on asset1)
+                    diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                    diff3.InstanceType = null;
+                    return diff3;
+                }
+
+                // other cases: Always merge from asset1 (should be a conflict, but we assume that we can only use asset1
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                diff3.InstanceType = asset1NodeDesc.Type;
+                return diff3;
+            }
 
             return diff3;
         }
@@ -199,33 +344,83 @@ namespace SiliconStudio.Assets.Diff
             return diff3;
         }
 
-        private static bool IsComparableType(bool hasMembers, Type type)
+        private bool IsComparableType(bool hasMembers, Type type)
         {
             // A comparable type doesn't have any members, is not a collection or dictionary or array.
-            bool isComparableType = !hasMembers && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
+            bool isComparableType = ((UseOverrideMode && type.IsValueType) || !hasMembers) && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
             return isComparableType;
         }
 
-        private static void DiffValue(Diff3Node diff3, ref NodeDescription baseNodeDesc, ref NodeDescription asset1NodeDesc, ref NodeDescription asset2NodeDesc)
+        private void DiffValue(Diff3Node diff3, ref NodeDescription baseNodeDesc, ref NodeDescription asset1NodeDesc, ref NodeDescription asset2NodeDesc)
         {
             var node = diff3.Asset1Node ?? diff3.Asset2Node ?? diff3.BaseNode;
             var dataVisitMember = node as DataVisitMember;
-            var diffMember = dataVisitMember?.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault();
-            if (diffMember != null)
+            if (dataVisitMember != null)
             {
-                if (diffMember.PreferredChange.HasValue)
-                    diff3.ChangeType = diffMember.PreferredChange.Value;
+                var diffMember = dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault();
+                if (diffMember != null)
+                {
+                    if (diffMember.PreferredChange.HasValue)
+                        diff3.ChangeType = diffMember.PreferredChange.Value;
 
-                diff3.Weight = diffMember.Weight;
+                    diff3.Weight = diffMember.Weight;
+                }
             }
 
-            var baseAsset1Equals = Equals(baseNodeDesc.Instance, asset1NodeDesc.Instance);
-            var baseAsset2Equals = Equals(baseNodeDesc.Instance, asset2NodeDesc.Instance);
-            var asset1And2Equals = Equals(asset1NodeDesc.Instance, asset2NodeDesc.Instance);
+            var instanceType = asset1NodeDesc.Instance?.GetType() ?? asset2NodeDesc.Instance?.GetType();
+
+            object baseInstance = baseNodeDesc.Instance;
+            object asset1Instance = asset1NodeDesc.Instance;
+            object asset2Instance = asset2NodeDesc.Instance;
+
+            // If this is an identifiable type (but we are for example not visiting its member), compare only the Ids instead
+            if (UseOverrideMode && instanceType != null && IdentifiableHelper.IsIdentifiable(instanceType))
+            {
+                baseInstance = IdentifiableHelper.GetId(baseInstance);
+                asset1Instance = IdentifiableHelper.GetId(asset1Instance);
+                asset2Instance = IdentifiableHelper.GetId(asset2Instance);
+            }
+
+            var baseAsset1Equals = Equals(baseInstance, asset1Instance);
+            var baseAsset2Equals = Equals(baseInstance, asset2Instance);
+            var asset1And2Equals = Equals(asset1Instance, asset2Instance);
 
             diff3.ChangeType = baseAsset1Equals && baseAsset2Equals
                 ? Diff3ChangeType.None
                 : baseAsset2Equals ? Diff3ChangeType.MergeFromAsset1 : baseAsset1Equals ? Diff3ChangeType.MergeFromAsset2 : asset1And2Equals ? Diff3ChangeType.MergeFromAsset1And2 : Diff3ChangeType.Conflict;
+        }
+
+        private static void ApplyOverrideOnValue(Diff3Node diff3, bool isClassType = false)
+        {
+            var memberBase = (diff3.BaseNode) as DataVisitMember;
+            var memberAsset1 = (diff3.Asset1Node) as DataVisitMember;
+            var memberAsset2 = (diff3.Asset2Node) as DataVisitMember;
+            var baseOverride = memberBase?.Parent?.Instance?.GetOverride(memberBase.MemberDescriptor) ?? OverrideType.Base;
+            var member1Override = memberAsset1?.Parent?.Instance?.GetOverride(memberAsset1.MemberDescriptor) ?? OverrideType.Base;
+            var member2Override = memberAsset2?.Parent?.Instance?.GetOverride(memberAsset2.MemberDescriptor) ?? OverrideType.Base;
+
+            if (member2Override.IsSealed())
+            {
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                // Force asset1 override to be base|sealed
+                diff3.FinalOverride = OverrideType.Base | OverrideType.Sealed;
+            }
+            else if (member1Override.IsBase())
+            {
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                diff3.FinalOverride = member1Override;
+            }
+            else
+            {
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                diff3.FinalOverride = member1Override;
+            }
+
+            // If base changed from Sealed to non-sealed, and asset1 was base|sealed, change it back to plain base.
+            if (baseOverride.IsSealed() && !member2Override.IsSealed() && member1Override == (OverrideType.Base | OverrideType.Sealed))
+            {
+                diff3.FinalOverride = OverrideType.Base;
+            }
         }
 
         private void DiffMembers(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
@@ -263,7 +458,22 @@ namespace SiliconStudio.Assets.Diff
             bool recurseDiff = false;
 
             // Find an item in any of the list
-            var firstItem = baseItems.FirstOrDefault() ?? asset1Items.FirstOrDefault() ?? asset2Items.FirstOrDefault();
+            var firstItem = baseItems.FirstOrDefault(item => item.Instance != null) ?? asset1Items.FirstOrDefault(item => item.Instance != null) ?? asset2Items.FirstOrDefault(item => item.Instance != null);
+
+            // For now, in the context of UseOverrideMode and we have identifiers per item, use DiffCollectionByIds instead
+            if (UseOverrideMode && firstItem != null)
+            {
+                if (IdentifiableHelper.IsIdentifiable(firstItem.Instance.GetType()))
+                {
+                    DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
+                    return;
+                }
+                else if (firstItem.Instance is Guid)
+                {
+                    DiffCollectionByGuids(diff3, baseNode, asset1Node, asset2Node);
+                    return;
+                }
+            }
 
             // If we have a DiffUseAsset1Attribute, list of Asset1Node becomes authoritative.
             var dataVisitMember = node as DataVisitMember;
@@ -394,6 +604,131 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
+        private void DiffCollectionByIds(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        {
+            DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, IdentifiableHelper.GetId, DiffNode);
+        }
+
+        private Guid GetSafeGuidForCollectionItem(object instance, int index, Func<object, Guid> idGetter)
+        {
+            // If the instance is null, we still need a guid, so we are generating one based on the index from the collection
+            // If null values is put at the same index for base/asset1/asset2, they will be matching
+            // If not a merge my not generate optimal merge with nulls
+            // In general, null items in collections that maybe mergeable should be avoided
+            if (instance == null)
+            {
+                return new Guid(index, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            }
+            return idGetter(instance);
+        }
+
+        private void DiffCollectionByIdsGeneric(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node, Func<object, Guid> idGetter, Func<DataVisitNode, DataVisitNode, DataVisitNode, Diff3Node> diff3Getter)
+        {
+            var baseItems = baseNode != null ? baseNode.Items ?? EmptyNodes : EmptyNodes;
+            var asset1Items = asset1Node != null ? asset1Node.Items ?? EmptyNodes : EmptyNodes;
+            var asset2Items = asset2Node != null ? asset2Node.Items ?? EmptyNodes : EmptyNodes;
+
+            // Pre-build dictionary
+            var items = new Dictionary<Guid, Diff3CollectionByIdItem>();
+
+            for (int i = 0; i < baseItems.Count; i++)
+            {
+                var item = baseItems[i];
+                var id = GetSafeGuidForCollectionItem(item.Instance, i, idGetter);
+                Diff3CollectionByIdItem entry;
+                items.TryGetValue(id, out entry);
+                entry.BaseIndex = i;
+                items[id] = entry;
+            }
+            for (int i = 0; i < asset1Items.Count; i++)
+            {
+                var item = asset1Items[i];
+                var id = GetSafeGuidForCollectionItem(item.Instance, i, idGetter);
+                Diff3CollectionByIdItem entry;
+                items.TryGetValue(id, out entry);
+                entry.Asset1Index = i;
+                items[id] = entry;
+            }
+            for (int i = 0; i < asset2Items.Count; i++)
+            {
+                var item = asset2Items[i];
+                var id = GetSafeGuidForCollectionItem(item.Instance, i, idGetter);
+                Diff3CollectionByIdItem entry;
+                items.TryGetValue(id, out entry);
+                entry.Asset2Index = i;
+                items[id] = entry;
+            }
+
+            foreach (var idAndEntry in items.OrderBy(item => item.Value.Asset1Index ?? item.Value.Asset2Index ?? item.Value.BaseIndex ?? 0))
+            {
+                var entry = idAndEntry.Value;
+
+                bool hasBase = entry.BaseIndex.HasValue;
+                bool hasAsset1 = entry.Asset1Index.HasValue;
+                bool hasAsset2 = entry.Asset2Index.HasValue;
+
+                int baseIndex = entry.BaseIndex ?? -1;
+                int asset1Index = entry.Asset1Index ?? -1;
+                int asset2Index = entry.Asset2Index ?? -1;
+
+                if (hasBase && hasAsset1 && hasAsset2)
+                {
+                    // If asset was already in base and is still valid for asset1 and asset2
+                    var diff3Node = diff3Getter(baseNode.Items[baseIndex], asset1Node.Items[asset1Index], asset2Node.Items[asset2Index]);
+                    // Use index from asset2 if baseIndex = asset1Index, else use from asset1 index
+                    AddItemByPosition(diff3, diff3Node, baseIndex == asset1Index ? asset2Index : asset1Index, true);
+                }
+                else if (!hasBase)
+                {
+                    // If no base, there is at least either asset1 or asset2 but not both, as they can't have the same id
+                    if (hasAsset1)
+                    {
+                        var diff3Node = new Diff3Node(null, asset1Node.Items[asset1Index], null) { ChangeType = Diff3ChangeType.MergeFromAsset1, InstanceType = asset1Node.Items[asset1Index].InstanceType };
+                        AddItemByPosition(diff3, diff3Node, asset1Index, true);
+                    }
+                    else if (hasAsset2)
+                    {
+                        var diff3Node = new Diff3Node(null, null, asset2Node.Items[asset2Index]) { ChangeType = Diff3ChangeType.MergeFromAsset2, InstanceType = asset2Node.Items[asset2Index].InstanceType };
+                        AddItemByPosition(diff3, diff3Node, asset2Index, true);
+                    }
+                }
+                else
+                {
+                    // either item was removed from asset1 or asset2, so we assume that it is completely removed 
+                    // (not strictly correct, because one item could change a sub-property, but we assume that when a top-level list item is removed, we remove it, even if it has changed internally)
+                }
+            }
+
+            // The diff will only applied to children (we don't support members)
+            diff3.ChangeType = Diff3ChangeType.Children;
+
+            // Cleanup any hole in the list
+            // If new items are found, just cleanup
+            if (diff3.Items != null)
+            {
+                // Because in the previous loop, we can add some hole while trying to merge index (null nodes), we need to remove them from here.
+                for (int i = diff3.Items.Count - 1; i >= 0; i--)
+                {
+                    if (diff3.Items[i] == null)
+                    {
+                        diff3.Items.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Diff a collection of Guid (supposed to be unique)
+        /// </summary>
+        /// <param name="diff3"></param>
+        /// <param name="baseNode"></param>
+        /// <param name="asset1Node"></param>
+        /// <param name="asset2Node"></param>
+        private void DiffCollectionByGuids(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        {
+            DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, o => (Guid)o, (a1, a2, a3) => new Diff3Node(a1, a2, a3) { InstanceType = typeof(Guid), ChangeType = Diff3ChangeType.MergeFromAsset1 });
+        }
+
         private static DataVisitNode GetSafeFromList(List<DataVisitNode> nodes, ref int index, ref Span span)
         {
             if (nodes == null || index < 0) return null;
@@ -465,7 +800,10 @@ namespace SiliconStudio.Assets.Diff
                     //   a       null     c     MergeFrom1 (unchanged)
                     //  null     null     c     MergeFrom2
                     //   a       null    null   MergeFrom1 (unchanged)
-                    diffValue = new Diff3Node(valueNode.Base, null, valueNode.Asset2) { ChangeType = valueNode.Base == null ? Diff3ChangeType.MergeFromAsset2 : Diff3ChangeType.MergeFromAsset1 };
+                    diffValue = new Diff3Node(valueNode.Base, null, valueNode.Asset2)
+                    {
+                        ChangeType = valueNode.Base == null ? Diff3ChangeType.MergeFromAsset2 : Diff3ChangeType.MergeFromAsset1,
+                    };
                 }
                 else
                 {
@@ -528,8 +866,9 @@ namespace SiliconStudio.Assets.Diff
                     asset1Items == null ? null : asset1Items[i],
                     asset2Items == null ? null : asset2Items[i]));
             }
-        }
 
+            // TODO: Add diff by ids on array
+        }
 
         /// <summary>
         /// Adds a member to this instance.
@@ -559,6 +898,15 @@ namespace SiliconStudio.Assets.Diff
         /// <exception cref="System.ArgumentNullException">item</exception>
         private static void AddItem(Diff3Node thisObject, Diff3Node item, bool hasChildrenChanged = false)
         {
+            if (thisObject.Items == null)
+                thisObject.Items = new List<Diff3Node>();
+
+            // Add at the end of the list
+            AddItemByPosition(thisObject, item, thisObject.Items.Count, hasChildrenChanged);
+        }
+
+        private static void AddItemByPosition(Diff3Node thisObject, Diff3Node item, int position, bool hasChildrenChanged = false)
+        {
             if (item == null) throw new ArgumentNullException("item");
             if (thisObject.Items == null)
                 thisObject.Items = new List<Diff3Node>();
@@ -568,8 +916,26 @@ namespace SiliconStudio.Assets.Diff
             {
                 thisObject.ChangeType = Diff3ChangeType.Children;
             }
-            item.Index = thisObject.Items.Count;
-            thisObject.Items.Add(item);
+
+            if (position >= thisObject.Items.Count)
+            {
+                int count = (position - thisObject.Items.Count + 1);
+                for (int i = 0; i < count; i++)
+                {
+                    thisObject.Items.Add(null);
+                }
+            }
+
+            if (thisObject.Items[position] == null)
+            {
+                item.Index = position;
+                thisObject.Items[position] = item;
+            }
+            else
+            {
+                item.Index = position + 1;
+                thisObject.Items.Insert(item.Index, item);
+            }
         }
 
         private NodeDescription GetNodeDescription(DataVisitNode node)
@@ -599,6 +965,13 @@ namespace SiliconStudio.Assets.Diff
             public readonly object Instance;
 
             public readonly Type Type;
+        }
+
+        struct Diff3CollectionByIdItem
+        {
+            public int? BaseIndex;
+            public int? Asset1Index;
+            public int? Asset2Index;
         }
 
         private struct Diff3DictionaryItem
@@ -652,7 +1025,7 @@ namespace SiliconStudio.Assets.Diff
                         hashCode = hashCode * 17 + node.Items.Count;
                     else if (node.HasMembers)
                         hashCode = hashCode * 11 + node.Members.Count;
-                    else if (IsComparableType(false, node.InstanceType) && node.InstanceType.IsPrimitive && node.Instance != null) // Ignore non-primitive types, to be safe (GetHashCode doesn't do deep comparison)
+                    else if (diffManager.IsComparableType(false, node.InstanceType) && node.InstanceType.IsPrimitive && node.Instance != null) // Ignore non-primitive types, to be safe (GetHashCode doesn't do deep comparison)
                         hashCode = hashCode * 13 + node.Instance.GetHashCode();
                 }
 

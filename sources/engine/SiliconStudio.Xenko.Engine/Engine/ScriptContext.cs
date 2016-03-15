@@ -16,13 +16,14 @@ using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    // TODO: Remove this interface?
     public interface IScriptContext
     {
         IServiceRegistry Services { get; }
 
         IGame Game { get; }
 
-        AssetManager Asset { get; }
+        ContentManager Content { get; }
 
         GraphicsDevice GraphicsDevice { get; }
 
@@ -39,17 +40,19 @@ namespace SiliconStudio.Xenko.Engine
         SpriteAnimationSystem SpriteAnimation { get; }
     }
 
+    // TODO: Remove this class?
     [DataContract("ScriptContext")]
-    public abstract class ScriptContext : ComponentBase, IScriptContext
+    public abstract class ScriptContext : ComponentBase, IScriptContext, IIdentifiable
     {
         private IGraphicsDeviceService graphicsDeviceService;
         private Logger logger;
 
         protected ScriptContext()
         {
+            Id = Guid.NewGuid();
         }
 
-        protected ScriptContext(IServiceRegistry registry)
+        protected ScriptContext(IServiceRegistry registry) : this()
         {
             Initialize(registry);
         }
@@ -61,7 +64,7 @@ namespace SiliconStudio.Xenko.Engine
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             Game = Services.GetSafeServiceAs<IGame>();
-            Asset = (AssetManager)Services.GetSafeServiceAs<IAssetManager>();
+            Content = (ContentManager)Services.GetSafeServiceAs<IAssetManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();
@@ -71,11 +74,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMember(-10), Display(Browsable = false)]
-        public override Guid Id
-        {
-            get { return base.Id; }
-            set { base.Id = value; }
-        }
+        public Guid Id { get; set; }
 
         [DataMemberIgnore]
         public AudioSystem Audio { get; private set; }
@@ -90,7 +89,11 @@ namespace SiliconStudio.Xenko.Engine
         public IGame Game { get; private set; }
 
         [DataMemberIgnore]
-        public AssetManager Asset { get; private set; }
+        public ContentManager Content { get; private set; }
+
+        [DataMemberIgnore]
+        [Obsolete("Use Content property instead when accessing the ContentManager")]
+        public ContentManager Asset => Content;
 
         [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice

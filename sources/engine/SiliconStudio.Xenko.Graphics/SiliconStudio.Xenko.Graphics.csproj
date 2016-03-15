@@ -15,24 +15,34 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup>
-        <Reference Include="System.Drawing" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="SharpDX.Desktop">
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+      <ItemGroup>
+        <Reference Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')" Include="System.Drawing" />
+        <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -42,10 +52,6 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
         </Reference>
-        <Reference Include="SharpDX.Direct3D11">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-        </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
@@ -54,12 +60,39 @@
     </When>
   </Choose>
   <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D11">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
+        <Reference Include="SharpDX.Direct3D12">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+          <ItemGroup>
+            <Reference Include="OpenTK">
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
-              <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -72,6 +105,16 @@
           </ItemGroup>
         </When>
       </Choose>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+      </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
@@ -92,7 +135,7 @@
       <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+  <ItemGroup Condition="('$(SiliconStudioPlatform)' == 'Android') OR ('$(SiliconStudioPlatform)' == 'Linux')">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
@@ -102,27 +145,72 @@
   <ItemGroup>
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
-    <Compile Include="BlendStateSerializer.cs" />
+    <Compile Include="BufferPool.cs" />
+    <Compile Include="BufferPoolAllocationResult.cs" />
+    <Compile Include="CommandList.cs" />
+    <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
-    <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
-    <Compile Include="Effects\ParameterDependency.cs" />
+    <Compile Include="DescriptorPool.cs" />
+    <Compile Include="DescriptorSet.cs" />
+    <Compile Include="DescriptorSetEntry.cs" />
+    <Compile Include="DescriptorSetLayout.cs" />
+    <Compile Include="DescriptorSetLayoutBuilder.cs" />
+    <Compile Include="DescriptorSetLayoutEntry.cs" />
+    <Compile Include="DescriptorTypeCount.cs" />
+    <Compile Include="Direct3D12\Buffer.Direct3D12.cs" />
+    <Compile Include="Direct3D12\CommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSet.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorPool.Direct3D12.cs" />
+    <Compile Include="Direct3D12\DescriptorSetLayout.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDevice.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsDeviceFeatures.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsOutput.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\GraphicsResourceBase.Direct3D12.cs" />
+    <Compile Include="Direct3D12\MappedResource.Direct3D12.cs" />
+    <Compile Include="Direct3D12\PipelineState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\SamplerState.Direct3D12.cs" />
+    <Compile Include="Direct3D12\Texture.Direct3D12.cs" />
+    <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
+    <Compile Include="Rendering\EffectInstance.cs" />
+    <Compile Include="Rendering\EffectParameterUpdater.cs" />
+    <Compile Include="Rendering\EffectParameterUpdaterLayout.cs" />
+    <Compile Include="GraphicsContext.cs" />
+    <Compile Include="InputClassification.cs" />
+    <Compile Include="InputElementDescription.cs" />
+    <Compile Include="MutablePipelineState.cs" />
+    <Compile Include="RenderOutputDescription.cs" />
+    <Compile Include="OpenGL\CommandList.OpenGL.cs" />
+    <Compile Include="OpenGL\PipelineState.OpenGL.cs" />
+    <Compile Include="ResourceBinder.cs" />
+    <Compile Include="ResourceGroupAllocator.cs" />
+    <Compile Include="ResourceGroupBufferUploader.cs" />
+    <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
     <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
     <Compile Include="Font\StaticSpriteFontSerializer.cs" />
     <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
-    <Compile Include="RasterizerStateSerializer.cs" />
+    <Compile Include="ParameterCollectionLayoutExtensions.cs" />
+    <Compile Include="PipelineState.cs" />
     <Compile Include="Data\BufferData.cs" />
     <Compile Include="Data\GraphicsSerializerExtensions.cs" />
     <Compile Include="Data\BufferSerializer.cs" />
     <Compile Include="Data\TextureSerializer.cs" />
     <Compile Include="Direct3D\DisplayMode.Direct3D.cs" />
-    <Compile Include="Direct3D\EffectInputSignature.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
-    <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
-    <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="ResourceGroup.cs" />
+    <Compile Include="ResourceGroupLayout.cs" />
+    <Compile Include="ResourceStates.cs" />
+    <Compile Include="RootSignature.cs" />
+    <Compile Include="SDL\Application.cs" />
+    <Compile Include="SDL\Cursor.cs" />
+    <Compile Include="SDL\FormBorderStyle.cs" />
+    <Compile Include="SDL\FormWindowState.cs" />
+    <Compile Include="SDL\SDLMessageLoop.cs" />
+    <Compile Include="SDL\Window.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
@@ -179,18 +267,10 @@
     <Compile Include="ImageOrientation.cs" />
     <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
-    <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
     <Compile Include="ResumeManager.cs" />
-    <Compile Include="Direct3D\VertexArrayLayout.Direct3D.cs" />
-    <Compile Include="Effects\ConstantBufferData.cs" />
     <Compile Include="Effects\Effect.cs" />
-    <Compile Include="EffectInputSignature.cs" />
     <Compile Include="Effects\EffectSerializer.cs" />
-    <Compile Include="Effects\EffectParameterResourceBinding.cs" />
-    <Compile Include="Effects\EffectStateBindings.cs" />
-    <Compile Include="Effects\ParameterConstantBuffer.cs" />
-    <Compile Include="Effects\StageStatus.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
@@ -221,9 +301,7 @@
     <Compile Include="IVertex.cs" />
     <Compile Include="MappedResource.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="OpenGL\EffectInputSignature.OpenGL.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.iOS.cs" />
-    <Compile Include="Effects\EffectParameterCollectionGroup.cs" />
     <Compile Include="PrimitiveQuad.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.OpenGL.Level_9_1.cs" />
@@ -291,41 +369,31 @@
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.OpenTK.cs" />
     <Compile Include="OpenGL\UseOpenGLCreationContext.cs" />
     <Compile Include="RenderTargetGraphicsPresenter.cs" />
-    <Compile Include="Direct3D\EffectProgram.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsResource.Direct3D.cs" />
-    <Compile Include="EffectProgram.cs" />
-    <Compile Include="Direct3D\Shader.Direct3D.cs" />
     <Compile Include="Null\EffectProgram.Null.cs" />
     <Compile Include="Null\Shader.Null.cs" />
     <Compile Include="OpenGL\EffectProgram.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLShaderBytecodeData.cs" />
-    <Compile Include="Shader.cs" />
     <Compile Include="Direct3D\GraphicsDeviceFeatures.Direct3D.cs" />
     <Compile Include="FormatSupport.cs" />
     <Compile Include="GraphicsDeviceFeatures.cs" />
     <Compile Include="Null\GraphicsDeviceFeatures.Null.cs" />
     <Compile Include="Null\Texture2DBase.Null.cs" />
     <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
-    <Compile Include="OpenGL\Shader.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
     <Compile Include="SwizzleMode.cs" />
     <Compile Include="TextAlignment.cs" />
-    <Compile Include="Direct3D\BlendState.Direct3D.cs" />
     <Compile Include="Direct3D\Buffer.Direct3D.cs" />
     <Compile Include="Direct3D\ColorHelper.cs" />
-    <Compile Include="Direct3D\CommandList.cs" />
-    <Compile Include="Direct3D\DepthStencilState.Direct3D.cs" />
-    <Compile Include="Direct3D\EffectSignatureLayout.cs" />
+    <Compile Include="Direct3D\CommandList.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsAdapter.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsAdapterFactory.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsDevice.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsProfileHelper.cs" />
     <Compile Include="Direct3D\GraphicsResourceBase.Direct3D.cs" />
-    <Compile Include="Direct3D\RasterizerState.Direct3D.cs" />
     <Compile Include="Direct3D\SamplerState.Direct3D.cs" />
     <Compile Include="Direct3D\Texture.Direct3D.cs" />
-    <Compile Include="Direct3D\VertexArrayObject.Direct3D.cs" />
     <Compile Include="TextureDescription.ExtensionsCube.cs" />
     <Compile Include="TextureDescription.Extensions3D.cs" />
     <Compile Include="TextureDescription.Extensions2D.cs" />
@@ -374,7 +442,6 @@
     <Compile Include="OpenGL\RasterizerState.OpenGL.cs" />
     <Compile Include="OpenGL\SamplerState.OpenGL.cs" />
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
-    <Compile Include="OpenGL\VertexArrayObject.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
@@ -402,21 +469,17 @@
     <Compile Include="Texture.Extensions1D.cs" />
     <Compile Include="DepthStencilStencilOpDescription.cs" />
     <Compile Include="GraphicsResourceMap.cs" />
-    <Compile Include="ICommandList.cs" />
-    <Compile Include="DepthStencilState.cs" />
     <Compile Include="IndexElementSize.cs" />
     <Compile Include="MapMode.cs" />
     <Compile Include="RasterizerStateDescription.cs" />
-    <Compile Include="RasterizerStateFactory.cs" />
+    <Compile Include="RasterizerStates.cs" />
     <Compile Include="SamplerStateFactory.cs" />
     <Compile Include="SamplerState.cs" />
     <Compile Include="TextureDescription.cs" />
-    <Compile Include="VertexArrayObject.cs" />
     <Compile Include="GraphicsDeviceFactory.cs" />
-    <Compile Include="DepthStencilStateFactory.cs" />
+    <Compile Include="DepthStencilStates.cs" />
     <Compile Include="GraphicsAdapter.cs" />
     <Compile Include="GraphicsFactory.cs" />
-    <Compile Include="BlendState.cs" />
     <Compile Include="Buffer.cs" />
     <Compile Include="DepthStencilClearOptions.cs" />
     <Compile Include="ColorWriteChannels.cs" />
@@ -429,13 +492,12 @@
     <Compile Include="GraphicsResourceFactoryBase.cs" />
     <Compile Include="GraphicsResource.cs" />
     <Compile Include="GraphicsResourceUsage.cs" />
-    <Compile Include="BlendStateFactory.cs" />
+    <Compile Include="BlendStates.cs" />
     <Compile Include="BlendStateRenderTargetDescription.cs" />
     <Compile Include="PresentationParameters.cs" />
     <Compile Include="PresentInterval.cs" />
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RasterizerState.cs" />
     <Compile Include="StencilOperation.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="Texture.Extensions2D.cs" />
@@ -469,6 +531,11 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">

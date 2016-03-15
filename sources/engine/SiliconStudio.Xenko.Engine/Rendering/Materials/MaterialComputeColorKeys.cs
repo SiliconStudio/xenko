@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 {
     public class MaterialComputeColorKeys
     {
-        public MaterialComputeColorKeys(ParameterKey<Texture> textureBaseKey, ParameterKey valueBaseKey, Color? defaultTextureValue = null, bool isColor = true)
+        public MaterialComputeColorKeys(ObjectParameterKey<Texture> textureBaseKey, ParameterKey valueBaseKey, Color? defaultTextureValue = null, bool isColor = true)
         {
             //if (textureBaseKey == null) throw new ArgumentNullException("textureBaseKey");
             //if (valueBaseKey == null) throw new ArgumentNullException("valueBaseKey");
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             IsColor = isColor;
         }
 
-        public ParameterKey<Texture> TextureBaseKey { get; private set; }
+        public ObjectParameterKey<Texture> TextureBaseKey { get; private set; }
 
         public ParameterKey ValueBaseKey { get; private set; }
 

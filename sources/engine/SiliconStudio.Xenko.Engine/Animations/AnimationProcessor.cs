@@ -9,43 +9,41 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationProcessor : EntityProcessor<AnimationProcessor.AssociatedData>
+    public class AnimationProcessor : EntityProcessor<AnimationComponent, AnimationProcessor.AssociatedData>
     {
         private readonly FastList<AnimationOperation> animationOperations = new FastList<AnimationOperation>(2);
 
-
         public AnimationProcessor()
-            : base(AnimationComponent.Key)
         {
             Order = -500;
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateComponentData(Entity entity, AnimationComponent component)
         {
             return new AssociatedData
             {
-                AnimationComponent = entity.Get(AnimationComponent.Key),
-                ModelComponent = entity.Get(ModelComponent.Key)
+                AnimationComponent = component,
+                ModelComponent = entity.Get<ModelComponent>()
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AnimationComponent component, AssociatedData associatedData)
         {
             return
-                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent &&
-                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
+                component == associatedData.AnimationComponent &&
+                entity.Get<ModelComponent>() == associatedData.ModelComponent;
         }
 
-        protected override void OnEntityAdding(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentAdding(Entity entity, AnimationComponent component, AssociatedData data)
         {
-            base.OnEntityAdding(entity, data);
+            base.OnEntityComponentAdding(entity, component, data);
 
             data.AnimationUpdater = new AnimationUpdater();
         }
 
-        protected override void OnEntityRemoved(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentRemoved(Entity entity, AnimationComponent component, AssociatedData data)
         {
-            base.OnEntityRemoved(entity, data);
+            base.OnEntityComponentRemoved(entity, component, data);
 
             // Return AnimationClipEvaluators to pool
             foreach (var playingAnimation in data.AnimationComponent.PlayingAnimations)
@@ -67,7 +65,7 @@ namespace SiliconStudio.Xenko.Animations
         {
             var time = context.Time;
 
-            foreach (var entity in enabledEntities)
+            foreach (var entity in ComponentDatas)
             {
                 var associatedData = entity.Value;
                 var animationUpdater = associatedData.AnimationUpdater;
@@ -86,7 +84,7 @@ namespace SiliconStudio.Xenko.Animations
                                     playingAnimation.CurrentTime = playingAnimation.Clip.Duration;
                                 break;
                             case AnimationRepeatMode.LoopInfinite:
-                                playingAnimation.CurrentTime = TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
+                                playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero ? TimeSpan.Zero : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -141,7 +139,7 @@ namespace SiliconStudio.Xenko.Animations
                     animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
-                    animationUpdater.Update(entity.Key, associatedData.AnimationClipResult);
+                    animationUpdater.Update(animationComponent.Entity, associatedData.AnimationClipResult);
                 }
 
                 // Update weight animation

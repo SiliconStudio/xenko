@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
     /// Base class for primitive procedural model.
     /// </summary>
     [DataContract]
+    [NonIdentifiable]
     public abstract class PrimitiveProceduralModelBase : IProceduralModel
     {
         protected PrimitiveProceduralModelBase()
@@ -122,7 +123,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
             }
             else
             {
-                if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
+                if (graphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_9_3)
                 {
                     throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
                 }

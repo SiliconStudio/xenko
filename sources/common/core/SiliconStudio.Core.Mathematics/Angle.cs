@@ -450,6 +450,9 @@ namespace SiliconStudio.Core.Mathematics
             get { return new AngleSingle(0.0f, AngleType.Radian); }
         }
 
+// Currently those 3 routines RightAngle, StraightAngle and FullRotationAngle are causing the .NET native
+// compiler to crash when targeting Windows 10 Universal apps.
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_10 || WIN_X64_AOT_BUG_FIXED
         /// <summary>
         /// Gets a new SiliconStudio.Core.Mathematics.AngleSingle instance that represents the right angle (i.e. 90° or π/2).
         /// </summary>
@@ -473,6 +476,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             get { return new AngleSingle(MathUtil.TwoPi, AngleType.Radian); }
         }
+#endif
 
         /// <summary>
         /// Returns a System.Boolean that indicates whether the values of two SiliconStudio.Core.Mathematics.Angle

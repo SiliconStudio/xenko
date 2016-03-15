@@ -7,6 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
     public class ComputeShaderBaseKeys
     {   
-        public static readonly ParameterKey<Int3> ThreadGroupCountGlobal = ParameterKeys.New<Int3>();
+        public static readonly ValueParameterKey<Int3> ThreadGroupCountGlobal = ParameterKeys.NewValue<Int3>();
     }
 }

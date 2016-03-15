@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class StageValueTestKeys
     {
-        public static readonly ParameterKey<float> testFloat = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> testFloat = ParameterKeys.NewValue<float>();
     }
 }

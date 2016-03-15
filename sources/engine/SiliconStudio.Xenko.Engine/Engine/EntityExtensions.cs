@@ -5,6 +5,9 @@ using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    /// <summary>
+    /// Extensions for <see cref="Entity"/>
+    /// </summary>
     public static class EntityExtensions
     {
         /// <summary>

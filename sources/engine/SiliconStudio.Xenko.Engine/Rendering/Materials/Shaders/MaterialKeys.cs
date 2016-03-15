@@ -11,121 +11,117 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 {
     public class MaterialKeys
     {
-        public static readonly ParameterKey<ShaderSource> VertexStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
-        public static readonly ParameterKey<ShaderSource> DomainStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
-        public static readonly ParameterKey<ShaderSource> PixelStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> VertexStageSurfaceShaders = ParameterKeys.NewPermutation<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> DomainStageSurfaceShaders = ParameterKeys.NewPermutation<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> PixelStageSurfaceShaders = ParameterKeys.NewPermutation<ShaderSource>();
         
-        public static readonly ParameterKey<ShaderSource> VertexStageStreamInitializer = ParameterKeys.New<ShaderSource>();
-        public static readonly ParameterKey<ShaderSource> DomainStageStreamInitializer = ParameterKeys.New<ShaderSource>();
-        public static readonly ParameterKey<ShaderSource> PixelStageStreamInitializer = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> VertexStageStreamInitializer = ParameterKeys.NewPermutation<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> DomainStageStreamInitializer = ParameterKeys.NewPermutation<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> PixelStageStreamInitializer = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly ParameterKey<ShaderSource> TessellationShader = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> TessellationShader = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly ParameterKey<ShaderSource> PixelStageSurfaceFilter = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> PixelStageSurfaceFilter = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly ParameterKey<Texture> BlendMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> BlendValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> BlendMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> BlendValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> DisplacementMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> DisplacementValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> DisplacementMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> DisplacementValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> DisplacementIntensityMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> DisplacementIntensityValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> DisplacementIntensityMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> DisplacementIntensityValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> NormalMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Vector3> NormalValue = ParameterKeys.New<Vector3>();
+        public static readonly ObjectParameterKey<Texture> NormalMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Vector3> NormalValue = ParameterKeys.NewValue<Vector3>();
 
-        public static readonly ParameterKey<Texture> DiffuseMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Color4> DiffuseValue = ParameterKeys.New<Color4>();
+        public static readonly ObjectParameterKey<Texture> DiffuseMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Color4> DiffuseValue = ParameterKeys.NewValue<Color4>();
 
-        public static readonly ParameterKey<Texture> DiffuseSpecularAlphaBlendMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> DiffuseSpecularAlphaBlendValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> DiffuseSpecularAlphaBlendMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> DiffuseSpecularAlphaBlendValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> AlphaBlendColorMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Color3> AlphaBlendColorValue = ParameterKeys.New<Color3>();
+        public static readonly ObjectParameterKey<Texture> AlphaBlendColorMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Color3> AlphaBlendColorValue = ParameterKeys.NewValue<Color3>();
 
-        public static readonly ParameterKey<Texture> AlphaDiscardMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> AlphaDiscardValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> AlphaDiscardMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> AlphaDiscardValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> SpecularMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Color3> SpecularValue = ParameterKeys.New<Color3>();
-        public static readonly ParameterKey<float> SpecularIntensityValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> SpecularMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Color3> SpecularValue = ParameterKeys.NewValue<Color3>();
+        public static readonly ValueParameterKey<float> SpecularIntensityValue = ParameterKeys.NewValue<float>();
         
-        public static readonly ParameterKey<Texture> GlossinessMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> GlossinessValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> GlossinessMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> GlossinessValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> AmbientOcclusionMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> AmbientOcclusionValue = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> AmbientOcclusionDirectLightingFactorValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> AmbientOcclusionMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> AmbientOcclusionValue = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> AmbientOcclusionDirectLightingFactorValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> CavityMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> CavityValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> CavityMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> CavityValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<float> CavityDiffuseValue = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> CavitySpecularValue = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> CavityDiffuseValue = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> CavitySpecularValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> MetalnessMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> MetalnessValue = ParameterKeys.New<float>();
+        public static readonly ObjectParameterKey<Texture> MetalnessMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> MetalnessValue = ParameterKeys.NewValue<float>();
 
-        public static readonly ParameterKey<Texture> EmissiveMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Color4> EmissiveValue = ParameterKeys.New<Color4>();
+        public static readonly ObjectParameterKey<Texture> EmissiveMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Color4> EmissiveValue = ParameterKeys.NewValue<Color4>();
 
-        public static readonly ParameterKey<Texture> EmissiveIntensityMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> EmissiveIntensity = ParameterKeys.New<float>();
-
-        /// <summary>
-        /// Generic texture key used by a material
-        /// </summary>
-        public static readonly ParameterKey<Texture> GenericTexture = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> EmissiveIntensityMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> EmissiveIntensity = ParameterKeys.NewValue<float>();
 
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
-        public static readonly ParameterKey<Color3> GenericValueColor3 = ParameterKeys.New<Color3>();
+        public static readonly ObjectParameterKey<Texture> GenericTexture = ParameterKeys.NewObject<Texture>();
 
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
-        public static readonly ParameterKey<Color4> GenericValueColor4 = ParameterKeys.New<Color4>();
+        public static readonly ValueParameterKey<Color3> GenericValueColor3 = ParameterKeys.NewValue<Color3>();
 
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
-        public static readonly ParameterKey<Vector4> GenericValueVector4 = ParameterKeys.New<Vector4>();
+        public static readonly ValueParameterKey<Color4> GenericValueColor4 = ParameterKeys.NewValue<Color4>();
+
+        /// <summary>
+        /// Generic texture key used by a material
+        /// </summary>
+        public static readonly ValueParameterKey<Vector4> GenericValueVector4 = ParameterKeys.NewValue<Vector4>();
 
         /// <summary>
         /// Texture UV scaling
         /// </summary>
-        public static readonly ParameterKey<Vector2> TextureScale = ParameterKeys.New<Vector2>(Vector2.One);
+        public static readonly ValueParameterKey<Vector2> TextureScale = ParameterKeys.NewValue<Vector2>(Vector2.One);
 
         /// <summary>
         /// Texture UV offset
         /// </summary>
-        public static readonly ParameterKey<Vector2> TextureOffset = ParameterKeys.New<Vector2>();
+        public static readonly ValueParameterKey<Vector2> TextureOffset = ParameterKeys.NewValue<Vector2>();
 
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
-        public static readonly ParameterKey<float> GenericValueFloat = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> GenericValueFloat = ParameterKeys.NewValue<float>();
 
         /// <summary>
         /// Generic sampler key used by a material
         /// </summary>
-        public static readonly ParameterKey<SamplerState> Sampler = ParameterKeys.New<SamplerState>();
+        public static readonly ObjectParameterKey<SamplerState> Sampler = ParameterKeys.NewObject<SamplerState>();
 
-        public static readonly ParameterKey<bool> HasSkinningPosition = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> HasSkinningPosition = ParameterKeys.NewPermutation<bool>();
 
-        public static readonly ParameterKey<bool> HasSkinningNormal = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> HasSkinningNormal = ParameterKeys.NewPermutation<bool>();
 
-        public static readonly ParameterKey<bool> HasNormalMap = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> HasNormalMap = ParameterKeys.NewPermutation<bool>();
 
-        public static readonly ParameterKey<bool> HasSkinningTangent = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> HasSkinningTangent = ParameterKeys.NewPermutation<bool>();
 
-        public static readonly ParameterKey<bool> HasTransparency = ParameterKeys.New<bool>();
-
-        public static readonly ParameterKey<int> SkinningMaxBones = ParameterKeys.New<int>(56);
-
-        public static readonly ParameterKey<int> SkinningBones = ParameterKeys.New<int>(0);
+        public static readonly PermutationParameterKey<int> SkinningMaxBones = ParameterKeys.NewPermutation<int>(56);
 
         static MaterialKeys()
         {

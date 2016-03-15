@@ -20,6 +20,6 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         bool RequiresHDRRenderFrame();
 
-        PostProcessingEffects GetSceneEditorPostProcessingEffects();
+        PostProcessingEffects GetEditorPostProcessingEffects();
     }
 }

@@ -3,7 +3,9 @@
   <PropertyGroup>
     <!-- Override SiliconStudioBuildDirectory only now so that SiliconStudio common projects still get build in obj without XenkoGraphicsApi -->
     <SiliconStudioAssemblyProcessorGlobal>true</SiliconStudioAssemblyProcessorGlobal>
+    <!-- Define the location where to build assemblies. -->
     <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioBuildDirExtension)</SiliconStudioBuildDirectory>
     <SiliconStudioOutputCommonDir>$(SolutionDir)..\Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
     <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
 
@@ -12,8 +14,8 @@
     <SharpDXSdkDir Condition="'$(SharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</SharpDXSdkDir>
 
     <SiliconStudioAssemblyProcessorPath>$(MSBuildThisFileDirectory)..\Bin\Windows-Direct3D11\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
-    <SiliconStudioCoreAssemblyPath>$(MSBuildThisFileDirectory)..\Bin\Windows-Direct3D11\SiliconStudio.Core.dll</SiliconStudioCoreAssemblyPath>
-</PropertyGroup>
+    <SiliconStudioCoreAssemblyPath>$(MSBuildThisFileDirectory)..\Bin\$(SiliconStudioBuildDirectory)\SiliconStudio.Core.dll</SiliconStudioCoreAssemblyPath>
+  </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <SiliconStudioShaderUseSharpDX>true</SiliconStudioShaderUseSharpDX>

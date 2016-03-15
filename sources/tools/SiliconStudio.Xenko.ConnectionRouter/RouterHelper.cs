@@ -5,7 +5,10 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Xenko.Engine.Network;
 
 namespace SiliconStudio.Xenko.ConnectionRouter
 {
@@ -65,7 +68,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             return version.Substring(0, indexOfDash);
         }
 
-        public static bool EnsureRouterLaunched(bool attachChildJob = false)
+        public static bool EnsureRouterLaunched(bool attachChildJob = false, bool checkIfPortOpen = true)
         {
             try
             {
@@ -129,6 +132,28 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 if (attachChildJob && spawnedRouterProcess != null)
                 {
                     new AttachedChildProcessJob(spawnedRouterProcess);
+                }
+
+                if (checkIfPortOpen)
+                {
+                    using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+                    {
+                        // Try during 5 seconds (10 * 500 msec)
+                        for (int i = 0; i < 10; ++i)
+                        {
+                            try
+                            {
+                                socket.Connect("localhost", RouterClient.DefaultPort);
+                            }
+                            catch (SocketException)
+                            {
+                                // Try again in 500 msec
+                                Thread.Sleep(500);
+                                continue;
+                            }
+                            break;
+                        }
+                    }
                 }
 
                 return spawnedRouterProcess != null;

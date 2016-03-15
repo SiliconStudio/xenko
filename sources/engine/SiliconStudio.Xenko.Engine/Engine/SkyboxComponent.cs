@@ -13,13 +13,11 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a <see cref="Skybox"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("SkyboxComponent")]
-    [Display(11500, "Skybox", Expand = ExpandRule.Once)]  // More important than lights, as usually the Skybox is associated with a light
-    [DefaultEntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
-    [DefaultEntityComponentProcessor(typeof(SkyboxProcessor))]
+    [Display("Skybox", Expand = ExpandRule.Once)]  // More important than lights, as usually the Skybox is associated with a light
+    [DefaultEntityComponentRenderer(typeof(SkyboxRenderProcessor))]
+    [ComponentOrder(11500)]
     public sealed class SkyboxComponent : ActivableEntityComponent
     {
-        public static PropertyKey<SkyboxComponent> Key = new PropertyKey<SkyboxComponent>("Key", typeof(SkyboxComponent));
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxComponent"/> class.
         /// </summary>
@@ -67,10 +65,5 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

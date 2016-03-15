@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SiliconStudio.AssemblyProcessor")]
+[assembly: AssemblyTitle("SiliconStudio.AssemblyProcessor.Common")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SiliconStudio.AssemblyProcessor")]
+[assembly: AssemblyProduct("SiliconStudio.AssemblyProcessor.Common")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9feb9d89-6115-49e6-ad89-b412aca8b416")]
+[assembly: Guid("e8c22cb3-f72e-4ceb-9426-77f45356c3c6")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -13,35 +13,36 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public class PrimitiveQuad : ComponentBase
     {
-        private readonly Effect simpleEffect;
+        /// <summary>
+        /// The pipeline state.
+        /// </summary>
+        private readonly MutablePipelineState pipelineState;
+
+        private readonly EffectInstance simpleEffect;
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
 
-        private readonly ParameterCollection parameters;
-        private readonly EffectParameterCollectionGroup parameterCollectionGroup;
+        public static readonly VertexDeclaration VertexDeclaration = VertexPositionNormalTexture.Layout;
+        public static readonly PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
-        /// </summary>
-        /// <param name="graphicsDevice">The graphics device.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice)
-            : this(graphicsDevice, new Effect(graphicsDevice, SpriteEffect.Bytecode))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a particular effect.
+        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
         /// <param name="effect">The effect.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice, Effect effect)
+        public PrimitiveQuad(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            simpleEffect = effect;
-            parameters = new ParameterCollection();
-            parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, simpleEffect, new[] { parameters });
-            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
+            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
+
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+            simpleEffect.UpdateEffect(graphicsDevice);
+            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+
+            pipelineState = new MutablePipelineState(GraphicsDevice);
+            pipelineState.State.SetDefaults();
+            pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
+            pipelineState.State.PrimitiveType = PrimitiveType;
         }
 
         /// <summary>
@@ -54,22 +55,33 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the parameters used.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters
+        public ParameterCollection Parameters => simpleEffect.Parameters;
+
+        /// <summary>
+        /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
+        /// </summary>
+        /// <param name="texture"></param>
+        public void Draw(CommandList commandList)
         {
-            get
-            {
-                return parameters;
-            }
+            commandList.SetVertexBuffer(0, sharedData.VertexBuffer.Buffer, sharedData.VertexBuffer.Offset, sharedData.VertexBuffer.Stride);
+            commandList.Draw(QuadCount);
         }
 
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
         /// </summary>
-        public void Draw()
+        /// <param name="texture"></param>
+        public void Draw(CommandList commandList, EffectInstance effectInstance)
         {
-            GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
-            GraphicsDevice.Draw(PrimitiveType.TriangleList, QuadCount);
-            GraphicsDevice.SetVertexArrayObject(null);
+            pipelineState.State.RootSignature = effectInstance.RootSignature;
+            pipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
+            pipelineState.State.BlendState = BlendStates.Default;
+            pipelineState.State.Output.CaptureState(commandList);
+            pipelineState.Update();
+
+            commandList.SetPipelineState(pipelineState.CurrentState);
+
+            Draw(commandList);
         }
 
         /// <summary>
@@ -77,9 +89,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="texture">The texture.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void Draw(Texture texture, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, BlendStateDescription? blendState = null)
         {
-            Draw(texture, null, Color.White, applyEffectStates);
+            Draw(graphicsContext, texture, null, Color.White, blendState);
         }
 
         /// <summary>
@@ -90,14 +102,22 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
-        public void Draw(Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
+        public void Draw(GraphicsContext graphicsContext, Texture texture, SamplerState samplerState, Color4 color, BlendStateDescription? blendState = null)
         {
             // Make sure that we are using our vertex shader
-            parameters.Set(SpriteEffectKeys.Color, color);
-            parameters.Set(TexturingKeys.Texture0, texture);
-            parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
-            Draw();
+            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture);
+            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(graphicsContext);
+
+            pipelineState.State.RootSignature = simpleEffect.RootSignature;
+            pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
+            pipelineState.State.BlendState = blendState ?? BlendStates.Default;
+            pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
+            pipelineState.Update();
+            graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
+
+            Draw(graphicsContext.CommandList);
 
             // TODO ADD QUICK UNBIND FOR SRV
             //GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);
@@ -111,7 +131,7 @@ namespace SiliconStudio.Xenko.Graphics
             /// <summary>
             /// The vertex buffer
             /// </summary>
-            public readonly VertexArrayObject VertexBuffer;
+            public readonly VertexBufferBinding VertexBuffer;
             
             private static readonly VertexPositionNormalTexture[] QuadsVertices =
             {
@@ -120,14 +140,14 @@ namespace SiliconStudio.Xenko.Graphics
                 new VertexPositionNormalTexture(new Vector3(-1,-3, 0), new Vector3(0, 0, 1), new Vector2(0, 2)),
             };
 
-            public SharedData(GraphicsDevice device, EffectInputSignature defaultSignature)
+            public SharedData(GraphicsDevice device)
             {
                 var vertexBuffer = Buffer.Vertex.New(device, QuadsVertices).DisposeBy(this);
                 
                 // Register reload
                 vertexBuffer.Reload = (graphicsResource) => ((Buffer)graphicsResource).Recreate(QuadsVertices);
 
-                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionNormalTexture.Layout, QuadsVertices.Length, VertexPositionNormalTexture.Size)).DisposeBy(this);
+                VertexBuffer = new VertexBufferBinding(vertexBuffer, VertexDeclaration, QuadsVertices.Length, VertexPositionNormalTexture.Size);
             }
         }
     }

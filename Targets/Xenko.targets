@@ -21,14 +21,19 @@
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Linux'">OpenGL</SiliconStudioXenkoGraphicsApi>
 
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
 
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
-
     <SiliconStudioUserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</SiliconStudioUserLibrariesPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioPlatformFullName)' == ''">
+    <!-- Define the location where to build assemblies. -->
+    <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
+  </PropertyGroup>
+
 
   <!-- 
   *****************************************************************************************************************************
@@ -84,6 +89,9 @@
         <Reference Include="SiliconStudio.Xenko.Graphics">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Graphics.dll</HintPath>
         </Reference>
+        <Reference Include="SiliconStudio.Xenko.Particles">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Particles.dll</HintPath>
+        </Reference>
         <Reference Include="SiliconStudio.Xenko.Input">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Input.dll</HintPath>
         </Reference>
@@ -99,10 +107,23 @@
         <Reference Include="SiliconStudio.Xenko.SpriteStudio.Runtime">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll</HintPath>
         </Reference>
+        <Reference Include="SiliconStudio.Xenko.Native">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll</HintPath>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
 
+  <Choose>
+    <When Condition="'$(SiliconStudioAutoTesting)' == 'true'">
+      <ItemGroup>
+        <Reference Include="SiliconStudio.Xenko.Games.Testing">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  
   <!-- 
   *****************************************************************************************************************************
   Platform specific
@@ -117,12 +138,15 @@
   <!-- Include platform specific targets -->
   <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets')"
           Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets"/>
-  
+  <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).$(SiliconStudioRuntime).targets')"
+          Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).$(SiliconStudioRuntime).targets"/>
   <!-- 
   *****************************************************************************************************************************
   Assembly Processor
   *****************************************************************************************************************************
   -->
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
+    
   <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CoreCompile" DependsOnTargets="ResolveProjectReferences" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
     <WriteLinesToFile File="$(IntermediateOutputPath)XenkoReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
     <PropertyGroup>
@@ -130,17 +154,21 @@
       <!-- If building user solutions (not unit tests), provide assembly processor with ProjectReferences paths so that they can be readded to assembly references for serialization module initializer (otherwise .exe don't have real reference on Game assemblies with auto load scene game) -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioUnitTest)' != 'true'">$(SiliconStudioAssemblyProcessorOptions) @(_ResolvedProjectReferencePaths->'--add-reference=%22%(Identity)%22',' ')</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
-      <!-- Physics and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
-      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll" --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll" --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorCommand>
+      <!-- Physics, Particles and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
+      <!-- Please keep in sync with AssemblyRecompiler.cs -->
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Particles.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAutoTesting)' == 'true'">$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
     
     <!-- Run assembly processor -->
-    <Message Importance="Normal" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
-    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)">
-      <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
-    </Exec>
+    <Message Importance="low" Text="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 
   <!-- 
@@ -171,9 +199,17 @@
 
     <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true' Or '$(SiliconStudioXenkoDisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioXenkoCompileAssetCommand)&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
     <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioXenkoCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
+    
+    <!-- Quite hard-coded for our current way to find default game settings -->
+    <SiliconStudioXenkoGameSettings Condition=" '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Assets\Shared\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Assets\Shared\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
+    <!-- Quite hard-coded for our current unit tests -->
+    <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Assets\GameSettings.xkgamesettings))' == 'true'">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Assets\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
+    <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\GameAssets\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\GameAssets\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
+    <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\AudioAssets\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\AudioAssets\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
+    <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Shaders.Bytecodes\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Shaders.Bytecodes\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
   </PropertyGroup>
   
-  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioCurrentPackagePath)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioXenkoGameSettings)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     
@@ -195,6 +231,7 @@
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
       <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->

@@ -8,6 +8,7 @@ ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: AsIs
 PremultiplyAlpha: false
 ~Base:
+    ~Id: 2bf9944c-0df5-4056-a9c7-e25911fd7667
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

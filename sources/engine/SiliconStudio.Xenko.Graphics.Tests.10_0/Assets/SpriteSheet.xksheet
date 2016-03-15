@@ -1,0 +1,16 @@
+!SpriteSheet
+Id: f0bb4e18-b761-4e65-b1d5-f59b52cfef0f
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Packing:
+    ~Id: 7db6bc2d-4c92-4574-82f1-27548cf1a4b3
+Sprites:
+    -   ~Id: 07b24b64-561f-4fc7-96a3-2ad0a3fe6224
+        Source: ../../../data/tests/small_uv.png
+        Name: Frame 0
+        TextureRegion: {X: 64, Y: 64, Width: 128, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.True(File.Exists(projectDir + "/model/factory_entity.xkentity"));
 
-                var modelAsset = AssetSerializer.Load<EntityAsset>(projectDir + "/model/factory_entity.xkentity");
+                var modelAsset = AssetSerializer.Load<PrefabAsset>(projectDir + "/model/factory_entity.xkentity");
 
                 Assert.AreEqual("factory_model", modelAsset.Data.Name);
 

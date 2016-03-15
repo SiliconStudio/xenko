@@ -13,21 +13,29 @@ namespace SiliconStudio.Presentation.Collections
         private readonly List<T> list;
 
         public ObservableSet()
+            : this(EqualityComparer<T>.Default)
         {
-            hashSet = new HashSet<T>();
-            list = new List<T>();
         }
 
         public ObservableSet(IEnumerable<T> collection)
+              : this(EqualityComparer<T>.Default, collection)
         {
-            // First try to keep order by filling the list and use it for the hash set
-            list = new List<T>(collection);
-            hashSet = new HashSet<T>(list);
-            // If there are duplicated values in the list, we won't be able to keep order
-            if (hashSet.Count != list.Count)
+        }
+
+        public ObservableSet(IEqualityComparer<T> comparer)
+        {
+            hashSet = new HashSet<T>(comparer);
+            list = new List<T>();
+        }
+
+        public ObservableSet(IEqualityComparer<T> comparer, IEnumerable<T> collection)
+        {
+            list = new List<T>();
+            hashSet = new HashSet<T>(comparer);
+            foreach (var item in collection)
             {
-                list.Clear();
-                list.AddRange(hashSet);
+                if (hashSet.Add(item))
+                    list.Add(item);
             }
         }
 

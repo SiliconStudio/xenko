@@ -68,8 +68,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public override void UpdateParameters(ColorTransformContext context)
         {
-            base.UpdateParameters(context);
-
             Parameters.Set(FilmGrainShaderKeys.Amount, Amount * 4 * 0.02f);
             Parameters.Set(FilmGrainShaderKeys.GrainSize, GrainSize);
             Parameters.Set(FilmGrainShaderKeys.LuminanceFactor, LuminanceFactor);
@@ -79,6 +77,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (time > 100f) time = 1f;
             }
             Parameters.Set(FilmGrainShaderKeys.Time, time);
+
+            // Copy parameters to parent
+            base.UpdateParameters(context);
         }
 
     }

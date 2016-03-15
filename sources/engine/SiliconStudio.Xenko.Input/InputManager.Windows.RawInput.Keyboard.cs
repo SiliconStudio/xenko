@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -10,19 +9,14 @@ using System.Windows.Interop;
 
 using SharpDX.Multimedia;
 using SharpDX.RawInput;
-
 using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    internal partial class InputManagerWindows<TK>
     {
-        private static readonly Dictionary<WinFormsKeys, Keys> mapKeys = new Dictionary<WinFormsKeys, Keys>();
-
-        private void BindRawInputKeyboard(Control winformControl)
+        protected internal void BindRawInputKeyboard(Control winformControl)
         {
-            EnsureMapKeys();
-
             if (winformControl.Handle == IntPtr.Zero)
             {
                 winformControl.HandleCreated += (sender, args) =>
@@ -40,10 +34,8 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private void BindRawInputKeyboard(System.Windows.Window winformControl)
+        protected internal void BindRawInputKeyboard(System.Windows.Window winformControl)
         {
-            EnsureMapKeys();
-
             var interopHelper = new WindowInteropHelper(winformControl);
             interopHelper.EnsureHandle();
             SharpDX.RawInput.Device.RegisterDevice(UsagePage.Generic, UsageId.GenericKeyboard, DeviceFlags.None, interopHelper.Handle);
@@ -68,12 +60,12 @@ namespace SiliconStudio.Xenko.Input
             if (virtualKey == WinFormsKeys.ShiftKey)
             {
                 // correct left-hand / right-hand SHIFT
-                virtualKey = (WinFormsKeys)MapVirtualKey(scanCode, MAPVK_VSC_TO_VK_EX);
+                virtualKey = (WinFormsKeys) WinKeys.MapVirtualKey(scanCode, WinKeys.MAPVK_VSC_TO_VK_EX);
             }
             else if (virtualKey == WinFormsKeys.NumLock)
             {
                 // correct PAUSE/BREAK and NUM LOCK silliness, and set the extended bit
-                scanCode = MapVirtualKey((int)virtualKey, MAPVK_VK_TO_VSC) | 0x100;
+                scanCode = WinKeys.MapVirtualKey((int)virtualKey, WinKeys.MAPVK_VK_TO_VSC) | 0x100;
             }
 
             // e0 and e1 are escape sequences used for certain special keys, such as PRINT and PAUSE/BREAK.
@@ -85,7 +77,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 // for escaped sequences, turn the virtual key into the correct scan code using MapVirtualKey.
                 // however, MapVirtualKey is unable to map VK_PAUSE (this is a known bug), hence we map that by hand.
-                scanCode = virtualKey == WinFormsKeys.Pause ? 0x45 : MapVirtualKey((int)virtualKey, MAPVK_VK_TO_VSC);
+                scanCode = virtualKey == WinFormsKeys.Pause ? 0x45 : WinKeys.MapVirtualKey((int)virtualKey, WinKeys.MAPVK_VK_TO_VSC);
             }
 
             switch (virtualKey)
@@ -109,7 +101,7 @@ namespace SiliconStudio.Xenko.Input
 
             if (key == Keys.None)
             {
-                mapKeys.TryGetValue(virtualKey, out key);
+                WinKeys.mapKeys.TryGetValue(virtualKey, out key);
             }
 
 
@@ -133,211 +125,214 @@ namespace SiliconStudio.Xenko.Input
                 }
             }
         }
+    }
 
-        private static void AddKeys(WinFormsKeys fromKey, Keys toKey)
-        {
-            if (!mapKeys.ContainsKey(fromKey))
-            {
-                mapKeys.Add(fromKey, toKey);
-            }
-        }
-
-        private static void EnsureMapKeys()
-        {
-            lock (mapKeys)
-            {
-                if (mapKeys.Count > 0)
-                {
-                    return;
-                }
-                AddKeys(WinFormsKeys.None, Keys.None);
-                AddKeys(WinFormsKeys.Cancel, Keys.Cancel);
-                AddKeys(WinFormsKeys.Back, Keys.Back);
-                AddKeys(WinFormsKeys.Tab, Keys.Tab);
-                AddKeys(WinFormsKeys.LineFeed, Keys.LineFeed);
-                AddKeys(WinFormsKeys.Clear, Keys.Clear);
-                AddKeys(WinFormsKeys.Enter, Keys.Enter);
-                AddKeys(WinFormsKeys.Return, Keys.Return);
-                AddKeys(WinFormsKeys.Pause, Keys.Pause);
-                AddKeys(WinFormsKeys.Capital, Keys.Capital);
-                AddKeys(WinFormsKeys.CapsLock, Keys.CapsLock);
-                AddKeys(WinFormsKeys.HangulMode, Keys.HangulMode);
-                AddKeys(WinFormsKeys.KanaMode, Keys.KanaMode);
-                AddKeys(WinFormsKeys.JunjaMode, Keys.JunjaMode);
-                AddKeys(WinFormsKeys.FinalMode, Keys.FinalMode);
-                AddKeys(WinFormsKeys.HanjaMode, Keys.HanjaMode);
-                AddKeys(WinFormsKeys.KanjiMode, Keys.KanjiMode);
-                AddKeys(WinFormsKeys.Escape, Keys.Escape);
-                AddKeys(WinFormsKeys.IMEConvert, Keys.ImeConvert);
-                AddKeys(WinFormsKeys.IMENonconvert, Keys.ImeNonConvert);
-                AddKeys(WinFormsKeys.IMEAccept, Keys.ImeAccept);
-                AddKeys(WinFormsKeys.IMEModeChange, Keys.ImeModeChange);
-                AddKeys(WinFormsKeys.Space, Keys.Space);
-                AddKeys(WinFormsKeys.PageUp, Keys.PageUp);
-                AddKeys(WinFormsKeys.Prior, Keys.Prior);
-                AddKeys(WinFormsKeys.Next, Keys.Next);
-                AddKeys(WinFormsKeys.PageDown, Keys.PageDown);
-                AddKeys(WinFormsKeys.End, Keys.End);
-                AddKeys(WinFormsKeys.Home, Keys.Home);
-                AddKeys(WinFormsKeys.Left, Keys.Left);
-                AddKeys(WinFormsKeys.Up, Keys.Up);
-                AddKeys(WinFormsKeys.Right, Keys.Right);
-                AddKeys(WinFormsKeys.Down, Keys.Down);
-                AddKeys(WinFormsKeys.Select, Keys.Select);
-                AddKeys(WinFormsKeys.Print, Keys.Print);
-                AddKeys(WinFormsKeys.Execute, Keys.Execute);
-                AddKeys(WinFormsKeys.PrintScreen, Keys.PrintScreen);
-                AddKeys(WinFormsKeys.Snapshot, Keys.Snapshot);
-                AddKeys(WinFormsKeys.Insert, Keys.Insert);
-                AddKeys(WinFormsKeys.Delete, Keys.Delete);
-                AddKeys(WinFormsKeys.Help, Keys.Help);
-                AddKeys(WinFormsKeys.D0, Keys.D0);
-                AddKeys(WinFormsKeys.D1, Keys.D1);
-                AddKeys(WinFormsKeys.D2, Keys.D2);
-                AddKeys(WinFormsKeys.D3, Keys.D3);
-                AddKeys(WinFormsKeys.D4, Keys.D4);
-                AddKeys(WinFormsKeys.D5, Keys.D5);
-                AddKeys(WinFormsKeys.D6, Keys.D6);
-                AddKeys(WinFormsKeys.D7, Keys.D7);
-                AddKeys(WinFormsKeys.D8, Keys.D8);
-                AddKeys(WinFormsKeys.D9, Keys.D9);
-                AddKeys(WinFormsKeys.A, Keys.A);
-                AddKeys(WinFormsKeys.B, Keys.B);
-                AddKeys(WinFormsKeys.C, Keys.C);
-                AddKeys(WinFormsKeys.D, Keys.D);
-                AddKeys(WinFormsKeys.E, Keys.E);
-                AddKeys(WinFormsKeys.F, Keys.F);
-                AddKeys(WinFormsKeys.G, Keys.G);
-                AddKeys(WinFormsKeys.H, Keys.H);
-                AddKeys(WinFormsKeys.I, Keys.I);
-                AddKeys(WinFormsKeys.J, Keys.J);
-                AddKeys(WinFormsKeys.K, Keys.K);
-                AddKeys(WinFormsKeys.L, Keys.L);
-                AddKeys(WinFormsKeys.M, Keys.M);
-                AddKeys(WinFormsKeys.N, Keys.N);
-                AddKeys(WinFormsKeys.O, Keys.O);
-                AddKeys(WinFormsKeys.P, Keys.P);
-                AddKeys(WinFormsKeys.Q, Keys.Q);
-                AddKeys(WinFormsKeys.R, Keys.R);
-                AddKeys(WinFormsKeys.S, Keys.S);
-                AddKeys(WinFormsKeys.T, Keys.T);
-                AddKeys(WinFormsKeys.U, Keys.U);
-                AddKeys(WinFormsKeys.V, Keys.V);
-                AddKeys(WinFormsKeys.W, Keys.W);
-                AddKeys(WinFormsKeys.X, Keys.X);
-                AddKeys(WinFormsKeys.Y, Keys.Y);
-                AddKeys(WinFormsKeys.Z, Keys.Z);
-                AddKeys(WinFormsKeys.LWin, Keys.LeftWin);
-                AddKeys(WinFormsKeys.RWin, Keys.RightWin);
-                AddKeys(WinFormsKeys.Apps, Keys.Apps);
-                AddKeys(WinFormsKeys.Sleep, Keys.Sleep);
-                AddKeys(WinFormsKeys.NumPad0, Keys.NumPad0);
-                AddKeys(WinFormsKeys.NumPad1, Keys.NumPad1);
-                AddKeys(WinFormsKeys.NumPad2, Keys.NumPad2);
-                AddKeys(WinFormsKeys.NumPad3, Keys.NumPad3);
-                AddKeys(WinFormsKeys.NumPad4, Keys.NumPad4);
-                AddKeys(WinFormsKeys.NumPad5, Keys.NumPad5);
-                AddKeys(WinFormsKeys.NumPad6, Keys.NumPad6);
-                AddKeys(WinFormsKeys.NumPad7, Keys.NumPad7);
-                AddKeys(WinFormsKeys.NumPad8, Keys.NumPad8);
-                AddKeys(WinFormsKeys.NumPad9, Keys.NumPad9);
-                AddKeys(WinFormsKeys.Multiply, Keys.Multiply);
-                AddKeys(WinFormsKeys.Add, Keys.Add);
-                AddKeys(WinFormsKeys.Separator, Keys.Separator);
-                AddKeys(WinFormsKeys.Subtract, Keys.Subtract);
-                AddKeys(WinFormsKeys.Decimal, Keys.Decimal);
-                AddKeys(WinFormsKeys.Divide, Keys.Divide);
-                AddKeys(WinFormsKeys.F1, Keys.F1);
-                AddKeys(WinFormsKeys.F2, Keys.F2);
-                AddKeys(WinFormsKeys.F3, Keys.F3);
-                AddKeys(WinFormsKeys.F4, Keys.F4);
-                AddKeys(WinFormsKeys.F5, Keys.F5);
-                AddKeys(WinFormsKeys.F6, Keys.F6);
-                AddKeys(WinFormsKeys.F7, Keys.F7);
-                AddKeys(WinFormsKeys.F8, Keys.F8);
-                AddKeys(WinFormsKeys.F9, Keys.F9);
-                AddKeys(WinFormsKeys.F10, Keys.F10);
-                AddKeys(WinFormsKeys.F11, Keys.F11);
-                AddKeys(WinFormsKeys.F12, Keys.F12);
-                AddKeys(WinFormsKeys.F13, Keys.F13);
-                AddKeys(WinFormsKeys.F14, Keys.F14);
-                AddKeys(WinFormsKeys.F15, Keys.F15);
-                AddKeys(WinFormsKeys.F16, Keys.F16);
-                AddKeys(WinFormsKeys.F17, Keys.F17);
-                AddKeys(WinFormsKeys.F18, Keys.F18);
-                AddKeys(WinFormsKeys.F19, Keys.F19);
-                AddKeys(WinFormsKeys.F20, Keys.F20);
-                AddKeys(WinFormsKeys.F21, Keys.F21);
-                AddKeys(WinFormsKeys.F22, Keys.F22);
-                AddKeys(WinFormsKeys.F23, Keys.F23);
-                AddKeys(WinFormsKeys.F24, Keys.F24);
-                AddKeys(WinFormsKeys.NumLock, Keys.NumLock);
-                AddKeys(WinFormsKeys.Scroll, Keys.Scroll);
-                AddKeys(WinFormsKeys.LShiftKey, Keys.LeftShift);
-                AddKeys(WinFormsKeys.RShiftKey, Keys.RightShift);
-                AddKeys(WinFormsKeys.LControlKey, Keys.LeftCtrl);
-                AddKeys(WinFormsKeys.RControlKey, Keys.RightCtrl);
-                AddKeys(WinFormsKeys.LMenu, Keys.LeftAlt);
-                AddKeys(WinFormsKeys.RMenu, Keys.RightAlt);
-                AddKeys(WinFormsKeys.BrowserBack, Keys.BrowserBack);
-                AddKeys(WinFormsKeys.BrowserForward, Keys.BrowserForward);
-                AddKeys(WinFormsKeys.BrowserRefresh, Keys.BrowserRefresh);
-                AddKeys(WinFormsKeys.BrowserStop, Keys.BrowserStop);
-                AddKeys(WinFormsKeys.BrowserSearch, Keys.BrowserSearch);
-                AddKeys(WinFormsKeys.BrowserFavorites, Keys.BrowserFavorites);
-                AddKeys(WinFormsKeys.BrowserHome, Keys.BrowserHome);
-                AddKeys(WinFormsKeys.VolumeMute, Keys.VolumeMute);
-                AddKeys(WinFormsKeys.VolumeDown, Keys.VolumeDown);
-                AddKeys(WinFormsKeys.VolumeUp, Keys.VolumeUp);
-                AddKeys(WinFormsKeys.MediaNextTrack, Keys.MediaNextTrack);
-                AddKeys(WinFormsKeys.MediaPreviousTrack, Keys.MediaPreviousTrack);
-                AddKeys(WinFormsKeys.MediaStop, Keys.MediaStop);
-                AddKeys(WinFormsKeys.MediaPlayPause, Keys.MediaPlayPause);
-                AddKeys(WinFormsKeys.LaunchMail, Keys.LaunchMail);
-                AddKeys(WinFormsKeys.SelectMedia, Keys.SelectMedia);
-                AddKeys(WinFormsKeys.LaunchApplication1, Keys.LaunchApplication1);
-                AddKeys(WinFormsKeys.LaunchApplication2, Keys.LaunchApplication2);
-                AddKeys(WinFormsKeys.Oem1, Keys.Oem1);
-                AddKeys(WinFormsKeys.OemSemicolon, Keys.OemSemicolon);
-                AddKeys(WinFormsKeys.Oemplus, Keys.OemPlus);
-                AddKeys(WinFormsKeys.Oemcomma, Keys.OemComma);
-                AddKeys(WinFormsKeys.OemMinus, Keys.OemMinus);
-                AddKeys(WinFormsKeys.OemPeriod, Keys.OemPeriod);
-                AddKeys(WinFormsKeys.Oem2, Keys.Oem2);
-                AddKeys(WinFormsKeys.OemQuestion, Keys.OemQuestion);
-                AddKeys(WinFormsKeys.Oem3, Keys.Oem3);
-                AddKeys(WinFormsKeys.Oemtilde, Keys.OemTilde);
-                AddKeys(WinFormsKeys.Oem4, Keys.Oem4);
-                AddKeys(WinFormsKeys.OemOpenBrackets, Keys.OemOpenBrackets);
-                AddKeys(WinFormsKeys.Oem5, Keys.Oem5);
-                AddKeys(WinFormsKeys.OemPipe, Keys.OemPipe);
-                AddKeys(WinFormsKeys.Oem6, Keys.Oem6);
-                AddKeys(WinFormsKeys.OemCloseBrackets, Keys.OemCloseBrackets);
-                AddKeys(WinFormsKeys.Oem7, Keys.Oem7);
-                AddKeys(WinFormsKeys.OemQuotes, Keys.OemQuotes);
-                AddKeys(WinFormsKeys.Oem8, Keys.Oem8);
-                AddKeys(WinFormsKeys.Oem102, Keys.Oem102);
-                AddKeys(WinFormsKeys.OemBackslash, Keys.OemBackslash);
-                AddKeys(WinFormsKeys.Attn, Keys.Attn);
-                AddKeys(WinFormsKeys.Crsel, Keys.CrSel);
-                AddKeys(WinFormsKeys.Exsel, Keys.ExSel);
-                AddKeys(WinFormsKeys.EraseEof, Keys.EraseEof);
-                AddKeys(WinFormsKeys.Play, Keys.Play);
-                AddKeys(WinFormsKeys.Zoom, Keys.Zoom);
-                AddKeys(WinFormsKeys.NoName, Keys.NoName);
-                AddKeys(WinFormsKeys.Pa1, Keys.Pa1);
-                AddKeys(WinFormsKeys.OemClear, Keys.OemClear);
-            }
-        }
-
-        const uint MAPVK_VK_TO_VSC = 0x00;
-        const uint MAPVK_VSC_TO_VK = 0x01;
-        const uint MAPVK_VK_TO_CHAR = 0x02;
-        const uint MAPVK_VSC_TO_VK_EX = 0x03;
-        const uint MAPVK_VK_TO_VSC_EX = 0x04;
-
+    /// <summary>
+    /// Mapping between <see cref="WinFormsKeys"/> and <see cref="SiliconStudio.Xenko.Input.Keys"/> needed for
+    /// translating Winform key events into Xenko ones.
+    /// </summary>
+    static class WinKeys
+    {
         [DllImport("user32.dll")]
-        private static extern int MapVirtualKey(int uCode, uint uMapType);
+        internal static extern int MapVirtualKey(int uCode, uint uMapType);
+
+        /// <summary>
+        /// Map between Winform keys and Xenko keys.
+        /// </summary>
+        internal static readonly Dictionary<WinFormsKeys, Keys> mapKeys = NewMapKeys();
+
+        public const uint MAPVK_VK_TO_VSC = 0x00;
+        public const uint MAPVK_VSC_TO_VK = 0x01;
+        public const uint MAPVK_VK_TO_CHAR = 0x02;
+        public const uint MAPVK_VSC_TO_VK_EX = 0x03;
+        public const uint MAPVK_VK_TO_VSC_EX = 0x04;
+
+        /// <summary>
+        /// Create a mapping between <see cref="WinFormsKeys"/> and <see cref="SiliconStudio.Xenko.Input.Keys"/>
+        /// </summary>
+        /// <returns>A new map.</returns>
+        private static Dictionary<WinFormsKeys, Keys> NewMapKeys()
+        {
+            var map = new Dictionary<WinFormsKeys, Keys>(200);
+            map[WinFormsKeys.None] = Keys.None;
+            map[WinFormsKeys.Cancel] = Keys.Cancel;
+            map[WinFormsKeys.Back] = Keys.Back;
+            map[WinFormsKeys.Tab] = Keys.Tab;
+            map[WinFormsKeys.LineFeed] = Keys.LineFeed;
+            map[WinFormsKeys.Clear] = Keys.Clear;
+            map[WinFormsKeys.Enter] = Keys.Enter;
+            map[WinFormsKeys.Return] = Keys.Return;
+            map[WinFormsKeys.Pause] = Keys.Pause;
+            map[WinFormsKeys.Capital] = Keys.Capital;
+            map[WinFormsKeys.CapsLock] = Keys.CapsLock;
+            map[WinFormsKeys.HangulMode] = Keys.HangulMode;
+            map[WinFormsKeys.KanaMode] = Keys.KanaMode;
+            map[WinFormsKeys.JunjaMode] = Keys.JunjaMode;
+            map[WinFormsKeys.FinalMode] = Keys.FinalMode;
+            map[WinFormsKeys.HanjaMode] = Keys.HanjaMode;
+            map[WinFormsKeys.KanjiMode] = Keys.KanjiMode;
+            map[WinFormsKeys.Escape] = Keys.Escape;
+            map[WinFormsKeys.IMEConvert] = Keys.ImeConvert;
+            map[WinFormsKeys.IMENonconvert] = Keys.ImeNonConvert;
+            map[WinFormsKeys.IMEAccept] = Keys.ImeAccept;
+            map[WinFormsKeys.IMEModeChange] = Keys.ImeModeChange;
+            map[WinFormsKeys.Space] = Keys.Space;
+            map[WinFormsKeys.PageUp] = Keys.PageUp;
+            map[WinFormsKeys.Prior] = Keys.Prior;
+            map[WinFormsKeys.Next] = Keys.Next;
+            map[WinFormsKeys.PageDown] = Keys.PageDown;
+            map[WinFormsKeys.End] = Keys.End;
+            map[WinFormsKeys.Home] = Keys.Home;
+            map[WinFormsKeys.Left] = Keys.Left;
+            map[WinFormsKeys.Up] = Keys.Up;
+            map[WinFormsKeys.Right] = Keys.Right;
+            map[WinFormsKeys.Down] = Keys.Down;
+            map[WinFormsKeys.Select] = Keys.Select;
+            map[WinFormsKeys.Print] = Keys.Print;
+            map[WinFormsKeys.Execute] = Keys.Execute;
+            map[WinFormsKeys.PrintScreen] = Keys.PrintScreen;
+            map[WinFormsKeys.Snapshot] = Keys.Snapshot;
+            map[WinFormsKeys.Insert] = Keys.Insert;
+            map[WinFormsKeys.Delete] = Keys.Delete;
+            map[WinFormsKeys.Help] = Keys.Help;
+            map[WinFormsKeys.D0] = Keys.D0;
+            map[WinFormsKeys.D1] = Keys.D1;
+            map[WinFormsKeys.D2] = Keys.D2;
+            map[WinFormsKeys.D3] = Keys.D3;
+            map[WinFormsKeys.D4] = Keys.D4;
+            map[WinFormsKeys.D5] = Keys.D5;
+            map[WinFormsKeys.D6] = Keys.D6;
+            map[WinFormsKeys.D7] = Keys.D7;
+            map[WinFormsKeys.D8] = Keys.D8;
+            map[WinFormsKeys.D9] = Keys.D9;
+            map[WinFormsKeys.A] = Keys.A;
+            map[WinFormsKeys.B] = Keys.B;
+            map[WinFormsKeys.C] = Keys.C;
+            map[WinFormsKeys.D] = Keys.D;
+            map[WinFormsKeys.E] = Keys.E;
+            map[WinFormsKeys.F] = Keys.F;
+            map[WinFormsKeys.G] = Keys.G;
+            map[WinFormsKeys.H] = Keys.H;
+            map[WinFormsKeys.I] = Keys.I;
+            map[WinFormsKeys.J] = Keys.J;
+            map[WinFormsKeys.K] = Keys.K;
+            map[WinFormsKeys.L] = Keys.L;
+            map[WinFormsKeys.M] = Keys.M;
+            map[WinFormsKeys.N] = Keys.N;
+            map[WinFormsKeys.O] = Keys.O;
+            map[WinFormsKeys.P] = Keys.P;
+            map[WinFormsKeys.Q] = Keys.Q;
+            map[WinFormsKeys.R] = Keys.R;
+            map[WinFormsKeys.S] = Keys.S;
+            map[WinFormsKeys.T] = Keys.T;
+            map[WinFormsKeys.U] = Keys.U;
+            map[WinFormsKeys.V] = Keys.V;
+            map[WinFormsKeys.W] = Keys.W;
+            map[WinFormsKeys.X] = Keys.X;
+            map[WinFormsKeys.Y] = Keys.Y;
+            map[WinFormsKeys.Z] = Keys.Z;
+            map[WinFormsKeys.LWin] = Keys.LeftWin;
+            map[WinFormsKeys.RWin] = Keys.RightWin;
+            map[WinFormsKeys.Apps] = Keys.Apps;
+            map[WinFormsKeys.Sleep] = Keys.Sleep;
+            map[WinFormsKeys.NumPad0] = Keys.NumPad0;
+            map[WinFormsKeys.NumPad1] = Keys.NumPad1;
+            map[WinFormsKeys.NumPad2] = Keys.NumPad2;
+            map[WinFormsKeys.NumPad3] = Keys.NumPad3;
+            map[WinFormsKeys.NumPad4] = Keys.NumPad4;
+            map[WinFormsKeys.NumPad5] = Keys.NumPad5;
+            map[WinFormsKeys.NumPad6] = Keys.NumPad6;
+            map[WinFormsKeys.NumPad7] = Keys.NumPad7;
+            map[WinFormsKeys.NumPad8] = Keys.NumPad8;
+            map[WinFormsKeys.NumPad9] = Keys.NumPad9;
+            map[WinFormsKeys.Multiply] = Keys.Multiply;
+            map[WinFormsKeys.Add] = Keys.Add;
+            map[WinFormsKeys.Separator] = Keys.Separator;
+            map[WinFormsKeys.Subtract] = Keys.Subtract;
+            map[WinFormsKeys.Decimal] = Keys.Decimal;
+            map[WinFormsKeys.Divide] = Keys.Divide;
+            map[WinFormsKeys.F1] = Keys.F1;
+            map[WinFormsKeys.F2] = Keys.F2;
+            map[WinFormsKeys.F3] = Keys.F3;
+            map[WinFormsKeys.F4] = Keys.F4;
+            map[WinFormsKeys.F5] = Keys.F5;
+            map[WinFormsKeys.F6] = Keys.F6;
+            map[WinFormsKeys.F7] = Keys.F7;
+            map[WinFormsKeys.F8] = Keys.F8;
+            map[WinFormsKeys.F9] = Keys.F9;
+            map[WinFormsKeys.F10] = Keys.F10;
+            map[WinFormsKeys.F11] = Keys.F11;
+            map[WinFormsKeys.F12] = Keys.F12;
+            map[WinFormsKeys.F13] = Keys.F13;
+            map[WinFormsKeys.F14] = Keys.F14;
+            map[WinFormsKeys.F15] = Keys.F15;
+            map[WinFormsKeys.F16] = Keys.F16;
+            map[WinFormsKeys.F17] = Keys.F17;
+            map[WinFormsKeys.F18] = Keys.F18;
+            map[WinFormsKeys.F19] = Keys.F19;
+            map[WinFormsKeys.F20] = Keys.F20;
+            map[WinFormsKeys.F21] = Keys.F21;
+            map[WinFormsKeys.F22] = Keys.F22;
+            map[WinFormsKeys.F23] = Keys.F23;
+            map[WinFormsKeys.F24] = Keys.F24;
+            map[WinFormsKeys.NumLock] = Keys.NumLock;
+            map[WinFormsKeys.Scroll] = Keys.Scroll;
+            map[WinFormsKeys.LShiftKey] = Keys.LeftShift;
+            map[WinFormsKeys.RShiftKey] = Keys.RightShift;
+            map[WinFormsKeys.LControlKey] = Keys.LeftCtrl;
+            map[WinFormsKeys.RControlKey] = Keys.RightCtrl;
+            map[WinFormsKeys.LMenu] = Keys.LeftAlt;
+            map[WinFormsKeys.RMenu] = Keys.RightAlt;
+            map[WinFormsKeys.BrowserBack] = Keys.BrowserBack;
+            map[WinFormsKeys.BrowserForward] = Keys.BrowserForward;
+            map[WinFormsKeys.BrowserRefresh] = Keys.BrowserRefresh;
+            map[WinFormsKeys.BrowserStop] = Keys.BrowserStop;
+            map[WinFormsKeys.BrowserSearch] = Keys.BrowserSearch;
+            map[WinFormsKeys.BrowserFavorites] = Keys.BrowserFavorites;
+            map[WinFormsKeys.BrowserHome] = Keys.BrowserHome;
+            map[WinFormsKeys.VolumeMute] = Keys.VolumeMute;
+            map[WinFormsKeys.VolumeDown] = Keys.VolumeDown;
+            map[WinFormsKeys.VolumeUp] = Keys.VolumeUp;
+            map[WinFormsKeys.MediaNextTrack] = Keys.MediaNextTrack;
+            map[WinFormsKeys.MediaPreviousTrack] = Keys.MediaPreviousTrack;
+            map[WinFormsKeys.MediaStop] = Keys.MediaStop;
+            map[WinFormsKeys.MediaPlayPause] = Keys.MediaPlayPause;
+            map[WinFormsKeys.LaunchMail] = Keys.LaunchMail;
+            map[WinFormsKeys.SelectMedia] = Keys.SelectMedia;
+            map[WinFormsKeys.LaunchApplication1] = Keys.LaunchApplication1;
+            map[WinFormsKeys.LaunchApplication2] = Keys.LaunchApplication2;
+            map[WinFormsKeys.Oem1] = Keys.Oem1;
+            map[WinFormsKeys.OemSemicolon] = Keys.OemSemicolon;
+            map[WinFormsKeys.Oemplus] = Keys.OemPlus;
+            map[WinFormsKeys.Oemcomma] = Keys.OemComma;
+            map[WinFormsKeys.OemMinus] = Keys.OemMinus;
+            map[WinFormsKeys.OemPeriod] = Keys.OemPeriod;
+            map[WinFormsKeys.Oem2] = Keys.Oem2;
+            map[WinFormsKeys.OemQuestion] = Keys.OemQuestion;
+            map[WinFormsKeys.Oem3] = Keys.Oem3;
+            map[WinFormsKeys.Oemtilde] = Keys.OemTilde;
+            map[WinFormsKeys.Oem4] = Keys.Oem4;
+            map[WinFormsKeys.OemOpenBrackets] = Keys.OemOpenBrackets;
+            map[WinFormsKeys.Oem5] = Keys.Oem5;
+            map[WinFormsKeys.OemPipe] = Keys.OemPipe;
+            map[WinFormsKeys.Oem6] = Keys.Oem6;
+            map[WinFormsKeys.OemCloseBrackets] = Keys.OemCloseBrackets;
+            map[WinFormsKeys.Oem7] = Keys.Oem7;
+            map[WinFormsKeys.OemQuotes] = Keys.OemQuotes;
+            map[WinFormsKeys.Oem8] = Keys.Oem8;
+            map[WinFormsKeys.Oem102] = Keys.Oem102;
+            map[WinFormsKeys.OemBackslash] = Keys.OemBackslash;
+            map[WinFormsKeys.Attn] = Keys.Attn;
+            map[WinFormsKeys.Crsel] = Keys.CrSel;
+            map[WinFormsKeys.Exsel] = Keys.ExSel;
+            map[WinFormsKeys.EraseEof] = Keys.EraseEof;
+            map[WinFormsKeys.Play] = Keys.Play;
+            map[WinFormsKeys.Zoom] = Keys.Zoom;
+            map[WinFormsKeys.NoName] = Keys.NoName;
+            map[WinFormsKeys.Pa1] = Keys.Pa1;
+            map[WinFormsKeys.OemClear] = Keys.OemClear;
+            return map;
+        }
     }
 }
 #endif

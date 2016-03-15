@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class FlareReplicateKeys
     {
-        public static readonly ParameterKey<float> Amount = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> HaloFactor = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> Amount = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> HaloFactor = ParameterKeys.NewValue<float>();
     }
 }

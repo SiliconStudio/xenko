@@ -10,8 +10,10 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial class BlendState
+    class BlendState
     {
+        internal readonly ColorWriteChannels ColorWriteChannels;
+
         private readonly bool blendEnable;
         private readonly BlendEquationMode blendEquationModeColor;
         private readonly BlendEquationMode blendEquationModeAlpha;
@@ -21,45 +23,36 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly BlendingFactorDest blendFactorDestAlpha;
         private readonly uint blendEquationHash;
         private readonly uint blendFuncHash;
-        internal readonly bool[] EnabledColors = new bool[4];
 
-        internal BlendState(GraphicsDevice device, BlendStateDescription blendStateDescription) : base(device)
+        internal unsafe BlendState(BlendStateDescription blendStateDescription, bool hasRenderTarget)
         {
-            Description = blendStateDescription;
-
-            for (int i = 1; i < Description.RenderTargets.Length; ++i)
+            var renderTargets = &blendStateDescription.RenderTarget0;
+            for (int i = 1; i < 8; ++i)
             {
-                if (Description.RenderTargets[i].BlendEnable || Description.RenderTargets[i].ColorWriteChannels != ColorWriteChannels.All)
+                if (renderTargets[i].BlendEnable || renderTargets[i].ColorWriteChannels != ColorWriteChannels.All)
                     throw new NotSupportedException();
             }
 
-            blendEnable = Description.RenderTargets[0].BlendEnable;
+            ColorWriteChannels = blendStateDescription.RenderTarget0.ColorWriteChannels;
+            if (!hasRenderTarget)
+                ColorWriteChannels = 0;
 
-            blendEquationModeColor = ToOpenGL(Description.RenderTargets[0].ColorBlendFunction);
-            blendEquationModeAlpha = ToOpenGL(Description.RenderTargets[0].AlphaBlendFunction);
-            blendFactorSrcColor = ToOpenGL(Description.RenderTargets[0].ColorSourceBlend);
-            blendFactorSrcAlpha = ToOpenGL(Description.RenderTargets[0].AlphaSourceBlend);
-            blendFactorDestColor = (BlendingFactorDest)ToOpenGL(Description.RenderTargets[0].ColorDestinationBlend);
-            blendFactorDestAlpha = (BlendingFactorDest)ToOpenGL(Description.RenderTargets[0].AlphaDestinationBlend);
-            EnabledColors[0] = (Description.RenderTargets[0].ColorWriteChannels & ColorWriteChannels.Red  ) != 0;
-            EnabledColors[1] = (Description.RenderTargets[0].ColorWriteChannels & ColorWriteChannels.Green) != 0;
-            EnabledColors[2] = (Description.RenderTargets[0].ColorWriteChannels & ColorWriteChannels.Blue ) != 0;
-            EnabledColors[3] = (Description.RenderTargets[0].ColorWriteChannels & ColorWriteChannels.Alpha) != 0;
+            blendEnable = blendStateDescription.RenderTarget0.BlendEnable;
 
-            blendEquationHash = (uint)Description.RenderTargets[0].ColorBlendFunction
-                             | ((uint)Description.RenderTargets[0].AlphaBlendFunction << 8);
+            blendEquationModeColor = ToOpenGL(blendStateDescription.RenderTarget0.ColorBlendFunction);
+            blendEquationModeAlpha = ToOpenGL(blendStateDescription.RenderTarget0.AlphaBlendFunction);
+            blendFactorSrcColor = ToOpenGL(blendStateDescription.RenderTarget0.ColorSourceBlend);
+            blendFactorSrcAlpha = ToOpenGL(blendStateDescription.RenderTarget0.AlphaSourceBlend);
+            blendFactorDestColor = (BlendingFactorDest)ToOpenGL(blendStateDescription.RenderTarget0.ColorDestinationBlend);
+            blendFactorDestAlpha = (BlendingFactorDest)ToOpenGL(blendStateDescription.RenderTarget0.AlphaDestinationBlend);
 
-            blendFuncHash = (uint)Description.RenderTargets[0].ColorSourceBlend
-                         | ((uint)Description.RenderTargets[0].AlphaSourceBlend << 8)
-                         | ((uint)Description.RenderTargets[0].ColorDestinationBlend << 16)
-                         | ((uint)Description.RenderTargets[0].AlphaDestinationBlend << 24);
-        }
+            blendEquationHash = (uint)blendStateDescription.RenderTarget0.ColorBlendFunction
+                             | ((uint)blendStateDescription.RenderTarget0.AlphaBlendFunction << 8);
 
-        /// <inheritdoc/>
-        protected internal override bool OnRecreate()
-        {
-            base.OnRecreate();
-            return true;
+            blendFuncHash = (uint)blendStateDescription.RenderTarget0.ColorSourceBlend
+                         | ((uint)blendStateDescription.RenderTarget0.AlphaSourceBlend << 8)
+                         | ((uint)blendStateDescription.RenderTarget0.ColorDestinationBlend << 16)
+                         | ((uint)blendStateDescription.RenderTarget0.AlphaDestinationBlend << 24);
         }
 
         public static BlendEquationMode ToOpenGL(BlendFunction blendFunction)
@@ -136,17 +129,22 @@ namespace SiliconStudio.Xenko.Graphics
             if (blendFuncHash != oldBlendState.blendFuncHash)
                 GL.BlendFuncSeparate(blendFactorSrcColor, blendFactorDestColor, blendFactorSrcAlpha, blendFactorDestAlpha);
 
-            if (Description.RenderTargets[0].ColorWriteChannels != oldBlendState.Description.RenderTargets[0].ColorWriteChannels)
-                ApplyColorMask();
+            if (ColorWriteChannels != oldBlendState.ColorWriteChannels)
+            {
+                RestoreColorMask();
+            }
 
             if(!blendEnable && oldBlendState.blendEnable)
                 GL.Disable(EnableCap.Blend);
         }
 
-        internal void ApplyColorMask()
+        internal void RestoreColorMask()
         {
-            bool hasRenderTarget = GraphicsDevice.hasRenderTarget;
-            GL.ColorMask(hasRenderTarget && EnabledColors[0], hasRenderTarget && EnabledColors[1], hasRenderTarget && EnabledColors[2], hasRenderTarget && EnabledColors[3]);
+            GL.ColorMask(
+                (ColorWriteChannels & ColorWriteChannels.Red) != 0,
+                (ColorWriteChannels & ColorWriteChannels.Green) != 0,
+                (ColorWriteChannels & ColorWriteChannels.Blue) != 0,
+                (ColorWriteChannels & ColorWriteChannels.Alpha) != 0);
         }
     }
 } 

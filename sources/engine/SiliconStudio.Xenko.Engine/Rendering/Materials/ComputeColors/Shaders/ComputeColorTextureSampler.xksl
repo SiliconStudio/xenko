@@ -12,8 +12,8 @@ class ComputeColorTextureSampler<LinkType TTextureName,
                                  Semantic TStream, 
                                  LinkType TSampler, 
                                  MemberName TRgba> : ComputeColor, 
-                                                     DynamicTexture<TTextureName>, 
-                                                     DynamicSampler<TSampler>, 
+                                                     DynamicTexture<TTextureName, PerMaterial>, 
+                                                     DynamicSampler<TSampler, PerMaterial>, 
                                                      DynamicTextureStream<TStream>
 {
     override float4 Compute()

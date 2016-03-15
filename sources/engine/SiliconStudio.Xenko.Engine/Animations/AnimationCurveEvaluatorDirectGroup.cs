@@ -17,9 +17,6 @@ namespace SiliconStudio.Xenko.Animations
             if (typeof(T) == typeof(float))
                 return new AnimationCurveEvaluatorDirectFloatGroup();
 
-            if (typeof(T) == typeof(Vector3))
-                return new AnimationCurveEvaluatorDirectVector3Group();
-
             if (typeof(T) == typeof(Quaternion))
                 return new AnimationCurveEvaluatorDirectQuaternionGroup();
 

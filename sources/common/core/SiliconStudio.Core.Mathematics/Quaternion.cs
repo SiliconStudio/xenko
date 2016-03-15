@@ -737,6 +737,20 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Rotates a Vector3 by the specified quaternion rotation.
+        /// </summary>
+        /// <param name="vector"></param>
+        public void Rotate(ref Vector3 vector)
+        {
+            var pureQuaternion = new Quaternion(vector, 0);
+            pureQuaternion = Conjugate(this) * pureQuaternion * this;
+
+            vector.X = pureQuaternion.X;
+            vector.Y = pureQuaternion.Y;
+            vector.Z = pureQuaternion.Z;
+        }
+
+        /// <summary>
         /// Creates a quaternion given a rotation and an axis.
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>

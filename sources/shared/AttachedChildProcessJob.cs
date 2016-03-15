@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko
     /// <summary>
     /// Track child process, and destroy them either on <see cref="Dispose"/>, or when parent process is destroyed.
     /// </summary>
-    class AttachedChildProcessJob : IDisposable
+    public class AttachedChildProcessJob : IDisposable
     {
         private IntPtr jobHandle;
 

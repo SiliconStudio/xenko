@@ -9,6 +9,7 @@ namespace SiliconStudio.Core.Settings
     /// An internal class that represents a set of settings that can be stored in a file.
     /// </summary>
     [DataContract("SettingsFile")]
+    [NonIdentifiable]
     internal class SettingsFile
     {
         /// <summary>

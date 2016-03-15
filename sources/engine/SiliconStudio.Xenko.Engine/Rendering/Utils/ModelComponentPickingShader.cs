@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Utils
 {
     public static partial class ModelComponentPickingShaderKeys
     {
-        public static readonly ParameterKey<Color4> ModelComponentId = ParameterKeys.New<Color4>();
-        public static readonly ParameterKey<Color4> MeshId = ParameterKeys.New<Color4>();
-        public static readonly ParameterKey<Color4> MaterialId = ParameterKeys.New<Color4>();
+        public static readonly ValueParameterKey<Color4> ModelComponentId = ParameterKeys.NewValue<Color4>();
+        public static readonly ValueParameterKey<Color4> MeshId = ParameterKeys.NewValue<Color4>();
+        public static readonly ValueParameterKey<Color4> MaterialId = ParameterKeys.NewValue<Color4>();
     }
 }

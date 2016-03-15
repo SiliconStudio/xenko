@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SiliconStudio.Assets.Compiler
 {
     [Description("Import stream")]
-    public class ImportStreamCommand : SingleFileImportCommand
+    public sealed class ImportStreamCommand : SingleFileImportCommand
     {
         /// <inheritdoc/>
         public override string Title { get { string title = "Import Stream "; try { title += Path.GetFileName(SourcePath) ?? "[File]"; } catch { title += "[INVALID PATH]"; } return title; } }
@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Compiler
 
         public bool SaveSourcePath { get; set; }
 
-        protected TagSymbol DisableCompressionSymbol;
+        private TagSymbol DisableCompressionSymbol;
 
         public ImportStreamCommand() : this(null, null)
         {
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             // This path for effects xml is now part of this tool, but it should be done in a separate exporter?
             using (var inputStream = File.OpenRead(SourcePath))
-            using (var outputStream = AssetManager.FileProvider.OpenStream(Location, VirtualFileMode.Create, VirtualFileAccess.Write))
+            using (var outputStream = ContentManager.FileProvider.OpenStream(Location, VirtualFileMode.Create, VirtualFileAccess.Write))
             {
                 inputStream.CopyTo(outputStream);
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Assets.Compiler
                 // store absolute path to source
                 // TODO: the "/path" is hardcoded, used in EffectSystem and ShaderSourceManager. Find a place to share this correctly.
                 var pathLocation = new UFile(Location.FullPath + "/path");
-                using (var outputStreamPath = AssetManager.FileProvider.OpenStream(pathLocation, VirtualFileMode.Create, VirtualFileAccess.Write))
+                using (var outputStreamPath = ContentManager.FileProvider.OpenStream(pathLocation, VirtualFileMode.Create, VirtualFileAccess.Write))
                 {
                     using (var sw = new StreamWriter(outputStreamPath))
                     {

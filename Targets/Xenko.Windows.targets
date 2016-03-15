@@ -13,6 +13,7 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\d3dcompiler_47.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\glsl_optimizer.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\SDL2.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenkonative.dll"/>
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll" />
   </ItemGroup>
@@ -23,9 +24,10 @@
       <ItemGroup>
         <Reference Include="SiliconStudio.Xenko.Shaders.Compiler">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
+          <Private Condition="'$(SiliconStudioUnitTest)' == 'true'">False</Private>
         </Reference>
 
-        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
+        <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="@(SiliconStudioEmbeddedNativeLibrary)">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Visible>False</Visible>

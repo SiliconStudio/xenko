@@ -4,8 +4,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static class ToneMapKeys
     {
-        public static readonly ParameterKey<bool> AutoExposure = ParameterKeys.New(false);
+        public static readonly PermutationParameterKey<bool> AutoExposure = ParameterKeys.NewPermutation(false);
 
-        public static readonly ParameterKey<bool> AutoKey = ParameterKeys.New(false);
+        public static readonly PermutationParameterKey<bool> AutoKey = ParameterKeys.NewPermutation(false);
+
+        public static readonly PermutationParameterKey<ToneMapOperator> Operator = ParameterKeys.NewPermutation<ToneMapOperator>();
     }
 }

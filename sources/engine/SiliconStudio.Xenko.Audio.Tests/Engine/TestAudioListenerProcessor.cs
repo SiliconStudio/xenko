@@ -382,8 +382,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             CreateAndComponentToEntities();
             throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(rootEntity);
-            game.Audio.AddListener(listComp1);
-            game.Audio.AddListener(listComp2);
+            //game.Audio.AddListener(listComp1);
+            //game.Audio.AddListener(listComp2);
         }
 
         /// <summary>

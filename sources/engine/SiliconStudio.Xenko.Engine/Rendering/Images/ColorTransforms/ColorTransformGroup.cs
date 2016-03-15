@@ -19,14 +19,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Color Transforms")]
     public class ColorTransformGroup : ImageEffect
     {
-        private readonly ParameterCollection transformsParameters;
+        // TODO GRAPHICS REFACTOR
+        // private readonly ParameterCollection transformsParameters;
         private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
         private readonly ColorTransformCollection preTransforms;
         private readonly ColorTransformCollection transforms;
         private readonly ColorTransformCollection postTransforms;
         private readonly List<ColorTransform> collectTransforms;
-        private readonly List<ColorTransform> enabledTransforms;
+        private List<ColorTransform> enabledTransforms;
         private ColorTransformContext transformContext;
         private readonly string colorTransformGroupEffectName;
 
@@ -50,7 +51,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             postTransforms = new ColorTransformCollection();
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
-            transformsParameters = new ParameterCollection();
             colorTransformGroupEffectName = colorTransformGroupEffect ?? "ColorTransformGroupEffect";
         }
 
@@ -60,11 +60,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             transformGroupEffect = new ImageEffectShader(colorTransformGroupEffectName);
-            transformGroupEffect.SharedParameterCollections.Add(Parameters);
+            // TODO GRAPHICS REFACTOR
+            //transformGroupEffect.SharedParameterCollections.Add(Parameters);
             transformGroupEffect.Initialize(Context);
+            Parameters = transformGroupEffect.Parameters;
 
             // we are adding parameter collections after as transform parameters should override previous parameters
-            transformGroupEffect.ParameterCollections.Add(transformsParameters);
+            // TODO GRAPHICS REFACTOR
+            //transformGroupEffect.ParameterCollections.Add(transformsParameters);
 
             this.transformContext = new ColorTransformContext(this, Context);
         }
@@ -111,7 +114,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void DrawCore(RenderContext context1)
+        protected override void DrawCore(RenderDrawContext context1)
         {
             var output = GetOutput(0);
             if (output == null)
@@ -120,7 +123,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Collect all transform parameters
-            CollectTransformsParameters();
+            CollectTransformsParameters(context1);
 
             for (int i = 0; i < transformContext.Inputs.Count; i++)
             {
@@ -150,22 +153,39 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             if (transform == null) throw new ArgumentNullException("transform");
             if (transform.Shader == null) throw new ArgumentOutOfRangeException("transform", "Transform parameter must have a Shader not null");
-            collectTransforms.Add(transform);
+            if (transform.Enabled)
+                collectTransforms.Add(transform);
         }
 
         private void CollectTransforms()
         {
             collectTransforms.Clear();
             CollectPreTransforms();
-            collectTransforms.AddRange(transforms);
+            foreach (var transform in transforms)
+            {
+                AddTemporaryTransform(transform);
+            }
             CollectPostTransforms();
 
             // Copy all parameters from ColorTransform to effect parameters
-            enabledTransforms.Clear();
-            enabledTransforms.AddRange(collectTransforms);
+            if (collectTransforms.Count != enabledTransforms.Count)
+            {
+                enabledTransforms = new List<ColorTransform>(collectTransforms);
+            }
+            else
+            {
+                for (int i = 0; i < enabledTransforms.Count; i++)
+                {
+                    if (collectTransforms[i] != enabledTransforms[i])
+                    {
+                        enabledTransforms = new List<ColorTransform>(collectTransforms);
+                        break;
+                    }
+                }
+            }
         }
 
-        private void CollectTransformsParameters()
+        private void CollectTransformsParameters(RenderDrawContext context)
         {
             transformContext.Inputs.Clear();
             for (int i = 0; i < InputCount; i++)
@@ -176,26 +196,35 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Grab all color transforms
             CollectTransforms();
 
-            transformsParameters.Clear();
-            for (int i = 0; i < enabledTransforms.Count; i++)
+            // Update effect
+            // TODO: if the list was the same than previous one, we could optimize this and not setup the value
+            Parameters.Set(ColorTransformGroupKeys.Transforms, enabledTransforms);
+            if (transformGroupEffect.EffectInstance.UpdateEffect(context.GraphicsDevice))
             {
-                var transform = enabledTransforms[i];
-                // Always update parameters
-                transform.UpdateParameters(transformContext);
-
-                // Copy transform parameters back to the composition with the current index
-                var sourceParameters = transform.Parameters;
-                foreach (var parameterValue in sourceParameters.Keys)
+                // Update layouts
+                for (int i = 0; i < enabledTransforms.Count; i++)
                 {
-                    var key = GetComposedKey(parameterValue, i);
-                    sourceParameters.CopySharedTo(parameterValue, key, transformsParameters);
+                    // Set group
+                    enabledTransforms[i].Group = this;
+
+                    // Prepare layouts of ColorTransforms to be able to copy them easily
+                    enabledTransforms[i].PrepareParameters(transformContext, Parameters, $".Transforms[{i}]");
                 }
             }
 
-            // NOTE: This is very important to reset the transforms here, as pre-caching by DynamicEffectCompiler is done on parameters changes
-            // and as we have a list here, modifying a list doesn't trigger a change for the specified key
-            // TODO: if the list was the same than previous one, we could optimize this and not setup the value
-            Parameters.Set(ColorTransformGroupKeys.Transforms, enabledTransforms);
+
+            for (int i = 0; i < enabledTransforms.Count; i++)
+            {
+                var transform = enabledTransforms[i];
+
+                // Always update parameters
+                transform.UpdateParameters(transformContext);
+            }
+        }
+
+        public void NotifyPermutationChange()
+        {
+            Parameters.PermutationCounter++;
         }
 
         private ParameterKey GetComposedKey(ParameterKey key, int transformIndex)

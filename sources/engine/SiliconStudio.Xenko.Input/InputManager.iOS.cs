@@ -11,10 +11,11 @@ using CoreMotion;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    internal class InputManageriOS: InputManager<iOSWindow>
     {
         private UIWindow window;
         private iPhoneOSGameView view;
@@ -23,21 +24,19 @@ namespace SiliconStudio.Xenko.Input
         private bool locationManagerActivated;
         private float firstNorthValue = float.NegativeInfinity;
 
-        public InputManager(IServiceRegistry registry) : base(registry)
+        public InputManageriOS(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
             HasMouse = false;
             HasPointer = true;
         }
 
-        public override void Initialize()
+        public override void Initialize(GameContext<iOSWindow> gameContext)
         {
-            base.Initialize();
+            view = gameContext.Control.GameView;
+            window = gameContext.Control.MainWindow;
 
-            view = Game.Context.GameView;
-            window = Game.Context.MainWindow;
-
-            var gameController = Game.Context.GameViewController;
+            var gameController = gameContext.Control.GameViewController;
 
             window.UserInteractionEnabled = true;
             window.MultipleTouchEnabled = true;
@@ -265,8 +264,8 @@ namespace SiliconStudio.Xenko.Input
 
         public override bool MultiTouchEnabled
         {
-            get { return Game.Context.GameView.MultipleTouchEnabled; } 
-            set { Game.Context.GameView.MultipleTouchEnabled = value; }
+            get { return view.MultipleTouchEnabled; }
+            set { view.MultipleTouchEnabled = value; }
         }
     }
 }

@@ -3,14 +3,17 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -20,23 +23,18 @@ namespace SiliconStudio.Xenko.Engine
     //[ContentSerializer(typeof(EntityContentSerializer))]
     //[ContentSerializer(typeof(DataContentSerializer<Entity>))]
     [DebuggerTypeProxy(typeof(EntityDebugView))]
-    [ContentSerializer(typeof(DataContentSerializerWithReuse<Entity>))]
+    [ContentSerializer(typeof(EntityContentSerializer))]
+    [DataSerializer(typeof(EntitySerializer))]
     [DataStyle(DataStyle.Normal)]
     [DataContract("Entity")]
-    public class Entity : ComponentBase, IEnumerable
+    public sealed class Entity : ComponentBase, IEnumerable<EntityComponent>, IIdentifiable
     {
-        protected TransformComponent transform;
+        internal TransformComponent transform;
 
         /// <summary>
-        /// The components stored in this entity.
+        /// Internal owner of this entity
         /// </summary>
-        [DataMember(100, DataMemberMode.Content)]
-        public PropertyContainer Components;
-
-        static Entity()
-        {
-            PropertyContainer.AddAccessorProperty(typeof(Entity), TransformComponent.Key);
-        }
+        internal IEntityComponentNotify Owner;
 
         /// <summary>
         /// Create a new <see cref="Entity"/> instance.
@@ -61,23 +59,26 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="position">The initial position of the entity</param>
         /// <param name="name">The name to give to the entity</param>
         public Entity(Vector3 position, string name = null)
-            : base(name)
+            : this(name, false)
         {
-            Components = new PropertyContainer(this);
-            Components.PropertyUpdated += EntityPropertyUpdated;
+            Id = Guid.NewGuid();
+            transform = new TransformComponent { Position = position };
+            Components.Add(transform);
+        }
 
-            Transform = new TransformComponent();
-            transform.Position = position;
-
+        /// <summary>
+        /// Create a new entity without any components (used for binary deserialization)
+        /// </summary>
+        /// <param name="name">Name of this component, might be null</param>
+        /// <param name="notUsed">This parameter is not used</param>
+        private Entity(string name, bool notUsed) : base(name)
+        {
+            Components = new EntityComponentCollection(this);
             Group = EntityGroup.Group0;
         }
 
         [DataMember(-10), Display(Browsable = false)]
-        public override Guid Id
-        {
-            get { return base.Id; }
-            set { base.Id = value; }
-        }
+        public Guid Id { get; set; }
 
         [DataMember(0)] // Name is serialized
         public override string Name
@@ -97,16 +98,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Added for convenience over usual Get/Set method.
         /// </summary>
         [DataMemberIgnore]
-        public TransformComponent Transform
-        {
-            get { return transform; }
-            set
-            {
-                var transformationOld = transform;
-                transform = value;
-                Components.RaisePropertyContainerUpdated(TransformComponent.Key, transform, transformationOld);
-            }
-        }
+        public TransformComponent Transform => transform;
 
         /// <summary>
         /// Gets or sets the group of this entity.
@@ -117,36 +109,25 @@ namespace SiliconStudio.Xenko.Engine
         public EntityGroup Group { get; set; }
 
         /// <summary>
+        /// The components stored in this entity.
+        /// </summary>
+        [DataMember(100, DataMemberMode.Content)]
+        [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
+        public EntityComponentCollection Components { get; }
+
+        /// <summary>
         /// Gets or create a component with the specified key.
         /// </summary>
         /// <typeparam name="T">Type of the entity component</typeparam>
         /// <returns>A new or existing instance of {T}</returns>
         public T GetOrCreate<T>() where T : EntityComponent, new()
         {
-            var key = EntityComponent.GetDefaultKey<T>();
-            var component = Components.Get(key);
+            var component = Components.Get<T>();
             if (component == null)
             {
                 component = new T();
-                Components.SetObject(key, component);
-            }
-
-            return (T)component;
-        }
-
-        /// <summary>
-        /// Gets or create a component with the specified key.
-        /// </summary>
-        /// <typeparam name="T">Type of the entity component</typeparam>
-        /// <param name="key">The key.</param>
-        /// <returns>A new or existing instance of {T}</returns>
-        public T GetOrCreate<T>(PropertyKey<T> key) where T : EntityComponent, new()
-        {
-            var component = Components.Get(key);
-            if (component == null)
-            {
-                component = new T();
-                Components.Set(key, component);
+                Components.Add(component);
             }
 
             return component;
@@ -159,87 +140,114 @@ namespace SiliconStudio.Xenko.Engine
         /// <exception cref="System.ArgumentNullException">component</exception>
         public void Add(EntityComponent component)
         {
-            if (component == null) throw new ArgumentNullException("component");
-            Components.SetObject(component.GetDefaultKey(), component);
+            Components.Add(component);
         }
 
         /// <summary>
-        /// Gets a component by the specified key.
+        /// Gets the first component of the specified type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
         /// <returns>The component or null if does no exist</returns>
-        /// <exception cref="System.ArgumentNullException">key</exception>
-        public T Get<T>() where T : EntityComponent, new()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get<T>() where T : EntityComponent
         {
-            return (T)Components.Get(EntityComponent.GetDefaultKey<T>());
+            return Components.Get<T>();
         }
 
         /// <summary>
-        /// Gets a component by the specified key.
+        /// Gets the index'th component of the specified type. See remarks.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
-        /// <param name="key">The key.</param>
+        /// <param name="index">The index'th component to select.</param>
         /// <returns>The component or null if does no exist</returns>
-        /// <exception cref="System.ArgumentNullException">key</exception>
-        public T Get<T>(PropertyKey<T> key) where T : EntityComponent
+        /// <remarks>
+        /// <ul>
+        /// <li>If index &gt; 0, it will take the index'th component of the specified <typeparamref name="T"/>.</li>
+        /// <li>An index == 0 is equivalent to calling <see cref="Get{T}()"/></li>
+        /// <li>if index &lt; 0, it will start from the end of the list to the beginning. A value of -1 means the first last component.</li>
+        /// </ul>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get<T>(int index) where T : EntityComponent
         {
-            if (key == null) throw new ArgumentNullException("key");
-            return Components.Get(key);
+            return Components.Get<T>(index);
         }
 
         /// <summary>
-        /// Sets a component with the specified key.
+        /// Gets all components of the specified type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentNullException">key</exception>
-        public void Add<T>(PropertyKey<T> key, T value) where T : EntityComponent
+        /// <returns>The component or null if does no exist</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<T> GetAll<T>() where T : EntityComponent
         {
-            if (key == null) throw new ArgumentNullException("key");
-            Components.SetObject(key, value);
+            return Components.GetAll<T>();
         }
 
         /// <summary>
-        /// Sets a component with the specified key.
+        /// Removes the first component of the specified type or derived type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentNullException">key</exception>
-        [Obsolete("Use Add() method instead")]
-        public void Set<T>(PropertyKey<T> key, T value) where T : EntityComponent
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove<T>() where T : EntityComponent
         {
-            if (key == null) throw new ArgumentNullException("key");
-            Components.SetObject(key, value);
+            Components.Remove<T>();
         }
 
         /// <summary>
-        /// Removes a component with the specified key.
+        /// Removes all components of the specified type or derived type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
-        /// <param name="key">The key.</param>
-        /// <returns><c>True</c> if the component was removed, <c>False</c> otherwise.</returns>
-        public bool Remove<T>(PropertyKey<T> key)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveAll<T>() where T : EntityComponent
         {
-            return Components.Remove(key);
+            Components.RemoveAll<T>();
         }
-        
-        private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)
+
+        internal void OnComponentChanged(int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
-            // Remove entity owner from previous EntityComponent.
-            if (oldValue is EntityComponent)
+            // Don't use events but directly call the Owner
+            Owner?.OnComponentChanged(this, index, oldComponent, newComponent);
+        }
+
+        public override string ToString()
+        {
+            return $"Entity {Name}";
+        }
+
+        /// <summary>
+        /// Gets the enumerator of <see cref="EntityComponent"/>
+        /// </summary>
+        /// <returns></returns>
+        public FastCollection<EntityComponent>.Enumerator GetEnumerator()
+        {
+            return Components.GetEnumerator();
+        }
+
+        IEnumerator<EntityComponent> IEnumerable<EntityComponent>.GetEnumerator()
+        {
+            return Components.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Components.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Serializer which will not populate the new entity with a default transform
+        /// </summary>
+        internal class EntityContentSerializer : DataContentSerializerWithReuse<Entity>
+        {
+            public override object Construct(ContentSerializerContext context)
             {
-                ((EntityComponent)oldValue).Entity = null;
-            }
-
-            // Set entity owner to this new EntityComponent.
-            if (newValue is EntityComponent)
-            {
-                ((EntityComponent)newValue).Entity = this;
+                return new Entity(null, false);
             }
         }
 
+        /// <summary>
+        /// Dedicated Debugger for an entity that displays children from Entity.Transform.Children
+        /// </summary>
         internal class EntityDebugView
         {
             private readonly Entity entity;
@@ -249,10 +257,7 @@ namespace SiliconStudio.Xenko.Engine
                 this.entity = entity;
             }
 
-            public string Name
-            {
-                get { return entity.Name; }
-            }
+            public string Name => entity.Name;
 
             public Entity[] Children
             {
@@ -266,23 +271,66 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
 
-            public EntityComponent[] Components
+            public EntityComponent[] Components => entity.Components.ToArray();
+        }
+
+        /// <summary>
+        /// Specialized serializer
+        /// </summary>
+        /// <seealso cref="Entity" />
+        /// <seealso cref="SiliconStudio.Core.Serialization.IDataSerializerInitializer" />
+        internal class EntitySerializer : DataSerializer<Entity>, IDataSerializerInitializer
+        {
+            private DataSerializer<Guid> guidSerializer;
+            private DataSerializer<string> stringSerializer;
+            private DataSerializer<EntityGroup> entityGroupSerializer;
+            private DataSerializer<EntityComponentCollection> componentCollectionSerializer;
+
+            /// <inheritdoc/>
+            public void Initialize(SerializerSelector serializerSelector)
             {
-                get
+                guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
+                stringSerializer = MemberSerializer<string>.Create(serializerSelector);
+                entityGroupSerializer = MemberSerializer<EntityGroup>.Create(serializerSelector);
+                componentCollectionSerializer = serializerSelector.GetSerializer<EntityComponentCollection>();
+            }
+
+            public override void PreSerialize(ref Entity obj, ArchiveMode mode, SerializationStream stream)
+            {
+                // Create an empty Entity without a Transform component by default when deserializing
+                if (mode == ArchiveMode.Deserialize)
                 {
-                    return entity.Components.Select(x => x.Value).OfType<EntityComponent>().ToArray();
+                    if (obj == null)
+                        obj = new Entity(null, false);
+                    else
+                        obj.Components.Clear();
                 }
             }
-        }
 
-        public override string ToString()
-        {
-            return string.Format("Entity {0}", Name);
-        }
+            public override void Serialize(ref Entity obj, ArchiveMode mode, SerializationStream stream)
+            {
+                // Serialize Id
+                var id = obj.Id;
+                guidSerializer.Serialize(ref id, mode, stream);
+                if (mode == ArchiveMode.Deserialize)
+                {
+                    obj.Id = id;
+                }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Components.Values.OfType<EntityComponent>().GetEnumerator();
+                // Serialize Name
+                var name = obj.Name;
+                stringSerializer.Serialize(ref name, mode, stream);
+                obj.Name = name;
+
+                // EntityGroup
+                var group = obj.Group;
+                entityGroupSerializer.Serialize(ref group, mode, stream);
+                obj.Group = group;
+
+                // Components
+                var collection = obj.Components;
+                componentCollectionSerializer.Serialize(ref collection, mode, stream);
+            }
         }
     }
 }

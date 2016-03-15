@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -113,7 +113,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>true if the profile is supported</returns>
         public bool IsProfileSupported(GraphicsProfile graphicsProfile)
         {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            return true;
+#else
             return SharpDX.Direct3D11.Device.IsSupportedFeatureLevel(this.NativeAdapter, (SharpDX.Direct3D.FeatureLevel)graphicsProfile);
+#endif
         }
     }
 } 

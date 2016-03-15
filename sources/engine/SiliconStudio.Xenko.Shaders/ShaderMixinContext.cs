@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         /// <typeparam name="T">Type of the parameter collection</typeparam>
         /// <param name="parameterCollection">The property container.</param>
-        public void PushParameters<T>(T parameterCollection) where T : ParameterCollection
+        public void PushParameters(ParameterCollection parameterCollection)
         {
             parameterCollections.Push(parameterCollection);
         }
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <param name="paramKey">The parameter key.</param>
         /// <returns>The value or default value associated to this parameter key.</returns>
         /// <exception cref="System.ArgumentNullException">key</exception>
-        public T GetParam<T>(ParameterKey<T> paramKey)
+        public T GetParam<T>(PermutationParameterKey<T> paramKey)
         {
             if (paramKey == null)
                 throw new ArgumentNullException("paramKey");
@@ -124,18 +124,12 @@ namespace SiliconStudio.Xenko.Shaders
             }
 
             // Gets the value from a source parameters
-            var value = sourceParameters.Get(selectedKey);
-
-            // Sore only used parameters when they are taken from compilerParameters
-            if (sourceParameters == compilerParameters)
-            {
-                currentMixinSourceTree.UsedParameters.Set(selectedKey, value);
-            }
+            var value = Get(sourceParameters, selectedKey);
 
             return value;
         }
 
-        private ParameterCollection FindKeyValue<T>(ParameterKey<T> key, out ParameterKey<T> selectedKey)
+        private ParameterCollection FindKeyValue<T>(PermutationParameterKey<T> key, out PermutationParameterKey<T> selectedKey)
         {
             // Try to get a value from registered containers
             selectedKey = null;
@@ -156,7 +150,7 @@ namespace SiliconStudio.Xenko.Shaders
             return null;
         }
 
-        private ParameterKey<T> GetComposeKey<T>(ParameterKey<T> key)
+        private PermutationParameterKey<T> GetComposeKey<T>(PermutationParameterKey<T> key)
         {
             if (compositionString == null)
             {
@@ -166,13 +160,13 @@ namespace SiliconStudio.Xenko.Shaders
             return key;
         }
 
-        public void SetParam<T>(ParameterKey<T> key, T value)
+        public void SetParam<T>(PermutationParameterKey<T> key, T value)
         {
             if (key == null)
                 throw new ArgumentNullException("key");
 
             var propertyContainer = parameterCollections.Count > 0 ? parameterCollections.Peek() : compilerParameters;
-            propertyContainer.Set(key, value);
+            Set(propertyContainer, key, value);
         }
 
         /// <summary>
@@ -317,6 +311,17 @@ namespace SiliconStudio.Xenko.Shaders
             {
                 Discard();
             }
+        }
+
+        // Helpers, until we get rid of ParameterCollection
+        private void Set<T>(ParameterCollection parameterCollection, PermutationParameterKey<T> key, T value)
+        {
+            parameterCollection.Set(key, value);
+        }
+
+        private T Get<T>(ParameterCollection parameterCollection, PermutationParameterKey<T> key)
+        {
+            return parameterCollection.Get(key);
         }
     }
 }

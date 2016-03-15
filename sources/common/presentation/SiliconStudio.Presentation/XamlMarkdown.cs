@@ -1,8 +1,15 @@
-﻿#region Copyright and license
-// https://github.com/theunrepentantgeek/Markdown.XAML
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 
+#region Copyright and license
 /*
-Copyright(c) 2010 Bevan Arps
+The MIT license (MIT)
+https://opensource.org/licenses/MIT
+
+Modified version copyright (c) 2015 Nicolas Musset
+https://github.com/Kryptos-FR/XamlMarkdown
+Original version copyright (c) 2010 Bevan Arps
+https://github.com/theunrepentantgeek/Markdown.XAML
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal 
@@ -34,6 +41,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace SiliconStudio.Presentation
@@ -59,10 +67,29 @@ namespace SiliconStudio.Presentation
         private Style heading2Style;
         private Style heading3Style;
         private Style heading4Style;
+        private Style imageStyle;
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <remarks><see cref="Application.Current"/> will be used for styles look-up.</remarks>
         public XamlMarkdown()
         {
             HyperlinkCommand = NavigationCommands.GoToPage;
+        }
+
+        private readonly FrameworkElement resourcesProvider;
+
+        /// <summary>
+        /// Creates an instance of <see cref="XamlMarkdown"/> with <paramref name="resourcesProvider"/> for styles look-up.
+        /// </summary>
+        /// <param name="resourcesProvider">The framework element used for styles look-up.</param>
+        public XamlMarkdown(FrameworkElement resourcesProvider)
+            : this()
+        {
+            if (resourcesProvider == null) throw new ArgumentNullException(nameof(resourcesProvider));
+
+            this.resourcesProvider = resourcesProvider;
         }
 
         /// <summary>
@@ -96,6 +123,11 @@ namespace SiliconStudio.Presentation
         public static ComponentResourceKey Heading4StyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(Heading4StyleKey));
 
         /// <summary>
+        /// Resource Key for the ImageStyle.
+        /// </summary>
+        public static ComponentResourceKey ImageStyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(ImageStyleKey));
+
+        /// <summary>
         /// when true, bold and italic require non-word characters on either side  
         /// WARNING: this is a significant deviation from the markdown spec
         /// </summary>
@@ -104,32 +136,41 @@ namespace SiliconStudio.Presentation
 
         public ICommand HyperlinkCommand { get; set; }
 
-        private Style CodeStyle => codeStyle ?? (codeStyle = (Style)Application.Current.FindResource(CodeStyleKey));
+        private Style CodeStyle => codeStyle ?? (codeStyle = TryFindStyle(CodeStyleKey));
 
-        private Style DocumentStyle => documentStyle ?? (documentStyle = (Style)Application.Current.FindResource(DocumentStyleKey));
+        private Style DocumentStyle => documentStyle ?? (documentStyle = TryFindStyle(DocumentStyleKey));
 
-        private Style Heading1Style => heading1Style ?? (heading1Style = (Style)Application.Current.FindResource(Heading1StyleKey));
+        private Style Heading1Style => heading1Style ?? (heading1Style = TryFindStyle(Heading1StyleKey));
 
-        private Style Heading2Style => heading2Style ?? (heading2Style = (Style)Application.Current.FindResource(Heading2StyleKey));
+        private Style Heading2Style => heading2Style ?? (heading2Style = TryFindStyle(Heading2StyleKey));
 
-        private Style Heading3Style => heading3Style ?? (heading3Style = (Style)Application.Current.FindResource(Heading3StyleKey));
+        private Style Heading3Style => heading3Style ?? (heading3Style = TryFindStyle(Heading3StyleKey));
 
-        private Style Heading4Style => heading4Style ?? (heading4Style = (Style)Application.Current.FindResource(Heading4StyleKey));
+        private Style Heading4Style => heading4Style ?? (heading4Style = TryFindStyle(Heading4StyleKey));
+
+        private Style ImageStyle => imageStyle ?? (imageStyle = TryFindStyle(ImageStyleKey));
+
+        private Style TryFindStyle(object resourceKey)
+        {
+            return resourcesProvider?.TryFindResource(resourceKey) as Style;
+        }
 
         public FlowDocument Transform(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             text = Normalize(text);
-            var document = Create<FlowDocument, Block>(RunBlockGamut(text));
 
-            // FIXME: was in the original file, but we are setting it in our style. Commented for now, could be removed later.
-            //document.PagePadding = new Thickness(0);
+            var document = Create<FlowDocument, Block>(RunBlockGamut(text));
             if (DocumentStyle != null)
             {
-                document.Style = DocumentStyle;
+                // Try applying the style
+                try
+                {
+                    document.Style = DocumentStyle;
+                }
+                catch (InvalidOperationException) { }
             }
-
             return document;
         }
 
@@ -143,7 +184,7 @@ namespace SiliconStudio.Presentation
             return DoHeaders(text,
                 s1 => DoHorizontalRules(s1,
                     s2 => DoLists(s2,
-                    FormParagraphs)));
+                        FormParagraphs)));
 
             //text = DoCodeBlocks(text);
             //text = DoBlockQuotes(text);
@@ -167,9 +208,10 @@ namespace SiliconStudio.Presentation
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             return DoCodeSpans(text,
-                s0 => DoAnchors(s0,
-                s1 => DoItalicsAndBold(s1,
-                DoText)));
+                s0 => DoImages(s0,
+                    s1 => DoAnchors(s1,
+                        s2 => DoItalicsAndBold(s2,
+                            DoText))));
 
             //text = EscapeSpecialCharsWithinTagAttributes(text);
             //text = EscapeBackslashes(text);
@@ -219,9 +261,8 @@ namespace SiliconStudio.Presentation
         {
             // in other words [this] and [this[also]] and [this[also[too]]]
             // up to _nestDepth
-            if (nestedBracketsPattern == null)
-                nestedBracketsPattern =
-                    RepeatString(@"
+            return nestedBracketsPattern
+                ?? (nestedBracketsPattern = RepeatString(@"
                     (?>              # Atomic matching
                        [^\[\]]+      # Anything other than brackets
                      |
@@ -229,8 +270,7 @@ namespace SiliconStudio.Presentation
                            ", NestDepth) + RepeatString(
                     @" \]
                     )*"
-                    , NestDepth);
-            return nestedBracketsPattern;
+                    , NestDepth));
         }
 
         private static string nestedParensPattern;
@@ -243,9 +283,8 @@ namespace SiliconStudio.Presentation
         {
             // in other words (this) and (this(also)) and (this(also(too)))
             // up to _nestDepth
-            if (nestedParensPattern == null)
-                nestedParensPattern =
-                    RepeatString(@"
+            return nestedParensPattern
+                ?? (nestedParensPattern = RepeatString(@"
                     (?>              # Atomic matching
                        [^()\s]+      # Anything other than parens or whitespace
                      |
@@ -253,8 +292,7 @@ namespace SiliconStudio.Presentation
                            ", NestDepth) + RepeatString(
                     @" \)
                     )*"
-                    , NestDepth);
-            return nestedParensPattern;
+                    , NestDepth));
         }
 
         private static readonly Regex AnchorInline = new Regex(string.Format(@"
@@ -267,7 +305,7 @@ namespace SiliconStudio.Presentation
                         ({1})               # href = $3
                         [ ]*
                         (                   # $4
-                        (['""])           # quote char = $5
+                        (['""])             # quote char = $5
                         (.*?)               # title = $6
                         \5                  # matching quote
                         [ ]*                # ignore any spaces between closing quote and )
@@ -299,9 +337,110 @@ namespace SiliconStudio.Presentation
             var title = match.Groups[6].Value;
 
             var result = Create<Hyperlink, Inline>(RunSpanGamut(linkText));
-            result.Command = HyperlinkCommand;
             result.CommandParameter = url;
+            result.Command = HyperlinkCommand;
             return result;
+        }
+
+        private static readonly Regex HtmlImageInline = new Regex(@"
+              (                     # wrap whole match in $1
+                <img
+                    [^>]*?          # any valid HTML characters
+                    src             # src attribute
+                    \s*             # optional whitespace characters
+                    =               
+                    \s*             # optional whitespace characters
+                    (['""])         # quote char = $2
+                    ([^'"" >]+?)    # href = $3
+                    \2              # matching quote
+                    [^>]*?          # any valid HTML characters
+                >
+              )",
+            RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
+        private static readonly Regex ImageInline = new Regex(string.Format(@"
+              (                     # wrap whole match in $1
+                !\[
+                    (.*?)           # alt text = $2
+                \]
+                \s?                 # one optional whitespace character
+                \(                  # literal paren
+                    [ ]*
+                    ({0})           # href = $3
+                    [ ]*
+                    (               # $4
+                    (['""])         # quote char = $5
+                    (.*?)           # title = $6
+                    \5              # matching quote
+                    [ ]*
+                    )?              # title is optional
+                \)
+              )", GetNestedParensPattern()),
+            RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
+        /// <summary>
+        /// Turn Markdown image shortcuts into images. 
+        /// </summary>
+        /// <remarks>
+        /// ![alt text][id]
+        /// ![alt text](url "optional title")
+        /// </remarks>
+        private IEnumerable<Inline> DoImages(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        {
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            
+            // First, handle HTML images: <img src="url" />
+            // Next, handle inline images:  ![alt text](url "optional title")
+            return Evaluate(text, HtmlImageInline, HtmlImageInlineEvaluator, 
+                s => Evaluate(s, ImageInline, ImageInlineEvaluator, defaultHandler));
+        }
+
+        private Inline HtmlImageInlineEvaluator(Match match)
+        {
+            if (match == null) throw new ArgumentNullException(nameof(match));
+            
+            var url = match.Groups[3].Value;
+
+            if (url.StartsWith("<") && url.EndsWith(">"))
+                url = url.Substring(1, url.Length - 2);    // Remove <>'s surrounding URL, if present
+
+            return ImageTag(url, null, null);
+        }
+
+        private Inline ImageInlineEvaluator(Match match)
+        {
+            if (match == null) throw new ArgumentNullException(nameof(match));
+
+            var altText = match.Groups[2].Value;
+            var url = match.Groups[3].Value;
+            var title = match.Groups[6].Value;
+
+            if (url.StartsWith("<") && url.EndsWith(">"))
+                url = url.Substring(1, url.Length - 2);    // Remove <>'s surrounding URL, if present
+
+            return ImageTag(url, altText, title);
+        }
+
+        private Inline ImageTag(string url, string altText, string title)
+        {
+            var image = new Image
+            {
+                Source = new BitmapImage(new Uri(url))
+            };
+            if (!string.IsNullOrEmpty(title))
+            {
+                image.ToolTip = Create<TextBlock, Inline>(RunSpanGamut(title));
+            }
+            if (ImageStyle != null)
+            {
+                // Try applying the style
+                try
+                {
+                    image.Style = ImageStyle;
+                }
+                catch (InvalidOperationException) { }
+            }
+            return new InlineUIContainer(image);
         }
 
         private static readonly Regex HeaderSetext = new Regex(@"
@@ -352,8 +491,7 @@ namespace SiliconStudio.Presentation
 
             var header = match.Groups[1].Value;
             var level = match.Groups[2].Value.StartsWith("=") ? 1 : 2;
-
-            //TODO: Style the paragraph based on the header level
+            
             return CreateHeader(level, RunSpanGamut(header.Trim()));
         }
 
@@ -373,36 +511,41 @@ namespace SiliconStudio.Presentation
 
             var block = Create<Paragraph, Inline>(content);
 
-            switch (level)
+            try
             {
-                case 1:
-                    if (Heading1Style != null)
-                    {
-                        block.Style = Heading1Style;
-                    }
-                    break;
+                // Try applying the style
+                switch (level)
+                {
+                    case 1:
+                        if (Heading1Style != null)
+                        {
+                            block.Style = Heading1Style;
+                        }
+                        break;
 
-                case 2:
-                    if (Heading2Style != null)
-                    {
-                        block.Style = Heading2Style;
-                    }
-                    break;
+                    case 2:
+                        if (Heading2Style != null)
+                        {
+                            block.Style = Heading2Style;
+                        }
+                        break;
 
-                case 3:
-                    if (Heading3Style != null)
-                    {
-                        block.Style = Heading3Style;
-                    }
-                    break;
+                    case 3:
+                        if (Heading3Style != null)
+                        {
+                            block.Style = Heading3Style;
+                        }
+                        break;
 
-                case 4:
-                    if (Heading4Style != null)
-                    {
-                        block.Style = Heading4Style;
-                    }
-                    break;
+                    case 4:
+                        if (Heading4Style != null)
+                        {
+                            block.Style = Heading4Style;
+                        }
+                        break;
+                }
             }
+            catch (InvalidOperationException) { }
 
             return block;
         }
@@ -623,7 +766,12 @@ namespace SiliconStudio.Presentation
             var result = new Run(span);
             if (CodeStyle != null)
             {
-                result.Style = CodeStyle;
+                // Try applying the style
+                try
+                {
+                    result.Style = CodeStyle;
+                }
+                catch (InvalidOperationException) { }
             }
 
             return result;
@@ -746,7 +894,7 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
-        /// this is to emulate what's evailable in PHP
+        /// this is to emulate what's available in PHP
         /// </summary>
         private static string RepeatString(string text, int count)
         {
@@ -802,7 +950,7 @@ namespace SiliconStudio.Presentation
             }
         }
 
-        private static readonly Regex Eoln = new Regex("\\s+");
+        private static readonly Regex Eoln = new Regex(@"\s+");
 
         public IEnumerable<Inline> DoText(string text)
         {

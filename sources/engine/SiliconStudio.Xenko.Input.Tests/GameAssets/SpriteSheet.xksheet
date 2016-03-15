@@ -1,13 +1,15 @@
 !SpriteSheet
 Id: d311c28e-39fc-44ff-a4bc-f4a9d8c5fc53
-SerializedVersion: 2
+SerializedVersion: {Xenko: 1.5.0-alpha01}
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
-Packing: {}
+Packing:
+    ~Id: d5b32e10-6b63-4c79-ba59-f7ed8371f571
 Sprites:
-    -   Source: ../../../data/tests/arrow.png
+    -   ~Id: 8c64e756-5bfc-436d-a27b-a28a7fbe0f12
+        Source: ../../../data/tests/arrow.png
         Name: Arrow
         TextureRegion: {X: 0, Y: 0, Width: 128, Height: 128}
         Center: {X: 0.0, Y: 0.0}

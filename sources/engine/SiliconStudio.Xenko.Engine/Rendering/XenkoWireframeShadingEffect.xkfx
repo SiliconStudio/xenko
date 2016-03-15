@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Shaders.Compiler;
+
+namespace SiliconStudio.Xenko.Rendering
+{
+    shader XenkoWireframeShadingEffect
+    {
+        using params MaterialFrontBackBlendShaderKeys;
+
+        mixin XenkoEffectBase;
+
+        mixin MaterialFrontBackBlendShader<MaterialFrontBackBlendShaderKeys.UseNormalBackFace>;
+    };
+}
