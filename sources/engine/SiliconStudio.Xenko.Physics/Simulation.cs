@@ -1014,6 +1014,8 @@ namespace SiliconStudio.Xenko.Physics
                 collision.ColliderA.Collisions.Remove(collision);
                 collision.ColliderB.Collisions.Remove(collision);
                 removedCollisionsCache.Add(collision);
+
+                removedContactsCache.Add(collision.Contacts[0]);
             }
         }
 
@@ -1065,6 +1067,13 @@ namespace SiliconStudio.Xenko.Physics
                     {
                         if ((collision.ColliderA == component0 && collision.ColliderB == component1) || (collision.ColliderA == component1 && collision.ColliderB == component0))
                         {
+                            var oldContact = collision.Contacts[0];
+                            oldContact.Distance = contact.Distance;
+                            oldContact.Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ);
+                            oldContact.PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz);
+                            oldContact.PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz);
+                            updatedContactsCache.Add(oldContact);
+
                             skippedCollisions.Remove(collision);
                             skip = true;
                             break;
@@ -1083,10 +1092,23 @@ namespace SiliconStudio.Xenko.Physics
                         ColliderB = component1
                     };
 
+                    //todo this has to change
+                    var newContact = new ContactPoint
+                    {
+                        Collision = newCollision,
+                        Distance = contact.Distance,
+                        LifeTime = 0,
+                        Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ),
+                        PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz),
+                        PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz)
+                    };
+                    newCollision.Contacts.Add(newContact);
+
                     component0.Collisions.Add(newCollision);
                     component1.Collisions.Add(newCollision);
 
                     newCollisionsCache.Add(newCollision);
+                    newContactsFastCache.Add(newContact);
                 }
             }
         }
