@@ -64,6 +64,7 @@ namespace SiliconStudio.Core.Yaml
         public override string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
             var newMemberName = memberName.Trim(PostFixSealed, PostFixNew);
+            var objectType = objectContext.Instance.GetType();
 
             if (newMemberName.Length != memberName.Length)
             {
@@ -83,7 +84,6 @@ namespace SiliconStudio.Core.Yaml
 
                 if (overrideType != OverrideType.Base)
                 {
-                    var objectType = objectContext.Instance.GetType();
                     if (cachedDescriptor == null || cachedDescriptor.Type != objectType)
                     {
                         cachedDescriptor = typeDescriptorFactory.Find(objectType);
@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Yaml
             var resultMemberName = base.ReadMemberName(ref objectContext, newMemberName, out skipMember);
             // If ~Id was not found as a member, don't generate an error, as we may have switched an object
             // to NonIdentifiable but we don't want to write an upgrader for this
-            if (memberName == IdentifiableHelper.YamlSpecialId)
+            if (!IdentifiableHelper.IsIdentifiable(objectType) && memberName == IdentifiableHelper.YamlSpecialId)
             {
                 skipMember = true;
             }
