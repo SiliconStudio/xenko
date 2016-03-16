@@ -187,15 +187,19 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            // For simple merge (base, newAsset, newBase) => newObject
-            // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
-            if (!MergeAsset(assetItem, existingAssetBase, existingBaseParts))
+            // Don't process an asset that has been already processed
+            if (!assetsProcessed.ContainsKey(assetItem.Id))
             {
-                return false;
-            }
+                // For simple merge (base, newAsset, newBase) => newObject
+                // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
+                if (!MergeAsset(assetItem, existingAssetBase, existingBaseParts))
+                {
+                    return false;
+                }
 
-            assetsProcessed.Add(assetItem.Id, assetItem);
-            assetsToProcess.Remove(assetItem.Id);
+                assetsProcessed.Add(assetItem.Id, assetItem);
+                assetsToProcess.Remove(assetItem.Id);
+            }
 
             return true;
         }
