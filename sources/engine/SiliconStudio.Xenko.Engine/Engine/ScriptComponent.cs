@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The priority this script will be scheduled with (compared to other scripts).
         /// </summary>
-        /// <userdoc>The execution priority for this script. It applies to async, sync and startup scripts.</userdoc>
+        /// <userdoc>The execution priority for this script. It applies to async, sync and startup scripts. Lower values mean earlier execution.</userdoc>
         [DefaultValue(0)]
         [DataMember(10000)]
         public int Priority
