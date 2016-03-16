@@ -93,6 +93,25 @@ namespace SiliconStudio.Core.Serialization
         {
         }
 
+
+        /// <summary>
+        /// Checks if this instance supports the specified serialization profile.
+        /// </summary>
+        /// <param name="profile">Name of the profile</param>
+        /// <returns><c>true</c> if this instance supports the specified serialization profile</returns>
+        public bool HasProfile(string profile)
+        {
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
+            for (int i = 0; i < profiles.Length; i++)
+            {
+                if (profile == profiles[i])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private SerializerSelector(bool reuseReferences, bool unusedPrivateCtor, params string[] profiles)
         {
             this.reuseReferences = reuseReferences;
