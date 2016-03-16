@@ -218,6 +218,7 @@
     </Compile>
     <Compile Include="Rendering\IRenderCollector.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
+    <Compile Include="Rendering\MaterialNull.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
