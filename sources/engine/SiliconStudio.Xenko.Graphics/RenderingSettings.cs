@@ -56,7 +56,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// OpenGL ES.
         /// </summary>
         [Display("OpenGL ES")]
-        OpenGLES
+        OpenGLES,
+
+        /// <summary>
+        /// Vulkan
+        /// </summary>
+        Vulkan
     }
 
     [DataContract]
