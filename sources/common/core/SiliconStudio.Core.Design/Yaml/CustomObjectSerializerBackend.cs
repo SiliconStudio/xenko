@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Internal class used when serializing/deserializing an object.
     /// </summary>
-    internal class OverrideKeyMappingTransform : DefaultObjectSerializerBackend
+    internal class CustomObjectSerializerBackend : DefaultObjectSerializerBackend
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private ITypeDescriptor cachedDescriptor;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Core.Yaml
 
         private const string PostFixNewSealedAlt = "!*";
 
-        public OverrideKeyMappingTransform(ITypeDescriptorFactory typeDescriptorFactory)
+        public CustomObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
             if (typeDescriptorFactory == null) throw new ArgumentNullException("typeDescriptorFactory");
             this.typeDescriptorFactory = typeDescriptorFactory;
@@ -61,7 +61,7 @@ namespace SiliconStudio.Core.Yaml
             base.WriteMemberName(ref objectContext, member, memberName);
         }
 
-        public override string ReadMemberName(ref ObjectContext objectContext, string memberName)
+        public override string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
             var newMemberName = memberName.Trim(PostFixSealed, PostFixNew);
 
@@ -93,7 +93,14 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
 
-            return base.ReadMemberName(ref objectContext, newMemberName);
+            var resultMemberName = base.ReadMemberName(ref objectContext, newMemberName, out skipMember);
+            // If ~Id was not found as a member, don't generate an error, as we may have switched an object
+            // to NonIdentifiable but we don't want to write an upgrader for this
+            if (memberName == IdentifiableHelper.YamlSpecialId)
+            {
+                skipMember = true;
+            }
+            return resultMemberName;
         }
     }
 }

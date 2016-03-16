@@ -47,13 +47,6 @@ namespace SiliconStudio.Assets.Serializers
                 Asset = item.Asset;
             }
 
-            /// <summary>
-            /// TODO: This field is here to avoid a breaking change without having to write an upgrader for all assets, we can remove it at some point.
-            /// </summary>
-            [DataMember("~Id")]
-            [DefaultValue(null)]
-            public Guid? Id { get; set; }
-
             [DataMember(1)]
             public UFile Location;
 
