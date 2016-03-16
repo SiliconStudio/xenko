@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
                 needAdd = false;
             }
 
-            value = (EntityComponent)ReadCollectionItem(ref objectContext, value, elementType);
+            value = (EntityComponent)ReadCollectionItem(ref objectContext, value, elementType, index);
             if (needAdd)
             {
                 scriptCollection.Add(value);
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         }
 
         /// <inheritdoc/>
-        protected override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType)
+        protected override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
         {
             // Save the Yaml stream, in case loading fails we can keep this representation
             var parsingEvents = new List<ParsingEvent>();
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
 
             try
             {
-                return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, value, itemType);
+                return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, value, itemType, index);
             }
             catch (YamlException ex)
             {
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         }
 
         /// <inheritdoc/>
-        protected override void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType)
+        protected override void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)
         {
             // Check if we have a Yaml representation (in case loading failed)
             var unloadableScript = item as UnloadableComponent;
@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
                 return;
             }
 
-            base.WriteCollectionItem(ref objectContext, item, itemType);
+            base.WriteCollectionItem(ref objectContext, item, itemType, index);
         }
     }
 }
