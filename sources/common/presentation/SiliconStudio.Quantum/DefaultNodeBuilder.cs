@@ -232,14 +232,14 @@ namespace SiliconStudio.Quantum
         public IReference CreateReferenceForNode(Type type, object value)
         {
             // We don't create references for primitive types
-            if (IsPrimitiveType(type))
+            if (IsPrimitiveType(type) || type.IsStruct())
                 return null;
 
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || !IsPrimitiveType(valueType))
+            if (valueType == null || (!IsPrimitiveType(valueType) && !valueType.IsStruct()))
                 return Reference.CreateReference(value, type, Reference.NotInCollection);
 
             return null;
@@ -273,7 +273,7 @@ namespace SiliconStudio.Quantum
             if (type.IsNullable())
                 type = Nullable.GetUnderlyingType(type);
 
-            return type.IsPrimitive || type == typeof(string) || type.IsEnum || PrimitiveTypes.Any(x => x.IsAssignableFrom(type));
+            return type.IsPrimitive || type == typeof(string) || type == typeof(Guid) || type.IsEnum || PrimitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
 
         private static Type GetElementValueType(ITypeDescriptor descriptor)
