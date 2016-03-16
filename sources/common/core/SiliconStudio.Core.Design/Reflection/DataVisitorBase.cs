@@ -221,7 +221,15 @@ namespace SiliconStudio.Core.Reflection
         public virtual void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
             int i = 0;
+
+            // Make a copy in case VisitCollectionItem mutates something
+            var items = new List<object>();
             foreach (var item in collection)
+            {
+                items.Add(item);
+            }
+
+            foreach (var item in items)
             {
                 CurrentPath.Push(descriptor, i);
                 VisitCollectionItem(collection, descriptor, i, item, TypeDescriptorFactory.Find(item?.GetType() ?? descriptor.ElementType));
@@ -237,7 +245,14 @@ namespace SiliconStudio.Core.Reflection
 
         public virtual void VisitDictionary(object dictionary, DictionaryDescriptor descriptor)
         {
-            foreach (var keyValue in descriptor.GetEnumerator(dictionary))
+            // Make a copy in case VisitCollectionItem mutates something
+            var items = new List<KeyValuePair<object, object>>();
+            foreach (var item in descriptor.GetEnumerator(dictionary))
+            {
+                items.Add(item);
+            }
+
+            foreach (var keyValue in items)
             {
                 var key = keyValue.Key;
                 var keyDescriptor = TypeDescriptorFactory.Find(keyValue.Key?.GetType() ?? descriptor.KeyType);
