@@ -66,10 +66,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="scale">Particle System's uniform scale (from the Transform component)</param>
         public virtual void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
         {
-            var parent = new ParticleTransform() { Position = translation, Rotation = rotation, Scale = new Vector3(scale) };
-            parent.SetParentTransform(null); // Update the world transforms
-
-            SetParentTransform(parent);
+            SetParentTransform(ref translation, ref rotation, scale);
         }
     }
 }
