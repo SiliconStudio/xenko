@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtensions, false, AlwaysMarkAsRoot = true)]
+    [AssetDescription(FileExtensions, false, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [Display(80, "Game Settings")]
