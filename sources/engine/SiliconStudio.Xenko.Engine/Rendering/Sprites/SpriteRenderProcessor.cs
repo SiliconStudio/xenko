@@ -51,6 +51,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteComponent component, SpriteInfo data)
+        {
+            VisibilityGroup.RenderObjects.Remove(data.RenderSprite);
+        }
+
         protected override SpriteInfo GenerateComponentData(Entity entity, SpriteComponent spriteComponent)
         {
             return new SpriteInfo

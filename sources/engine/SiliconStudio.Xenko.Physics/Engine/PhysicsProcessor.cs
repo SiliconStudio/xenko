@@ -206,5 +206,21 @@ namespace SiliconStudio.Xenko.Physics
                 element.UpdateBones();
             }
         }
+
+        public void UpdateContacts()
+        {
+            Simulation.BeginContactTesting();
+
+            foreach (var dataPair in ComponentDatas)
+            {
+                var data = dataPair.Value;
+                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions)
+                {
+                    Simulation.ContactTest(data.PhysicsComponent);
+                }
+            }
+
+            Simulation.EndContactTesting();
+        }
     }
 }

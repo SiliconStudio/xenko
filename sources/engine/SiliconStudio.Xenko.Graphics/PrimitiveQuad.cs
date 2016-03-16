@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The pipeline state.
         /// </summary>
-        private readonly MutablePipelineState pipelineState = new MutablePipelineState();
+        private readonly MutablePipelineState pipelineState;
 
         private readonly EffectInstance simpleEffect;
         private readonly SharedData sharedData;
@@ -39,11 +39,10 @@ namespace SiliconStudio.Xenko.Graphics
             simpleEffect.UpdateEffect(graphicsDevice);
             simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
 
+            pipelineState = new MutablePipelineState(GraphicsDevice);
             pipelineState.State.SetDefaults();
             pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
             pipelineState.State.PrimitiveType = PrimitiveType;
-            pipelineState.State.RootSignature = simpleEffect.RootSignature;
-            pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
         }
 
         /// <summary>
@@ -64,10 +63,25 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture"></param>
         public void Draw(CommandList commandList)
         {
-            //GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
             commandList.SetVertexBuffer(0, sharedData.VertexBuffer.Buffer, sharedData.VertexBuffer.Offset, sharedData.VertexBuffer.Stride);
             commandList.Draw(QuadCount);
-            //GraphicsDevice.SetVertexArrayObject(null);
+        }
+
+        /// <summary>
+        /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
+        /// </summary>
+        /// <param name="texture"></param>
+        public void Draw(CommandList commandList, EffectInstance effectInstance)
+        {
+            pipelineState.State.RootSignature = effectInstance.RootSignature;
+            pipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
+            pipelineState.State.BlendState = BlendStates.Default;
+            pipelineState.State.Output.CaptureState(commandList);
+            pipelineState.Update();
+
+            commandList.SetPipelineState(pipelineState.CurrentState);
+
+            Draw(commandList);
         }
 
         /// <summary>
@@ -96,9 +110,11 @@ namespace SiliconStudio.Xenko.Graphics
             simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
             simpleEffect.Apply(graphicsContext);
 
+            pipelineState.State.RootSignature = simpleEffect.RootSignature;
+            pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
             pipelineState.State.BlendState = blendState ?? BlendStates.Default;
             pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
-            pipelineState.Update(GraphicsDevice);
+            pipelineState.Update();
             graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             Draw(graphicsContext.CommandList);

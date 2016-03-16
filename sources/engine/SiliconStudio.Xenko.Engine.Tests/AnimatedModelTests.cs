@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Colors;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Rendering.Tessellation;
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public AnimatedModelTests()
         {
+            CurrentVersion = 1;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
         }
@@ -56,11 +58,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
             camera = new TestCamera();
             CameraComponent = camera.Camera;
             Script.Add(camera);
-
-            // TODO GRAPHICS REFACTOR
-            throw new NotImplementedException();
-            //LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            //GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
             camera.Position = new Vector3(6.0f, 2.5f, 1.5f);
             camera.SetTarget(knight, true);

@@ -6,16 +6,16 @@ using System;
 using System.Threading;
 using OpenTK.Graphics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko;
 using SiliconStudio.Xenko.Shaders;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using BeginMode = OpenTK.Graphics.ES30.BeginMode;
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
 #else
-using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 #endif
 using DebugSourceExternal = OpenTK.Graphics.ES30.All;
 #else
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
@@ -214,7 +214,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             GL.BindTexture(texture.Target, texture.resourceId);
 
@@ -250,7 +250,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             GL.BindTexture(texture.Target, texture.resourceId);
 
@@ -268,7 +268,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             GL.BindTexture(texture.Target, texture.resourceId);
 
@@ -310,7 +310,7 @@ namespace SiliconStudio.Xenko.Graphics
             currentPipelineState.RasterizerState.Apply(this);
 
             // Set default render targets
-            SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            SetRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             GL.Enable(EnableCap.FramebufferSrgb);
@@ -333,10 +333,14 @@ namespace SiliconStudio.Xenko.Graphics
             var destTexture = destination as Texture;
 
             if (sourceTexture == null || destTexture == null)
-                throw new NotImplementedException("Copy is only implemented for ITexture2D objects.");
+            {
+                Internal.Refactor.ThrowNotImplementedException("Copy is only implemented for ITexture2D objects.");
+            }
 
             if (sourceSubresource != 0 || destinationSubResource != 0)
-                throw new NotImplementedException("Copy is only implemented for subresource 0 in OpenGL.");
+            {
+                Internal.Refactor.ThrowNotImplementedException("Copy is only implemented for subresource 0 in OpenGL.");
+            }
 
             var sourceRegion = regionSource.HasValue ? regionSource.Value : new ResourceRegion(0, 0, 0, sourceTexture.Description.Width, sourceTexture.Description.Height, 0);
             var sourceRectangle = new Rectangle(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right - sourceRegion.Left, sourceRegion.Bottom - sourceRegion.Top);
@@ -470,7 +474,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
             GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
-            GL.DrawArrays((BeginMode)PrimitiveTypeGl.TriangleStrip, 0, 4);
+            GL.DrawArrays(PrimitiveTypeGl.TriangleStrip, 0, 4);
             GL.UseProgram(boundProgram);
 
             // Restore context
@@ -502,7 +506,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
         }
 
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetToDest)
@@ -511,7 +515,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
         }
 
         public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
@@ -523,7 +527,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             GL.DispatchCompute(threadCountX, threadCountY, threadCountZ);
 #else
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #endif
         }
 
@@ -540,7 +544,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             GL.BindBuffer(BufferTarget.DispatchIndirectBuffer, 0);
 #else
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #endif
         }
 
@@ -551,7 +555,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
             PreDraw();
 
-            GL.DrawArrays((BeginMode)newPipelineState.PrimitiveType, startVertex, vertexCount);
+            GL.DrawArrays(newPipelineState.PrimitiveType, startVertex, vertexCount);
 
             GraphicsDevice.FrameTriangleCount += (uint)vertexCount;
             GraphicsDevice.FrameDrawCalls++;
@@ -566,7 +570,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             //GL.DrawArraysIndirect(newPipelineState.PrimitiveType, (IntPtr)0);
             //GraphicsDevice.FrameDrawCalls++;
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
         }
 
         /// <summary>
@@ -585,7 +589,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if(baseVertexLocation != 0)
                 throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
-            GL.DrawElements((BeginMode)newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
+            GL.DrawElements(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize)); // conversion to IntPtr required on Android
 #else
             GL.DrawElementsBaseVertex(newPipelineState.PrimitiveType, indexCount, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize), baseVertexLocation);
 #endif
@@ -609,7 +613,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
             PreDraw();
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             GL.DrawElementsInstancedBaseVertex(newPipelineState.PrimitiveType, indexCountPerInstance, indexBuffer.Type, indexBuffer.Buffer.StagingData + indexBuffer.Offset + (startIndexLocation * indexBuffer.ElementSize), instanceCount, baseVertexLocation);
 #endif
@@ -626,7 +630,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawIndexedInstanced(Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
 
-            if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
+            if (argumentsBuffer == null) throw new ArgumentNullException(nameof(argumentsBuffer));
 
 #if DEBUG
             //GraphicsDevice.EnsureContextActive();
@@ -635,7 +639,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             //GraphicsDevice.FrameDrawCalls++;
 
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
         }
 
         /// <summary>
@@ -656,7 +660,12 @@ namespace SiliconStudio.Xenko.Graphics
             if (GraphicsDevice.IsOpenGLES2)
                 throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
 #endif
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+            // On Mobile platform we have to use PrimitiveType and not BeginMode for the API call, thus the #ifdef
+            GL.DrawArraysInstanced((OpenTK.Graphics.ES30.PrimitiveType)newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
+#else
             GL.DrawArraysInstanced(newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
+#endif
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
@@ -670,7 +679,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawInstanced(Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
             if (argumentsBuffer == null)
-                throw new ArgumentNullException("argumentsBuffer");
+                throw new ArgumentNullException(nameof(argumentsBuffer));
 
 #if DEBUG
             GraphicsDevice.EnsureContextActive();
@@ -679,16 +688,17 @@ namespace SiliconStudio.Xenko.Graphics
             PreDraw();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            GraphicsDevice.FrameDrawCalls++;
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, argumentsBuffer.resourceId);
 
             GL.DrawArraysIndirect(newPipelineState.PrimitiveType, (IntPtr)alignedByteOffsetForArgs);
 
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, 0);
-#endif
 
             GraphicsDevice.FrameDrawCalls++;
+#endif
         }
 
         public void BeginProfile(Color profileColor, string name)
@@ -728,7 +738,9 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // OpenGL ES 2 needs Staging Data
                 if (GraphicsDevice.IsOpenGLES2)
-                    throw new NotImplementedException();
+                {
+                    Internal.Refactor.ThrowNotImplementedException();
+                }
 #endif
 
                 IntPtr mapResult = IntPtr.Zero;
@@ -792,7 +804,9 @@ namespace SiliconStudio.Xenko.Graphics
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (GraphicsDevice.IsOpenGLES2)
-                        throw new NotImplementedException();
+                    {
+                        Internal.Refactor.ThrowNotImplementedException();
+                    }
 #endif
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
                         throw new NotSupportedException("Only dynamic texture can be mapped.");
@@ -801,7 +815,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
+            throw Internal.Refactor.NewNotImplementedException("MapSubresource not implemented for type " + resource.GetType());
         }
 
         private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, int subResourceIndex, MapMode mapMode, int offsetInBytes, int lengthInBytes)
@@ -1028,7 +1042,8 @@ namespace SiliconStudio.Xenko.Graphics
                                 GL.Uniform4(firstUniformIndex, uniform.Count, (int*)currentData);
                                 break;
                             default:
-                                throw new NotImplementedException();
+                                Internal.Refactor.ThrowNotImplementedException();
+                                break;
                         }
                     }
                 }                
@@ -1058,7 +1073,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, params Texture[] renderTargets)
+        private void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, params Texture[] renderTargets)
         {
             var renderTargetsLength = 0;
             if (renderTargetCount > 0)
@@ -1156,7 +1171,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
 #else
             var scissorCount = scissorRectangles.Length > currentScissorRectangles.Length ? currentScissorRectangles.Length : scissorRectangles.Length;
 
@@ -1177,7 +1192,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void UpdateScissor(Rectangle scissorRect)
         {
-            var height = scissorRect.Height;
             GL.Scissor(scissorRect.Left, scissorRect.Top, scissorRect.Width, scissorRect.Height);
         }
 
@@ -1205,7 +1219,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
         }
 
         /// <summary>
@@ -1222,9 +1236,9 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
             if (stage != ShaderStage.Compute)
-                throw new ArgumentException("Invalid stage.", "stage");
+                throw new ArgumentException("Invalid stage.", nameof(stage));
 
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException();
         }
 
         internal void SetupTargets()
@@ -1415,7 +1429,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else // neither texture nor buffer
                 {
-                    throw new NotImplementedException("UnmapSubresource not implemented for type " + unmapped.Resource.GetType());
+                    Internal.Refactor.ThrowNotImplementedException("UnmapSubresource not implemented for type " + unmapped.Resource.GetType());
                 }
             }
         }
@@ -1433,7 +1447,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
-            SetDepthAndRenderTargets((Texture)null, null);
+            SetRenderTargets(null, null);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
@@ -1478,7 +1492,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else // neither texture nor buffer
                 {
-                    throw new NotImplementedException("UpdateSubresource not implemented for type " + resource.GetType());
+                    Internal.Refactor.ThrowNotImplementedException("UpdateSubresource not implemented for type " + resource.GetType());
                 }
             }
         }
@@ -1525,7 +1539,7 @@ namespace SiliconStudio.Xenko.Graphics
                     packAlignment = 4;
                 }
                 if (packAlignment == 0)
-                    throw new NotImplementedException("The data box RowPitch is not compatible with the region width. This requires additional copy to be implemented.");
+                    Internal.Refactor.ThrowNotImplementedException("The data box RowPitch is not compatible with the region width. This requires additional copy to be implemented.");
 
                 // change the Unpack Alignment
                 int previousPackAlignment;
@@ -1570,6 +1584,27 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 return !(left == right);
             }
+
+            public override bool Equals(object other)
+            {
+                if (other is VertexBufferView)
+                {
+                    VertexBufferView p = (VertexBufferView) other;
+                    return Equals(Buffer, p.Buffer) && Offset == p.Offset && Stride == p.Stride;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                int result = Buffer.GetHashCode();
+                result = (result * 397) ^ Offset;
+                result = (result * 397) ^ Stride;
+                return result;
+            }
         }
 
         struct IndexBufferView
@@ -1595,6 +1630,28 @@ namespace SiliconStudio.Xenko.Graphics
             public static bool operator !=(IndexBufferView left, IndexBufferView right)
             {
                 return !(left == right);
+            }
+
+            public override bool Equals(object other)
+            {
+                if (other is IndexBufferView)
+                {
+                    IndexBufferView p = (IndexBufferView)other;
+                    return Equals(Buffer, p.Buffer) && Offset == p.Offset && Type == p.Type && ElementSize == p.ElementSize;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                int result = Buffer.GetHashCode();
+                result = (result * 397) ^ Offset;
+                result = (result * 397) ^ Type.GetHashCode();
+                result = (result * 397) ^ ElementSize;
+                return result;
             }
         }
     }

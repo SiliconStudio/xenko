@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 while (currentElapsedTime >= resetSeconds)
                     currentElapsedTime -= resetSeconds;
 
-                particleSystem.RestartSimulation();
+                particleSystem.ResetSimulation();
             }
         }
     }

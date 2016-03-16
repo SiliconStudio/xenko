@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         /// <summary>
         /// The pipeline state.
         /// </summary>
-        public readonly MutablePipelineState PipelineState = new MutablePipelineState();
+        public readonly MutablePipelineState PipelineState;
 
         /// <summary>
         /// The index buffer used by this geometric primitive.
@@ -72,6 +72,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         public GeometricPrimitive(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh)
         {
             GraphicsDevice = graphicsDevice;
+            PipelineState = new MutablePipelineState(graphicsDevice);
 
             var vertices = geometryMesh.Vertices;
             var indices = geometryMesh.Indices;
@@ -90,7 +91,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             }
             else
             {
-                if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
+                if (graphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_9_3)
                 {
                     throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
                 }
@@ -119,7 +120,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             PipelineState.State.RootSignature = effectInstance.RootSignature;
             PipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
             PipelineState.State.Output.CaptureState(commandList);
-            PipelineState.Update(GraphicsDevice);
+            PipelineState.Update();
             commandList.SetPipelineState(PipelineState.CurrentState);
 
             // Setup the Vertex Buffer

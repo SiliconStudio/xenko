@@ -140,14 +140,26 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
         }
 
+        /// <summary>
+        /// Resets the <see cref="ParticleVertexBuilder"/> to its initial state, freeing any graphics memory used
+        /// </summary>
+        public void Reset()
+        {
+            SetRequiredQuads(4, 0, 0);
+            ResourceContext?.Dispose();
+            ResourceContext = null;
+        }
+
         public void RecreateBuffers(GraphicsDevice graphicsDevice)
         {
             if (requiredQuads == 0)
             {
+                ResourceContext?.Dispose();
                 ResourceContext = null;
             }
             else
             {
+                ResourceContext?.Dispose();
                 ResourceContext = new DeviceResourceContext(graphicsDevice, VertexDeclaration, requiredQuads * verticesPerQuad, indexStructSize, requiredQuads * IndicesPerQuad);
             }
         }
@@ -344,6 +356,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             public VertexBufferBinding VertexBuffer;
 
             public IndexBufferBinding IndexBuffer;
+
 
             public DeviceResourceContext(GraphicsDevice device, VertexDeclaration declaration, int vertexCount, int indexStructSize, int indexCount)
             {

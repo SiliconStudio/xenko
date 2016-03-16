@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // For 9.1, anisotropy cannot be larger then 2
             // mirror once is not supported either
-            if (GraphicsDevice.Features.Profile == GraphicsProfile.Level_9_1)
+            if (GraphicsDevice.Features.CurrentProfile == GraphicsProfile.Level_9_1)
             {
                 // TODO: Min with user-value instead?
                 nativeDescription.MaximumAnisotropy = 2;

@@ -91,11 +91,6 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
-        /// Gets or sets the shader profile. If null, it will use the graphics profile from the game settings.
-        /// </summary>
-        public GraphicsProfile? ShaderProfile { get; set; }
-
-        /// <summary>
         /// Gets or sets the presentation parameters.
         /// </summary>
         /// <value>The presentation parameters.</value>
@@ -127,7 +122,7 @@ namespace SiliconStudio.Xenko.Games
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(adapter, other.adapter) && graphicsProfile == other.graphicsProfile && Equals(presentationParameters, other.presentationParameters) && ShaderProfile == other.ShaderProfile;
+            return Equals(adapter, other.adapter) && graphicsProfile == other.graphicsProfile && Equals(presentationParameters, other.presentationParameters);
         }
 
         public override bool Equals(object obj)
@@ -145,7 +140,6 @@ namespace SiliconStudio.Xenko.Games
                 var hashCode = (adapter != null ? adapter.GetHashCode() : 0);
                 hashCode = (hashCode*397) ^ (int)graphicsProfile;
                 hashCode = (hashCode*397) ^ (presentationParameters != null ? presentationParameters.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ ShaderProfile.GetHashCode();
                 return hashCode;
             }
         }

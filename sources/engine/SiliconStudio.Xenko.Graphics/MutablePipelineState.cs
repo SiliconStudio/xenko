@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public class MutablePipelineState
     {
-        private static Dictionary<PipelineStateDescriptionWithHash, PipelineState> cache = new Dictionary<PipelineStateDescriptionWithHash, PipelineState>();
+        private readonly GraphicsDevice graphicsDevice;
+        private readonly Dictionary<PipelineStateDescriptionWithHash, PipelineState> cache;
         public PipelineStateDescription State;
 
         /// <summary>
@@ -13,8 +15,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public PipelineState CurrentState;
 
-        public MutablePipelineState()
+        public MutablePipelineState(GraphicsDevice graphicsDevice)
         {
+            this.graphicsDevice = graphicsDevice;
+
+            cache = graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, typeof(MutablePipelineStateCache), device => new MutablePipelineStateCache()).Cache;
+
             State = new PipelineStateDescription();
             State.SetDefaults();
         }
@@ -22,20 +28,24 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Determine and updates <see cref="CurrentState"/> from <see cref="State"/>.
         /// </summary>
-        /// <param name="graphicsDevice"></param>
-        public void Update(GraphicsDevice graphicsDevice)
+        public void Update()
         {
             // Hash current state
             var hashedState = new PipelineStateDescriptionWithHash(State);
 
             // Find existing PipelineState object
             PipelineState pipelineState;
-            if (!cache.TryGetValue(hashedState, out pipelineState))
+
+            // TODO GRAPHICS REFACTOR We could avoid lock by adding them to a ThreadLocal (or RenderContext) and merge at end of frame
+            lock (cache)
             {
-                // Otherwise, instantiate it
-                // First, make an copy
-                hashedState = new PipelineStateDescriptionWithHash(State.Clone());
-                cache.Add(hashedState, pipelineState = PipelineState.New(graphicsDevice, ref State));
+                if (!cache.TryGetValue(hashedState, out pipelineState))
+                {
+                    // Otherwise, instantiate it
+                    // First, make an copy
+                    hashedState = new PipelineStateDescriptionWithHash(State.Clone());
+                    cache.Add(hashedState, pipelineState = PipelineState.New(graphicsDevice, ref State));
+                }
             }
 
             CurrentState = pipelineState;
@@ -76,6 +86,21 @@ namespace SiliconStudio.Xenko.Graphics
             public static bool operator !=(PipelineStateDescriptionWithHash left, PipelineStateDescriptionWithHash right)
             {
                 return !left.Equals(right);
+            }
+        }
+
+        class MutablePipelineStateCache : IDisposable
+        {
+            public readonly Dictionary<PipelineStateDescriptionWithHash, PipelineState> Cache = new Dictionary<PipelineStateDescriptionWithHash, PipelineState>();
+
+            public void Dispose()
+            {
+                foreach (var pipelineState in Cache)
+                {
+                    ((IReferencable)pipelineState.Value).Release();
+                }
+
+                Cache.Clear();
             }
         }
     }

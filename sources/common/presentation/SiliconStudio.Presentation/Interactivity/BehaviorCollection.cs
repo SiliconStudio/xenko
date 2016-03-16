@@ -33,7 +33,7 @@ namespace SiliconStudio.Presentation.Interactivity
 
         public void Attach(DependencyObject dependencyObject)
         {
-            if (dependencyObject == null) throw new ArgumentNullException("dependencyObject");
+            if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
             // Aleady attached
             if (ReferenceEquals(AssociatedObject, dependencyObject))
                 return;

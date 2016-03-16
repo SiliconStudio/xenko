@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
         private void TestAddAudioSysThenEntitySysLoopImpl(Game game, int loopCount, int loopCountSum)
         {
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
             //if(loopCount == 1)
@@ -156,14 +156,14 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             
             listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
 
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             // game.Entities.Add(rootEntity);
         }
 
         private void TestAddEntitySysThenAudioSysLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             var audio = game.Audio;
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
             //if (loopCount == 1)
@@ -263,14 +263,14 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
 
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(rootEntity);
         }
 
         private void TestRemoveListenerFromAudioSystemLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             var audio = game.Audio;
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
             //var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
@@ -333,7 +333,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         private void TestRemoveListenerFromEntitySystemLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             var audio = game.Audio;
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
             //var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
@@ -380,7 +380,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         {
             BuildEntityHierarchy();
             CreateAndComponentToEntities();
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(rootEntity);
             game.Audio.AddListener(listComp1);
             game.Audio.AddListener(listComp2);
@@ -409,7 +409,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
         private void UpdateListenerTestValues(Game game, int loopCount, int loopCountSum)
         {
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //var matchingEntities = game.Entities.Processors.OfType<AudioListenerProcessor>().First().MatchingEntitiesForDebug;
 
             //var dataComp1 = matchingEntities[listComp1Entity];

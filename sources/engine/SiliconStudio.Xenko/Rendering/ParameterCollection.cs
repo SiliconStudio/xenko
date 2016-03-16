@@ -495,29 +495,25 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Reorganizes internal data and resources to match the given objects, and append extra values at the end.
         /// </summary>
-        /// <param name="layoutParameterKeyInfos"></param>
-        /// <param name="resourceCount"></param>
-        /// <param name="bufferSize"></param>
-        /// <param name="constantBuffers"></param>
-        /// <param name="descriptorSetLayouts"></param>
-        public unsafe void UpdateLayout(ParameterCollectionLayout layout)
+        /// <param name="collectionLayout"></param>
+        public unsafe void UpdateLayout(ParameterCollectionLayout collectionLayout)
         {
             var oldLayout = this.layout;
-            this.layout = layout;
+            this.layout = collectionLayout;
 
             // Same layout, or removed layout
-            if (oldLayout == layout || layout == null)
+            if (oldLayout == collectionLayout || collectionLayout == null)
                 return;
 
-            var layoutParameterKeyInfos = layout.LayoutParameterKeyInfos;
+            var layoutParameterKeyInfos = collectionLayout.LayoutParameterKeyInfos;
 
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
             newParameterKeyInfos.AddRange(parameterKeyInfos);
             var processedParameters = new bool[parameterKeyInfos.Count];
 
-            var bufferSize = layout.BufferSize;
-            var resourceCount = layout.ResourceCount;
+            var bufferSize = collectionLayout.BufferSize;
+            var resourceCount = collectionLayout.ResourceCount;
 
             foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
             {

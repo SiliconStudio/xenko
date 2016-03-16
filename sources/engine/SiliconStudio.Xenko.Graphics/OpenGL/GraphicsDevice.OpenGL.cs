@@ -97,6 +97,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal SamplerState DefaultSamplerState;
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
+        internal GraphicsProfile requestedGraphicsProfile;
         internal int versionMajor, versionMinor; // queried version
         internal int currentVersionMajor, currentVersionMinor; // glGetVersion
         internal Texture WindowProvidedRenderTexture;
@@ -158,8 +159,6 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_IOS
         private iPhoneOSGameView gameWindow;
 #endif
-
-        private DrawElementsType drawElementsType;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
         [DllImport("libEGL.dll", EntryPoint = "eglGetCurrentContext")]
@@ -679,7 +678,7 @@ namespace SiliconStudio.Xenko.Graphics
             versionMajor = 1;
             versionMinor = 0;
 
-            var requestedGraphicsProfile = GraphicsProfile.Level_9_1;
+            requestedGraphicsProfile = GraphicsProfile.Level_9_1;
 
             // Find the first profile that is compatible with current GL version
             foreach (var graphicsProfile in graphicsProfiles)

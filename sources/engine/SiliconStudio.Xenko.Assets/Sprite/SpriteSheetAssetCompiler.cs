@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                         return Task.FromResult(resultStatus);
                 }
 
-                var imageGroupData = new SpriteSheet { Sprites = new List<Graphics.Sprite>() };
+                var imageGroupData = new SpriteSheet();
 
                 // add the sprite data to the sprite list.
                 foreach (var image in AssetParameters.SheetAsset.Sprites)

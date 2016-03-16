@@ -78,10 +78,11 @@ namespace SiliconStudio.Xenko.Physics
         private void Simulate(float deltaTime)
         {
             foreach (var simulation in scenes)
-            {
+            {                
+                simulation.Simulation.Simulate(deltaTime);
+                
                 simulation.Simulation.CacheContacts();
                 simulation.Simulation.ProcessContacts();
-                simulation.Simulation.Simulate(deltaTime);
                 simulation.Simulation.SendEvents();
             }
         }
@@ -96,6 +97,7 @@ namespace SiliconStudio.Xenko.Physics
                 foreach (var physicsScene in scenes)
                 {
                     physicsScene.Processor.UpdateBones();
+                    physicsScene.Processor.UpdateContacts();
                 }
 
                 //simulate, might spawn tasks for multiple simulations

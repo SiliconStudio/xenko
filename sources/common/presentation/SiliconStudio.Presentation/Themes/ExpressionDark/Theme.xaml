@@ -14,6 +14,7 @@
                     xmlns:me="clr-namespace:SiliconStudio.Presentation.MarkupExtensions"
                     xmlns:behaviors="clr-namespace:SiliconStudio.Presentation.Behaviors"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:interactivity="clr-namespace:SiliconStudio.Presentation.Interactivity"
                     xmlns:commands="clr-namespace:SiliconStudio.Presentation.Controls.Commands"
                     xmlns:wnd="clr-namespace:SiliconStudio.Presentation.Windows"
                     xmlns:local="clr-namespace:SiliconStudio.Presentation"
@@ -153,7 +154,7 @@
   <BitmapImage x:Key="ImageLength" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/ruler-triangle.png" />
 
   <!--  WINDOWS  -->
-  <Style TargetType="Window" x:Key="WindowChromeStyle">
+  <Style TargetType="{x:Type Window}" x:Key="WindowChromeStyle">
     <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
     <Setter Property="WindowChrome.WindowChrome">
       <Setter.Value>
@@ -288,20 +289,22 @@
     <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="MinHeight" Value="120" />
     <Setter Property="MinWidth" Value="320" />
-    <!-- begin FIXME: create and add behavior to keep aspect ratio (and also screen resolution independent) -->
     <Setter Property="MaxHeight" Value="768" />
-    <Setter Property="MaxWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
-    <!-- end FIXME -->
     <Setter Property="ResizeMode" Value="NoResize" />
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <DockPanel LastChildFill="True">
+          <DockPanel LastChildFill="True"
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
+            <i:Interaction.Behaviors>
+              <behaviors:ResizeBehavior SizeRatio="5,3"/>
+            </i:Interaction.Behaviors>
             <Image DockPanel.Dock="Left" Source="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
@@ -316,7 +319,12 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <DockPanel LastChildFill="True">
+          <DockPanel LastChildFill="True"
+                     MinWidth="{Binding MinWidth, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, FallbackValue=320}"
+                     MaxHeight="{Binding MaxHeight, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:SumNum}, ConverterParameter={me:Double -20}, FallbackValue=748}" >
+            <i:Interaction.Behaviors>
+              <behaviors:ResizeBehavior SizeRatio="5,3"/>
+            </i:Interaction.Behaviors>
             <CheckBox DockPanel.Dock="Bottom" Margin="20,15,5,5"
                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
                       Content="{Binding CheckedMessage, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"

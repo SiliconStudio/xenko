@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (boundPipelineState != null)
                 SetPipelineState(boundPipelineState);
             NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
-            SetDepthAndRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
 
             return fenceValue;
         }
@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
+        private void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
             var renderTargetHandles = new CpuDescriptorHandle[renderTargetCount];
             for (int i = 0; i < renderTargetHandles.Length; ++i)

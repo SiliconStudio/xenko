@@ -9,7 +9,11 @@ using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Extensions;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
+#else
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;

@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // render into texture
             GraphicsContext.CommandList.Clear(offlineTarget, new Color4(0,0,0,0));
             GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetDepthAndRenderTarget(depthBuffer, offlineTarget);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(depthBuffer, offlineTarget);
 
             spriteBatch.Begin(GraphicsContext);
             spriteBatch.Draw(uv, new RectangleF(0, 0, OfflineWidth, OfflineHeight), null, Color.White, 0, Vector2.Zero);
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // copy texture on screen
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsContext.CommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             spriteBatch.Begin(GraphicsContext);
             spriteBatch.Draw(offlineTarget, new RectangleF(0, 0, width, height), Color.White);

@@ -81,6 +81,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         [NotNull]
         [Category]
         [MemberCollection(CanReorderItems = true)]
+        [NotNullItems]
         public MaterialBlendLayers Layers { get; set; }
 
         public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()

@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             // Add a listenerComponent already present in the entity system and check that it is correctly added to the AudioSystem internal data structures
             var entity = new Entity("Test");
             entity.Add(addedToEntityListener);
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(entity);
             Assert.DoesNotThrow(() => audio.AddListener(addedToEntityListener), "Adding a listener present in the entity system failed");
             Assert.IsTrue(audio.Listeners.ContainsKey(addedToEntityListener), "The list of listeners of AudioSystem does not contains the addedToEntityListener.");
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         /// <param name="game"></param>
         private void AddRootEntityToEntitySystem(Game game)
         {
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(rootEntity);
         }
 
@@ -237,7 +237,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if(loopCount == 180)
             {
                 // add the new listener to the entity system
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Add(listCompEntities[2]);
 
                 // check the sounds are heard by the two listeners.
@@ -272,7 +272,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             listComps.Add(new AudioListenerComponent());
             listCompEntities.Add(new Entity());
             listCompEntities[2].Add(listComps[2]);
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(listCompEntities[2]);
 
             // isolate the two listeners such that emitter 1 can be heard only by listener 1 and emitter 2 by listener 3
@@ -300,7 +300,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 60)
             {
                 // remove listener 3 from the entity system => check that the sounds are now heard only via listener 1
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Remove(listCompEntities[2]);
             }
             // here we should hear the soundEffect 0 on left ear only
@@ -358,7 +358,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 60)
             {
                 // add emitter 1 to the entity system
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Add(emitCompEntities[0]);
 
                 // check that emitter 1 can now be heard.
@@ -369,7 +369,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 120)
             {
                 // add now emitter 2 to the entity system
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Add(emitCompEntities[1]);
 
                 // test that now both emitters can be heard.
@@ -380,7 +380,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 180)
             {
                 // remove emitter 2 from the entity system  
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Remove(emitCompEntities[1]);
 
                 // test that now only emitter 1 can be heard.
@@ -391,7 +391,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 240)
             {
                 // remove emitter 1 from the entity system  
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Remove(emitCompEntities[0]);
 
                 // check that there is not more audio output at all

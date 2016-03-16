@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 var spriteId = startingFrame + (int)(normalizedTimeline * animationSpeedOverLife);
 
-                var uvTransform = new Vector4((spriteId % xDivisions) * xStep, (spriteId / yDivisions) * yStep, xStep, yStep);
+                var uvTransform = new Vector4((spriteId % xDivisions) * xStep, (spriteId / xDivisions) * yStep, xStep, yStep);
 
                 ParticleVertexBuilder.TransformAttributeDelegate<Vector2> transformCoords =
                     (ref Vector2 value) =>

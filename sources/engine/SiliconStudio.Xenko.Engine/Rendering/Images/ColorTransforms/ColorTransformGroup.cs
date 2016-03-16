@@ -19,14 +19,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Color Transforms")]
     public class ColorTransformGroup : ImageEffect
     {
-        private readonly ParameterCollection transformsParameters;
+        // TODO GRAPHICS REFACTOR
+        // private readonly ParameterCollection transformsParameters;
         private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
         private readonly ColorTransformCollection preTransforms;
         private readonly ColorTransformCollection transforms;
         private readonly ColorTransformCollection postTransforms;
         private readonly List<ColorTransform> collectTransforms;
-        private readonly List<ColorTransform> enabledTransforms;
+        private List<ColorTransform> enabledTransforms;
         private ColorTransformContext transformContext;
         private readonly string colorTransformGroupEffectName;
 
@@ -152,19 +153,36 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             if (transform == null) throw new ArgumentNullException("transform");
             if (transform.Shader == null) throw new ArgumentOutOfRangeException("transform", "Transform parameter must have a Shader not null");
-            collectTransforms.Add(transform);
+            if (transform.Enabled)
+                collectTransforms.Add(transform);
         }
 
         private void CollectTransforms()
         {
             collectTransforms.Clear();
             CollectPreTransforms();
-            collectTransforms.AddRange(transforms);
+            foreach (var transform in transforms)
+            {
+                AddTemporaryTransform(transform);
+            }
             CollectPostTransforms();
 
             // Copy all parameters from ColorTransform to effect parameters
-            enabledTransforms.Clear();
-            enabledTransforms.AddRange(collectTransforms);
+            if (collectTransforms.Count != enabledTransforms.Count)
+            {
+                enabledTransforms = new List<ColorTransform>(collectTransforms);
+            }
+            else
+            {
+                for (int i = 0; i < enabledTransforms.Count; i++)
+                {
+                    if (collectTransforms[i] != enabledTransforms[i])
+                    {
+                        enabledTransforms = new List<ColorTransform>(collectTransforms);
+                        break;
+                    }
+                }
+            }
         }
 
         private void CollectTransformsParameters(RenderDrawContext context)

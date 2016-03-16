@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -38,6 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The views.
         /// </value>
+        [NotNullItems]
         public IList<Model> Children
         {
             get { return children; }
@@ -50,6 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The materials.
         /// </value>
+        [NotNullItems]
         public List<MaterialInstance> Materials
         {
             get { return materials; }
@@ -61,6 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The meshes.
         /// </value>
+        [NotNullItems]
         public List<Mesh> Meshes
         {
             get { return meshes; }

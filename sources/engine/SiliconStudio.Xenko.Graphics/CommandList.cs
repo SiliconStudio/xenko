@@ -63,54 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Setup the default render target
             var deviceDepthStencilBuffer = GraphicsDevice.Presenter?.DepthStencilBuffer;
             var deviceBackBuffer = GraphicsDevice.Presenter?.BackBuffer;
-            SetDepthAndRenderTarget(deviceDepthStencilBuffer, deviceBackBuffer);
-        }
-
-        /// <summary>
-        /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
-        /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetDepthAndRenderTarget(Texture depthStencilView, Texture renderTargetView)
-        {
-            depthStencilBuffer = depthStencilView;
-            renderTargets[0] = renderTargetView;
-            renderTargetCount = renderTargetView != null ? 1 : 0;
-
-            // Clear the other render targets bound
-            for (int i = 1; i < renderTargets.Length; i++)
-            {
-                renderTargets[i] = null;
-            }
-
-            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
-        }
-
-        /// <summary>
-        ///     Sets a new depthStencilBuffer to this GraphicsDevice. If there is any RenderTarget already bound, it will be unbinded. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilBuffer">The depth stencil.</param>
-        public void SetDepthTarget(Texture depthStencilBuffer)
-        {
-            SetDepthAndRenderTarget(depthStencilBuffer, null);
-        }
-
-        /// <summary>
-        /// Binds a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetRenderTarget(Texture renderTargetView)
-        {
-            SetDepthAndRenderTarget(null, renderTargetView);
-        }
-
-        /// <summary>
-        ///     <p>Bind one or more render targets atomically and the depth-stencil buffer to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.</p>
-        /// </summary>
-        /// <param name="renderTargetViews">A set of render target views to bind.</param>
-        public void SetRenderTargets(params Texture[] renderTargetViews)
-        {
-            SetDepthAndRenderTargets(null, renderTargetViews);
+            SetRenderTargetAndViewport(deviceDepthStencilBuffer, deviceBackBuffer);
         }
 
         /// <summary>
@@ -164,12 +117,35 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
+        /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetView">A view of the render target to bind.</param>
+        public void SetRenderTargetAndViewport(Texture depthStencilView, Texture renderTargetView)
+        {
+            depthStencilBuffer = depthStencilView;
+            renderTargets[0] = renderTargetView;
+            renderTargetCount = renderTargetView != null ? 1 : 0;
+
+            CommonSetRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
+        }
+
+        /// <summary>
+        ///     <p>Bind one or more render targets atomically and the depth-stencil buffer to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.</p>
+        /// </summary>
+        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        public void SetRenderTargetsAndViewport(Texture[] renderTargetViews)
+        {
+            SetRenderTargetsAndViewport(null, renderTargetViews);
+        }
+
+        /// <summary>
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
         /// <param name="renderTargetViews">A set of render target views to bind.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        public void SetDepthAndRenderTargets(Texture depthStencilView, params Texture[] renderTargetViews)
+        public void SetRenderTargetsAndViewport(Texture depthStencilView, Texture[] renderTargetViews)
         {
             depthStencilBuffer = depthStencilView;
 
@@ -184,16 +160,61 @@ namespace SiliconStudio.Xenko.Graphics
             else
             {
                 renderTargetCount = 0;
-                for (int i = 0; i < renderTargets.Length; i++)
-                {
-                    renderTargets[i] = null;
-                }
             }
 
-            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
+            CommonSetRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
-        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
+        /// <summary>
+        /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetView">A view of the render target to bind.</param>
+        public void SetRenderTarget(Texture depthStencilView, Texture renderTargetView)
+        {
+            depthStencilBuffer = depthStencilView;
+            renderTargets[0] = renderTargetView;
+            renderTargetCount = renderTargetView != null ? 1 : 0;
+
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+        }
+
+        /// <summary>
+        ///     <p>Bind one or more render targets atomically and the depth-stencil buffer to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.</p>
+        /// </summary>
+        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        public void SetRenderTargets(Texture[] renderTargetViews)
+        {
+            SetRenderTargets(null, renderTargetViews);
+        }
+
+        /// <summary>
+        /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
+        public void SetRenderTargets(Texture depthStencilView, Texture[] renderTargetViews)
+        {
+            depthStencilBuffer = depthStencilView;
+
+            if (renderTargetViews != null)
+            {
+                renderTargetCount = renderTargetViews.Length;
+                for (int i = 0; i < renderTargetViews.Length; i++)
+                {
+                    renderTargets[i] = renderTargetViews[i];
+                }
+            }
+            else
+            {
+                renderTargetCount = 0;
+            }
+
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+        }
+
+        private void CommonSetRenderTargetsAndViewport(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
         {
             if (depthStencilView != null)
             {
@@ -206,7 +227,7 @@ namespace SiliconStudio.Xenko.Graphics
                 SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
 
-            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
+            SetRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
         }
     }
 }

@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Creates the depth stencil buffer.
             var flags = TextureFlags.DepthStencil;
-            if (GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0)
+            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0)
             {
                 flags |= TextureFlags.ShaderResource;
             }

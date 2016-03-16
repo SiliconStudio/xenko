@@ -545,7 +545,10 @@ void main()
                             textureUnitCount++;
                             break;
                     }
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    //this is a special OpenglES case
                     skip:;
+#endif
                 }
 
                 // Remove any optimized resource binding
