@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// Describes a shader effect asset (xksl).
     /// </summary>
     [DataContract("EffectCompositorAsset")]
-    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
+    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [Display(95, "Effect Compositor")]
     public sealed class EffectCompositorAsset : ProjectCodeGeneratorAsset
     {
