@@ -47,7 +47,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Set back the real GraphicsProfile that is used
             // TODO D3D12
-            Profile = GraphicsProfile.Level_11_0;//GraphicsProfileHelper.FromFeatureLevel(FeatureLevel.Level_11_0);
+            RequestedProfile = GraphicsProfile.Level_11_0; // deviceRoot.RequestedProfile;
+            CurrentProfile = GraphicsProfile.Level_11_0; // GraphicsProfileHelper.FromFeatureLevel(deviceRoot.CurrentFeatureLevel);
 
             // TODO D3D12
             HasComputeShaders = true;

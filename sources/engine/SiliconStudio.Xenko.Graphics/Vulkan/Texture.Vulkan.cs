@@ -1031,7 +1031,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The updated texture description.</returns>
         private static TextureDescription CheckMipLevels(GraphicsDevice device, ref TextureDescription description)
         {
-            if (device.Features.Profile < GraphicsProfile.Level_10_0 && (description.Flags & TextureFlags.DepthStencil) == 0 && description.Format.IsCompressed())
+            if (device.Features.CurrentProfile < GraphicsProfile.Level_10_0 && (description.Flags & TextureFlags.DepthStencil) == 0 && description.Format.IsCompressed())
             {
                 description.MipLevels = Math.Min(CalculateMipCount(description.Width, description.Height), description.MipLevels);
             }
