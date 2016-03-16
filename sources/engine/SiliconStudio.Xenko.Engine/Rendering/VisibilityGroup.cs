@@ -6,6 +6,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -87,6 +88,9 @@ namespace SiliconStudio.Xenko.Rendering
             Matrix viewInverse = view.View;
             viewInverse.Invert();
             var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
+
+            // TODO: This should be configured by the creator of the view. E.g. near clipping can be enabled for spot light shadows.
+            var ignoreDepthPlanes = view is ShadowMapRenderView;
 
             // Prepare culling mask
             foreach (var renderViewStage in view.RenderStages)
@@ -174,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // Compute transformed AABB (by world)
                 if (cullingMode == CameraCullingMode.Frustum
                     && renderObject.BoundingBox.Extent != Vector3.Zero
-                    && !frustum.Contains(ref renderObject.BoundingBox))
+                    && !FrustumContainsBox(ref frustum, ref renderObject.BoundingBox, ignoreDepthPlanes))
                 {
                     continue;
                 }
@@ -187,6 +191,33 @@ namespace SiliconStudio.Xenko.Rendering
                 // Calculate bounding box of all render objects in the view
                 if (renderObject.BoundingBox.Extent != Vector3.Zero)
                     CalculateMinMaxDistance(view, ref plane, ref renderObject.BoundingBox);
+            }
+        }
+
+        private static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)
+        {
+            unsafe
+            {
+                fixed (Plane* planeStart = &frustum.LeftPlane)
+                {
+                    var plane = planeStart;
+                    for (int i = 0; i < 6; ++i)
+                    {
+                        if (ignoreDepthPlanes && i > 3)
+                            continue;
+
+                        // Previous code:
+                        if (Vector3.Dot(boundingBoxExt.Center, plane->Normal)
+                            + boundingBoxExt.Extent.X * Math.Abs(plane->Normal.X)
+                            + boundingBoxExt.Extent.Y * Math.Abs(plane->Normal.Y)
+                            + boundingBoxExt.Extent.Z * Math.Abs(plane->Normal.Z)
+                            <= -plane->D)
+                            return false;
+                        plane++;
+                    }
+                }
+
+                return true;
             }
         }
 
