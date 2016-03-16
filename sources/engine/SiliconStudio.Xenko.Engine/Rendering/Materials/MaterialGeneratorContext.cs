@@ -144,6 +144,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (CurrentShadingModel == null && Current.ShadingModels.Count > 0)
             {
                 CurrentShadingModel = Current.ShadingModels;
+                shadingModelCount++;
             }
 
             var sameShadingModel = Current.ShadingModels.Equals(CurrentShadingModel);
@@ -179,31 +180,24 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (shouldBlendShadingModels)
             {
                 var shadingSources = CurrentShadingModel.Generate(this);
-
-                // If we are in a multi-shading-blending, only blend shading models after 1st shading model
-                if (shadingModelCount > 1)
-                {
-                    var shaderBlendingSource = new ShaderMixinSource();
-                    shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceBlendShading"));
-
-                    foreach (var shaderSource in shadingSources)
-                    {
-                        shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
-                    }
-
-                    shadingSources = new List<ShaderSource>() { shaderBlendingSource };
-                }
-
                 var currentOrParentLayer = Current.Parent ?? Current;
-                foreach (var shaderSource in shadingSources)
-                {
-                    currentOrParentLayer.SurfaceShaders[MaterialShaderStage.Pixel].Add(shaderSource);
-                }
+
+                BlendShadingModels(shadingSources, currentOrParentLayer, shadingModelCount > 1);
             }
 
             // In case of the root material, add all stream modifiers just at the end and call final callbacks
             if (Current.Parent == null)
             {
+                // Need to merge top level layer last
+                // TODO not sure which one is good?
+                //if (shouldBlendShadingModels && !sameShadingModel)
+                if (shouldBlendShadingModels && shadingModelCount > 1)
+                {
+                    var shadingSources = Current.ShadingModels.Generate(this);
+
+                    BlendShadingModels(shadingSources, Current, false);
+                }
+
                 foreach (var modifierKey in inputStreamModifiers.Keys)
                 {
                     Current.SurfaceShaders[modifierKey.Key].Add(inputStreamModifiers[modifierKey]);
@@ -233,6 +227,28 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (Current.Parent != null)
             {
                 Current = Current.Parent;
+            }
+        }
+
+        private static void BlendShadingModels(IEnumerable<ShaderSource> shadingSources, MaterialBlendLayerNode currentOrParentLayer, bool blendShading)
+        {
+            // If we are in a multi-shading-blending, only blend shading models after 1st shading model
+            if (blendShading)
+            {
+                var shaderBlendingSource = new ShaderMixinSource();
+                shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceBlendShading"));
+
+                foreach (var shaderSource in shadingSources)
+                {
+                    shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
+                }
+
+                shadingSources = new List<ShaderSource>() { shaderBlendingSource };
+            }
+
+            foreach (var shaderSource in shadingSources)
+            {
+                currentOrParentLayer.SurfaceShaders[MaterialShaderStage.Pixel].Add(shaderSource);
             }
         }
 
