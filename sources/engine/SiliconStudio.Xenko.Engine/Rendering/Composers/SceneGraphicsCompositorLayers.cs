@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
@@ -30,6 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
         [DataMember(10)]
         [Category]
+        [NotNullItems]
         public SceneCameraSlotCollection Cameras { get; private set; }
 
         protected override void InitializeCore()

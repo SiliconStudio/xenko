@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,11 +24,43 @@ namespace SiliconStudio.Xenko.Engine.Design
     [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<AnimationClip>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<string>), Profile = "Clone")]
-    class EntityCloner
+    public class EntityCloner
     {
-        private static CloneContext cloneContext = new CloneContext();
+        private static readonly CloneContext cloneContext = new CloneContext();
         private static SerializerSelector cloneSerializerSelector = null;
-        internal static PropertyKey<CloneContext> CloneContextProperty = new PropertyKey<CloneContext>("CloneContext", typeof(EntityCloner));
+        internal static readonly PropertyKey<CloneContext> CloneContextProperty = new PropertyKey<CloneContext>("CloneContext", typeof(EntityCloner));
+
+        // CloneObject TLS used to clone entities, so that we don't create one everytime we clone
+        [ThreadStatic] private static HashSet<object> clonedObjectsTLS;
+        private static HashSet<object> ClonedObjects()
+        {
+            return clonedObjectsTLS ?? (clonedObjectsTLS = new HashSet<object>());
+        }
+
+        /// <summary>
+        /// Clones the specified prefab.
+        /// <see cref="Entity"/>, children <see cref="Entity"/> and their <see cref="EntityComponent"/> will be cloned.
+        /// Other assets will be shared.
+        /// </summary>
+        /// <param name="prefab">The prefab to clone.</param>
+        /// <returns>A cloned prefab</returns>
+        public static Prefab Clone(Prefab prefab)
+        {
+            if (prefab == null) throw new ArgumentNullException(nameof(prefab));
+            var clonedObjects = ClonedObjects();
+            try
+            {
+                foreach (var entity in prefab.Entities)
+                {
+                    CollectEntityTreeHelper(entity, clonedObjects);
+                }
+                return Clone(clonedObjects, null, prefab);
+            }
+            finally
+            {
+                clonedObjects.Clear();
+            }
+        }
 
         /// <summary>
         /// Clones the specified entity.
@@ -35,22 +68,45 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// Other assets will be shared.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        /// <returns></returns>
+        /// <returns>A cloned entity</returns>
         public static Entity Clone(Entity entity)
         {
-            var clonedObjects = new HashSet<object>();
-
-            // Registers objects that should be cloned (Entity and their EntityComponent)
-            foreach (var currentEntity in ParameterContainerExtensions.CollectEntityTree(entity))
+            var clonedObjects = ClonedObjects();
+            try
             {
-                clonedObjects.Add(currentEntity);
-                foreach (var component in currentEntity.Components)
+                CollectEntityTreeHelper(entity, clonedObjects);
+                return Clone(clonedObjects, null, entity);
+            }
+            finally
+            {
+                clonedObjects.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Collect entities and components recursively from an entity and add them to a hashset.
+        /// </summary>
+        /// <param name="entity">The entity to collect</param>
+        /// <param name="entityAndComponents">The collected entities and components</param>
+        internal static void CollectEntityTreeHelper(Entity entity, HashSet<object> entityAndComponents)
+        {
+            // Already processed
+            if (!entityAndComponents.Add(entity))
+                return;
+
+            foreach (var component in entity.Components)
+            {
+                entityAndComponents.Add(component);
+            }
+
+            var transformationComponent = entity.Transform;
+            if (transformationComponent != null)
+            {
+                foreach (var child in transformationComponent.Children)
                 {
-                    clonedObjects.Add(component);
+                    CollectEntityTreeHelper(child.Entity, entityAndComponents);
                 }
-            } 
-            
-            return Clone(clonedObjects, null, entity);
+            }
         }
 
         /// <summary>

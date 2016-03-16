@@ -14,12 +14,14 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
     /// </summary>
     public class ComputeEffectShader : DrawEffect
     {
-        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private MutablePipelineState pipelineState;
         private bool pipelineStateDirty = true;
 
         public ComputeEffectShader(RenderContext context)
             : base(context, null)
         {
+            pipelineState = new MutablePipelineState(context.GraphicsDevice);
+
             // Setup the effect compiler
             EffectInstance = new DynamicEffectInstance("ComputeEffectShader", Parameters);
             EffectInstance.Initialize(context.Services);
@@ -88,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
                 pipelineState.State.SetDefaults();
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
-                pipelineState.Update(GraphicsDevice);
+                pipelineState.Update();
                 pipelineStateDirty = false;
             }
 

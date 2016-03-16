@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Graphics
             effectInstance.Apply(graphicsContext);
 
             // Draw a full screen quad
-            graphicsContext.CommandList.DrawQuad();
+            graphicsContext.CommandList.GraphicsDevice.PrimitiveQuad.Draw(graphicsContext.CommandList, effectInstance);
         }
 
         #region DrawQuad/DrawTexture Helpers

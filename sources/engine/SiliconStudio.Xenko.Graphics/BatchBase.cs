@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Graphics
         // TODO: dispose vertex array when Effect is disposed
         protected readonly DeviceResourceContext ResourceContext;
 
-        protected MutablePipelineState MutablePipeline = new MutablePipelineState();
+        protected MutablePipelineState MutablePipeline;
         protected GraphicsDevice GraphicsDevice;
         protected BlendStateDescription? BlendState;
         protected RasterizerStateDescription? RasterizerState;
@@ -121,6 +121,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
 
             GraphicsDevice = device;
+            MutablePipeline = new MutablePipelineState(device);
             // TODO GRAPHICS REFACTOR Should we initialize FX lazily?
             DefaultEffect = new EffectInstance(new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"});
             DefaultEffectSRgb = new EffectInstance(new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"});
@@ -226,7 +227,7 @@ namespace SiliconStudio.Xenko.Graphics
             MutablePipeline.State.InputElements = ResourceContext.InputElements;
             MutablePipeline.State.PrimitiveType = PrimitiveType.TriangleList;
             MutablePipeline.State.Output.CaptureState(GraphicsContext.CommandList);
-            MutablePipeline.Update(GraphicsDevice);
+            MutablePipeline.Update();
 
             // Bind pipeline
             if (MutablePipeline.State.DepthStencilState.StencilEnable)

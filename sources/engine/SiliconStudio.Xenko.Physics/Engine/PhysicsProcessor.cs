@@ -7,7 +7,6 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Physics.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
@@ -36,7 +35,8 @@ namespace SiliconStudio.Xenko.Physics
 
         private bool colliderShapesRendering;
 
-        private PhysicsDebugShapeRendering debugShapeRendering;
+        private SceneChildRenderer debugSceneRenderer;
+        private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
             : base(typeof(TransformComponent))
@@ -51,8 +51,16 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                //this should be enough to remove everything
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
+
+                foreach (var element in elements)
+                {
+                    element.RemoveDebugEntity(scene);
+                }
+
                 sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+                mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
             {
@@ -75,7 +83,9 @@ namespace SiliconStudio.Xenko.Physics
 
                 var childComponent = new ChildSceneComponent { Scene = debugScene };
                 debugEntityScene = new Entity { childComponent };
-                mainCompositor.Master.Add(new SceneChildRenderer(childComponent));
+                debugSceneRenderer = new SceneChildRenderer(childComponent);
+
+                mainCompositor.Master.Add(debugSceneRenderer);
                 sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
 
                 foreach (var element in elements)
@@ -137,24 +147,23 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnSystemAdd()
         {
-            try
-            {
-                physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            }
-            catch (ServiceNotFoundException)
+            physicsSystem = (Bullet2PhysicsSystem)Services.GetServiceAs<IPhysicsSystem>();
+            if (physicsSystem == null)
             {
                 physicsSystem = new Bullet2PhysicsSystem(Services);
-                var game = Services.GetSafeServiceAs<IGame>();
-                game.GameSystems.Add(physicsSystem);
+                var game = Services.GetServiceAs<IGame>();
+                game?.GameSystems.Add(physicsSystem);
+            }
+
+            debugShapeRendering = Services.GetServiceAs<PhysicsShapesRenderingService>();
+            if (debugShapeRendering == null)
+            {
+                debugShapeRendering = new PhysicsShapesRenderingService(Services);
+                var game = Services.GetServiceAs<IGame>();
+                game?.GameSystems.Add(debugShapeRendering);
             }
 
             simulation = physicsSystem.Create(this);
-
-            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
-            if (gfxDevice != null)
-            {
-                debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
-            }
 
             sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
         }
@@ -205,6 +214,22 @@ namespace SiliconStudio.Xenko.Physics
             {
                 element.UpdateBones();
             }
+        }
+
+        public void UpdateContacts()
+        {
+            Simulation.BeginContactTesting();
+
+            foreach (var dataPair in ComponentDatas)
+            {
+                var data = dataPair.Value;
+                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions)
+                {
+                    Simulation.ContactTest(data.PhysicsComponent);
+                }
+            }
+
+            Simulation.EndContactTesting();
         }
     }
 }

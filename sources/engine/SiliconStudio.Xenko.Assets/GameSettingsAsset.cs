@@ -54,22 +54,54 @@ namespace SiliconStudio.Xenko.Assets
         /// Gets or sets the default scene.
         /// </summary>
         /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
-        [DataMember(10)]
+        [DataMember(1000)]
         public Scene DefaultScene { get; set; }
 
-        [DataMember(20)]
+        [DataMember(2000)]
         [NotNullItems]
+        [MemberCollectionAttribute(ReadOnly = true)]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
 
-        [DataMember(30)]
+        [DataMember(3000)]
+        [Category]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
-        [DataMember(40)]
+        [DataMember(4000)]
+        [Category]
         public List<string> PlatformFilters { get; } = new List<string>(); 
 
-        public T Get<T>() where T : Configuration, new()
+        public T Get<T>(string profile = null) where T : Configuration, new()
         {
-            var settings = (T)Defaults.FirstOrDefault(x => x != null && x.GetType() == typeof(T));
+            Configuration first = null;
+            if (profile != null)
+            {
+                foreach (var configurationOverride in Overrides)
+                {
+                    if (configurationOverride.SpecificFilter == -1) continue;
+                    var filter = PlatformFilters[configurationOverride.SpecificFilter];
+                    if (filter == profile)
+                    {
+                        var x = configurationOverride.Configuration;
+                        if (x != null && x.GetType() == typeof(T))
+                        {
+                            first = x;
+                            break;
+                        }
+                    } 
+                }
+            }
+            if (first == null)
+            {
+                foreach (var x in Defaults)
+                {
+                    if (x != null && x.GetType() == typeof(T))
+                    {
+                        first = x;
+                        break;
+                    }
+                }
+            }
+            var settings = (T)first;
             if (settings != null) return settings;
             settings = new T();
             Defaults.Add(settings);
@@ -99,15 +131,13 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.Windows10:
                     configPlatform = ConfigPlatforms.Windows10;
                     break;
-#if SILICONSTUDIO_RUNTIME_CORECLR
                 case PlatformType.Linux:
                     configPlatform = ConfigPlatforms.Linux;
                     break;
-#endif
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
-            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(configPlatform) && x.GetType() == typeof(T) && x.Configuration != null);
+            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(configPlatform) && x.Configuration is T);
             if (platVersion != null)
             {
                 return (T)platVersion.Configuration;

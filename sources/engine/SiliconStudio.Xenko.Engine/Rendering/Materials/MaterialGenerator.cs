@@ -36,9 +36,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.PopLayer();
             context.PopMaterial();
 
-            if (!material.Parameters.ContainsKey(MaterialKeys.TessellationShader))
-                material.Parameters.Set(MaterialKeys.TessellationShader, null);
-
             material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Vertex));
             material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Domain));
             material.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Pixel));

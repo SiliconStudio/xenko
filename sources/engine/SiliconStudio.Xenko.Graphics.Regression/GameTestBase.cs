@@ -170,17 +170,16 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         private void FitPresentationParametersToWindowRatio(int windowWidth, int windowHeight, PresentationParameters parameters)
         {
-            var panelRatio = (float)windowWidth / windowHeight;
             var desiredWidth = parameters.BackBufferWidth;
             var desiredHeight = parameters.BackBufferHeight;
 
-            if (panelRatio >= 1.0f) // Landscape => use height as base
+            if (windowWidth >= windowHeight) // Landscape => use height as base
             {
-                parameters.BackBufferHeight = (int)(desiredWidth / panelRatio);
+                parameters.BackBufferHeight = (int)(desiredWidth * (float)windowHeight / (float)windowWidth);
             }
             else // Portrait => use width as base
             {
-                parameters.BackBufferWidth = (int)(desiredHeight * panelRatio);
+                parameters.BackBufferWidth = (int)(desiredHeight * (float)windowWidth / (float)windowHeight);
             }
         }
 

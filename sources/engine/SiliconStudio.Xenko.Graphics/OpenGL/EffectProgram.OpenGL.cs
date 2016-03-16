@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenTK.Graphics;
@@ -546,7 +545,10 @@ void main()
                             textureUnitCount++;
                             break;
                     }
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    //this is a special OpenglES case
                     skip:;
+#endif
                 }
 
                 // Remove any optimized resource binding

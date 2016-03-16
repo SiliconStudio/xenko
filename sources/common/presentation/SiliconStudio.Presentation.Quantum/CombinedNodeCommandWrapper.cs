@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.ActionStack;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 
@@ -16,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly IReadOnlyCollection<ModelNodeCommandWrapper> commands;
 
         public CombinedNodeCommandWrapper(IViewModelServiceProvider serviceProvider, string name, IReadOnlyCollection<ModelNodeCommandWrapper> commands)
-            : base(serviceProvider, new HashSet<IDirtiable>(commands.SafeArgument(nameof(commands)).SelectMany(x => x.Dirtiables)))
+            : base(serviceProvider)
         {
             if (commands == null) throw new ArgumentNullException(nameof(commands));
             if (commands.Count == 0) throw new ArgumentException(@"The collection of commands to combine is empty", nameof(commands));

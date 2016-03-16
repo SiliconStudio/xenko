@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </remarks>
     [Display("Audio Emitter", Expand = ExpandRule.Once)]
     [DataContract("AudioEmitterComponent")]
-    [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor))]
+    [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(7000)]
     public sealed class AudioEmitterComponent : EntityComponent
     {

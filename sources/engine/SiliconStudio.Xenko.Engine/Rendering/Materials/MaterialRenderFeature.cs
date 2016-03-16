@@ -33,6 +33,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Any matching effect
             public ResourceGroupLayout PerMaterialLayout;
 
+            /// <summary>
+            /// <c>true</c> if MaterialParameters instance was changed
+            /// </summary>
+            public bool ParametersChanged;
+
             public ParameterCollection ParameterCollection = new ParameterCollection();
             public ParameterCollectionLayout ParameterCollectionLayout;
             public ParameterCollection.Copier ParameterCollectionCopier;
@@ -53,6 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Permutation parameters
             public int PermutationCounter; // Dirty counter against material.Parameters.PermutationCounter
             public ParameterCollection MaterialParameters; // Protect against changes of Material.Parameters instance (happens with editor fast reload)
+            public CullMode? CullMode;
 
             public ShaderSource VertexStageSurfaceShaders;
             public ShaderSource VertexStageStreamInitializer;
@@ -64,6 +70,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public ShaderSource PixelStageSurfaceShaders;
             public ShaderSource PixelStageStreamInitializer;
+
+            public bool HasNormalMap;
 
             public MaterialInfo(Material material)
             {
@@ -178,7 +186,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderMesh.MaterialInfo = materialInfo;
                     }
 
-                    if (materialInfo.MaterialParameters != material.Parameters // parameter fast reload?
+                    if (materialInfo.CullMode != material.CullMode)
+                    {
+                        materialInfo.CullMode = material.CullMode;
+                        renderEffect.PipelineState = null;
+                    }
+
+                    var isMaterialParametersChanged = materialInfo.MaterialParameters != material.Parameters;
+                    if (isMaterialParametersChanged // parameter fast reload?
                         || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
                     {
                         materialInfo.VertexStageSurfaceShaders = material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders);
@@ -191,8 +206,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                         materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
                         materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
+                        materialInfo.HasNormalMap = material.Parameters.Get(MaterialKeys.HasNormalMap);
 
                         materialInfo.MaterialParameters = material.Parameters;
+                        materialInfo.ParametersChanged = isMaterialParametersChanged;
                         materialInfo.PermutationCounter = material.Parameters.PermutationCounter;
                     }
 
@@ -217,6 +234,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageSurfaceShaders, materialInfo.PixelStageSurfaceShaders);
                     if (materialInfo.PixelStageStreamInitializer != null)
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageStreamInitializer, materialInfo.PixelStageStreamInitializer);
+                    if (materialInfo.HasNormalMap)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasNormalMap, materialInfo.HasNormalMap);
                 }
             }
         }
@@ -300,9 +319,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
                     parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                 }
+                materialInfo.ParametersChanged = true;
+            }
 
-                materialInfo.ParameterCollection.UpdateLayout(parameterCollectionLayout);
+            // If the parameters collection instance changed, we need to update it
+            if (materialInfo.ParametersChanged)
+            {
+                materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
                 materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
+                materialInfo.ParametersChanged = false;
             }
 
             // Mark this material as used during this frame

@@ -18,13 +18,16 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
-        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
+        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D12;
 
         private bool simulateReset = false;
         private string rendererName;
 
         private SharpDX.Direct3D12.Device nativeDevice;
         internal CommandQueue NativeCommandQueue;
+
+        internal GraphicsProfile RequestedProfile;
+        internal SharpDX.Direct3D.FeatureLevel CurrentFeatureLevel;
 
         internal CommandAllocator NativeCopyCommandAllocator;
         internal GraphicsCommandList NativeCopyCommandList;
@@ -183,28 +186,38 @@ namespace SiliconStudio.Xenko.Graphics
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
 
-            // Map GraphicsProfile to D3D11 FeatureLevel
-            SharpDX.Direct3D.FeatureLevel[] levels = graphicsProfiles.ToFeatureLevel();
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {
                 SharpDX.Direct3D12.DebugInterface.Get().EnableDebugLayer();
             }
 
+            // Default fallback
+            if (graphicsProfiles.Length == 0)
+                graphicsProfiles = new[] { GraphicsProfile.Level_11_0 };
+
             // Create Device D3D12 with feature Level based on profile
-            foreach (var level in levels)
+            for (int index = 0; index < graphicsProfiles.Length; index++)
             {
+                var graphicsProfile = graphicsProfiles[index];
                 try
                 {
+                    // D3D12 supports only feature level 11+
+                    var level = graphicsProfile.ToFeatureLevel();
+                    if (level < SharpDX.Direct3D.FeatureLevel.Level_11_0)
+                        level = SharpDX.Direct3D.FeatureLevel.Level_11_0;
+
                     nativeDevice = new SharpDX.Direct3D12.Device(Adapter.NativeAdapter, level);
+
+                    RequestedProfile = graphicsProfile;
+                    CurrentFeatureLevel = level;
                     break;
                 }
                 catch (Exception)
                 {
-                    continue;
+                    if (index == graphicsProfiles.Length - 1)
+                        throw;
                 }
             }
-            if (nativeDevice == null)
-                throw new InvalidOperationException("Could not create D3D12 graphics device");
 
             // Describe and create the command queue.
             var queueDesc = new SharpDX.Direct3D12.CommandQueueDescription(SharpDX.Direct3D12.CommandListType.Direct);

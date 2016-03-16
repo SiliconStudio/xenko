@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -15,9 +16,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("ImageEffectShader")]
     public class ImageEffectShader : ImageEffect
     {
-        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private MutablePipelineState pipelineState;
         private bool pipelineStateDirty = true;
         private BlendStateDescription blendState = BlendStateDescription.Default;
+        private EffectBytecode previousBytecode;
 
         [DataMemberIgnore]
         public BlendStateDescription BlendState
@@ -38,6 +40,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            pipelineState = new MutablePipelineState(Context.GraphicsDevice);
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
@@ -108,8 +112,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty)
+            if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty || previousBytecode != EffectInstance.Effect.Bytecode)
             {
+                // The EffectInstance might have been updated from outside
+                previousBytecode = EffectInstance.Effect.Bytecode;
+
                 pipelineState.State.SetDefaults();
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
@@ -117,14 +124,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
                 pipelineState.State.BlendState = blendState;
                 pipelineState.State.Output.CaptureState(context.CommandList);
-                pipelineState.Update(GraphicsDevice);
+                pipelineState.Update();
                 pipelineStateDirty = false;
             }
 
             context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
+            EffectInstance.Apply(context.GraphicsContext);
+
             // Draw a full screen quad
-            context.GraphicsContext.DrawQuad(EffectInstance);
+            context.GraphicsDevice.PrimitiveQuad.Draw(context.CommandList);
         }
     }
 }

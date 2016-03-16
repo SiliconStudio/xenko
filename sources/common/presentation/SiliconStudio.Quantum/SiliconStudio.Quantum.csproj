@@ -28,7 +28,6 @@
     <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\NodeCommandActionItem.cs" />
     <Compile Include="Commands\NodeCommandBase.cs" />
-    <Compile Include="Commands\ActionItemNodeCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\SimpleNodeCommandActionItem.cs" />
     <Compile Include="Commands\SyncNodeCommand.cs" />

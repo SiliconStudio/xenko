@@ -31,6 +31,7 @@ namespace SiliconStudio.Core.Yaml
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
         private static Serializer globalSerializer;
+        private static Serializer globalSerializerWithoutId;
 
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
@@ -133,9 +134,9 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">A YAML string from a stream .</param>
         /// <returns>An instance of the YAML data.</returns>
-        public static IEnumerable<T> DeserializeMultiple<T>(Stream stream)
+        public static IEnumerable<T> DeserializeMultiple<T>(Stream stream, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(generateIds);
 
             var input = new StreamReader(stream);
             var reader = new EventReader(new Parser(input));
@@ -180,9 +181,9 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">The stream to receive the YAML representation of the object.</param>
         /// <param name="instance">The instance.</param>
-        public static void Serialize(Stream stream, object instance)
+        public static void Serialize(Stream stream, object instance, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(generateIds);
             serializer.Serialize(stream, instance);
         }
 
@@ -217,21 +218,25 @@ namespace SiliconStudio.Core.Yaml
             {
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
 
-        private static Serializer GetYamlSerializer()
+        private static Serializer GetYamlSerializer(bool generateIds = true)
         {
             Serializer localSerializer;
             // Cache serializer to improve performance
             lock (Lock)
             {
-                localSerializer = CreateSerializer(ref globalSerializer);
+                if (generateIds)
+                    localSerializer = CreateSerializer(ref globalSerializer, true);
+                else
+                    localSerializer = CreateSerializer(ref globalSerializerWithoutId, false);
             }
             return localSerializer;
         }
 
-        private static Serializer CreateSerializer(ref Serializer localSerializer)
+        private static Serializer CreateSerializer(ref Serializer localSerializer, bool generateIds)
         {
             if (localSerializer == null)
             {
@@ -246,7 +251,8 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
-                config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+                if (generateIds)
+                    config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
 
                 for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                 {
@@ -255,7 +261,7 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 localSerializer = new Serializer(config);
-                localSerializer.Settings.ObjectSerializerBackend = new OverrideKeyMappingTransform(TypeDescriptorFactory.Default);
+                localSerializer.Settings.ObjectSerializerBackend = new CustomObjectSerializerBackend(TypeDescriptorFactory.Default);
 
                 // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
             }
@@ -281,9 +287,7 @@ namespace SiliconStudio.Core.Yaml
         
         private class CustomDynamicMember : DynamicMemberDescriptorBase
         {
-            private const string StringId = "~Id";
-
-            public CustomDynamicMember() : base(StringId, typeof(Guid))
+            public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid))
             {
                 Order = -int.MaxValue;
             }
@@ -396,6 +400,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
 
@@ -407,6 +412,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
     }

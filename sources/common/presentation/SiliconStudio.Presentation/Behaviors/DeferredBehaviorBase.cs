@@ -25,7 +25,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         public bool AttachOnEveryLoadedEvent { get { return (bool)GetValue(AttachOnEveryLoadedEventProperty); } set { SetValue(AttachOnEveryLoadedEventProperty, value); } }
 
-        protected override sealed void OnAttached()
+        protected sealed override void OnAttached()
         {
             base.OnAttached();
 
@@ -49,7 +49,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        protected override sealed void OnDetaching()
+        protected sealed override void OnDetaching()
         {
             base.OnDetaching();
 

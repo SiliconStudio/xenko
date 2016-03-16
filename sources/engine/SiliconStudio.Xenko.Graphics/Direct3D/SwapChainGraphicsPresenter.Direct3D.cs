@@ -110,13 +110,13 @@ namespace SiliconStudio.Xenko.Graphics
                     swapChain.GetFullscreenState(out isCurrentlyFullscreen, out currentOutput);
 
                     // check if the current fullscreen monitor is the same as new one
-                    if (isCurrentlyFullscreen == value && output != null && currentOutput != null && currentOutput.NativePointer == output.NativeOutput.NativePointer)
+                    // If not fullscreen, currentOutput will be null but output won't be, so don't compare them
+                    if (isCurrentlyFullscreen == value && (isCurrentlyFullscreen == false || (output != null && currentOutput != null && currentOutput.NativePointer == output.NativeOutput.NativePointer)))
                         return;
                 }
                 finally
                 {
-                    if (currentOutput != null)
-                        currentOutput.Dispose();
+                    currentOutput?.Dispose();
                 }
 
                 bool switchToFullScreen = value;

@@ -272,37 +272,19 @@ namespace SiliconStudio.Xenko.Games
                 }
 
                 var preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile;
-                var shaderProfiles = new GraphicsProfile?[preferredParameters.PreferredGraphicsProfile.Length];
-
-                // INTEL workaround: it seems Intel driver doesn't support properly feature level 9.x. Fallback to 10.
-                if (graphicsAdapter.VendorId == 0x8086)
-                {
-                    // Make a copy
-                    preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile.ToArray();
-
-                    for (int i = 0; i < preferredGraphicsProfiles.Length; i++)
-                    {
-                        if (preferredGraphicsProfiles[i] < GraphicsProfile.Level_10_0)
-                        {
-                            // Force to use a specific shader profile
-                            shaderProfiles[i] = GraphicsProfile.Level_10_0;
-                            preferredGraphicsProfiles[i] = GraphicsProfile.Level_10_0;
-                        }
-                    }
-                }
 
                 // Iterate on each preferred graphics profile
                 for (int index = 0; index < preferredGraphicsProfiles.Length; index++)
                 {
                     var featureLevel = preferredGraphicsProfiles[index];
-// Check if this profile is supported.
+
+                    // Check if this profile is supported.
                     if (graphicsAdapter.IsProfileSupported(featureLevel))
                     {
                         var deviceInfo = new GraphicsDeviceInformation
                         {
                             Adapter = graphicsAdapter,
                             GraphicsProfile = featureLevel,
-                            ShaderProfile = shaderProfiles[index],
                             PresentationParameters =
                             {
                                 MultiSampleCount = MSAALevel.None,

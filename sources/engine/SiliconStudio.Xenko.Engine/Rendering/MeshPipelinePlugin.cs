@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public string ModelEffect
         {
-            get { return modelEffect; }
+            get { return modelEffect ?? DefaultEffectName; }
             set
             {
                 modelEffect = value;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Set default stage selector
             RegisterRenderStageSelector(meshRenderStageSelector = new MeshTransparentRenderStageSelector
             {
-                EffectName = modelEffect ?? DefaultEffectName,
+                EffectName = ModelEffect,
                 MainRenderStage = mainRenderStage,
                 TransparentRenderStage = transparentRenderStage,
             });
@@ -84,6 +84,33 @@ namespace SiliconStudio.Xenko.Rendering
                 if (renderNode.RenderStage == transparentRenderStage)
                 {
                     pipelineState.BlendState = BlendStates.AlphaBlend;
+                    pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
+                }
+
+                var renderMesh = (RenderMesh)renderObject;
+                var cullModeOverride = renderMesh.MaterialInfo.CullMode;
+                var cullMode = pipelineState.RasterizerState.CullMode;
+
+                // No override, or already two-sided?
+                if (cullModeOverride.HasValue && cullMode != CullMode.None)
+                {
+                    if (cullModeOverride.Value == CullMode.None)
+                    {
+                        // Override to two-sided
+                        cullMode = CullMode.None;
+                    }
+                    else if (cullModeOverride.Value == cullMode)
+                    {
+                        // No or double flipping
+                        cullMode = CullMode.Back;
+                    }
+                    else
+                    {
+                        // Single flipping
+                        cullMode = CullMode.Front;
+                    }
+
+                    pipelineState.RasterizerState.CullMode = cullMode;
                 }
             });
         }

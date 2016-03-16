@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Data
 {
@@ -14,9 +15,7 @@ namespace SiliconStudio.Xenko.Data
         WindowsPhone = 1 << PlatformType.WindowsPhone,
         iOS = 1 << PlatformType.iOS,
         Android = 1 << PlatformType.Android,
-#if SILICONSTUDIO_RUNTIME_CORECLR
         Linux = 1 << PlatformType.Linux
-#endif
     }
 
     [DataContract]
@@ -30,6 +29,7 @@ namespace SiliconStudio.Xenko.Data
     public class ConfigurationOverride
     {
         [DataMember(10)]
+        [InlineProperty]
         public ConfigPlatforms Platforms;
 
         [DataMember(20)]

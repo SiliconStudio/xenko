@@ -54,11 +54,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <param name="reflection">the reflection gathered from the hlsl analysis</param>
         /// <param name="sourceFilename">the name of the source file</param>
         /// <returns></returns>
-        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, ShaderMixinParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
+        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isOpenGLES = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.OpenGLES;
-            var isOpenGLES3 = compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0;
-            var isVulkan = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.Vulkan;
+            var isOpenGLES = compilerParameters.EffectParameters.Platform == GraphicsPlatform.OpenGLES;
+            var isOpenGLES3 = compilerParameters.EffectParameters.Profile >= GraphicsProfile.Level_10_0;
+            var isVulkan = compilerParameters.EffectParameters.Platform == GraphicsPlatform.Vulkan;
 
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
@@ -241,11 +241,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             var member = reflectionConstantBuffer.Members[index];
 
                             // Properly compute size and offset according to std140 rules
-                            int alignment;
-                            var memberSize = ComputeMemberSize(ref member, out alignment);
+                            var memberSize = ComputeMemberSize(ref member, ref constantBufferOffset);
 
-                            // Align offset and store it as member offset
-                            constantBufferOffset = (constantBufferOffset + alignment - 1)/alignment*alignment;
                             member.Offset = constantBufferOffset;
                             member.Size = memberSize;
 
@@ -268,8 +265,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
                 {
                     // Check if we have a variable that starts or ends with this name (in case of samplers)
-                    if (variable.Type == SamplerType.Sampler1D || variable.Type == SamplerType.Sampler2D || variable.Type == SamplerType.Sampler3D ||
-                        variable.Type.Name.Text.Equals(SamplerType.SamplerCube.Name.Text, StringComparison.OrdinalIgnoreCase))
+                    // TODO: Have real AST support for all the list in Keywords.glsl
+                    if (variable.Type.Name.Text.Contains("sampler1D")
+                        || variable.Type.Name.Text.Contains("sampler2D")
+                        || variable.Type.Name.Text.Contains("sampler3D")
+                        || variable.Type.Name.Text.Contains("samplerCube"))
                     {
                         // TODO: Make more robust
                         var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Param.RawName));
@@ -391,10 +391,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
-        private static int ComputeMemberSize(ref EffectParameterValueData member, out int alignment)
+        private static int ComputeMemberSize(ref EffectParameterValueData member, ref int constantBufferOffset)
         {
             var elementSize = ComputeTypeSize(member.Param.Type);
             int size;
+            int alignment;
 
             switch (member.Param.Class)
             {
@@ -413,13 +414,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     }
                 case EffectParameterClass.MatrixColumns:
                     {
-                        size = elementSize * 4 * member.RowCount;
+                        size = elementSize * 4 * member.ColumnCount;
                         alignment = size;
                         break;
                     }
                 case EffectParameterClass.MatrixRows:
                     {
-                        size = elementSize * 4 * member.ColumnCount;
+                        size = elementSize * 4 * member.RowCount;
                         alignment = size;
                         break;
                     }
@@ -428,7 +429,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
 
             // Array
-            if (member.Count > 1)
+            if (member.Count > 0)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
                 size = roundedSize * member.Count;
@@ -438,6 +439,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             // Alignment is maxed up to vec4
             if (alignment > 16)
                 alignment = 16;
+
+            // Align offset and store it as member offset
+            constantBufferOffset = (constantBufferOffset + alignment - 1) / alignment * alignment;
 
             return size;
         }
@@ -491,7 +495,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 {
                     IntPtr log = glslopt_get_log(shader);
                     var logAsString = Marshal.PtrToStringAnsi(log);
-                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", logAsString);
+                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n    glsl_opt: {0}", string.Join("\r\n    glsl_opt: ", logAsString.Split(new[] { "\n", "\r", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)));
                 }
 
                 glslopt_shader_delete(shader);

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <para>The entity needs to be added to the Entity System so that the associated AudioListenerComponent can be processed.</para></remarks>
     [Display("Audio Listener", Expand = ExpandRule.Once)]
     [DataContract("AudioListenerComponent")]
-    [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor))]
+    [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(6000)]
     public sealed class AudioListenerComponent : EntityComponent
     {

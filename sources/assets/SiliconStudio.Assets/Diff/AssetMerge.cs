@@ -40,14 +40,9 @@ namespace SiliconStudio.Assets.Diff
                     }
                     key.Close();
                 }
-                if (DefaultMergeTool == null)
-                {
-                    Log.Error("Unable to find a default merge tool");
-                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Log.Error("Unable to find a default merge tool", ex);
             }
         }
 
@@ -245,7 +240,7 @@ namespace SiliconStudio.Assets.Diff
                 return result;
             }
 
-            if (!File.Exists(DefaultMergeTool))
+            if (DefaultMergeTool == null || !File.Exists(DefaultMergeTool))
             {
                 result.Error("Unable to use external diff3 merge tool [{0}]. File not found", DefaultMergeTool);
                 return result;

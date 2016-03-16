@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Some parameters should be initialized when the emitter first runs, rather than in the constructor
         /// </summary>
         [DataMemberIgnore]
-        private bool delayInit;
+        private bool hasBeenInitialized;
 
         /// <summary>
         /// Particles will live for a number of seconds between these two values
@@ -153,13 +153,13 @@ namespace SiliconStudio.Xenko.Particles
 
             initialDefaultFields = new InitialDefaultFields();
 
-            Initializers = new TrackingCollection<ParticleInitializer>();
+            Initializers = new FastTrackingCollection<ParticleInitializer>();
             Initializers.CollectionChanged += ModulesChanged;
 
-            Updaters = new TrackingCollection<ParticleUpdater>();
+            Updaters = new FastTrackingCollection<ParticleUpdater>();
             Updaters.CollectionChanged += ModulesChanged;
 
-            Spawners = new TrackingCollection<ParticleSpawner>();
+            Spawners = new FastTrackingCollection<ParticleSpawner>();
             Spawners.CollectionChanged += SpawnersChanged;        
         }
 
@@ -261,7 +261,7 @@ namespace SiliconStudio.Xenko.Particles
             set
             {
                 randomSeedMethod = value;
-                delayInit = false;
+                hasBeenInitialized = false;
             }
         }
 
@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Spawners")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleSpawner> Spawners;
+        public readonly FastTrackingCollection<ParticleSpawner> Spawners;
 
         /// <summary>
         /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
@@ -327,7 +327,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Initializers")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleInitializer> Initializers;
+        public readonly FastTrackingCollection<ParticleInitializer> Initializers;
 
         /// <summary>
         /// List of <see cref="ParticleUpdater"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
@@ -339,37 +339,20 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Updaters")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleUpdater> Updaters;
-
-
-        #region Dispose
-
-        ~ParticleEmitter()
-        {
-            Dispose(false);
-        }
+        public readonly FastTrackingCollection<ParticleUpdater> Updaters;
 
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
         {
             if (disposed)
                 return;
             disposed = true;
 
             // Dispose unmanaged resources
-
-            if (!disposing)
-                return;
+            ResetSimulation(); // Will set particle count = 0, freeing unmanaged and graphics memory
 
             // Dispose managed resources
             pool?.Dispose();
         }
-        #endregion Dispose
 
         /// <summary>
         /// If the particle pool has changed the sorter must also be updated to reflect those changes
@@ -414,7 +397,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event arguments</param>
-        private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void ModulesChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             var module = e.Item as ParticleModule;
             if (module == null)
@@ -443,7 +426,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SpawnersChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void SpawnersChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             DirtyParticlePool = true;
         }
@@ -467,7 +450,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
-            if (!delayInit)
+            if (!hasBeenInitialized)
             {
                 DelayedInitialization(parentSystem);
             }
@@ -490,10 +473,10 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         protected unsafe void DelayedInitialization(ParticleSystem parentSystem)
         {
-            if (delayInit)
+            if (hasBeenInitialized)
                 return;
 
-            delayInit = true;
+            hasBeenInitialized = true;
 
             // RandomNumberGenerator creation
             {
@@ -529,24 +512,30 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Restarts the simulation, deleting all particles and starting from Time = 0
+        /// Resets the simulation, deleting all particles and starting from Time = 0
         /// </summary>
-        public void RestartSimulation()
+        public void ResetSimulation()
         {
+            // Reset the particle pool which allocates unmanaged memory
             DirtyParticlePool = true;
             pool.SetCapacity(0);
+
+            // Reset the vertex builder which allocates graphics memory
+            VertexBuilder.Reset();
 
             // Restart all spawners
             foreach (var spawner in Spawners)
             {
-                spawner.RestartSimulation();
+                spawner.ResetSimulation();
             }
 
             // Restart all updaters
             foreach (var updater in Updaters)
             {
-                updater.RestartSimulation();
+                updater.ResetSimulation();
             }
+
+            hasBeenInitialized = false;
         }
 
         /// <summary>

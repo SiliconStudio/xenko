@@ -13,10 +13,14 @@
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="BoundingShapes\BoundingBoxStatic.cs" />
     <Compile Include="BoundingShapes\BoundingShape.cs" />
@@ -41,8 +45,8 @@
     <Compile Include="Materials\UVBuilderFlipbook.cs" />
     <Compile Include="Materials\UVBuilderScroll.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="ParticleLocator.cs" />
     <Compile Include="ParticleSystemSettings.cs" />
+    <Compile Include="ParticleTransform.cs" />
     <Compile Include="Rendering\ParticleEmitterPipelinePlugin.cs" />
     <Compile Include="Rendering\ParticleEmitterTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\ParticleSystemRenderProcessor.cs" />

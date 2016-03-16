@@ -11,8 +11,6 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class BoxColliderShape : ColliderShape
     {
-        private static MeshDraw cachedDebugPrimitive;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BoxColliderShape"/> class.
         /// </summary>
@@ -32,7 +30,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cube.New(device).ToMeshDraw());
+            return GeometricPrimitive.Cube.New(device).ToMeshDraw();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
+using Microsoft.CSharp.RuntimeBinder;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Visitors;
@@ -14,6 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -894,6 +896,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
+                // TODO: Asset upgraders are called for BaseParts too, which might not be of the same type. Upgraders should be aware of this.
+                if (asset.Node.Tag != "!SceneAsset")
+                    return;
+
                 var graphicsCompositor = asset.SceneSettings.GraphicsCompositor;
 
                 if (graphicsCompositor != null && graphicsCompositor.Node.Tag == "!SceneGraphicsCompositorLayers")
@@ -953,6 +959,37 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
 
                 return modelEffect;
+            }
+        }
+
+        private class PhysicsFiltersUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Node.Tag;
+                        if (componentTag == "!StaticColliderComponent" ||
+                            componentTag == "!CharacterComponent" ||
+                            componentTag == "!RigidbodyComponent")
+                        {
+                            if (component.CollisionGroup == null || (string)component.CollisionGroup == "0")
+                            {
+                                component.CollisionGroup = CollisionFilterGroups.DefaultFilter;
+                            }
+                           
+                            if (component.CanCollideWith == null || (string)component.CanCollideWith == "0")
+                            {
+                                component.CanCollideWith = CollisionFilterGroupFlags.AllFilter;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

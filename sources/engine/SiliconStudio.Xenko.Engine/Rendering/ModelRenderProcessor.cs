@@ -3,17 +3,38 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     public class ModelRenderProcessor : EntityProcessor<ModelComponent, RenderModel>, IEntityComponentRenderProcessor
     {
+        private Material fallbackMaterial;
+
         public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
 
         public VisibilityGroup VisibilityGroup { get; set; }
 
         public ModelRenderProcessor() : base(typeof(TransformComponent))
         {
+        }
+
+        protected internal override void OnSystemAdd()
+        {
+            base.OnSystemAdd();
+
+            var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+
+            fallbackMaterial = Material.New(graphicsDevice, new MaterialDescriptor
+            {
+                Attributes =
+                {
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeTextureColor()),
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature()
+                }
+            });
         }
 
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
@@ -89,9 +110,9 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private static void UpdateMaterial(RenderMesh renderMesh, Material materialOverride, MaterialInstance modelMaterialInstance, ModelComponent modelComponent)
+        private void UpdateMaterial(RenderMesh renderMesh, Material materialOverride, MaterialInstance modelMaterialInstance, ModelComponent modelComponent)
         {
-            renderMesh.Material = materialOverride ?? modelMaterialInstance.Material;
+            renderMesh.Material = materialOverride ?? modelMaterialInstance?.Material ?? fallbackMaterial;
 
             renderMesh.IsShadowCaster = modelComponent.IsShadowCaster;
             renderMesh.IsShadowReceiver = modelComponent.IsShadowReceiver;
@@ -118,6 +139,9 @@ namespace SiliconStudio.Xenko.Rendering
                     VisibilityGroup.RenderObjects.Remove(renderMesh);
                 }
             }
+
+            if (model == null)
+                return;
 
             // Create render meshes
             var renderMeshes = new RenderMesh[model.Meshes.Count];

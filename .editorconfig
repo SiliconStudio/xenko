@@ -1,26 +1,17 @@
 root = true
 
-# C# files
-[*.{cs}]
-indent_style = space
-indent_size = 4
-end_of_line = crlf
-insert_final_newline = true
-charset = utf-8-bom
-
-# XAML files
-[*.{xaml}]
-# enable this once we have merged most of our branches into master
-#indent_style = space
-#indent_size = 2
-end_of_line = crlf
-insert_final_newline = true
-charset = utf-8-bom
-
-# C/C++ files
-[*.{c,cpp,cxx,cc,tli,tlh,h,hh,hpp,hxx,hh,inl,rc,resx,idl,asm,inc}]
-indent_style = tab
-indent_size = 1
+[*]
 end_of_line = crlf
 insert_final_newline = true
 charset = utf-8
+
+# C# files
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# XAML files
+[*.xaml]
+# enable this once we have merged most of our branches into master
+#indent_style = space
+#indent_size = 2

@@ -22,14 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                if (context.GetParam(ColorTransformKeys.Enabled))
-                {
-                    context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader), context.GetParam(ColorTransformKeys.GenericArguments));
-                }
-                else
-                {
-                    context.Mixin(mixin, "ColorTransformShader");
-                }
+                context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader), context.GetParam(ColorTransformKeys.GenericArguments));
             }
 
             [ModuleInitializer]

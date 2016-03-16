@@ -368,7 +368,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="value"></param>
         public void Set<T>(PermutationParameter<T> parameter, T value)
         {
-            PermutationCounter++;
+            if (!EqualityComparer<T>.Default.Equals((T)ObjectValues[parameter.BindingSlot], value))
+                PermutationCounter++;
+
             ObjectValues[parameter.BindingSlot] = value;
         }
 
@@ -422,10 +424,15 @@ namespace SiliconStudio.Xenko.Rendering
             if (key.Type != ParameterKeyType.Permutation && key.Type != ParameterKeyType.Object)
                 throw new InvalidOperationException("SetObject can only be used for Permutation or Object keys");
 
-            if (key.Type == ParameterKeyType.Permutation)
-                PermutationCounter++;
-
             var accessor = GetObjectParameterHelper(key);
+
+            if (key.Type == ParameterKeyType.Permutation)
+            {
+                var oldValue = ObjectValues[accessor.Offset];
+                if (oldValue != null && (value == null || !oldValue.Equals(value)) // oldValue non null => check equality
+                    || (oldValue == null && value != null)) // oldValue null => check if value too
+                        PermutationCounter++;
+            }
             ObjectValues[accessor.Offset] = value;
         }
 
@@ -488,35 +495,30 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Reorganizes internal data and resources to match the given objects, and append extra values at the end.
         /// </summary>
-        /// <param name="layoutParameterKeyInfos"></param>
-        /// <param name="resourceCount"></param>
-        /// <param name="bufferSize"></param>
-        /// <param name="constantBuffers"></param>
-        /// <param name="descriptorSetLayouts"></param>
-        public unsafe void UpdateLayout(ParameterCollectionLayout layout)
+        /// <param name="collectionLayout"></param>
+        public unsafe void UpdateLayout(ParameterCollectionLayout collectionLayout)
         {
             var oldLayout = this.layout;
-            this.layout = layout;
+            this.layout = collectionLayout;
 
             // Same layout, or removed layout
-            if (oldLayout == layout || layout == null)
+            if (oldLayout == collectionLayout || collectionLayout == null)
                 return;
 
-            var layoutParameterKeyInfos = layout.LayoutParameterKeyInfos;
+            var layoutParameterKeyInfos = collectionLayout.LayoutParameterKeyInfos;
 
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
             newParameterKeyInfos.AddRange(parameterKeyInfos);
             var processedParameters = new bool[parameterKeyInfos.Count];
 
-            var bufferSize = layout.BufferSize;
-            var resourceCount = layout.ResourceCount;
+            var bufferSize = collectionLayout.BufferSize;
+            var resourceCount = collectionLayout.ResourceCount;
 
             foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
             {
                 // Find the same parameter in old collection
                 // Is this parameter already added?
-                bool memberFound = false;
                 for (int i = 0; i < parameterKeyInfos.Count; ++i)
                 {
                     if (parameterKeyInfos[i].Key == layoutParameterKeyInfo.Key)
@@ -686,7 +688,6 @@ namespace SiliconStudio.Xenko.Rendering
                 if (destinationLayout == null)
                     throw new NotImplementedException();
 
-            TryCopy:
                 if (destinationLayout == source.Layout)
                 {
                     // Easy, let's do a full copy!

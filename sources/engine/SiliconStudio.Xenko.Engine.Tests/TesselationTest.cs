@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -72,6 +73,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             materials.Add(Content.Load<Material>("FlatTessellationDisplAE"));
             materials.Add(Content.Load<Material>("PNTessellationDisplAE"));
 
+            RenderContext.GetShared(Services).RendererInitialized += RendererInitialized;
+
             var cube = new Entity("Cube") { new ModelComponent(new ProceduralModelDescriptor(new CubeProceduralModel { Size = new Vector3(80), MaterialInstance = { Material = materials[0] } }).GenerateModel(Services)) };
             var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Radius = 50, Tessellation = 5, MaterialInstance = { Material = materials[0] }} ).GenerateModel(Services)) };
 
@@ -93,15 +96,23 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Script.Add(camera);
 
             // TODO GRAPHICS REFACTOR
-            throw new System.NotImplementedException();
-            //LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            //GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
-
             ChangeModel(0);
-            SetWireframe(true);
 
             camera.Position = new Vector3(25, 45, 80);
             camera.SetTarget(currentEntity, true);
+        }
+
+        void RendererInitialized(IGraphicsRendererCore obj)
+        {
+            // TODO: callback will be called also for editor renderers. We might want to filter down this
+            if (obj is MeshRenderFeature)
+            {
+                ((MeshRenderFeature)obj).PostProcessPipelineState +=
+                    (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+                    {
+                        pipelineState.RasterizerState = RasterizerStates.WireframeCullBack;
+                    };
+            }
         }
 
         protected override void RegisterTests()
@@ -148,18 +159,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             if (Input.IsKeyDown(Keys.NumPad2))
                 ChangeDesiredTriangleSize(0.2f);
-
-            if (Input.IsKeyPressed(Keys.Space))
-                SetWireframe(!isWireframe);
-        }
-
-        private void SetWireframe(bool wireframeActivated)
-        {
-            isWireframe = wireframeActivated;
-
-            // TODO GRAPHICS REFACTOR
-            //if (currentMaterial != null)
-            //    currentMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, isWireframe ? wireframeState : GraphicsDevice.RasterizerStates.CullBack);
         }
 
         private void ChangeDesiredTriangleSize(float f)
@@ -204,8 +203,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
                         modelComponent.Materials.Add(currentMaterial);
                 }
             }
-
-            SetWireframe(isWireframe);
         }
 
         [Test]

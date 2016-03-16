@@ -22,7 +22,5 @@ namespace SiliconStudio.Xenko.Physics
         public Collision Collision;
 
         internal int LifeTime;
-        internal int PrevLifeTime;
-        internal bool Valid;
     }
 }

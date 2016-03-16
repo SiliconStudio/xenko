@@ -50,6 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
             writer.Serialize(ref effectbyteCodeMagicNumber, ArchiveMode.Serialize);
             writer.Serialize(ref effectName, ArchiveMode.Serialize);
             writer.Serialize(ref compilerParameters, ArchiveMode.Serialize);
+            writer.Serialize(ref compilerParameters.EffectParameters, ArchiveMode.Serialize);
         }
 
         protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
@@ -114,7 +115,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                     }
                 }
 
-                var outputClassFile = effectName + "." + fieldName + "." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
+                var outputClassFile = effectName + "." + fieldName + "." + compilerParameters.EffectParameters.Platform + "." + compilerParameters.EffectParameters.Profile + ".cs";
                 var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
                 commandContext.Logger.Verbose("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);

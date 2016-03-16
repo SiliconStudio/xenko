@@ -26,6 +26,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private readonly static Logger Log = GlobalLogger.GetLogger("EffectSystem");
 
+        private EffectCompilerParameters effectCompilerParameters = EffectCompilerParameters.Default;
+
         private IGraphicsDeviceService graphicsDeviceService;
         private EffectCompilerBase compiler;
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
@@ -65,40 +67,6 @@ namespace SiliconStudio.Xenko.Rendering
             Services.AddService(typeof(EffectSystem), this);
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether shader must be compiled with debug info.
-        /// </summary>
-        public bool CompilationDebugInfo { get; set; }
-
-        /// <summary>
-        /// Gets or sets the optimization level when compiling shaders. 0: no optimization, 2: full optimizations
-        /// </summary>
-        public int CompilationOptimizationLevel { get; set; }
-
-        /// <summary>
-        /// Initialize the property <see cref="CompilationDebugInfo"/> level and <see cref="CompilationOptimizationLevel"/> from a compilation mode.
-        /// </summary>
-        /// <param name="compilationMode">The compilation mode</param>
-        public void Setup(CompilationMode compilationMode)
-        {
-            switch (compilationMode)
-            {
-                case CompilationMode.Debug:
-                case CompilationMode.Testing:
-                    CompilationDebugInfo = true;
-                    CompilationOptimizationLevel = 0;
-                    break;
-                case CompilationMode.Release:
-                    CompilationDebugInfo = true;
-                    CompilationOptimizationLevel = 1;
-                    break;
-                case CompilationMode.AppStore:
-                    CompilationDebugInfo = false;
-                    CompilationOptimizationLevel = 2;
-                    break;
-            }
-        }
-
         public override void Initialize()
         {
             base.Initialize();
@@ -119,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
             if (Game != null && (((Game)Game).Settings != null))
             {
-                Setup(((Game)Game).Settings.CompilationMode);
+                effectCompilerParameters.ApplyCompilationMode(((Game)Game).Settings.CompilationMode);
             }
 
             // Make sure default compiler is created (local if possible otherwise none) if nothing else was explicitely set/requested (i.e. by GameSettings)
@@ -171,20 +139,7 @@ namespace SiliconStudio.Xenko.Rendering
                 return cachedEffects.ContainsKey(effect.Bytecode);
             }
         }
-
-        /// <summary>
-        /// Loads the effect.
-        /// </summary>
-        /// <param name="effectName">Name of the effect.</param>
-        /// <param name="compilerParameters">The compiler parameters.</param>
-        /// <returns>A new instance of an effect.</returns>
-        /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
-        {
-            ParameterCollection usedParameters;
-            return LoadEffect(effectName, compilerParameters, out usedParameters);
-        }
-
+        
         /// <summary>
         /// Loads the effect.
         /// </summary>
@@ -193,20 +148,16 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="usedParameters">The used parameters.</param>
         /// <returns>A new instance of an effect.</returns>
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out ParameterCollection usedParameters)
+        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
             // Setup compilation parameters
-            if (!compilerParameters.ContainsKey(CompilerParameters.DebugKey))
-            {
-                compilerParameters.Debug = CompilationDebugInfo;
-            }
-            if (!compilerParameters.ContainsKey(CompilerParameters.OptimizationLevelKey))
-            {
-                compilerParameters.OptimizationLevel = CompilationOptimizationLevel;
-            }
+            // GraphicsDevice might have been not valid until this point, which is why we set this only here
+            effectCompilerParameters.Platform = GraphicsDevice.Platform;
+            effectCompilerParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.RequestedProfile;
+            compilerParameters.EffectParameters = effectCompilerParameters;
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);
@@ -214,7 +165,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Only take the sub-effect
             var bytecode = compilerResult.Bytecode;
-            usedParameters = compilerResult.UsedParameters;
 
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
@@ -286,17 +236,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters)
         {
-            compilerParameters.Profile = GraphicsDevice.ShaderProfile.HasValue ? GraphicsDevice.ShaderProfile.Value : GraphicsDevice.Features.Profile;
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-            compilerParameters.Platform = GraphicsPlatform.OpenGL;
-#endif
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES 
-            compilerParameters.Platform = GraphicsPlatform.OpenGLES;
-#endif
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_VULKAN
             compilerParameters.Platform = GraphicsPlatform.Vulkan;
 #endif
-
             // Compile shader
             var isXkfx = ShaderMixinManager.Contains(effectName);
 
@@ -313,14 +255,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (compilerResult == null)
             {
-                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
-                compilerResult = compiler.Compile(source, compilerParameters);
-
                 var effectRequested = EffectUsed;
                 if (effectRequested != null)
                 {
-                    effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
+                    effectRequested(new EffectCompileRequest(effectName, new CompilerParameters(compilerParameters)));
                 }
+
+                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
+                compilerResult = compiler.Compile(source, compilerParameters);
                 
                 if (!compilerResult.HasErrors && isXkfx)
                 {
@@ -486,7 +428,7 @@ namespace SiliconStudio.Xenko.Rendering
                     SourceDirectories = { EffectCompilerBase.DefaultSourceShaderFolder },
                 };
             }
-#endif               
+#endif
 
             // Nothing to do remotely
             bool needRemoteCompiler = (compiler == null && (effectCompilationMode & EffectCompilationMode.Remote) != 0);

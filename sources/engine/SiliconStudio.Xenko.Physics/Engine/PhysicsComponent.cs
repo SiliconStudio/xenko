@@ -62,7 +62,8 @@ namespace SiliconStudio.Xenko.Engine
         /// The collision group of this element, default is DefaultFilter. Cannot change during run-time.
         /// </userdoc>
         [DataMember(30)]
-        public CollisionFilterGroups CollisionGroup { get; set; }
+        [DefaultValue(CollisionFilterGroups.DefaultFilter)]
+        public CollisionFilterGroups CollisionGroup { get; set; } = CollisionFilterGroups.DefaultFilter;
 
         /// <summary>
         /// Gets or sets the can collide with.
@@ -74,9 +75,8 @@ namespace SiliconStudio.Xenko.Engine
         /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups. Cannot change during run-time.
         /// </userdoc>
         [DataMember(40)]
-        public CollisionFilterGroupFlags CanCollideWith { get; set; }
-
-        protected bool IsDefaultGroup => CanCollideWith == 0 || CollisionGroup == 0;
+        [DefaultValue(CollisionFilterGroupFlags.AllFilter)]
+        public CollisionFilterGroupFlags CanCollideWith { get; set; } = CollisionFilterGroupFlags.AllFilter;
 
         /// <summary>
         /// Gets or sets if this element will store collisions
@@ -117,10 +117,21 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (value)
                 {
+                    //allow collisions
+                    if ((NativeCollisionObject.CollisionFlags & BulletSharp.CollisionFlags.NoContactResponse) != 0)
+                    {
+                        NativeCollisionObject.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
+                    }
+
+                    //allow simulation
                     NativeCollisionObject.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
                 else
                 {
+                    //prevent collisions
+                    NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
+
+                    //prevent simulation
                     NativeCollisionObject.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
                 }
             }
@@ -326,7 +337,7 @@ namespace SiliconStudio.Xenko.Engine
         public Simulation Simulation { get; internal set; }
 
         [DataMemberIgnore]
-        internal PhysicsDebugShapeRendering DebugShapeRendering;
+        internal PhysicsShapesRenderingService DebugShapeRendering;
 
         [DataMemberIgnore]
         public bool ColliderShapeChanged { get; private set; }
@@ -433,7 +444,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (scale != ColliderShape.Scaling)
                 {
                     ColliderShape.Scaling = scale;
-                    ColliderShape.UpdateLocalTransformations();
 
                     if (DebugEntity != null)
                     {
@@ -466,7 +476,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (scale != ColliderShape.Scaling)
                 {
                     ColliderShape.Scaling = scale;
-                    ColliderShape.UpdateLocalTransformations();
 
                     if (DebugEntity != null)
                     {

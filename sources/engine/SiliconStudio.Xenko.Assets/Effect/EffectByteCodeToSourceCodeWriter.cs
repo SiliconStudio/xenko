@@ -62,7 +62,7 @@ namespace {1}
 
             var commandLine = string.Join(" ", Environment.GetCommandLineArgs());
 
-            var graphicsPlatform = parameters.Get(CompilerParameters.GraphicsPlatformKey);
+            var graphicsPlatform = parameters.EffectParameters.Platform;
             string xenkoDefine = "undefined";
             switch (graphicsPlatform)
             {

@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             foreach (var member in constantBuffer.Members)
             {
-                parameterCollectionLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(member.Param.Key, parameterCollectionLayout.BufferSize + member.Offset, member.Count));
+                parameterCollectionLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(member.Param.Key, parameterCollectionLayout.BufferSize + member.Offset, member.Count > 0 ? member.Count : 1));
             }
             parameterCollectionLayout.BufferSize += constantBuffer.Size;
         }

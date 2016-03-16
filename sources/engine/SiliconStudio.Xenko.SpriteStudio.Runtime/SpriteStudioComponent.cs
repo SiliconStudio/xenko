@@ -9,6 +9,7 @@ namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("SpriteStudioComponent")]
     [Display("Sprite Studio", Expand = ExpandRule.Once)]
+    [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRendererProcessor))]
     [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]
     [ComponentOrder(9900)]
@@ -16,6 +17,15 @@ namespace SiliconStudio.Xenko.Engine
     {
         [DataMember(1)]
         public SpriteStudioSheet Sheet { get; set; }
+
+        [DataMemberIgnore]
+        public SpriteStudioNodeState RootNode;
+
+        [DataMemberIgnore]
+        public SpriteStudioSheet CurrentSheet;
+
+        [DataMemberIgnore]
+        public bool ValidState;
 
         [DataMemberIgnore, DataMemberUpdatable]
         public List<SpriteStudioNodeState> Nodes { get; } = new List<SpriteStudioNodeState>();

@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
         private static CompilerParameters staticCompilerParameters;
 
         // Helper class to build pipeline state
-        protected MutablePipelineState MutablePipeline = new MutablePipelineState();
+        protected MutablePipelineState MutablePipeline;
 
         private readonly List<string> effectDescriptorSetSlots = new List<string>();
         private readonly Dictionary<string, int> effectPermutationSlots = new Dictionary<string, int>();
@@ -84,6 +84,8 @@ namespace SiliconStudio.Xenko.Rendering
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            MutablePipeline = new MutablePipelineState(Context.GraphicsDevice);
 
             // Create RenderEffectKey
             RenderEffectKey = RenderData.CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
@@ -315,7 +317,14 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Skip if nothing changed
                     Effect effect;
-                    if (renderEffect.EffectValidator.EndEffectValidation())
+                    if (renderEffect.EffectValidator.ShouldSkip)
+                    {
+                        // Reset pending effect, as it is now obsolete anyway
+                        effect = null;
+                        renderEffect.Effect = null;
+                        renderEffect.State = RenderEffectState.Skip;
+                    }
+                    else if (renderEffect.EffectValidator.EndEffectValidation())
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);
                     
@@ -328,7 +337,6 @@ namespace SiliconStudio.Xenko.Rendering
                         if (pendingEffect.IsFaulted)
                         {
                             renderEffect.State = RenderEffectState.Error;
-                            renderEffect.FallbackParameters = new ParameterCollection();
                             effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
                         }
                         else
@@ -342,6 +350,7 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         // Reset pending effect, as it is now obsolete anyway
                         renderEffect.PendingEffect = null;
+                        renderEffect.State = RenderEffectState.Normal;
 
                         foreach (var effectValue in renderEffect.EffectValidator.EffectValues)
                         {
@@ -356,7 +365,6 @@ namespace SiliconStudio.Xenko.Rendering
                         {
                             // Effect still compiling, let's find if there is a fallback
                             renderEffect.ClearFallbackParameters();
-                            renderEffect.FallbackParameters = new ParameterCollection();
                             effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
                             if (effect != null)
                             {
@@ -446,6 +454,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                         renderEffects[staticEffectObjectNode] = renderEffect;
                     }
+                    else
+                    {
+                        renderEffect.Reflection = RenderEffectReflection.Empty;
+                        renderEffect.PipelineState = null;
+                    }
                 }
             }
         }
@@ -461,8 +474,6 @@ namespace SiliconStudio.Xenko.Rendering
         public override void Prepare(RenderThreadContext context)
         {
             EffectObjectNodes.Clear();
-
-            int requiredDescriptorSets = 0;
 
             // Make sure descriptor set pool is large enough
             var expectedDescriptorSetPoolSize = RenderNodes.Count * effectDescriptorSetSlots.Count;
@@ -487,7 +498,13 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Not compiled yet?
                     if (renderEffect.Effect == null)
+                    {
+                        renderNode.RenderEffect = renderEffect;
+                        renderNode.EffectObjectNode = EffectObjectNodeReference.Invalid;
+                        renderNode.Resources = null;
+                        RenderNodes[renderNodeReference.Index] = renderNode;
                         continue;
+                    }
 
                     var renderEffectReflection = renderEffect.Reflection;
 
@@ -551,7 +568,7 @@ namespace SiliconStudio.Xenko.Rendering
                     ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
 
                     // Create resource group for everything else in case of fallback effects
-                    if (renderEffect.State != RenderEffectState.Normal)
+                    if (renderEffect.State != RenderEffectState.Normal && renderEffect.FallbackParameters != null)
                     {
                         if (renderEffect.FallbackParameterUpdater.ResourceGroups == null)
                         {
@@ -587,7 +604,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                         PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
-                        MutablePipeline.Update(Context.GraphicsDevice);
+                        MutablePipeline.Update();
                         renderEffect.PipelineState = MutablePipeline.CurrentState;
                     }
 

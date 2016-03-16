@@ -4,10 +4,10 @@ Meta:
     Name: Xenko.Graphics
     Version: 1.0.0
 Profiles:
-    - Name: Shared
-      AssetFolders:
-        - Path: ../Shaders
-        - Path: .
+    -   Name: Shared
+        AssetFolders:
+            - Path: ../Shaders
+            - Path: .
     -   Name: Windows
         Platform: Windows
     -   Name: Windows-OpenGL

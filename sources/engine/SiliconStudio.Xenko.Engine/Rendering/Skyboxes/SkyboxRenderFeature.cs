@@ -82,7 +82,14 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         continue;
 
                     var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
-                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, parameters.Get(SkyboxKeys.Shader));
+
+                    var shader = parameters.Get(SkyboxKeys.Shader);
+
+                    if (shader == null)
+                    {
+                        renderEffect.EffectValidator.ShouldSkip = true;
+                    }
+                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, shader);
                 }
             }
 
@@ -109,7 +116,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var parameters = skyboxInfo.ParameterCollection;
 
                 var renderEffect = renderNode.RenderEffect;
-
+                if (renderEffect.State != RenderEffectState.Normal)
+                    continue;
 
                 // TODO GRAPHICS REFACTOR current system is not really safe with multiple renderers (parameters come from Skybox which is shared but ResourceGroupLayout from RenderSkybox is per RenderNode)
                 if (skyboxInfo.ResourceGroupLayout == null || skyboxInfo.ResourceGroupLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[perLightingDescriptorSetSlot.Index].Hash)
@@ -145,10 +153,12 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 skyboxInfo.ParameterCollectionCopier.Copy();
 
+                // Setup the intensity
+                parameters.Set(SkyboxKeys.Intensity, renderSkybox.Intensity);
+
                 // Update SkyMatrix
-                var rotation = parameters.Get(SkyboxKeys.Rotation);
                 Matrix skyMatrix;
-                Matrix.RotationY(MathUtil.DegreesToRadians(rotation), out skyMatrix);
+                Matrix.RotationQuaternion(ref renderSkybox.Rotation, out skyMatrix);
                 parameters.Set(SkyboxKeys.SkyMatrix, ref skyMatrix);
 
                 // Update MatrixTransform
@@ -208,6 +218,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // Get effect
                 // TODO: Use real effect slot
                 var renderEffect = renderNode.RenderEffect;
+                if (renderEffect.Effect == null)
+                    continue;
 
                 commandList.SetPipelineState(renderEffect.PipelineState);
 

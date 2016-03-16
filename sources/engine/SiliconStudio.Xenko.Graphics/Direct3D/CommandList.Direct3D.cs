@@ -58,14 +58,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        public void Begin()
-        {
-        }
-
-        public void End()
-        {
-        }
-
         private void ClearStateImpl()
         {
             NativeDeviceContext.ClearState();
@@ -101,7 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="renderTargetCount">The number of render targets.</param>
         /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
+        private void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
             for (int i = 0; i < renderTargetCount; i++)
                 currentRenderTargetViews[i] = renderTargets[i].NativeRenderTargetView;

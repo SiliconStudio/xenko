@@ -910,24 +910,24 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             }
             public Parameter MakeMatrix(int rowCount, int columnCount)
             {
-                return new Parameter { Target = Target.Matrix, TargetType = TargetType, TargetSize = (rowCount - 1) * 4 + columnCount - 1 };
+                return new Parameter { Target = Target.Matrix, TargetType = TargetType, TargetSize = (columnCount - 1) * 4 + rowCount - 1 };
             }
             public Parameter ReduceFromMatrixRow()
             {
-                return new Parameter { Target = Target.Vector, TargetType = TargetType, TargetSize = TargetSize / 4 };
+                return new Parameter { Target = Target.Vector, TargetType = TargetType, TargetSize = TargetSize % 4 };
             }
             public Parameter ReduceFromMatrixColumn()
             {
-                return new Parameter { Target = Target.Vector, TargetType = TargetType, TargetSize = TargetSize % 4 };
+                return new Parameter { Target = Target.Vector, TargetType = TargetType, TargetSize = TargetSize / 4 };
             }
             public Parameter Transpose()
             {
-                int row = TargetSize / 4;
-                int column = TargetSize % 4;
-                return new Parameter { Target = Target, TargetType = TargetType, TargetSize = column * 4 + row };
+                int row = TargetSize % 4;
+                int column = TargetSize / 4;
+                return new Parameter { Target = Target, TargetType = TargetType, TargetSize = row * 4 + column };
             }
-            public int RowCount { get { return (TargetSize / 4) + 1; } }
-            public int ColumnCount { get { return (TargetSize % 4) + 1; } }
+            public int RowCount { get { return (TargetSize % 4) + 1; } }
+            public int ColumnCount { get { return (TargetSize / 4) + 1; } }
             public Target Target { get; set; }
             public TypeBase TargetType { get; set; }
             public int TargetSize { get; set; }
@@ -937,7 +937,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                 if (Target == Target.Matrix)
                     return new MatrixType((ScalarType)TargetType, RowCount, ColumnCount);
                 if (Target == Target.Vector)
-                    return new VectorType((ScalarType)TargetType, ColumnCount);
+                    return new VectorType((ScalarType)TargetType, RowCount);
                 if (Target == Target.Vector2)
                     return new VectorType((ScalarType)TargetType, 2);
                 if (Target == Target.Vector3)

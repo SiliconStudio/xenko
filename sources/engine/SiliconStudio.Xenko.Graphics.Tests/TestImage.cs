@@ -181,8 +181,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             image.Dispose();
         }
 
-        private long testMemoryBefore;
-
         [Test]
         public void TestLoadAndSave()
         {
@@ -217,7 +215,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestLoadPremultiplied()
         {
-            var sourceFormat = ImageFileType.Png;
             var intermediateFormat = ImageFileType.Png;
 
             PerformTest(
@@ -254,6 +251,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void ProcessFiles(Game game, ImageFileType sourceFormat, ImageFileType intermediateFormat)
         {
+            var testMemoryBefore = GC.GetTotalMemory(true);
+
             Log.Info("Testing {0}", intermediateFormat);
             Console.Out.Flush();
             var imageCount = 0;

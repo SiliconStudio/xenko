@@ -48,7 +48,8 @@ namespace SiliconStudio.Xenko.Graphics
             mapFeaturesPerFormat = new FeaturesPerFormat[256];
 
             // Set back the real GraphicsProfile that is used
-            Profile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
+            RequestedProfile = deviceRoot.RequestedProfile;
+            CurrentProfile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
 
             HasComputeShaders = nativeDevice.CheckFeatureSupport(Feature.ComputeShaders);
             HasDoublePrecision = nativeDevice.CheckFeatureSupport(Feature.ShaderDoubles);

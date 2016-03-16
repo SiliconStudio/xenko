@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
-
+using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -31,6 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public SkyboxAsset()
         {
             Model = new SkyboxCubeMapModel();
+            Usage = SkyboxUsage.LightingAndBackground;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
         }
@@ -49,6 +50,14 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [NotNull]
         [Display("Type", Expand = ExpandRule.Always)]
         public ISkyboxModel Model { get; set; }
+
+        /// <summary>
+        /// Gets or sets the usge of this skybox
+        /// </summary>
+        /// <userdoc>The usage of this skybox</userdoc>
+        [DataMember(15)]
+        [DefaultValue(SkyboxUsage.LightingAndBackground)]
+        public SkyboxUsage Usage { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse sh order.

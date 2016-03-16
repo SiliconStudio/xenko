@@ -24,17 +24,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, fromEmptySheet.SpritesCount);
             Assert.IsNull(fromEmptySheet.GetSprite(0));
 
-            var nullList = new SpriteSheet { Sprites = null };
-            var fromnullListSheet = new SpriteFromSheet { Sheet = nullList };
-            Assert.AreEqual(0, fromnullListSheet.SpritesCount);
-            Assert.IsNull(fromnullListSheet.GetSprite(0));
-            
-            var emptyList = new SpriteSheet { Sprites = new List<Sprite>() };
-            var fromEmptyListSheet = new SpriteFromSheet { Sheet = emptyList };
-            Assert.AreEqual(0, fromEmptyListSheet.SpritesCount);
-            Assert.IsNull(fromEmptyListSheet.GetSprite(0));
-
-            var validSheet = new SpriteSheet() { Sprites = new List<Sprite> { new Sprite("0"), new Sprite("1") } };
+            var validSheet = new SpriteSheet() { Sprites = { new Sprite("0"), new Sprite("1") } };
             var fromValidSheet = new SpriteFromSheet { Sheet = validSheet };
             Assert.AreEqual(2, fromValidSheet.SpritesCount);
             for (int i = 0; i < fromValidSheet.SpritesCount; i++)

@@ -433,6 +433,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                                 break;
 
                             case "samplerstate":
+                            case "samplercomparisonstate":
                                 parameterKey.Class = EffectParameterClass.Sampler;
                                 parameterKey.Type = EffectParameterType.Sampler;
                                 break;
@@ -542,7 +543,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
         private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey, int slotCount)
         {
-            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount };
+            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1 };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -552,7 +553,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             var constantBuffer = effectReflection.ConstantBuffers.FirstOrDefault(buffer => buffer.Name == cbName);
             if (constantBuffer == null)
             {
-                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName};
+                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName, Type = ConstantBufferType.ConstantBuffer};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
                 var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, ResourceGroup = cbName }, SlotStart = -1, SlotCount = 1 };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);
@@ -593,7 +594,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             public int ColumnCount;
 
-            public int Count = 1;
+            public int Count = 0;
         }
     }
 }

@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
                 // TODO Add system to prefilter
 
-                using (var context = new SkyboxGeneratorContext())
+                using (var context = new SkyboxGeneratorContext(AssetParameters))
                 {
                     var result = SkyboxGenerator.Compile(AssetParameters, context);
 

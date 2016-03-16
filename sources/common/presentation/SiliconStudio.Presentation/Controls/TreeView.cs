@@ -124,7 +124,7 @@ namespace SiliconStudio.Presentation.Controls
                 parent = getParent(parent);
             }
 
-            for (int i = path.Count - 1; i >= 0; --i)
+            for (var i = path.Count - 1; i >= 0; --i)
             {
                 if (container != null)
                     container = (TreeViewItem)container.ItemContainerGenerator.ContainerFromItem(path[i]);
@@ -132,9 +132,12 @@ namespace SiliconStudio.Presentation.Controls
                     container = (TreeViewItem)ItemContainerGenerator.ContainerFromItem(path[i]);
 
                 if (container == null)
-                    return false;
+                    continue;
 
-                container.IsExpanded = true;
+                // don't expand the last node
+                if (i > 0)
+                    container.IsExpanded = true;
+
                 container.ApplyTemplate();
                 var itemsPresenter = (ItemsPresenter)container.Template.FindName("ItemsHost", container);
                 if (itemsPresenter == null)
@@ -273,7 +276,10 @@ namespace SiliconStudio.Presentation.Controls
             if (item.IsEditing)
                 return;
 
-            SelectSingleItem(item);
+            if (!SelectedItems.Contains(item.DataContext))
+            {
+                SelectSingleItem(item);
+            }
 
             item.ForceFocus();
         }

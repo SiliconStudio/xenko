@@ -5,6 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
@@ -157,9 +158,7 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void RemoveContact(ContactPoint point)
         {
-            point.Valid = false;
-
-            var collision = point.Collision;
+            var collision = point?.Collision;
 
             if (collision == null || collision.Contacts.Count == 0) return;
 
@@ -167,12 +166,12 @@ namespace SiliconStudio.Xenko.Physics
 
             removedContactsCache.Add(point);
 
-            if (collision.Contacts.Count > 0) return;
+            //if (collision.Contacts.Count > 0) return;
 
-            collision.ColliderA.Collisions.Remove(collision);
-            collision.ColliderB.Collisions.Remove(collision);
+            //collision.ColliderA.Collisions.Remove(collision);
+            //collision.ColliderB.Collisions.Remove(collision);
 
-            removedCollisionsCache.Add(collision);
+            //removedCollisionsCache.Add(collision);
         }
 
         internal void CacheContacts()
@@ -235,7 +234,6 @@ namespace SiliconStudio.Xenko.Physics
                         info.NewContact = true;
                     }
 
-                    info.ContactPoint.Valid = true;
                     info.ContactPoint.LifeTime = cp.LifeTime;
                     info.ContactPoint.Distance = cp.Distance;
                     info.ContactPoint.Normal = cp.NormalWorldOnB;
@@ -270,24 +268,26 @@ namespace SiliconStudio.Xenko.Physics
                     }
                 }
 
-                //if it's still null we need to create a new collision 
-                if (collision == null)
-                {
-                    //new collision
-                    collision = new Collision
-                    {
-                        Contacts = new TrackingCollection<ContactPoint>(),
-                        ColliderA = contactInfo.ColA,
-                        ColliderB = contactInfo.ColB
-                    };
+                if(collision == null) continue;
 
-                    collision.Contacts.Clear();
-
-                    contactInfo.ColA.Collisions.Add(collision);
-                    contactInfo.ColB.Collisions.Add(collision);
-
-                    newCollisionsCache.Add(collision);
-                }
+//                //if it's still null we need to create a new collision 
+//                if (collision == null)
+//                {
+//                    //new collision
+//                    collision = new Collision
+//                    {
+//                        Contacts = new TrackingCollection<ContactPoint>(),
+//                        ColliderA = contactInfo.ColA,
+//                        ColliderB = contactInfo.ColB
+//                    };
+//
+//                    collision.Contacts.Clear();
+//
+//                    contactInfo.ColA.Collisions.Add(collision);
+//                    contactInfo.ColB.Collisions.Add(collision);
+//
+//                    newCollisionsCache.Add(collision);
+//                }
 
                 contactInfo.ContactPoint.Collision = collision;
 
@@ -334,6 +334,9 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contactPoint in newContactsFastCache)
             {
+                //todo remove should never happen
+                if (contactPoint.Collision == null) continue;
+
                 while (contactPoint.Collision.NewContactChannel.Balance < 0)
                 {
                     contactPoint.Collision.NewContactChannel.Send(contactPoint);
@@ -342,6 +345,9 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contactPoint in updatedContactsCache)
             {
+                //todo remove should never happen
+                if (contactPoint.Collision == null) continue;
+
                 while (contactPoint.Collision.ContactUpdateChannel.Balance < 0)
                 {
                     contactPoint.Collision.ContactUpdateChannel.Send(contactPoint);
@@ -350,6 +356,9 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contactPoint in removedContactsCache)
             {
+                //todo remove should never happen
+                if (contactPoint.Collision == null) continue;
+
                 while (contactPoint.Collision.ContactEndedChannel.Balance < 0)
                 {
                     contactPoint.Collision.ContactEndedChannel.Send(contactPoint);
@@ -989,6 +998,127 @@ namespace SiliconStudio.Xenko.Physics
         {
             var handler = SimulationEnd;
             handler?.Invoke(this, e);
+        }
+
+        //todo lots of data dupes, this needs rework soon
+        readonly HashSet<Collision> skippedCollisions = new HashSet<Collision>();
+        readonly HashSet<Collision> newCollisions = new HashSet<Collision>();
+
+        internal void BeginContactTesting()
+        {
+            skippedCollisions.Clear();
+            newCollisions.Clear();
+        }
+
+        internal void EndContactTesting()
+        {
+            foreach (var collision in skippedCollisions)
+            {
+                if(newCollisions.Contains(collision)) continue;
+
+                collision.ColliderA.Collisions.Remove(collision);
+                collision.ColliderB.Collisions.Remove(collision);
+                removedCollisionsCache.Add(collision);
+
+                removedContactsCache.Add(collision.Contacts[0]);
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        unsafe struct ContactData
+        {
+            public readonly void* ColliderA;
+            public readonly void* ColliderB;
+
+            public readonly float Distance;
+
+            public readonly float NormalX;
+            public readonly float NormalY;
+            public readonly float NormalZ;
+
+            public readonly float PositionOnAx;
+            public readonly float PositionOnAy;
+            public readonly float PositionOnAz;
+
+            public readonly float PositionOnBx;
+            public readonly float PositionOnBy;
+            public readonly float PositionOnBz;
+        }
+
+        unsafe internal void ContactTest(PhysicsComponent component)
+        {
+            foreach (var collision in component.Collisions)
+            {
+                skippedCollisions.Add(collision);
+            }
+
+            IntPtr buffer;
+            int bufferSize;
+            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
+
+            var contacts = (ContactData*) buffer;
+            for (var i = 0; i < bufferSize; i++)
+            {
+                var contact = contacts[i];
+                var obj0 = BulletSharp.CollisionObject.GetManaged((IntPtr)contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged((IntPtr)contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                if (((int)component0.CanCollideWith & (int)component1.CollisionGroup) != 0 || ((int)component1.CanCollideWith & (int)component0.CollisionGroup) != 0)
+                {
+                    var skip = false;
+                    foreach (var collision in component0.Collisions)
+                    {
+                        if ((collision.ColliderA == component0 && collision.ColliderB == component1) || (collision.ColliderA == component1 && collision.ColliderB == component0))
+                        {
+                            var oldContact = collision.Contacts[0];
+                            oldContact.Distance = contact.Distance;
+                            oldContact.Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ);
+                            oldContact.PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz);
+                            oldContact.PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz);
+                            updatedContactsCache.Add(oldContact);
+
+                            skippedCollisions.Remove(collision);
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
+                    {
+                        continue;
+                    }
+
+                    var newCollision = new Collision
+                    {
+                        Contacts = new TrackingCollection<ContactPoint>(),
+                        ColliderA = component0,
+                        ColliderB = component1
+                    };
+
+                    //todo this has to change
+                    var newContact = new ContactPoint
+                    {
+                        Collision = newCollision,
+                        Distance = contact.Distance,
+                        LifeTime = 0,
+                        Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ),
+                        PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz),
+                        PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz)
+                    };
+                    newCollision.Contacts.Add(newContact);
+
+                    component0.Collisions.Add(newCollision);
+                    component1.Collisions.Add(newCollision);
+
+                    newCollisionsCache.Add(newCollision);
+
+                    newContactsFastCache.Add(newContact);
+
+                    newCollisions.Add(newCollision);
+                }
+            }
         }
     }
 }

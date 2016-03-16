@@ -8,8 +8,14 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 {
     struct SortedParticle : IComparable
     {
-        public Particle Particle;
-        public float SortIndex;         // TODO Maybe use a Int32 key rather than float?
+        public readonly Particle Particle;
+        public readonly float SortIndex;         // TODO Maybe use a Int32 key rather than float?
+
+        public SortedParticle(Particle particle, float sortIndex)
+        {
+            Particle = particle;
+            SortIndex = sortIndex;
+        }
 
         int IComparable.CompareTo(object other)
         {
@@ -32,6 +38,20 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         public static bool operator ==(SortedParticle left, SortedParticle right) => (left.SortIndex == right.SortIndex);
 
         public static bool operator !=(SortedParticle left, SortedParticle right) => (left.SortIndex != right.SortIndex);
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SortedParticle))
+                return false;
+
+            var other = (SortedParticle)obj;
+            return (this == other);
+        }
+
+        public override int GetHashCode()
+        {
+            return SortIndex.GetHashCode();
+        }
     }
 
     public delegate float GetSortIndex<T>(T value) where T : struct;

@@ -687,6 +687,7 @@
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="GameAssets\Compiler\SimpleEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleEffect.cs</LastGenOutput>

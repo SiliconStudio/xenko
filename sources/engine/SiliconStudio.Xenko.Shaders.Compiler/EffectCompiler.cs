@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters? compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             var log = new LoggerResult();
 
@@ -93,7 +93,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             var shaderMixinSource = mixinTree;
             var fullEffectName = mixinTree.Name;
-            var usedParameters = mixinTree.UsedParameters;
 
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)
             var shaderMixinSourceCopy = new ShaderMixinSource();
@@ -101,8 +100,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             shaderMixinSource = shaderMixinSourceCopy;
 
             // Generate platform-specific macros
-            var platform = usedParameters.Get(CompilerParameters.GraphicsPlatformKey);
-            switch (platform)
+            switch (compilerParameters.EffectParameters.Platform)
             {
                 case GraphicsPlatform.Direct3D11:
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
@@ -128,8 +126,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
 
             // Generate profile-specific macros
-            var profile = usedParameters.Get(CompilerParameters.GraphicsProfileKey);
-            shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_PROFILE", (int)profile);
+            shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_PROFILE", (int)compilerParameters.EffectParameters.Profile);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_1", (int)GraphicsProfile.Level_9_1);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_2", (int)GraphicsProfile.Level_9_2);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_3", (int)GraphicsProfile.Level_9_3);
@@ -193,7 +190,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             // Select the correct backend compiler
             IShaderCompiler compiler;
-            switch (platform)
+            switch (compilerParameters.EffectParameters.Platform)
             {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
@@ -243,7 +240,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             var stageStringBuilder = new StringBuilder();
 #endif
             // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
-            if (platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            if (compilerParameters.EffectParameters.Platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
             {
                 parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
             }
@@ -252,7 +249,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
                 // Compile
                 // TODO: We could compile stages in different threads to improve compiler throughput?
-                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, usedParameters, bytecode.Reflection, shaderSourceFilename);
+                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, compilerParameters, bytecode.Reflection, shaderSourceFilename);
                 result.CopyTo(log);
 
                 if (result.HasErrors)
@@ -287,11 +284,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
                 var builder = new StringBuilder();
                 builder.AppendLine("/**************************");
-                builder.AppendLine("***** Used Parameters *****");
+                builder.AppendLine("***** Compiler Parameters *****");
                 builder.AppendLine("***************************");
                 builder.Append("@P EffectName: ");
                 builder.AppendLine(fullEffectName ?? "");
-                builder.Append(usedParameters.ToStringPermutationsDetailed());
+                builder.Append(compilerParameters.ToStringPermutationsDetailed());
                 builder.AppendLine("***************************");
 
                 if (bytecode.Reflection.ConstantBuffers.Count > 0)
@@ -376,10 +373,26 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
         private static void CleanupReflection(EffectReflection reflection)
         {
+            // TODO GRAPHICS REFACTOR we hardcode several resource group we want to preserve or optimize completly
+            // Somehow this should be handled some other place (or probably we shouldn't cleanup reflection at all?)
+            bool hasMaterialGroup = false;
+            bool hasLightingGroup = false;
+
+            foreach (var resourceBinding in reflection.ResourceBindings)
+            {
+                if (resourceBinding.Stage != ShaderStage.None)
+                {
+                    if (!hasLightingGroup && resourceBinding.Param.ResourceGroup == "PerLighting")
+                        hasLightingGroup = true;
+                    else if (!hasMaterialGroup && resourceBinding.Param.ResourceGroup == "PerMaterial")
+                        hasMaterialGroup = true;
+                }
+            }
+
             for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
             {
-                var cBuffer = reflection.ConstantBuffers[i];
-                if (cBuffer.Stage == ShaderStage.None)
+                var cbuffer = reflection.ConstantBuffers[i];
+                if (cbuffer.Stage == ShaderStage.None && !(hasMaterialGroup && cbuffer.Name == "PerMaterial") && !(hasLightingGroup && cbuffer.Name == "PerLighting"))
                 {
                     reflection.ConstantBuffers.RemoveAt(i);
                 }
@@ -388,7 +401,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             for (int i = reflection.ResourceBindings.Count - 1; i >= 0; i--)
             {
                 var resourceBinding = reflection.ResourceBindings[i];
-                if (resourceBinding.Stage == ShaderStage.None)
+                if (resourceBinding.Stage == ShaderStage.None && !(hasMaterialGroup && resourceBinding.Param.ResourceGroup == "PerMaterial") && !(hasLightingGroup && resourceBinding.Param.ResourceGroup == "PerLighting"))
                 {
                     reflection.ResourceBindings.RemoveAt(i);
                 }

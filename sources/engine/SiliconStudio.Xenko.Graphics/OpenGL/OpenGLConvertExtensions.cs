@@ -7,7 +7,11 @@ using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
+#else
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
+#endif
 #if SILICONSTUDIO_PLATFORM_IOS
 using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
 using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;

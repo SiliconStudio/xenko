@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
-                context.CommandList.SetDepthAndRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetRenderTargetAndViewport(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             ClearPointerEvents();
 
             // revert the depth stencil buffer to the default value 
-            context.CommandList.SetDepthAndRenderTargets(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
+            context.CommandList.SetRenderTargetsAndViewport(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
 
             // Release scroped texture
             if (scopedDepthBuffer != null)

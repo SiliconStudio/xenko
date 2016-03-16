@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 }
 
                 // TODO: ParticleMaterial should set this up
-                materialInfo.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
+                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
             }
 
             base.Prepare(context);
@@ -231,6 +231,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 var renderNode = GetRenderNode(renderNodeReference);
 
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
+                if (renderParticleEmitter.ParticleEmitter.VertexBuilder.ResourceContext == null)
+                    continue;
 
                 // Generate vertices
                 // TODO: Just just unmap/barrier here
@@ -238,6 +240,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // Get effect
                 var renderEffect = renderNode.RenderEffect;
+                if (renderEffect.Effect == null)
+                    continue;
 
                 // TODO GRAPHICS REFACTOR: Extract data
                 var particleSystemComponent = renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent;
