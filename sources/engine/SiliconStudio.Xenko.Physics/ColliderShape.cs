@@ -96,6 +96,7 @@ namespace SiliconStudio.Xenko.Physics
                 var newScaling = value;
                 if (Is2D) newScaling.Z = 0.0f;
                 InternalShape.LocalScaling = newScaling;
+                UpdateLocalTransformations();
             }
         }
 
