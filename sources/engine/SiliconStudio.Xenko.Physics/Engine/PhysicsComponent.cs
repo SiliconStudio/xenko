@@ -444,7 +444,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (scale != ColliderShape.Scaling)
                 {
                     ColliderShape.Scaling = scale;
-                    ColliderShape.UpdateLocalTransformations();
 
                     if (DebugEntity != null)
                     {
@@ -477,7 +476,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (scale != ColliderShape.Scaling)
                 {
                     ColliderShape.Scaling = scale;
-                    ColliderShape.UpdateLocalTransformations();
 
                     if (DebugEntity != null)
                     {
