@@ -63,8 +63,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 uvTransform.Z -= uvTransform.X;
                 uvTransform.W -= uvTransform.Y;
 
-                vertexBuilder.TransformAttributePerParticle(texDefault, texAttribute, this);
-                vertexBuilder.TransformAttributePerSegment(texDefault, texAttribute, transformCoords);
+                vertexBuilder.TransformAttributePerSegment(texDefault, texAttribute, this);
 
                 vertexBuilder.NextSegment();
             }

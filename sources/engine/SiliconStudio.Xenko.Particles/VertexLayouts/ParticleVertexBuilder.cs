@@ -372,13 +372,13 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="accessorTo">Vertex attribute accessor to the destination attribute</param>
         /// <param name="accessorFrom">Vertex attribute accessor to the source attribute</param>
         /// <param name="transformMethod">Transform method for the type data</param>
-        public void TransformAttributePerSegment<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, TransformAttributeDelegate<T> transformMethod) where T : struct
+        public void TransformAttributePerSegment<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
         {
             for (var i = 0; i < VerticesPerSegCurrent; i++)
             {
                 var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
 
-                transformMethod(ref temp);
+                transformMethod.Transform(ref temp);
 
                 Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
