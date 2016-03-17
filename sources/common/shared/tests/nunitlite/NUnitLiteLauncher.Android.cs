@@ -35,12 +35,15 @@ using Java.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Graphics.Regression;
 
 using Console = System.Console;
 using File = System.IO.File;
 using StringWriter = System.IO.StringWriter;
 using TextUI = SiliconStudio.Xenko.Graphics.Regression.TextUI;
+using SiliconStudio;
+using static System.Int32;
 
 namespace NUnitLite.Tests
 {
@@ -97,8 +100,8 @@ namespace NUnitLite.Tests
             if (PlatformAndroid.Context == null)
                 PlatformAndroid.Context = this;
 
-            var serverAddresses = Intent.GetStringExtra(TestRunner.XenkoServerIp);
-            if (serverAddresses == null)
+            var xenkoVersion = Intent.GetStringExtra(TestRunner.XenkoVersion);
+            if (xenkoVersion == null)
             {
                 // No explicit intent, switch to UI activity
                 StartActivity(typeof(XenkoTestSuiteActivity));
@@ -110,26 +113,26 @@ namespace NUnitLite.Tests
 
         private void RunTests()
         {
-            var serverAddresses = Intent.GetStringExtra(TestRunner.XenkoServerIp);
-            var serverPort = Int32.Parse(Intent.GetStringExtra(TestRunner.XenkoServerPort) ?? "8080");
-            var buildNumber = Int32.Parse(Intent.GetStringExtra(TestRunner.XenkoBuildNumber) ?? "-1");
+            var xenkoVersion = Intent.GetStringExtra(TestRunner.XenkoVersion);
+            var buildNumber = Parse(Intent.GetStringExtra(TestRunner.XenkoBuildNumber) ?? "-1");
             var branchName = Intent.GetStringExtra(TestRunner.XenkoBranchName) ?? "";
 
             // Remove extra (if activity is recreated)
-            Intent.RemoveExtra(TestRunner.XenkoServerIp);
-            Intent.RemoveExtra(TestRunner.XenkoServerPort);
+            Intent.RemoveExtra(TestRunner.XenkoVersion);
             Intent.RemoveExtra(TestRunner.XenkoBuildNumber);
             Intent.RemoveExtra(TestRunner.XenkoBranchName);
 
 
             Logger.Info(@"*******************************************************************************************************************************");
             Logger.Info(@"date: " + DateTime.Now);
-            Logger.Info(@"server addresses: " + serverAddresses);
-            Logger.Info(@"port: " + serverPort);
             Logger.Info(@"*******************************************************************************************************************************");
 
             // Connect to server right away to let it know we're alive
-            var client = Connect(serverAddresses, serverPort);
+            //var client = Connect(serverAddresses, serverPort);
+
+            var url = $"/service/{xenkoVersion}/SiliconStudio.Xenko.SamplesTestServer.exe";
+
+            var socketContext = RouterClient.RequestServer(url).Result;
 
             // Update build number (if available)
             ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
@@ -173,7 +176,7 @@ namespace NUnitLite.Tests
             Logger.Debug(@"Sending results to server");
 
             // Send back result
-            var binaryWriter = new BinaryWriter(client.GetStream());
+            var binaryWriter = new BinaryWriter(socketContext.WriteStream);
             binaryWriter.Write(output);
             binaryWriter.Write(result);
 
@@ -181,7 +184,7 @@ namespace NUnitLite.Tests
 
             ImageTester.Disconnect();
 
-            client.Close();
+            socketContext.Dispose();
 
             Finish();
         }
