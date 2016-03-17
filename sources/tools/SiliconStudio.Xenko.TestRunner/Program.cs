@@ -3,16 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Mono.Options;
 using SiliconStudio.Xenko.ConnectionRouter;
 using SiliconStudio.Xenko.Engine.Network;
@@ -23,17 +17,10 @@ namespace SiliconStudio.Xenko.TestRunner
 {
     class TestServerHost : RouterServiceServer
     {
-        private const char IpAddressesSplitCharacter = '%';
-
         /// <summary>
         /// The name of the branch the test is done on;
         /// </summary>
         private readonly string branchName;
-
-        /// <summary>
-        /// The address of the server.
-        /// </summary>
-        private string serverAddresses;
 
         /// <summary>
         /// The current buildNumber.
@@ -51,9 +38,9 @@ namespace SiliconStudio.Xenko.TestRunner
             buildNumber = -1;
         }
 
-        public int RunAndroidTest(ConnectedDevice device, bool reinstall, string packageName, string packageFile, string resultFile)
+        public int RunAndroidTest(ConnectedDevice device, bool reinstall, string packageName, string packageFile, string resultFilename)
         {
-            this.resultFile = resultFile;
+            resultFile = resultFilename;
 
             try
             {
@@ -72,7 +59,7 @@ namespace SiliconStudio.Xenko.TestRunner
                     ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} uninstall {packageName}");
 
                     // install
-                    adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, Format(@"-s {0} install {1}", device.Serial, packageFile));
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} install {packageFile}");
                     Console.WriteLine(@"adb install: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
                     if (adbOutputs.ExitCode != 0)
                         throw new InvalidOperationException("Invalid error code from adb install.\n Shell log: {0}");
@@ -160,7 +147,7 @@ namespace SiliconStudio.Xenko.TestRunner
         {
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
-            int exitCode = 0;
+            int exitCode;
             string resultPath = "TestResults";
             bool reinstall = true;
 
@@ -198,7 +185,7 @@ namespace SiliconStudio.Xenko.TestRunner
             }
             catch (Exception e)
             {
-                Console.WriteLine("{0}: {1}", exeName, e);
+                Console.WriteLine(@"{0}: {1}", exeName, e);
                 if (e is OptionException)
                     p.WriteOptionDescriptions(Console.Out);
                 exitCode = 1;
@@ -238,6 +225,7 @@ namespace SiliconStudio.Xenko.TestRunner
                 foreach (var device in androidDevices)
                 {
                     var testServerHost = new TestServerHost(buildNumber, branchName);
+                    testServerHost.TryConnect("127.0.0.1", RouterClient.DefaultPort).Wait();
                     Directory.CreateDirectory(resultPath);
                     var deviceResultFile = Path.Combine(resultPath, "TestResult_" + packageName + "_Android_" + device.Name + "_" + device.Serial + ".xml");
                     
