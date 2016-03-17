@@ -9,7 +9,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("PrefabAsset")]
-    [AssetDescription(FileExtension)]
+    [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(PrefabAssetCompiler))]
     [Display(195, "Prefab")]
     public class PrefabAsset : EntityHierarchyAssetBase

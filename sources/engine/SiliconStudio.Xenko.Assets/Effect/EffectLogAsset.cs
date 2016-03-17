@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// Describes an effect asset. 
     /// </summary>
     [DataContract("EffectLibrary")]
-    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
+    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [AssetCompiler(typeof(EffectLogAssetCompiler))]
     [Display(98, "Effect Library")]
     public sealed class EffectLogAsset : SourceCodeAsset

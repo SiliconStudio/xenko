@@ -328,6 +328,19 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
         }
 
+
+        public void TransformAttributePerParticle<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
+        {
+            for (var i = 0; i < verticesPerParticle; i++)
+            {
+                var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
+
+                transformMethod.Transform(ref temp);
+
+                Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
+            }
+        }
+
         /// <summary>
         /// Use a ResourceContext per GraphicsDevice (DeviceContext)
         /// </summary>

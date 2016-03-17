@@ -10,7 +10,7 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Skeleton")]
-    [AssetDescription(FileExtension)]
+    [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
     //[ObjectFactory(typeof(SkeletonFactory))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]

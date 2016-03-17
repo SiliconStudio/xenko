@@ -528,7 +528,7 @@ namespace SiliconStudio.Assets.Analysis
                     var nextItem = assetResolver(link.Element.Id);
                     if (nextItem != null)
                     {
-                        result.AddLinkOut(nextItem, link.Type, false);
+                        result.AddLinkOut(nextItem, link.Type);
 
                         // add current element to analyze list, to analyze dependencies recursively
                         if (isRecursive)
@@ -833,7 +833,7 @@ namespace SiliconStudio.Assets.Analysis
                     var childDependencyItem = TrackAsset(assetLink.Item);
                     if (childDependencyItem != null)
                     {
-                        childDependencyItem.AddLinkIn(dependencies.Item, assetLink.Type, false);
+                        childDependencyItem.AddLinkIn(dependencies.Item, assetLink.Type);
                     }
                 }
 
@@ -891,10 +891,10 @@ namespace SiliconStudio.Assets.Analysis
                     var oldBrokenLink = parentDependencies.RemoveBrokenLinkOut(item.Id);
 
                     // Update [Out] dependency to parent
-                    parentDependencies.AddLinkOut(item, oldBrokenLink.Type, false);
+                    parentDependencies.AddLinkOut(item, oldBrokenLink.Type);
 
                     // Update [In] dependency to current
-                    dependencies.AddLinkIn(parentDependencies.Item, oldBrokenLink.Type, false);
+                    dependencies.AddLinkIn(parentDependencies.Item, oldBrokenLink.Type);
 
                     // Remove global cache for assets with missing references
                     if (!parentDependencies.HasMissingDependencies)
@@ -1419,7 +1419,7 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     if ((linkTypes & pair.Type) != 0)
                     {
-                        dependencyRoot.AddLinkIn(pair, true);
+                        dependencyRoot.AddLinkIn(pair);
 
                         if (visited != null && recursive)
                         {
@@ -1456,7 +1456,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 if ((linkTypes & child.Type) != 0)
                 {
-                    dependencyRoot.AddLinkOut(child, true);
+                    dependencyRoot.AddLinkOut(child);
 
                     if (visited != null && recursive)
                     {
