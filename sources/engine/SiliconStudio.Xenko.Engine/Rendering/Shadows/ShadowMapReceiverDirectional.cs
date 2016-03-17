@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     internal static partial class ShadowMapReceiverDirectionalKeys
     {
-        public static readonly ParameterKey<float[]> CascadeDepthSplits = ParameterKeys.New<float[]>();
+        public static readonly ValueParameterKey<float> CascadeDepthSplits = ParameterKeys.NewValue<float>();
     }
 }

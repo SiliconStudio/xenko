@@ -22,12 +22,8 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public abstract bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
-        public Task<IActionItem> Execute(IContent content, object index, object parameter)
-        {
-            return Execute(content, index, parameter, Enumerable.Empty<IDirtiable>());
-        }
-
-        public abstract Task<IActionItem> Execute(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
+        /// <inheritdoc/>
+        public abstract Task<IActionItem> Execute(IContent content, object index, object parameter);
 
         /// <inheritdoc/>
         public virtual void StartCombinedInvoke()

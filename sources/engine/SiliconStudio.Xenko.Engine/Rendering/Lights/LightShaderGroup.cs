@@ -79,20 +79,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public void AddLight(LightComponent light, LightShadowMapTexture shadowMapTexture)
         {
             AddLightInternal(light);
-            if (ShadowGroup != null)
-            {
-                ShadowGroup.SetShadowMapShaderData(Count, shadowMapTexture.ShaderData);
-            }
+            ShadowGroup?.SetShadowMapShaderData(Count, shadowMapTexture.ShaderData);
             Count++;
         }
 
         public void ApplyParameters(ParameterCollection parameters)
         {
             ApplyParametersInternal(parameters);
-            if (ShadowGroup != null)
-            {
-                ShadowGroup.ApplyParameters(parameters);
-            }
+            ShadowGroup?.ApplyParameters(parameters);
+        }
+
+        public virtual void ApplyEffectPermutations(RenderEffect renderEffect)
+        {
         }
 
         protected abstract void AddLightInternal(LightComponent light);

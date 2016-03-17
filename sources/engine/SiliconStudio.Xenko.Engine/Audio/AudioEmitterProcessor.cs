@@ -223,7 +223,7 @@ namespace SiliconStudio.Xenko.Audio
         private void OnSoundControllerListChanged(object o, AudioEmitterComponent.ControllerCollectionChangedEventArgs args)
         {
             AssociatedData associatedData = null;
-            throw new NotImplementedException();
+            Internal.Refactor.ThrowNotImplementedException(null);
             //if (!ComponentDatas.TryGetValue(args.Entity, out associatedData))
             //    return;
 

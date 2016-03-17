@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -17,7 +18,7 @@ namespace SiliconStudio.Xenko.Animations
     /// </summary>
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<AnimationClip>))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Content")]
     public sealed class AnimationClip
     {
         // If there is an evaluator, animation clip can't be changed anymore.
@@ -45,6 +46,7 @@ namespace SiliconStudio.Xenko.Animations
         public Dictionary<string, Channel> Channels = new Dictionary<string, Channel>();
 
         // TODO: The curve stored inside should be internal/private (it is public now to avoid implementing custom serialization before first release).
+        [NotNullItems]
         public List<AnimationCurve> Curves = new List<AnimationCurve>();
 
         public AnimationData[] OptimizedAnimationDatas;

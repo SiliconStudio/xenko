@@ -7,6 +7,7 @@ using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -123,6 +124,57 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(new List<EntityComponent>() { custom, custom2 }, allComponents);
         }
 
+        [Test]
+        public void TestEntityAndPrefabClone()
+        {
+            Prefab prefab = null;
+
+            var entity = new Entity("Parent");
+            var childEntity = new Entity("Child");
+            entity.AddChild(childEntity);
+
+            var custom = entity.GetOrCreate<CustomEntityComponent>();
+            custom.Link = childEntity;
+            custom.CustomObject = new Model();
+
+            var newEntity = entity.Clone();
+
+            // NOTE: THE CODE AFTER THIS IS EXECUTED TWO TIMES
+            // 1st time: newEntity = entity.Clone();
+            // 2nd time: newEntity = prefab.Instantiate()[0];
+            check_new_Entity:
+            {
+                Assert.AreEqual(1, newEntity.Transform.Children.Count);
+                var newChildEntity = newEntity.Transform.Children[0].Entity;
+                Assert.AreEqual("Child", newChildEntity.Name);
+
+                Assert.NotNull(newEntity.Get<CustomEntityComponent>());
+                var newCustom = newEntity.Get<CustomEntityComponent>();
+
+                // Make sure that the old component and the new component are different
+                Assert.AreNotEqual(custom, newCustom);
+
+                // Make sure that the property is referencing the new cloned entity
+                Assert.AreEqual(newChildEntity, newCustom.Link);
+
+                // Verify that objects references outside the Entity/Component hierarchy are not cloned (shared)
+                Assert.AreEqual(custom.CustomObject, newCustom.CustomObject);
+            }
+
+            // Woot, ugly test using a goto, avoid factorizing code in a delegate method, ugly but effective, goto FTW
+            if (prefab == null)
+            {
+                // Check prefab cloning
+                prefab = new Prefab();
+                prefab.Entities.Add(entity);
+                var newEntities = prefab.Instantiate();
+                Assert.AreEqual(1, newEntities.Count);
+
+                newEntity = newEntities[0];
+                goto check_new_Entity;
+            }
+        }
+
         private class DelegateEntityComponentNotify : IEntityComponentNotify
         {
             private readonly Action<EntityComponentEvent> action;
@@ -197,6 +249,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
     [AllowMultipleComponents]
     public sealed class CustomEntityComponent : CustomEntityComponentBase
     {
+        public Entity Link { get; set; }
+
+        public object CustomObject { get; set; }
     }
 
     [DataContract()]

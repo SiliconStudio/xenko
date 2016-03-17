@@ -5,26 +5,20 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public static class MyCustomShaderKeys
     {
-        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
+        public static readonly ValueParameterKey<Vector4> ColorFactor2 = ParameterKeys.NewValue<Vector4>();
     }
 
     [TestFixture]
     public class TestCustomEffect : GraphicTestGameBase
     {
-        private ParameterCollection effectParameters;
-        private DynamicEffectCompiler dynamicEffectCompiler;
-
-        private DefaultEffectInstance effectInstance;
+        private DynamicEffectInstance effectInstance;
 
         private float switchEffectLevel;
-
-        private EffectParameterCollectionGroup parameterCollection;
 
         public TestCustomEffect()
         {
@@ -42,10 +36,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-
-            dynamicEffectCompiler = new DynamicEffectCompiler(Services, "CustomEffect.CustomSubEffect");
-            effectParameters = new ParameterCollection();
-            effectInstance = new DefaultEffectInstance(effectParameters);
+            effectInstance = new DynamicEffectInstance("CustomEffect.CustomSubEffect");
+            effectInstance.Initialize(Services);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -58,18 +50,16 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawCustomEffect()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
-            effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
-            effectParameters.Set(TexturingKeys.Texture0, UVTexture);
+            effectInstance.Parameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
+            effectInstance.Parameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
+            effectInstance.Parameters.Set(TexturingKeys.Texture0, UVTexture);
             switchEffectLevel++; // TODO: Add switch Effect to test and capture frames
-            dynamicEffectCompiler.Update(effectInstance, null);
-            parameterCollection = new EffectParameterCollectionGroup(GraphicsDevice, effectInstance.Effect, new[] { effectParameters });
 
-            GraphicsDevice.DrawQuad(effectInstance.Effect, parameterCollection);
+            GraphicsContext.DrawQuad(effectInstance);
         }
 
         public static void Main()

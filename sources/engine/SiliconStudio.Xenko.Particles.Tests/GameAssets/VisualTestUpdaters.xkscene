@@ -1,6 +1,6 @@
 !SceneAsset
 Id: c82d528c-c099-4ddb-ab27-b13b691b262f
-SerializedVersion: {Xenko: 1.6.0-beta}
+SerializedVersion: {Xenko: 1.6.0-beta03}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -50,13 +50,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -65,6 +67,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -75,62 +78,87 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 0.0, G: 1.0, B: 0.25, A: 1.0}
                                             ColorMax: {R: 0.0, G: 1.0, B: 0.7750001, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: c9a95c4f-060e-40ea-8477-d39e2a955da3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: df02b96f-ab3d-44b4-a8bb-0a0fb7251650
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -1.0, Y: 1.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 43b1799e-32fc-48d0-be42-6494f7552300
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: f1f34dd2-2789-43b4-a673-471b31ad11e2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 ~Id: 63c6bf5c-1734-457e-8b05-e81bcc2c327e
                                                 HalfHeight: 1.0
                                                 Radius: 1.0
-                                            IsSolid: false
+                                            IsHollow: true
                                             KillParticles: false
                                             Restitution: 0.0
                                             Friction: 0.0
@@ -164,13 +192,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -179,6 +209,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -189,62 +220,87 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.525, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.9375, B: 0.0, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: f152ea04-bb16-4d82-861c-1eea7b57f5c3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e0ff6c4a-75d8-4e4c-82e4-d63cfea83116
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 36
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 1debe135-dac2-4bb1-b365-4ffbf27f89ca
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: d980f4f4-3ee8-48a4-9e18-0c2b157a68fc
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCube
                                                 ~Id: 904b663f-6de3-4035-bb4e-6be0f228f1a3
                                                 HalfSideX: 1.0
                                                 HalfSideY: 1.0
                                                 HalfSideZ: 1.0
-                                            IsSolid: false
+                                            IsHollow: true
                                             KillParticles: false
                                             Restitution: 0.5
                                             Friction: 0.1
@@ -278,13 +334,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -293,6 +351,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -303,46 +362,66 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 0.0, G: 1.0, B: 0.7750001, A: 1.0}
                                             ColorMax: {R: 0.0, G: 0.4000001, B: 1.0, A: 1.0}
                                     Updaters:
                                         - !UpdaterForceField
                                             ~Id: bc61a783-fbbb-4da2-a582-2f0379ee9291
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 1b58e30f-dd09-4cba-802d-38cf8e49abd2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 ~Id: 0628e367-2ebb-4281-9ea7-a8af7e66d257
                                                 HalfHeight: 1.0
@@ -388,13 +467,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -403,6 +484,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -413,46 +495,66 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 0.0, G: 1.0, B: 0.25, A: 1.0}
                                             ColorMax: {R: 0.0, G: 1.0, B: 0.7750001, A: 1.0}
                                     Updaters:
                                         - !UpdaterForceField
                                             ~Id: bc61a783-fbbb-4da2-a582-2f0379ee9291
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 1b58e30f-dd09-4cba-802d-38cf8e49abd2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeTorus
                                                 ~Id: eb349d7d-b7a5-4754-aede-37689612c97c
                                                 BigRadius: 1.0
@@ -498,13 +600,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -513,6 +617,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -523,46 +628,66 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.525, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.9375, B: 0.0, A: 1.0}
                                     Updaters:
                                         - !UpdaterForceField
                                             ~Id: bc61a783-fbbb-4da2-a582-2f0379ee9291
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 1b58e30f-dd09-4cba-802d-38cf8e49abd2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCube
                                                 ~Id: cada21ce-7520-4822-8090-a11858d0ca3d
                                                 HalfSideX: 0.5
@@ -609,13 +734,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -624,6 +751,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -634,62 +762,87 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.2, Y: 1.2, Z: 1.8}
                                             PositionMax: {X: -1.8, Y: 1.8, Z: 1.2}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.45625, B: 0.6805468, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: f152ea04-bb16-4d82-861c-1eea7b57f5c3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e0ff6c4a-75d8-4e4c-82e4-d63cfea83116
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 36
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: 2.0, Y: -2.0, Z: -2.0}
                                             VelocityMax: {X: 1.0, Y: -1.0, Z: -1.0}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 1debe135-dac2-4bb1-b365-4ffbf27f89ca
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: d980f4f4-3ee8-48a4-9e18-0c2b157a68fc
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCube
                                                 ~Id: 904b663f-6de3-4035-bb4e-6be0f228f1a3
                                                 HalfSideX: 1.0
                                                 HalfSideY: 1.0
                                                 HalfSideZ: 1.0
-                                            IsSolid: true
+                                            IsHollow: false
                                             KillParticles: false
                                             Restitution: 0.0
                                             Friction: 0.0
@@ -723,13 +876,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -738,6 +893,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -748,74 +904,104 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: 0.5, Y: 2.0, Z: -0.5}
                                             PositionMax: {X: 0.5, Y: 2.0, Z: 0.5}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 0.8375, G: 1.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.1875, B: 0.0, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: c9a95c4f-060e-40ea-8477-d39e2a955da3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: df02b96f-ab3d-44b4-a8bb-0a0fb7251650
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -0.5, Y: 1.0, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 1.0, Z: 0.5}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 43b1799e-32fc-48d0-be42-6494f7552300
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: f1f34dd2-2789-43b4-a673-471b31ad11e2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 ~Id: 68aec651-291d-425b-a617-20664443059a
                                                 HalfHeight: 1.0
                                                 Radius: 1.0
-                                            IsSolid: true
+                                            IsHollow: false
                                             KillParticles: false
                                             Restitution: 0.22138
                                             Friction: 0.661107
                                         - !UpdaterGravity
                                             ~Id: aa84741a-f6ee-4bd9-92b1-8cbb964a0efc
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 10785120-bbf8-41f0-9a19-03b4e9a471eb
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
             Design: {}
         -   Entity:
                 Id: 6079c7be-2e6b-43eb-b110-3a90e0eb1058
@@ -846,13 +1032,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -861,6 +1049,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -871,56 +1060,81 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 0.237500191, G: 0.0, B: 1.0, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: 9ec5c5fe-5e3a-487b-aa3b-038197fd3bde
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 85704e6d-9f96-4dca-9518-74cbb4bd42f0
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 23
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Updaters:
                                         - !UpdaterForceField
                                             ~Id: bc61a783-fbbb-4da2-a582-2f0379ee9291
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 1b58e30f-dd09-4cba-802d-38cf8e49abd2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeSphere
                                                 ~Id: 9f36cd5f-d1d6-47a7-9c33-7616cb5d9b41
                                                 Radius: 1.0
@@ -938,12 +1152,17 @@ Hierarchy:
                                         - !UpdaterForceField
                                             ~Id: 9c0c7ef7-4504-4d6e-9524-a592e1466dbb
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 65e16380-814a-4949-802b-8792662f1260
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 0.3, Y: 10.0, Z: 0.3}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 0.3, Y: 10.0, Z: 0.3}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 ~Id: 3aceef53-2506-4ef1-ae3f-df12264376ec
                                                 HalfHeight: 1.0
@@ -1003,13 +1222,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -1018,6 +1239,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -1028,60 +1250,85 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.525, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.9375, B: 0.0, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: f152ea04-bb16-4d82-861c-1eea7b57f5c3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e0ff6c4a-75d8-4e4c-82e4-d63cfea83116
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 36
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 1debe135-dac2-4bb1-b365-4ffbf27f89ca
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: d980f4f4-3ee8-48a4-9e18-0c2b157a68fc
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeSphere
                                                 ~Id: ccad6e84-3bde-4b09-a2c3-8e2c8b84b8bf
                                                 Radius: 1.0
-                                            IsSolid: false
+                                            IsHollow: true
                                             KillParticles: false
                                             Restitution: 0.5
                                             Friction: 0.1
@@ -1098,8 +1345,9 @@ Hierarchy:
                         Children: []
                     - !ModelComponent
                         ~Id: fcdd2da4-ea61-45e9-b00f-a0f90009719c
-                        Model: a72697c2-f6a3-4f24-982c-570b3662500b:ProceduralModelGround
-                        Materials: []
+                        Model: bd690c56-74ea-43c5-8157-c86f57e8665e/a72697c2-f6a3-4f24-982c-570b3662500b:ProceduralModelGround
+                        Materials:
+                            - null
             Design: {}
         -   Entity:
                 Id: 92589c83-2183-4a15-8508-8a5fe34cc7c7
@@ -1130,13 +1378,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -1145,6 +1395,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -1155,62 +1406,87 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: -1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 0.0, G: 1.0, B: 0.25, A: 1.0}
                                             ColorMax: {R: 0.0, G: 1.0, B: 0.7750001, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: c9a95c4f-060e-40ea-8477-d39e2a955da3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: df02b96f-ab3d-44b4-a8bb-0a0fb7251650
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -1.0, Y: 1.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 43b1799e-32fc-48d0-be42-6494f7552300
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: f1f34dd2-2789-43b4-a673-471b31ad11e2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeTorus
                                                 ~Id: b816b9ea-8d9c-4514-b1c2-eb7f5b09ee37
                                                 BigRadius: 1.0
                                                 SmallRadius: 0.33333
-                                            IsSolid: false
+                                            IsHollow: true
                                             KillParticles: false
                                             Restitution: 0.0
                                             Friction: 0.0
@@ -1244,13 +1520,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -1259,6 +1537,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -1269,60 +1548,85 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: -1.2, Y: 1.2, Z: 1.8}
                                             PositionMax: {X: -1.8, Y: 1.8, Z: 1.2}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.45625, B: 0.6805468, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: f152ea04-bb16-4d82-861c-1eea7b57f5c3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e0ff6c4a-75d8-4e4c-82e4-d63cfea83116
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 36
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: 2.0, Y: -2.0, Z: -2.0}
                                             VelocityMax: {X: 1.0, Y: -1.0, Z: -1.0}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 1debe135-dac2-4bb1-b365-4ffbf27f89ca
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: d980f4f4-3ee8-48a4-9e18-0c2b157a68fc
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeSphere
                                                 ~Id: 769375e8-661f-4ff9-b5d9-1b3b507a46d7
                                                 Radius: 1.0
-                                            IsSolid: true
+                                            IsHollow: false
                                             KillParticles: false
                                             Restitution: 0.0
                                             Friction: 0.0
@@ -1356,13 +1660,15 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
                                     MaxParticlesOverride: 0
-                                    ParticleMinLifetime: 1.0
-                                    ParticleMaxLifetime: 1.0
+                                    ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
                                     RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
@@ -1371,6 +1677,7 @@ Hierarchy:
                                             Stream: !ColorVertexStreamDefinition
                                                 ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
+                                        ForceTexCoords: false
                                     Spawners:
                                         - !SpawnerPerSecond
                                             ~Id: 9af5d8dc-50cf-47ca-979a-8e06f5ab84f7
@@ -1381,74 +1688,104 @@ Hierarchy:
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
-                                            InheritLocation: Scale
-                                            ParticleLocator:
-                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.01}
                                         - !InitialPositionSeed
                                             ~Id: d5d227a5-d0aa-4b6c-9c71-2b69cd972b8d
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: e59059ca-a9b0-4d07-900a-213a264a3e13
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             PositionMin: {X: 0.5, Y: 2.0, Z: -0.5}
                                             PositionMax: {X: 0.5, Y: 2.0, Z: 0.5}
                                         - !InitialColorSeed
                                             ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ColorMin: {R: 0.8375, G: 1.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 1.0, G: 0.1875, B: 0.0, A: 1.0}
                                         - !InitialVelocitySeed
                                             ~Id: c9a95c4f-060e-40ea-8477-d39e2a955da3
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: df02b96f-ab3d-44b4-a8bb-0a0fb7251650
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
                                             VelocityMin: {X: -0.5, Y: 1.0, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 1.0, Z: 0.5}
                                     Updaters:
                                         - !UpdaterCollider
                                             ~Id: 43b1799e-32fc-48d0-be42-6494f7552300
                                             DebugDraw: true
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: f1f34dd2-2789-43b4-a673-471b31ad11e2
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeTorus
                                                 ~Id: b816b9ea-8d9c-4514-b1c2-eb7f5b09ee37
                                                 BigRadius: 1.0
                                                 SmallRadius: 0.33333
-                                            IsSolid: true
+                                            IsHollow: false
                                             KillParticles: false
                                             Restitution: 0.22138
                                             Friction: 0.661107
                                         - !UpdaterGravity
                                             ~Id: aa84741a-f6ee-4bd9-92b1-8cbb964a0efc
-                                            InheritLocation: Position, Rotation, Scale
-                                            ParticleLocator:
-                                                ~Id: 10785120-bbf8-41f0-9a19-03b4e9a471eb
-                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
-                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
             Design: {}
         -   Entity:
                 Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
@@ -1493,6 +1830,7 @@ SceneSettings:
                     Mode: !CameraRendererModeForward
                         ~Id: 6710f190-af88-41e2-b97f-5656f5cd6039
                     Camera:
+                        ~Id: ea9dc595-a8cf-4108-bc37-0239014bd7d0
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}

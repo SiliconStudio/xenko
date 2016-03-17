@@ -167,7 +167,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             if (!Enabled || Texture == null) // generate shader from default value when the texture is null or disabled
-                return GenerateShaderFromFallbackValue(context, baseKeys);
+            {
+                var fallbackValue = GenerateShaderFromFallbackValue(context, baseKeys);
+                if (fallbackValue != null)
+                    return fallbackValue;
+            }
 
             // generate shader from the texture
             // TODO: Use a generated UsedTexcoordIndex when backing textures
@@ -218,8 +222,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             else
             {
                 // Try to avoid shader permutations, by putting UV scaling/offset in shader parameters
-                var textureScale = (ParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureScale);
-                var textureOffset = (ParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureOffset);
+                var textureScale = (ValueParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureScale);
+                var textureOffset = (ValueParameterKey<Vector2>)context.GetParameterKey(MaterialKeys.TextureOffset);
 
                 context.Parameters.Set(textureScale, scale);
                 context.Parameters.Set(textureOffset, Offset);

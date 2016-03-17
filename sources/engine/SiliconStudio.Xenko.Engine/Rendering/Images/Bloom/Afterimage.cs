@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // Nothing to do
                 if (input != output)
                 {
-                    GraphicsDevice.Copy(input, output);
+                    context.CommandList.Copy(input, output);
                 }
                 return;
             }
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (input == output)
             {
                 var newInput = NewScopedRenderTarget2D(input.Description);
-                GraphicsDevice.Copy(input, newInput);
+                context.CommandList.Copy(input, newInput);
                 input = newInput;
             }
 
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 persistenceTexture = Context.Allocator.GetTemporaryTexture2D(output.Description);
                 // Initializes to black
-                GraphicsDevice.Clear(persistenceTexture, Color.Black);
+                context.CommandList.Clear(persistenceTexture, Color.Black);
             }
 
             var accumulationPersistence = NewScopedRenderTarget2D(persistenceTexture.Description);
@@ -108,16 +108,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
             bloomAfterimageShader.SetInput(0, input);
             bloomAfterimageShader.SetInput(1, persistenceTexture);
             bloomAfterimageShader.SetOutput(accumulationPersistence);
-            bloomAfterimageShader.Draw("Afterimage persistence accumulation");
+            bloomAfterimageShader.Draw(context, "Afterimage persistence accumulation");
 
             // Keep the final brightness buffer for the following frames
-            GraphicsDevice.Copy(accumulationPersistence, persistenceTexture);
+            context.CommandList.Copy(accumulationPersistence, persistenceTexture);
 
             // Merge persistence and current bloom into the final result
             bloomAfterimageCombineShader.SetInput(0, input);
             bloomAfterimageCombineShader.SetInput(1, persistenceTexture);
             bloomAfterimageCombineShader.SetOutput(output);
-            bloomAfterimageCombineShader.Draw("Afterimage persistence combine");
+            bloomAfterimageCombineShader.Draw(context, "Afterimage persistence combine");
         }
     }
 }

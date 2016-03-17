@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private bool skipHighestLevel;
 
-        private Effect spriteEffect;
+        private EffectInstance spriteEffect;
 
         private bool filterAtEachFrame = true;
         private bool hasBeenFiltered;
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             skipHighestLevel = radianceFilter.DoNotFilterHighestLevel;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            inputCubemap = Asset.Load<Texture>("CubeMap");
+            inputCubemap = Content.Load<Texture>("CubeMap");
             outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
             outputCubemapNoCompute = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6).DisposeBy(this);
             CreateViews();
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderCubeMap });
         }
 
-        private void PrefilterCubeMap()
+        private void PrefilterCubeMap(RenderDrawContext context)
         {
             if (!filterAtEachFrame && hasBeenFiltered)
                 return;
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 radianceFilter.SamplingsCount = samplingCounts;
                 radianceFilter.RadianceMap = inputCubemap;
                 radianceFilter.PrefilteredRadiance = outputCubemap;
-                radianceFilter.Draw();
+                radianceFilter.Draw(context);
             }
             else
             {
@@ -111,25 +111,25 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 radianceFilterNoCompute.SamplingsCount = samplingCounts;
                 radianceFilterNoCompute.RadianceMap = inputCubemap;
                 radianceFilterNoCompute.PrefilteredRadiance = outputCubemapNoCompute;
-                radianceFilterNoCompute.Draw();
+                radianceFilterNoCompute.Draw(context);
             }
 
             hasBeenFiltered = true;
         }
 
-        private void RenderCubeMap()
+        private void RenderCubeMap(RenderDrawContext context)
         {
             if (displayedViews == null || spriteBatch == null)
                 return;
 
-            spriteEffect = EffectSystem.LoadEffect("SpriteEffect").WaitForResult();
+            spriteEffect = new EffectInstance(EffectSystem.LoadEffect("SpriteEffect").WaitForResult());
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Green);
+            context.CommandList.SetRenderTargetAndViewport(null, GraphicsDevice.Presenter.BackBuffer);
+            context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
-            spriteBatch.Begin(SpriteSortMode.Texture, spriteEffect);
+            spriteBatch.Begin(GraphicsContext, SpriteSortMode.Texture, spriteEffect);
             spriteBatch.Draw(displayedViews[1], new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[2], new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[4], new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
@@ -183,14 +183,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             }
 
             if (Input.IsKeyPressed(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "RadiancePrefilteredGGXCross_level{0}.png".ToFormat(displayedLevel));
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "RadiancePrefilteredGGXCross_level{0}.png".ToFormat(displayedLevel));
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            PrefilterCubeMap();
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsContext);
 
-            RenderCubeMap();
+            PrefilterCubeMap(renderDrawContext);
+            RenderCubeMap(renderDrawContext);
 
             base.Draw(gameTime);
         }

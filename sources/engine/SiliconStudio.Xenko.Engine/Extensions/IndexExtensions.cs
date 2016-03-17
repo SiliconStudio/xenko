@@ -14,11 +14,16 @@ namespace SiliconStudio.Xenko.Extensions
 {
     public static class IndexExtensions
     {
-        private static byte[] GetDataSafe(this Buffer buffer)
+        private static byte[] GetDataSafe(this Buffer buffer, CommandList commandList = null)
         {
             var data = buffer.GetSerializationData();
+            if (data != null)
+                return data.Content;
 
-            return data != null ? data.Content : buffer.GetData<byte>();
+            if (commandList == null)
+                throw new InvalidOperationException("Could not find underlying CPU buffer data and no command list was given to extract them from GPU");
+
+            return buffer.GetData<byte>(commandList);
         }
 
         /// <summary>
@@ -26,7 +31,7 @@ namespace SiliconStudio.Xenko.Extensions
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
         /// <param name="declaration">The final vertex declaration</param>
-        public unsafe static void GenerateIndexBuffer(this MeshDraw meshData, VertexDeclaration declaration)
+        public static unsafe void GenerateIndexBuffer(this MeshDraw meshData, VertexDeclaration declaration)
         {
             // For now, require a MeshData with only one vertex buffer and no index buffer
             if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer != null)
@@ -35,7 +40,7 @@ namespace SiliconStudio.Xenko.Extensions
             var oldVertexBuffer = meshData.VertexBuffers[0];
             var oldVertexStride = oldVertexBuffer.Declaration.VertexStride;
             var newVertexStride = declaration.VertexStride;
-            var indexMapping = GenerateIndexMapping(oldVertexBuffer);
+            var indexMapping = GenerateIndexMapping(oldVertexBuffer, null);
             var vertices = indexMapping.Vertices;
 
             // Generate vertex buffer
@@ -107,7 +112,7 @@ namespace SiliconStudio.Xenko.Extensions
             return true;
         }
 
-        public static unsafe int[] GenerateIndexBufferAEN(IndexBufferBinding indexBuffer, VertexBufferBinding vertexBuffer)
+        public static unsafe int[] GenerateIndexBufferAEN(IndexBufferBinding indexBuffer, VertexBufferBinding vertexBuffer, CommandList commandList = null)
         {
             // More info at http://developer.download.nvidia.com/whitepapers/2010/PN-AEN-Triangles-Whitepaper.pdf
             // This implementation might need some performance improvements
@@ -115,12 +120,12 @@ namespace SiliconStudio.Xenko.Extensions
             var triangleCount = indexBuffer.Count / 3;
             var newIndices = new int[triangleCount * 12];
 
-            var positionMapping = GenerateIndexMapping(vertexBuffer, "POSITION");
+            var positionMapping = GenerateIndexMapping(vertexBuffer, commandList, "POSITION");
             var dominantEdges = new Dictionary<EdgeKeyAEN, EdgeAEN>();
             var dominantVertices = new Dictionary<int, int>();
             var indexSize = indexBuffer.Is32Bit? 4: 2;
 
-            fixed (byte* indexBufferStart = &indexBuffer.Buffer.GetDataSafe()[indexBuffer.Offset])
+            fixed (byte* indexBufferStart = &indexBuffer.Buffer.GetDataSafe(commandList)[indexBuffer.Offset])
             {
                 var triangleIndices = stackalloc int[3];
                 var positionIndices = stackalloc int[3];
@@ -308,9 +313,9 @@ namespace SiliconStudio.Xenko.Extensions
         /// <param name="vertexBufferBinding">The vertex buffer binding.</param>
         /// <param name="usages">The vertex element usages to consider.</param>
         /// <returns></returns>
-        public static unsafe IndexMappingResult GenerateIndexMapping(this VertexBufferBinding vertexBufferBinding, params string[] usages)
+        public static unsafe IndexMappingResult GenerateIndexMapping(this VertexBufferBinding vertexBufferBinding, CommandList commandList, params string[] usages)
         {
-            var bufferData = vertexBufferBinding.Buffer.GetDataSafe();
+            var bufferData = vertexBufferBinding.Buffer.GetDataSafe(commandList);
             var vertexStride = vertexBufferBinding.Declaration.VertexStride;
             var vertexCount = vertexBufferBinding.Count;
             var activeBytes = stackalloc byte[vertexStride];

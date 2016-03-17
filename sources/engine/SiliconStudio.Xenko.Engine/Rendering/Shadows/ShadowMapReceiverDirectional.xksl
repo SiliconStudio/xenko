@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </remarks>
     internal class ShadowMapReceiverDirectional<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TDepthRangeAuto, bool TCascadeDebug> : ShadowMapReceiverBase<TCascadeCount, TLightCount>
     {
-        cbuffer PerPass // TODO: Use a proper cbuffer for this?
+        cbuffer PerLighting // TODO: Use a proper cbuffer for this?
         {
             float CascadeDepthSplits[TCascadeCount * TLightCount];
         };

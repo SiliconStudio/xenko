@@ -44,11 +44,11 @@ namespace SiliconStudio.Assets.Analysis
 
             // Copy Output refs
             foreach (var child in set.LinksOut)
-                AddLinkOut(child, true);
+                AddLinkOut(child);
 
             // Copy Input refs
             foreach (var child in set.LinksIn)
-                AddLinkIn(child, true);
+                AddLinkIn(child);
 
             // Copy missing refs
             foreach (var child in set.BrokenLinksOut)
@@ -177,11 +177,10 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="fromItem">The element the link is coming from</param>
         /// <param name="contentLinkType">The type of link</param>
-        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link from this element already exists</exception>
-        public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType, bool cloneAssetItem)
+        public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType)
         {
-            AddLink(ref parents, new AssetLink(fromItem, contentLinkType), cloneAssetItem);
+            AddLink(ref parents, new AssetLink(fromItem, contentLinkType));
         }
 
         /// <summary>
@@ -218,11 +217,10 @@ namespace SiliconStudio.Assets.Analysis
         /// Adds a link coming from the provided element.
         /// </summary>
         /// <param name="contentLink">The link in</param>
-        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link from this element already exists</exception>
-        public void AddLinkIn(AssetLink contentLink, bool cloneAssetItem)
+        public void AddLinkIn(AssetLink contentLink)
         {
-            AddLink(ref parents, contentLink, cloneAssetItem);
+            AddLink(ref parents, contentLink);
         }
 
         /// <summary>
@@ -257,22 +255,20 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="toItem">The element the link is going to</param>
         /// <param name="contentLinkType">The type of link</param>
-        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link to this element already exists</exception>
-        public void AddLinkOut(AssetItem toItem, ContentLinkType contentLinkType, bool cloneAssetItem)
+        public void AddLinkOut(AssetItem toItem, ContentLinkType contentLinkType)
         {
-            AddLink(ref children, new AssetLink(toItem, contentLinkType), cloneAssetItem);
+            AddLink(ref children, new AssetLink(toItem, contentLinkType));
         }
 
         /// <summary>
         /// Adds a link going to the provided element.
         /// </summary>
         /// <param name="contentLink">The link out</param>
-        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link to this element already exists</exception>
-        public void AddLinkOut(AssetLink contentLink, bool cloneAssetItem)
+        public void AddLinkOut(AssetLink contentLink)
         {
-            AddLink(ref children, contentLink, cloneAssetItem);
+            AddLink(ref children, contentLink);
         }
 
         /// <summary>
@@ -310,7 +306,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="ArgumentException">A broken link to this element already exists</exception>
         public void AddBrokenLinkOut(IContentReference reference, ContentLinkType contentLinkType)
         {
-            AddLink(ref missingChildren, new AssetLink(reference, contentLinkType), false);
+            AddLink(ref missingChildren, new AssetLink(reference, contentLinkType));
         }
 
         /// <summary>
@@ -320,7 +316,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="ArgumentException">A broken link to this element already exists</exception>
         public void AddBrokenLinkOut(IContentLink contentLink)
         {
-            AddLink(ref missingChildren, new AssetLink(contentLink.Element, contentLink.Type), false);
+            AddLink(ref missingChildren, new AssetLink(contentLink.Element, contentLink.Type));
         }
 
         /// <summary>
@@ -346,7 +342,7 @@ namespace SiliconStudio.Assets.Analysis
             return RemoveLink(ref missingChildren, id, ContentLinkType.All);
         }
 
-        private void AddLink(ref Dictionary<Guid, AssetLink> dictionary, AssetLink contentLink, bool cloneAssetItem)
+        private void AddLink(ref Dictionary<Guid, AssetLink> dictionary, AssetLink contentLink)
         {
             if(dictionary == null)
                 dictionary = new Dictionary<Guid, AssetLink>();
@@ -355,7 +351,7 @@ namespace SiliconStudio.Assets.Analysis
             if (dictionary.ContainsKey(id))
                 contentLink.Type |= dictionary[id].Type;
 
-            dictionary[id] = cloneAssetItem? contentLink.Clone(): contentLink;
+            dictionary[id] = contentLink;
         }
 
         private AssetLink GetLink(ref Dictionary<Guid, AssetLink> dictionary, Guid id)

@@ -7,16 +7,61 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
+    /// <summary>
+    /// The <see cref="InitialRotationSeed"/> is an initializer which sets the particle's rotation around the Z axis in clip space (camera-facing)
+    /// </summary>
     [DataContract("InitialRotationSeed")]
     [Display("Initial Rotation")]
     public class InitialRotationSeed : ParticleInitializer
     {
+        private Vector2 angularRotation = new Vector2(-60f, 60f);
+        private float angularRotationStart = MathUtil.DegreesToRadians(-60f);
+        private float angularRotationStep = MathUtil.DegreesToRadians(120);
+
+
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
         public InitialRotationSeed()
         {
             RequiredFields.Add(ParticleFields.Angle);
             RequiredFields.Add(ParticleFields.RandomSeed);
         }
 
+
+
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
+        [DataMember(8)]
+        [Display("Random Seed")]
+        public UInt32 SeedOffset { get; set; } = 0;
+
+        /// <summary>
+        /// Angular rotation in degrees, positive value means clockwise
+        /// </summary>
+        /// <userdoc>
+        /// Angular rotation in degrees, positive value means clockwise
+        /// </userdoc>
+        [DataMember(30)]
+        [Display("Angle (degrees) min")]
+        public Vector2 AngularRotation
+        {
+            get { return angularRotation; }
+            set
+            {
+                angularRotation = value;
+                angularRotationStart = MathUtil.DegreesToRadians(angularRotation.X);
+                angularRotationStep = MathUtil.DegreesToRadians(angularRotation.Y - angularRotation.X);
+            }
+        }
+
+
+
+        /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
             if (!pool.FieldExists(ParticleFields.Angle) || !pool.FieldExists(ParticleFields.RandomSeed))
@@ -36,58 +81,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-
-        /// <summary>
-        /// The seed offset used to match or separate random values
-        /// </summary>
-        /// <userdoc>
-        /// The seed offset used to match or separate random values
-        /// </userdoc>
-        [DataMember(8)]
-        [Display("Seed offset")]
-        public UInt32 SeedOffset { get; set; } = 0;
-
-        /// <summary>
-        /// Angular rotation in degrees, positive value means clockwise
-        /// </summary>
-        /// <userdoc>
-        /// Angular rotation in degrees, positive value means clockwise
-        /// </userdoc>
-        [DataMember(30)]
-        [Display("Angle (degrees) min")]
-        public float AngularRotationMin
-        {
-            get { return angularRotationMin; }
-            set
-            {
-                angularRotationMin = value;
-                angularRotationStart = MathUtil.DegreesToRadians(angularRotationMin);
-                angularRotationStep  = MathUtil.DegreesToRadians(angularRotationMax - angularRotationMin);
-            }
-        }
-
-        /// <summary>
-        /// Angular rotation in degrees, positive value means clockwise
-        /// </summary>
-        /// <userdoc>
-        /// Angular rotation in degrees, positive value means clockwise
-        /// </userdoc>
-        [DataMember(40)]
-        [Display("Angle (degrees) max")]
-        public float AngularRotationMax
-        {
-            get { return angularRotationMax; }
-            set
-            {
-                angularRotationMax = value;
-                angularRotationStart = MathUtil.DegreesToRadians(angularRotationMin);
-                angularRotationStep  = MathUtil.DegreesToRadians(angularRotationMax - angularRotationMin);
-            }
-        }
-
-        private float angularRotationMin = -60f;
-        private float angularRotationMax = 60f;
-        private float angularRotationStart = MathUtil.DegreesToRadians(-60f);
-        private float angularRotationStep  = MathUtil.DegreesToRadians(120);
+        
+        
     }
 }

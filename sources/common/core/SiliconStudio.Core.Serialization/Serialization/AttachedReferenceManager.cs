@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -62,7 +63,7 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Creates a proxy object with <see cref="AttachedReference" /> designing it as a proxy with a given id and location (that can be used with <see cref="Assets.AssetManager" />). This allows to construct and save object references without actually loading them.
+        /// Creates a proxy object with <see cref="AttachedReference" /> designing it as a proxy with a given id and location (that can be used with <see cref="ContentManager" />). This allows to construct and save object references without actually loading them.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="contentReference">The content reference.</param>
@@ -75,7 +76,7 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Creates a proxy object with <see cref="AttachedReference"/> designing it as a proxy with a given id and location (that can be used with <see cref="Assets.AssetManager"/>). This allows to construct and save object references without actually loading them.
+        /// Creates a proxy object with <see cref="AttachedReference"/> designing it as a proxy with a given id and location (that can be used with <see cref="ContentManager"/>). This allows to construct and save object references without actually loading them.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="id">The identifier.</param>
@@ -92,7 +93,7 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Creates a proxy object with <see cref="AttachedReference"/> designing it as a proxy with a given id and location (that can be used with <see cref="Assets.AssetManager"/>). This allows to construct and save object references without actually loading them.
+        /// Creates a proxy object with <see cref="AttachedReference"/> designing it as a proxy with a given id and location (that can be used with <see cref="ContentManager"/>). This allows to construct and save object references without actually loading them.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="id">The identifier.</param>

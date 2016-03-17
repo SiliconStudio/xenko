@@ -120,6 +120,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(80)]
         [Category]
         [Display(null, "Characters")]
+        [NotNullItems]
         public List<CharacterRegion> CharacterRegions { get; set; }
 
         /// <summary>

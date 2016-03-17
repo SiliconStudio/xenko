@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ComputeColorTextureDynamicScaledOffsetKeys
     {
-        public static readonly ParameterKey<Vector2> Offset = ParameterKeys.New<Vector2>(new Vector2(0,0));
-        public static readonly ParameterKey<Vector2> Scale = ParameterKeys.New<Vector2>(new Vector2(1,1));
+        public static readonly ValueParameterKey<Vector2> Offset = ParameterKeys.NewValue<Vector2>(new Vector2(0,0));
+        public static readonly ValueParameterKey<Vector2> Scale = ParameterKeys.NewValue<Vector2>(new Vector2(1,1));
     }
 }

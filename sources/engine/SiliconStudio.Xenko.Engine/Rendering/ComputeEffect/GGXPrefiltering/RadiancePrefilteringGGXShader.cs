@@ -18,10 +18,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class RadiancePrefilteringGGXShaderKeys
     {
-        public static readonly ParameterKey<int> RadianceMapSize = ParameterKeys.New<int>();
-        public static readonly ParameterKey<Texture> RadianceMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Texture> FilteredRadiance = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> MipmapCount = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> Roughness = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<int> RadianceMapSize = ParameterKeys.NewValue<int>();
+        public static readonly ObjectParameterKey<Texture> RadianceMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ObjectParameterKey<Texture> FilteredRadiance = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> MipmapCount = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> Roughness = ParameterKeys.NewValue<float>();
     }
 }

@@ -109,19 +109,13 @@ namespace SiliconStudio.Xenko.Particles
         /// Some parameters should be initialized when the emitter first runs, rather than in the constructor
         /// </summary>
         [DataMemberIgnore]
-        private bool delayInit;
+        private bool hasBeenInitialized;
 
         /// <summary>
-        /// Particles will live at least that much when spawned
+        /// Particles will live for a number of seconds between these two values
         /// </summary>
         [DataMemberIgnore]
-        private float particleMinLifetime = 1;
-
-        /// <summary>
-        /// Particles will live at most that much when spawned
-        /// </summary>
-        [DataMemberIgnore]
-        private float particleMaxLifetime = 1;
+        private Vector2 particleLifetime = new Vector2(1, 1);
 
         // Draw location can be different than the particle position if we are using local coordinate system
         private Vector3 drawPosition = new Vector3(0, 0, 0);
@@ -141,7 +135,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// The vertex builder is used for rendering, and it builds the actual vertex buffer stream from particle data
         /// </summary>
-        private ParticleVertexBuilder vertexBuilder = new ParticleVertexBuilder();
+        internal readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
 
 
         /// <summary>
@@ -160,13 +154,13 @@ namespace SiliconStudio.Xenko.Particles
 
             initialDefaultFields = new InitialDefaultFields();
 
-            Initializers = new TrackingCollection<ParticleInitializer>();
+            Initializers = new FastTrackingCollection<ParticleInitializer>();
             Initializers.CollectionChanged += ModulesChanged;
 
-            Updaters = new TrackingCollection<ParticleUpdater>();
+            Updaters = new FastTrackingCollection<ParticleUpdater>();
             Updaters.CollectionChanged += ModulesChanged;
 
-            Spawners = new TrackingCollection<ParticleSpawner>();
+            Spawners = new FastTrackingCollection<ParticleSpawner>();
             Spawners.CollectionChanged += SpawnersChanged;        
         }
 
@@ -213,45 +207,18 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
-        /// <summary>
-        /// Minimum particle lifetime, in seconds. Should be positive and no bigger than <see cref="ParticleMaxLifetime"/>
-        /// </summary>
-        /// <userdoc>
-        /// When a new particle is born it will have at least that much Lifetime remaining (in seconds)
-        /// </userdoc>
-        [DataMember(8)]
-        [Display("Lifespan min")]
-        public float ParticleMinLifetime
+        [DataMember(7)]
+        [Display("Lifespan")]
+        public Vector2 ParticleLifetime
         {
-            get { return particleMinLifetime; }
+            get { return particleLifetime; }
             set
             {
-                if (value <= 0) //  || value > particleMaxLifetime - there is a problem with reading data when MaxLifetime is still not initialized
+                if (value.X <= 0 || value.Y < value.X)
                     return;
 
                 DirtyParticlePool = true;
-                particleMinLifetime = value;
-            }
-        }
-
-        /// <summary>
-        /// Maximum particle lifetime, in seconds. Should be positive and no smaller than <see cref="ParticleMinLifetime"/>
-        /// </summary>
-        /// <userdoc>
-        /// When a new particle is born it will have at most that much Lifetime remaining (in seconds)
-        /// </userdoc>
-        [DataMember(10)]
-        [Display("Lifespan max")]
-        public float ParticleMaxLifetime
-        {
-            get { return particleMaxLifetime; }
-            set
-            {
-                if (value < particleMinLifetime)
-                    return;
-
-                DirtyParticlePool = true;
-                particleMaxLifetime = value;
+                particleLifetime = value;
             }
         }
 
@@ -295,7 +262,7 @@ namespace SiliconStudio.Xenko.Particles
             set
             {
                 randomSeedMethod = value;
-                delayInit = false;
+                hasBeenInitialized = false;
             }
         }
 
@@ -349,7 +316,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Spawners")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleSpawner> Spawners;
+        public readonly FastTrackingCollection<ParticleSpawner> Spawners;
 
         /// <summary>
         /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
@@ -361,7 +328,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Initializers")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleInitializer> Initializers;
+        public readonly FastTrackingCollection<ParticleInitializer> Initializers;
 
         /// <summary>
         /// List of <see cref="ParticleUpdater"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
@@ -373,37 +340,20 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Updaters")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleUpdater> Updaters;
-
-
-        #region Dispose
-
-        ~ParticleEmitter()
-        {
-            Dispose(false);
-        }
+        public readonly FastTrackingCollection<ParticleUpdater> Updaters;
 
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
         {
             if (disposed)
                 return;
             disposed = true;
 
             // Dispose unmanaged resources
-
-            if (!disposing)
-                return;
+            ResetSimulation(); // Will set particle count = 0, freeing unmanaged and graphics memory
 
             // Dispose managed resources
             pool?.Dispose();
         }
-        #endregion Dispose
 
         /// <summary>
         /// If the particle pool has changed the sorter must also be updated to reflect those changes
@@ -458,7 +408,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event arguments</param>
-        private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void ModulesChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             var module = e.Item as ParticleModule;
             if (module == null)
@@ -487,7 +437,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SpawnersChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void SpawnersChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)
         {
             DirtyParticlePool = true;
         }
@@ -511,7 +461,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
-            if (!delayInit)
+            if (!hasBeenInitialized)
             {
                 DelayedInitialization(parentSystem);
             }
@@ -534,10 +484,10 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         protected unsafe void DelayedInitialization(ParticleSystem parentSystem)
         {
-            if (delayInit)
+            if (hasBeenInitialized)
                 return;
 
-            delayInit = true;
+            hasBeenInitialized = true;
 
             // RandomNumberGenerator creation
             {
@@ -573,24 +523,30 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Restarts the simulation, deleting all particles and starting from Time = 0
+        /// Resets the simulation, deleting all particles and starting from Time = 0
         /// </summary>
-        public void RestartSimulation()
+        public void ResetSimulation()
         {
+            // Reset the particle pool which allocates unmanaged memory
             DirtyParticlePool = true;
             pool.SetCapacity(0);
+
+            // Reset the vertex builder which allocates graphics memory
+            VertexBuilder.Reset();
 
             // Restart all spawners
             foreach (var spawner in Spawners)
             {
-                spawner.RestartSimulation();
+                spawner.ResetSimulation();
             }
 
             // Restart all updaters
             foreach (var updater in Updaters)
             {
-                updater.RestartSimulation();
+                updater.ResetSimulation();
             }
+
+            hasBeenInitialized = false;
         }
 
         /// <summary>
@@ -663,7 +619,7 @@ namespace SiliconStudio.Xenko.Particles
                 particlesPerSecond += spawnerBase.GetMaxParticlesPerSecond();
             }
 
-            MaxParticles = (int)Math.Ceiling(ParticleMaxLifetime * particlesPerSecond);
+            MaxParticles = (int)Math.Ceiling(particleLifetime.Y * particlesPerSecond);
 
             pool.SetCapacity(MaxParticles);
             PoolChangedNotification();
@@ -680,7 +636,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 var lifeField = pool.GetField(ParticleFields.RemainingLife);
                 var randField = pool.GetField(ParticleFields.RandomSeed);
-                var lifeStep = ParticleMaxLifetime - ParticleMinLifetime;
+                var lifeStep = particleLifetime.Y - particleLifetime.X;
 
                 var particleEnumerator = pool.GetEnumerator();
                 while (particleEnumerator.MoveNext())
@@ -693,7 +649,7 @@ namespace SiliconStudio.Xenko.Particles
                     if (*life > 1)
                         *life = 1;
 
-                    var startingLife = ParticleMinLifetime + lifeStep * randSeed.GetFloat(0);
+                    var startingLife = particleLifetime.X + lifeStep * randSeed.GetFloat(0);
 
                     if (*life <= 0 || (*life -= (dt / startingLife)) <= 0)
                     {
@@ -865,28 +821,28 @@ namespace SiliconStudio.Xenko.Particles
 
         #endregion
 
-        #region Rendering
-
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
         /// </summary>
-        private void PrepareForDraw()
+        public void PrepareForDraw()
         {
-            Material.PrepareForDraw(vertexBuilder, ParticleSorter);
+            Material.PrepareForDraw(VertexBuilder, ParticleSorter);
 
-            ShapeBuilder.PrepareForDraw(vertexBuilder, ParticleSorter);
+            ShapeBuilder.PrepareForDraw(VertexBuilder, ParticleSorter);
 
             // Update the vertex builder and the vertex layout if needed
-            if (Material.VertexLayoutHasChanged || ShapeBuilder.VertexLayoutHasChanged)
+            if (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged)
             {
-                vertexBuilder.ResetVertexElementList();
+                VertexBuilder.ResetVertexElementList();
 
-                Material.UpdateVertexBuilder(vertexBuilder);
+                Material.UpdateVertexBuilder(VertexBuilder);
 
-                ShapeBuilder.UpdateVertexBuilder(vertexBuilder);
+                ShapeBuilder.UpdateVertexBuilder(VertexBuilder);
 
-                vertexBuilder.UpdateVertexLayout();
+                VertexBuilder.UpdateVertexLayout();
             }
+
+            VertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
         }
 
         /// <summary>
@@ -895,7 +851,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        public void BuildVertexBuffer(GraphicsDevice device, ref Matrix invViewMatrix)
+        public void BuildVertexBuffer(CommandList commandList, ref Matrix invViewMatrix)
         {
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
@@ -916,43 +872,17 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawScale;
             }
 
-            PrepareForDraw();
+            VertexBuilder.MapBuffer(commandList);
 
-            vertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+            ShapeBuilder.BuildVertexBuffer(VertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
-            vertexBuilder.MapBuffer(device);
+            VertexBuilder.RestartBuffer();
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            ShapeBuilder.BuildVertexBuffer(vertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            Material.PatchVertexBuffer(VertexBuilder, unitX, unitY, ParticleSorter);
 
-            vertexBuilder.RestartBuffer();
-
-            Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
-
-            vertexBuilder.UnmapBuffer(device);
+            VertexBuilder.UnmapBuffer(commandList);
         }
-
-        /// <summary>
-        /// Setup the material and kick the vertex buffer
-        /// Should come after <see cref="BuildVertexBuffer"/>
-        /// </summary>
-        /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
-        /// <param name="context">The rendering context</param>
-        /// <param name="viewMatrix">The current camera's view matrix</param>
-        /// <param name="projMatrix">The current camera's projection matrix</param>
-        /// <param name="color">Color scale (color shade) for all particles</param>
-        public void KickVertexBuffer(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, Color4 color)
-        {
-            // Calling the method here causes mismatching vertex declarations in the EffectInputSignature (correct) and VertexAttributeLayout (wrong)
-            if (Material.Effect != null) vertexBuilder.CreateVAO(device, Material.Effect);
-
-            Material.Setup(device, context, viewMatrix, projMatrix, color);
-
-            Material.ApplyEffect(device);
-
-            vertexBuilder.Draw(device);
-        }
-        #endregion
 
         #region Particles
 

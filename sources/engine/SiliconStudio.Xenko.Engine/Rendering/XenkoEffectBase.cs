@@ -16,7 +16,6 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 using SiliconStudio.Xenko.Rendering.Data;
 using SiliconStudio.Xenko.Rendering.Materials;
-
 namespace SiliconStudio.Xenko.Rendering
 {
     internal static partial class ShaderMixins
@@ -61,10 +60,6 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 if (context.GetParam(MaterialKeys.HasSkinningPosition))
                 {
-                    if (context.GetParam(MaterialKeys.SkinningBones) > context.GetParam(MaterialKeys.SkinningMaxBones))
-                    {
-                        context.SetParam(MaterialKeys.SkinningMaxBones, context.GetParam(MaterialKeys.SkinningBones));
-                    }
                     mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialKeys.SkinningMaxBones));
                     context.Mixin(mixin, "TransformationSkinning");
                     if (context.GetParam(MaterialKeys.HasSkinningNormal))

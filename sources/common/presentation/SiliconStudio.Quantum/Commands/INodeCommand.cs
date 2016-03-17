@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
@@ -33,9 +31,15 @@ namespace SiliconStudio.Quantum.Commands
         /// <returns></returns>
         bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
+        /// <summary>
+        /// Triggers the command and returns a task that complete when the command execution is done.
+        /// </summary>
+        /// <param name="content">The content on which to execute the command.</param>
+        /// <param name="index">The index in the content on which to execute the command.</param>
+        /// <param name="parameter">The parameter of the command.</param>
+        /// <returns>A task that complete when the command execution is done.</returns>
+        /// <remarks>A command can execute asynchronous code and is not guaranteed to complete immediately.</remarks>
         Task<IActionItem> Execute(IContent content, object index, object parameter);
-
-        Task<IActionItem> Execute(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
 
         /// <summary>
         /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).

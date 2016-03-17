@@ -41,13 +41,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter);
 
         /// <summary>
-        /// Check if ParticleVertexElements should be changed and set VertexLayoutHasChanged = true; if they do
+        /// Check if ParticleVertexElements should be changed and set HasVertexLayoutChanged = true; if they do
         /// </summary>
         /// <param name="vertexBuilder">Target vertex buffer stream builder which will be used for the current frame</param>
         /// <param name="sorter">Enumerator which accesses all particles in a sorted manner</param>
         public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
         {
-            // Check if ParticleVertexElements should be changed and set VertexLayoutHasChanged = true; if they do
+            // Check if ParticleVertexElements should be changed and set HasVertexLayoutChanged = true; if they do
         }
 
         /// <summary>

@@ -9,15 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         using params ColorTransformKeys;
 
-        if (ColorTransformKeys.Enabled)
-        {
-            mixin ColorTransformKeys.Shader, ColorTransformKeys.GenericArguments;
-        }
-        else
-        {
-            // Always mix a default ColorTransformShader
-            mixin ColorTransformShader;
-        }
+        mixin ColorTransformKeys.Shader, ColorTransformKeys.GenericArguments;
     };
 
     shader ColorTransformGroupEffect
@@ -28,7 +20,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         mixin ColorTransformGroupShader;
         foreach (var colorTransform in ColorTransformGroupKeys.Transforms)
         {
+            context.PushParameters(colorTransform.Parameters);
             mixin compose Transforms += ColorTransformCompose;
+            context.PopParameters();
         }
     };
 }

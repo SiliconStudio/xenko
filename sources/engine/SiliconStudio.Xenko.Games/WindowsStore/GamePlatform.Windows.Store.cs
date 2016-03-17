@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Games
 
             using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
             {
-                game.GraphicsDevice.ClearState();
+                game.GraphicsContext.CommandList.ClearState();
                 device3.Trim();    
             }
 

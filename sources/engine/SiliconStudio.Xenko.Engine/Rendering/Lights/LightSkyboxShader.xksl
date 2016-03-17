@@ -7,9 +7,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightSkyboxShader : EnvironmentLight, MaterialPixelShadingStream, NormalStream, Transformation
     {
-        float4x4 SkyMatrix;
-
-        float Intensity;
+        cbuffer PerLighting
+        {
+            float4x4 SkyMatrix;
+            float Intensity;
+        }
 
         compose IComputeEnvironmentColor lightDiffuseColor;
 

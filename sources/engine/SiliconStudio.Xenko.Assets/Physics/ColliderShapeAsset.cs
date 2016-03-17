@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.Physics
@@ -45,6 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
         /// </userdoc>
         [DataMember(10)]
         [Category]
+        [NotNullItems]
         public List<IAssetColliderShapeDesc> ColliderShapes { get; set; }
 
         private class ColliderShapeFactory : IObjectFactory

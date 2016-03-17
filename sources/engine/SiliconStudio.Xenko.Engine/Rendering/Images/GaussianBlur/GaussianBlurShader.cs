@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class GaussianBlurShaderKeys
     {
-        public static readonly ParameterKey<Vector2[]> OffsetsWeights = ParameterKeys.New<Vector2[]>();
+        public static readonly ValueParameterKey<Vector2> OffsetsWeights = ParameterKeys.NewValue<Vector2>();
     }
 }

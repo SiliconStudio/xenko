@@ -1,34 +1,24 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
-using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
-    public sealed class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<ListBox>
+    public sealed class SelectionRectangleBehavior : MouseMoveCaptureBehaviorBase<UIElement>
     {
         public static readonly DependencyProperty CanvasProperty =
             DependencyProperty.Register(nameof(Canvas), typeof(Canvas), typeof(SelectionRectangleBehavior), new PropertyMetadata(OnCanvasChanged));
 
-        public static readonly DependencyProperty AdditiveModifiersProperty =
-            DependencyProperty.Register(nameof(AdditiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Shift));
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(SelectionRectangleBehavior));
 
-        public static readonly DependencyProperty DefaultModifiersProperty =
-            DependencyProperty.Register(nameof(DefaultModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.None));
-
-        public static readonly DependencyProperty SubtractiveModifiersProperty =
-            DependencyProperty.Register(nameof(SubtractiveModifiers), typeof(ModifierKeys), typeof(SelectionRectangleBehavior), new PropertyMetadata(ModifierKeys.Control));
-
-        public static readonly DependencyProperty RectangleStyleProperty
-            = DependencyProperty.Register(nameof(RectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior));
+        public static readonly DependencyProperty RectangleStyleProperty =
+            DependencyProperty.Register(nameof(RectangleStyle), typeof(Style), typeof(SelectionRectangleBehavior));
 
         private Point originPoint;
-        private Panel itemsPanel;
         private Rectangle selectionRectangle;
         
         static SelectionRectangleBehavior()
@@ -43,11 +33,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public Canvas Canvas { get { return (Canvas)GetValue(CanvasProperty); } set { SetValue(CanvasProperty, value); } }
 
-        public ModifierKeys AdditiveModifiers { get { return (ModifierKeys)GetValue(AdditiveModifiersProperty); } set { SetValue(AdditiveModifiersProperty, value); } }
-
-        public ModifierKeys DefaultModifiers { get { return (ModifierKeys)GetValue(DefaultModifiersProperty); } set { SetValue(DefaultModifiersProperty, value); } }
-
-        public ModifierKeys SubtractiveModifiers { get { return (ModifierKeys)GetValue(SubtractiveModifiersProperty); } set { SetValue(SubtractiveModifiersProperty, value); } }
+        public ICommand Command { get { return (ICommand)GetValue(CommandProperty); } set { SetValue(CommandProperty, value); } }
 
         public Style RectangleStyle { get { return (Style)GetValue(RectangleStyleProperty); } set { SetValue(RectangleStyleProperty, value); } }
         
@@ -66,16 +52,9 @@ namespace SiliconStudio.Presentation.Behaviors
             Canvas.Visibility = Visibility.Collapsed;
         }
 
-        protected override void OnAttachedOverride()
-        {
-            base.OnAttachedOverride();
-
-            itemsPanel = GetItemsPanel(AssociatedObject);
-        }
-
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (!AreModifiersValid() || e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -88,7 +67,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (!AreModifiersValid() || e.MouseDevice.LeftButton != MouseButtonState.Pressed)
+            if (e.MouseDevice.LeftButton != MouseButtonState.Pressed)
             {
                 Cancel();
                 return;
@@ -116,7 +95,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (!AreModifiersValid() || e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
@@ -128,7 +107,6 @@ namespace SiliconStudio.Presentation.Behaviors
                 IsDragging = false;
                 ApplyDragSelectionRect();
             }
-
         }
 
         private void CreateSelectionRectangle()
@@ -147,6 +125,7 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 selectionRectangle.Style = selectionRectangle?.TryFindResource(DefaultRectangleStyleKey) as Style;
             }
+            selectionRectangle.IsHitTestVisible = false;
         }
 
         private void OnCanvasChanged(DependencyPropertyChangedEventArgs e)
@@ -226,83 +205,19 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             Canvas.Visibility = Visibility.Collapsed;
 
+            if (Command == null)
+                return;
+
             var x = Canvas.GetLeft(selectionRectangle);
             var y = Canvas.GetTop(selectionRectangle);
             var width = selectionRectangle.Width;
             var height = selectionRectangle.Height;
             var dragRect = new Rect(x, y, width, height);
-
-            if (HasDefaultModifiers())
-            {
-                // Clear the current selection.
-                AssociatedObject.SelectedItems.Clear(); 
-            }
             
-            // Find and select all the list box items.
-            foreach (var item in AssociatedObject.Items)
+            if (Command.CanExecute(dragRect))
             {
-                var container = AssociatedObject.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
-                if (container == null)
-                    continue;
-
-                var bounds = GetBounds(container);
-                if (!dragRect.IntersectsWith(bounds))
-                    continue;
-
-                var isItemSelected = AssociatedObject.SelectedItems.Contains(item);
-                var isSubstractive = HasSubstractiveModifiers();
-                if (isSubstractive && isItemSelected)
-                {
-                    AssociatedObject.SelectedItems.Remove(item);
-                }
-                else if (!isSubstractive && !isItemSelected)
-                {
-                    AssociatedObject.SelectedItems.Add(item);
-                }
+                Command.Execute(dragRect);
             }
-        }
-
-        private Rect GetBounds(Visual container)
-        {
-            var bounds = VisualTreeHelper.GetDescendantBounds(container);
-            if (itemsPanel == null)
-                return bounds;
-
-            var transform = container.TransformToAncestor(itemsPanel);
-            return transform.TransformBounds(bounds);
-        }
-
-        private static Panel GetItemsPanel(DependencyObject itemsControl)
-        {
-            var itemsPresenter = itemsControl.FindVisualChildOfType<ItemsPresenter>();
-            if (itemsPresenter == null)
-                return null;
-
-            return VisualTreeHelper.GetChild(itemsPresenter, 0) as Panel;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool AreModifiersValid()
-        {
-            return HasAdditiveModifiers() || HasDefaultModifiers() || HasSubstractiveModifiers();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasAdditiveModifiers()
-        {
-            return AdditiveModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(AdditiveModifiers);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasDefaultModifiers()
-        {
-            return DefaultModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(DefaultModifiers);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasSubstractiveModifiers()
-        {
-            return SubtractiveModifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(SubtractiveModifiers);
         }
     }
 }

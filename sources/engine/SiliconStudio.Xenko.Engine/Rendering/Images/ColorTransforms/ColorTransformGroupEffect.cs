@@ -22,14 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                if (context.GetParam(ColorTransformKeys.Enabled))
-                {
-                    context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader), context.GetParam(ColorTransformKeys.GenericArguments));
-                }
-                else
-                {
-                    context.Mixin(mixin, "ColorTransformShader");
-                }
+                context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader), context.GetParam(ColorTransformKeys.GenericArguments));
             }
 
             [ModuleInitializer]
@@ -50,6 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 foreach(var colorTransform in context.GetParam(ColorTransformGroupKeys.Transforms))
 
                 {
+                    context.PushParameters(colorTransform.Parameters);
 
                     {
                         var __mixinToCompose__ = "ColorTransformCompose";
@@ -58,6 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
+                    context.PopParameters();
                 }
             }
 
