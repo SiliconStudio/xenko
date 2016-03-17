@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <inheritdoc />
         public override void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles)
         {
-            ribbonizer.Restart(totalParticles);            
+            ribbonizer.Restart(totalParticles, quadsPerParticle);            
         }
 
         /// <inheritdoc />
@@ -116,19 +116,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             private int lastParticle = 0;
             private Vector3[] positions = new Vector3[1];
             private float[] sizes = new float[1];
+            private int sections = 1;
 
             /// <summary>
             /// Restarts the point string, potentially expanding the capacity
             /// </summary>
             /// <param name="newCapacity">Required minimum capacity</param>
-            public void Restart(int newCapacity)
+            public void Restart(int newCapacity, int sectionsPerParticle)
             {
                 lastParticle = 0;
+                sections = sectionsPerParticle;
 
-                if (newCapacity > positions.Length)
+                int requiredCapacity = sectionsPerParticle * newCapacity - sectionsPerParticle + 1;
+
+                if (requiredCapacity > positions.Length)
                 {
-                    positions = new Vector3[newCapacity];
-                    sizes = new float[newCapacity];
+                    positions = new Vector3[requiredCapacity];
+                    sizes = new float[requiredCapacity];
                 }                
             }
 
@@ -144,7 +148,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 positions[lastParticle] = position;
                 sizes[lastParticle] = size;
-                lastParticle++;
+                lastParticle += sections;
             }
 
             /// <summary>
@@ -169,6 +173,19 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 return unitX * (particleSize * 0.5f);
             }
 
+            private void ExpandVertices()
+            {
+                if (sections <= 1)
+                    return;
+
+                int index = 0;
+                while (index < positions.Length)
+                {
+
+                    index += sections;
+                }
+            }
+
             /// <summary>
             /// Constructs the ribbon by outputting vertex stream based on the positions and sizes specified previously
             /// </summary>
@@ -187,7 +204,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
                 var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
 
-                if (lastParticle <= 1)
+                if (lastParticle <= sections)
                 {
                     // Optional - connect first particle to the origin/emitter
 
