@@ -36,12 +36,8 @@ namespace SiliconStudio.Presentation.Quantum
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var actionItem = await NodeCommand.Execute(modelNode.Content, index, parameter);
-            if (actionItem != null)
-            {
-                ActionStack?.Add(actionItem);
-            }
-            ActionStack?.EndTransaction($"Executed {Name}");
+            NodeCommand.Execute(modelNode.Content, index, parameter);
+            ActionStack?.EndTransaction($"Execute {Name}");
         }
     }
 }

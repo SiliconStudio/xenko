@@ -1,10 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Linq;
-
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
@@ -12,7 +9,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : SyncNodeCommand
+    public class AddPrimitiveKeyCommand : NodeCommandBase
     {
         public const string CommandName = "AddPrimitiveKey";
 
@@ -38,7 +35,7 @@ namespace SiliconStudio.Quantum.Commands
             return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(new Type[0]) != null;
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
+        public override void Execute(IContent content, object index, object parameter)
         {
             var value = content.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
@@ -48,7 +45,6 @@ namespace SiliconStudio.Quantum.Commands
             if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
                 newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
             content.Add(newKey, newItem);
-            return null;
         }
 
         private static object GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
