@@ -130,7 +130,7 @@ namespace NUnitLite.Tests
             // Connect to server right away to let it know we're alive
             //var client = Connect(serverAddresses, serverPort);
 
-            var url = $"/service/{xenkoVersion}/SiliconStudio.Xenko.SamplesTestServer.exe";
+            var url = $"/service/{xenkoVersion}/SiliconStudio.Xenko.TestRunner.exe";
 
             var socketContext = RouterClient.RequestServer(url).Result;
 
@@ -153,13 +153,13 @@ namespace NUnitLite.Tests
             var timeNow = DateTime.Now;
 
             // Generate result file name
-            var resultFile = Path.Combine(cachePath, string.Format("TestResult-{0:yyyy-MM-dd_hh-mm-ss-tt}.xml", timeNow));
+            var resultFile = Path.Combine(cachePath, $"TestResult-{timeNow:yyyy-MM-dd_hh-mm-ss-tt}.xml");
 
             Logger.Debug(@"Execute tests");
 
             var stringBuilder = new StringBuilder();
             var stringWriter = new StringWriter(stringBuilder);
-            new TextUI(stringWriter).Execute(new [] { "-format:nunit2", string.Format("-result:{0}", resultFile) });
+            new TextUI(stringWriter).Execute(new [] { "-format:nunit2", $"-result:{resultFile}" });
 
             Logger.Debug(@"Execute tests done");
 
