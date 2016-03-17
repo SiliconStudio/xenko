@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
         {
             await base.LoadContent();
 
-            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+            var assetManager = Services.GetSafeServiceAs<ContentManager>();
 
             // Make sure you have created a Scene with the same name (testName) in your XenkoGameStudio project.
             // The scene should be included in the build as Root and copied together with the other 
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
             var filename = xenkoDir + "\\screenshots\\" + assemblyName + "." + platformName + "_" + testName + "_" + screenShots + ".png";
             screenShots++;
 
-            SaveTexture(GraphicsDevice.BackBuffer, filename);
+            SaveTexture(GraphicsDevice.Presenter.BackBuffer, filename);
         }
 
         protected override void Draw(GameTime gameTime)

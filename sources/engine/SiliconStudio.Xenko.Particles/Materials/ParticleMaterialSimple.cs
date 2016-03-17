@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
         [Display("Alpha-Add")]
-        public float AlphaAdditive { get; set; } = 0f;
+        public float AlphaAdditive { get; set; }
 
         /// <summary>
         /// Allows the particle shape to be back- or front-face culled.
@@ -44,12 +44,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(40)]
         [Display("Culling")]
-        public ParticleMaterialCulling FaceCulling { get; set; } = ParticleMaterialCulling.CullNone;
+        public ParticleMaterialCulling FaceCulling { get; set; }
 
         /// <summary>
         /// Indicates if this material requires a color field in the vertex stream
         /// </summary>
-        protected bool HasColorField { get; private set; } = false;
+        protected bool HasColorField { get; private set; }
 
         /// <inheritdoc />
         public override void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
@@ -60,37 +60,31 @@ namespace SiliconStudio.Xenko.Particles.Materials
             var colorField = sorter.GetField(ParticleFields.Color);
             if (colorField.IsValid() != HasColorField)
             {
-                VertexLayoutHasChanged = true;
+                HasVertexLayoutChanged = true;
                 HasColorField = colorField.IsValid();
             }
         }
 
         /// <inheritdoc />
-        public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
+        public override void Setup(RenderContext context)
         {
-            base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
-
-            // Setup graphics device - culling, blend states and depth testing
-
-            if (FaceCulling == ParticleMaterialCulling.CullNone) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
-            if (FaceCulling == ParticleMaterialCulling.CullBack) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
-            if (FaceCulling == ParticleMaterialCulling.CullFront) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullFront);
-
-            graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
-
-            graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
-
-            ///////////////
-            // This should be CB0 - view/proj matrices don't change per material
-            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
-
-            // Scale up the color intensity - might depend on the eye adaptation later
-            SetParameter(ParticleBaseKeys.ColorScale, color);
-
-            SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
+            base.Setup(context);
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
-            SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+            Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+        }
+
+        public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)
+        {
+            base.SetupPipeline(renderContext, pipelineState);
+
+            if (FaceCulling == ParticleMaterialCulling.CullNone) pipelineState.RasterizerState = RasterizerStates.CullNone;
+            else if (FaceCulling == ParticleMaterialCulling.CullBack) pipelineState.RasterizerState = RasterizerStates.CullBack;
+            else if (FaceCulling == ParticleMaterialCulling.CullFront) pipelineState.RasterizerState = RasterizerStates.CullFront;
+
+            pipelineState.BlendState = BlendStates.AlphaBlend;
+
+            pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
         }
 
         /// <inheritdoc />
@@ -118,6 +112,5 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             vertexBuilder.RestartBuffer();
         }
-
     }
 }

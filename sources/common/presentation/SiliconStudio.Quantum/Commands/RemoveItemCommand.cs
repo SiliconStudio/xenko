@@ -41,9 +41,10 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null;
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
         {
-            content.Remove(index);
+            var item = content.Retrieve(index);
+            content.Remove(index, item);
             return null;
         }
     }

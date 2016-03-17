@@ -7,10 +7,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.BoundingShapes;
 using SiliconStudio.Xenko.Particles.DebugDraw;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -84,6 +82,9 @@ namespace SiliconStudio.Xenko.Particles
                 }
             }
 
+            if (BoundingShape == null)
+                return false;
+
             if (BoundingShape.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                 return ToWorldSpace(ref translation, ref rotation, ref scale);
 
@@ -105,12 +106,11 @@ namespace SiliconStudio.Xenko.Particles
         /// AABB of this Particle System
         /// </summary>
         /// <userdoc>
-        /// AABB (Axis-Aligned Bounding Box) used for fast culling, optimizations etc. Can be specified by the user
+        /// AABB (Axis-Aligned Bounding Box) used for fast culling and optimizations. Can be specified by the user. Leave it Null to disable culling.
         /// </userdoc>
         [DataMember(5)]
-        [NotNull]
         [Display("Bounding Shape")]
-        public BoundingShape BoundingShape { get; set; } = new BoundingBoxStatic();
+        public BoundingShape BoundingShape { get; set; } = null;
 
         /// <summary>
         /// Gets the current AABB of the <see cref="ParticleSystem"/>
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Particles
         // ReSharper disable once InconsistentNaming
         public BoundingBox GetAABB()
         {
-            return BoundingShape?.GetAABB(Translation, Rotation, UniformScale) ?? new BoundingBox(new Vector3(-1), new Vector3(1));
+            return BoundingShape?.GetAABB(Translation, Rotation, UniformScale) ?? new BoundingBox(Translation, Translation);
         }
 
         private readonly SafeList<ParticleEmitter> emitters;
@@ -184,7 +184,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
-            BoundingShape.Dirty = true;
+            if (BoundingShape != null) BoundingShape.Dirty = true;
 
             // If the particle system is paused skip the rest of the update state
             if (isPaused)
@@ -238,32 +238,13 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Render all particles in this particle system. Particles might have different materials assigned.
+        /// Resets the particle system, resetting all values to their initial state
         /// </summary>
-        /// <userdoc>
-        /// Render all particles in this particle system. Particles might have different materials assigned.
-        /// </userdoc>
-        public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
+        public void ResetSimulation()
         {
             foreach (var particleEmitter in Emitters)
             {
-                if (particleEmitter.Enabled)
-                {
-                    particleEmitter.BuildVertexBuffer(device, ref invViewMatrix);
-
-                    particleEmitter.KickVertexBuffer(device, context, ref viewMatrix, ref projMatrix, color);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Restarts the particle system, resetting all values to their initial state
-        /// </summary>
-        public void RestartSimulation()
-        {
-            foreach (var particleEmitter in Emitters)
-            {
-                particleEmitter.RestartSimulation();
+                particleEmitter.ResetSimulation();
             }
 
             hasStarted = false;
@@ -300,7 +281,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public void Stop()
         {
-            RestartSimulation();
+            ResetSimulation();
             isPaused = true;
         }
 

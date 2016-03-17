@@ -39,7 +39,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Features level of the current device.
         /// </summary>
-        public GraphicsProfile Profile;
+        public GraphicsProfile RequestedProfile;
+
+        /// <summary>
+        /// Features level of the current device.
+        /// </summary>
+        public GraphicsProfile CurrentProfile;
 
         /// <summary>
         /// Boolean indicating if this device supports compute shaders, unordered access on structured buffers and raw structured buffers.
@@ -126,7 +131,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public override string ToString()
         {
-            return string.Format("Level: {0}, HasComputeShaders: {1}, HasDoublePrecision: {2}, HasMultiThreadingConcurrentResources: {3}, HasDriverCommandLists: {4}", Profile, HasComputeShaders, HasDoublePrecision, HasMultiThreadingConcurrentResources, this.HasDriverCommandLists);
+            return string.Format("Level: {0}, HasComputeShaders: {1}, HasDoublePrecision: {2}, HasMultiThreadingConcurrentResources: {3}, HasDriverCommandLists: {4}", RequestedProfile, HasComputeShaders, HasDoublePrecision, HasMultiThreadingConcurrentResources, this.HasDriverCommandLists);
         }
     }
 }

@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class GenericClass2Keys
     {
-        public static readonly ParameterKey<Texture> TextureAll = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> TextureAll = ParameterKeys.NewObject<Texture>();
     }
 }

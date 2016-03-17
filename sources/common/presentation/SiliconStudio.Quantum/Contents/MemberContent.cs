@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 var index = collectionDescriptor.GetCollectionCount(Value);
                 NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
-                    collectionDescriptor.Add(Value, newItem);
+                collectionDescriptor.Add(Value, newItem);
 
                 UpdateReferences();
                 NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
@@ -100,7 +100,7 @@ namespace SiliconStudio.Quantum.Contents
             if (collectionDescriptor != null)
             {
                 var index = (int)itemIndex;
-                if (collectionDescriptor.GetCollectionCount(Value) == index)
+                if (collectionDescriptor.GetCollectionCount(Value) == index || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(Value, newItem);
                 }
@@ -120,17 +120,23 @@ namespace SiliconStudio.Quantum.Contents
             NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
         }
 
-        public override void Remove(object itemIndex)
+        public override void Remove(object itemIndex, object item)
         {
             if (itemIndex == null) throw new ArgumentNullException(nameof(itemIndex));
-            var oldValue = Retrieve(itemIndex);
-            NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
+            NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, item, null);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = (int)itemIndex;
-                collectionDescriptor.RemoveAt(Value, index);
+                if (collectionDescriptor.HasRemoveAt)
+                {
+                    var index = (int)itemIndex;
+                    collectionDescriptor.RemoveAt(Value, index);                  
+                }
+                else
+                {
+                    collectionDescriptor.Remove(Value, item);
+                }               
             }
             else if (dictionaryDescriptor != null)
             {
@@ -140,7 +146,7 @@ namespace SiliconStudio.Quantum.Contents
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
             UpdateReferences();
-            NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
+            NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, item, null);
         }
 
         private void UpdateReferences()

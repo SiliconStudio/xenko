@@ -7,8 +7,9 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Physics.Engine;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -29,25 +30,68 @@ namespace SiliconStudio.Xenko.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private SceneSystem sceneSystem;
         private Simulation simulation;
+        private Scene debugScene;
+        private Entity debugEntityScene;
 
         private bool colliderShapesRendering;
 
-        private PhysicsDebugShapeRendering debugShapeRendering;
+        private SceneChildRenderer debugSceneRenderer;
+        private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
             : base(typeof(TransformComponent))
         {
         }
+
         public Simulation Simulation => simulation;
 
         internal void RenderColliderShapes(bool enabled)
         {
             colliderShapesRendering = enabled;
 
-            foreach (var element in elements)
+            if (!colliderShapesRendering)
             {
-                if(enabled) element.AddDebugEntity(sceneSystem.SceneInstance.Scene);
-                else element.RemoveDebugEntity(sceneSystem.SceneInstance.Scene);
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
+
+                foreach (var element in elements)
+                {
+                    element.RemoveDebugEntity(scene);
+                }
+
+                sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+                mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
+            }
+            else
+            {
+                //we create a child scene to render the shapes, so that they are totally separated from the normal scene
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+
+                var graphicsCompositor = new SceneGraphicsCompositorLayers
+                {
+                    Cameras = { mainCompositor.Cameras[0] },
+                    Master =
+                    {
+                        Renderers =
+                        {
+                            new SceneCameraRenderer { Mode = new PhysicsDebugCameraRendererMode { Name = "Camera renderer" } },
+                        }
+                    }
+                };
+
+                debugScene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+
+                var childComponent = new ChildSceneComponent { Scene = debugScene };
+                debugEntityScene = new Entity { childComponent };
+                debugSceneRenderer = new SceneChildRenderer(childComponent);
+
+                mainCompositor.Master.Add(debugSceneRenderer);
+                sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
+
+                foreach (var element in elements)
+                {
+                    element.AddDebugEntity(debugScene);
+                }
             }
         }
 
@@ -86,7 +130,7 @@ namespace SiliconStudio.Xenko.Physics
 
             if (colliderShapesRendering)
             {
-                component.AddDebugEntity(sceneSystem.SceneInstance.Scene);
+                component.AddDebugEntity(debugScene);
             }
 
             elements.Add(component);
@@ -103,24 +147,23 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnSystemAdd()
         {
-            try
-            {
-                physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            }
-            catch (ServiceNotFoundException)
+            physicsSystem = (Bullet2PhysicsSystem)Services.GetServiceAs<IPhysicsSystem>();
+            if (physicsSystem == null)
             {
                 physicsSystem = new Bullet2PhysicsSystem(Services);
-                var game = Services.GetSafeServiceAs<IGame>();
-                game.GameSystems.Add(physicsSystem);
+                var game = Services.GetServiceAs<IGame>();
+                game?.GameSystems.Add(physicsSystem);
+            }
+
+            debugShapeRendering = Services.GetServiceAs<PhysicsShapesRenderingService>();
+            if (debugShapeRendering == null)
+            {
+                debugShapeRendering = new PhysicsShapesRenderingService(Services);
+                var game = Services.GetServiceAs<IGame>();
+                game?.GameSystems.Add(debugShapeRendering);
             }
 
             simulation = physicsSystem.Create(this);
-
-            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
-            if (gfxDevice != null)
-            {
-                debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
-            }
 
             sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
         }
@@ -171,6 +214,22 @@ namespace SiliconStudio.Xenko.Physics
             {
                 element.UpdateBones();
             }
+        }
+
+        public void UpdateContacts()
+        {
+            Simulation.BeginContactTesting();
+
+            foreach (var dataPair in ComponentDatas)
+            {
+                var data = dataPair.Value;
+                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions)
+                {
+                    Simulation.ContactTest(data.PhysicsComponent);
+                }
+            }
+
+            Simulation.EndContactTesting();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         static ImageScalerShaderKeys()
         {
             // Default value of 1.0f
-            Color = ParameterKeys.New(Color4.White);
+            Color = ParameterKeys.NewValue(Color4.White);
         }
     }
 }

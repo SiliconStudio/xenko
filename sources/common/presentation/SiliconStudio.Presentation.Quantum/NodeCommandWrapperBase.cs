@@ -18,23 +18,16 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="NodeCommandWrapperBase"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IActionStack"/> to use for this view model.</param>
-        /// <param name="dirtiables">The <see cref="IDirtiable"/> instances associated to this command.</param>
-        protected NodeCommandWrapperBase(IViewModelServiceProvider serviceProvider, IEnumerable<IDirtiable> dirtiables)
+        protected NodeCommandWrapperBase(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             this.serviceProvider = serviceProvider;
-            Dirtiables = dirtiables;
         }
 
         /// <summary>
         /// The name of this command.
         /// </summary>
         public abstract string Name { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IDirtiable"/> object affected by this command wrapper.
-        /// </summary>
-        public IEnumerable<IDirtiable> Dirtiables { get; }
 
         /// <summary>
         /// Gets the how to combine a set of <see cref="NodeCommandWrapperBase"/> in a <see cref="CombinedObservableNode"/>

@@ -99,6 +99,7 @@ namespace SiliconStudio.Core.Extensions
             lock (AllAssemblies)
             {
                 AllAssemblies.Clear();
+                AllInstantiableTypes.Clear();
                 AllTypes.Clear();
                 InheritableTypes.Clear();
                 InheritableInstantiableTypes.Clear();

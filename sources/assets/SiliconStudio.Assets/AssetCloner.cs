@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets
 
         static AssetCloner()
         {
-            ClonerSelector = new SerializerSelector(true, "Default", "Asset", "AssetClone");
+            ClonerSelector = new SerializerSelector(true, "Default", "Content", "AssetClone");
         }
 
         /// <summary>
@@ -129,11 +129,11 @@ namespace SiliconStudio.Assets
                 List<string> orderedNames = null;
                 foreach (var objectRef in objectReferences)
                 {
-                    // If the object is actually a reference to another asset, we can skip it as their won't be any overrides
-                    if (AttachedReferenceManager.GetAttachedReference(objectRef) != null)
-                    {
-                        continue;
-                    }
+                    //// If the object is actually a reference to another asset, we can skip it as their won't be any overrides
+                    //if (AttachedReferenceManager.GetAttachedReference(objectRef) != null)
+                    //{
+                    //    continue;
+                    //}
 
                     // Else gets the id if there are any (including shadows that are not part of the standard serialization)
                     var shadowObject = ShadowObject.GetOrCreate(objectRef);
@@ -205,11 +205,11 @@ namespace SiliconStudio.Assets
             {
                 var previousObject = objectReferences[i];
 
-                // If the object is an attached reference, there is no need to copy the shadow object
-                if (AttachedReferenceManager.GetAttachedReference(previousObject) != null)
-                {
-                    return;
-                }
+                //// If the object is an attached reference, there is no need to copy the shadow object
+                //if (AttachedReferenceManager.GetAttachedReference(previousObject) != null)
+                //{
+                //    return;
+                //}
 
                 ShadowObject.Copy(previousObject, newObject);
                 if ((flags & AssetClonerFlags.RemoveOverrides) != 0)

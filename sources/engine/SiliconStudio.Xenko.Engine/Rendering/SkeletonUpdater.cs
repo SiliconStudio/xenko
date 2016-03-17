@@ -97,23 +97,6 @@ namespace SiliconStudio.Xenko.Rendering
             matrixCounter++;
         }
 
-        /// <summary>
-        /// Updates previously computed world matrices to TransformationKeys.World for each <see cref="RenderMesh" />.
-        /// </summary>
-        /// <param name="renderMesh">The render mesh.</param>
-        internal void UpdateRenderMesh(RenderMesh renderMesh)
-        {
-            var nodeIndex = renderMesh.Mesh.NodeIndex;
-            var enabled = nodeTransformations[nodeIndex].RenderingEnabledRecursive;
-            renderMesh.Enabled = enabled;
-            if (enabled && renderMesh.MatrixCounter != matrixCounter)
-            {
-                renderMesh.WorldMatrix = nodeTransformations[nodeIndex].WorldMatrix;
-                renderMesh.IsGeometryInverted = nodeTransformations[nodeIndex].IsScalingNegative;
-                renderMesh.MatrixCounter = matrixCounter;
-            }
-        }
-
         public void GetWorldMatrix(int index, out Matrix matrix)
         {
             matrix = nodeTransformations[index].WorldMatrix;

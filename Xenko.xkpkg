@@ -36,7 +36,9 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/PlayerController.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/BasicAsyncScript.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/BasicSyncScript.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Events/EventDispatcher.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/DebugShapesRender.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Prefabs/PrefabInstance.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl
     - Path: sources/data/images/NewGame
       Group: Core
@@ -68,6 +70,7 @@ TemplateFolders:
         - samples\Particles\SimpleParticles\SimpleParticles.xktpl
         - samples\Particles\CustomParticles\CustomParticles.xktpl
         - samples\Particles\ParticleMaterialShader\ParticleMaterialShader.xktpl
+        - samples\Particles\AnimatedParticles\AnimatedParticles.xktpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\Physics\Raycasting\Raycasting.xktpl

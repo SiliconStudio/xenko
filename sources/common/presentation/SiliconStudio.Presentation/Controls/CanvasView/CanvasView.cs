@@ -34,11 +34,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using SiliconStudio.Presentation.Drawing;
 
 namespace SiliconStudio.Presentation.Controls
 {
     [TemplatePart(Name = GridPartName, Type = typeof(Grid))]
-    public sealed class CanvasView : Control
+    public sealed class CanvasView : Control, IDrawingView
     {
         /// <summary>
         /// The name of the part for the <see cref="Canvas"/>.
@@ -69,7 +70,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="Model"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ModelProperty =
-            DependencyProperty.Register(nameof(Model), typeof(ICanvasViewItem), typeof(CanvasView), new PropertyMetadata(null, OnModelPropertyChanged));
+            DependencyProperty.Register(nameof(Model), typeof(IDrawingModel), typeof(CanvasView), new PropertyMetadata(null, OnModelPropertyChanged));
 
         /// <summary>
         /// The grid.
@@ -99,19 +100,19 @@ namespace SiliconStudio.Presentation.Controls
         /// <remarks>When the value is False, it means that the canvas will be redrawn at the end of this frame.</remarks>
         public bool IsCanvasValid { get { return (bool)GetValue(IsCanvasValidProperty); } private set { SetValue(IsCanvasValidPropertyKey, value); } }
 
-        public ICanvasViewItem Model { get { return (ICanvasViewItem)GetValue(ModelProperty); } set { SetValue(ModelProperty, value); } }
+        public IDrawingModel Model { get { return (IDrawingModel)GetValue(ModelProperty); } set { SetValue(ModelProperty, value); } }
 
         private static void OnModelPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var view = (CanvasView)sender;
 
-            var model = e.OldValue as ICanvasViewItem;
+            var model = e.OldValue as IDrawingModel;
             model?.Detach(view);
 
-            model = e.NewValue as ICanvasViewItem;
+            model = e.NewValue as IDrawingModel;
             model?.Attach(view);
 
-            view.InvalidateCanvas();
+            view.InvalidateDrawing();
         }
 
         public override void OnApplyTemplate()
@@ -142,22 +143,28 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <summary>
-        /// Invalidates the canvas (not blocking the UI thread). The <see cref="Model"/> will render it only once, after all non-idle operations are completed
-        /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
-        /// even when other operations are coming.
+        /// Invalidates the canvas (not blocking the UI thread). The <see cref="Model"/> will render it only once, after
+        /// all non-idle operations are completed (<see cref="DispatcherPriority.Background"/> priority).
+        /// Thus it is safe to call it every time the canvas should be redraw even when other operations are coming.
         /// </summary>
-        /// <param name="updateData"></param>
-        public void InvalidateCanvas(bool updateData = true)
+        public void InvalidateDrawing()
         {
-            // always updates the model
-            UpdateModel(updateData);
+            if (IsLoaded)
+                DoInvalidateDrawing();
+        }
 
+        private void DoInvalidateDrawing()
+        {
             if (renderer == null || !IsCanvasValid)
                 return;
 
             IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
             {
+                // Makes sure the flag was not reset
+                IsCanvasValid = false;
+                // Updates the model before rendering
+                UpdateModel(true);
                 // Invalidate the arrange state for the element.
                 // After the invalidation, the element will have its layout updated,
                 // which will occur asynchronously unless subsequently forced by UpdateLayout.
@@ -175,14 +182,14 @@ namespace SiliconStudio.Presentation.Controls
         {
             // Make sure InvalidateArrange is called when the canvas is invalidated
             IsCanvasValid = true;
-            InvalidateCanvas();
+            DoInvalidateDrawing();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (e.NewSize.Height > 0 && e.NewSize.Width > 0)
             {
-                InvalidateCanvas();
+                InvalidateDrawing();
             }
         }
 

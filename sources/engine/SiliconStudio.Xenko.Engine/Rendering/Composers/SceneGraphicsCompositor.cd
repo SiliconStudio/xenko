@@ -132,16 +132,16 @@
       <FileName>Rendering\CameraRendererModeForward.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SiliconStudio.Xenko.Rendering.CameraRendererModeWireFrame">
+  <Class Name="SiliconStudio.Xenko.Rendering.CameraRendererModeWireframe">
     <Position X="4.25" Y="10.75" Width="2.5" />
     <Members>
-      <Method Name="CameraRendererModeWireFrame" Hidden="true" />
+      <Method Name="CameraRendererModeWireframe" Hidden="true" />
       <Field Name="modelComponentAndPickingRenderer" Hidden="true" />
-      <Field Name="WireFrameEffect" Hidden="true" />
+      <Field Name="WireframeEffect" Hidden="true" />
     </Members>
     <TypeIdentifier>
       <HashCode>gQAAAAAAAAAgMAAAAAAAABIAAAICAAQAAAABAEABAAg=</HashCode>
-      <FileName>Rendering\CameraRendererModeWireFrame.cs</FileName>
+      <FileName>Rendering\CameraRendererModeWireframe.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="SiliconStudio.Xenko.Rendering.ISceneRenderer" Collapsed="true">

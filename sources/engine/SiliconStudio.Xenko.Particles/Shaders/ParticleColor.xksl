@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         override float4 Compute()
         {
-            return float4(1,1,1,1);
+            return float4(1, 1, 1, 1);
         }
     };
 }

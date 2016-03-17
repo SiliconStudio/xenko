@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
@@ -65,12 +64,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
             }
 
-            // Copy global parameters to used Parameters by default, as it is used by the compiler
-            mixinToCompile.UsedParameters.Set(CompilerParameters.GraphicsPlatformKey, compilerParameters.Platform);
-            mixinToCompile.UsedParameters.Set(CompilerParameters.GraphicsProfileKey, compilerParameters.Profile);
-            mixinToCompile.UsedParameters.Set(CompilerParameters.DebugKey, compilerParameters.Debug);
-            mixinToCompile.UsedParameters.Set(CompilerParameters.OptimizationLevelKey, compilerParameters.OptimizationLevel);
-
             // Compile the whole mixin tree
             var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", mixinToCompile.Name) };
             var bytecode = Compile(mixinToCompile, compilerParameters);
@@ -83,7 +76,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     bytecode.Result.CompilationLog.CopyTo(compilerResults);
                 }
                 compilerResults.Bytecode = bytecode;
-                compilerResults.UsedParameters = mixinToCompile.UsedParameters;
+                compilerResults.SourceParameters = new CompilerParameters(compilerParameters);
             }
             return compilerResults;
         }
@@ -92,7 +85,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// Compiles the ShaderMixinSource into a platform bytecode.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
-        /// <param name="compilerParameters">The compiler parameters.</param>
+        /// <param name="compilerParameters"></param>
         /// <returns>The platform-dependent bytecode.</returns>
         public abstract TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
 

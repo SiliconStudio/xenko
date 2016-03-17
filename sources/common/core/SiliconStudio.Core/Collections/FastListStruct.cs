@@ -9,6 +9,8 @@ namespace SiliconStudio.Core.Collections
 {
     public struct FastListStruct<T> : IEnumerable<T>
     {
+        private static readonly T[] emptyArray = new T[0];
+
         public int Count;
 
         /// <summary>
@@ -39,9 +41,8 @@ namespace SiliconStudio.Core.Collections
 
         public FastListStruct(int capacity)
         {
-            if (capacity <= 0) throw new ArgumentOutOfRangeException("capacity", "Must be > 0");
             this.Count = 0;
-            this.Items = new T[capacity];
+            this.Items = capacity == 0 ? emptyArray : new T[capacity];
         }
 
         public void Add(T item)

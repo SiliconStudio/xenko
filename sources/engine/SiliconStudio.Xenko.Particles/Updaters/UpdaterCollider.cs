@@ -26,6 +26,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
             RequiredFields.Add(ParticleFields.Life);
+
+            DisplayParticlePosition = true;
+            DisplayParticleRotation = true;
+            DisplayParticleScale = true;
         }
 
 
@@ -44,15 +48,15 @@ namespace SiliconStudio.Xenko.Particles.Modules
         public FieldShape FieldShape { get; set; }
 
         /// <summary>
-        /// Shows if the collider shape is solid on the inside or no
+        /// Shows if the collider shape is hollow on the inside or solid
         /// </summary>
         /// <userdoc>
+        /// If the collider shape is hollow, particles can't escape it.
         /// If the collider shape is solid, particles can't enter the shape.
-        /// If the collider shape is hollow (not solid on the inside), particles can't escape it.
         /// </userdoc>
         [DataMember(50)]
-        [Display("Is solid")]
-        public bool IsSolid { get; set; } = true;
+        [Display("Is hollow")]
+        public bool IsHollow { get; set; } = false;
 
         /// <summary>
         /// Kill particles when they collide with the shape
@@ -115,9 +119,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
                     isInside = FieldShape.IsPointInside(particlePos, out surfacePoint, out surfaceNormal);
                 }
 
-                if (IsSolid == isInside)
+                if (IsHollow != isInside)
                 {
-                    if (!IsSolid)
+                    if (IsHollow)
                         surfaceNormal *= -1;
 
                     // The particle is on the wrong side of the collision shape and must collide

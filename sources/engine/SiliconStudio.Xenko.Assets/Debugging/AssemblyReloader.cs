@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Xenko.Assets.Serializers;
@@ -50,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         /// <param name="entities">The entities to process.</param>
         /// <param name="loadedAssembliesSet">The collection of assemblies containing component types thatshould be reloaded.</param>
         /// <returns>A collection of <see cref="ComponentToReload"/>.</returns>
-        public static List<ComponentToReload> CollectComponentsToReload(List<Entity> entities, HashSet<Assembly> loadedAssembliesSet)
+        public static List<ComponentToReload> CollectComponentsToReload(IEnumerable<Entity> entities, HashSet<Assembly> loadedAssembliesSet)
         {
             var result = new List<ComponentToReload>();
 

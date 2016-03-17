@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Extensions
         public static void Enable<T>(this Entity entity, bool enabled = true, bool applyOnChildren = false) where T : ActivableEntityComponent
         {
             // NOTE: This method is recursive. That might not be the best solution in case of deep entities.
-            for (int i = 0; i < entity.Components.Count; i++)
+            for (var i = 0; i < entity.Components.Count; i++)
             {
                 var component = entity.Components[i] as T;
                 if (component != null)
@@ -44,17 +44,16 @@ namespace SiliconStudio.Xenko.Extensions
                 }
             }
 
-            if (applyOnChildren)
+            if (!applyOnChildren) return;
+
+            var transformationComponent = entity.Transform;
+
+            if (transformationComponent == null) return;
+
+            var children = transformationComponent.Children;
+            for (var i = 0; i < children.Count; i++)
             {
-                var transformationComponent = entity.Transform;
-                if (transformationComponent != null)
-                {
-                    var children = transformationComponent.Children;
-                    for (int i = 0; i < children.Count; i++)
-                    {
-                        Enable<T>(children[i].Entity, enabled, true);
-                    }
-                }
+                Enable<T>(children[i].Entity, enabled, true);
             }
         }
 

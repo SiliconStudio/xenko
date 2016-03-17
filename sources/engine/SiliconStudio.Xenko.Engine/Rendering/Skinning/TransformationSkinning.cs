@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class TransformationSkinningKeys
     {
-        public static readonly ParameterKey<Matrix[]> BlendMatrixArray = ParameterKeys.New<Matrix[]>();
+        public static readonly ValueParameterKey<Matrix> BlendMatrixArray = ParameterKeys.NewValue<Matrix>();
     }
 }

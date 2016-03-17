@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
@@ -33,10 +34,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <summary>
         /// Computes the screen coverage of this light in pixel.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="camera">The camera observing the light.</param>
         /// <param name="position">The position of the light in world space.</param>
         /// <param name="direction">The direction of the light in world space.</param>
+        /// <param name="width">The viewport width.</param>
+        /// <param name="height">The viewport height.</param>
         /// <returns>The largest screen coverage width or height size in pixels of this light.</returns>
-        float ComputeScreenCoverage(RenderContext context, Vector3 position, Vector3 direction);
+        float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height);
     }
 }

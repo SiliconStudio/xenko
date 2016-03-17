@@ -8,9 +8,12 @@
 /// </remarks>
 class ComputeColorConstantColorLink<LinkType LinkName> : ComputeColor
 {
-    [Color]
-    [Link("LinkName")]
-    stage float4 constantColor;
+    cbuffer PerMaterial
+    {
+        [Color]
+        [Link("LinkName")]
+        stage float4 constantColor;
+    }
     
     override float4 Compute()
     {

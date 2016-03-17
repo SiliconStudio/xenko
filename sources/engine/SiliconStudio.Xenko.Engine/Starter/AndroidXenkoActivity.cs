@@ -10,11 +10,13 @@ using Android.Views;
 using Android.Widget;
 using Android.Content;
 using Android.Media;
+using OpenTK.Graphics;
 using OpenTK.Platform.Android;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Games.Android;
+using SiliconStudio.Xenko.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Starter
 {

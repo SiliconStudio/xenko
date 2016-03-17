@@ -234,8 +234,8 @@ namespace SiliconStudio.Assets.Tests.Diff
             // Expecting only 2 diff from TestDiffAsset (3 properties + BuildOrder)
             Assert.AreEqual(4, diffResultStripped.Where(item => item.BaseNode.Parent?.Instance is TestDiffAsset).Count());
 
-            // Expecting 6 diffs for DiffComponent (3 elements, 5 properties (Name + Vector4))
-            Assert.AreEqual(3 * 5, diffResultStripped.Where(item => item.BaseNode.Parent?.Instance is DiffComponent || item.BaseNode.Parent?.Parent?.Instance is DiffComponent).Count());
+            // Expecting 6 diffs for DiffComponent (3 elements, 5 properties (Name + Position))
+            Assert.AreEqual(3 * 2, diffResultStripped.Where(item => item.BaseNode.Parent?.Instance is DiffComponent || item.BaseNode.Parent?.Parent?.Instance is DiffComponent).Count());
 
             // All changes must be from asset2 (considered as new base), as everything is setting base
             Assert.True(diffResultStripped.All(item => item.ChangeType == Diff3ChangeType.MergeFromAsset2));

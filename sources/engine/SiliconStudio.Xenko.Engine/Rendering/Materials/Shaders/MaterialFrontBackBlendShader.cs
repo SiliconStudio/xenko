@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class MaterialFrontBackBlendShaderKeys
     {
-        public static readonly ParameterKey<Color3> ColorFront = ParameterKeys.New<Color3>();
-        public static readonly ParameterKey<Color3> ColorBack = ParameterKeys.New<Color3>();
-        public static readonly ParameterKey<float> ColorBlend = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> AlphaBlend = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<Color3> ColorFront = ParameterKeys.NewValue<Color3>();
+        public static readonly ValueParameterKey<float> ColorBlend = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Color3> ColorBack = ParameterKeys.NewValue<Color3>();
+        public static readonly ValueParameterKey<float> AlphaBlend = ParameterKeys.NewValue<float>();
     }
 }

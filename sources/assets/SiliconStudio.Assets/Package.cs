@@ -424,7 +424,8 @@ namespace SiliconStudio.Assets
             {
                 SetDirtyFlagOnAssetWhenFixingUFile = false,
                 ConvertUPathTo = UPathType.Relative,
-                IsProcessingUPaths = true
+                IsProcessingUPaths = true,
+                AssetTemplatingRemoveUnusedBaseParts = true,
             });
             analysis.Run(log);
 
@@ -435,6 +436,13 @@ namespace SiliconStudio.Assets
 
                 if (IsDirty)
                 {
+                    List<UFile> filesToDeleteLocal;
+                    lock (filesToDelete)
+                    {
+                        filesToDeleteLocal = filesToDelete.ToList();
+                        filesToDelete.Clear();
+                    }
+
                     try
                     {
                         // Notifies the dependency manager that a package with the specified path is being saved
@@ -448,7 +456,7 @@ namespace SiliconStudio.Assets
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
                         {
-                            filesToDelete.Add(previousPackagePath);
+                            filesToDeleteLocal.Add(previousPackagePath);
                         }
                         previousPackagePath = packagePath;
 
@@ -461,7 +469,7 @@ namespace SiliconStudio.Assets
                     }
                     
                     // Delete obsolete files
-                    foreach (var file in filesToDelete)
+                    foreach (var file in filesToDeleteLocal)
                     {
                         if (File.Exists(file.FullPath))
                         {
@@ -475,7 +483,6 @@ namespace SiliconStudio.Assets
                             }
                         }
                     }
-                    filesToDelete.Clear();
                 }
 
                 //batch projects
@@ -1236,6 +1243,9 @@ namespace SiliconStudio.Assets
                 return listFiles;
             }
 
+            var sharedProfile = package.Profiles.FindSharedProfile();
+            var hasProject = sharedProfile != null && sharedProfile.ProjectReferences.Count > 0;
+
             // Iterate on each source folders
             foreach (var sourceFolder in package.GetDistinctAssetFolderPaths())
             {
@@ -1263,7 +1273,7 @@ namespace SiliconStudio.Assets
                         var ext = fileUPath.GetFileExtension();
 
                         //make sure to add default shaders in this case, since we don't have a csproj for them
-                        if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && package.IsSystem)
+                        if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && !hasProject)
                         {
                             listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
                             continue;

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Xenko.Rendering.Data;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -57,11 +56,6 @@ namespace SiliconStudio.Xenko.Rendering
         // -----------------------------------------------
         if (MaterialKeys.HasSkinningPosition)
         {
-            if (MaterialKeys.SkinningBones > MaterialKeys.SkinningMaxBones)
-            {
-                // TODO: We should use next power of two minus constant to limit shader permutations?
-                MaterialKeys.SkinningMaxBones = MaterialKeys.SkinningBones;
-            }
             mixin macro MaterialKeys.SkinningMaxBones;
             mixin TransformationSkinning;
 

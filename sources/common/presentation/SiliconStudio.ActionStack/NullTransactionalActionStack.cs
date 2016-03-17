@@ -43,32 +43,34 @@ namespace SiliconStudio.ActionStack
         public bool UndoRedoInProgress => false;
 
         // The following events are intentionally never invoked.
+        // We provide an empty `add' and `remove' to avoid a warning about unused events that we have
+        // to implement as they are part of the ITransactionalActionStack definition.
         /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded;
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler ActionItemsCleared;
+        public event EventHandler ActionItemsCleared { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<EventArgs> TransactionStarted;
+        public event EventHandler<EventArgs> TransactionStarted { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded;
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<DiscardedActionItemsEventArgs<IActionItem>> ActionItemsDiscarded;
+        public event EventHandler<DiscardedActionItemsEventArgs<IActionItem>> ActionItemsDiscarded { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> Undone;
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> Undone { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone;
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone { add { } remove { } }
 
         /// <inheritdoc/>
         public IDisposable BeginEndTransaction(string name)

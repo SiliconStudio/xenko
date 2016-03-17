@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// A GPU resource mapped for CPU access. This is returned by using <see cref="GraphicsDevice.MapSubresource"/>
     /// </summary>
-    public struct MappedResource
+    public partial struct MappedResource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MappedResource"/> struct.
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="resource">The resource.</param>
         /// <param name="subResourceIndex">Index of the sub resource.</param>
         /// <param name="dataBox">The data box.</param>
-        internal MappedResource(GraphicsResource resource, int subResourceIndex, DataBox dataBox)
+        internal MappedResource(GraphicsResource resource, int subResourceIndex, DataBox dataBox) : this()
         {
             Resource = resource;
             SubResourceIndex = subResourceIndex;
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="dataBox">The data box.</param>
         /// <param name="offsetInBytes">Offset since the beginning of the buffer.</param>
         /// <param name="sizeInBytes">Size of the mapped resource.</param>
-        internal MappedResource(GraphicsResource resource, int subResourceIndex, DataBox dataBox, int offsetInBytes, int sizeInBytes)
+        internal MappedResource(GraphicsResource resource, int subResourceIndex, DataBox dataBox, int offsetInBytes, int sizeInBytes) : this()
         {
             Resource = resource;
             SubResourceIndex = subResourceIndex;

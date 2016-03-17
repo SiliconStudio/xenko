@@ -11,13 +11,14 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A compiled version of <see cref="MaterialDescriptor"/>.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Material>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Material>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<Material>))]
     [DataContract]
     public class Material
@@ -69,6 +70,12 @@ namespace SiliconStudio.Xenko.Rendering
         public MaterialDescriptor Descriptor { get; set; }
 
         /// <summary>
+        /// Determines if this material is affected by lighting.
+        /// </summary>
+        /// <value><c>true</c> if this instance affects lighting; otherwise, <c>false</c>.</value>
+        public bool IsLightDependent { get; set; }
+
+        /// <summary>
         /// Creates a new material from the specified descriptor.
         /// </summary>
         /// <param name="device"></param>
@@ -88,12 +95,13 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             var material = result.Material;
-            var blendState = material.Parameters.Get(Graphics.Effect.BlendStateKey);
-            if (blendState != null && blendState.GraphicsDevice == null)
-            {
-                var newState = BlendState.New(device, blendState.Description);
-                material.Parameters.Set(Effect.BlendStateKey, newState);
-            }
+            // TODO GRAPHICS REFACTOR
+            //var blendState = material.Parameters.GetResourceSlow(Graphics.Effect.BlendStateKey);
+            //if (blendState != null && blendState.GraphicsDevice == null)
+            //{
+            //    var newState = BlendState.New(device, blendState.Description);
+            //    material.Parameters.SetResourceSlow(Effect.BlendStateKey, newState);
+            //}
             // TODO: Add other states?
 
             return material;

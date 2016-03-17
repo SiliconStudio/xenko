@@ -124,23 +124,27 @@ namespace SiliconStudio.Xenko.Rendering.Images
             this.viewport = viewport; // TODO: support multiple viewport?
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
 
             if (EnableSetRenderTargets)
             {
-                SetRenderTargets();
+                SetRenderTargets(context);
             }
         }
 
         /// <summary>
         /// Set the render targets for the image effect.
         /// </summary>
-        protected virtual void SetRenderTargets()
+        /// <param name="context"></param>
+        protected virtual void SetRenderTargets(RenderDrawContext context)
         {
             if (outputRenderTargetView != null)
             {
+                // Transition render target
+                context.CommandList.ResourceBarrierTransition(outputRenderTargetView, GraphicsResourceState.RenderTarget);
+
                 if (outputRenderTargetView.Dimension == TextureDimension.TextureCube)
                 {
                     if(createdOutputRenderTargetViews == null)
@@ -149,44 +153,48 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
-                    GraphicsDevice.SetRenderTargets(createdOutputRenderTargetViews);
+                    context.CommandList.SetRenderTargetsAndViewport(createdOutputRenderTargetViews);
 
                     if (viewport.HasValue)
                     {
                         for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
                         {
-                            GraphicsDevice.SetViewport(i, viewport.Value);
+                            context.CommandList.SetViewport(i, viewport.Value);
                         }
                     }
                 }
                 else
                 {
-                    GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+                    context.CommandList.SetRenderTargetAndViewport(null, outputRenderTargetView);
                     if (viewport.HasValue)
                     {
-                        GraphicsDevice.SetViewport(viewport.Value);
+                        context.CommandList.SetViewport(viewport.Value);
                     }
                 }
             }
             else if (outputRenderTargetViews != null)
             {
-                GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
+                // Transition render targets
+                foreach (var renderTarget in outputRenderTargetViews)
+                    context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
+
+                context.CommandList.SetRenderTargetsAndViewport(outputRenderTargetViews);
 
                 if (viewport.HasValue)
                 {
                     for (int i = 0; i < outputRenderTargetViews.Length; i++)
                     {
-                        GraphicsDevice.SetViewport(i, viewport.Value);
+                        context.CommandList.SetViewport(i, viewport.Value);
                     }
                 }
             }
         }
 
-        protected override void PostDrawCore(RenderContext context)
+        protected override void PostDrawCore(RenderDrawContext context)
         {
             if (EnableSetRenderTargets)
             {
-                DisposeCreatedRenderTargetViews();
+                DisposeCreatedRenderTargetViews(context);
             }
 
             base.PostDrawCore(context);
@@ -195,8 +203,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Dispose the render target views that have been created.
         /// </summary>
-        protected virtual void DisposeCreatedRenderTargetViews()
+        protected virtual void DisposeCreatedRenderTargetViews(RenderDrawContext context)
         {
+            // Transtion render targets back to read sources
+            for (int i = 0; i < context.CommandList.RenderTargetCount; ++i)
+            {
+                context.CommandList.ResourceBarrierTransition(context.CommandList.RenderTargets[i], GraphicsResourceState.GenericRead);
+            }
+
             if(createdOutputRenderTargetViews == null)
                 return;
 

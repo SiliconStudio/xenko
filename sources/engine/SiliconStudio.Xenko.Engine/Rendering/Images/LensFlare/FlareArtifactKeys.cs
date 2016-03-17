@@ -10,6 +10,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     internal static class FlareArtifactKeys
     {
-        public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> Count = ParameterKeys.NewPermutation<int>();
     }
 }

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class Transformation
 {
-    cbuffer PerFrame {
+    cbuffer PerView {
         // View matrix. Default to Matrix.Identity.
         stage float4x4 View;
         // Inverse View matrix. Default to Matrix.Inverse(View)
@@ -17,17 +17,15 @@ class Transformation
         stage float2 ProjScreenRay;
         // Eye vector. Default to = View^-1[M41,M42,M43,1.0]
         stage float4 Eye;
-        // Eye vector in model space. Default to = (World*View)^-1[M41,M42,M43,1.0]
-        stage float4 EyeMS;
     };
 
-    cbuffer PerObject {
+    cbuffer PerDraw {
         // World matrix. Default to Matrix.Identity.
         stage float4x4 World;
-        // World matrix. Default to Matrix.Identity.
-        stage float4x4 WorldInverseTranspose;
         // Inverse World matrix. Default to Matrix.Inverse(World).
         stage float4x4 WorldInverse;
+        // Inverse Transpose World matrix. Default to Matrix.Transpose(Matrix.Inverse(World)).
+        stage float4x4 WorldInverseTranspose;
         // WorldView matrix. Default to = World * View.
         stage float4x4 WorldView;
         // Inverse WorldView matrix. Default to Matrix.Inverse(WorldView)
@@ -36,5 +34,7 @@ class Transformation
         stage float4x4 WorldViewProjection;
         // The scale of the World. Default to Vector2.One.
         stage float3 WorldScale;
+        // Eye vector in model space. Default to = (World*View)^-1[M41,M42,M43,1.0]
+        stage float4 EyeMS;
     };
 };
