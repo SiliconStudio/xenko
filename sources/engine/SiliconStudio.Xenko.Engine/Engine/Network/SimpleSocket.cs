@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Engine.Network
             await socket.WriteStream.FlushAsync();
             var ack = (uint)await socket.ReadStream.ReadInt32Async();
             if (ack != expectedAck)
-                throw new InvalidOperationException("Invalid ack");
+                throw new SimpleSocketException("Invalid ack");
         }
 
         private void SetSocket(TcpSocketClient socket)
