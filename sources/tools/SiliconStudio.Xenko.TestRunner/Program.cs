@@ -80,7 +80,10 @@ namespace SiliconStudio.Xenko.TestRunner
                 if (adbOutputs.ExitCode != 0)
                     throw new InvalidOperationException("Invalid error code from adb shell am start.");
 
-                clientResultsEvent.WaitOne(TimeSpan.FromMinutes(5)); //might be too much
+                clientResultsEvent.WaitOne(TimeSpan.FromSeconds(30)); //wait 30 seconds for client connection
+                Console.WriteLine(@"Device client connected, waiting for test results...");
+
+                clientResultsEvent.WaitOne(TimeSpan.FromMinutes(5)); //wait 5 minutes max for running tests results
 
                 return 0;
             }
@@ -122,6 +125,8 @@ namespace SiliconStudio.Xenko.TestRunner
 
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
+            clientResultsEvent.Set();
+
             await AcceptConnection(clientSocket);
 
             var binaryReader = new BinaryReader(clientSocket.ReadStream);
