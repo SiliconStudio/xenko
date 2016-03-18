@@ -130,7 +130,7 @@ namespace NUnitLite.Tests
             // Connect to server right away to let it know we're alive
             //var client = Connect(serverAddresses, serverPort);
 
-            var url = $"/service/{xenkoVersion}/SiliconStudio.Xenko.TestRunner.exe";
+            var url = "/task/SiliconStudio.Xenko.TestRunner.exe";
 
             var socketContext = RouterClient.RequestServer(url).Result;
 
