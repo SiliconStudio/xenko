@@ -106,6 +106,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             SamplerStates = null;
 
+            // Clear shared data
+            sharedDataPerDevice.Clear();
+            sharedDataPerDeviceContext.Clear();
+
             base.Destroy();
         }
 
