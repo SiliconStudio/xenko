@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             public SocketMessageLayer GameSocket;
             public string GameName;
             public Process Process;
+            public Action TestEndAction;
         }
 
         private readonly Dictionary<string, TestPair> processes = new Dictionary<string, TestPair>();
@@ -232,7 +233,16 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                         currentTester = socketMessageLayer;
                                     }
 
-                                    var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process };
+                                    
+
+                                    var currenTestPair = new TestPair
+                                    {
+                                        TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process, TestEndAction = () =>
+                                        {
+                                            // force stop - only works for Android 3.0 and above.
+                                            Process.Start("cmd.exe", $"/C adb shell am force-stop {request.GameAssembly}.{request.GameAssembly}");
+                                        }
+                                    };
                                     processes[request.GameAssembly] = currenTestPair;
                                     testerToGame[socketMessageLayer] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
@@ -335,6 +345,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                     currentTester = null;
                 }
 
+                game.TestEndAction?.Invoke();
+
                 Console.WriteLine($"Finished test {game.GameName}");
             });
 
@@ -354,6 +366,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 {
                     currentTester = null;
                 }
+
+                game.TestEndAction?.Invoke();
 
                 Console.WriteLine($"Aborted test {game.GameName}");
             });
