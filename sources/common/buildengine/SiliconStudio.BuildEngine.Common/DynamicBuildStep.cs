@@ -56,6 +56,14 @@ namespace SiliconStudio.BuildEngine
                 if (executeContext.CancellationTokenSource.Token.IsCancellationRequested)
                     return ResultStatus.Cancelled;
 
+                // Clean completed build steps
+                for (int index = buildStepsToWait.Count - 1; index >= 0; index--)
+                {
+                    var buildStepToWait = buildStepsToWait[index];
+                    if (buildStepToWait.Processed)
+                        buildStepsToWait.RemoveAt(index);
+                }
+
                 // wait for a task to complete
                 if (buildStepsToWait.Count >= MaxParallelSteps)
                     await CompleteOneBuildStep(executeContext, buildStepsToWait);
