@@ -279,6 +279,11 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDeviceContext.OutputMerger.DepthStencilReference = stencilReference;
         }
 
+        public void SetBlendFactor(Color4 blendFactor)
+        {
+            nativeDeviceContext.OutputMerger.BlendFactor = ColorHelper.Convert(blendFactor);
+        }
+
         public void SetPipelineState(PipelineState pipelineState)
         {
             newPipelineState = pipelineState ?? GraphicsDevice.DefaultPipelineState;
