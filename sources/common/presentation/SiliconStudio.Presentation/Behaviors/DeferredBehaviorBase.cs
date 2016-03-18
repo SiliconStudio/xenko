@@ -7,14 +7,25 @@ namespace SiliconStudio.Presentation.Behaviors
 {
     /// <summary>
     /// A <see cref="Behavior{T}"/> that support deferred attachement for a FrameworkElement derived class.
-    /// In such a case, the attachement is delayed until the OnLoad event is raised.
+    /// In such a case, the attachement is delayed until the <see cref="FrameworkElement.Loaded"/> event is raised.
     /// </summary>
     /// <typeparam name="T">The type of instance to attach to.</typeparam>
     public abstract class DeferredBehaviorBase<T> : Behavior<T> where T : DependencyObject
     {
+        /// <summary>
+        /// Represents the <see cref="AttachOnEveryLoadedEvent"/> property.
+        /// </summary>
+        public static readonly DependencyProperty AttachOnEveryLoadedEventProperty =
+            DependencyProperty.Register(nameof(AttachOnEveryLoadedEvent), typeof(bool), typeof(DeferredBehaviorBase<T>), new PropertyMetadata(false));
+
         private bool isClean;
 
-        protected override sealed void OnAttached()
+        /// <summary>
+        /// Gets or sets whether <see cref="OnAttachedOverride"/> should be called each time the <see cref="FrameworkElement.Loaded"/> event is raised.
+        /// </summary>
+        public bool AttachOnEveryLoadedEvent { get { return (bool)GetValue(AttachOnEveryLoadedEventProperty); } set { SetValue(AttachOnEveryLoadedEventProperty, value); } }
+
+        protected sealed override void OnAttached()
         {
             base.OnAttached();
 
@@ -26,7 +37,11 @@ namespace SiliconStudio.Presentation.Behaviors
             else
             {
                 if (element.IsLoaded)
+                {
                     OnAttachedOverride();
+                    if (AttachOnEveryLoadedEvent)
+                        element.Loaded += OnAssociatedObjectLoaded;
+                }
                 else
                     element.Loaded += OnAssociatedObjectLoaded;
 
@@ -34,25 +49,32 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        protected override sealed void OnDetaching()
+        protected sealed override void OnDetaching()
         {
             base.OnDetaching();
 
-            CleanUp();
+            CleanUp(true);
         }
 
         private void OnAssociatedObjectLoaded(object sender, RoutedEventArgs e)
         {
             OnAttachedOverride();
-            ((FrameworkElement)sender).Loaded -= OnAssociatedObjectLoaded;
+            // HACK:
+            // In some cases (e.g. in Telerik panes), the loaded event is called multiple times, without
+            // Unloaded event in between. This might cause some behavior to not work properly. In such a case
+            // set <see cref="AttachOnEveryLoadedEvent"/> to true.
+            if (!AttachOnEveryLoadedEvent)
+            {
+                ((FrameworkElement)sender).Loaded -= OnAssociatedObjectLoaded;
+            }
         }
 
         private void OnAssociatedObjectUnloaded(object sender, RoutedEventArgs e)
         {
-            CleanUp();
+            CleanUp(false);
         }
 
-        private void CleanUp()
+        private void CleanUp(bool isDetaching)
         {
             if (isClean)
                 return;
@@ -62,7 +84,11 @@ namespace SiliconStudio.Presentation.Behaviors
             var element = AssociatedObject as FrameworkElement;
             if (element != null)
             {
-                element.Loaded += OnAssociatedObjectLoaded;
+                if (isDetaching)
+                    element.Loaded -= OnAssociatedObjectLoaded;
+                // see HACK in OnAssociatedObjectLoaded
+                else if (!AttachOnEveryLoadedEvent)
+                    element.Loaded += OnAssociatedObjectLoaded;
                 element.Unloaded -= OnAssociatedObjectUnloaded;
             }
 

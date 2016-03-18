@@ -1,0 +1,14 @@
+!ProceduralModelAsset
+Id: a72697c2-f6a3-4f24-982c-570b3662500b
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !PlaneProceduralModel
+    Size: {X: 1.0, Y: 1.0}
+    Tessellation: {X: 1, Y: 1}
+    Normal: UpY
+    GenerateBackFace: false
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 0bdf9987-6098-488a-9ae0-3f20119b9e3c
+        Material: db59d494-42a0-4470-aadf-5c629cd67e3f:Material

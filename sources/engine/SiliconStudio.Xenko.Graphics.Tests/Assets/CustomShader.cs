@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public static partial class CustomShaderKeys
     {
-        public static readonly ParameterKey<float> SwitchEffectLevel = ParameterKeys.New<float>();
+        public static readonly PermutationParameterKey<float> SwitchEffectLevel = ParameterKeys.NewPermutation<float>();
     }
 }

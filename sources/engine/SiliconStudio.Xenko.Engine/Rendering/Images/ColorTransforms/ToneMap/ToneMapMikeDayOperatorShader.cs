@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ToneMapMikeDayOperatorShaderKeys
     {
-        public static readonly ParameterKey<Vector4> ToeCoeffs = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<Vector4> ShoulderCoeffs = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<float> MiddleCrossOver = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<Vector4> ToeCoeffs = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Vector4> ShoulderCoeffs = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<float> MiddleCrossOver = ParameterKeys.NewValue<float>();
     }
 }

@@ -16,13 +16,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     public class EffectCompileRequest : IEquatable<EffectCompileRequest>
     {
         public string EffectName;
-        public ShaderMixinParameters UsedParameters;
+        public CompilerParameters UsedParameters;
 
         public EffectCompileRequest()
         {
         }
 
-        public EffectCompileRequest(string effectName, ShaderMixinParameters usedParameters)
+        public EffectCompileRequest(string effectName, CompilerParameters usedParameters)
         {
             EffectName = effectName;
             UsedParameters = usedParameters;
@@ -45,10 +45,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ShaderMixinObjectId.Compute(EffectName, UsedParameters).GetHashCode();
-            }
+            return ShaderMixinObjectId.Compute(EffectName, UsedParameters).GetHashCode();
         }
     }
 }

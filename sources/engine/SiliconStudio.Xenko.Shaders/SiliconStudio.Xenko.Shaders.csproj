@@ -16,10 +16,14 @@
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -27,6 +31,7 @@
     <Compile Include="Compiler\CompilerResults.cs" />
     <Compile Include="Compiler\CompilerParameters.cs" />
     <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
+    <Compile Include="Compiler\EffectCompilerParameters.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />
     <Compile Include="Compiler\EffectPriorityScheduler.cs" />
     <Compile Include="Compiler\TaskOrResult.cs" />
@@ -64,6 +69,7 @@
     <Compile Include="ShaderMixinParameters.cs" />
     <Compile Include="EffectParameterType.cs" />
     <Compile Include="ShaderSource.cs" />
+    <Compile Include="ShaderSourceCollection.cs" />
     <Compile Include="ShaderStage.cs" />
     <Compile Include="ShaderStreamOutputDeclarationEntry.cs" />
   </ItemGroup>

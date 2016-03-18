@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,8 +15,48 @@ using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
+    /// <summary>
+    /// Represents a control that displays hierarchical data in a tree structure that has items that can expand and collapse.
+    /// </summary>
     public class TreeView : ItemsControl
     {
+        /// <summary>
+        /// Identifies the <see cref="SelectedItem"/> dependency property.
+        /// </summary>
+        public static DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(nameof(SelectedItem), typeof(object), typeof(TreeView), new FrameworkPropertyMetadata(null, OnSelectedItemPropertyChanged));
+        /// <summary>
+        /// Identifies the <see cref="SelectedItems"/> dependency property.
+        /// </summary>
+        public static DependencyPropertyKey SelectedItemsProperty =
+            DependencyProperty.RegisterReadOnly(nameof(SelectedItems), typeof(IList), typeof(TreeView), new FrameworkPropertyMetadata(null, OnSelectedItemsPropertyChanged));
+        /// <summary>
+        /// Identifes the <see cref="SelectionMode"/> dependency property.
+        /// </summary>
+        public static DependencyProperty SelectionModeProperty =
+            DependencyProperty.Register(nameof(SelectionMode), typeof(SelectionMode), typeof(TreeView), new FrameworkPropertyMetadata(SelectionMode.Extended, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectionModeChanged));
+        /// <summary>
+        /// Identifies the <see cref="IsVirtualizing"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsVirtualizingProperty =
+            DependencyProperty.Register(nameof(IsVirtualizing), typeof(bool), typeof(TreeView), new PropertyMetadata(false));
+        /// <summary>
+        /// Identifies the <see cref="PrepareItem"/> routed event.
+        /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub-items.
+        /// </summary>
+        public static readonly RoutedEvent PrepareItemEvent =
+            EventManager.RegisterRoutedEvent("PrepareItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
+        /// <summary>
+        /// Identifies the <see cref="ClearItem"/> routed event.
+        /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub items.
+        /// </summary>
+        public static readonly RoutedEvent ClearItemEvent =
+            EventManager.RegisterRoutedEvent("ClearItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
+
+        internal static bool IsControlKeyDown => (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+
+        internal static bool IsShiftKeyDown => (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+
         // the space where items will be realized if virtualization is enabled. This is set by virtualizingtreepanel.
         internal VirtualizingTreePanel.VerticalArea RealizationSpace = new VirtualizingTreePanel.VerticalArea();
         internal VirtualizingTreePanel.SizesCache CachedSizes = new VirtualizingTreePanel.SizesCache();
@@ -22,33 +65,7 @@ namespace SiliconStudio.Presentation.Controls
         private bool allowedSelectionChanges;
         private bool mouseDown;
         private object lastShiftRoot;
-        TreeViewItem editedItem;
-
-        public static DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(TreeView), new FrameworkPropertyMetadata(null, OnSelectedItemPropertyChanged));
-
-        public static DependencyPropertyKey SelectedItemsProperty = DependencyProperty.RegisterReadOnly("SelectedItems", typeof(IList), typeof(TreeView), new FrameworkPropertyMetadata(null, OnSelectedItemsPropertyChanged));
-
-        public static DependencyProperty SelectionModeProperty = DependencyProperty.Register("SelectionMode", typeof(SelectionMode), typeof(TreeView), new FrameworkPropertyMetadata(SelectionMode.Extended, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectionModeChanged));
-
-        public static readonly DependencyProperty IsVirtualizingProperty = DependencyProperty.Register("IsVirtualizing", typeof(bool), typeof(TreeView), new PropertyMetadata(false));
-
-        /// <summary>
-        /// Identifies the PreparePropertyItem event.
-        /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub-items.
-        /// </summary>
-        public static readonly RoutedEvent PrepareItemEvent = EventManager.RegisterRoutedEvent("PrepareItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
-
-        /// <summary>
-        /// Identifies the ClearPropertyItem event.
-        /// This attached routed event may be raised by the PropertyGrid itself or by a
-        /// PropertyItemBase containing sub items.
-        /// </summary>
-        public static readonly RoutedEvent ClearItemEvent = EventManager.RegisterRoutedEvent("ClearItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
-
-        internal static bool IsControlKeyDown => (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-
-        internal static bool IsShiftKeyDown => (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
-
+        private TreeViewItem editedItem;
         private bool isInitialized;
         private ScrollViewer scroller;
 
@@ -56,9 +73,9 @@ namespace SiliconStudio.Presentation.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(typeof(TreeView)));
 
-            FrameworkElementFactory vPanel = new FrameworkElementFactory(typeof(VirtualizingTreePanel));
+            var vPanel = new FrameworkElementFactory(typeof(VirtualizingTreePanel));
             vPanel.SetValue(Panel.IsItemsHostProperty, true);
-            ItemsPanelTemplate vPanelTemplate = new ItemsPanelTemplate { VisualTree = vPanel };
+            var vPanelTemplate = new ItemsPanelTemplate { VisualTree = vPanel };
             ItemsPanelProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(vPanelTemplate));
 
             KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(KeyboardNavigationMode.Contained));
@@ -96,12 +113,12 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnApplyTemplate();
 
-            if (!isInitialized)
-            {
-                Loaded += OnLoaded;
-                Unloaded += OnUnLoaded;
-                OnLoaded(this, new RoutedEventArgs(LoadedEvent));
-            }
+            if (isInitialized)
+                return;
+
+            Loaded += OnLoaded;
+            Unloaded += OnUnLoaded;
+            OnLoaded(this, new RoutedEventArgs(LoadedEvent));
         }
 
         // TODO: This method has been implemented with a lot of fail and retry, and should be cleaned.
@@ -124,7 +141,7 @@ namespace SiliconStudio.Presentation.Controls
                 parent = getParent(parent);
             }
 
-            for (int i = path.Count - 1; i >= 0; --i)
+            for (var i = path.Count - 1; i >= 0; --i)
             {
                 if (container != null)
                     container = (TreeViewItem)container.ItemContainerGenerator.ContainerFromItem(path[i]);
@@ -132,9 +149,12 @@ namespace SiliconStudio.Presentation.Controls
                     container = (TreeViewItem)ItemContainerGenerator.ContainerFromItem(path[i]);
 
                 if (container == null)
-                    return false;
+                    continue;
 
-                container.IsExpanded = true;
+                // don't expand the last node
+                if (i > 0)
+                    container.IsExpanded = true;
+
                 container.ApplyTemplate();
                 var itemsPresenter = (ItemsPresenter)container.Template.FindName("ItemsHost", container);
                 if (itemsPresenter == null)
@@ -158,7 +178,7 @@ namespace SiliconStudio.Presentation.Controls
 
                 // Ensure that the generator for this panel has been created.
                 // ReSharper disable once UnusedVariable
-                UIElementCollection children = itemsHostPanel.Children;
+                var children = itemsHostPanel.Children;
                 container.BringIntoView();
             }
             return true;
@@ -172,8 +192,8 @@ namespace SiliconStudio.Presentation.Controls
 
         internal virtual void SelectPreviousFromKey()
         {
-            List<TreeViewItem> items = TreeViewElementFinder.FindAll(this, true).ToList();
-            TreeViewItem item = GetFocusedItem();
+            var items = TreeViewElementFinder.FindAll(this, true).ToList();
+            var item = GetFocusedItem();
             item = GetPreviousItem(item, items);
             if (item == null) return;
 
@@ -188,7 +208,7 @@ namespace SiliconStudio.Presentation.Controls
 
         internal virtual void SelectNextFromKey()
         {
-            TreeViewItem item = GetFocusedItem();
+            var item = GetFocusedItem();
             item = TreeViewElementFinder.FindNext(item, true);
             if (item == null) return;
 
@@ -203,7 +223,7 @@ namespace SiliconStudio.Presentation.Controls
 
         internal virtual void SelectCurrentBySpace()
         {
-            TreeViewItem item = GetFocusedItem();
+            var item = GetFocusedItem();
             SelectSingleItem(item);
             item.ForceFocus();
         }
@@ -226,21 +246,21 @@ namespace SiliconStudio.Presentation.Controls
         internal virtual void SelectFirst()
         {
             var item = TreeViewElementFinder.FindFirst(this, true);
-            if (item != null)
-            {
-                SelectSingleItem(item);
-                item.ForceFocus();
-            }
+            if (item == null)
+                return;
+
+            SelectSingleItem(item);
+            item.ForceFocus();
         }
 
         internal virtual void SelectLast()
         {
             var item = TreeViewElementFinder.FindLast(this, true);
-            if (item != null)
-            {
-                SelectSingleItem(item);
-                item.ForceFocus();
-            }
+            if (item == null)
+                return;
+
+            SelectSingleItem(item);
+            item.ForceFocus();
         }
 
         internal virtual void ClearObsoleteItems(IList items)
@@ -265,15 +285,15 @@ namespace SiliconStudio.Presentation.Controls
 
             mouseDown = e.ChangedButton == MouseButton.Left;
 
-            TreeViewItem item = GetTreeViewItemUnderMouse(e.GetPosition(this));
-            if (item == null)
-                return;
-            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null)
-                return;
-            if (item.IsEditing)
-                return;
+            var item = GetTreeViewItemUnderMouse(e.GetPosition(this));
+            if (item == null) return;
+            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null) return;
+            if (item.IsEditing) return;
 
-            SelectSingleItem(item);
+            if (!SelectedItems.Contains(item.DataContext))
+            {
+                SelectSingleItem(item);
+            }
 
             item.ForceFocus();
         }
@@ -283,7 +303,7 @@ namespace SiliconStudio.Presentation.Controls
             base.OnMouseUp(e);
             if (mouseDown)
             {
-                TreeViewItem item = GetTreeViewItemUnderMouse(e.GetPosition(this));
+                var item = GetTreeViewItemUnderMouse(e.GetPosition(this));
                 if (item == null) return;
                 if (e.ChangedButton != MouseButton.Left) return;
                 if (item.IsEditing) return;
@@ -329,7 +349,7 @@ namespace SiliconStudio.Presentation.Controls
         internal IEnumerable<TreeViewItem> GetChildren(TreeViewItem item)
         {
             if (item == null) yield break;
-            for (int i = 0; i < item.Items.Count; i++)
+            for (var i = 0; i < item.Items.Count; i++)
             {
                 var child = item.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                 if (child != null) yield return child;
@@ -338,9 +358,9 @@ namespace SiliconStudio.Presentation.Controls
 
         internal TreeViewItem GetNextItem(TreeViewItem item, List<TreeViewItem> items)
         {
-            int indexOfCurrent = items.IndexOf(item);
+            var indexOfCurrent = items.IndexOf(item);
 
-            for (int i = indexOfCurrent + 1; i < items.Count; i++)
+            for (var i = indexOfCurrent + 1; i < items.Count; i++)
             {
                 if (items[i].IsVisible)
                 {
@@ -378,7 +398,7 @@ namespace SiliconStudio.Presentation.Controls
 
             if (lastIndex > firstIndex)
             {
-                for (int i = firstIndex; i <= lastIndex; i++)
+                for (var i = firstIndex; i <= lastIndex; i++)
                 {
                     if (allNodes[i].IsVisible)
                     {
@@ -388,7 +408,7 @@ namespace SiliconStudio.Presentation.Controls
             }
             else
             {
-                for (int i = firstIndex; i >= lastIndex; i--)
+                for (var i = firstIndex; i >= lastIndex; i--)
                 {
                     if (allNodes[i].IsVisible)
                     {
@@ -416,8 +436,8 @@ namespace SiliconStudio.Presentation.Controls
 
         internal TreeViewItem GetPreviousItem(TreeViewItem item, List<TreeViewItem> items)
         {
-            int indexOfCurrent = items.IndexOf(item);
-            for (int i = indexOfCurrent - 1; i >= 0; i--)
+            var indexOfCurrent = items.IndexOf(item);
+            for (var i = indexOfCurrent - 1; i >= 0; i--)
             {
                 if (items[i].IsVisible)
                 {
@@ -430,15 +450,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public TreeViewItem GetTreeViewItemFor(object item)
         {
-            foreach (var treeViewItem in TreeViewElementFinder.FindAll(this, false))
-            {
-                if (item == treeViewItem.DataContext)
-                {
-                    return treeViewItem;
-                }
-            }
-
-            return null;
+            return TreeViewElementFinder.FindAll(this, false).FirstOrDefault(treeViewItem => item == treeViewItem.DataContext);
         }
 
         internal IEnumerable<TreeViewItem> GetTreeViewItemsFor(IEnumerable objects)
@@ -471,39 +483,46 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var treeView = (TreeView)d;
-            if (!treeView.updatingSelection)
-            {
-                if (treeView.SelectedItems.Count == 1 && treeView.SelectedItems[0] == e.NewValue)
-                    return;
+            if (treeView.updatingSelection)
+                return;
 
-                treeView.updatingSelection = true;
-                if (treeView.SelectedItems.Count > 0)
+            if (treeView.SelectedItems.Count == 1 && treeView.SelectedItems[0] == e.NewValue)
+                return;
+
+            treeView.updatingSelection = true;
+            if (treeView.SelectedItems.Count > 0)
+            {
+                foreach (var oldItem in treeView.SelectedItems.Cast<object>().ToList())
                 {
-                    foreach (var oldItem in treeView.SelectedItems.Cast<object>().ToList())
-                    {
-                        var item = treeView.GetTreeViewItemFor(oldItem);
-                        if (item != null)
-                            item.IsSelected = false;
-                    }
-                    treeView.SelectedItems.Clear();
-                }
-                if (e.NewValue != null)
-                {
-                    var item = treeView.GetTreeViewItemFor(e.NewValue);
+                    var item = treeView.GetTreeViewItemFor(oldItem);
                     if (item != null)
-                        item.IsSelected = true;
+                        item.IsSelected = false;
+                }
+                treeView.SelectedItems.Clear();
+            }
+            if (e.NewValue != null)
+            {
+                var item = treeView.GetTreeViewItemFor(e.NewValue);
+                if (item != null)
+                {
+                    // Setting to true will automatically add to the selection (if not already selected).
+                    // See <see cref="TreeViewItem.OnPropertyChanged" /> for more details
+                    item.IsSelected = true;
+                }
+                else
+                {
                     treeView.SelectedItems.Add(e.NewValue);
                 }
-                treeView.updatingSelection = false;
             }
+            treeView.updatingSelection = false;
         }
 
         private static void OnSelectedItemsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            TreeView treeView = (TreeView)d;
+            var treeView = (TreeView)d;
             if (e.OldValue != null)
             {
-                INotifyCollectionChanged collection = e.OldValue as INotifyCollectionChanged;
+                var collection = e.OldValue as INotifyCollectionChanged;
                 if (collection != null)
                 {
                     collection.CollectionChanged -= treeView.OnSelectedItemsChanged;
@@ -512,7 +531,7 @@ namespace SiliconStudio.Presentation.Controls
 
             if (e.NewValue != null)
             {
-                INotifyCollectionChanged collection = e.NewValue as INotifyCollectionChanged;
+                var collection = e.NewValue as INotifyCollectionChanged;
                 if (collection != null)
                 {
                     collection.CollectionChanged += treeView.OnSelectedItemsChanged;
@@ -522,26 +541,34 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnSelectionModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var treeView = (TreeView)d;
             var newValue = (SelectionMode)e.NewValue;
-            if (newValue == SelectionMode.Multiple)
-                throw new NotSupportedException("SelectionMode.Multiple is not yet supported. Please use SelectionMode.Single or SelectionMode.Multiple.Extended.");
-
-            if (newValue != SelectionMode.Single)
+            switch (newValue)
             {
-                var selectedItem = treeView.SelectedItem;
-                treeView.updatingSelection = true;
-                for (int i = treeView.SelectedItems.Count - 1; i >= 0; --i)
-                {
-                    if (treeView.SelectedItems[i] != selectedItem)
+                case SelectionMode.Multiple:
+                    throw new NotSupportedException("SelectionMode.Multiple is not yet supported. Please use SelectionMode.Single or SelectionMode.Extended.");
+
+                case SelectionMode.Single:
+                    break;
+
+                case SelectionMode.Extended:
+                    var treeView = (TreeView)d;
+                    var selectedItem = treeView.SelectedItem;
+                    treeView.updatingSelection = true;
+                    for (var i = treeView.SelectedItems.Count - 1; i >= 0; --i)
                     {
+                        if (treeView.SelectedItems[i] == selectedItem)
+                            continue;
+
                         var item = treeView.GetTreeViewItemFor(treeView.SelectedItems[i]);
                         if (item != null)
                             item.IsSelected = false;
                         treeView.SelectedItems.RemoveAt(i);
                     }
-                }
-                treeView.updatingSelection = false;
+                    treeView.updatingSelection = false;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -645,7 +672,7 @@ namespace SiliconStudio.Presentation.Controls
 
         protected TreeViewItem GetTreeViewItemUnderMouse(Point positionRelativeToTree)
         {
-            HitTestResult hitTestResult = VisualTreeHelper.HitTest(this, positionRelativeToTree);
+            var hitTestResult = VisualTreeHelper.HitTest(this, positionRelativeToTree);
             if (hitTestResult?.VisualHit == null)
                 return null;
 
@@ -688,7 +715,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void ModifySelection(List<object> itemsToSelect, List<object> itemsToUnselect)
+        private void ModifySelection(ICollection<object> itemsToSelect, ICollection<object> itemsToUnselect)
         {
             //clean up any duplicate or unnecessery input
             // check for itemsToUnselect also in itemsToSelect
@@ -729,8 +756,7 @@ namespace SiliconStudio.Presentation.Controls
             if (!(SelectedItems.Contains(lastShiftRoot) && IsShiftKeyDown))
                 lastShiftRoot = itemsToSelect.LastOrDefault();
         }
-
-
+        
         private void SelectWithShift(TreeViewItem item)
         {
             object firstSelectedItem;

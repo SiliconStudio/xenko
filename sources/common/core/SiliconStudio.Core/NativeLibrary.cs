@@ -33,6 +33,8 @@ namespace SiliconStudio.Core
         /// </summary>
 #if SILICONSTUDIO_PLATFORM_IOS
         public const string LibraryName = "__Internal";
+#elif SILICONSTUDIO_PLATFORM_LINUX
+        public const string LibraryName = "libcore.so";
 #else
         public const string LibraryName = "libcore.dll";
 #endif

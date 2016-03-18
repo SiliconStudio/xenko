@@ -60,9 +60,7 @@ namespace SiliconStudio.Presentation.Commands
 
         private void InvokeCanExecute()
         {
-            var handler = CanExecuteChanged;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

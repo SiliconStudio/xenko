@@ -9,7 +9,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Graphics.Font
 {
-    [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Content")]
     [ContentSerializer(typeof(StaticSpriteFontContentSerializer))]
     [DataSerializer(typeof(StaticSpriteFontSerializer))]
     internal class StaticSpriteFont : SpriteFont
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             return CharacterToGlyph.ContainsKey(c);
         }
 
-        protected override Glyph GetGlyph(char character, ref Vector2 fontSize, bool dumb)
+        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool dumb)
         {
             Glyph glyph = null;
 

@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="DataVisitorBase"/> class.
         /// </summary>
         protected DataVisitorBase()
-            : this(new TypeDescriptorFactory(new AttributeRegistry()))
+            : this(Reflection.TypeDescriptorFactory.Default)
         {
         }
 
@@ -208,7 +208,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 var value = array.GetValue(i);
                 CurrentPath.Push(descriptor, i);
-                VisitArrayItem(array, descriptor, i, value, value == null ? null : TypeDescriptorFactory.Find(value.GetType()));
+                VisitArrayItem(array, descriptor, i, value, TypeDescriptorFactory.Find(value?.GetType() ?? descriptor.ElementType));
                 CurrentPath.Pop();
             }
         }
@@ -221,10 +221,18 @@ namespace SiliconStudio.Core.Reflection
         public virtual void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
             int i = 0;
+
+            // Make a copy in case VisitCollectionItem mutates something
+            var items = new List<object>();
             foreach (var item in collection)
             {
+                items.Add(item);
+            }
+
+            foreach (var item in items)
+            {
                 CurrentPath.Push(descriptor, i);
-                VisitCollectionItem(collection, descriptor, i, item, item == null ? null : TypeDescriptorFactory.Find(item.GetType()));
+                VisitCollectionItem(collection, descriptor, i, item, TypeDescriptorFactory.Find(item?.GetType() ?? descriptor.ElementType));
                 CurrentPath.Pop();
                 i++;
             }
@@ -237,12 +245,19 @@ namespace SiliconStudio.Core.Reflection
 
         public virtual void VisitDictionary(object dictionary, DictionaryDescriptor descriptor)
         {
-            foreach (var keyValue in descriptor.GetEnumerator(dictionary))
+            // Make a copy in case VisitCollectionItem mutates something
+            var items = new List<KeyValuePair<object, object>>();
+            foreach (var item in descriptor.GetEnumerator(dictionary))
+            {
+                items.Add(item);
+            }
+
+            foreach (var keyValue in items)
             {
                 var key = keyValue.Key;
-                var keyDescriptor = keyValue.Key == null ? null : TypeDescriptorFactory.Find(keyValue.Key.GetType());
+                var keyDescriptor = TypeDescriptorFactory.Find(keyValue.Key?.GetType() ?? descriptor.KeyType);
                 var value = keyValue.Value;
-                var valueDescriptor = keyValue.Value == null ? null : TypeDescriptorFactory.Find(keyValue.Value.GetType());
+                var valueDescriptor = TypeDescriptorFactory.Find(keyValue.Value?.GetType() ?? descriptor.ValueType);
 
                 CurrentPath.Push(descriptor, key);
                 VisitDictionaryKeyValue(dictionary, descriptor, key, keyDescriptor, value, valueDescriptor);

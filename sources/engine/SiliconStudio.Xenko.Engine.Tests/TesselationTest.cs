@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -34,7 +35,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private bool isWireframe;
 
-        private RasterizerState wireframeState;
+        private RasterizerStateDescription wireframeState;
 
         private SpriteBatch spriteBatch;
 
@@ -60,25 +61,27 @@ namespace SiliconStudio.Xenko.Engine.Tests
             await base.LoadContent();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = Asset.Load<SpriteFont>("Font");
+            font = Content.Load<SpriteFont>("Font");
 
-            wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
+            wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
-            materials.Add(Asset.Load<Material>("NoTessellation"));
-            materials.Add(Asset.Load<Material>("FlatTessellation"));
-            materials.Add(Asset.Load<Material>("PNTessellation"));
-            materials.Add(Asset.Load<Material>("PNTessellationAE"));
-            materials.Add(Asset.Load<Material>("FlatTessellationDispl"));
-            materials.Add(Asset.Load<Material>("FlatTessellationDisplAE"));
-            materials.Add(Asset.Load<Material>("PNTessellationDisplAE"));
+            materials.Add(Content.Load<Material>("NoTessellation"));
+            materials.Add(Content.Load<Material>("FlatTessellation"));
+            materials.Add(Content.Load<Material>("PNTessellation"));
+            materials.Add(Content.Load<Material>("PNTessellationAE"));
+            materials.Add(Content.Load<Material>("FlatTessellationDispl"));
+            materials.Add(Content.Load<Material>("FlatTessellationDisplAE"));
+            materials.Add(Content.Load<Material>("PNTessellationDisplAE"));
+
+            RenderContext.GetShared(Services).RendererInitialized += RendererInitialized;
 
             var cube = new Entity("Cube") { new ModelComponent(new ProceduralModelDescriptor(new CubeProceduralModel { Size = new Vector3(80), MaterialInstance = { Material = materials[0] } }).GenerateModel(Services)) };
             var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Radius = 50, Tessellation = 5, MaterialInstance = { Material = materials[0] }} ).GenerateModel(Services)) };
 
-            var megalodon = new Entity { new ModelComponent { Model = Asset.Load<Model>("megalodon Model") } };
+            var megalodon = new Entity { new ModelComponent { Model = Content.Load<Model>("megalodon Model") } };
             megalodon.Transform.Position= new Vector3(0, -30f, -10f);
 
-            var knight = new Entity { new ModelComponent { Model = Asset.Load<Model>("knight Model") } };
+            var knight = new Entity { new ModelComponent { Model = Content.Load<Model>("knight Model") } };
             knight.Transform.RotationEulerXYZ = new Vector3(-MathUtil.Pi / 2, MathUtil.Pi / 4, 0);
             knight.Transform.Position = new Vector3(0, -50f, 20f);
             knight.Transform.Scale= new Vector3(0.6f);
@@ -92,14 +95,24 @@ namespace SiliconStudio.Xenko.Engine.Tests
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
-            LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
-            GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
-
+            // TODO GRAPHICS REFACTOR
             ChangeModel(0);
-            SetWireframe(true);
 
             camera.Position = new Vector3(25, 45, 80);
             camera.SetTarget(currentEntity, true);
+        }
+
+        void RendererInitialized(IGraphicsRendererCore obj)
+        {
+            // TODO: callback will be called also for editor renderers. We might want to filter down this
+            if (obj is MeshRenderFeature)
+            {
+                ((MeshRenderFeature)obj).PostProcessPipelineState +=
+                    (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+                    {
+                        pipelineState.RasterizerState = RasterizerStates.WireframeCullBack;
+                    };
+            }
         }
 
         protected override void RegisterTests()
@@ -114,12 +127,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
             FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
         }
 
-        protected override void PostCameraRendererDraw(RenderContext context, RenderFrame frame)
+        protected override void PostCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
         {
             if (!debug)
                 return;
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
             spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();
@@ -146,17 +159,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             if (Input.IsKeyDown(Keys.NumPad2))
                 ChangeDesiredTriangleSize(0.2f);
-
-            if (Input.IsKeyPressed(Keys.Space))
-                SetWireframe(!isWireframe);
-        }
-
-        private void SetWireframe(bool wireframeActivated)
-        {
-            isWireframe = wireframeActivated;
-
-            if (currentMaterial != null)
-                currentMaterial.Parameters.Set(Effect.RasterizerStateKey, isWireframe ? wireframeState : GraphicsDevice.RasterizerStates.CullBack);
         }
 
         private void ChangeDesiredTriangleSize(float f)
@@ -201,8 +203,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
                         modelComponent.Materials.Add(currentMaterial);
                 }
             }
-
-            SetWireframe(isWireframe);
         }
 
         [Test]

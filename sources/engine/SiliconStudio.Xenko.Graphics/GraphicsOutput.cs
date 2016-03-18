@@ -14,6 +14,16 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly Rectangle desktopBounds;
 
         /// <summary>
+        /// Default constructor to initialize fields that are not explicitly set to avoid warnings at compile time.
+        /// </summary>
+        internal GraphicsOutput()
+        {
+            adapter = null;
+            supportedDisplayModes = null;
+            desktopBounds = Rectangle.Empty;
+        }
+
+        /// <summary>
         /// Gets the current display mode.
         /// </summary>
         /// <value>The current display mode.</value>

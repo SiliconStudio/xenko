@@ -25,11 +25,11 @@ namespace SiliconStudio.Xenko.Assets.Model
         public string EffectName { get; set; }
         public bool TessellationAEN { get; set; }
 
-        private object ExportModel(ICommandContext commandContext, AssetManager assetManager)
+        private object ExportModel(ICommandContext commandContext, ContentManager contentManager)
         {
             // Read from model file
-            var modelSkeleton = LoadSkeleton(commandContext, assetManager); // we get model skeleton to compare it to real skeleton we need to map to
-            var model = LoadModel(commandContext, assetManager);
+            var modelSkeleton = LoadSkeleton(commandContext, contentManager); // we get model skeleton to compare it to real skeleton we need to map to
+            var model = LoadModel(commandContext, contentManager);
 
             // Apply materials
             foreach (var modelMaterial in Materials)
@@ -44,14 +44,12 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             model.BoundingBox = BoundingBox.Empty;
 
-            bool hasErrors = false;
             foreach (var mesh in model.Meshes)
             {
                 if (TessellationAEN)
                 {
                     // TODO: Generate AEN model view
                     commandContext.Logger.Error("TessellationAEN is not supported in {0}", ContextAsString);
-                    hasErrors = true;
                 }
             }
 
@@ -61,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             if (SkeletonUrl != null)
             {
                 // Load skeleton and process it
-                skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
+                skeleton = contentManager.Load<Skeleton>(SkeletonUrl);
 
                 // Assign skeleton to model
                 model.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(Guid.Empty, SkeletonUrl);

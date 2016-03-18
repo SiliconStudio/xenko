@@ -1,66 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioProcessor.Data>
+    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, SpriteStudioComponent>
     {
-        public readonly List<Data> Sprites = new List<Data>();
-
-        public SpriteStudioProcessor()
-            : base(SpriteStudioComponent.Key, TransformComponent.Key)
+        protected override SpriteStudioComponent GenerateComponentData(Entity entity, SpriteStudioComponent component)
         {
-            Order = 550;
+            return component;
         }
 
-        public class Data
-        {
-            public SpriteStudioComponent SpriteStudioComponent;
-            public TransformComponent TransformComponent;
-            public AnimationComponent AnimationComponent;
-            public SpriteStudioNodeState RootNode;
-            public SpriteStudioSheet Sheet;
-        }
-
-        protected override Data GenerateAssociatedData(Entity entity)
-        {
-            return new Data
-            {
-                SpriteStudioComponent = entity.Get<SpriteStudioComponent>(),
-                TransformComponent = entity.Transform,
-                AnimationComponent = entity.Get<AnimationComponent>()
-            };
-        }
-
-        protected override bool IsAssociatedDataValid(Entity entity, Data associatedData)
-        {
-            return
-                entity.Get(SpriteStudioComponent.Key) == associatedData.SpriteStudioComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
-                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent;
-        }
-
-        protected override void OnEntityAdding(Entity entity, Data data)
+        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, SpriteStudioComponent data)
         {
             PrepareNodes(data);
         }
 
-        protected override void OnEntityRemoved(Entity entity, Data data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, SpriteStudioComponent data)
         {
-            data.SpriteStudioComponent.Nodes.Clear();
+            data.Nodes.Clear();
         }
 
-        internal static SpriteStudioNodeState InitializeNodes(SpriteStudioComponent spriteStudioComponent)
+        public override void Update(GameTime time)
         {
-            spriteStudioComponent.Nodes.Clear();
+            foreach (var data in ComponentDatas)
+            {
+                var spriteStudioComponent = data.Value;
+                if (!spriteStudioComponent.Enabled) continue;
 
+                spriteStudioComponent.ValidState = PrepareNodes(spriteStudioComponent);
+            }
+        }
+
+        public override void Draw(RenderContext context)
+        {
+            foreach (var componentData in ComponentDatas)
+            {
+                var component = componentData.Value;
+                if (!component.ValidState) continue;
+                SortNodes(component);
+                component.RootNode.UpdateTransformation();
+            }
+        }
+
+        internal static bool PrepareNodes(SpriteStudioComponent component)
+        {
+            var sheet = component.Sheet;
+            if (component.CurrentSheet != sheet) // sheet changed? force pre-process
+            {
+                component.RootNode = null;
+                component.Nodes.Clear();
+            }
+
+            var assetNodes = sheet?.NodesInfo;
+            if (assetNodes == null) return false;
+
+            if (component.RootNode == null)
+            {
+                component.RootNode = InitializeNodes(component);
+                component.CurrentSheet = sheet;
+            }
+
+            return (component.RootNode != null);
+        }
+
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
+        // Enumerables are Evil
+        private static void SortNodes(SpriteStudioComponent component)
+        {
+            component.SortedNodes.Clear();
+            var sortedNodes = component.Nodes.OrderBy(x => x.Priority);
+            foreach (var node in sortedNodes)
+            {
+                component.SortedNodes.Add(node);
+            }
+        }
+
+        private static SpriteStudioNodeState InitializeNodes(SpriteStudioComponent spriteStudioComponent)
+        {
             var nodes = spriteStudioComponent.Sheet?.NodesInfo;
             if (nodes == null)
                 return null;
@@ -121,145 +142,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
 
             return rootNode;
-        }
-
-        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
-        // Enumerables are Evil
-        private static unsafe void UpdateNodes(List<SpriteStudioNodeState> nodes, Data data)
-        {
-            /*var animComp = data.AnimationComponent;
-            if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
-            {
-                fixed (byte* bytes = animComp.CurrentFrameResult.Data)
-                {
-                    foreach (var node in nodes)
-                    {
-                        //Process animations
-                        var results = animComp.CurrentFrameResult;
-                        var channels = results.Channels.Where(x => x.PropertyName == node.BaseNode.Name);
-                        foreach (var channel in results.Channels)
-                        {
-                            if(channel.NodeName != node.BaseNode.Name) continue;
-
-                            var structureData = (float*)(bytes + channel.Offset);
-                            if(structureData == null) continue;
-                            if (structureData[0] == 0.0f) continue;
-
-                            var valueFloat = *(structureData + 1);
-                            var valueInt = *((int*)structureData + 1);
-
-                            if (channel.PropertyName.StartsWith("posx"))
-                            {
-                                node.Position.X = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("posy"))
-                            {
-                                node.Position.Y = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("prio"))
-                            {
-                                node.Priority = valueInt;
-                            }
-                            else if (channel.PropertyName.StartsWith("rotz"))
-                            {
-                                node.RotationZ = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("sclx"))
-                            {
-                                node.Scale.X = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("scly"))
-                            {
-                                node.Scale.Y = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("alph"))
-                            {
-                                node.Transparency = valueFloat;
-                            }
-                            else if (channel.PropertyName.StartsWith("hide"))
-                            {
-                                node.Hide = valueInt != 0;
-                            }
-                            else if (channel.PropertyName.StartsWith("flph"))
-                            {
-                                node.HFlipped = valueInt != 0;
-                            }
-                            else if (channel.PropertyName.StartsWith("flpv"))
-                            {
-                                node.VFlipped = valueInt != 0;
-                            }
-                            else if (channel.PropertyName.StartsWith("cell"))
-                            {
-                                var spriteIndex = valueInt;
-                                node.SpriteId = spriteIndex;
-                                node.Sprite = spriteIndex != -1 ? data.SpriteStudioComponent.Sheet.Sprites[spriteIndex] : null;
-                            }
-                            else if (channel.PropertyName.StartsWith("colb"))
-                            {
-                                node.BlendType = (SpriteStudioBlending)valueInt;
-                            }
-                            else if (channel.PropertyName.StartsWith("colv"))
-                            {
-                                Utilities.Read((IntPtr)(structureData + 1), ref node.BlendColor);
-                            }
-                            else if (channel.PropertyName.StartsWith("colf"))
-                            {
-                                node.BlendFactor = valueFloat;
-                            }
-                        }
-                    }
-                }
-            }*/
-        }
-
-        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
-        // Enumerables are Evil
-        private static void SortNodes(Data data, List<SpriteStudioNodeState> nodes)
-        {
-            data.SpriteStudioComponent.SortedNodes.Clear();
-            var sortedNodes = nodes.OrderBy(x => x.Priority);
-            foreach (var node in sortedNodes)
-            {
-                data.SpriteStudioComponent.SortedNodes.Add(node);
-            }
-        }
-
-        public override void Draw(RenderContext context)
-        {
-            Sprites.Clear();
-            foreach (var spriteStateKeyPair in enabledEntities)
-            {
-                if (!PrepareNodes(spriteStateKeyPair.Value))
-                    continue;
-
-                UpdateNodes(spriteStateKeyPair.Value.SpriteStudioComponent.Nodes, spriteStateKeyPair.Value);
-                SortNodes(spriteStateKeyPair.Value, spriteStateKeyPair.Value.SpriteStudioComponent.Nodes);
-                spriteStateKeyPair.Value.RootNode.UpdateTransformation();
-                Sprites.Add(spriteStateKeyPair.Value);
-            }
-        }
-
-        private static bool PrepareNodes(Data data)
-        {
-            var sheet = data.SpriteStudioComponent.Sheet;
-            if (data.Sheet != sheet) // sheet changed? force pre-process
-            {
-                data.RootNode = null;
-                data.SpriteStudioComponent.Nodes.Clear();
-            }
-
-            var assetNodes = sheet?.NodesInfo;
-            if (assetNodes == null) return false;
-
-            if (data.RootNode == null)
-            {
-                data.RootNode = InitializeNodes(data.SpriteStudioComponent);
-                data.Sheet = sheet;
-            }
-
-            //data.SpriteStudioComponent.SortedNodes = data.SpriteStudioComponent.Nodes.ToList(); // copy
-
-            return (data.RootNode != null);
         }
     }
 }

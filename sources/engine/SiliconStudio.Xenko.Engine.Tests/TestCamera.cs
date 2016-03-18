@@ -163,7 +163,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             SetCamera();
 
-            while (!IsDisposed)
+            while (true)
             {
                 UpdateCamera();
 
@@ -290,7 +290,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
         /// </summary>
         protected virtual void OnWindowSizeChanged()
         {
-            Camera.AspectRatio = GraphicsDevice.BackBuffer.Width / (float)GraphicsDevice.BackBuffer.Height;
+            // TODO GRAPHICS REFACTOR Need to get aspect ratio using graphics compositor
+            Camera.AspectRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
         }
 
 
@@ -387,7 +388,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             var boundingSphere = new BoundingSphere();
 
-            var model = rootEntity.Get(ModelComponent.Key);
+            var model = rootEntity.Get<ModelComponent>();
             if (model != null && model.Model != null)
             {
                 var boundingBox = model.Model.BoundingBox;

@@ -278,12 +278,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         [Visit]
         protected virtual void Visit(GenericType<ObjectType> type)
         {
-            var typeName = type.Name.Text;
-            if (typeName.Contains("Texture"))
+            if (IsTextureType(type))
             {
                 Write("Texture");
             }
-            else if (typeName.Contains("Buffer"))
+            else if (IsBufferType(type))
             {
                 Write("Buffer");
             }

@@ -35,25 +35,25 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            defaultEngine = new AudioEngine();
+            defaultEngine = AudioEngineFactory.NewAudioEngine();
 
-            using (var monoStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var monoStream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 monoSoundEffect = SoundEffect.Load(defaultEngine, monoStream);
             }
-            using (var stereoStream = AssetManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var stereoStream = ContentManager.FileProvider.OpenStream("EffectStereo", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 stereoSoundEffect = SoundEffect.Load(defaultEngine, stereoStream);
             }
-            using (var contStream = AssetManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var contStream = ContentManager.FileProvider.OpenStream("EffectToneA", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 continousMonoSoundEffect = SoundEffect.Load(defaultEngine, contStream);
             }
-            using (var contStream = AssetManager.FileProvider.OpenStream("EffectToneAE", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var contStream = ContentManager.FileProvider.OpenStream("EffectToneAE", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 continousStereoSoundEffect = SoundEffect.Load(defaultEngine, contStream);
             }
-            using (var monoStream = AssetManager.FileProvider.OpenStream("Effect44100Hz", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var monoStream = ContentManager.FileProvider.OpenStream("Effect44100Hz", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 laugherMono = SoundEffect.Load(defaultEngine, monoStream);
             }

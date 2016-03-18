@@ -65,23 +65,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Gets the default render target associated with this graphics device.
-        /// </summary>
-        /// <value>The default render target.</value>
-        public RenderTarget DefaultRenderTarget
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Presents the display with the contents of the next buffer in the sequence of back buffers owned by the GraphicsDevice.
-        /// </summary>
-        public void Present()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
         /// </summary>
         /// <value>

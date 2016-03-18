@@ -16,21 +16,28 @@
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderSpriteStudio.cs" />
     <Compile Include="SpriteStudioComponent.cs" />
     <Compile Include="SpriteStudioModelNodeTransformLink.cs" />
     <Compile Include="SpriteStudioNode.cs" />
     <Compile Include="SpriteStudioNodeLinkComponent.cs" />
     <Compile Include="SpriteStudioNodeLinkProcessor.cs" />
     <Compile Include="SpriteStudioNodeState.cs" />
+    <Compile Include="SpriteStudioPipelinePlugin.cs" />
     <Compile Include="SpriteStudioProcessor.cs" />
-    <Compile Include="SpriteStudioRenderer.cs" />
+    <Compile Include="SpriteStudioRendererProcessor.cs" />
+    <Compile Include="SpriteStudioRenderFeature.cs" />
     <Compile Include="SpriteStudioSheet.cs" />
   </ItemGroup>
   <ItemGroup>

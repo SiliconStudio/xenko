@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            sliderImages = Asset.Load<SpriteSheet>("DebugSlider");
+            sliderImages = Content.Load<SpriteSheet>("DebugSlider");
 
             slider = new Slider { TrackStartingOffsets = new Vector2(10, 6), TickOffset = 10 };
             SetSliderImages(isRotatedImages);

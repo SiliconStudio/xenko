@@ -5,16 +5,19 @@ Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
-Packing: {}
+Packing:
+    ~Id: 4ff0f6f9-93c3-425a-b75d-c16922cc7599
 Sprites:
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: d9cfb74b-eec3-407a-a6fe-ffabf5009958
+        Source: ../../../data/tests/DebugSprites.png
         Name: Center
         TextureRegion: {X: 300, Y: 150, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: a698d94e-62a7-4c92-a40c-14a6ee6c4cac
+        Source: ../../../data/tests/DebugSprites.png
         Name: TopLeft
         TextureRegion: {X: 450, Y: 0, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -22,7 +25,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: bb4aef46-c9ce-4522-adb3-e573907d07aa
+        Source: ../../../data/tests/DebugSprites.png
         Name: OutOfImage
         TextureRegion: {X: 450, Y: 150, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -30,27 +34,31 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Name: NoTexture
+    -   ~Id: 2e99b3aa-acd0-495d-8777-c75643f06358
+        Name: NoTexture
         TextureRegion: {X: 0, Y: 0, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/Sphere.png
+    -   ~Id: 74852202-2456-4695-b1f5-7e5cd893edad
+        Source: ../../../data/tests/Sphere.png
         Name: NullWidth
         TextureRegion: {X: 0, Y: 0, Width: 0, Height: 1024}
         PixelsPerUnit: 1.0
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/Sphere.png
+    -   ~Id: 441d3564-f5bb-4bd8-860d-51779d5377c7
+        Source: ../../../data/tests/Sphere.png
         Name: NegativeHeight
         TextureRegion: {X: 0, Y: 0, Width: 1024, Height: -20}
         PixelsPerUnit: 1.0
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/small_uv.png
+    -   ~Id: 52a12131-8fbe-4315-ab96-691588098367
+        Source: ../../../data/tests/small_uv.png
         Name: ShiftedRegion
         TextureRegion: {X: -128, Y: 64, Width: 320, Height: 256}
         PixelsPerUnit: 1.0
@@ -58,7 +66,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: de09df24-768f-492c-ae37-3224f2fd0176
+        Source: ../../../data/tests/DebugSprites.png
         Name: OtherRatio
         TextureRegion: {X: 0, Y: 300, Width: 150, Height: 150}
         PixelsPerUnit: 2.0
@@ -66,7 +75,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: f89db2e4-9483-4660-9139-0a827171ac4f
+        Source: ../../../data/tests/DebugSprites.png
         Name: Child
         TextureRegion: {X: 150, Y: 300, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -74,7 +84,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: 05875f25-a855-4bb8-9a7f-0cf26ee46420
+        Source: ../../../data/tests/DebugSprites.png
         Name: Normal
         TextureRegion: {X: 0, Y: 0, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -82,7 +93,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: 52172b56-b009-43a1-8976-344ec7172253
+        Source: ../../../data/tests/DebugSprites.png
         Name: Billboard
         TextureRegion: {X: 150, Y: 0, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -90,7 +102,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: 01151688-3ac7-4e6a-bdd1-7c62990d3ed4
+        Source: ../../../data/tests/DebugSprites.png
         Name: NoDepth
         TextureRegion: {X: 300, Y: 0, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -98,7 +111,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: 8f8d939c-aabd-4544-994f-7db4dbff621d
+        Source: ../../../data/tests/DebugSprites.png
         Name: Color
         TextureRegion: {X: 0, Y: 150, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -106,7 +120,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: d07acb80-887d-4f57-a394-781289db4f41
+        Source: ../../../data/tests/DebugSprites.png
         Name: OnFront
         TextureRegion: {X: 150, Y: 150, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -114,7 +129,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: 3efedae1-de6a-4bed-ab61-66e79fbcc6f0
+        Source: ../../../data/tests/DebugSprites.png
         Name: OnBack
         TextureRegion: {X: 0, Y: 450, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -122,7 +138,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: eb62c2de-d489-4078-a817-d7bd20073a07
+        Source: ../../../data/tests/DebugSprites.png
         Name: NPAlpha
         TextureRegion: {X: 300, Y: 300, Width: 150, Height: 150}
         PixelsPerUnit: 1.0
@@ -130,7 +147,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/DebugSprites.png
+    -   ~Id: a8b5439e-a105-40fc-b522-19dec5654c91
+        Source: ../../../data/tests/DebugSprites.png
         Name: PAlpha
         TextureRegion: {X: 450, Y: 300, Width: 150, Height: 150}
         PixelsPerUnit: 1.0

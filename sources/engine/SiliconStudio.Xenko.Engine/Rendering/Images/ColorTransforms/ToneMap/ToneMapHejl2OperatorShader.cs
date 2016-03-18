@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ToneMapHejl2OperatorShaderKeys
     {
-        public static readonly ParameterKey<float> WhitePoint = ParameterKeys.New<float>(5.0f);
+        public static readonly ValueParameterKey<float> WhitePoint = ParameterKeys.NewValue<float>(5.0f);
     }
 }

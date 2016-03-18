@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(1f)]
         public float HaloFactor { get; set; }
 
-        protected override void DrawCore(RenderContext contextParameters)
+        protected override void DrawCore(RenderDrawContext contextParameters)
         {
             var input = GetInput(0);
             var output = GetOutput(0) ?? input;
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             blur.Radius = 8;
             blur.SetInput(halfSizeRenderTarget);
             blur.SetOutput(blurredBright);
-            blur.Draw(contextParameters);
+            ((RendererBase)blur).Draw(contextParameters);
 
             // Draws a few artifacts
             var flareRenderTargetInitial = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             flareArtifactEffect.Parameters.Set(FlareArtifactShaderKeys.Amount, Amount * 0.0005f);
             flareArtifactEffect.SetInput(0, blurredBright);
             flareArtifactEffect.SetOutput(flareRenderTargetInitial);
-            flareArtifactEffect.Draw(contextParameters);
+            ((RendererBase)flareArtifactEffect).Draw(contextParameters);
             
             // Replicates the artifacts around
             flareReplicateEffect.Parameters.Set(FlareReplicateKeys.Amount, Amount * 0.0005f);
@@ -153,14 +153,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             flareReplicateEffect.SetInput(0,flareRenderTargetInitial);
             flareReplicateEffect.SetInput(1, blurredBright);
             flareReplicateEffect.SetOutput(flareRenderTarget);
-            flareReplicateEffect.Draw(contextParameters);
+            ((RendererBase)flareReplicateEffect).Draw(contextParameters);
 
             // Adds the result to the scene
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
+            Scaler.BlendState = BlendStates.Additive;
             Scaler.SetInput(flareRenderTarget);
             Scaler.SetOutput(output);
-            Scaler.Draw(contextParameters);
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
+            ((RendererBase)Scaler).Draw(contextParameters);
+            Scaler.BlendState = BlendStates.Default;
         }
     }
 }

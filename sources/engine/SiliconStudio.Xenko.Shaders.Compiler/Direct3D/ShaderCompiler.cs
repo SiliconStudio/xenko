@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX;
 using SharpDX.D3DCompiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Storage;
@@ -17,19 +18,34 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 {
     internal class ShaderCompiler : IShaderCompiler
     {
-        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, ShaderMixinParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
+        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isDebug = compilerParameters.Get(CompilerParameters.DebugKey);
-            var profile = compilerParameters.Get(CompilerParameters.GraphicsProfileKey);
+            var isDebug = compilerParameters.EffectParameters.Debug;
+            var optimLevel = compilerParameters.EffectParameters.OptimizationLevel;
+            var profile = compilerParameters.EffectParameters.Profile;
             
             var shaderModel = ShaderStageToString(stage) + "_" + ShaderProfileFromGraphicsProfile(profile);
 
             var shaderFlags = ShaderFlags.None;
             if (isDebug)
             {
-                shaderFlags = ShaderFlags.OptimizationLevel0 | ShaderFlags.Debug;
+                shaderFlags = ShaderFlags.Debug;
             }
-
+            switch (optimLevel)
+            {
+                case 0:
+                    shaderFlags |= ShaderFlags.OptimizationLevel0;
+                    break;
+                case 1:
+                    shaderFlags |= ShaderFlags.OptimizationLevel1;
+                    break;
+                case 2:
+                    shaderFlags |= ShaderFlags.OptimizationLevel2;
+                    break;
+                case 3:
+                    shaderFlags |= ShaderFlags.OptimizationLevel3;
+                    break;
+            }
             SharpDX.Configuration.ThrowOnShaderCompileError = false;
 
             // Compile using D3DCompiler
@@ -44,6 +60,15 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             }
             else
             {
+                // TODO: Make this optional
+                try
+                {
+                    byteCodeResult.DisassembleText = compilationResult.Bytecode.Disassemble();
+                }
+                catch (SharpDXException)
+                {
+                }
+
                 // As effect bytecode binary can changed when having debug infos (with d3dcompiler_47), we are calculating a bytecodeId on the stripped version
                 var rawData = compilationResult.Bytecode.Strip(StripFlags.CompilerStripDebugInformation | StripFlags.CompilerStripReflectionData);
                 var bytecodeId = ObjectId.FromBytes(rawData);
@@ -66,16 +91,22 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             var shaderReflectionRaw = new SharpDX.D3DCompiler.ShaderReflection(shaderBytecode);
             var shaderReflectionRawDesc = shaderReflectionRaw.Description;
 
+            foreach (var constantBuffer in effectReflection.ConstantBuffers)
+            {
+                UpdateConstantBufferReflection(constantBuffer);
+            }
+
             // Constant Buffers
             for (int i = 0; i < shaderReflectionRawDesc.ConstantBuffers; ++i)
             {
                 var constantBufferRaw = shaderReflectionRaw.GetConstantBuffer(i);
                 var constantBufferRawDesc = constantBufferRaw.Description;
-                var linkBuffer = effectReflection.ConstantBuffers.FirstOrDefault(buffer => buffer.Name == constantBufferRawDesc.Name && buffer.Stage == ShaderStage.None);
+                var linkBuffer = effectReflection.ConstantBuffers.First(buffer => buffer.Name == constantBufferRawDesc.Name);
 
-                var constantBuffer = GetConstantBufferReflection(constantBufferRaw, ref constantBufferRawDesc, linkBuffer, log);
-                constantBuffer.Stage = shaderBytecode.Stage;
-                effectReflection.ConstantBuffers.Add(constantBuffer);
+                // TODO: Flags/bitfield?
+                linkBuffer.Stage = shaderBytecode.Stage;
+
+                ValidateConstantBufferReflection(constantBufferRaw, ref constantBufferRawDesc, linkBuffer, log);
             }
 
             // BoundResources
@@ -84,11 +115,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 var boundResourceDesc = shaderReflectionRaw.GetResourceBindingDescription(i);
 
                 string linkKeyName = null;
+                string resourceGroup = null;
                 foreach (var linkResource in effectReflection.ResourceBindings)
                 {
                     if (linkResource.Param.RawName == boundResourceDesc.Name && linkResource.Stage == ShaderStage.None)
                     {
                         linkKeyName = linkResource.Param.KeyName;
+                        resourceGroup = linkResource.Param.ResourceGroup;
                         break;
                     }
 
@@ -103,6 +136,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 
                     var binding = GetResourceBinding(boundResourceDesc, linkKeyName, log);
                     binding.Stage = shaderBytecode.Stage;
+                    binding.Param.ResourceGroup = resourceGroup;
 
                     effectReflection.ResourceBindings.Add(binding);
                 }
@@ -234,29 +268,52 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             return binding;
         }
 
-        private ShaderConstantBufferDescription GetConstantBufferReflection(ConstantBuffer constantBufferRaw, ref ConstantBufferDescription constantBufferRawDesc, ShaderConstantBufferDescription linkBuffer, LoggerResult log)
+        private void UpdateConstantBufferReflection(ShaderConstantBufferDescription reflectionConstantBuffer)
         {
-            var constantBuffer = new ShaderConstantBufferDescription
-            {
-                Name = constantBufferRawDesc.Name,
-                Size = constantBufferRawDesc.Size,
-            };
+            // Used to compute constant buffer size and member offsets (std140 rule)
+            int constantBufferOffset = 0;
 
+            // Fill members
+            for (int index = 0; index < reflectionConstantBuffer.Members.Length; index++)
+            {
+                var member = reflectionConstantBuffer.Members[index];
+
+                // Properly compute size and offset according to DX rules
+                var memberSize = ComputeMemberSize(ref member, ref constantBufferOffset);
+
+                // Align offset and store it as member offset
+                member.Offset = constantBufferOffset;
+                member.Size = memberSize;
+
+                // Adjust offset for next item
+                constantBufferOffset += memberSize;
+
+                reflectionConstantBuffer.Members[index] = member;
+            }
+
+            // Round buffer size to next multiple of 16
+            reflectionConstantBuffer.Size = (constantBufferOffset + 15) / 16 * 16;
+        }
+
+        private void ValidateConstantBufferReflection(ConstantBuffer constantBufferRaw, ref ConstantBufferDescription constantBufferRawDesc, ShaderConstantBufferDescription constantBuffer, LoggerResult log)
+        {
             switch (constantBufferRawDesc.Type)
             {
                 case SharpDX.D3DCompiler.ConstantBufferType.ConstantBuffer:
-                    constantBuffer.Type = ConstantBufferType.ConstantBuffer;
+                    if (constantBuffer.Type != ConstantBufferType.ConstantBuffer)
+                        log.Error($"Invalid buffer type for {constantBuffer.Name}: {constantBuffer.Type} instead of {ConstantBufferType.ConstantBuffer}");
                     break;
                 case SharpDX.D3DCompiler.ConstantBufferType.TextureBuffer:
-                    constantBuffer.Type = ConstantBufferType.TextureBuffer;
+                    if (constantBuffer.Type != ConstantBufferType.TextureBuffer)
+                        log.Error($"Invalid buffer type for {constantBuffer.Name}: {constantBuffer.Type} instead of {ConstantBufferType.TextureBuffer}");
                     break;
                 default:
-                    constantBuffer.Type = ConstantBufferType.Unknown;
+                    if (constantBuffer.Type != ConstantBufferType.Unknown)
+                        log.Error($"Invalid buffer type for {constantBuffer.Name}: {constantBuffer.Type} instead of {ConstantBufferType.Unknown}");
                     break;
             }
 
             // ConstantBuffers variables
-            var members = new List<EffectParameterValueData>();
             for (int i = 0; i < constantBufferRawDesc.VariableCount; i++)
             {
                 var variable = constantBufferRaw.GetVariable(i);
@@ -264,49 +321,115 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 var variableDescription = variable.Description;
                 var variableTypeDescription = variableType.Description;
 
-                var parameter = new EffectParameterValueData()
-                {
-                    Param =
-                    {
-                        Class = (EffectParameterClass)variableTypeDescription.Class,
-                        Type = ConvertVariableValueType(variableTypeDescription.Type, log),
-                        RawName = variableDescription.Name,
-                    },
-                    Offset = variableDescription.StartOffset,
-                    Size = variableDescription.Size,
-                    Count = variableTypeDescription.ElementCount == 0 ? 1 : variableTypeDescription.ElementCount,
-                    RowCount = (byte)variableTypeDescription.RowCount,
-                    ColumnCount = (byte)variableTypeDescription.ColumnCount,
-                };
-
                 if (variableTypeDescription.Offset != 0)
                 {
                     log.Error("Unexpected offset [{0}] for variable [{1}] in constant buffer [{2}]", variableTypeDescription.Offset, variableDescription.Name, constantBuffer.Name);
                 }
 
-                bool bindingNotFound = true;
+                var binding = constantBuffer.Members[i];
                 // Retrieve Link Member
-                foreach (var binding in linkBuffer.Members)
-                {
-                    if (binding.Param.RawName == variableDescription.Name)
-                    {
-                        // TODO: should we replicate linkMember.Count/RowCount/ColumnCount? or use what is retrieved by D3DCompiler reflection
-                        parameter.Param.KeyName = binding.Param.KeyName;
-                        bindingNotFound = false;
-                        break;
-                    }
-                }
-
-                if (bindingNotFound)
+                if (binding.Param.RawName != variableDescription.Name)
                 {
                     log.Error("Variable [{0}] in constant buffer [{1}] has no link", variableDescription.Name, constantBuffer.Name);
                 }
+                else
+                {
+                    var parameter = new EffectParameterValueData()
+                    {
+                        Param =
+                    {
+                        Class = (EffectParameterClass)variableTypeDescription.Class,
+                        Type = ConvertVariableValueType(variableTypeDescription.Type, log),
+                        RawName = variableDescription.Name,
+                    },
+                        Offset = variableDescription.StartOffset,
+                        Size = variableDescription.Size,
+                        Count = variableTypeDescription.ElementCount,
+                        RowCount = (byte)variableTypeDescription.RowCount,
+                        ColumnCount = (byte)variableTypeDescription.ColumnCount,
+                    };
 
-                members.Add(parameter);
+                    if (parameter.Offset != binding.Offset
+                        || parameter.Size != binding.Size
+                        || parameter.Count != binding.Count
+                        || parameter.RowCount != binding.RowCount
+                        || parameter.ColumnCount != binding.ColumnCount)
+                    {
+                        log.Error("Variable [{0}] in constant buffer [{1}] binding doesn't match what was expected", variableDescription.Name, constantBuffer.Name);
+                    }
+                }
             }
-            constantBuffer.Members = members.ToArray();
+            if (constantBuffer.Size != constantBufferRawDesc.Size)
+            {
+                log.Error($"Error precomputing buffer size for {constantBuffer.Name}: {constantBuffer.Size} instead of {constantBufferRawDesc.Size}");
+            }
+        }
 
-            return constantBuffer;
+        private static int ComputeMemberSize(ref EffectParameterValueData member, ref int constantBufferOffset)
+        {
+            var elementSize = ComputeTypeSize(member.Param.Type);
+            int size;
+            int alignment = 4;
+
+            switch (member.Param.Class)
+            {
+                case EffectParameterClass.Scalar:
+                    {
+                        size = elementSize;
+                        break;
+                    }
+                case EffectParameterClass.Color:
+                case EffectParameterClass.Vector:
+                    {
+                        size = elementSize * member.ColumnCount;
+                        break;
+                    }
+                case EffectParameterClass.MatrixColumns:
+                    {
+                        size = elementSize * (4 * (member.ColumnCount - 1) + member.RowCount);
+                        break;
+                    }
+                case EffectParameterClass.MatrixRows:
+                    {
+                        size = elementSize * (4 * (member.RowCount - 1) + member.ColumnCount);
+                        break;
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // Array
+            if (member.Count > 0)
+            {
+                var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
+                size += roundedSize * (member.Count - 1);
+                alignment = 16;
+            }
+
+            // Align to float4 if it is bigger than leftover space in current float4
+            if (constantBufferOffset / 16 != (constantBufferOffset + size - 1) / 16)
+                alignment = 16;
+
+            // Align offset and store it as member offset
+            constantBufferOffset = (constantBufferOffset + alignment - 1) / alignment * alignment;
+
+            return size;
+        }
+
+        private static int ComputeTypeSize(EffectParameterType type)
+        {
+            switch (type)
+            {
+                case EffectParameterType.Bool:
+                case EffectParameterType.Float:
+                case EffectParameterType.Int:
+                case EffectParameterType.UInt:
+                    return 4;
+                case EffectParameterType.Double:
+                    return 8;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private static string ShaderStageToString(ShaderStage stage)

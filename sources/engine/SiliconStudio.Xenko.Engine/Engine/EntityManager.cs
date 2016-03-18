@@ -4,9 +4,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
@@ -21,24 +21,27 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>
+    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>, IEntityComponentNotify
     {
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
         public ExecutionMode ExecutionMode { get; protected set; } = ExecutionMode.Runtime;
 
         // List of all entities, with their respective processors
-        private readonly TrackingDictionary<Entity, List<EntityProcessor>> entities;
+        private readonly HashSet<Entity> entities;
 
-        // Enabled entities
-        private readonly TrackingHashSet<Entity> enabledEntities;
+        // List of processors currently registered
+        private readonly TrackingEntityProcessorCollection processors;
 
-        private readonly FastCollection<EntityProcessor> processors;
+        // use an ordered list to make sure processor are added in the correct order as much as possible
+        private readonly EntityProcessorCollection pendingProcessors; 
 
-        private readonly List<EntityProcessor> newProcessors;
+        // List of processors per EntityComponent final type
+        internal readonly Dictionary<TypeInfo, EntityProcessorCollectionPerComponentType> MapComponentTypeToProcessors;
 
-        private readonly HashSet<Type> componentTypes;
-        private readonly HashSet<Type> processorTypes;
+        private readonly List<EntityProcessor> currentDependentProcessors;
+        private readonly HashSet<TypeInfo> componentTypes;
+        private int addEntityLevel = 0;
 
         /// <summary>
         /// Occurs when an entity is added.
@@ -53,7 +56,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Occurs when a new component type is added.
         /// </summary>
-        public event EventHandler<Type> ComponentTypeAdded;
+        public event EventHandler<TypeInfo> ComponentTypeAdded;
 
         /// <summary>
         /// Occurs when a component changed for an entity (Added or removed)
@@ -70,14 +73,14 @@ namespace SiliconStudio.Xenko.Engine
             if (registry == null) throw new ArgumentNullException("registry");
             Services = registry;
 
-            entities = new TrackingDictionary<Entity, List<EntityProcessor>>();
-            enabledEntities = new TrackingHashSet<Entity>();
+            entities = new HashSet<Entity>();
+            processors = new TrackingEntityProcessorCollection(this);
+            pendingProcessors = new EntityProcessorCollection();
 
-            processors = new FastCollection<EntityProcessor>();
-            newProcessors = new List<EntityProcessor>();
+            componentTypes = new HashSet<TypeInfo>();
+            MapComponentTypeToProcessors = new Dictionary<TypeInfo, EntityProcessorCollectionPerComponentType>();
 
-            componentTypes = new HashSet<Type>();
-            processorTypes = new HashSet<Type>();
+            currentDependentProcessors = new List<EntityProcessor>(10);
         }
 
         /// <summary>
@@ -89,53 +92,15 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the entity Processors.
         /// </summary>
-        public IReadOnlyCollection<EntityProcessor> Processors
-        {
-            get { return processors; }
-        }
+        public EntityProcessorCollection Processors => processors;
+
+        public int Count => entities.Count;
 
         /// <summary>
         /// Gets the list of component types from the entities..
         /// </summary>
         /// <value>The registered component types.</value>
-        public IEnumerable<Type> ComponentTypes
-        {
-            get
-            {
-                return componentTypes;
-            }
-        }
-
-        /// <summary>
-        /// Adds a processor to this instance.
-        /// </summary>
-        /// <param name="processor">The processor.</param>
-        /// <exception cref="System.ArgumentNullException">processor</exception>
-        public void AddProcessor(EntityProcessor processor)
-        {
-            if (processor == null) throw new ArgumentNullException("processor");
-            if (!processors.Contains(processor))
-            {
-                processors.Add(processor);
-                processors.Sort(EntityProcessorComparer.Default);
-                OnProcessorAdded(processor);
-            }
-        }
-
-        /// <summary>
-        /// Removes a processor from this instance.
-        /// </summary>
-        /// <param name="processor">The processor.</param>
-        /// <exception cref="System.ArgumentNullException">processor</exception>
-        public void RemoveProcessor(EntityProcessor processor)
-        {
-            if (processor == null) throw new ArgumentNullException("processor");
-            if (processors.Contains(processor))
-            {
-                processors.Remove(processor);
-                OnProcessorRemoved(processor);
-            }
-        }
+        public IEnumerable<TypeInfo> ComponentTypes => componentTypes;
 
         public virtual void Update(GameTime gameTime)
         {
@@ -143,12 +108,71 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (processor.Enabled)
                 {
-                    using (Profiler.Begin(processor.UpdateProfilingKey, "Entities: {0}", enabledEntities.Count))
+                    using (processor.UpdateProfilingState = Profiler.Begin(processor.UpdateProfilingKey, "Entities: {0}", entities.Count))
                     {
                         processor.Update(gameTime);
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines whether this instance contains the specified entity.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns><c>true</c> if this instance contains the specified entity; otherwise, <c>false</c>.</returns>
+        public bool Contains(Entity item)
+        {
+            return entities.Contains(item);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Entity"/> enumerator of this instance.
+        /// </summary>
+        /// <returns>The entity enumerator</returns>
+        public HashSet<Entity>.Enumerator GetEnumerator()
+        {
+            return entities.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the first processor of the type TProcessor.
+        /// </summary>
+        /// <typeparam name="TProcessor">Type of the processor</typeparam>
+        /// <returns>The first processor of type T or <c>null</c> if not found.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TProcessor GetProcessor<TProcessor>() where TProcessor : EntityProcessor
+        {
+            return Processors.Get<TProcessor>();
+        }
+
+        /// <summary>
+        /// Removes the entity from the <see cref="EntityManager" />.
+        /// It works weither entity has a parent or not.
+        /// In conjonction with <see cref="HierarchicalProcessor" />, it will remove children entities as well.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        public void Remove(Entity entity)
+        {
+            InternalRemoveEntity(entity, true);
+        }
+
+        /// <summary>
+        /// Removes all entities from the <see cref="EntityManager"/>.
+        /// </summary>
+        protected internal virtual void Reset()
+        {
+            var entitiesToRemove = entities.ToList();
+            foreach (var entity in entitiesToRemove)
+            {
+                InternalRemoveEntity(entity, true);
+            }
+
+            entities.Clear();
+            componentTypes.Clear();
+            MapComponentTypeToProcessors.Clear();
+            pendingProcessors.Clear();
+            processors.Clear();
         }
 
         internal virtual void Draw(RenderContext context)
@@ -157,7 +181,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (processor.Enabled)
                 {
-                    using (Profiler.Begin(processor.DrawProfilingKey))
+                    using (processor.DrawProfilingState = Profiler.Begin(processor.DrawProfilingKey))
                     {
                         processor.Draw(context);
                     }
@@ -175,125 +199,10 @@ namespace SiliconStudio.Xenko.Engine
         {
             // Entity can't be a root because it already has a parent?
             if (entity.Transform != null && entity.Transform.Parent != null)
-                throw new ArgumentException("Entity shouldn't have a parent.", "entity");
+                throw new ArgumentException("Entity shouldn't have a parent.", nameof(entity));
 
             InternalAddEntity(entity);
         }
-
-        /// <summary>
-        /// Sets the enable state of this entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="enabled">if set to <c>true</c>, entity is [enabled].</param>
-        /// <exception cref="System.InvalidOperationException">Entity is not part of this SceneInstance.</exception>
-        public void SetEnabled(Entity entity, bool enabled = true)
-        {
-            List<EntityProcessor> entityProcessors;
-            if (!entities.TryGetValue(entity, out entityProcessors))
-                throw new InvalidOperationException("Entity is not part of this SceneInstance.");
-
-            bool wasEnabled = enabledEntities.Contains(entity);
-
-            if (enabled != wasEnabled)
-            {
-                if (enabled)
-                {
-                    enabledEntities.Add(entity);
-                }
-                else
-                {
-                    enabledEntities.Remove(entity);
-                }
-
-                foreach (var processor in entityProcessors)
-                {
-                    processor.SetEnabled(entity, enabled);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the specified entity is enabled.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns><c>true</c> if the specified entity is enabled; otherwise, <c>false</c>.</returns>
-        public bool IsEnabled(Entity entity)
-        {
-            return enabledEntities.Contains(entity);
-        }
-
-        /// <summary>
-        /// Enables the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        public void Enable(Entity entity)
-        {
-            SetEnabled(entity, true);
-        }
-
-        /// <summary>
-        /// Disables the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        public void Disable(Entity entity)
-        {
-            SetEnabled(entity, false);
-        }
-
-        /// <summary>
-        /// Removes the entity from the <see cref="EntityManager" />.
-        /// It works weither entity has a parent or not.
-        /// In conjonction with <see cref="HierarchicalSystem" />, it will remove children entities as well.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        public void Remove(Entity entity)
-        {
-            InternalRemoveEntity(entity, true);
-        }
-
-        /// <summary>
-        /// Removes all entities from the <see cref="EntityManager"/>.
-        /// </summary>
-        protected internal virtual void Reset()
-        {
-            // TODO: Not sure this method is correctly implemented
-            // TODO: Check that we are correctly removing all indirect collection watchers (in processors...etc.)
-
-            foreach (var entity in entities.Keys.ToList())
-            {
-                InternalRemoveEntity(entity, true);
-            }
-            var previousProcessors = processors.ToArray();
-            foreach (var processor in previousProcessors)
-            {
-                RemoveProcessor(processor);
-            }
-
-            processorTypes.Clear();
-            componentTypes.Clear();
-
-            enabledEntities.Clear();
-            entities.Clear();
-        }
-
-        /// <summary>
-        /// Gets the processor.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>T.</returns>
-        public T GetProcessor<T>() where T : EntityProcessor
-        {
-            // TODO: Cache in a Dictionary
-            foreach (var system in processors)
-            {
-                if (system is T)
-                    return (T)system;
-            }
-
-            return null;
-        }
-
-        private int addEntityLevel = 0;
 
         /// <summary>
         /// Adds the specified entity.
@@ -302,56 +211,48 @@ namespace SiliconStudio.Xenko.Engine
         internal void InternalAddEntity(Entity entity)
         {
             // Already added?
-            if (entities.ContainsKey(entity))
+            if (entities.Contains(entity))
                 return;
 
-            addEntityLevel++;
+            if (entity.Owner != null)
+            {
+                throw new InvalidOperationException("Cannot add an entity to this entity manager when it is already used by another entity manager");
+            }
 
-            var entityProcessors = new List<EntityProcessor>();
-            entities.Add(entity, entityProcessors);
-
-            enabledEntities.Add(entity);
-
+            // Add this entity to our internal hashset
+            entity.Owner = this;
+            entities.Add(entity);
             entity.AddReferenceInternal();
 
-            entity.Components.PropertyUpdated += EntityPropertyUpdated;
+            // Because a processor can add entities, we want to make sure that 
+            // the RegisterPendingProcessors is called only at the top level
+            {
+                addEntityLevel++;
 
-            // Check which processor want this entity
-            CheckEntityWithProcessors(entity, entityProcessors, false);
+                // Check which exiting processor are working with the components of this entity
+                // and grab the list of new processors to registers
+                CheckEntityWithProcessors(entity, false, true);
 
-            // Grab the list of new processors to registers
-            AutoRegisterProcessors(entity);
-
-            addEntityLevel--;
+                addEntityLevel--;
+            }
 
             // Register all new processors
-            RegisterNewProcessors();
+            RegisterPendingProcessors();
 
             OnEntityAdded(entity);
         }
 
-        private void RegisterNewProcessors()
+        private void RegisterPendingProcessors()
         {
             // Auto-register all new processors
-            if (addEntityLevel == 0)
+            if (addEntityLevel == 0 && pendingProcessors.Count > 0)
             {
                 // Add all new processors
-                foreach (var newProcessor in newProcessors)
+                foreach (var newProcessor in pendingProcessors)
                 {
                     processors.Add(newProcessor);
                 }
-                // Make sure they are always sorted
-                if (newProcessors.Count > 0)
-                {
-                    processors.Sort(EntityProcessorComparer.Default);
-                }
-
-                // Notify
-                foreach (var newProcessor in newProcessors)
-                {
-                    OnProcessorAdded(newProcessor);
-                }
-                newProcessors.Clear();
+                pendingProcessors.Clear();
             }
         }
 
@@ -363,191 +264,293 @@ namespace SiliconStudio.Xenko.Engine
         internal void InternalRemoveEntity(Entity entity, bool removeParent)
         {
             // Entity wasn't already added
-            List<EntityProcessor> entityProcessors;
-            if (!entities.TryGetValue(entity, out entityProcessors))
+            if (!entities.Contains(entity))
                 return;
 
             entities.Remove(entity);
-            enabledEntities.Remove(entity);
 
-            if (removeParent)
+            if (removeParent && entity.Transform != null)
             {
                 // Force parent to be null, so that it is removed even if it is not a root node
                 entity.Transform.Parent = null;
             }
 
             // Notify Processors this entity has been removed
-            CheckEntityWithProcessors(entity, entityProcessors, true);
-
-            entity.Components.PropertyUpdated -= EntityPropertyUpdated;
+            CheckEntityWithProcessors(entity, true, false);
 
             entity.ReleaseInternal();
+
+            entity.Owner = null;
 
             OnEntityRemoved(entity);
         }
 
-        private void AutoRegisterProcessors(Entity entity)
+        private void CollectNewProcessorsByComponentType(TypeInfo componentType)
         {
-            // TODO: Access to Components use a yield behind. Change this
-            foreach (var componentKeyPair in entity.Components)
-            {
-                var component = componentKeyPair.Value as EntityComponent;
-                if (component != null)
-                {
-                    RegisterComponentType(component.GetType());
-                }
-            }
-        }
-
-        private void RegisterComponentType(Type componentType)
-        {
-            if (componentType == null) throw new ArgumentNullException("componentType");
-
             if (componentTypes.Contains(componentType))
             {
                 return;
             }
 
             componentTypes.Add(componentType);
-
             OnComponentTypeAdded(componentType);
 
-            // Automatically create processors for the given component type
-            RegisterProcessors(componentType);
-        }
-
-        private void RegisterProcessors(Type type)
-        {
-            var processorAttributes = type.GetTypeInfo().GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
+            // Automatically collect processors that are used by this component
+            var processorAttributes = componentType.GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
             foreach (var processorAttributeType in processorAttributes)
             {
                 var processorType = AssemblyRegistry.GetType(processorAttributeType.TypeName);
-                if (processorType == null)
+                if (processorType == null || !typeof(EntityProcessor).GetTypeInfo().IsAssignableFrom(processorType.GetTypeInfo()))
                 {
+                    // TODO: log an error if type is not of EntityProcessor
                     continue;
                 }
 
                 // Filter using ExecutionMode
                 if ((ExecutionMode & processorAttributeType.ExecutionMode) != ExecutionMode.None)
-                    RegisterProcessorType(processorType);
-            }
-        }
-
-        private void RegisterProcessorType(Type processorType)
-        {
-            // TODO: Log an error?
-            if (!typeof(EntityProcessor).GetTypeInfo().IsAssignableFrom(processorType.GetTypeInfo()))
-            {
-                return;
-            }
-
-            if (!processorTypes.Contains(processorType))
-            {
-                processorTypes.Add(processorType);
-                var processor = (EntityProcessor)Activator.CreateInstance(processorType);
-
-                foreach (var key in processor.RequiredKeys)
                 {
-                    RegisterComponentType(key.OwnerType);
+                    // Make sure that we are adding a processor of the specified type only if it is not already in the list or pending
+
+                    // 1) Check in the list of existing processors
+                    var addNewProcessor = true;
+                    for (int i = 0; i < processors.Count; i++)
+                    {
+                        if (processorType == processors[i].GetType())
+                        {
+                            addNewProcessor = false;
+                            break;
+                        }
+                    }
+                    if (addNewProcessor)
+                    {
+                        // 2) Check in the list of pending processors
+                        for (int i = 0; i < pendingProcessors.Count; i++)
+                        {
+                            if (processorType == pendingProcessors[i].GetType())
+                            {
+                                addNewProcessor = false;
+                                break;
+                            }
+                        }
+                        
+                        // If not found, we can add this processor
+                        if (addNewProcessor)
+                        {
+                            var processor = (EntityProcessor)Activator.CreateInstance(processorType);
+                            pendingProcessors.Add(processor);
+
+                            // Collect dependencies
+                            foreach (var subComponentType in processor.RequiredTypes)
+                            {
+                                CollectNewProcessorsByComponentType(subComponentType);
+                            }
+                        }
+                    }
                 }
-
-                RegisterProcessors(processorType);
-
-                newProcessors.Add(processor);
-            }            
+            }
         }
 
         private void OnProcessorAdded(EntityProcessor processor)
         {
-            processorTypes.Add(processor.GetType());
-
             processor.EntityManager = this;
             processor.Services = Services;
             processor.OnSystemAdd();
 
-            foreach (var entity in entities)
+            // Update processor per types and dependencies
+            foreach (var componentTypeAndProcessors in MapComponentTypeToProcessors)
             {
-                processor.EntityCheck(entity.Key, entity.Value);
+                var componentType = componentTypeAndProcessors.Key;
+                var processorList = componentTypeAndProcessors.Value;
+
+                if (processor.Accept(componentType))
+                {
+                    componentTypeAndProcessors.Value.Add(processor);
+                }
+
+                // Add dependent component
+                if (processor.IsDependentOnComponentType(componentType))
+                {
+                    if (processorList.Dependencies == null)
+                    {
+                        processorList.Dependencies = new List<EntityProcessor>();
+                    }
+                    processorList.Dependencies.Add(processor);
+                }
+            }
+
+            // NOTE: It is important to perform a ToList() as the TransformProcessor adds children 
+            // entities and modifies the current list of entities
+            foreach (var entity in entities.ToList())
+            {
+                CheckEntityWithNewProcessor(entity, processor);
             }
         }
 
         private void OnProcessorRemoved(EntityProcessor processor)
         {
+            // Remove the procsesor from any list
+            foreach (var componentTypeAndProcessors in MapComponentTypeToProcessors)
+            {
+                var processorList = componentTypeAndProcessors.Value;
+
+                processorList.Remove(processor);
+                if (processorList.Dependencies != null)
+                {
+                    processorList.Dependencies.Remove(processor);
+                }
+            }
+
+            processor.RemoveAllEntities();
+
             processor.OnSystemRemove();
             processor.Services = null;
             processor.EntityManager = null;
         }
 
-        private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)
+        internal void NotifyComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
-            // Only process EntityComponent properties
-            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(propertyKey.PropertyType.GetTypeInfo()))
-                return;
-
             // No real update   
-            if (oldValue == newValue)
+            if (oldComponent == newComponent)
                 return;
 
-            var entity = (Entity)propertyContainer.Owner;
-            var entityProcessors = entities[entity];
+            // If we have a new component we can try to collect processors for it
+            if (newComponent != null)
+            {
+                CollectNewProcessorsByComponentType(newComponent.GetType().GetTypeInfo());
+                RegisterPendingProcessors();
+            }
 
-            AutoRegisterProcessors(entity);
-            RegisterNewProcessors();
+            // Remove previous component from processors
+            currentDependentProcessors.Clear(); 
+            if (oldComponent != null)
+            {
+                CheckEntityComponentWithProcessors(entity, oldComponent, true, currentDependentProcessors);
+            }
 
-            CheckEntityWithProcessors(entity, entityProcessors, false);
+            // Add new component to processors
+            if (newComponent != null)
+            {
+                CheckEntityComponentWithProcessors(entity, newComponent, false, currentDependentProcessors);
+            }
+
+            // Update all dependencies
+            if (currentDependentProcessors.Count > 0)
+            {
+                UpdateDependentProcessors(entity, oldComponent, newComponent);
+                currentDependentProcessors.Clear();
+            }
 
             // Notify component changes
-            OnComponentChanged(new EntityComponentEventArgs(entity, propertyKey, (EntityComponent)oldValue, (EntityComponent)newValue));
+            OnComponentChanged(entity, index, oldComponent, newComponent);
         }
 
-        private void CheckEntityWithProcessors(Entity entity, List<EntityProcessor> entityProcessors, bool forceRemove)
+        private void UpdateDependentProcessors(Entity entity, EntityComponent skipComponent1, EntityComponent skipComponent2)
         {
-            foreach (EntityProcessor system in processors)
+            var components = entity.Components;
+            for (int i = 0; i < components.Count; i++)
             {
-                system.EntityCheck(entity, entityProcessors, forceRemove);
+                var component = components[i];
+                if (component == skipComponent1 || component == skipComponent2)
+                {
+                    continue;
+                }
+
+                var componentType = component.GetType().GetTypeInfo();
+                var processorsForComponent = MapComponentTypeToProcessors[componentType];
+                {
+                    for (int j = 0; j < processorsForComponent.Count; j++)
+                    {
+                        var processor = processorsForComponent[j];
+                        if (currentDependentProcessors.Contains(processor))
+                        {
+                            processor.ProcessEntityComponent(entity, component, false);
+                        }
+                    }
+                }
             }
         }
 
-        //private void entities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        //{
-        //    var entity = (Entity)e.Item;
-        //    switch (e.Action)
-        //    {
-        //        case NotifyCollectionChangedAction.Add:
-        //            InternalAddEntity(entity);
-        //            break;
-        //        case NotifyCollectionChangedAction.Remove:
-        //            InternalRemoveEntity(entity);
-        //            break;
-        //    }
-        //}
-
-        private void systems_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void CheckEntityWithProcessors(Entity entity, bool forceRemove, bool collecComponentTypesAndProcessors)
         {
-            switch (e.Action)
+            var components = entity.Components;
+            for (int i = 0; i < components.Count; i++)
             {
-                case NotifyCollectionChangedAction.Add:
-                    OnProcessorAdded((EntityProcessor)e.Item);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    OnProcessorRemoved((EntityProcessor)e.Item);
-                    break;
+                var component = components[i];
+                CheckEntityComponentWithProcessors(entity, component, forceRemove, null);
+                if (collecComponentTypesAndProcessors)
+                {
+                    CollectNewProcessorsByComponentType(component.GetType().GetTypeInfo());
+                }
             }
         }
 
-        /// <summary>
-        /// Determines whether this instance contains the specified entity.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns><c>true</c> if this instance contains the specified entity; otherwise, <c>false</c>.</returns>
-        public bool Contains(Entity item)
+        private void CheckEntityWithNewProcessor(Entity entity, EntityProcessor processor)
         {
-            return entities.ContainsKey(item);
+            var components = entity.Components;
+            for (int i = 0; i < components.Count; i++)
+            {
+                var component = components[i];
+                if (processor.Accept(component.GetType().GetTypeInfo()))
+                {
+                    processor.ProcessEntityComponent(entity, component, false);
+                }
+            }
         }
 
-        public IEnumerator<Entity> GetEnumerator()
+        private void CheckEntityComponentWithProcessors(Entity entity, EntityComponent component, bool forceRemove, List<EntityProcessor> dependentProcessors)
         {
-            return entities.Keys.GetEnumerator();
+            var componentType = component.GetType().GetTypeInfo();
+            EntityProcessorCollectionPerComponentType processorsForComponent;
+
+            if (MapComponentTypeToProcessors.TryGetValue(componentType, out processorsForComponent))
+            {
+                for (int i = 0; i < processorsForComponent.Count; i++)
+                {
+                    processorsForComponent[i].ProcessEntityComponent(entity, component, forceRemove);
+                }
+            }
+            else
+            {
+                processorsForComponent = new EntityProcessorCollectionPerComponentType();
+                for (int j = 0; j < processors.Count; j++)
+                {
+                    var processor = processors[j];
+                    if (processor.Accept(componentType))
+                    {
+                        processorsForComponent.Add(processor);
+                        processor.ProcessEntityComponent(entity, component, forceRemove);
+                    }
+
+                    if (processor.IsDependentOnComponentType(componentType))
+                    {
+                        if (processorsForComponent.Dependencies == null)
+                        {
+                            processorsForComponent.Dependencies = new List<EntityProcessor>();
+                        }
+                        processorsForComponent.Dependencies.Add(processor);
+                    }
+                }
+                MapComponentTypeToProcessors.Add(componentType, processorsForComponent);
+            }
+
+            // Collect dependent processors
+            var processorsForComponentDependencies = processorsForComponent.Dependencies;
+            if (dependentProcessors != null && processorsForComponentDependencies != null)
+            {
+                for (int i = 0; i < processorsForComponentDependencies.Count; i++)
+                {
+                    var processor = processorsForComponentDependencies[i];
+                    if (!dependentProcessors.Contains(processor))
+                    {
+                        dependentProcessors.Add(processor);
+                    }
+                }
+            }
+        }
+
+        IEnumerator<Entity> IEnumerable<Entity>.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -555,15 +558,7 @@ namespace SiliconStudio.Xenko.Engine
             return GetEnumerator();
         }
 
-        public int Count
-        {
-            get
-            {
-                return entities.Count;
-            }
-        }
-
-        protected virtual void OnComponentTypeAdded(Type obj)
+        protected virtual void OnComponentTypeAdded(TypeInfo obj)
         {
             var handler = ComponentTypeAdded;
             if (handler != null) handler(this, obj);
@@ -581,19 +576,63 @@ namespace SiliconStudio.Xenko.Engine
             if (handler != null) handler(this, e);
         }
 
-        protected virtual void OnComponentChanged(EntityComponentEventArgs e)
+        protected virtual void OnComponentChanged(Entity entity, int index, EntityComponent previousComponent, EntityComponent newComponent)
         {
             var handler = ComponentChanged;
-            if (handler != null) handler(this, e);
+            if (handler != null) handler(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
         }
 
-        private class EntityProcessorComparer : Comparer<EntityProcessor>
+        void IEntityComponentNotify.OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
-            public new static readonly EntityProcessorComparer Default = new EntityProcessorComparer();
+            NotifyComponentChanged(entity, index, oldComponent, newComponent);
+        }
 
-            public override int Compare(EntityProcessor x, EntityProcessor y)
+        /// <summary>
+        /// List of processors for a particular component type.
+        /// </summary>
+        internal class EntityProcessorCollectionPerComponentType : EntityProcessorCollection
+        {
+            /// <summary>
+            /// The processors that are depending on the component type
+            /// </summary>
+            public List<EntityProcessor> Dependencies;
+        }
+
+        private class TrackingEntityProcessorCollection : EntityProcessorCollection
+        {
+            private readonly EntityManager manager;
+
+            public TrackingEntityProcessorCollection(EntityManager manager)
             {
-                return x.Order.CompareTo(y.Order);
+                if (manager == null) throw new ArgumentNullException(nameof(manager));
+                this.manager = manager;
+            }
+            
+            protected override void ClearItems()
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    manager.OnProcessorRemoved(this[i]);
+                }
+
+                base.ClearItems();
+            }
+
+            protected override void AddItem(EntityProcessor processor)
+            {
+                if (processor == null) throw new ArgumentNullException(nameof(processor));
+                if (!Contains(processor))
+                {
+                    base.AddItem(processor);
+                    manager.OnProcessorAdded(processor);
+                }
+            }
+
+            protected override void RemoteItem(int index)
+            {
+                var processor = this[index];
+                base.RemoteItem(index);
+                manager.OnProcessorRemoved(processor);
             }
         }
     }

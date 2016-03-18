@@ -64,7 +64,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             var shaderCompilerAnswer = (RemoteEffectCompilerEffectAnswer)await socketMessageLayer.SendReceiveAsync(new RemoteEffectCompilerEffectRequest
             {
                 MixinTree = mixinTree,
-                UsedParameters = mixinTree.UsedParameters,
+                CompilerParameters = compilerParameters,
+                EffectParameters = compilerParameters.EffectParameters,
             });
 
             // TODO: Get LoggerResult as well

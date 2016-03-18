@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class BloomAfterimageShaderKeys
     {
-        public static readonly ParameterKey<float> FadeOutSpeed = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> Sensitivity = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> FadeOutSpeed = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> Sensitivity = ParameterKeys.NewValue<float>();
     }
 }

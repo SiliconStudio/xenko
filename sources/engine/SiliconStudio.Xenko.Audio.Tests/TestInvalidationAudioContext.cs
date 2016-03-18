@@ -26,15 +26,15 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            engine = new AudioEngine();
+            engine = AudioEngineFactory.NewAudioEngine();
 
-            using (var stream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var stream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 oneSound = SoundEffect.Load(engine, stream);
             }
             oneSound.IsLooped = true;
 
-            sayuriPart = SoundMusic.Load(engine, AssetManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
+            sayuriPart = SoundMusic.Load(engine, ContentManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
             sayuriPart.IsLooped = true;
         }
 
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         public void TestSoundMusicWhenEngineInvalidated()
         {
             // user should unplug the headphone before starting the test
-            var soundMusic = SoundMusic.Load(engine, AssetManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
+            var soundMusic = SoundMusic.Load(engine, ContentManager.FileProvider.OpenStream("MusicFishLampMp3", VirtualFileMode.Open, VirtualFileAccess.Read));
 
             // check the initial status of the engine
             Assert.AreEqual(AudioEngineState.Invalidated, engine.State);
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             // user should unplug the headphone before starting the test
             SoundEffect sound;
-            using (var stream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var stream = ContentManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
                 sound = SoundEffect.Load(engine, stream);
 
             // check the initial status of the engine

@@ -61,8 +61,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
         public EntityDesign()
+            : this(null)
         {
-            Design = new EntityDesignData();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
+        public EntityDesign(Entity entity)
+            : this(entity, new EntityDesignData())
+        {
         }
 
         /// <summary>
@@ -87,6 +95,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         [DataMember(20)]
         public EntityDesignData Design { get; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"EntityDesign {Entity.Name}";
+        }
     }
 
     [DataContract("EntityHierarchyData")]
@@ -125,17 +139,20 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 return item.Entity.Id;
             }
         
-            protected override void InsertItem(int index, EntityDesign item)
+            public void AddRange(IEnumerable<EntityDesign> entityDesigns)
             {
-                //item.Container = container;
-                base.InsertItem(index, item);
+                foreach (var entityDesign in entityDesigns)
+                {
+                    Add(entityDesign);
+                }
             }
-        
-            protected override void RemoveItem(int index)
+
+            public void AddRange(IEnumerable<Entity> entities)
             {
-                var item = items[index];
-                base.RemoveItem(index);
-                //item.Container = null;
+                foreach (var entity in entities)
+                {
+                    Add(entity);
+                }
             }
         }
     }

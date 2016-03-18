@@ -20,14 +20,14 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         public ShaderArraySource()
         {
-            Values = new List<ShaderSource>();
+            Values = new ShaderSourceCollection();
         }
 
         /// <summary>
         /// Gets or sets the values.
         /// </summary>
         /// <value>The values.</value>
-        public List<ShaderSource> Values { get; set; }
+        public ShaderSourceCollection Values { get; set; }
 
         /// <summary>
         /// Adds the specified composition.
@@ -40,37 +40,7 @@ namespace SiliconStudio.Xenko.Shaders
 
         public override object Clone()
         {
-            return new ShaderArraySource { Values = Values.Select(x => (ShaderSource)x.Clone()).ToList() };
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ShaderArraySource)obj);
-        }
-
-        public bool Equals(ShaderArraySource other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            if (ReferenceEquals(Values, other.Values))
-                return true;
-
-            if (ReferenceEquals(Values, null))
-                return false;
-
-            if (Values.Count != other.Values.Count)
-                return false;
-
-            return !Values.Where((t, i) => !t.Equals(other.Values[i])).Any();
-        }
-
-        public override int GetHashCode()
-        {
-            return Utilities.GetHashCode(Values);
+            return new ShaderArraySource { Values = new ShaderSourceCollection(Values.Select(x => (ShaderSource)x.Clone())) };
         }
 
         public IEnumerator<ShaderSource> GetEnumerator()
@@ -86,6 +56,38 @@ namespace SiliconStudio.Xenko.Shaders
         public override string ToString()
         {
             return string.Format("[{0}]", Values != null ? string.Join(", ", Values) : string.Empty);
+        }
+
+        public bool Equals(ShaderArraySource other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Values.Equals(other.Values);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj is ShaderArraySource && Equals((ShaderArraySource)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return Values.GetHashCode();
+            }
+        }
+
+        public static bool operator ==(ShaderArraySource left, ShaderArraySource right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ShaderArraySource left, ShaderArraySource right)
+        {
+            return !Equals(left, right);
         }
     }
 }

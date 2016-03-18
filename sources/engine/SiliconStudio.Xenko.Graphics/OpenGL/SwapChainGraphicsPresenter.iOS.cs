@@ -43,19 +43,21 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        public override void EndDraw(CommandList commandList, bool present)
+        {
+            if (present)
+            {
+                // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
+                commandList.CopyScaler2D(backBuffer, GraphicsDevice.WindowProvidedRenderTexture,
+                    new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
+                    new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
+
+                gameWindow.SwapBuffers();
+            }
+        }
+
         public override void Present()
         {
-            GraphicsDevice.Begin();
-
-            // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-            if (backBuffer != GraphicsDevice.windowProvidedRenderTexture)
-                GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.windowProvidedRenderTexture,
-                    new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
-                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), true);
-
-            gameWindow.SwapBuffers();
-
-            GraphicsDevice.End();
         }
 
         protected override void ResizeBackBuffer(int width, int height, PixelFormat format)

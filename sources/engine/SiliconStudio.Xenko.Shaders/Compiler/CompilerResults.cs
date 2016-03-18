@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Rendering;
 
@@ -29,6 +31,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// Parameters used to create this shader.
         /// </summary>
         /// <value>The ParameterCollection.</value>
-        public ShaderMixinParameters UsedParameters { get; set; }
+        public CompilerParameters SourceParameters { get; set; }
     }
 }

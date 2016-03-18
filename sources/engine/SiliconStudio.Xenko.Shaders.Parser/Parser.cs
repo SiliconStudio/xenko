@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                         {
                             foreach (var subVariable in variable.Instances())
                             {
-                                subVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer.Name.Text);
+                                subVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer);
                                 if (variable.IsGroup && !ReferenceEquals(variable, subVariable))
                                 {
                                     subVariable.Qualifiers |= variable.Qualifiers;

@@ -19,20 +19,16 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         /// </summary>
         /// <param name="mixinName">Name of the mixin.</param>
         /// <param name="properties">The properties that the mixin will use.</param>
-        /// <param name="usedProperties">The properties effectively used by the mixin.</param>
         /// <returns>ShaderMixinSource.</returns>
-        private static ShaderMixinSource GenerateMixin(string mixinName, ParameterCollection properties, out ShaderMixinParameters usedProperties)
+        private static ShaderMixinSource GenerateMixin(string mixinName, ParameterCollection properties)
         {
-            var allUsedProperties = new List<ShaderMixinParameters>();
             var mixin = ShaderMixinManager.Generate(mixinName, properties);
 
-            usedProperties = mixin.UsedParameters;
-
             // Verify that output used properties are a subset of input properties
-            Assert.That(usedProperties.IsSubsetOf(properties), Is.True);
+            //Assert.That(usedProperties.IsSubsetOf(properties), Is.True);
 
-            foreach(var usedProps in allUsedProperties)
-                Assert.That(usedProps.IsSubsetOf(properties), Is.True);
+            //foreach(var usedProps in allUsedProperties)
+            //    Assert.That(usedProps.IsSubsetOf(properties), Is.True);
 
             return mixin;
         }

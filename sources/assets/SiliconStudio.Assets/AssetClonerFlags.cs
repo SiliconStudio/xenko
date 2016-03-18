@@ -23,6 +23,11 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Attached references will be cloned as <c>null</c>
         /// </summary>
-        ReferenceAsNull = 2
+        ReferenceAsNull = 2,
+
+        /// <summary>
+        /// Keep cloned bases.
+        /// </summary>
+        KeepBases = 4,
     }
 }

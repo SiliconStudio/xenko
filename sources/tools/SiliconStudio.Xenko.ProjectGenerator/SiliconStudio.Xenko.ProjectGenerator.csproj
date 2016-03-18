@@ -84,6 +84,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="ResharperDotSettings.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ResharperDotSettings.cs</LastGenOutput>

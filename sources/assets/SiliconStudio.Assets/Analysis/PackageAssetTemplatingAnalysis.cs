@@ -15,10 +15,6 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public class PackageAssetTemplatingAnalysis
     {
-        // TODO: The current code doesn't perform skip optimization and always tries to merge assets base/derived, even things didn't change from base.
-        // In order to support this skip optimization, we will have to add a content hash when loading assets, this hash will be used to check if content has changed.
-        // The hash should include shadow informations (like overrides)
-
         private readonly Package package;
         private readonly Dictionary<Guid, AssetItem> assetsToProcess;
         private readonly Dictionary<Guid, AssetItem> assetsProcessed;
@@ -35,9 +31,29 @@ namespace SiliconStudio.Assets.Analysis
             this.package = package;
             session = package.Session;
             this.log = log;
+            MergeModifiedAssets = true;
+            RemoveUnusedBaseParts = true;
         }
 
+        public bool MergeModifiedAssets { get; set; }
+
+        public bool RemoveUnusedBaseParts { get; set; }
+
+
         public void Run()
+        {
+            if (RemoveUnusedBaseParts)
+            {
+                ProcessRemoveUnusedBaseParts();
+            }
+
+            if (MergeModifiedAssets)
+            {
+                ProcessMergeModifiedAssets();
+            }
+        }
+
+        private void ProcessMergeModifiedAssets()
         {
             foreach (var assetItem in package.Assets)
             {
@@ -72,6 +88,60 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     log.Error("Unexpected error while processing asset templating");
                     break;
+                }
+            }
+        }
+
+        private void ProcessRemoveUnusedBaseParts()
+        {
+            var basePartsToKeep = new HashSet<AssetBase>();
+            var partInstanceIdProcessed = new HashSet<Guid>();
+            foreach (var assetItem in package.Assets)
+            {
+                var asset = assetItem.Asset as AssetComposite;
+                if (asset == null)
+                {
+                    continue;
+                }
+
+                // If an asset doesn't have any base for templating, we can skip this part
+                if (asset.BaseParts != null)
+                {
+                    basePartsToKeep.Clear();
+                    partInstanceIdProcessed.Clear();
+
+                    foreach (var part in asset.CollectParts())
+                    {
+                        if (part.BaseId.HasValue && part.BasePartInstanceId.HasValue && !partInstanceIdProcessed.Contains(part.BasePartInstanceId.Value))
+                        {
+                            // Add to this map to avoid processing assets from the same BasePartInstanceId
+                            partInstanceIdProcessed.Add(part.BasePartInstanceId.Value);
+
+                            var baseId = part.BaseId.Value;
+                            foreach (var basePart in asset.BaseParts)
+                            {
+                                var assetBase = (AssetComposite)basePart.Asset;
+                                if (assetBase.ContainsPart(baseId))
+                                {
+                                    basePartsToKeep.Add(basePart);
+                                }
+                            }
+                        }
+                    }
+
+                    for (int i = asset.BaseParts.Count - 1; i >= 0; i--)
+                    {
+                        var basePart = asset.BaseParts[i];
+                        if (!basePartsToKeep.Contains(basePart))
+                        {
+                            asset.BaseParts.RemoveAt(i);
+                        }
+                    }
+
+                    if (asset.BaseParts.Count == 0)
+                    {
+                        asset.BaseParts = null;
+                    }
                 }
             }
         }
@@ -117,15 +187,19 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            // For simple merge (base, newAsset, newBase) => newObject
-            // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
-            if (!MergeAsset(assetItem, existingAssetBase, existingBaseParts))
+            // Don't process an asset that has been already processed
+            if (!assetsProcessed.ContainsKey(assetItem.Id))
             {
-                return false;
-            }
+                // For simple merge (base, newAsset, newBase) => newObject
+                // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
+                if (!MergeAsset(assetItem, existingAssetBase, existingBaseParts))
+                {
+                    return false;
+                }
 
-            assetsProcessed.Add(assetItem.Id, assetItem);
-            assetsToProcess.Remove(assetItem.Id);
+                assetsProcessed.Add(assetItem.Id, assetItem);
+                assetsToProcess.Remove(assetItem.Id);
+            }
 
             return true;
         }
@@ -158,11 +232,43 @@ namespace SiliconStudio.Assets.Analysis
             return true;
         }
 
+        private static bool CompareAssets(Asset left, Asset right)
+        {
+            // Computes the hash on the clone (so that we don't have a .Base/.BaseParts in them
+            // TODO: We might want to store the hash in the asset in order to avoid a recompute at load time
+            // (but would require a compute at save time)
+            var baseId = AssetHash.Compute(left);
+            var newBaseCopyId = AssetHash.Compute(right);
+
+            // If the old base and new base are similar (including ids and overrides), we don't need to perform a merge
+            return baseId == newBaseCopyId;
+        }
+
         private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetBase> existingBaseParts)
         {
             // No need to clone existingBaseParts as they are already cloned
             var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
             var newBaseCopy = (Asset)AssetCloner.Clone(existingBase?.Asset);
+
+            // Check base parts
+            bool basePartsAreEqual = true;
+            if (item.Asset != null && item.Asset.BaseParts != null)
+            {
+                foreach (var assetBasePart in item.Asset.BaseParts)
+                {
+                    var existingBasePart = existingBaseParts.First(e => e.Id == assetBasePart.Asset.Id);
+                    if (!CompareAssets(assetBasePart.Asset, existingBasePart.Asset))
+                    {
+                        basePartsAreEqual = false;
+                    }
+                }
+            }
+
+            // If the old base and new base are similar (including ids and overrides), we don't need to perform a merge
+            if (CompareAssets(baseCopy, newBaseCopy) && basePartsAreEqual)
+            {
+                return true;
+            }
 
             // Delegates actual merge to the asset implem
             var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts);

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
@@ -80,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         private const string BackgroundCompositionName = "color1";
         private const string ForegroundCompositionName = "color2";
 
-        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             var leftShaderSource = LeftChild.GenerateShaderSource(context, baseKeys);
             var rightShaderSource = RightChild.GenerateShaderSource(context, baseKeys);

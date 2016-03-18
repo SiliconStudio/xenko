@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Presentation.View;
+using SiliconStudio.Presentation.ViewModel;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -17,7 +18,8 @@ namespace SiliconStudio.Presentation.Windows
 
         protected MessageDialogBase()
         {
-            this.ButtonCommand = new MessageDialogCommand<int>(ButtonClick);
+            var serviceProvider = new ViewModelServiceProvider(new[] { new DispatcherService(this.Dispatcher) });
+            this.ButtonCommand = new AnonymousCommand<int>(serviceProvider, ButtonClick);
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace SiliconStudio.Presentation.Windows
         /// Identifies the <see cref="ButtonCommand"/> dependency property.
         /// </summary>
         private static readonly DependencyProperty ButtonCommandProperty =
-            DependencyProperty.Register("ButtonCommand", typeof(ICommand), typeof(MessageDialogBase));
+            DependencyProperty.Register("ButtonCommand", typeof(ICommandBase), typeof(MessageDialogBase));
 
         public IEnumerable<DialogButtonInfo> ButtonsSource
         {
@@ -74,9 +76,9 @@ namespace SiliconStudio.Presentation.Windows
             protected set { SetValue(ResultProperty, value); }
         }
 
-        private ICommand ButtonCommand
+        private ICommandBase ButtonCommand
         {
-            get { return (ICommand)GetValue(ButtonCommandProperty); }
+            get { return (ICommandBase)GetValue(ButtonCommandProperty); }
             set { SetValue(ButtonCommandProperty, value); }
         }
 
@@ -90,36 +92,6 @@ namespace SiliconStudio.Presentation.Windows
         {
             this.result = parameter;
             this.Close();
-        }
-
-        private class MessageDialogCommand<T> : ICommand
-        {
-            private readonly Func<bool> canExecute;
-            private readonly Action<T> action;
-
-            public MessageDialogCommand(Action<T> action, Func<bool> canExecute = null)
-            {
-                if (action == null)
-                    throw new ArgumentNullException(nameof(action));
-
-                this.action = action;
-                this.canExecute = canExecute;
-            }
-
-            public bool CanExecute(object parameter)
-            {
-                return canExecute?.Invoke() ?? true;
-            }
-
-            public void Execute(object parameter)
-            {
-                if ((typeof(T).IsValueType || parameter != null) && !(parameter is T))
-                    throw new ArgumentException(@"Unexpected parameter type in the command.", nameof(parameter));
-
-                action((T)parameter);
-            }
-
-            public event EventHandler CanExecuteChanged;
         }
     }
 

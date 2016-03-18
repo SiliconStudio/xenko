@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Process <see cref="LightComponent"/> stored in an <see cref="EntityManager"/> by providing grouped lights per types/shadows.
     /// </summary>
-    public class LightProcessor : EntityProcessor<LightComponent>
+    public class LightProcessor : EntityProcessor<LightComponent, LightComponent>
     {
         private const int DefaultLightCapacityCount = 512;
 
@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// Initializes a new instance of the <see cref="LightProcessor"/> class.
         /// </summary>
         public LightProcessor()
-            : base(LightComponent.Key)
         {
             lights = new LightComponentCollection(DefaultLightCapacityCount);
             lightsCollected = new LightComponentCollection(DefaultLightCapacityCount);
@@ -33,21 +32,21 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <value>The lights.</value>
         public LightComponentCollection Lights => lightsCollected;
 
-        protected override void OnEntityAdding(Entity entity, LightComponent state)
+        protected override void OnEntityComponentAdding(Entity entity, LightComponent component, LightComponent state)
         {
-            base.OnEntityAdding(entity, state);
+            base.OnEntityComponentAdding(entity, component, state);
             lights.Add(state);
         }
 
-        protected override void OnEntityRemoved(Entity entity, LightComponent state)
+        protected override void OnEntityComponentRemoved(Entity entity, LightComponent component, LightComponent state)
         {
-            base.OnEntityRemoved(entity, state);
+            base.OnEntityComponentRemoved(entity, component, state);
             lights.Remove(state);
         }
 
-        protected override LightComponent GenerateAssociatedData(Entity entity)
+        protected override LightComponent GenerateComponentData(Entity entity, LightComponent component)
         {
-            return entity.Get<LightComponent>();
+            return component;
         }
 
         public override void Draw(RenderContext context)

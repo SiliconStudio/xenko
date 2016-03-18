@@ -13,34 +13,22 @@ namespace SiliconStudio.Assets
     public abstract class AssetComposite : Asset, IAssetComposite
     {
         /// <summary>
-        /// Adds an asset composition as a part of this asset. This method has to be used in sub-classes.
+        /// Adds the given <see cref="AssetBase"/> to the <see cref="Asset.BaseParts"/> collection of this asset.
         /// </summary>
-        /// <param name="assetPartBase">The entity asset to be used as a part (must be created directly from <see cref="Asset.CreateChildAsset"/>)</param>
-        protected void AddPartCore(AssetComposite assetPartBase)
+        /// <remarks>If the <see cref="Asset.BaseParts"/> collection already contains the argument. this method does nothing.</remarks>
+        /// <param name="newBasePart">The base to add to the <see cref="Asset.BaseParts"/> collection.</param>
+        public void AddBasePart(AssetBase newBasePart)
         {
-            if (assetPartBase == null) throw new ArgumentNullException(nameof(assetPartBase));
+            if (newBasePart == null) throw new ArgumentNullException(nameof(newBasePart));
 
-            // The assetPartBase must be a plain child asset
-            if (assetPartBase.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetPartBase)}");
-            if (assetPartBase.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetPartBase)}");
-
-            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
-            if (assetPartBase.CollectParts().Any(it => !it.BaseId.HasValue))
+            if (BaseParts == null)
             {
-                throw new InvalidOperationException("An asset part base must contain only base assets");
+                BaseParts = new List<AssetBase>();
             }
 
-            // The instance id will be the id of the assetPartBase
-            if (this.BaseParts == null)
+            if (BaseParts.All(x => x.Id != newBasePart.Id))
             {
-                this.BaseParts = new List<AssetBase>();
-            }
-
-            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Id == assetPartBase.Base.Id);
-            if (basePart == null)
-            {
-                basePart = assetPartBase.Base;
-                this.BaseParts.Add(basePart);
+                BaseParts.Add(newBasePart);
             }
         }
 

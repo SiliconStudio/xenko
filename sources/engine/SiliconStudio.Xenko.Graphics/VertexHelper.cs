@@ -360,7 +360,7 @@ namespace SiliconStudio.Xenko.Graphics
                     var normal = *(Vector3*)&oldBuffer[oldVertexOffset + normalOffset];
                     var newTangentPtr = ((float*)(&newBuffer[newVertexOffset + tangentOffset]));
 
-                    var tangent = -tangents[i];
+                    var tangent = tangents[i];
                     var bitangent = bitangents[i];
 
                     // Gram-Schmidt orthogonalize

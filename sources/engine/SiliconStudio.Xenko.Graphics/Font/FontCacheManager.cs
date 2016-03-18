@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// Upload a character's bitmap into the current cache.
         /// </summary>
         /// <param name="character">The character specifications corresponding to the bitmap</param>
-        public void UploadCharacterBitmap(CharacterSpecification character)
+        public void UploadCharacterBitmap(CommandList commandList, CharacterSpecification character)
         {
             if(character.Bitmap == null)
                 throw new ArgumentNullException("character");
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             {
                 var dataBox = new DataBox(character.Bitmap.Buffer, character.Bitmap.Pitch, character.Bitmap.Pitch * character.Bitmap.Rows);
                 var region = new ResourceRegion(character.Glyph.Subrect.Left, character.Glyph.Subrect.Top, 0, character.Glyph.Subrect.Right, character.Glyph.Subrect.Bottom, 1);
-                system.GraphicsDevice.UpdateSubresource(cacheTextures[0], 0, dataBox, region);
+                commandList.UpdateSubresource(cacheTextures[0], 0, dataBox, region);
             }
 
             // update the glyph data

@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     public static partial class SphericalHarmonicsEnvironmentColorKeys
     {
-        public static readonly ParameterKey<Color3[]> SphericalColors = ParameterKeys.New<Color3[]>();
+        public static readonly ValueParameterKey<Color3> SphericalColors = ParameterKeys.NewValue<Color3>();
     }
 }

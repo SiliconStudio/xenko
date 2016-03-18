@@ -43,9 +43,15 @@
     <Reference Include="BulletSharp">
       <HintPath>..\..\..\deps\BulletPhysics\$(XenkoBulletPlatform)\$(XenkoBulletSignedDir)BulletSharp.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Bullet2PhysicsSystem.cs" />
     <Compile Include="Collision.cs" />
@@ -54,20 +60,19 @@
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
     <Compile Include="Data\IColliderShapeDesc.cs" />
-    <Compile Include="Elements\CharacterElement.cs" />
-    <Compile Include="Elements\IPhysicsElement.cs" />
+    <Compile Include="Elements\CharacterComponent.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
     <Compile Include="Data\ColliderShapeAssetDesc.cs" />
-    <Compile Include="Elements\PhysicsElementBase.cs" />
-    <Compile Include="Elements\PhysicsSkinnedElementBase.cs" />
-    <Compile Include="Elements\PhysicsTriggerElementBase.cs" />
-    <Compile Include="Elements\RigidbodyElement.cs" />
-    <Compile Include="Elements\StaticColliderElement.cs" />
-    <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
+    <Compile Include="Elements\PhysicsSkinnedComponentBase.cs" />
+    <Compile Include="Elements\PhysicsTriggerComponentBase.cs" />
+    <Compile Include="Elements\RigidbodyComponent.cs" />
+    <Compile Include="Elements\StaticColliderComponent.cs" />
+    <Compile Include="Engine\PhysicsColliderShape.cs" />
+    <Compile Include="Engine\PhysicsDebugCameraRendererMode.cs" />
     <Compile Include="Engine\PhysicsDebugShapeMaterial.cs" />
-    <Compile Include="Engine\PhysicsDebugShapeRendering.cs" />
+    <Compile Include="Engine\PhysicsShapesRenderingService.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
     <Compile Include="IPhysicsSystem.cs" />
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
@@ -75,7 +80,9 @@
     </Compile>
     <Compile Include="IRelative.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="PhysicsConfiguration.cs" />
     <Compile Include="PhysicsProfilingKeys.cs" />
+    <Compile Include="PhysicsScriptComponentExtensions.cs" />
     <Compile Include="XenkoMotionState.cs" />
     <Compile Include="PhysicsDebugEffect.cs" />
     <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Direct3D11.Level_9_3.cs" />
@@ -91,8 +98,6 @@
     <Compile Include="Shapes\Box2DColliderShape.cs" />
     <Compile Include="Shapes\BoxColliderShape.cs" />
     <Compile Include="Shapes\CapsuleColliderShape.cs" />
-    <Compile Include="Character.cs" />
-    <Compile Include="Collider.cs" />
     <Compile Include="ColliderShape.cs" />
     <Compile Include="Shapes\CompoundColliderShape.cs" />
     <Compile Include="Constraints\ConeTwistConstraint.cs" />
@@ -106,7 +111,6 @@
     <Compile Include="Constraints\Generic6DoFSpringConstraint.cs" />
     <Compile Include="Constraints\HingeConstraint.cs" />
     <Compile Include="Constraints\Point2PointConstraint.cs" />
-    <Compile Include="RigidBody.cs" />
     <Compile Include="Constraints\RotationalLimitMotor.cs" />
     <Compile Include="Constraints\SliderConstraint.cs" />
     <Compile Include="Shapes\SphereColliderShape.cs" />

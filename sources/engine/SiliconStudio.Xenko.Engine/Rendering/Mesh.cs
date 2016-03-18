@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             if (mesh == null) throw new ArgumentNullException("mesh");
             Draw = mesh.Draw;
-            Parameters = mesh.Parameters.Clone();
+            Parameters = mesh.Parameters;
             MaterialIndex = mesh.MaterialIndex;
             NodeIndex = mesh.NodeIndex;
             Name = mesh.Name;

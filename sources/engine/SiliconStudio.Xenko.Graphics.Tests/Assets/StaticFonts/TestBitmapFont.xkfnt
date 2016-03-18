@@ -1,5 +1,6 @@
 !SpriteFont
 Id: 21069bb0-91b2-4570-be00-a70a1df67cb1
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: ../../../../data/tests/TestFont.png
 FontName: Agency FB
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: 0
         End: 9
 AntiAlias: Grayscale
-IsNotPremultiply: false
 Spacing: 0.0
 LineSpacing: 0.0
 UseKerning: false

@@ -101,8 +101,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             }
             compositor.Cameras.Add(cameraEntity.Get<CameraComponent>());
 
-            SceneSystem.SceneInstance = new SceneInstance(Services, scene);
-
             // Use this graphics compositor
             scene.Settings.GraphicsCompositor = compositor;
 
