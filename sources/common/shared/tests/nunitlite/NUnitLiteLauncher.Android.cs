@@ -53,7 +53,10 @@ namespace NUnitLite.Tests
         private const char IpAddressesSplitCharacter = '%';
 
         public static Logger Logger = GlobalLogger.GetLogger("NUnitLiteLauncher");
-        private ConsoleLogListener logAction = new ConsoleLogListener();
+        private readonly ConsoleLogListener logAction = new ConsoleLogListener();
+        private string resultFile;
+        private StringBuilder stringBuilder;
+        private SimpleSocket socketContext;
 
         protected TcpClient Connect(string serverAddresses, int serverPort)
         {
@@ -93,6 +96,7 @@ namespace NUnitLite.Tests
         {
             GlobalLogger.GlobalMessageLogged += logAction;
             Logger.ActivateLog(LogMessageType.Debug);
+            logAction.LogMode = ConsoleLogMode.Always;
 
             base.OnCreate(bundle);
 
@@ -113,6 +117,18 @@ namespace NUnitLite.Tests
 
         private void RunTests()
         {
+            AppDomain.CurrentDomain.UnhandledException += (a, e) =>
+            {
+                var exception = e.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    var exceptionText = exception.ToString();
+                    stringBuilder.Append($"Tests fatal failure: {exceptionText}");
+                    Logger.Debug($"Unhandled fatal exception: {exception.ToString()}");
+                    EndTesting();
+                }
+            };
+
             var xenkoVersion = Intent.GetStringExtra(TestRunner.XenkoVersion);
             var buildNumber = Parse(Intent.GetStringExtra(TestRunner.XenkoBuildNumber) ?? "-1");
             var branchName = Intent.GetStringExtra(TestRunner.XenkoBranchName) ?? "";
@@ -121,7 +137,6 @@ namespace NUnitLite.Tests
             Intent.RemoveExtra(TestRunner.XenkoVersion);
             Intent.RemoveExtra(TestRunner.XenkoBuildNumber);
             Intent.RemoveExtra(TestRunner.XenkoBranchName);
-
 
             Logger.Info(@"*******************************************************************************************************************************");
             Logger.Info(@"date: " + DateTime.Now);
@@ -132,7 +147,7 @@ namespace NUnitLite.Tests
 
             var url = "/task/SiliconStudio.Xenko.TestRunner.exe";
 
-            var socketContext = RouterClient.RequestServer(url).Result;
+            socketContext = RouterClient.RequestServer(url).Result;
 
             // Update build number (if available)
             ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
@@ -153,21 +168,35 @@ namespace NUnitLite.Tests
             var timeNow = DateTime.Now;
 
             // Generate result file name
-            var resultFile = Path.Combine(cachePath, $"TestResult-{timeNow:yyyy-MM-dd_hh-mm-ss-tt}.xml");
+            resultFile = Path.Combine(cachePath, $"TestResult-{timeNow:yyyy-MM-dd_hh-mm-ss-tt}.xml");
 
             Logger.Debug(@"Execute tests");
 
-            var stringBuilder = new StringBuilder();
+            stringBuilder = new StringBuilder();
             var stringWriter = new StringWriter(stringBuilder);
-            new TextUI(stringWriter).Execute(new [] { "-format:nunit2", $"-result:{resultFile}" });
 
+            try
+            {
+                new TextUI(stringWriter).Execute(new[] { "-format:nunit2", $"-result:{resultFile}" });
+            }
+            catch (Exception ex)
+            {
+                stringBuilder.Append($"Tests fatal failure: {ex}");
+                Logger.Error($"Tests fatal failure: {ex}");
+            }           
+
+            EndTesting();
+        }
+
+        private void EndTesting()
+        {
             Logger.Debug(@"Execute tests done");
 
             // Read result file
-            var result = File.ReadAllText(resultFile);
+            var result = File.Exists(resultFile) ? File.ReadAllText(resultFile) : "";
 
             // Delete result file
-            File.Delete(resultFile);
+            if(File.Exists(resultFile)) File.Delete(resultFile);
 
             // Display some useful info
             var output = stringBuilder.ToString();
@@ -183,6 +212,8 @@ namespace NUnitLite.Tests
             Logger.Debug(@"Close connection");
 
             ImageTester.Disconnect();
+
+            socketContext.WriteStream.Flush();
 
             socketContext.Dispose();
 
