@@ -188,14 +188,14 @@ namespace SiliconStudio.Quantum
         private ReferenceInfo GetReferenceInfo(Type type, object value)
         {
             // Is it a reference?
-            if ((!type.IsClass && !type.IsStruct()) || IsPrimitiveType(type))
+            if (!type.IsClass && (type.IsStruct() || IsPrimitiveType(type)))
                 return null;
 
-            ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
+            var descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || !IsPrimitiveType(valueType, false))
+            if (valueType == null || (!type.IsStruct() && !IsPrimitiveType(valueType, false)))
             {
                 var refType = Reference.GetReferenceType(value, Reference.NotInCollection);
                 if (refType == typeof(ReferenceEnumerable))
