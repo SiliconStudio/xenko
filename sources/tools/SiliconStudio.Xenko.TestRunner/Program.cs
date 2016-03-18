@@ -29,6 +29,8 @@ namespace SiliconStudio.Xenko.TestRunner
 
         private string resultFile;
 
+        private bool testFailed = true;
+
         private readonly AutoResetEvent clientResultsEvent = new AutoResetEvent(false);
 
         public TestServerHost(int bn, string branch) : base("/task/SiliconStudio.Xenko.TestRunner.exe")
@@ -50,11 +52,11 @@ namespace SiliconStudio.Xenko.TestRunner
                 if (adbPath == null)
                     throw new InvalidOperationException("Can't find adb");
 
+                // force stop - only works for Android 3.0 and above.
+                ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} shell am force-stop {packageName}");
+
                 if (reinstall)
                 {
-                    // force stop - only works for Android 3.0 and above.
-                    ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} shell am force-stop {packageName}");
-
                     // uninstall
                     ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} uninstall {packageName}");
 
@@ -80,12 +82,17 @@ namespace SiliconStudio.Xenko.TestRunner
                 if (adbOutputs.ExitCode != 0)
                     throw new InvalidOperationException("Invalid error code from adb shell am start.");
 
-                clientResultsEvent.WaitOne(TimeSpan.FromSeconds(30)); //wait 30 seconds for client connection
+                if (!clientResultsEvent.WaitOne(TimeSpan.FromSeconds(30))) //wait 30 seconds for client connection
+                {
+                    Console.WriteLine(@"Device failed to connect.");
+                    return -1;
+                }
+
                 Console.WriteLine(@"Device client connected, waiting for test results...");
 
                 clientResultsEvent.WaitOne(TimeSpan.FromMinutes(5)); //wait 5 minutes max for running tests results
 
-                return 0;
+                return testFailed ? -1 : 0;
             }
             catch (Exception e)
             {
@@ -132,6 +139,9 @@ namespace SiliconStudio.Xenko.TestRunner
             try
             {
                 var binaryReader = new BinaryReader(clientSocket.ReadStream);
+
+                //Read failure flag
+                testFailed = binaryReader.ReadBoolean();
 
                 //Read output
                 var output = binaryReader.ReadString();
@@ -250,6 +260,12 @@ namespace SiliconStudio.Xenko.TestRunner
                             Platform = TestPlatform.Android,
                         },
                         reinstall, packageName, packageFile, deviceResultFile);
+
+                    var adbPath = AndroidDeviceEnumerator.GetAdbPath();
+
+                    // force stop - only works for Android 3.0 and above.
+                    ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} shell am force-stop {packageName}");
+
                     if (currentExitCode != 0)
                         exitCode = currentExitCode;
                 }

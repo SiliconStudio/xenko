@@ -125,7 +125,7 @@ namespace NUnitLite.Tests
                     var exceptionText = exception.ToString();
                     stringBuilder.Append($"Tests fatal failure: {exceptionText}");
                     Logger.Debug($"Unhandled fatal exception: {exception.ToString()}");
-                    EndTesting();
+                    EndTesting(true);
                 }
             };
 
@@ -185,10 +185,10 @@ namespace NUnitLite.Tests
                 Logger.Error($"Tests fatal failure: {ex}");
             }           
 
-            EndTesting();
+            EndTesting(false);
         }
 
-        private void EndTesting()
+        private void EndTesting(bool failure)
         {
             Logger.Debug(@"Execute tests done");
 
@@ -206,6 +206,7 @@ namespace NUnitLite.Tests
 
             // Send back result
             var binaryWriter = new BinaryWriter(socketContext.WriteStream);
+            binaryWriter.Write(failure);
             binaryWriter.Write(output);
             binaryWriter.Write(result);
 
