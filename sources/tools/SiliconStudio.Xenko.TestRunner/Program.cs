@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.TestRunner
 
         private readonly AutoResetEvent clientResultsEvent = new AutoResetEvent(false);
 
-        public TestServerHost(int bn, string branch) : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.TestRunner.exe")
+        public TestServerHost(int bn, string branch) : base("/task/SiliconStudio.Xenko.TestRunner.exe")
         {
             buildNumber = bn;
             branchName = branch;
