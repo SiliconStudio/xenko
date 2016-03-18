@@ -90,8 +90,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal void Apply(CommandList commandList, PipelineState previousPipeline)
         {
             // Apply states
-            if (BlendState != previousPipeline.BlendState)
-                BlendState.Apply(previousPipeline.BlendState);
+            if (BlendState != previousPipeline.BlendState || commandList.NewBlendFactor != commandList.BoundBlendFactor)
+                BlendState.Apply(commandList, previousPipeline.BlendState);
             if (RasterizerState != previousPipeline.RasterizerState)
                 RasterizerState.Apply(commandList);
             if (DepthStencilState != previousPipeline.DepthStencilState || commandList.NewStencilReference != commandList.BoundStencilReference)
