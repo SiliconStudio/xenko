@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.TestRunner
 
                     // install
                     adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, $@"-s {device.Serial} install {packageFile}");
-                    Console.WriteLine(@"adb install: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
+                    Console.WriteLine("adb install: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
                     if (adbOutputs.ExitCode != 0)
                         throw new InvalidOperationException("Invalid error code from adb install.\n Shell log: {0}");
                 }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.TestRunner
                 Console.WriteLine(parameters.ToString());
 
                 adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, parameters.ToString());
-                Console.WriteLine(@"adb shell am start: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
+                Console.WriteLine("adb shell am start: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
                 if (adbOutputs.ExitCode != 0)
                     throw new InvalidOperationException("Invalid error code from adb shell am start.");
 
@@ -129,20 +129,28 @@ namespace SiliconStudio.Xenko.TestRunner
 
             await AcceptConnection(clientSocket);
 
-            var binaryReader = new BinaryReader(clientSocket.ReadStream);
+            try
+            {
+                var binaryReader = new BinaryReader(clientSocket.ReadStream);
 
-             //Read output
-            var output = binaryReader.ReadString();
-            Console.WriteLine(output);
-            
-            // Read XML result
-            var result = binaryReader.ReadString();
-            Console.WriteLine(result);
-                            
-            // Write XML result to disk
-            File.WriteAllText(resultFile, result);
+                //Read output
+                var output = binaryReader.ReadString();
+                Console.WriteLine(output);
 
-            clientResultsEvent.Set();
+                // Read XML result
+                var result = binaryReader.ReadString();
+                Console.WriteLine(result);
+
+                // Write XML result to disk
+                File.WriteAllText(resultFile, result);
+
+                clientResultsEvent.Set();
+            }
+            catch (Exception)
+            {
+                clientResultsEvent.Set();
+                Console.WriteLine(@"Client disconnected before sending results, a fatal crash might have occurred.");
+            }        
         }
     }
 
@@ -230,7 +238,7 @@ namespace SiliconStudio.Xenko.TestRunner
                 foreach (var device in androidDevices)
                 {
                     var testServerHost = new TestServerHost(buildNumber, branchName);
-                    testServerHost.TryConnect("127.0.0.1", RouterClient.DefaultPort).Wait();
+                    testServerHost.TryConnect("127.0.0.1", RouterClient.DefaultPort, true).Wait();
                     Directory.CreateDirectory(resultPath);
                     var deviceResultFile = Path.Combine(resultPath, "TestResult_" + packageName + "_Android_" + device.Name + "_" + device.Serial + ".xml");
                     
