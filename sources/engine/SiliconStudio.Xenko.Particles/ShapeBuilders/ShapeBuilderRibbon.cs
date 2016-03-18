@@ -17,6 +17,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         DistanceBased,        
     }
 
+    public enum SmoothingPolicy
+    {
+        None,   // Ribbons only use control points and edges are hard. Good for straight lines
+        Fast,   // Smoothing using Catmull-Rom interpolation. Generally looks good
+        Best,   // Smoothing based on circumcircles generated around every three adjacent points. Best suited for rapid, circular motions
+    }
+
     /// <summary>
     /// Shape builder which builds all particles as a ribbon, connecting adjacent particles with camera-facing quads
     /// </summary>
@@ -35,6 +42,30 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [DataMember(10)]
         [Display("UV Coords")]
         public TexCoordsPolicy TexCoordsPolicy { get; set; } = TexCoordsPolicy.AsIs;
+
+        /// <summary>
+        /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
+        /// </summary>
+        /// <userdoc>
+        /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
+        /// </userdoc>
+        [DataMember(15)]
+        [Display("Smoothing")]
+        public SmoothingPolicy SmoothingPolicy
+        {
+            get { return smoothingPolicy; }
+            set
+            {
+                smoothingPolicy = value;
+
+                if (smoothingPolicy == SmoothingPolicy.Best) QuadsPerParticle = 10;
+                else if (smoothingPolicy == SmoothingPolicy.Fast) QuadsPerParticle = 5;
+                else QuadsPerParticle = 1;
+            }
+        }
+
+        private SmoothingPolicy smoothingPolicy = SmoothingPolicy.None;
+
 
         /// <summary>
         /// The factor (coefficient) for length to use when building texture coordinates
@@ -148,6 +179,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 positions[lastParticle] = position;
                 sizes[lastParticle] = size;
+
                 lastParticle += sections;
             }
 
@@ -173,7 +205,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 return unitX * (particleSize * 0.5f);
             }
 
-            private void ExpandVertices()
+            /// <summary>
+            /// Advanced interpolation, drawing the vertices in a circular arc between two adjacent control points
+            /// </summary>
+            private void ExpandVertices_Circular()
             {
                 if (sections <= 1)
                     return;
@@ -187,38 +222,76 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var O1 = Vector3.Circumcenter(ref Pt0, ref Pt1, ref Pt2);
                 var R1 = (O1 - Pt1).Length();
 
-                var s0 = sizes[0];
                 var s1 = sizes[0];
                 var s2 = sizes[sections];
 
                 int index = 0;
-                while (index < positions.Length)
+                while (index < lastParticle)
                 {
-                    var Pt3 = (index + sections * 2 < positions.Length) ? positions[index + sections * 2] : Pt2 * 2 - Pt1;
-                    var s3  = (index + sections * 2 < sizes.Length) ? sizes[index + sections * 2] : 0f;
+                    var Pt3 = (index + sections * 2 < lastParticle) ? positions[index + sections * 2] : Pt2;
+                    var s3  = (index + sections * 2 < lastParticle) ? sizes[index + sections * 2] : 0f;
                     var O2 = Vector3.Circumcenter(ref Pt1, ref Pt2, ref Pt3);
                     var R2 = (O2 - Pt2).Length();
+
+                    if (index + sections * 2 >= lastParticle)
+                    {
+                        O2 = O1;
+                        R2 = R1;
+                    }
 
                     for (int j = 1; j < sections; j++)
                     {
                         positions[index + j] = Vector3.Lerp(Pt1, Pt2, j * lerpStep);
-                        
-                        // Circular motion
-                        var dist1 = positions[index + j] - O1;
-                        dist1.Normalize();
-                        var dist2 = positions[index + j] - O2;
-                        dist2.Normalize();
 
-                        positions[index + j] = Vector3.Lerp(O1 + dist1 * R1, O2 + dist2 * R2, j * lerpStep);
+                            // Circular motion
+                            var dist1 = positions[index + j] - O1;
+                            dist1.Normalize();
+                            var dist2 = positions[index + j] - O2;
+                            dist2.Normalize();
+
+                            positions[index + j] = Vector3.Lerp(O1 + dist1*R1, O2 + dist2*R2, j*lerpStep);
 
                         sizes[index + j] = s1 * (1 - j * lerpStep) + s2 * (j * lerpStep);
                     }
 
                     index += sections;
                     Pt0 = Pt1;  Pt1 = Pt2;  Pt2 = Pt3;
-                    s0 = s1;    s1 = s2;    s2 = s3;
+                    s1 = s2;    s2 = s3;
                     O1 = O2;
                     R1 = R2;
+
+                }
+            }
+
+            /// <summary>
+            /// Simple interpolation using Catmull-Rom
+            /// </summary>
+            private void ExpandVertices_CatmullRom()
+            {
+                var lerpStep = 1f / sections;
+
+                var Pt0 = positions[0] * 2 - positions[sections];
+                var Pt1 = positions[0];
+                var Pt2 = positions[sections];
+
+                var s1 = sizes[0];
+                var s2 = sizes[sections];
+
+                int index = 0;
+                while (index < lastParticle)
+                {
+                    var Pt3 = (index + sections * 2 < lastParticle) ? positions[index + sections * 2] : Pt2;
+
+                    for (int j = 1; j < sections; j++)
+                    {
+                        positions[index + j] = Vector3.CatmullRom(Pt0, Pt1, Pt2, Pt3, j * lerpStep);
+                        sizes[index + j] = s1 * (1 - j * lerpStep) + s2 * (j * lerpStep);
+                    }
+
+                    Pt0 = Pt1; Pt1 = Pt2; Pt2 = Pt3;
+                    s1 = s2; s2 = (index + sections * 2 < lastParticle) ? sizes[index + sections * 2] : 0f;
+
+                    index += sections;
                 }
             }
 
@@ -268,7 +341,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     return;
                 }
 
-                ExpandVertices();
+                if (sections > 1)
+                {
+                    if (sections > 5)
+                        ExpandVertices_Circular();
+                    else
+                        ExpandVertices_CatmullRom();
+                }
 
                 vtxBuilder.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
 
@@ -286,7 +365,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 var vCoordOld = 0f;
 
-                for (int i = 0; i < positions.Length - 1; i++)
+                for (int i = 0; i < lastParticle; i++)
                 {
                     var centralPos = positions[i];
 
