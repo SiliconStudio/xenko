@@ -27,6 +27,7 @@
     <Compile Include="GraphNodeBinding.cs" />
     <Compile Include="INodeCommandWrapper.cs" />
     <Compile Include="IObservableNode.cs" />
+    <Compile Include="IPropertiesProviderViewModel.cs" />
     <Compile Include="LCS.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="ObservableViewModelNodeValueChangedArgs.cs" />
