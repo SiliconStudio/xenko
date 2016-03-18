@@ -5,7 +5,6 @@ using System;
 using System.Text.RegularExpressions;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;

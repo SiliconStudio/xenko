@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
