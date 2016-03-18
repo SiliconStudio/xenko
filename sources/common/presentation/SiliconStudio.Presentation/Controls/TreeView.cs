@@ -286,12 +286,9 @@ namespace SiliconStudio.Presentation.Controls
             mouseDown = e.ChangedButton == MouseButton.Left;
 
             var item = GetTreeViewItemUnderMouse(e.GetPosition(this));
-            if (item == null)
-                return;
-            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null)
-                return;
-            if (item.IsEditing)
-                return;
+            if (item == null) return;
+            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null) return;
+            if (item.IsEditing) return;
 
             if (!SelectedItems.Contains(item.DataContext))
             {
@@ -507,8 +504,15 @@ namespace SiliconStudio.Presentation.Controls
             {
                 var item = treeView.GetTreeViewItemFor(e.NewValue);
                 if (item != null)
+                {
+                    // Setting to true will automatically add to the selection (if not already selected).
+                    // See <see cref="TreeViewItem.OnPropertyChanged" /> for more details
                     item.IsSelected = true;
-                treeView.SelectedItems.Add(e.NewValue);
+                }
+                else
+                {
+                    treeView.SelectedItems.Add(e.NewValue);
+                }
             }
             treeView.updatingSelection = false;
         }
