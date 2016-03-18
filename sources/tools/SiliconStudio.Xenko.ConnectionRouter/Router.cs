@@ -59,9 +59,14 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
                         switch (routerMessage)
                         {
+                            case RouterMessage.TaskProvideServer:
+                            {
+                                await HandleMessageServiceProvideServer(clientSocketContext, true);
+                                break;
+                            }
                             case RouterMessage.ServiceProvideServer:
                             {
-                                await HandleMessageServiceProvideServer(clientSocketContext);
+                                await HandleMessageServiceProvideServer(clientSocketContext, false);
                                 break;
                             }
                             case RouterMessage.ServerStarted:
@@ -307,18 +312,33 @@ namespace SiliconStudio.Xenko.ConnectionRouter
         /// Handles ServiceProvideServer messages. It allows service to publicize what "server" they can instantiate.
         /// </summary>
         /// <param name="clientSocket">The client socket context.</param>
+        /// <param name="task">If it's a task the service will overwrite old instances</param>
         /// <returns></returns>
-        private async Task HandleMessageServiceProvideServer(SimpleSocket clientSocket)
+        private async Task HandleMessageServiceProvideServer(SimpleSocket clientSocket, bool task)
         {
             var url = await clientSocket.ReadStream.ReadStringAsync();
-            TaskCompletionSource<Service> service;
 
             lock (registeredServices)
             {
-                if (!registeredServices.TryGetValue(url, out service))
+                TaskCompletionSource<Service> service;
+                if (task)
                 {
+                    if (registeredServices.TryGetValue(url, out service))
+                    {
+                        var result = service.Task.Result;
+                        result.Socket.Dispose();
+                    }
+
                     service = new TaskCompletionSource<Service>();
-                    registeredServices.Add(url, service);
+                    registeredServices[url] = service;
+                }
+                else
+                {
+                    if (!registeredServices.TryGetValue(url, out service))
+                    {
+                        service = new TaskCompletionSource<Service>();
+                        registeredServices.Add(url, service);
+                    }
                 }
 
                 service.TrySetResult(new Service(clientSocket));
