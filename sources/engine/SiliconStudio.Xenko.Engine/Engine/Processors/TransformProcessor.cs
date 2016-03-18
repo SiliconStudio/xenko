@@ -13,14 +13,14 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
-    /// Updates <see cref="TransformComponent.WorldMatrix"/> of entities.
+    /// Handle <see cref="TransformComponent.Children"/> and updates <see cref="TransformComponent.WorldMatrix"/> of entities.
     /// </summary>
     public class TransformProcessor : EntityProcessor<TransformComponent>
     {
         /// <summary>
-        /// List of <see cref="TransformComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager.RootEntities"/>.
+        /// List of root entities <see cref="TransformComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager"/>.
         /// </summary>
-        private readonly TrackingHashSet<TransformComponent> transformationRoots = new TrackingHashSet<TransformComponent>();
+        internal readonly HashSet<TransformComponent> TransformationRoots = new HashSet<TransformComponent>();
 
         /// <summary>
         /// The list of the components that are not special roots.
@@ -32,34 +32,63 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Initializes a new instance of the <see cref="TransformProcessor" /> class.
         /// </summary>
         public TransformProcessor()
-            : base(TransformComponent.Key)
         {
-            Order = -100;            
+            Order = -200;            
         }
 
         /// <inheritdoc/>
-        protected override TransformComponent GenerateAssociatedData(Entity entity)
+        protected override TransformComponent GenerateComponentData(Entity entity, TransformComponent component)
         {
-            return entity.Transform;
+            return component;
         }
 
         /// <inheritdoc/>
         protected internal override void OnSystemAdd()
         {
-            var rootEntities = EntityManager.GetProcessor<HierarchicalProcessor>().RootEntities;
-            ((ITrackingCollectionChanged)rootEntities).CollectionChanged += rootEntities_CollectionChanged;
-
-            // Add transform of existing root entities
-            foreach (var entity in rootEntities)
-            {
-                transformationRoots.Add(entity.Transform);
-            }
         }
 
         /// <inheritdoc/>
         protected internal override void OnSystemRemove()
         {
-            transformationRoots.Clear();
+            TransformationRoots.Clear();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnEntityComponentAdding(Entity entity, TransformComponent component, TransformComponent data)
+        {
+            if (component.Parent == null)
+            {
+                TransformationRoots.Add(component);
+            }
+
+            foreach (var child in data.Children)
+            {
+                InternalAddEntity(child.Entity);
+            }
+
+            ((TrackingCollection<TransformComponent>)data.Children).CollectionChanged += Children_CollectionChanged;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnEntityComponentRemoved(Entity entity, TransformComponent component, TransformComponent data)
+        {
+            var entityToRemove = new List<Entity>();
+            foreach (var child in data.Children)
+            {
+                entityToRemove.Add(child.Entity);
+            }
+
+            foreach (var childEntity in entityToRemove)
+            {
+                InternalRemoveEntity(childEntity, false);
+            }
+
+            if (component.Parent == null)
+            {
+                TransformationRoots.Remove(component);
+            }
+
+            ((TrackingCollection<TransformComponent>)data.Children).CollectionChanged -= Children_CollectionChanged;
         }
 
         internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
@@ -108,71 +137,26 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public override void Draw(RenderContext context)
         {
             notSpecialRootComponents.Clear();
-            foreach (var t in transformationRoots)
+            foreach (var t in TransformationRoots)
                 notSpecialRootComponents.Add(t);
 
             // Special roots are already filtered out
             UpdateTransformations(notSpecialRootComponents);
         }
-
-        /// <summary>
-        /// Creates a matrix that contains the X, Y and Z rotation.
-        /// </summary>
-        /// <param name="rotation">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
-        /// <param name="result">When the method completes, contains the created rotation matrix.</param>
-        public static void CreateMatrixR(ref Vector3 rotation, out Matrix result)
+        
+        private void Children_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
-            // Equivalent to:
-            //result =
-            //    *Matrix.RotationX(rotation.X)
-            //    *Matrix.RotationY(rotation.Y)
-            //    *Matrix.RotationZ(rotation.Z)
-
-            // Precompute cos and sin
-            var cosX = (float)Math.Cos(rotation.X);
-            var sinX = (float)Math.Sin(rotation.X);
-            var cosY = (float)Math.Cos(rotation.Y);
-            var sinY = (float)Math.Sin(rotation.Y);
-            var cosZ = (float)Math.Cos(rotation.Z);
-            var sinZ = (float)Math.Sin(rotation.Z);
-
-            // Precompute some multiplications
-            var sinZY = sinZ * sinY;
-            var cosXZ = cosZ * cosX;
-            var cosZsinY = cosZ * sinX;
-
-            // Rotation
-            result.M11 = cosZ * cosY;
-            result.M21 = cosZsinY * sinY - cosX * sinZ;
-            result.M31 = sinZ * sinX + cosXZ * sinY;
-            result.M12 = cosY * sinZ;
-            result.M22 = cosXZ + sinZY * sinX;
-            result.M32 = cosX * sinZY - cosZsinY;
-            result.M13 = -sinY;
-            result.M23 = cosY * sinX;
-            result.M33 = cosY * cosX;
-            
-            // Position
-            result.M41 = 0;
-            result.M42 = 0;
-            result.M43 = 0;
-
-            result.M14 = 0.0f;
-            result.M24 = 0.0f;
-            result.M34 = 0.0f;
-            result.M44 = 1.0f;
-        }
-
-        private void rootEntities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
+            // Added/removed children of entities in the entity manager have to be added/removed of the entity manager.
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    transformationRoots.Add(((Entity)e.Item).Transform);
+                    InternalAddEntity(((TransformComponent)e.Item).Entity);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    transformationRoots.Remove(((Entity)e.Item).Transform);
+                    InternalRemoveEntity(((TransformComponent)e.Item).Entity, false);
                     break;
+                default:
+                    throw new NotSupportedException();
             }
         }
     }

@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     internal struct UseOpenGLCreationContext : IDisposable
     {
+        public readonly CommandList CommandList;
+
         private readonly bool useDeviceCreationContext;
         private readonly bool needUnbindContext;
 
@@ -48,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_IOS
             if (OpenGLES.EAGLContext.CurrentContext == null)
 #else
-            if (GraphicsContext.CurrentContext == null)
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext == null)
 #endif
             {
                 needUnbindContext = true;
@@ -84,6 +86,11 @@ namespace SiliconStudio.Xenko.Graphics
                 // Bind the context
                 deviceCreationContext = graphicsDevice.deviceCreationContext;
                 deviceCreationContext.MakeCurrent(graphicsDevice.deviceCreationWindowInfo);
+            }
+            else
+            {
+                // TODO Hardcoded to the fact it uses only one command list, this should be fixed
+                CommandList = graphicsDevice.MainCommandList;
             }
         }
 

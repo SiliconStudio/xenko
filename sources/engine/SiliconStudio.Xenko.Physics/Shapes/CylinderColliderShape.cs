@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
@@ -12,8 +12,6 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class CylinderColliderShape : ColliderShape
     {
-        private static MeshDraw cachedDebugPrimitive;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
         /// </summary>
@@ -54,12 +52,12 @@ namespace SiliconStudio.Xenko.Physics
                     throw new ArgumentOutOfRangeException("orientation");
             }
 
-            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(2*radius, height, 2*radius) * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, height, radius * 2) * 1.01f) * rotation;
         }
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cylinder.New(device).ToMeshDraw());
+            return GeometricPrimitive.Cylinder.New(device).ToMeshDraw();
         }
     }
 }

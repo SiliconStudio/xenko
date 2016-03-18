@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 // Copyright (c) 2010-2011 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,24 +29,19 @@ namespace SiliconStudio.Xenko.Graphics
 {
     internal class ColorHelper
     {
-        public static RawColor4 Convert(Color4 color)
+        public unsafe static RawColor4 Convert(Color4 color)
         {
-            var temp = new RawColor4();
-            unsafe
-            {
-                *((Color4*)&temp) = color;
-            }
-            return temp;
+            return *(RawColor4*)&color;
         }
 
-        public static Color4 Convert(RawColor4 color)
+        public unsafe static Color4 Convert(RawColor4 color)
         {
-            var temp = new Color4();
-            unsafe
-            {
-                *((RawColor4*)&temp) = color;
-            }
-            return temp;
+            return *(Color4*)&color;
+        }
+
+        public unsafe static RawVector4 ConvertToVector4(Color4 color)
+        {
+            return *(RawVector4*)&color;
         }
     }
 }

@@ -8,6 +8,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static class XenkoEffectBaseKeys
     {
-        public static readonly ParameterKey<ShaderSource> ExtensionPostVertexStageShader = ParameterKeys.New<ShaderSource>();
+        public static readonly PermutationParameterKey<ShaderSource> ExtensionPostVertexStageShader = ParameterKeys.NewPermutation<ShaderSource>();
     }
 }

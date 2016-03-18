@@ -10,8 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     internal static class GaussianBlurKeys
     {
-        public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> Count = ParameterKeys.NewPermutation<int>();
 
-        public static readonly ParameterKey<bool> VerticalBlur = ParameterKeys.New<bool>();
+        public static readonly PermutationParameterKey<bool> VerticalBlur = ParameterKeys.NewPermutation<bool>();
     }
 }

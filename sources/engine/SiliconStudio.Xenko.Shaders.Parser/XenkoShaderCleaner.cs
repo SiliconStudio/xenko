@@ -32,6 +32,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         [Visit]
         public void Visit(Variable variable)
         {
+            variable.RemoveTag(XenkoTags.ConstantBuffer);
             variable.Qualifiers.Values.Remove(XenkoStorageQualifier.Stream);
             variable.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
             variable.Qualifiers.Values.Remove(XenkoStorageQualifier.PatchStream);

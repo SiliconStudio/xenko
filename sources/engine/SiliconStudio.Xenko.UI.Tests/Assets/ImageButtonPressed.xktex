@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/ImageButtonPressed.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 9aa769fa-67f8-4d93-8433-87429c11d796
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

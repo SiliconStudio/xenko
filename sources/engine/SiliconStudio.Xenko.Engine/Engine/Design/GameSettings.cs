@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Data;
 
 namespace SiliconStudio.Xenko.Engine.Design
 {
@@ -28,13 +28,10 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         public string DefaultSceneUrl { get; set; }
 
-        public int DefaultBackBufferWidth { get; set; }
-
-        public int DefaultBackBufferHeight { get; set; }
-
-        public GraphicsProfile DefaultGraphicsProfileUsed { get; set; }
-
-        public ColorSpace ColorSpace { get; set; }
+        /// <summary>
+        /// Gets or sets the compilation mode used.
+        /// </summary>
+        public CompilationMode CompilationMode { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether effect compile should be allowed, and if yes, should it be done locally (if possible) or remotely?
@@ -45,5 +42,10 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// Gets or sets a value indicating whether effect compile (local or remote) should be recorded and sent to effect compile server for GameStudio notification.
         /// </summary>
         public bool RecordUsedEffects { get; set; }
+
+        /// <summary>
+        /// Gets or sets configuration for the actual running platform as compiled during build
+        /// </summary>
+        public PlatformConfigurations Configurations { get; set; }
     }
 }

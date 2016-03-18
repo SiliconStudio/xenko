@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
@@ -7,9 +7,9 @@ namespace SiliconStudio.Xenko.Physics
 {
     class XenkoMotionState : BulletSharp.SharpMotionState
     {
-        private readonly RigidBody rigidBody;
+        private readonly RigidbodyComponent rigidBody;
 
-        public XenkoMotionState(RigidBody rb)
+        public XenkoMotionState(RigidbodyComponent rb)
         {
             rigidBody = rb;
         }
@@ -28,10 +28,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public override void SetWorldTransform(Matrix transform)
         {
-            if (rigidBody.SetWorldTransformCallback != null)
-            {
-                rigidBody.SetWorldTransformCallback(transform);
-            }
+            rigidBody.SetWorldTransformCallback?.Invoke(transform);
         }
     }
 }

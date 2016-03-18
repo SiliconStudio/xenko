@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             // Create and mount database file system
             var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
 
             sourceManager = new ShaderSourceManager();
             sourceManager.LookupDirectoryList.Add(@"shaders");

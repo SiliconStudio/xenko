@@ -25,7 +25,26 @@ namespace SiliconStudio.Xenko.Engine.Tests
             get {  return Camera.Get<CameraComponent>(); }
             set
             {
-                Camera.Add(value);
+                bool alreadyAdded = false;
+                for (int i = 0; i < Camera.Components.Count; i++)
+                {
+                    var component = Camera.Components[i];
+                    if (component == value)
+                    {
+                        alreadyAdded = true;
+                        break;
+                    }
+                    if (component is CameraComponent)
+                    {
+                        alreadyAdded = true;
+                        Camera.Components[i] = value;
+                        break;
+                    }
+                }
+                if (!alreadyAdded)
+                {
+                    Camera.Add(value);
+                }
                 graphicsCompositor.Cameras[0] = value;
             }
         }
@@ -34,9 +53,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private SceneGraphicsCompositorLayers graphicsCompositor;
 
-        public EngineTestBase(string effectName = "XenkoForwardShadingEffect")
+        public EngineTestBase()
         {
-            SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = effectName };
+            SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer" };
         }
 
         protected override async Task LoadContent()
@@ -67,12 +86,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }
 
-        protected virtual void PreCameraRendererDraw(RenderContext context, RenderFrame frame)
+        protected virtual void PreCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
         {
             
         }
 
-        protected virtual void PostCameraRendererDraw(RenderContext context, RenderFrame frame)
+        protected virtual void PostCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
         {
         }
     }

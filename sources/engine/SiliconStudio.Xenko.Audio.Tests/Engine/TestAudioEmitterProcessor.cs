@@ -57,9 +57,9 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         {
             sounds = new List<SoundEffect>
                 {
-                    game.Asset.Load<SoundEffect>("EffectBip"),
-                    game.Asset.Load<SoundEffect>("EffectToneA"),
-                    game.Asset.Load<SoundEffect>("EffectToneA"),
+                    game.Content.Load<SoundEffect>("EffectBip"),
+                    game.Content.Load<SoundEffect>("EffectToneA"),
+                    game.Content.Load<SoundEffect>("EffectToneA"),
                 };
 
             emitComps[0].AttachSoundEffect(sounds[0]);
@@ -220,7 +220,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
 
             emitComps.Add(new AudioEmitterComponent());
-            emitComps[2].AttachSoundEffect(game.Asset.Load<SoundEffect>("EffectToneA"));
+            emitComps[2].AttachSoundEffect(game.Content.Load<SoundEffect>("EffectToneA"));
             var extraEntity = new Entity();
             extraEntity.Add(emitComps[2]);
 
@@ -265,9 +265,9 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             //CheckSoundEffectExistance(matchingEntities);
 
-            //var sound1 = game.Asset.Load<SoundEffect>("EffectToneA");
-            //var sound2 = game.Asset.Load<SoundEffect>("EffectFishLamp");
-            //var sound3 = game.Asset.Load<SoundEffect>("EffectBip");
+            //var sound1 = game.Content.Load<SoundEffect>("EffectToneA");
+            //var sound2 = game.Content.Load<SoundEffect>("EffectFishLamp");
+            //var sound3 = game.Content.Load<SoundEffect>("EffectBip");
 
             //// attach new Soundeffects and check the SoundEffectInstance creation.
             //emitComps[0].AttachSoundEffect(sound1);

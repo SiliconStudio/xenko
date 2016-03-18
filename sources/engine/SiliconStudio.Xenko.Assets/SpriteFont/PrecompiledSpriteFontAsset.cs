@@ -121,6 +121,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <userdoc>The glyph information specifying the position of the characters in the data image.</userdoc>
         [Display("Glyphs", "Font Characters")]
         [DataMember(80)]
+        [NotNullItems]
         public List<Glyph> Glyphs = new List<Glyph>();
 
         /// <summary>

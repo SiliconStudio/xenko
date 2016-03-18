@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -14,9 +15,9 @@ namespace SiliconStudio.Quantum
     public interface INodeBuilder
     {
         /// <summary>
-        /// Gets the instance of <see cref="ModelContainer"/> associated to this node builder.
+        /// Gets the instance of <see cref="NodeContainer"/> associated to this node builder.
         /// </summary>
-        ModelContainer ModelContainer { get; }
+        NodeContainer NodeContainer { get; }
 
         /// <summary>
         /// Gets the collection of structure types that represents custom primitive types. Primitive structures won't have node created for each of their members.
@@ -29,6 +30,11 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <value>The type descriptor factory.</value>
         ITypeDescriptorFactory TypeDescriptorFactory { get; }
+
+        /// <summary>
+        /// Gets or sets the factory that will create instances of <see cref="IContent"/> for nodes.
+        /// </summary>
+        IContentFactory ContentFactory { get; set; }
 
         /// <summary>
         /// Gets the collection of available commands to attach to nodes.
@@ -48,12 +54,11 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Build the node hierarchy corresponding to the given object.
         /// </summary>
-        /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <param name="obj">The object. Can be <c>null</c>.</param>
-        /// <param name="type">The type of the object</param>
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
+        /// <param name="nodeFactory">The factory that creates node for each content.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
-        IModelNode Build(IModelNode referencer, object obj, Type type, Guid rootGuid);
+        IGraphNode Build(object obj, Guid rootGuid, NodeFactoryDelegate nodeFactory);
 
         /// <summary>
         /// Creates a reference for the specified type/value node.

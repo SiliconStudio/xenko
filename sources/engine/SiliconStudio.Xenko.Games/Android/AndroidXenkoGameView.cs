@@ -2,17 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
-using System.Text.RegularExpressions;
-using Android.App;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.OpenGL;
 using Android.Content;
-using Android.Content.PM;
-using Android.Runtime;
-using Javax.Microedition.Khronos.Egl;
 using OpenTK.Graphics;
-using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
+using OpenTK.Graphics.ES30;
+using SiliconStudio.Xenko.Data;
 using PixelFormat = SiliconStudio.Xenko.Graphics.PixelFormat;
 
 namespace SiliconStudio.Xenko.Games.Android
@@ -42,19 +38,17 @@ namespace SiliconStudio.Xenko.Games.Android
         /// The requested graphics profiles.
         /// </value>
         public GraphicsProfile[] RequestedGraphicsProfile { get; set; }
-        
+
         public override void Pause()
         {
             base.Pause();
 
             var handler = OnPause;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void CreateFrameBuffer()
         {
-            int requestedStencil = 0;
             ColorFormat requestedColorFormat = 32;
 
             switch (RequestedBackBufferFormat)
@@ -87,7 +81,7 @@ namespace SiliconStudio.Xenko.Games.Android
                     continue;
                 }
                 ContextRenderingApi = version;
-                GraphicsMode = new GraphicsMode(requestedColorFormat, 0, requestedStencil);
+                GraphicsMode = new GraphicsMode(requestedColorFormat, 0, 0);
                 base.CreateFrameBuffer();
                 return;
             }
@@ -105,6 +99,8 @@ namespace SiliconStudio.Xenko.Games.Android
                 window.CreateSurface(mode.Config);
 
                 context.MakeCurrent(window);
+
+                PlatformConfigurations.RendererName = GL.GetString(StringName.Renderer);
 
                 int versionMajor, versionMinor;
                 if (!OpenGLUtils.GetCurrentGLVersion(out versionMajor, out versionMinor))

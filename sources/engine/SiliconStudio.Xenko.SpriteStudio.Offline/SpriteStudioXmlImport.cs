@@ -1,4 +1,3 @@
-using System.CodeDom;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;

@@ -73,52 +73,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             var methods = shader.Declarations.OfType<MethodDeclaration>();
             var newVariables = new List<Node>();
 
-            var constantBuffers = new Dictionary<string, ConstantBuffer>();
-
             foreach (var variableGroup in variables)
             {
                 foreach (var variable in variableGroup.Instances())
                 {
-                    var constantBufferName = (string)variable.GetTag(XenkoTags.ConstantBuffer);
-
-                    var type = variable.Type;
-                    if (type is ArrayType)
-                    {
-                        var arrayType = (ArrayType)type;
-                        type = arrayType.Type;
-                    }
-
-                    // Put variable which are not in a constant buffer into one named "Globals".
-                    // static variables should stay out of this buffer
-                    if (constantBufferName == null && !(type.ResolveType() is ObjectType)
-                        && !variable.Qualifiers.Contains(StorageQualifier.Const)
-                        && !variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Static)
-                        && !variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Groupshared))
-                    {
-                        constantBufferName = "Globals";
-                    }
-
-                    if (constantBufferName == null)
-                    {
-                        //declarations.Insert(0, variable); // keep thes kinds of variable at the top of the declaration
-                        declarations.Add(variable);
-                    }
-                    else
-                    {
-                        // Remove initial value (it should be part of key definition)
-                        if (!variable.Qualifiers.Contains(StorageQualifier.Const) && variable.InitialValue != null)
-                            variable.InitialValue = null;
-
-                        ConstantBuffer constantBuffer;
-                        if (!constantBuffers.TryGetValue(constantBufferName, out constantBuffer))
-                        {
-                            constantBuffer = new ConstantBuffer {Name = constantBufferName, Type = SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType.Constant};
-                            constantBuffers.Add(constantBufferName, constantBuffer);
-                            newVariables.Add(constantBuffer);
-                        }
-
-                        constantBuffer.Members.Add(variable);
-                    }
+                    declarations.Add(variable);
                 }
             }
 
@@ -142,8 +101,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             if (parameterKey == null) return;
 
             var resolvedType = variable.Type.ResolveType();
+            var slotCount = 1;
             if (resolvedType is ArrayType)
             {
+                // TODO: Use evaluator?
+                slotCount = (int)((LiteralExpression)((ArrayType)resolvedType).Dimensions[0]).Literal.Value;
                 resolvedType = ((ArrayType)resolvedType).Type;
             }
             if (resolvedType is StateType)
@@ -262,14 +224,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                             parsingResult.Error(XenkoMessageCode.SamplerFieldNotSupported, variable.Span, variable);
                         }
                     }
+
+                    effectReflection.SamplerStates.Add(new EffectSamplerStateBinding(parameterKey.Name, samplerState));
                 }
 
-                effectReflection.SamplerStates.Add(new EffectSamplerStateBinding(parameterKey.Name, samplerState));
-                LinkVariable(effectReflection, variable.Name, parameterKey);
+                LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
             else if (variable.Type is TextureType || variable.Type is GenericType)
             {
-                LinkVariable(effectReflection, variable.Name, parameterKey);
+                LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
             else
             {
@@ -325,7 +288,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             {
                 var parameterKey = this.GetLinkParameterKey(node);
                 if (parameterKey != null)
-                    LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey);
+                    LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey, parameterKey.Count);
             }
 
             node.Childrens(OnProcessor);
@@ -365,6 +328,12 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 if (variable != null)
                 {
                     var variableType = variable.Type;
+
+                    var cbuffer = (ConstantBuffer)variable.GetTag(XenkoTags.ConstantBuffer);
+                    if (cbuffer != null && cbuffer.Type == XenkoConstantBufferType.ResourceGroup)
+                    {
+                        parameterKey.ResourceGroup = cbuffer.Name;
+                    }
 
                     if (variableType.TypeInference.TargetType != null)
                         variableType = variableType.TypeInference.TargetType;
@@ -464,6 +433,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                                 break;
 
                             case "samplerstate":
+                            case "samplercomparisonstate":
                                 parameterKey.Class = EffectParameterClass.Sampler;
                                 parameterKey.Type = EffectParameterType.Sampler;
                                 break;
@@ -571,9 +541,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             }
         }
 
-        private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey)
+        private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey, int slotCount)
         {
-            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, RawName = variableName }, SlotStart = -1 };
+            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1 };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -583,9 +553,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             var constantBuffer = effectReflection.ConstantBuffers.FirstOrDefault(buffer => buffer.Name == cbName);
             if (constantBuffer == null)
             {
-                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName};
+                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName, Type = ConstantBufferType.ConstantBuffer};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
-                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName }, SlotStart = -1 };
+                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, ResourceGroup = cbName }, SlotStart = -1, SlotCount = 1 };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);
                 valueBindings.Add(constantBuffer, new List<EffectParameterValueData>());
             }
@@ -614,6 +584,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         {
             public string Name;
 
+            public string ResourceGroup;
+
             public EffectParameterClass Class;
 
             public EffectParameterType Type;
@@ -622,7 +594,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             public int ColumnCount;
 
-            public int Count = 1;
+            public int Count = 0;
         }
     }
 }

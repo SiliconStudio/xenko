@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
@@ -14,6 +15,14 @@ namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManagerBase
     {
+        [DllImport(Core.NativeLibrary.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool IsXInputDevice(ref Guid guid);
+
+        static InputManagerBase()
+        {
+            Core.NativeLibrary.PreloadLibrary(Core.NativeLibrary.LibraryName);
+        }
+
         /// <summary>
         /// Internal GamePad factory handling DirectInput gamepads.
         /// </summary>
@@ -28,7 +37,9 @@ namespace SiliconStudio.Xenko.Input
 
             public override IEnumerable<GamePadKey> GetConnectedPads()
             {
-                return directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AllDevices).Select(deviceInstance => new GamePadKey(deviceInstance.InstanceGuid, this));
+                return directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AllDevices).
+                    Where(x => !IsXInputDevice(ref x.ProductGuid)).
+                    Select(deviceInstance => new GamePadKey(deviceInstance.InstanceGuid, this));
             }
 
             public override GamePad GetGamePad(Guid guid)

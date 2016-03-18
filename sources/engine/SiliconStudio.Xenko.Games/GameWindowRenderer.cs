@@ -40,7 +40,6 @@ namespace SiliconStudio.Xenko.Games
         private PixelFormat preferredDepthStencilFormat;
         private bool isBackBufferToResize;
         private GraphicsPresenter savedPresenter;
-        private Viewport savedViewport;
         private bool beginDrawOk;
         private bool windowUserResized;
 
@@ -193,7 +192,6 @@ namespace SiliconStudio.Xenko.Games
             if (GraphicsDevice != null && Window.Visible)
             {
                 savedPresenter = GraphicsDevice.Presenter;
-                savedViewport = GraphicsDevice.Viewport;
 
                 CreateOrUpdatePresenter();
 

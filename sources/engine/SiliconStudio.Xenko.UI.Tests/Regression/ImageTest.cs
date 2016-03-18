@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            imageElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
+            imageElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv"))};
             UIComponent.RootElement = imageElement;
         }
 

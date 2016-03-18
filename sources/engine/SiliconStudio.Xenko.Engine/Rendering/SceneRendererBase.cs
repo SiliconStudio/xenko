@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Rendering
         protected SceneRendererBase()
         {
             Output = new CurrentRenderFrameProvider();
-            Parameters = new ParameterCollection();
             ResetGraphicsStates = true;
         }
 
@@ -41,12 +40,12 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(true)]
         public bool ResetGraphicsStates { get; set; }
 
-        /// <summary>
-        /// Gets the parameters used to in place of the default <see cref="RenderContext.Parameters"/>.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
+        /// <param name="context"></param>
+        /// <inheritdoc/>
+        public virtual void Collect(RenderContext context)
+        {
+            EnsureContext(context);
+        }
 
         /// <summary>
         /// Gets the current output <see cref="RenderFrame"/> output.
@@ -63,9 +62,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
-        public void ActivateOutput(RenderContext context, bool disableDepth = false)
+        public void ActivateOutput(RenderDrawContext context, bool disableDepth = false)
         {
-            var output = GetOutput(context);
+            var output = GetOutput(context.RenderContext);
             if (output != null)
             {
                 ActivateOutputCore(context, output, disableDepth);
@@ -78,20 +77,21 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="context">The context.</param>
         /// <param name="output">The output.</param>
         /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
-        protected virtual void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
+        protected virtual void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
         {
             // Setup the render target
-            context.GraphicsDevice.SetDepthAndRenderTargets(disableDepth ? null : output.DepthStencil, output.RenderTargets);
+            context.CommandList.SetRenderTargetsAndViewport(disableDepth ? null : output.DepthStencil, output.RenderTargets);
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
-            var output = GetOutput(context);
+            var output = GetOutput(context.RenderContext);
             if (output != null)
             {
                 try
                 {
-                    context.PushParameters(Parameters);
+                    // TODO GRAPHICS REFACTOR
+                    //context.PushParameters(Parameters);
 
                     ActivateOutput(context);
 
@@ -99,18 +99,20 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 finally
                 {
-                    context.PopParameters();
+                    // TODO GRAPHICS REFACTOR
+                    //context.PopParameters();
 
                     if (ResetGraphicsStates)
                     {
                         // Make sure that states are clean after this rendering
-                        context.GraphicsDevice.ResetStates();
+                        // TODO GRAPHICS REFACTOR
+                        //context.GraphicsDevice.ResetStates();
                     }
                 }
             }
         }
 
-        protected abstract void DrawCore(RenderContext context, RenderFrame output);
+        protected abstract void DrawCore(RenderDrawContext context, RenderFrame output);
 
         protected override void Destroy()
         {

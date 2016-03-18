@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
@@ -27,10 +27,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The swing span1.
         /// </value>
-        public float SwingSpan1
-        {
-            get { return InternalConeTwistConstraint.SwingSpan1; }
-        }
+        public float SwingSpan1 => InternalConeTwistConstraint.SwingSpan1;
 
         /// <summary>
         ///     Gets the swing span2.
@@ -38,10 +35,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The swing span2.
         /// </value>
-        public float SwingSpan2
-        {
-            get { return InternalConeTwistConstraint.SwingSpan2; }
-        }
+        public float SwingSpan2 => InternalConeTwistConstraint.SwingSpan2;
 
         /// <summary>
         ///     Gets the twist angle.
@@ -49,10 +43,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The twist angle.
         /// </value>
-        public float TwistAngle
-        {
-            get { return InternalConeTwistConstraint.TwistAngle; }
-        }
+        public float TwistAngle => InternalConeTwistConstraint.TwistAngle;
 
         /// <summary>
         ///     Gets the twist limit sign.
@@ -60,10 +51,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The twist limit sign.
         /// </value>
-        public float TwistLimitSign
-        {
-            get { return InternalConeTwistConstraint.TwistLimitSign; }
-        }
+        public float TwistLimitSign => InternalConeTwistConstraint.TwistLimitSign;
 
         /// <summary>
         ///     Gets the twist span.
@@ -71,10 +59,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The twist span.
         /// </value>
-        public float TwistSpan
-        {
-            get { return InternalConeTwistConstraint.TwistSpan; }
-        }
+        public float TwistSpan => InternalConeTwistConstraint.TwistSpan;
 
         /// <summary>
         ///     Gets a value indicating whether this instance is past swing limit.
@@ -82,10 +67,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     <c>true</c> if this instance is past swing limit; otherwise, <c>false</c>.
         /// </value>
-        public bool IsPastSwingLimit
-        {
-            get { return InternalConeTwistConstraint.IsPastSwingLimit; }
-        }
+        public bool IsPastSwingLimit => InternalConeTwistConstraint.IsPastSwingLimit;
 
         /// <summary>
         ///     Gets the solve swing limit.
@@ -93,10 +75,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The solve swing limit.
         /// </value>
-        public int SolveSwingLimit
-        {
-            get { return InternalConeTwistConstraint.SolveSwingLimit; }
-        }
+        public int SolveSwingLimit => InternalConeTwistConstraint.SolveSwingLimit;
 
         /// <summary>
         ///     Gets the solve twist limit.
@@ -104,10 +83,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         ///     The solve twist limit.
         /// </value>
-        public int SolveTwistLimit
-        {
-            get { return InternalConeTwistConstraint.SolveTwistLimit; }
-        }
+        public int SolveTwistLimit => InternalConeTwistConstraint.SolveTwistLimit;
 
         /// <summary>
         ///     Sets the frames.

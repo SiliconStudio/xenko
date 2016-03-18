@@ -1,103 +1,128 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Parameters used for compilation.
     /// </summary>
-    [DataContract]
-    public sealed class CompilerParameters : ParameterCollection
+    [DataSerializer(typeof(DictionaryAllSerializer<CompilerParameters, ParameterKey, object>))]
+    public sealed class CompilerParameters : ParameterCollection, IDictionary<ParameterKey, object>
     {
-        /// <summary>
-        /// The compiler platform type.
-        /// </summary>
-        public static readonly ParameterKey<GraphicsPlatform> GraphicsPlatformKey = ParameterKeys.New<GraphicsPlatform>();
-
-        /// <summary>
-        /// The graphics profile target type.
-        /// </summary>
-        public static readonly ParameterKey<GraphicsProfile> GraphicsProfileKey = ParameterKeys.New<GraphicsProfile>();
-
-        /// <summary>
-        /// The debug flag.
-        /// </summary>
-        public static readonly ParameterKey<bool> DebugKey = ParameterKeys.New(true);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.
         /// </summary>
         public CompilerParameters()
         {
-            Platform = GraphicsPlatform.Direct3D11;
-            Profile = GraphicsProfile.Level_11_0;
         }
 
-        /// <summary>
-        /// Gets or sets the priority (in case this compile is scheduled in a custom async pool)
-        /// </summary>
-        /// <value>
-        /// The priority.
-        /// </value>
-        [DataMemberIgnore]
-        public int TaskPriority { get; set; }
+        public CompilerParameters(CompilerParameters compilerParameters) : base(compilerParameters)
+        {
+            EffectParameters = compilerParameters.EffectParameters;
+        }
 
-        /// <summary>
-        /// The shader target type
-        /// </summary>
         [DataMemberIgnore]
-        public GraphicsPlatform Platform
+        public EffectCompilerParameters EffectParameters = EffectCompilerParameters.Default;
+
+        #region IDictionary<ParameterKey, object> implementation
+        public void Add(ParameterKey key, object value)
+        {
+            SetObject(key, value);
+        }
+
+        public bool Contains(KeyValuePair<ParameterKey, object> item)
+        {
+            var accessor = GetObjectParameterHelper(item.Key);
+            if (accessor.Offset == -1)
+                return false;
+
+            return ObjectValues[accessor.Offset].Equals(item.Value);
+        }
+
+        public void CopyTo(KeyValuePair<ParameterKey, object>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Count
         {
             get
             {
-                return Get(GraphicsPlatformKey);
-            }
+                var count = 0;
 
-            set
-            {
-                Set(GraphicsPlatformKey, value);
+                foreach (var parameterKeyInfo in ParameterKeyInfos)
+                {
+                    if (parameterKeyInfo.Key.Type == ParameterKeyType.Permutation)
+                        count++;
+                }
+
+                return count;
             }
         }
 
-        /// <summary>
-        /// The shader target type
-        /// </summary>
-        [DataMemberIgnore]
-        public GraphicsProfile Profile
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            get
-            {
-                return Get(GraphicsProfileKey);
-            }
-
-            set
-            {
-                Set(GraphicsProfileKey, value);
-            }
+            return GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether shader must be compiled with debug info.
-        /// </summary>
-        /// <value><c>true</c> if shader must be compiled with debug info; otherwise, <c>false</c>.</value>
-        [DataMemberIgnore]
-        public bool Debug
+        public IEnumerator<KeyValuePair<ParameterKey, object>> GetEnumerator()
         {
-            get
+            foreach (var parameterKeyInfo in ParameterKeyInfos)
             {
-                return Get(DebugKey);
-            }
+                if (parameterKeyInfo.Key.Type != ParameterKeyType.Permutation)
+                    continue;
 
-            set
-            {
-                Set(DebugKey, value);
+                yield return new KeyValuePair<ParameterKey, object>(parameterKeyInfo.Key, ObjectValues[parameterKeyInfo.BindingSlot]);
             }
         }
+
+        public bool IsReadOnly => false;
+
+        public object this[ParameterKey key]
+        {
+            get { return GetObject(key); }
+            set { SetObject(key, value); }
+        }
+
+        public ICollection<ParameterKey> Keys { get { throw new NotImplementedException(); } }
+        public ICollection<object> Values { get { throw new NotImplementedException(); } }
+
+        public bool TryGetValue(ParameterKey key, out object value)
+        {
+            foreach (var parameterKeyInfo in ParameterKeyInfos)
+            {
+                if (parameterKeyInfo.Key.Type != ParameterKeyType.Permutation)
+                    continue;
+
+                if (parameterKeyInfo.Key == key)
+                {
+                    value = ObjectValues[parameterKeyInfo.BindingSlot];
+                    return true;
+                }
+            }
+
+            value = null;
+            return false;
+        }
+
+        public void Add(KeyValuePair<ParameterKey, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(KeyValuePair<ParameterKey, object> item)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

@@ -12,21 +12,29 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     /// Describes a range of consecutive characters that should be included in the font.
     /// </summary>
     [DataContract("CharacterRegion")]
-    public struct CharacterRegion
+    public class CharacterRegion
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterRegion"/> structure.
+        /// Initializes a new instance of the <see cref="CharacterRegion"/> class.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <exception cref="System.ArgumentException"></exception>
         public CharacterRegion(char start, char end)
+            : this()
         {
             if (start > end)
                 throw new ArgumentException();
 
             Start = start;
             End = end;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterRegion"/> class.
+        /// </summary>
+        public CharacterRegion()
+        {
         }
 
         /// <summary>
@@ -48,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         public char End;
 
         // Flattens a list of character regions into a combined list of individual characters.
-        public static IEnumerable<Char> Flatten(List<CharacterRegion> regions)
+        public static IEnumerable<char> Flatten(List<CharacterRegion> regions)
         {
             if (regions.Any())
             {
@@ -64,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         public static CharacterRegion Default = new CharacterRegion(' ', '~');
 
         // Enumerates all characters within the region.
-        private IEnumerable<Char> GetCharacters()
+        private IEnumerable<char> GetCharacters()
         {
             for (char c = Start; c <= End; c++)
             {

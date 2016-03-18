@@ -11,19 +11,9 @@ namespace SiliconStudio.Core
     /// Base class for a <see cref="IDisposable"/> interface.
     /// </summary>
     [DataContract]
-    public abstract class DisposeBase : IDisposable, ICollectorHolder, IReferencable
+    public abstract class DisposeBase : IDisposable, IReferencable
     {
         private int counter = 1;
-        private ObjectCollector collector;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ComponentBase"/> class.
-        /// </summary>
-        protected DisposeBase()
-        {
-            collector = new ObjectCollector();
-            Tags = new PropertyContainer(this);
-        }
 
         public void Dispose()
         {
@@ -43,26 +33,10 @@ namespace SiliconStudio.Core
         /// </summary>
         protected virtual void Destroy()
         {
-            collector.Dispose();
         }
-
-        ObjectCollector ICollectorHolder.Collector
-        {
-            get
-            {
-                collector.EnsureValid();
-                return collector;
-            }
-        }
-
-        /// <summary>
-        /// Gets the attached properties to this component.
-        /// </summary>
-        [DataMemberIgnore] // Do not try to recreate object (preserve Tags.Owner)
-        public PropertyContainer Tags;
 
         /// <inheritdoc/>
-        int IReferencable.ReferenceCount { get { return counter; } }
+        int IReferencable.ReferenceCount => counter;
 
         /// <inheritdoc/>
         int IReferencable.AddReference()

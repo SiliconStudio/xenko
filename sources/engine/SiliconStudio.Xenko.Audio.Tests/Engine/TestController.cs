@@ -64,8 +64,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         {
             sounds = new List<SoundEffect>
                 {
-                    game.Asset.Load<SoundEffect>("EffectBip"),
-                    game.Asset.Load<SoundEffect>("EffectToneA"),
+                    game.Content.Load<SoundEffect>("EffectBip"),
+                    game.Content.Load<SoundEffect>("EffectToneA"),
                 };
 
             emitComps[0].AttachSoundEffect(sounds[0]);
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
         private void AddRootEntityToEntitySystem(Game game)
         {
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(rootEntity);
         }
 
@@ -301,7 +301,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 160)
             {
                 // add a longuer sound
-                sounds.Add(game.Asset.Load<SoundEffect>("EffectFishLamp"));
+                sounds.Add(game.Content.Load<SoundEffect>("EffectFishLamp"));
                 emitComps[0].AttachSoundEffect(sounds[2]);
                 soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[2]));
                 soundControllers[2].Play();
@@ -325,7 +325,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 500)
             {
                 // check that the sound is stopped when removing the sound Entity from the system.
-                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
                 //game.Entities.Remove(rootEntity);
                 Assert.AreEqual(SoundPlayState.Stopped, soundControllers[2].PlayState, "The sound has not been stopped when the emitter's entities have been removed.");
             }
@@ -352,7 +352,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
 
             // add a longuer sound
-            sounds.Add(game.Asset.Load<SoundEffect>("EffectFishLamp"));
+            sounds.Add(game.Content.Load<SoundEffect>("EffectFishLamp"));
             emitComps[0].AttachSoundEffect(sounds[2]);
             soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[2]));
         }
@@ -406,7 +406,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
 
             // add a longuer sound
-            sounds.Add(game.Asset.Load<SoundEffect>("EffectFishLamp"));
+            sounds.Add(game.Content.Load<SoundEffect>("EffectFishLamp"));
             emitComps[0].AttachSoundEffect(sounds[2]);
             soundControllers.Add(emitComps[0].GetSoundEffectController(sounds[2]));
         }
@@ -462,7 +462,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             var extraList = new AudioListenerComponent();
             var extraListEntity = new Entity();
             extraListEntity.Add(extraList);
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            Internal.Refactor.ThrowNotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //game.Entities.Add(extraListEntity);
 
             // check that PlayState always returns 'SoundPlayState.Stopped' when there are no listeners

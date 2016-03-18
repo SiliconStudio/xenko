@@ -21,15 +21,12 @@ namespace SiliconStudio.Xenko.Audio
     /// When a new emitter or a new listener is added to the system, its creates the required SoundInstances and associate them with the new emitter/listener tuples.
     /// </para> 
     /// </remarks>
-    public class AudioEmitterProcessor: EntityProcessor<AudioEmitterProcessor.AssociatedData>
+    public class AudioEmitterProcessor: EntityProcessor<AudioEmitterComponent, AudioEmitterProcessor.AssociatedData>
     {
         /// <summary>
         /// Reference to the audioSystem.
         /// </summary>
         private AudioSystem audioSystem;
-
-        // exposes field internally to allow debug (use directly matchingEntities if not for debug purpose)
-        internal Dictionary<Entity, AssociatedData> MatchingEntitiesForDebug { get { return matchingEntities; } } 
 
         /// <summary>
         /// Data associated to each <see cref="Entity"/> instances of the system having an <see cref="AudioEmitterComponent"/> and an <see cref="TransformComponent"/>.
@@ -61,7 +58,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Create a new instance of the processor.
         /// </summary>
         public AudioEmitterProcessor()
-            : base(AudioEmitterComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
         }
 
@@ -74,21 +71,21 @@ namespace SiliconStudio.Xenko.Audio
             audioSystem.Listeners.CollectionChanged += OnListenerCollectionChanged;
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateComponentData(Entity entity, AudioEmitterComponent component)
         {
             return new AssociatedData
             {
-                AudioEmitterComponent = entity.Get(AudioEmitterComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
+                AudioEmitterComponent = component,
+                TransformComponent = entity.Transform,
                 ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance>()
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AudioEmitterComponent component, AssociatedData associatedData)
         {
             return
-                entity.Get(AudioEmitterComponent.Key) == associatedData.AudioEmitterComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                component == associatedData.AudioEmitterComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         protected internal override void OnSystemRemove()
@@ -96,15 +93,15 @@ namespace SiliconStudio.Xenko.Audio
             base.OnSystemRemove();
 
             // Destroy all the SoundEffectInstance created by the processor before closing.
-            foreach (var soundInstance in matchingEntities.Values.SelectMany(x => x.AudioEmitterComponent.SoundEffectToController.Values))
+            foreach (var soundInstance in ComponentDatas.Values.SelectMany(x => x.AudioEmitterComponent.SoundEffectToController.Values))
                 soundInstance.DestroyAllSoundInstances();
 
             audioSystem.Listeners.CollectionChanged -= OnListenerCollectionChanged;
         }
 
-        protected override void OnEntityAdding(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentAdding(Entity entity, AudioEmitterComponent component, AssociatedData data)
         {
-            base.OnEntityAdding(entity, data);
+            base.OnEntityComponentAdding(entity, component, data);
 
             // initialize the AudioEmitter first position
             data.TransformComponent.UpdateWorldMatrix(); // ensure the worldMatrix is correct
@@ -124,7 +121,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.Draw(context);
 
-            foreach (var associatedData in matchingEntities.Values)
+            foreach (var associatedData in ComponentDatas.Values)
             {
                 var emitter = associatedData.AudioEmitter;
                 var worldMatrix = associatedData.TransformComponent.WorldMatrix;
@@ -182,9 +179,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        protected override void OnEntityRemoved(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentRemoved(Entity entity, AudioEmitterComponent component, AssociatedData data)
         {
-            base.OnEntityRemoved(entity, data);
+            base.OnEntityComponentRemoved(entity, component, data);
 
             // dispose and delete all SoundEffectInstances associated to the EmitterComponent.
             foreach (var soundController in data.AudioEmitterComponent.SoundEffectToController.Values)
@@ -201,7 +198,7 @@ namespace SiliconStudio.Xenko.Audio
             // A listener have been Added or Removed. 
             // We need to create/destroy all SoundEffectInstances associated to that listener for each AudioEmitterComponent.
 
-            foreach (var associatedData in matchingEntities.Values)
+            foreach (var associatedData in ComponentDatas.Values)
             {
                 var listenerControllerToSoundInstance = associatedData.ListenerControllerToSoundInstance;
                 var soundControllers = associatedData.AudioEmitterComponent.SoundEffectToController.Values;
@@ -225,9 +222,10 @@ namespace SiliconStudio.Xenko.Audio
 
         private void OnSoundControllerListChanged(object o, AudioEmitterComponent.ControllerCollectionChangedEventArgs args)
         {
-            AssociatedData associatedData;
-            if (!matchingEntities.TryGetValue(args.Entity, out associatedData))
-                return;
+            AssociatedData associatedData = null;
+            Internal.Refactor.ThrowNotImplementedException(null);
+            //if (!ComponentDatas.TryGetValue(args.Entity, out associatedData))
+            //    return;
 
             // A new SoundEffect have been associated to the AudioEmitterComponenent or an old SoundEffect have been deleted.
             // We need to create/destroy the corresponding SoundEffectInstances.

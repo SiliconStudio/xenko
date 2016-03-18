@@ -7,10 +7,34 @@ using System.Runtime.CompilerServices;
 namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
-    /// Various helper functions for float, Vector3 and Quaternion interpolations.
+    /// Various helper functions for float, Vector2, Vector3, Vector4 and Quaternion interpolations.
     /// </summary>
     public static class Interpolator
     {
+        public static class Vector2
+        {
+            public static void Cubic(ref Core.Mathematics.Vector2 value1, ref Core.Mathematics.Vector2 value2, ref Core.Mathematics.Vector2 value3, ref Core.Mathematics.Vector2 value4, float t, out Core.Mathematics.Vector2 result)
+            {
+                // http://en.wikipedia.org/wiki/Cubic_Hermite_spline#Interpolation_on_the_unit_interval_without_exact_derivatives
+                float t2 = t * t;
+                float t3 = t2 * t;
+
+                float factor0 = -t3 + 2.0f * t2 - t;
+                float factor1 = 3.0f * t3 - 5.0f * t2 + 2.0f;
+                float factor2 = -3.0f * t3 + 4.0f * t2 + t;
+                float factor3 = t3 - t2;
+
+                // TODO: Use Vector3(ref,out) functions
+                result.X = 0.5f * (value1.X * factor0 + value2.X * factor1 + value3.X * factor2 + value4.X * factor3);
+                result.Y = 0.5f * (value1.Y * factor0 + value2.Y * factor1 + value3.Y * factor2 + value4.Y * factor3);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void Linear(ref Core.Mathematics.Vector2 value1, ref Core.Mathematics.Vector2 value2, float t, out Core.Mathematics.Vector2 result)
+            {
+                Core.Mathematics.Vector2.Lerp(ref value1, ref value2, t, out result);
+            }
+        }
         public static class Vector3
         {
             public static void Cubic(ref Core.Mathematics.Vector3 value1, ref Core.Mathematics.Vector3 value2, ref Core.Mathematics.Vector3 value3, ref Core.Mathematics.Vector3 value4, float t, out Core.Mathematics.Vector3 result)

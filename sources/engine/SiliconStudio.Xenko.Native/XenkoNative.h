@@ -8,6 +8,10 @@
 #include <NativeMemory.h>
 #include <NativeTime.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #pragma pack(push, 4)
 typedef struct Vector2
 {
@@ -63,3 +67,9 @@ typedef struct SpriteDrawInfo
 	int Orientation;
 } SpriteDrawInfo;
 #pragma pack(pop)
+
+extern void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset);
+
+#ifdef __cplusplus
+}
+#endif

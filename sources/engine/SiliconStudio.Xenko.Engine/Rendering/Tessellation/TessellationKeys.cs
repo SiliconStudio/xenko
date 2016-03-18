@@ -11,12 +11,12 @@ namespace SiliconStudio.Xenko.Rendering.Tessellation
         /// <summary>
         /// Desired maximum triangle size in screen space during tessellation.
         /// </summary>
-        public static readonly ParameterKey<float> DesiredTriangleSize = ParameterKeys.New(12.0f);
+        public static readonly ValueParameterKey<float> DesiredTriangleSize = ParameterKeys.NewValue(12.0f);
 
         /// <summary>
         /// The intensity of the smoothing for PN-based tessellation.
         /// </summary>
-        public static readonly ParameterKey<Texture> SmoothingMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> SmoothingValue = ParameterKeys.New<float>(); 
+        public static readonly ObjectParameterKey<Texture> SmoothingMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> SmoothingValue = ParameterKeys.NewValue<float>(); 
     }
 }

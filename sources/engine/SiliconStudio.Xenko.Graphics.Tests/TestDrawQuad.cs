@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (firstSave)
             {
                 SaveTexture(offlineTarget, "offlineTarget.png");
-                SaveTexture(GraphicsDevice.BackBuffer, "backBuffer.png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "backBuffer.png");
                 firstSave = false;
             }
         }
@@ -52,12 +52,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private void DrawQuad()
         {
             // Clears the screen 
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.LimeGreen);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LimeGreen);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
 
             // Render to the backbuffer
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            GraphicsDevice.DrawTexture(UVTexture);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.DrawTexture(UVTexture);
 
             // -> Render to back by using intermediate texture
             //GraphicsDevice.SetDepthAndRenderTarget(offlineTarget);

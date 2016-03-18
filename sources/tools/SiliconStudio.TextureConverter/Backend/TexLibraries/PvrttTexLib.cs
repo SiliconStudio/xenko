@@ -290,7 +290,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         private void Load(TexImage image, LoadingRequest request)
         {
-            Log.Info("Loading " + request.FilePath + " ...");
+            Log.Verbose("Loading " + request.FilePath + " ...");
 
             var libraryData = new PvrTextureLibraryData();
             image.LibraryData[this] = libraryData;
@@ -337,7 +337,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             int width = request.ComputeWidth(image);
             int height = request.ComputeHeight(image);
 
-            Log.Info("Rescaling to " + width + "x" + height + " ...");
+            Log.Verbose("Rescaling to " + width + "x" + height + " ...");
 
             EResizeMode filter;
             switch(request.Filter)
@@ -372,7 +372,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="export">The export request.</param>
         private void Export(TexImage image, PvrTextureLibraryData libraryData, ExportRequest request)
         {
-            Log.Info("Exporting to " + request.FilePath + " ...");
+            Log.Verbose("Exporting to " + request.FilePath + " ...");
 
             if (request.MinimumMipMapSize > 1) // if a mimimun mipmap size was requested
             {
@@ -432,7 +432,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Unsuported format for channel switching.</exception>
         private void SwitchChannels(TexImage image, PvrTextureLibraryData libraryData, SwitchingBRChannelsRequest request)
         {
-            Log.Info("Switching channels B and R ...");
+            Log.Verbose("Switching channels B and R ...");
 
             switch (image.Format)
             {
@@ -476,7 +476,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Compression failed</exception>
         private void Compress(TexImage image, PvrTextureLibraryData libraryData, CompressingRequest compress)
         {
-            Log.Info("Compressing to " + compress.Format + " ...");
+            Log.Verbose("Compressing to " + compress.Format + " ...");
 
             ulong format = RetrieveNativeFormat(compress.Format);
             EPVRTColourSpace colorSpace = RetrieveNativeColorSpace(compress.Format);
@@ -572,7 +572,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TextureToolsException">Decompression failed!</exception>
         public void Decompress(TexImage image, PvrTextureLibraryData libraryData, DecompressingRequest request)
         {
-            Log.Info("Decompressing texture ...");
+            Log.Verbose("Decompressing texture ...");
 
             if (!Utilities.Transcode(libraryData.Texture, PixelType.Standard8PixelType, libraryData.Header.GetChannelType(), libraryData.Header.GetColourSpace(), ECompressorQuality.ePVRTCNormal, true))
             {
@@ -599,7 +599,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         private void GenerateMipMaps(TexImage image, PvrTextureLibraryData libraryData, MipMapsGenerationRequest request)
         {
-            Log.Info("Generating Mipmaps ... ");
+            Log.Verbose("Generating Mipmaps ... ");
 
             EResizeMode filter;
             switch (request.Filter)
@@ -633,7 +633,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Flipping failed.</exception>
         private void Flip(TexImage image, PvrTextureLibraryData libraryData, FlippingRequest request)
         {
-            Log.Info("Flipping texture : " + request.Flip + " ... ");
+            Log.Verbose("Flipping texture : " + request.Flip + " ... ");
 
             switch(request.Flip)
             {
@@ -667,7 +667,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Failed to generate normal map.</exception>
         public void GenerateNormalMap(TexImage image, PvrTextureLibraryData libraryData, NormalMapGenerationRequest request)
         {
-            Log.Info("Generating Normal Map ... ");
+            Log.Verbose("Generating Normal Map ... ");
 
             // Creating new TexImage with the normal map data.
             request.NormalMap = new TexImage();
@@ -699,11 +699,11 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Failed to premultiply the alpha.</exception>
         public void PreMultiplyAlpha(TexImage image, PvrTextureLibraryData libraryData)
         {
-            Log.Info("Premultiplying alpha ... ");
+            Log.Verbose("Premultiplying alpha ... ");
 
             if (!Utilities.PreMultipliedAlpha(libraryData.Texture))
             {
-                Log.Info("Failed to premultiply the alpha.");
+                Log.Error("Failed to premultiply the alpha.");
                 throw new TextureToolsException("Failed to premultiply the alpha.");
             }
         }

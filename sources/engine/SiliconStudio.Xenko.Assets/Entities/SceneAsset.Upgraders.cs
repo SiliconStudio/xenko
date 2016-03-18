@@ -2,11 +2,20 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CSharp.RuntimeBinder;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -30,9 +39,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
             {
                 dynamic asset = new DynamicYamlMapping(yamlAssetNode);
-                var baseBranch = asset["~Base"];
+                var baseBranch = asset[Asset.BaseProperty];
                 if (baseBranch != null)
-                    asset["~Base"] = DynamicYamlEmpty.Default;
+                    asset[BaseProperty] = DynamicYamlEmpty.Default;
 
                 AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, targetVersion);
             }
@@ -563,6 +572,424 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 asset.SceneSettings = sceneSettings;
                 var assetYaml = (DynamicYamlMapping)asset.Hierarchy;
                 assetYaml.RemoveChild("SceneSettings");
+            }
+        }
+
+        class MigrateToNewComponents : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+
+                var mapEntityComponents = new Dictionary<string, Dictionary<string, Tuple<string, dynamic>>>();
+                var newScriptComponentsPerEntity = new Dictionary<string, List<dynamic>>();
+                var newPhysicsComponentsPerEntity = new Dictionary<string, List<dynamic>>();
+
+                // Collect current order of known components
+                // We will use this order to add components in order to the new component list
+                var mapComponentOrder = new Dictionary<string, int>();
+                var knownComponentTypes = SiliconStudio.Core.Extensions.TypeDescriptorExtensions.GetInheritedInstantiableTypes(typeof(EntityComponent));
+                const int defaultComponentOrder = 2345;
+                foreach (var knownComponent in knownComponentTypes)
+                {
+                    var componentName = knownComponent.GetCustomAttribute<DataContractAttribute>()?.Alias;
+                    if (componentName == null)
+                    {
+                        continue;
+                    }
+                    var order = knownComponent.GetCustomAttribute<ComponentOrderAttribute>(true)?.Order ?? defaultComponentOrder;
+
+                    mapComponentOrder[componentName] = order;
+                }
+                mapComponentOrder["ScriptComponent"] = 1000;
+
+                // --------------------------------------------------------------------------------------------
+                // 1) Collect all components ids and key/types, collect all scripts
+                // --------------------------------------------------------------------------------------------
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    var entityId = (string)entity.Id;
+                    var newComponents = new Dictionary<string, Tuple<string, dynamic>>();
+                    mapEntityComponents.Add(entityId, newComponents);
+
+                    foreach (var component in entity.Components)
+                    {
+                        var componentKey = (string)component.Key;
+                        if (componentKey == "ScriptComponent.Key")
+                        {
+                            var newScripts = new List<dynamic>();
+                            newScriptComponentsPerEntity.Add(entityId, newScripts);
+
+                            foreach (var script in component.Value.Scripts)
+                            {
+                                newScripts.Add(script);
+                            }
+                        }
+                        else if (componentKey == "PhysicsComponent.Key")
+                        {
+                            var newPhysics = new List<dynamic>();
+                            newPhysicsComponentsPerEntity.Add(entityId, newPhysics);
+
+                            foreach (var newPhysic in component.Value.Elements)
+                            {
+                                newPhysics.Add(newPhysic);
+                            }
+                        }
+                        else
+                        {
+                            componentKey = GetComponentNameFromKey(componentKey);
+                            var componentValue = component.Value;
+                            var componentId = (string)componentValue["~Id"];
+
+                            newComponents.Add(componentKey, new Tuple<string, dynamic>(componentId, componentValue));
+                        }
+                    }
+                }
+
+                // --------------------------------------------------------------------------------------------
+                // 2) Collect all components ids and key/types
+                // --------------------------------------------------------------------------------------------
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+
+                    var entityId = (string)entity.Id;
+                    var newComponents = mapEntityComponents[entityId];
+
+                    // Order components
+                    var orderedComponents = newComponents.ToList();
+
+                    // Convert scripts to ScriptComponents
+                    List<dynamic> scripts;
+                    if (newScriptComponentsPerEntity.TryGetValue(entityId, out scripts))
+                    {
+                        foreach (var component in scripts)
+                        {
+                            // Update Script to ScriptComponent
+                            var componentId = (string)component.Id;
+                            component.RemoveChild("Id");
+                            component["~Id"] = componentId;
+
+                            var componentNode = (DynamicYamlMapping)component;
+                            var componentType = componentNode.Node.Tag.Substring(1);
+
+                            orderedComponents.Add(new KeyValuePair<string, Tuple<string, dynamic>>(componentType, new Tuple<string, dynamic>(componentId, component)));
+                        }
+                    }
+
+                    // Convert PhysicsElements to PhysicsComponents
+                    List<dynamic> physics;
+                    if (newPhysicsComponentsPerEntity.TryGetValue(entityId, out physics))
+                    {
+                        foreach (var component in physics)
+                        {
+                            // Update Script to ScriptComponent
+                            var componentId = (string)component["~Id"];
+                            var componentNode = (DynamicYamlMapping)component;
+                            var componentType = componentNode.Node.Tag.Substring(1);
+                            componentType = componentType.Replace("Element", "Component");
+
+                            orderedComponents.Add(new KeyValuePair<string, Tuple<string, dynamic>>(componentType, new Tuple<string, dynamic>(componentId, component)));
+                        }
+                    }
+
+                    // Order components
+                    orderedComponents.Sort((left, right) =>
+                    {
+                        int leftOrder;
+                        if (!mapComponentOrder.TryGetValue(left.Key, out leftOrder))
+                        {
+                            leftOrder = defaultComponentOrder;
+                        }
+
+                        int rightOrder;
+                        if (!mapComponentOrder.TryGetValue(right.Key, out rightOrder))
+                        {
+                            rightOrder = defaultComponentOrder;
+                        }
+
+                        return leftOrder.CompareTo(rightOrder);
+                    });
+
+
+                    // Reset previous component mapping
+                    entity.Components = new DynamicYamlArray(new YamlSequenceNode());
+
+                    foreach (var item in orderedComponents)
+                    {
+                        var componentKey = item.Key;
+
+                        var component = (DynamicYamlMapping)item.Value.Item2;
+                        component.Node.Tag = "!" + componentKey;
+
+                        // Fix any component references.
+                        FixEntityComponentReferences(component, mapEntityComponents);
+
+                        entity.Components.Add(item.Value.Item2);
+                    }
+                }
+
+                // Fix also component references in the settings
+                if (asset.SceneSettings != null)
+                {
+                    FixEntityComponentReferences(asset.SceneSettings, mapEntityComponents);
+                }
+            }
+
+            private string GetComponentNameFromKey(string componentKey)
+            {
+                if (componentKey.EndsWith(".Key"))
+                {
+                    componentKey = componentKey.Substring(0, componentKey.Length - ".Key".Length);
+                }
+                return componentKey;
+            }
+
+            private DynamicYamlMapping FixEntityComponentReferences(dynamic item, Dictionary<string, Dictionary<string, Tuple<string, dynamic>>> maps)
+            {
+                // Go recursively into an object to fix anykind of EntityComponent references
+
+                var mapping = item as DynamicYamlMapping;
+                var array = item as DynamicYamlArray;
+
+                // We have an EntityComponentLink, transform it to the new format
+                // Entity: {Id: guid}             =>    Entity: {Id: guid}
+                // Component: Component.Key       =>    Id: guid
+                if (mapping != null && item.Entity is DynamicYamlMapping && item.Component != null && item.Entity.Id != null && mapping.Node.Children.Count == 2)
+                {
+                    var entity = item.Entity;
+                    var entityId = (string)entity.Id;
+                    var componentKey = (string)item.Component;
+                    var newComponentReference = new DynamicYamlMapping(new YamlMappingNode());
+                    var newComponentDynamic = (dynamic)newComponentReference;
+
+                    newComponentDynamic.Entity = entity;
+
+                    string componentId = Guid.Empty.ToString();
+
+                    Dictionary<string, Tuple<string, dynamic>> componentInfo;
+                    if (maps.TryGetValue(entityId, out componentInfo))
+                    {
+                        var componentTypeName = GetComponentNameFromKey(componentKey);
+
+                        Tuple<string, dynamic> newIdAndComponent;
+                        if (componentInfo.TryGetValue(componentTypeName, out newIdAndComponent))
+                        {
+                            componentId = newIdAndComponent.Item1;
+                        }
+
+                        newComponentReference.Node.Tag = "!" + componentTypeName;
+                        newComponentDynamic.Id = componentId;
+
+                        return newComponentReference;
+                    }
+                    return null;
+                }
+                else if (mapping != null)
+                {
+                    foreach (var subKeyValue in mapping.Cast<KeyValuePair<dynamic, dynamic>>())
+                    {
+                        var newRef = FixEntityComponentReferences(subKeyValue.Value, maps);
+                        if (newRef != null)
+                        {
+                            item[subKeyValue.Key] = newRef;
+                        }
+                    }
+                }
+                else if (array != null)
+                {
+                    var elements = array.Cast<dynamic>().ToList();
+                    for (int i = 0; i < elements.Count; i++)
+                    {
+                        var arrayItem = elements[i];
+                        var newRef = FixEntityComponentReferences(arrayItem, maps);
+                        if (newRef != null)
+                        {
+                            item[i] = newRef;
+                        }
+                    }
+                }
+
+                // Otherwise we are not modifying anything
+                return null;
+            }
+        }
+
+        // Upgrades inconsistent Float and Float2 Min/Max fields into Float2 and Float4 MinMax fields respectively
+        class ParticleMinMaxFieldsUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    var entityId = (string)entity.Id;
+                    var entityName = (string)entity.Name;
+
+                    foreach (var component in entity.Components)
+                    {
+                        var componentKey = (string)component.Key;
+                        var componentTag = component.Node.Tag;
+                        if (componentTag == "!ParticleSystemComponent")
+                        {
+                            dynamic particleSystem = component.ParticleSystem;
+                            if (particleSystem != null)
+                            {
+
+                                foreach (dynamic emitter in particleSystem.Emitters)
+                                {
+                                    // Lifetime changed from: float (ParticleMinLifetime), float (ParticleMaxLifetime) -> Vector2 (ParticleLifetime)
+                                    dynamic lifetime = new DynamicYamlMapping(new YamlMappingNode());
+                                    lifetime.AddChild("X", emitter.ParticleMinLifetime);
+                                    lifetime.AddChild("Y", emitter.ParticleMaxLifetime);
+
+                                    emitter.AddChild("ParticleLifetime", lifetime);
+
+                                    emitter.RemoveChild("ParticleMinLifetime");
+                                    emitter.RemoveChild("ParticleMaxLifetime");
+
+                                    // Initializers
+                                    foreach (dynamic initializer in emitter.Initializers)
+                                    {
+                                        var initializerTag = initializer.Node.Tag;
+                                        if (initializerTag == "!InitialRotationSeed")
+                                        {
+                                            dynamic angle = new DynamicYamlMapping(new YamlMappingNode());
+                                            angle.AddChild("X", initializer.AngularRotationMin);
+                                            angle.AddChild("Y", initializer.AngularRotationMax);
+
+                                            initializer.AddChild("AngularRotation", angle);
+
+                                            initializer.RemoveChild("AngularRotationMin");
+                                            initializer.RemoveChild("AngularRotationMax");
+
+                                        }
+                                    }
+
+                                    // Updaters
+                                    foreach (dynamic updater in emitter.Updaters)
+                                    {
+                                        var updaterTag = updater.Node.Tag;
+                                        if (updaterTag == "!UpdaterCollider")
+                                        {
+                                            var isSolid = (bool)updater.IsSolid;
+
+                                            updater.AddChild("IsHollow", !isSolid);
+
+                                            updater.RemoveChild("IsSolid");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private class ModelEffectUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                // TODO: Asset upgraders are called for BaseParts too, which might not be of the same type. Upgraders should be aware of this.
+                if (asset.Node.Tag != "!SceneAsset")
+                    return;
+
+                var graphicsCompositor = asset.SceneSettings.GraphicsCompositor;
+
+                if (graphicsCompositor != null && graphicsCompositor.Node.Tag == "!SceneGraphicsCompositorLayers")
+                {
+                    string modelEffect = null;
+
+                    if (graphicsCompositor.Layers != null)
+                    {
+                        foreach (var layer in graphicsCompositor.Layers)
+                        {
+                            var layerModelEffect = RemoveModelEffectsFromLayer(layer);
+                            if (modelEffect == null)
+                            {
+                                modelEffect = layerModelEffect;
+                            }
+                        }
+                    }
+
+                    if (graphicsCompositor.Master != null)
+                    {
+                        var layerModelEffect = RemoveModelEffectsFromLayer(graphicsCompositor.Master);
+                        if (modelEffect == null)
+                        {
+                            modelEffect = layerModelEffect;
+                        }
+                    }
+
+                    if (modelEffect != null)
+                    {
+                        graphicsCompositor.ModelEffect = modelEffect;
+                    }
+                }
+            }
+
+            private string RemoveModelEffectsFromLayer(dynamic layer)
+            {
+                string modelEffect = null;
+
+                if (layer.Renderers != null)
+                {
+                    foreach (var renderer in layer.Renderers)
+                    {
+                        if (renderer.Node.Tag != "!SceneCameraRenderer")
+                            continue;
+
+                        var mode = renderer.Mode;
+                        if (mode != null && mode.Node.Tag == "!CameraRendererModeForward" && mode.ModelEffect != null)
+                        {
+                            if (modelEffect == null)
+                            {
+                                modelEffect = mode.ModelEffect;
+                            }
+
+                            mode.RemoveChild("ModelEffect");
+                        }
+                    }
+                }
+
+                return modelEffect;
+            }
+        }
+
+        private class PhysicsFiltersUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Node.Tag;
+                        if (componentTag == "!StaticColliderComponent" ||
+                            componentTag == "!CharacterComponent" ||
+                            componentTag == "!RigidbodyComponent")
+                        {
+                            if (component.CollisionGroup == null || (string)component.CollisionGroup == "0")
+                            {
+                                component.CollisionGroup = CollisionFilterGroups.DefaultFilter;
+                            }
+                           
+                            if (component.CanCollideWith == null || (string)component.CanCollideWith == "0")
+                            {
+                                component.CanCollideWith = CollisionFilterGroupFlags.AllFilter;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

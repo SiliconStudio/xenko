@@ -52,6 +52,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(SolutionDir)\..\sources\targets\Xenko.PreSettings.targets" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -72,22 +73,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\Windows-Direct3D11\x86\</OutDir>
+    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\Windows-Direct3D11\x64\</OutDir>
+    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x64\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\Windows-Direct3D11\x86\</OutDir>
+    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\Windows-Direct3D11\x64\</OutDir>
+    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -195,7 +196,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="..\..\..\obj\*.obj" />
+    <Object Include="$(MSBuildThisFileDirectory)\..\..\..\obj\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

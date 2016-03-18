@@ -59,10 +59,10 @@ namespace SiliconStudio.Xenko.Games
         TimerTick PlayTime { get; }
 
         /// <summary>
-        /// Gets or sets the <see cref="AssetManager"/>.
+        /// Gets or sets the <see cref="ContentManager"/>.
         /// </summary>
         /// <value>The content manager.</value>
-        AssetManager Asset { get; }
+        ContentManager Content { get; }
 
         /// <summary>
         /// Gets the game components registered by this game.
@@ -81,6 +81,12 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         /// <value>The graphics device.</value>
         GraphicsDevice GraphicsDevice { get; }
+
+        /// <summary>
+        /// Gets the graphics context.
+        /// </summary>
+        /// <value>The graphics context.</value>
+        GraphicsContext GraphicsContext { get; }
 
         /// <summary>
         /// Gets or sets the inactive sleep time.

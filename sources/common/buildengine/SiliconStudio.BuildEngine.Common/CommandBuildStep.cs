@@ -434,7 +434,7 @@ namespace SiliconStudio.BuildEngine
                         // Merge results from prerequisites
                         // TODO: This will prevent us from overwriting this asset with different content as it will result in a write conflict
                         // At some point we _might_ want to get rid of WaitBuildStep/ListBuildStep system and write a fully stateless input/output-based system; probably need further discussions
-                        var assetIndexMap = AssetManager.FileProvider.AssetIndexMap;
+                        var assetIndexMap = ContentManager.FileProvider.AssetIndexMap;
                         foreach (var prerequisiteStep in PrerequisiteSteps)
                         {
                             foreach (var output in prerequisiteStep.OutputObjectIds)

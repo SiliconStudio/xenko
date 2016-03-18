@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class StructuredBufferTestKeys
     {
-        public static readonly ParameterKey<Buffer> sbtest = ParameterKeys.New<Buffer>();
-        public static readonly ParameterKey<Buffer> rwsbtest = ParameterKeys.New<Buffer>();
+        public static readonly ObjectParameterKey<Buffer> sbtest = ParameterKeys.NewObject<Buffer>();
+        public static readonly ObjectParameterKey<Buffer> rwsbtest = ParameterKeys.NewObject<Buffer>();
     }
 }

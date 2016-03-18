@@ -105,7 +105,7 @@ namespace SiliconStudio.Assets.Compiler
                 return;
 
             // Collect references recursively
-            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             foreach (var dependency in dependencies.LinksOut)
             {
                 // Try to find real asset (dependecy might be a copy)

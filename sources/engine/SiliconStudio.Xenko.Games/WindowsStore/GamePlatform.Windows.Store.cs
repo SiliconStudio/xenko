@@ -21,10 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Xenko.Graphics;
 using Windows.ApplicationModel;
+using Windows.UI.Xaml;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -32,6 +34,28 @@ namespace SiliconStudio.Xenko.Games
     {
         public GamePlatformWindowsRuntime(GameBase game) : base(game)
         {
+            Application.Current.Suspending += CurrentOnSuspending;
+            Application.Current.Resuming += CurrentOnResuming;
+        }
+
+        private void CurrentOnResuming(object sender, object o)
+        {
+            OnResume(sender, null);
+        }
+
+        private void CurrentOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
+        {
+            var deferral = suspendingEventArgs.SuspendingOperation.GetDeferral();
+
+            using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
+            {
+                game.GraphicsContext.CommandList.ClearState();
+                device3.Trim();    
+            }
+
+            OnSuspend(sender, null);
+
+            deferral.Complete();
         }
 
         public override string DefaultAppDirectory

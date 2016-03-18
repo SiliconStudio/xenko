@@ -4,7 +4,9 @@ Tags: []
 Source: ../../../data/tests/audio/90-bboc1.mp3
 ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
 ~Base:
+    ~Id: 13a52318-ce6b-4e8c-99af-c78b99daf422
     Location: --import--
     Asset: !SoundMusic
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 

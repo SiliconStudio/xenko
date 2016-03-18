@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="presentationParameters"> </param>
         protected GraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters)
         {
-            GraphicsDevice = device.RootDevice;
+            GraphicsDevice = device;
             var description = presentationParameters.Clone();
 
             // If we are creating a GraphicsPresenter with 
@@ -142,6 +142,14 @@ namespace SiliconStudio.Xenko.Graphics
             set { Description.PresentationInterval = value; }
         }
 
+        public virtual void BeginDraw(CommandList commandList)
+        {
+        }
+
+        public virtual void EndDraw(CommandList commandList, bool present)
+        {
+        }
+
         /// <summary>
         /// Presents the Backbuffer to the screen.
         /// </summary>
@@ -205,7 +213,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Creates the depth stencil buffer.
             var flags = TextureFlags.DepthStencil;
-            if (GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0)
+            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0)
             {
                 flags |= TextureFlags.ShaderResource;
             }

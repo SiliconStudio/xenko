@@ -49,7 +49,7 @@ One blank line below
         {
             await base.LoadContent();
 
-            arial = Asset.Load<SpriteFont>(AssetPrefix + "Arial13");
+            arial = Content.Load<SpriteFont>(AssetPrefix + "Arial13");
 
             colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
 
@@ -67,11 +67,12 @@ One blank line below
 
         private void DrawText()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
 
             var dim1 = arial.MeasureString(Text1);
             var dim2 = arial.MeasureString(Text2);

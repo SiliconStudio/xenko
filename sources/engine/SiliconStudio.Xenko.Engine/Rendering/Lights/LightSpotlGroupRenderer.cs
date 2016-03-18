@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void Initialize(RenderContext context)
         {
-            var isLowProfile = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0;
+            var isLowProfile = context.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0;
             LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
             AllocateLightMaxCount = !isLowProfile;
         }
@@ -51,11 +51,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class SpotLightShaderGroup : LightShaderGroupAndDataPool<SpotLightShaderGroupData>
         {
-            internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> DirectionsKey;
-            internal readonly ParameterKey<Vector3[]> PositionsKey;
-            internal readonly ParameterKey<Vector3[]> AngleOffsetAndInvSquareRadiusKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ValueParameterKey<int> CountKey;
+            internal readonly ValueParameterKey<Vector3> DirectionsKey;
+            internal readonly ValueParameterKey<Vector3> PositionsKey;
+            internal readonly ValueParameterKey<Vector3> AngleOffsetAndInvSquareRadiusKey;
+            internal readonly ValueParameterKey<Color3> ColorsKey;
 
             public SpotLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
@@ -75,11 +75,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class SpotLightShaderGroupData : LightShaderGroupData
         {
-            private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Vector3[]> directionsKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
-            internal readonly ParameterKey<Vector3[]> positionsKey;
-            internal readonly ParameterKey<Vector3[]> angleOffsetAndInvSquareRadiusKey;
+            private readonly ValueParameterKey<int> countKey;
+            private readonly ValueParameterKey<Vector3> directionsKey;
+            private readonly ValueParameterKey<Color3> colorsKey;
+            internal readonly ValueParameterKey<Vector3> positionsKey;
+            internal readonly ValueParameterKey<Vector3> angleOffsetAndInvSquareRadiusKey;
             private readonly Vector3[] lightDirections;
             private readonly Vector3[] lightPositions;
             private readonly Vector3[] lightAngleOffsetAndInvSquareRadius;
@@ -112,10 +112,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, lightDirections);
-                parameters.Set(colorsKey, lightColors);
-                parameters.Set(positionsKey, lightPositions);
-                parameters.Set(angleOffsetAndInvSquareRadiusKey, lightAngleOffsetAndInvSquareRadius);
+                parameters.Set(directionsKey, Count, ref lightDirections[0]);
+                parameters.Set(colorsKey, Count, ref lightColors[0]);
+                parameters.Set(positionsKey, Count, ref lightPositions[0]);
+                parameters.Set(angleOffsetAndInvSquareRadiusKey, Count, ref lightAngleOffsetAndInvSquareRadius[0]);
             }
         }
     }

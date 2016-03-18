@@ -1,9 +1,10 @@
 !SpriteFont
 Id: 81fc0346-d4f8-4717-98af-ef896c15379f
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: null
 FontName: Courier New
-Size: 12
+Size: 12.0
 Style: Regular
 IsDynamic: true
 DefaultCharacter: ' '
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: Aliased
-NoPremultiply: false
-Spacing: 0
-LineSpacing: 0
+Spacing: 0.0
+LineSpacing: 0.0
 UseKerning: false

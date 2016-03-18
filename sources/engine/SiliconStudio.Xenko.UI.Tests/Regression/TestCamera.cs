@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             SetCamera();
 
-            while (!IsDisposed)
+            while (true)
             {
                 UpdateCamera();
 
@@ -291,7 +291,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// </summary>
         protected virtual void OnWindowSizeChanged()
         {
-            Camera.AspectRatio = GraphicsDevice.BackBuffer.Width / (float)GraphicsDevice.BackBuffer.Height;
+            Camera.AspectRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
         }
 
 
@@ -388,7 +388,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             var boundingSphere = new BoundingSphere();
 
-            var model = rootEntity.Get(ModelComponent.Key);
+            var model = rootEntity.Get<ModelComponent>();
             if (model != null && model.Model != null)
             {
                 var boundingBox = model.Model.BoundingBox;

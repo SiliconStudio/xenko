@@ -18,8 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class CoCMapBlurShaderKeys
     {
-        public static readonly ParameterKey<Vector2> Direction = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<float> Radius = ParameterKeys.New<float>();
-        public static readonly ParameterKey<Vector2[]> OffsetsWeights = ParameterKeys.New<Vector2[]>();
+        public static readonly ValueParameterKey<Vector2> Direction = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<float> Radius = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Vector2> OffsetsWeights = ParameterKeys.NewValue<Vector2>();
     }
 }

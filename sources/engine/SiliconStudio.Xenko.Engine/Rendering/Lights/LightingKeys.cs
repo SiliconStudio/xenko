@@ -15,15 +15,16 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract]
     public partial class LightingKeys : ShaderMixinParameters
     {
-        public static readonly ParameterKey<List<ShaderSource>> DirectLightGroups = ParameterKeys.New((List<ShaderSource>)null);
+        public static readonly PermutationParameterKey<ShaderSourceCollection> DirectLightGroups = ParameterKeys.NewPermutation((ShaderSourceCollection)null);
 
-        public static readonly ParameterKey<List<ShaderSource>> EnvironmentLights = ParameterKeys.New((List<ShaderSource>)null);
+        public static readonly PermutationParameterKey<ShaderSourceCollection> EnvironmentLights = ParameterKeys.NewPermutation((ShaderSourceCollection)null);
        
-        private static readonly List<ShaderSource> DefaultAmbientLighting = new List<ShaderSource>() { new ShaderClassSource("LightSimpleAmbient"), };
+        private static readonly ShaderSourceCollection DefaultAmbientLighting = new ShaderSourceCollection() { new ShaderClassSource("LightSimpleAmbient"), };
 
         public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
         {
             if (parameters == null) throw new ArgumentNullException("parameters");
+
             if (enable)
             {
                 parameters.Set(EnvironmentLights, DefaultAmbientLighting);

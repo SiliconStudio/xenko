@@ -7,6 +7,7 @@ ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: Mask
 PremultiplyAlpha: false
 ~Base:
+    ~Id: eabc2012-b97d-4146-a1cc-5d1edfebbe00
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

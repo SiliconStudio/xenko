@@ -33,6 +33,7 @@
     <Compile Include="TestMemberPathBase.cs" />
     <Compile Include="TestNamingHelper.cs" />
     <Compile Include="TestSettings.cs" />
+    <Compile Include="TestShadowObject.cs" />
     <Compile Include="TestTypeConverter.cs" />
     <Compile Include="TestUPath.cs" />
     <Compile Include="Module.cs" />
@@ -42,6 +43,11 @@
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">

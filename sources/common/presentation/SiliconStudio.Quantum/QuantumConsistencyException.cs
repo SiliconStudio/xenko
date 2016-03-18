@@ -5,7 +5,7 @@ using System;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// An exception that occurs during consistency checks of Quantum objects, indicating that a <see cref="IModelNode"/> is un an unexpected state.
+    /// An exception that occurs during consistency checks of Quantum objects, indicating that a <see cref="IGraphNode"/> is un an unexpected state.
     /// </summary>
     public class QuantumConsistencyException : Exception
     {
@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum
         /// <param name="expected">A string representing the expected result.</param>
         /// <param name="observed">A string representing the observed result.</param>
         /// <param name="node">The node that is related to this error.</param>
-        public QuantumConsistencyException(string expected, string observed, IModelNode node)
+        public QuantumConsistencyException(string expected, string observed, IGraphNode node)
             : base(GetMessage(expected, observed))
         {
             Expected = expected ?? "(NullMessage)";
@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum
         /// <param name="observed">A string representing the observed result.</param>
         /// <param name="observedArg"></param>
         /// <param name="node">The node that is related to this error.</param>
-        public QuantumConsistencyException(string expected, string expectedArg, string observed, string observedArg, IModelNode node)
+        public QuantumConsistencyException(string expected, string expectedArg, string observed, string observedArg, IGraphNode node)
             : base(GetMessage(expected, expectedArg, observed, observedArg))
         {
             try
@@ -65,9 +65,9 @@ namespace SiliconStudio.Quantum
         public string Observed { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="IModelNode"/> that triggered this exception.
+        /// Gets the <see cref="IGraphNode"/> that triggered this exception.
         /// </summary>
-        public IModelNode Node { get; private set; }
+        public IGraphNode Node { get; private set; }
 
         ///// <inheritdoc/>
         //public override string ToString()

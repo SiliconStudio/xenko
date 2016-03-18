@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core;
@@ -11,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [DataContract]
     [StructLayout(LayoutKind.Sequential)]
-    public struct DepthStencilStateDescription
+    public struct DepthStencilStateDescription : IEquatable<DepthStencilStateDescription>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DepthStencilStateDescription"/> class.
@@ -104,6 +106,43 @@ namespace SiliconStudio.Xenko.Graphics
         public DepthStencilStateDescription Clone()
         {
             return (DepthStencilStateDescription)MemberwiseClone();
+        }
+
+        public bool Equals(DepthStencilStateDescription other)
+        {
+            return DepthBufferEnable == other.DepthBufferEnable && DepthBufferFunction == other.DepthBufferFunction && DepthBufferWriteEnable == other.DepthBufferWriteEnable && StencilEnable == other.StencilEnable && StencilMask == other.StencilMask && StencilWriteMask == other.StencilWriteMask && FrontFace.Equals(other.FrontFace) && BackFace.Equals(other.BackFace);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is DepthStencilStateDescription && Equals((DepthStencilStateDescription)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = DepthBufferEnable.GetHashCode();
+                hashCode = (hashCode*397) ^ (int)DepthBufferFunction;
+                hashCode = (hashCode*397) ^ DepthBufferWriteEnable.GetHashCode();
+                hashCode = (hashCode*397) ^ StencilEnable.GetHashCode();
+                hashCode = (hashCode*397) ^ StencilMask.GetHashCode();
+                hashCode = (hashCode*397) ^ StencilWriteMask.GetHashCode();
+                hashCode = (hashCode*397) ^ FrontFace.GetHashCode();
+                hashCode = (hashCode*397) ^ BackFace.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(DepthStencilStateDescription left, DepthStencilStateDescription right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(DepthStencilStateDescription left, DepthStencilStateDescription right)
+        {
+            return !left.Equals(right);
         }
     }
 }

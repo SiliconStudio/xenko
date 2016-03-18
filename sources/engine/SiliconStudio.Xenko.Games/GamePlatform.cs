@@ -39,6 +39,8 @@ namespace SiliconStudio.Xenko.Games
 
         protected GameWindow gameWindow;
 
+        public string FullName { get; protected set; } = string.Empty;
+
         protected GamePlatform(GameBase game)
         {
             this.game = game;
@@ -271,30 +273,28 @@ namespace SiliconStudio.Xenko.Games
 
                 var preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile;
 
-                // INTEL workaround: it seems Intel driver doesn't support properly feature level 9.x. Fallback to 10.
-                if (graphicsAdapter.VendorId == 0x8086)
-                    preferredGraphicsProfiles = preferredGraphicsProfiles.Select(x => x < GraphicsProfile.Level_10_0 ? GraphicsProfile.Level_10_0 : x).ToArray();
-
                 // Iterate on each preferred graphics profile
-                foreach (var featureLevel in preferredGraphicsProfiles)
+                for (int index = 0; index < preferredGraphicsProfiles.Length; index++)
                 {
+                    var featureLevel = preferredGraphicsProfiles[index];
+
                     // Check if this profile is supported.
                     if (graphicsAdapter.IsProfileSupported(featureLevel))
                     {
                         var deviceInfo = new GraphicsDeviceInformation
+                        {
+                            Adapter = graphicsAdapter,
+                            GraphicsProfile = featureLevel,
+                            PresentationParameters =
                             {
-                                Adapter = graphicsAdapter,
-                                GraphicsProfile = featureLevel,
-                                PresentationParameters =
-                                    {
-                                        MultiSampleCount = MSAALevel.None,
-                                        IsFullScreen = preferredParameters.IsFullScreen,
-                                        PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
-                                        PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
-                                        DeviceWindowHandle = MainWindow.NativeWindow,
-                                        ColorSpace = preferredParameters.ColorSpace
-                                    }
-                            };
+                                MultiSampleCount = MSAALevel.None,
+                                IsFullScreen = preferredParameters.IsFullScreen,
+                                PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
+                                PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
+                                DeviceWindowHandle = MainWindow.NativeWindow,
+                                ColorSpace = preferredParameters.ColorSpace
+                            }
+                        };
 
                         var preferredMode = new DisplayMode(preferredParameters.PreferredBackBufferFormat,
                             preferredParameters.PreferredBackBufferWidth,

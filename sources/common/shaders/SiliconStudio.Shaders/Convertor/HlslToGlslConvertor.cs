@@ -223,12 +223,9 @@ namespace SiliconStudio.Shaders.Convertor
         public bool ViewFrustumRemap { get; set; }
 
         /// <summary>
-        /// Gets or sets a variable name that will be checked to know if render target needs to be flipped. Null means nothing happens.
+        /// Gets or sets a value indicating wether Y projection will be inverted at end of vertex shader.
         /// </summary>
-        /// <value>
-        /// The name of the variable to check if render target needs to be flipped.
-        /// </value>
-        public string FlipRenderTargetFlag { get; set; }
+        public bool FlipRenderTarget { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is point sprite shader.
@@ -1878,6 +1875,15 @@ namespace SiliconStudio.Shaders.Convertor
             if (matrixType != null)
             {
                 var swizzles = HlslSemanticAnalysis.MatrixSwizzleDecode(expression);
+
+                // When NoSwapForBinaryMatrixOperation, we need to transpose accessor
+                if (NoSwapForBinaryMatrixOperation)
+                {
+                    for (int i = 0; i < swizzles.Count; ++i)
+                    {
+                        swizzles[i] = new MatrixType.Indexer(swizzles[i].Column, swizzles[i].Row);
+                    }
+                }
 
                 if (swizzles.Count == 1)
                     return new IndexerExpression(new IndexerExpression(expression.Target, new LiteralExpression(swizzles[0].Row)), new LiteralExpression(swizzles[0].Column));
@@ -3895,16 +3901,16 @@ namespace SiliconStudio.Shaders.Convertor
                                 )));
                 }
 
-                if (FlipRenderTargetFlag != null)
+                if (FlipRenderTarget)
                 {
+                    // Add gl_Position.y = -gl_Position.y
                     list.Add(
                         new ExpressionStatement(
                             new AssignmentExpression(
                                 AssignmentOperator.Default,
                                 new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"),
-                                new BinaryExpression(
-                                    BinaryOperator.Multiply,
-                                    new VariableReferenceExpression(FlipRenderTargetFlag),
+                                new UnaryExpression(
+                                    UnaryOperator.Minus,
                                     new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"))
                                 )));
                 }
@@ -4262,7 +4268,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        newInitializers.Add(initializers[rowCount * rowIndex + columnIndex]);
+                        newInitializers.Add(initializers[columnCount * rowIndex + columnIndex]);
                     }
                 }
             }
