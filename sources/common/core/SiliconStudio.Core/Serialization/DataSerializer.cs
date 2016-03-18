@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Serialization
     {
         // Binary format version, needs to be bumped in case of big changes in serialization formats (i.e. primitive types).
         // Format: major version * 10000 + minor version * 1000 + patch version * 100 + bump ID
-        public const int BinaryFormatVersion = 16001;
+        public const int BinaryFormatVersion = 16100;
 
         public ObjectId SerializationTypeId;
 
