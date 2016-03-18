@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public UVRotate UvRotate { get; set; }
 
         /// <inheritdoc />
-        public override int QuadsPerParticle { get; protected set; } = 1;
+        public override int QuadsPerParticle { get; protected set; } = 4;
 
         /// <inheritdoc />
         public override void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles)
@@ -178,9 +178,17 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 if (sections <= 1)
                     return;
 
+                var lerpStep = 1f/sections;
+
                 int index = 0;
-                while (index < positions.Length)
+                while (index < positions.Length - 1)
                 {
+                    for (int j = 1; j < sections; j++)
+                    {
+                        positions[index + j] = Vector3.Lerp(positions[index], positions[index + sections], j * lerpStep);
+                        positions[index + j] += new Vector3(0, 0.25f, 0);
+                        sizes[index + j] = sizes[index] * (1 - j * lerpStep) + sizes[index + sections] * (j * lerpStep);
+                    }
 
                     index += sections;
                 }
@@ -230,6 +238,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     return;
                 }
 
+                ExpandVertices();
+
                 vtxBuilder.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
 
                 // Step 1 - Determine the origin of the ribbon
@@ -246,7 +256,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 var vCoordOld = 0f;
 
-                for (int i = 0; i < lastParticle; i++)
+                for (int i = 0; i < positions.Length - 1; i++)
                 {
                     var centralPos = positions[i];
 
