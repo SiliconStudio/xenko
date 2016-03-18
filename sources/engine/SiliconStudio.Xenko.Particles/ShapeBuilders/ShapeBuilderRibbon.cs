@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public UVRotate UvRotate { get; set; }
 
         /// <inheritdoc />
-        public override int QuadsPerParticle { get; protected set; } = 4;
+        public override int QuadsPerParticle { get; protected set; } = 1;
 
         /// <inheritdoc />
         public override void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles)
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 lastParticle = 0;
                 sections = sectionsPerParticle;
 
-                int requiredCapacity = sectionsPerParticle * newCapacity - sectionsPerParticle + 1;
+                int requiredCapacity = sectionsPerParticle * newCapacity;
 
                 if (requiredCapacity > positions.Length)
                 {
@@ -180,17 +180,45 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 var lerpStep = 1f/sections;
 
+                var Pt0 = positions[0] * 2 - positions[sections];
+                var Pt1 = positions[0];
+                var Pt2 = positions[sections];
+
+                var O1 = Vector3.Circumcenter(ref Pt0, ref Pt1, ref Pt2);
+                var R1 = (O1 - Pt1).Length();
+
+                var s0 = sizes[0];
+                var s1 = sizes[0];
+                var s2 = sizes[sections];
+
                 int index = 0;
-                while (index < positions.Length - 1)
+                while (index < positions.Length)
                 {
+                    var Pt3 = (index + sections * 2 < positions.Length) ? positions[index + sections * 2] : Pt2 * 2 - Pt1;
+                    var s3  = (index + sections * 2 < sizes.Length) ? sizes[index + sections * 2] : 0f;
+                    var O2 = Vector3.Circumcenter(ref Pt1, ref Pt2, ref Pt3);
+                    var R2 = (O2 - Pt2).Length();
+
                     for (int j = 1; j < sections; j++)
                     {
-                        positions[index + j] = Vector3.Lerp(positions[index], positions[index + sections], j * lerpStep);
-                        positions[index + j] += new Vector3(0, 0.25f, 0);
-                        sizes[index + j] = sizes[index] * (1 - j * lerpStep) + sizes[index + sections] * (j * lerpStep);
+                        positions[index + j] = Vector3.Lerp(Pt1, Pt2, j * lerpStep);
+                        
+                        // Circular motion
+                        var dist1 = positions[index + j] - O1;
+                        dist1.Normalize();
+                        var dist2 = positions[index + j] - O2;
+                        dist2.Normalize();
+
+                        positions[index + j] = Vector3.Lerp(O1 + dist1 * R1, O2 + dist2 * R2, j * lerpStep);
+
+                        sizes[index + j] = s1 * (1 - j * lerpStep) + s2 * (j * lerpStep);
                     }
 
                     index += sections;
+                    Pt0 = Pt1;  Pt1 = Pt2;  Pt2 = Pt3;
+                    s0 = s1;    s1 = s2;    s2 = s3;
+                    O1 = O2;
+                    R1 = R2;
                 }
             }
 
@@ -208,6 +236,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             {
                 if (lastParticle <= 0)
                     return;
+
+                vtxBuilder.RestartBuffer();
 
                 var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
                 var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
@@ -330,6 +360,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     oldUnitX = unitX;
                     oldPoint = centralPos;
                 }
+
             }
         }
     }
