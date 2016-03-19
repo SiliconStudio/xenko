@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 
 using SharpVulkan;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Buffer
     {
-        //private SharpDX.Direct3D12.ResourceDescription nativeDescription;
-        //internal ResourceStates NativeResourceStates;
-        
+        internal SharpVulkan.Buffer NativeBuffer;
+        internal BufferView NativeBufferView;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
         /// </summary>
@@ -31,27 +32,31 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="dataPointer">The data pointer.</param>
         protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
         {
-            //bufferDescription = description;
+            bufferDescription = description;
             //nativeDescription = ConvertToNativeDescription(Description);
-            //ViewFlags = viewFlags;
-            //InitCountAndViewFormat(out this.elementCount, ref viewFormat);
-            //ViewFormat = viewFormat;
-            //Recreate(dataPointer);
+            ViewFlags = viewFlags;
+            InitCountAndViewFormat(out this.elementCount, ref viewFormat);
+            ViewFormat = viewFormat;
+            Recreate(dataPointer);
 
-            //if (GraphicsDevice != null)
-            //{
-            //    GraphicsDevice.BuffersMemory += SizeInBytes/(float)0x100000;
-            //}
+            if (GraphicsDevice != null)
+            {
+                GraphicsDevice.BuffersMemory += SizeInBytes/(float)0x100000;
+            }
 
             return this;
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
+        protected unsafe internal override void OnDestroyed()
         {
             if (GraphicsDevice != null)
             {
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
+
+                GraphicsDevice.NativeDevice.DestroyBufferView(NativeBufferView);
+                GraphicsDevice.NativeDevice.DestroyBuffer(NativeBuffer);
+                GraphicsDevice.NativeDevice.FreeMemory(NativeMemory);
             }
             base.OnDestroyed();
             DestroyImpl();
@@ -76,8 +81,35 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataPointer"></param>
-        public void Recreate(IntPtr dataPointer)
+        public unsafe void Recreate(IntPtr dataPointer)
         {
+            var createInfo = new BufferCreateInfo
+            {
+                StructureType = StructureType.BufferCreateInfo,
+                Size = (ulong)bufferDescription.SizeInBytes,
+                Flags = BufferCreateFlags.None,
+            };
+
+            if (bufferDescription.Usage == GraphicsResourceUsage.Dynamic)
+                createInfo.Usage |= BufferUsageFlags.TransferDestination;
+
+            if ((ViewFlags & BufferFlags.VertexBuffer) != 0)
+                createInfo.Usage |= BufferUsageFlags.VertexBuffer;
+
+            if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
+                createInfo.Usage |= BufferUsageFlags.IndexBuffer;
+
+            if ((ViewFlags & BufferFlags.ConstantBuffer) != 0)
+                createInfo.Usage |= BufferUsageFlags.UniformBuffer;
+
+            // Create buffer
+            NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
+            AllocateMemory(dataPointer, MemoryPropertyFlags.HostVisible);
+
+            // Staging resource don't have any views
+            if (bufferDescription.Usage != GraphicsResourceUsage.Staging)
+                this.InitializeViews();
+
             //// TODO D3D12 where should that go longer term? should it be precomputed for future use? (cost would likely be additional check on SetDescriptorSets/Draw)
             //NativeResourceStates = ResourceStates.Common;
             //var bufferFlags = bufferDescription.BufferFlags;
@@ -137,6 +169,87 @@ namespace SiliconStudio.Xenko.Graphics
 
             //    // TODO D3D12 release uploadResource (using a fence to know when copy is done)
             //}
+        }
+
+        /// <summary>
+        /// Initializes the views.
+        /// </summary>
+        private void InitializeViews()
+        {
+            var viewFormat = ViewFormat;
+
+            if (((ViewFlags & BufferFlags.RawBuffer) != 0))
+            {
+                viewFormat = PixelFormat.R32_Typeless;
+            }
+
+            if ((ViewFlags & (BufferFlags.ConstantBuffer | BufferFlags.ShaderResource | BufferFlags.UnorderedAccess)) != 0)
+            {
+                NativeBufferView = GetShaderResourceView(viewFormat);
+            }
+        }
+
+        internal unsafe BufferView GetShaderResourceView(PixelFormat viewFormat)
+        {
+            var createInfo = new BufferViewCreateInfo
+            {
+                StructureType = StructureType.BufferViewCreateInfo,
+                Buffer = NativeBuffer,
+                Format = viewFormat == PixelFormat.None ? Format.Undefined : VulkanConvertExtensions.ConvertPixelFormat(viewFormat),
+                Range = (ulong)SizeInBytes, // this.ElementCount
+                //View = (Description.BufferFlags & BufferFlags.RawBuffer) != 0 ? BufferViewType.Raw : BufferViewType.Formatted
+            };
+
+            return GraphicsDevice.NativeDevice.CreateBufferView(ref createInfo);
+        }
+
+        private DeviceMemory NativeMemory;
+
+        protected unsafe void AllocateMemory(IntPtr dataPointer, MemoryPropertyFlags memoryProperties)
+        {
+            if (NativeMemory != DeviceMemory.Null)
+                return;
+
+            MemoryRequirements memoryRequirements;
+            GraphicsDevice.NativeDevice.GetBufferMemoryRequirements(NativeBuffer, out memoryRequirements);
+
+            if (memoryRequirements.Size == 0)
+                return;
+
+            var allocateInfo = new MemoryAllocateInfo
+            {
+                StructureType = StructureType.MemoryAllocateInfo,
+                AllocationSize = memoryRequirements.Size,
+            };
+
+            PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+            GraphicsDevice.Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
+            var typeBits = memoryRequirements.MemoryTypeBits;
+            for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
+            {
+                if ((typeBits & 1) == 1)
+                {
+                    // Type is available, does it match user properties?
+                    var memoryType = *((MemoryType*)&physicalDeviceMemoryProperties.MemoryTypes + i);
+                    if ((memoryType.PropertyFlags & memoryProperties) == memoryProperties)
+                    {
+                        allocateInfo.MemoryTypeIndex = i;
+                        break;
+                    }
+                }
+                typeBits >>= 1;
+            }
+
+            NativeMemory = GraphicsDevice.NativeDevice.AllocateMemory(ref allocateInfo);
+
+            if (dataPointer != IntPtr.Zero)
+            {
+                var pData = GraphicsDevice.NativeDevice.MapMemory(NativeMemory, 0, 0, 0);
+                Utilities.CopyMemory(pData, dataPointer, (int)memoryRequirements.Size);
+                GraphicsDevice.NativeDevice.UnmapMemory(NativeMemory);
+            }
+
+            GraphicsDevice.NativeDevice.BindBufferMemory(NativeBuffer, NativeMemory, 0);
         }
 
         private void InitCountAndViewFormat(out int count, ref PixelFormat viewFormat)
