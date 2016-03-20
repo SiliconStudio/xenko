@@ -35,17 +35,36 @@ namespace SiliconStudio.Xenko.Graphics
         //internal DescriptorAllocator DepthStencilViewAllocator;
         //internal DescriptorAllocator RenderTargetViewAllocator;
 
-        //private SharpDX.Direct3D12.Resource nativeUploadBuffer;
-        //private IntPtr nativeUploadBufferStart;
-        //private int nativeUploadBufferOffset;
+        private SharpVulkan.Buffer nativeUploadBuffer;
+        private DeviceMemory nativeUploadBufferMemory;
+        private IntPtr nativeUploadBufferStart;
+        private int nativeUploadBufferSize;
+        private int nativeUploadBufferOffset;
 
         internal int SrvHandleIncrementSize;
         internal int SamplerHandleIncrementSize;
 
-        //private Fence nativeFence;
-        //private int fenceValue = 1;
-        //private AutoResetEvent fenceEvent = new AutoResetEvent(false);
-        //internal List<SharpDX.Direct3D12.Pageable> TemporaryResources = new List<SharpDX.Direct3D12.Pageable>();
+        private Fence nativeFence;
+        private long lastCompletedFence;
+        internal long NextFenceValue = 1;
+        private AutoResetEvent fenceEvent = new AutoResetEvent(false);
+        internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
+
+        internal struct BufferInfo
+        {
+            public long FenceValue;
+
+            public SharpVulkan.Buffer Buffer;
+
+            public DeviceMemory Memory;
+
+            public BufferInfo(long fenceValue, SharpVulkan.Buffer buffer, DeviceMemory memory)
+            {
+                FenceValue = fenceValue;
+                Buffer = buffer;
+                Memory = memory;
+            }
+        }
 
         /// <summary>
         ///     Gets the status of this device.
@@ -260,50 +279,97 @@ namespace SiliconStudio.Xenko.Graphics
             //nativeFence = NativeDevice.CreateFence(0, FenceFlags.None);
         }
 
-        //internal IntPtr AllocateUploadBuffer(int size, out SharpDX.Direct3D12.Resource resource, out int offset)
-        //{
-        //    // TODO D3D12 thread safety, should we simply use locks?
-        //    if (nativeUploadBuffer == null || nativeUploadBufferOffset + size > nativeUploadBuffer.Description.Width)
-        //    {
-        //        // Allocate new buffer
-        //        // TODO D3D12 recycle old ones (using fences to know when GPU is done with them)
-        //        // TODO D3D12 ResourceStates.CopySource not working?
-        //        var bufferSize = Math.Max(4 * 1024*1024, size);
-        //        nativeUploadBuffer = NativeDevice.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None, ResourceDescription.Buffer(bufferSize), ResourceStates.GenericRead);
-        //        TemporaryResources.Add(nativeUploadBuffer);
-        //        nativeUploadBufferStart = nativeUploadBuffer.Map(0);
-        //        nativeUploadBufferOffset = 0;
-        //    }
-
-        //    // Bump allocate
-        //    resource = nativeUploadBuffer;
-        //    offset = nativeUploadBufferOffset;
-        //    nativeUploadBufferOffset += size;
-        //    return nativeUploadBufferStart + offset;
-        //}
-
-        internal void ReleaseTemporaryResources()
+        internal unsafe IntPtr AllocateUploadBuffer(int size, out SharpVulkan.Buffer resource, out int offset)
         {
-            //// Wait for frame to be finished
-            //int localFence = fenceValue;
-            //NativeCommandQueue.Signal(this.nativeFence, localFence);
-            //fenceValue++;
+            // TODO D3D12 thread safety, should we simply use locks?
+            if (nativeUploadBuffer == SharpVulkan.Buffer.Null || nativeUploadBufferOffset + size > nativeUploadBufferSize)
+            {
+                if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+                {
+                    NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+                    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
+                }
 
-            //// Wait until the previous frame is finished.
-            //if (nativeFence.CompletedValue < localFence)
-            //{
-            //    nativeFence.SetEventOnCompletion(localFence, fenceEvent.SafeWaitHandle.DangerousGetHandle());
-            //    fenceEvent.WaitOne();
-            //}
+                // Allocate new buffer
+                // TODO D3D12 recycle old ones (using fences to know when GPU is done with them)
+                // TODO D3D12 ResourceStates.CopySource not working?
+                nativeUploadBufferSize = Math.Max(4 * 1024 * 1024, size);
+                
+                var bufferCreateInfo = new BufferCreateInfo
+                {
+                    StructureType = StructureType.BufferCreateInfo,
+                    Size = (ulong)nativeUploadBufferSize,
+                    Flags = BufferCreateFlags.None,
+                    Usage = BufferUsageFlags.TransferSource,
+                };
+                nativeUploadBuffer = NativeDevice.CreateBuffer(ref bufferCreateInfo);
+                AllocateMemory(MemoryPropertyFlags.HostVisible);
 
-            //// Release previous frame resources
-            //foreach (var resource in TemporaryResources)
-            //{
-            //    resource.Dispose();
-            //}
-            //nativeUploadBuffer = null;
+                nativeUploadBufferStart = NativeDevice.MapMemory(nativeUploadBufferMemory, 0, (ulong)nativeUploadBufferSize, MemoryMapFlags.None);
+                nativeUploadBufferOffset = 0;
+            }
 
-            //TemporaryResources.Clear();
+            // Bump allocate
+            resource = nativeUploadBuffer;
+            offset = nativeUploadBufferOffset;
+            nativeUploadBufferOffset += size;
+            return nativeUploadBufferStart + offset;
+        }
+
+        protected unsafe void AllocateMemory(MemoryPropertyFlags memoryProperties)
+        {
+            if (nativeUploadBufferMemory != DeviceMemory.Null)
+                return;
+
+            MemoryRequirements memoryRequirements;
+            NativeDevice.GetBufferMemoryRequirements(nativeUploadBuffer, out memoryRequirements);
+
+            if (memoryRequirements.Size == 0)
+                return;
+
+            var allocateInfo = new MemoryAllocateInfo
+            {
+                StructureType = StructureType.MemoryAllocateInfo,
+                AllocationSize = memoryRequirements.Size,
+            };
+
+            PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+            Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
+            var typeBits = memoryRequirements.MemoryTypeBits;
+            for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
+            {
+                if ((typeBits & 1) == 1)
+                {
+                    // Type is available, does it match user properties?
+                    var memoryType = *((MemoryType*)&physicalDeviceMemoryProperties.MemoryTypes + i);
+                    if ((memoryType.PropertyFlags & memoryProperties) == memoryProperties)
+                    {
+                        allocateInfo.MemoryTypeIndex = i;
+                        break;
+                    }
+                }
+                typeBits >>= 1;
+            }
+
+            nativeUploadBufferMemory = NativeDevice.AllocateMemory(ref allocateInfo);
+
+            NativeDevice.BindBufferMemory(nativeUploadBuffer, nativeUploadBufferMemory, 0);
+        }
+
+        internal unsafe void ReleaseTemporaryResources()
+        {
+            // Release previous frame resources
+            //while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().FenceValue))
+            NativeCommandQueue.WaitIdle();
+
+            foreach (var temporaryResource in TemporaryResources)
+            {
+                //var temporaryResource = TemporaryResources.Dequeue();
+                NativeDevice.FreeMemory(temporaryResource.Memory);
+                NativeDevice.DestroyBuffer(temporaryResource.Buffer);
+            }
+
+            TemporaryResources.Clear();
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
@@ -322,6 +388,43 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void OnDestroyed()
         {
+        }
+
+        internal unsafe long ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer)
+        {
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = 1,
+                CommandBuffers = new IntPtr(&nativeCommandBuffer)
+            };
+            NativeCommandQueue.Submit(1, &submitInfo, nativeFence);
+
+            return NextFenceValue++;
+        }
+
+        internal bool IsFenceCompleteInternal(long fenceValue)
+        {
+            //// Try to avoid checking the fence if possible
+            //if (fenceValue > lastCompletedFence)
+            //    lastCompletedFence = Math.Max(lastCompletedFence, nativeFence.CompletedValue); // Protect against race conditions
+
+            //return fenceValue <= lastCompletedFence;
+            return false;
+        }
+
+        internal void WaitForFenceInternal(long fenceValue)
+        {
+            //if (IsFenceCompleteInternal(fenceValue))
+            //    return;
+
+            //// TODO D3D12 in case of concurrency, this lock could end up blocking too long a second thread with lower fenceValue then first one
+            //lock (nativeFence)
+            //{
+            //    nativeFence.SetEventOnCompletion(fenceValue, fenceEvent.SafeWaitHandle.DangerousGetHandle());
+            //    fenceEvent.WaitOne();
+            //    lastCompletedFence = fenceValue;
+            //}
         }
 
         /// <summary>

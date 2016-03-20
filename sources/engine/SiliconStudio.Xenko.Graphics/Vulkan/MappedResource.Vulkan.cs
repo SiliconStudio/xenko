@@ -6,8 +6,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial struct MappedResource
     {
-        //internal SharpDX.Direct3D12.Resource UploadResource;
-        //internal int UploadOffset;
+        internal SharpVulkan.Buffer UploadResource;
+        internal int UploadOffset;
     }
 }
 #endif

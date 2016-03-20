@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             NativeCommandBuffer.Reset(CommandBufferResetFlags.ReleaseResources);
 
-            //GraphicsDevice.ReleaseTemporaryResources();
+            GraphicsDevice.ReleaseTemporaryResources();
 
             //ResetSrvHeap();
             //ResetSamplerHeap();
@@ -74,8 +74,8 @@ namespace SiliconStudio.Xenko.Graphics
             //srvMapping.Clear();
             //samplerMapping.Clear();
 
-            //nativeCommandAllocator.Reset();
-            //NativeCommandList.Reset(nativeCommandAllocator, null);
+            NativeCommandBuffer.Reset(CommandBufferResetFlags.ReleaseResources);
+            GraphicsDevice.NativeDevice.ResetCommandPool(nativeCommandPool, CommandPoolResetFlags.ReleseResources);
 
             //// TODO D3D12 This should happen at beginning of frame only on main command list
             //NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.Present, ResourceStates.RenderTarget);
@@ -519,7 +519,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             var clearValue = new ClearDepthStencilValue { Depth = depth, Stencil = stencil };
             NativeCommandBuffer.ClearDepthStencilImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, clearValue, 1, &clearRange);
-            //NativeCommandList.ClearDepthStencilView(depthStencilBuffer.NativeDepthStencilView, (ClearFlags)options, depth, stencil);
         }
 
         /// <summary>
@@ -540,7 +539,6 @@ namespace SiliconStudio.Xenko.Graphics
             };
             
             NativeCommandBuffer.ClearColorImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, ColorHelper.Convert(color), 1, &clearRange);
-            //NativeCommandList.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
         }
 
         /// <summary>
@@ -552,6 +550,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
         public void ClearReadWrite(Buffer buffer, Vector4 value)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -563,6 +562,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
         public void ClearReadWrite(Buffer buffer, Int4 value)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -574,6 +574,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
         public void ClearReadWrite(Buffer buffer, UInt4 value)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -585,6 +586,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
         public void ClearReadWrite(Texture texture, Vector4 value)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -596,6 +598,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
         public void ClearReadWrite(Texture texture, Int4 value)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -607,32 +610,38 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
         public void ClearReadWrite(Texture texture, UInt4 value)
         {
+            throw new NotImplementedException();
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
         {
+            throw new NotImplementedException();
         }
 
         public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
+            throw new NotImplementedException();
         }
 
         public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourecRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
         {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetInBytes)
         {
+            throw new NotImplementedException();
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
         {
+            throw new NotImplementedException();
         }
 
         internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
         {
-            
+            throw new NotImplementedException();
 
             var texture = resource as Texture;
             if (texture != null)
@@ -698,29 +707,56 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            //SharpDX.Direct3D12.Resource uploadResource;
-            //int uploadOffset;
-            //var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
+            SharpVulkan.Buffer uploadResource;
+            int uploadOffset;
+            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
 
-            //return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
-            //{
-            //    UploadResource = uploadResource,
-            //    UploadOffset = uploadOffset,
-            //};
-            return default(MappedResource);
+            return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
+            {
+                UploadResource = uploadResource,
+                UploadOffset = uploadOffset,
+            };
         }
 
         // TODO GRAPHICS REFACTOR what should we do with this?
-        public void UnmapSubresource(MappedResource unmapped)
+        public unsafe void UnmapSubresource(MappedResource unmapped)
         {
             // Copy back
-            //var buffer = unmapped.Resource as Buffer;
-            //if (buffer != null)
-            //{
-            //    NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, buffer.NativeResourceStates, ResourceStates.CopyDestination);
-            //    NativeCommandList.CopyBufferRegion(buffer.NativeResource, unmapped.OffsetInBytes, unmapped.UploadResource, unmapped.UploadOffset, unmapped.SizeInBytes);
-            //    NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, ResourceStates.CopyDestination, buffer.NativeResourceStates);
-            //}
+            var buffer = unmapped.Resource as Buffer;
+            if (buffer != null)
+            {
+                var memoryBarrier = new BufferMemoryBarrier
+                {
+                    StructureType = StructureType.BufferMemoryBarrier,
+                    Buffer = buffer.NativeBuffer,
+                    Offset = (uint)unmapped.OffsetInBytes,
+                    Size = (uint)unmapped.SizeInBytes,
+                    //SourceAccessMask = buffer.NativeAccessMask,
+                    DestinationAccessMask = AccessFlags.TransferWrite,                   
+                };
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+
+                var bufferCopy = new BufferCopy
+                {
+                    DestinationOffset = (uint)unmapped.OffsetInBytes,
+                    SourceOffset = (uint)unmapped.UploadOffset,
+                    Size = (uint)unmapped.OffsetInBytes
+                };
+                NativeCommandBuffer.CopyBuffer(buffer.NativeBuffer, unmapped.UploadResource, 1, &bufferCopy);
+
+                memoryBarrier = new BufferMemoryBarrier
+                {
+                    StructureType = StructureType.BufferMemoryBarrier,
+                    Buffer = buffer.NativeBuffer,
+                    Offset = (uint)unmapped.OffsetInBytes,
+                    Size = (uint)unmapped.SizeInBytes,
+                    SourceAccessMask = AccessFlags.TransferWrite,
+                    //DestinationAccessMask = buffer.NativeAccessMask,
+                };
+
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+
+            }
         }
     }
 }
