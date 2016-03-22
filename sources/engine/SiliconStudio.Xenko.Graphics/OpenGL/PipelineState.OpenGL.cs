@@ -179,6 +179,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         value = computeValue(source);
                         storage.Add(key, value);
+                        reverse.Add(value, key);
                     }
                     else
                     {
