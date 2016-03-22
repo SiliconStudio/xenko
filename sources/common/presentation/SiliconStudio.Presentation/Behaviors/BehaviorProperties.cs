@@ -142,9 +142,6 @@ namespace SiliconStudio.Presentation.Behaviors
                     mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
                     mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
                     mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
-                    // Synchronize with WPF
-                    window.MaxWidth = mmi.ptMaxSize.X;
-                    window.MaxHeight = mmi.ptMaxSize.Y;
 
                     Marshal.StructureToPtr(mmi, lparam, true);
                     handled = true;
