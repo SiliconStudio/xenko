@@ -33,6 +33,7 @@
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitialDefaultFields.cs" />
+    <Compile Include="Initializers\InitialDirectionSeed.cs" />
     <Compile Include="Initializers\InitialSpawnOrder.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderTrail.cs" />
+    <Compile Include="ShapeBuilders\Tools\ShapeBuilder.cs" />
     <Compile Include="ShapeBuilders\Tools\UVRotate.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
