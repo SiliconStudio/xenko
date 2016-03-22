@@ -115,6 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (directoryWatcher != null)
             {
                 directoryWatcher.Modified -= FileModifiedEvent;
+                directoryWatcher.Dispose();
                 directoryWatcher = null;
             }
 #endif
