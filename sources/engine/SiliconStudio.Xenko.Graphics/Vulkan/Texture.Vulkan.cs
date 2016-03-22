@@ -31,6 +31,7 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class Texture
     {
         internal SharpVulkan.Image NativeImage;
+        internal DeviceMemory NativeMemory;
         internal ImageView NativeColorAttachmentView;
         internal ImageView NativeDepthStencilView;
         internal ImageView NativeImageView;
@@ -92,6 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 // Create only a view
                 NativeImage = ParentTexture.NativeImage;
+                NativeMemory = ParentTexture.NativeMemory;
             }
             else
             {
@@ -183,9 +185,9 @@ namespace SiliconStudio.Xenko.Graphics
                             typeBits >>= 1;
                         }
 
-                        var memory = GraphicsDevice.NativeDevice.AllocateMemory(ref allocateInfo);
+                        NativeMemory = GraphicsDevice.NativeDevice.AllocateMemory(ref allocateInfo);
 
-                        GraphicsDevice.NativeDevice.BindImageMemory(NativeImage, memory, 0);
+                        GraphicsDevice.NativeDevice.BindImageMemory(NativeImage, NativeMemory, 0);
 
                         //AllocateMemory(IntPtr.Zero, memoryProperties);
 
@@ -367,11 +369,17 @@ namespace SiliconStudio.Xenko.Graphics
             if (ParentTexture != null || isNotOwningResources)
             {
                 NativeImage = SharpVulkan.Image.Null;
-                //NativeMemory = 0;
+                NativeMemory = DeviceMemory.Null;
             }
 
             if (!isNotOwningResources)
             {
+                if (NativeMemory != DeviceMemory.Null)
+                {
+                    GraphicsDevice.NativeDevice.FreeMemory(NativeMemory);
+                    NativeMemory = DeviceMemory.Null;
+                }
+
                 if (NativeImage != SharpVulkan.Image.Null)
                 {
                     GraphicsDevice.NativeDevice.DestroyImage(NativeImage);

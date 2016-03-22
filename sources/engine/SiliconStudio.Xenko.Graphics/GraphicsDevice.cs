@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected override void Destroy()
         {
-            DestroyPlatformDevice();
+            NativeDevice.WaitIdle();
 
             // Notify listeners
             if (Disposing != null)
@@ -107,6 +107,8 @@ namespace SiliconStudio.Xenko.Graphics
             SamplerStates = null;
 
             base.Destroy();
+
+            DestroyPlatformDevice();
         }
 
         /// <summary>

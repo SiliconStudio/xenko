@@ -383,6 +383,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void ReleaseDevice()
         {
+            // TODO VULKAN: Proper cleanup
+
             nativeDevice.Destroy();
         }
 
