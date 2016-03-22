@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         protected override Task LoadContent()
         {
             //Profiler.Enable(GameProfilingKeys.GameDrawFPS);
-            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
+//            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
 
             model = Content.Load<Model>("Model");
             material1 = Content.Load<Material>("Material1");
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
                         //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
-                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" } },
+//                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" } },
                     }
                 }
             };

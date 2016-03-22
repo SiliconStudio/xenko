@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal SharpVulkan.Buffer NativeBuffer;
         internal BufferView NativeBufferView;
+        internal AccessFlags AccessMask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
@@ -103,12 +104,13 @@ namespace SiliconStudio.Xenko.Graphics
                 createInfo.Usage |= BufferUsageFlags.UniformBuffer;
 
             // Create buffer
+            var isStaging = bufferDescription.Usage != GraphicsResourceUsage.Staging;
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
-            AllocateMemory(dataPointer, MemoryPropertyFlags.HostVisible);
+            AllocateMemory(dataPointer, isStaging ? MemoryPropertyFlags.HostVisible : MemoryPropertyFlags.DeviceLocal);
 
             // Staging resource don't have any views
-            if (bufferDescription.Usage != GraphicsResourceUsage.Staging)
-                this.InitializeViews();
+            if (!isStaging)
+                InitializeViews();
 
             //// TODO D3D12 where should that go longer term? should it be precomputed for future use? (cost would likely be additional check on SetDescriptorSets/Draw)
             //NativeResourceStates = ResourceStates.Common;

@@ -223,7 +223,9 @@ namespace SiliconStudio.Xenko.Graphics
             //} : null);
         }
 
-        public void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
+        private int i = 0;
+
+        public unsafe void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
         {
             //// Find parent resource
             //if (resource.ParentResource != null)
@@ -235,6 +237,61 @@ namespace SiliconStudio.Xenko.Graphics
             //    resource.NativeResourceState = (ResourceStates)newState;
             //    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, currentState, (ResourceStates)newState);
             //}
+
+
+
+            var texture = resource as Texture;
+            if (texture != null)
+            {
+                if (texture.ParentTexture != null)
+                    texture = texture.ParentTexture;
+
+                // TODO VULKAN: Check for change
+
+                var oldLayout = texture.NativeLayout;
+                var oldAccessMask = texture.NativeAccessMask;
+
+                switch (newState)
+                {
+                    case GraphicsResourceState.RenderTarget:
+                        texture.NativeLayout = ImageLayout.ColorAttachmentOptimal;
+                        texture.NativeAccessMask = AccessFlags.ColorAttachmentWrite;
+                        break;
+                    case GraphicsResourceState.Present:
+                        texture.NativeLayout = ImageLayout.PresentSource;
+                        texture.NativeAccessMask = AccessFlags.MemoryRead;
+                        break;
+                    case GraphicsResourceState.DepthWrite:
+                        texture.NativeLayout = ImageLayout.DepthStencilAttachmentOptimal;
+                        texture.NativeAccessMask = AccessFlags.DepthStencilAttachmentWrite;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                if (oldLayout == texture.NativeLayout && oldAccessMask == texture.NativeAccessMask)
+                    return;
+
+                var memoryBarrier = new ImageMemoryBarrier
+                {
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    Image = texture.NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)texture.ArraySize, 0, (uint)texture.MipLevels),
+                    OldLayout = oldLayout,
+                    NewLayout = texture.NativeLayout,
+                    SourceAccessMask = oldAccessMask,
+                    DestinationAccessMask = texture.NativeAccessMask,
+                };
+                NativeCommandBuffer.PipelineBarrier(
+                    newState == GraphicsResourceState.Present ? PipelineStageFlags.AllCommands : PipelineStageFlags.TopOfPipe,
+                    newState == GraphicsResourceState.Present ? PipelineStageFlags.BottomOfPipe : PipelineStageFlags.TopOfPipe,
+                    DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+                i++;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
@@ -366,6 +423,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="startVertexLocation">Index of the first vertex, which is usually an offset in a vertex buffer; it could also be used as the first vertex id generated for a shader parameter marked with the <strong>SV_TargetId</strong> system-value semantic.</param>
         public void Draw(int vertexCount, int startVertexLocation = 0)
         {
+            return;
+
             PrepareDraw();
 
             NativeCommandBuffer.Draw((uint)vertexCount, 1, (uint)startVertexLocation, 0);
@@ -396,6 +455,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="baseVertexLocation">A value added to each index before reading a vertex from the vertex buffer.</param>
         public void DrawIndexed(int indexCount, int startIndexLocation = 0, int baseVertexLocation = 0)
         {
+            return;
+
             PrepareDraw();
 
             NativeCommandBuffer.DrawIndexed((uint)indexCount, 1, (uint)startIndexLocation, baseVertexLocation, 0);
@@ -503,6 +564,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public unsafe void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
+            return;
+
             var clearRange = new ImageSubresourceRange
             {
                 BaseMipLevel = (uint)depthStencilBuffer.MipLevel,
@@ -529,6 +592,20 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentNullException">renderTarget</exception>
         public unsafe void Clear(Texture renderTarget, Color4 color)
         {
+            // TODO VULKAN: Detect if inside render pass. If so, NativeCommandBuffer.ClearAttachments()
+
+            var memoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                Image = renderTarget.NativeImage,
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)renderTarget.ArraySize, 0, (uint)renderTarget.MipLevels),
+                OldLayout = renderTarget.NativeLayout,
+                NewLayout = ImageLayout.TransferDestinationOptimal,
+                SourceAccessMask = renderTarget.NativeAccessMask,
+                DestinationAccessMask = AccessFlags.TransferWrite,
+            };
+            NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+
             var clearRange = new ImageSubresourceRange
             {
                 BaseMipLevel = (uint)depthStencilBuffer.MipLevel,
@@ -537,8 +614,20 @@ namespace SiliconStudio.Xenko.Graphics
                 LayerCount = (uint)depthStencilBuffer.ArraySize,
                 AspectMask = ImageAspectFlags.Color
             };
-            
+
             NativeCommandBuffer.ClearColorImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, ColorHelper.Convert(color), 1, &clearRange);
+
+            memoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                Image = renderTarget.NativeImage,
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)renderTarget.ArraySize, 0, (uint)renderTarget.MipLevels),
+                OldLayout = ImageLayout.TransferDestinationOptimal,
+                NewLayout = renderTarget.NativeLayout,
+                SourceAccessMask = AccessFlags.TransferWrite,
+                DestinationAccessMask = renderTarget.NativeAccessMask,
+            };
+            NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
         }
 
         /// <summary>
@@ -641,8 +730,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
         {
-            throw new NotImplementedException();
-
             var texture = resource as Texture;
             if (texture != null)
             {
@@ -652,28 +739,56 @@ namespace SiliconStudio.Xenko.Graphics
                 var width = region.Right - region.Left;
                 var height = region.Bottom - region.Top;
 
-                // TODO D3D12 allocate in upload heap (placed resources?)
-                //var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
-                //    ResourceDescription.Texture2D((SharpDX.DXGI.Format)texture.Format, width, height),
-                //    ResourceStates.GenericRead);
+                var mipSlice = subResourceIndex % texture.MipLevels;
+                var arraySlice = subResourceIndex / texture.MipLevels;
 
-                //GraphicsDevice.TemporaryResources.Add(nativeUploadTexture);
+                SharpVulkan.Buffer uploadResource;
+                int uploadOffset;
+                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch, out uploadResource, out uploadOffset);
 
-//                NativeCommandBuffer.UpdateBuffer(nativeUploadBuffer, offset, (uint)databox.SlicePitch, (uint*)databox.DataPointer);
-                //nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
-
-                // Trigger copy
-                var copyRegion = new BufferImageCopy
+                Utilities.CopyMemory(uploadMemory + uploadOffset, databox.DataPointer, databox.SlicePitch);
+                //NativeCommandBuffer.UpdateBuffer(uploadResource, (ulong)uploadOffset, (ulong)databox.SlicePitch, (uint*)databox.DataPointer);
+                
+                var memoryBarrier = new ImageMemoryBarrier
                 {
-                    //ImageExtent = new Extent3D(texture.Width, texture.Height, texture.Depth),
-                    //ImageOffset = new Offset3D(region.Left, region.Top, 0),
-
-                    //ImageSubresource = new ImageSubresourceLayers { AspectMask = }
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    Image = texture.NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice, 1),
+                    OldLayout = texture.NativeLayout,
+                    NewLayout = ImageLayout.TransferDestinationOptimal,
+                    SourceAccessMask = texture.NativeAccessMask,
+                    DestinationAccessMask = AccessFlags.TransferWrite,
                 };
-//                NativeCommandBuffer.CopyBufferToImage(nativeUploadBuffer, texture.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &copyRegion);
-                //NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.Common, ResourceStates.CopyDestination);
-                //NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
-                //NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+
+                // TODO VULKAN: Handle depth-stencil (NOTE: only supported on graphics queue)
+                // TODO VULKAN: Check on non-zero, slices
+                var bufferCopy = new BufferImageCopy
+                {
+                    BufferOffset = (ulong)uploadOffset,
+                    ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
+                    BufferImageHeight = (uint)databox.SlicePitch,
+                    BufferRowLength = (uint)databox.RowPitch,
+                    ImageExtent = new Extent3D((uint)(region.Right - region.Left), (uint)(region.Bottom - region.Top), (uint)(region.Back - region.Front)),
+                    ImageOffset = new Offset3D(region.Left, region.Top, region.Front)
+                };
+                NativeCommandBuffer.CopyBufferToImage(uploadResource, texture.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &bufferCopy);
+
+                memoryBarrier = new ImageMemoryBarrier
+                {
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    Image = texture.NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice, 1),
+                    OldLayout = ImageLayout.TransferDestinationOptimal,
+                    NewLayout = texture.NativeLayout,
+                    SourceAccessMask = AccessFlags.TransferWrite,
+                    DestinationAccessMask = texture.NativeAccessMask,
+                };
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -753,7 +868,6 @@ namespace SiliconStudio.Xenko.Graphics
                     SourceAccessMask = AccessFlags.TransferWrite,
                     //DestinationAccessMask = buffer.NativeAccessMask,
                 };
-
                 NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
 
             }

@@ -44,8 +44,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal int DepthPitch;
         internal bool HasStencil;
 
-        internal ImageLayout PreferredLayout;
-        internal ImageLayout CurrentLayout;
+        internal ImageLayout NativeLayout;
+        internal AccessFlags NativeAccessMask;
 
         public void Recreate(DataBox[] dataBoxes = null)
         {
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Graphics
             DepthPitch = Description.Width * Description.Height * pixelSize;
             RowPitch = Description.Width * pixelSize;
 
-            PreferredLayout = IsRenderTarget ? ImageLayout.ColorAttachmentOptimal : IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal : IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal : ImageLayout.General;
+            NativeLayout = IsRenderTarget ? ImageLayout.ColorAttachmentOptimal : IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal : IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal : ImageLayout.General;
 
             if (ParentTexture != null)
             {
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Graphics
                             Format = nativeFormat,
                             Flags = ImageCreateFlags.None,
                             Tiling = ImageTiling.Optimal,
-                            InitialLayout = dataBoxes == null ? PreferredLayout : ImageLayout.Preinitialized
+                            InitialLayout = dataBoxes == null ? NativeLayout : ImageLayout.Preinitialized
                         };
 
                         switch (Dimension)
@@ -145,8 +145,9 @@ namespace SiliconStudio.Xenko.Graphics
                             createInfo.Usage |= ImageUsageFlags.TransferSource | ImageUsageFlags.TransferDestination;
 
                         if (Usage == GraphicsResourceUsage.Immutable)
-                            createInfo.Usage |= ImageUsageFlags.TransferDestination; // TODO: TransferSource too?
+                            createInfo.Usage |= ImageUsageFlags.TransferSource;
 
+                        // TODO VULKAN: Simulate staging textures?
                         var memoryProperties = MemoryPropertyFlags.DeviceLocal;
                         if (Usage == GraphicsResourceUsage.Dynamic || Usage == GraphicsResourceUsage.Staging)
                         {
@@ -239,31 +240,33 @@ namespace SiliconStudio.Xenko.Graphics
                         //}
                     }
 
-                    //GraphicsDevice.SetImageLayout(this, IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, ImageLayout.Undefined, PreferredLayout);
+                    //GraphicsDevice.SetImageLayout(this, IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, ImageLayout.Undefined, NativeLayout);
                     //GraphicsDevice.Flush();
                 }
             }
+
+            if (NativeLayout == ImageLayout.TransferDestinationOptimal)
+                NativeAccessMask = AccessFlags.TransferRead;
+
+            if (NativeLayout == ImageLayout.ColorAttachmentOptimal)
+                NativeAccessMask = AccessFlags.ColorAttachmentWrite;
+
+            if (NativeLayout == ImageLayout.DepthStencilAttachmentOptimal)
+                NativeAccessMask = AccessFlags.DepthStencilAttachmentWrite;
+
+            if (NativeLayout == ImageLayout.ShaderReadOnlyOptimal)
+                NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
 
             var imageMemoryBarrier = new ImageMemoryBarrier
             {
                 StructureType = StructureType.ImageMemoryBarrier,
                 OldLayout = ImageLayout.Undefined,
-                NewLayout = PreferredLayout,
+                NewLayout = NativeLayout,
                 Image = NativeImage,
-                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)ArraySize, 0, (uint)MipLevels)
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)ArraySize, 0, (uint)MipLevels),
+                SourceAccessMask = AccessFlags.None,
+                DestinationAccessMask = NativeAccessMask
             };
-
-            if (PreferredLayout == ImageLayout.TransferDestinationOptimal)
-                imageMemoryBarrier.DestinationAccessMask = AccessFlags.TransferRead;
-
-            if (PreferredLayout == ImageLayout.ColorAttachmentOptimal)
-                imageMemoryBarrier.DestinationAccessMask = AccessFlags.ColorAttachmentWrite;
-
-            if (PreferredLayout == ImageLayout.DepthStencilAttachmentOptimal)
-                imageMemoryBarrier.DestinationAccessMask = AccessFlags.DepthStencilAttachmentWrite;
-
-            if (PreferredLayout == ImageLayout.ShaderReadOnlyOptimal)
-                imageMemoryBarrier.DestinationAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
 
             var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
             commandBuffer.Reset(CommandBufferResetFlags.None);

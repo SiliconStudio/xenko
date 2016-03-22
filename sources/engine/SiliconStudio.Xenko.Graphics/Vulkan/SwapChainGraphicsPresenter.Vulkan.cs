@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using SharpVulkan;
+using ImageLayout = SharpVulkan.ImageLayout;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -41,6 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
         private Texture backbuffer;
         private Texture[] buffers;
         private uint currentBufferIndex;
+        private int presentCount;
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters)
             : base(device, presentationParameters)
@@ -142,6 +144,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+
         public unsafe override void Present()
         {
             var semaphoreCreateInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
@@ -155,6 +158,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var currentBufferIndexCopy = currentBufferIndex;
                 var presentInfo = new PresentInfo
                 {
+                    StructureType = StructureType.PresentInfo,
                     SwapchainCount = 1,
                     Swapchains = new IntPtr(&swapChainCopy),
                     ImageIndices = new IntPtr(&currentBufferIndexCopy),
@@ -165,10 +169,16 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
 
                 // Get next image
-                currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, presentCompleteSemaphore, default(Fence));
+                currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, presentCompleteSemaphore, Fence.Null);
 
                 // Flip render targets
-                BackBuffer.SetNativeHandles(buffers[currentBufferIndex].NativeImage, buffers[currentBufferIndex].NativeColorAttachmentView);
+                backbuffer.SetNativeHandles(buffers[currentBufferIndex].NativeImage, buffers[currentBufferIndex].NativeColorAttachmentView);
+
+                if (++presentCount < buffers.Length)
+                {
+                    backbuffer.NativeLayout = ImageLayout.ColorAttachmentOptimal;
+                    backbuffer.NativeAccessMask = AccessFlags.ColorAttachmentWrite;
+                }
             }
             catch (SharpVulkanException e) when (e.Result == Result.ErrorOutOfDate)
             {
@@ -179,6 +189,15 @@ namespace SiliconStudio.Xenko.Graphics
 
                 GraphicsDevice.NativeDevice.DestroySemaphore(presentCompleteSemaphore);
             }
+        }
+
+        public override void BeginDraw(CommandList commandList)
+        {
+        }
+
+        public override void EndDraw(CommandList commandList, bool present)
+        {
+            
         }
 
         protected override void OnNameChanged()
