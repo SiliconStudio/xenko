@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <userdoc>
         /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
         /// </userdoc>
-        [DataMember(15)]
+        [DataMember(5)]
         [Display("Smoothing")]
         public SmoothingPolicy SmoothingPolicy
         {
