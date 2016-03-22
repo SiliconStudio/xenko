@@ -10,6 +10,12 @@ using SiliconStudio.Xenko.Particles.ShapeBuilders.Tools;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
+    /// <summary>
+    /// Specifies how texture coordinates should be assigned to the ribbonized mesh.
+    /// <see cref="AsIs"/> will assign a (0, 0, 1, 1) quad to each segment along the ribbon.
+    /// <see cref="Stretched"/> will assign a (0, 0, 1, X) quad stretched over the entire ribbon, where X is user-defined.
+    /// <see cref="DistanceBased"/> will assign a (0, 0, 1, Length) quad stretched over the entire ribbon, where Length is the actual length of the ribbon.
+    /// </summary>
     public enum TexCoordsPolicy
     {
         AsIs,
@@ -17,6 +23,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         DistanceBased,        
     }
 
+    /// <summary>
+    /// Specifies if the ribbon should be additionally smoothed or rendered as is.
+    /// </summary>
     public enum SmoothingPolicy
     {
         None,   // Ribbons only use control points and edges are hard. Good for straight lines

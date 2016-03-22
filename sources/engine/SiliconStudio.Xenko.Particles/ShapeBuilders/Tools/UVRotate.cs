@@ -40,12 +40,30 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders.Tools
         private bool innerFlipY;    // Read y' = (1 - y) rather than y' = y
         private bool innerRotated;  // Return (x, y) = (y', x') if rotated at 90 degrees, (x', y') otherwise
 
+        /// <summary>
+        /// If <c>True</c>, the texture coordinates will be flipped horizontally prior to texture sampling.
+        /// </summary>
+        /// <userdoc>
+        /// If <c>True</c>, the texture coordinates will be flipped horizontally prior to texture sampling.
+        /// </userdoc>
         [Display("Flip Hor")]
         public bool FlipX { get { return flipX; } set { flipX = value; ApplyChanges(); } }
 
+        /// <summary>
+        /// If <c>True</c>, the texture coordinates will be flipped vertically prior to texture sampling.
+        /// </summary>
+        /// <userdoc>
+        /// If <c>True</c>, the texture coordinates will be flipped vertically prior to texture sampling. 
+        /// </userdoc>
         [Display("Flip Ver")]
         public bool FlipY { get { return flipY; } set { flipY = value; ApplyChanges(); } }
 
+        /// <summary>
+        /// If <c>True</c>, the texture coordinates will be rotated clockwise by the specified angle prior to texture sampling.
+        /// </summary>
+        /// <userdoc>
+        /// If <c>True</c>, the texture coordinates will be rotated clockwise by the specified angle prior to texture sampling.
+        /// </userdoc>
         [Display("Clockwise")]
         public UvClockwiseRotation UvClockwise { get { return uvClockwise; } set { uvClockwise = value; ApplyChanges(); } }
 
