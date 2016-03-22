@@ -743,6 +743,13 @@ namespace SiliconStudio.Xenko.Games
                     }
                 }
 
+                // Reset allocator
+                if (GraphicsContext != null)
+                {
+                    GraphicsContext.ResourceGroupAllocator.Dispose();
+                    GraphicsContext = null;
+                }
+
                 var disposableGraphicsManager = graphicsDeviceManager as IDisposable;
                 if (disposableGraphicsManager != null)
                 {
@@ -1030,6 +1037,8 @@ namespace SiliconStudio.Xenko.Games
             {
                 UnloadContent();
             }
+
+            resumeManager.OnDestroyed();
 
             GraphicsDevice = null;
         }
