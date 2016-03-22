@@ -601,7 +601,12 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsDevice.Presenter = null;
                 }
 
+                //GraphicsDevice.DeviceResetting -= GraphicsDevice_DeviceResetting;
+                //GraphicsDevice.DeviceReset -= GraphicsDevice_DeviceReset;
+                //GraphicsDevice.DeviceLost -= GraphicsDevice_DeviceLost;
+
                 GraphicsDevice.Dispose();
+                GraphicsDevice.Disposing -= GraphicsDevice_Disposing;
                 GraphicsDevice = null;
             }
 

@@ -20,8 +20,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             catch
             {
                 return;
-            }
-           
+            }          
 
             // Forbid process to terminate (unless ctrl+c)
             while (true)

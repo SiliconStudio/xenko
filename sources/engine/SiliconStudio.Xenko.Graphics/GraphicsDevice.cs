@@ -106,6 +106,25 @@ namespace SiliconStudio.Xenko.Graphics
 
             SamplerStates = null;
 
+            // Clear shared data
+            sharedDataPerDevice.Clear();
+            sharedDataPerDeviceContext.Clear();
+
+            // Destroy resources
+            lock (Resources)
+            {
+                foreach (var resource in Resources)
+                {
+                    // Destroy resources
+                    resource.OnDestroyed();
+                    resource.LifetimeState = GraphicsResourceLifetimeState.Destroyed;
+
+                    // Remove Reload code in case it was preventing objects from being GC
+                    resource.Reload = null;
+                }
+                Resources.Clear();
+            }
+
             base.Destroy();
         }
 
