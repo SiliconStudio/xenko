@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         protected override void Destroy()
         {
-            Scheduler.ActionException += Scheduler_ActionException;
+            Scheduler.ActionException -= Scheduler_ActionException;
             Scheduler = null;
 
             Services.RemoveService(typeof(ScriptSystem));
