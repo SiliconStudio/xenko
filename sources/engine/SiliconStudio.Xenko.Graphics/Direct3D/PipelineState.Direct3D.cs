@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (blendState != previousPipeline.blendState || sampleMask != previousPipeline.sampleMask)
             {
-                nativeDeviceContext.OutputMerger.SetBlendState(blendState, null, sampleMask);
+                nativeDeviceContext.OutputMerger.SetBlendState(blendState, nativeDeviceContext.OutputMerger.BlendFactor, sampleMask);
             }
 
             if (rasterizerState != previousPipeline.rasterizerState)

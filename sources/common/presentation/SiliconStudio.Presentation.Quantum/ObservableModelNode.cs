@@ -213,13 +213,6 @@ namespace SiliconStudio.Presentation.Quantum
                         throw new ObservableViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
                     }
                 }
-                else if (!targetNode.Children.Contains(child.SourceNode))
-                {
-                    if (child.Index == null || !child.IsPrimitive)
-                    {
-                        throw new ObservableViewModelConsistencyException(child, "The source node of this node is not a child of the target node of its parent.");
-                    }
-                }
                 child.CheckConsistency();
             }
 #endif

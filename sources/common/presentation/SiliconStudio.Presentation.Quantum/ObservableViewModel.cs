@@ -45,12 +45,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        /// <param name="nodeContainer">A <see cref="NodeContainer"/> to use to build view model nodes.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer)
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            NodeContainer = nodeContainer;
             ObservableViewModelService = serviceProvider.Get<ObservableViewModelService>();
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
@@ -59,13 +56,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        /// <param name="nodeContainer">A <see cref="NodeContainer"/> to use to build view model nodes.</param>
-        /// <param name="modelNode">The root model node of the view model to generate.</param>
-        public ObservableViewModel(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IGraphNode modelNode)
-            : this(serviceProvider, nodeContainer)
+        /// <param name="propertyProvider">The object providing properties to display</param>
+        /// <param name="graphNode">The root node of the view model to generate.</param>
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
+            : this(serviceProvider)
         {
-            if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
-            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new GraphNodePath(modelNode), modelNode.Content.Type, null);
+            if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
+            PropertiesProvider = propertyProvider;
+            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, null);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
@@ -78,10 +76,26 @@ namespace SiliconStudio.Presentation.Quantum
             RootNode.Dispose();
         }
 
-        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
+        public static ObservableViewModel Create(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider)
         {
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
+            if (propertyProvider == null) throw new ArgumentNullException(nameof(propertyProvider));
+
+            if (!propertyProvider.CanProvidePropertiesViewModel)
+                return null;
+
+            var rootNode = propertyProvider.GetRootNode();
+            if (rootNode == null)
+                return null;
+
+            return new ObservableViewModel(serviceProvider, propertyProvider, rootNode);
+        }
+
+        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<ObservableViewModel> viewModels)
+        {
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
-            var combinedViewModel = new ObservableViewModel(serviceProvider, nodeContainer);
+            var combinedViewModel = new ObservableViewModel(serviceProvider);
 
             var rootNodes = new List<ObservableModelNode>();
             foreach (var viewModel in viewModels)
@@ -124,10 +138,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public ObservableViewModelService ObservableViewModelService { get; }
 
+        ///// <summary>
+        ///// Gets the <see cref="NodeContainer"/> used to store Quantum objects.
+        ///// </summary>
+        //public NodeContainer NodeContainer { get; }
+
         /// <summary>
-        /// Gets the <see cref="NodeContainer"/> used to store Quantum objects.
+        /// Gets the object providing properties for this view model.
         /// </summary>
-        public NodeContainer NodeContainer { get; }
+        public IPropertiesProviderViewModel PropertiesProvider { get; }
 
         /// <summary>
         /// Gets the <see cref="Logger"/> associated to this view model.
