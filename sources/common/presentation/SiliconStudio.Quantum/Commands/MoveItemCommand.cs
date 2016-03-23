@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
@@ -8,7 +6,7 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Quantum.Commands
 {
     // TODO: this command is very similar to RenameStringKeyCommand - try to factorize them
-    public class MoveItemCommand : SyncNodeCommand
+    public class MoveItemCommand : NodeCommandBase
     {
         public const string CommandName = "MoveItem";
 
@@ -32,7 +30,7 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor != null && collectionDescriptor.HasInsert;
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
+        public override void Execute(IContent content, object index, object parameter)
         {
             var indices = (Tuple<int, int>)parameter;
             var sourceIndex = indices.Item1;
@@ -40,7 +38,6 @@ namespace SiliconStudio.Quantum.Commands
             var value = content.Retrieve(sourceIndex);
             content.Remove(sourceIndex, value);
             content.Add(targetIndex, value);
-            return null;
         }
     }
 }

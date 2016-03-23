@@ -6,8 +6,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interactivity;
-
 using SiliconStudio.Presentation.Collections;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -34,7 +32,7 @@ namespace SiliconStudio.Presentation.Behaviors
     /// that contains a selected items collection in the framework.
     /// </summary>
     /// <typeparam name="T">The type of control that is associated with this behavior.</typeparam>
-    public abstract class BindableSelectedItemsBehavior<T> : Behavior<T> where T : Control
+    public abstract class BindableSelectedItemsBehavior<T> : DeferredBehaviorBase<T> where T : Control
     {
         private bool updatingCollection;
         
@@ -47,14 +45,6 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Identifies the <see cref="GiveFocusOnSelectionChange"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty GiveFocusOnSelectionChangeProperty = DependencyProperty.Register("GiveFocusOnSelectionChange", typeof(bool), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(true));
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BindableSelectedItemsBehavior{T}"/> class.
-        /// </summary>
-        protected BindableSelectedItemsBehavior()
-        {
-            BindableSelectedItemsControl.BindingReactivated += () => CollectionSelectionChanged(SelectedItems, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
 
         /// <summary>
         /// Gets or sets the view model collection that should be bound to the selected item collection of the control.
@@ -94,6 +84,18 @@ namespace SiliconStudio.Presentation.Behaviors
             }
 
             base.OnAttached();
+        }
+
+        protected override void OnAttachedAndLoaded()
+        {
+            BindableSelectedItemsControl.BindingReactivated += OnBindableSelectedItemsControlOnBindingReactivated;
+            base.OnAttachedAndLoaded();
+        }
+
+        protected override void OnDetachingAndUnloaded()
+        {
+            base.OnDetachingAndUnloaded();
+            BindableSelectedItemsControl.BindingReactivated -= OnBindableSelectedItemsControlOnBindingReactivated;
         }
 
         /// <summary>
@@ -264,6 +266,11 @@ namespace SiliconStudio.Presentation.Behaviors
                     AssociatedObject.Focus();
                 }
             }
+        }
+
+        private void OnBindableSelectedItemsControlOnBindingReactivated()
+        {
+            CollectionSelectionChanged(SelectedItems, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
 }

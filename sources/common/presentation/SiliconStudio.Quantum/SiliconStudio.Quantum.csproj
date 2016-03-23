@@ -30,7 +30,6 @@
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\SimpleNodeCommandActionItem.cs" />
-    <Compile Include="Commands\SyncNodeCommand.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
     <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
@@ -42,9 +41,9 @@
     <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
+    <Compile Include="INodeContainer.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
-    <Compile Include="NodeFactoryId.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
     <Compile Include="ModelConsistencyCheckVisitor.cs" />
     <Compile Include="GraphNodePath.cs" />

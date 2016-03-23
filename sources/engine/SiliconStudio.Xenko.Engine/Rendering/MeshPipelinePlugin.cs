@@ -84,6 +84,7 @@ namespace SiliconStudio.Xenko.Rendering
                 if (renderNode.RenderStage == transparentRenderStage)
                 {
                     pipelineState.BlendState = BlendStates.AlphaBlend;
+                    pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
                 }
 
                 var renderMesh = (RenderMesh)renderObject;

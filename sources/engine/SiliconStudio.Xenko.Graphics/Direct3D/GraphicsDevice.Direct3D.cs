@@ -236,7 +236,7 @@ namespace SiliconStudio.Xenko.Graphics
         private void ReleaseDevice()
         {
             // Display D3D11 ref counting info
-            //ClearState();
+            NativeDevice.ImmediateContext.ClearState();
             NativeDevice.ImmediateContext.Flush();
             NativeDevice.ImmediateContext.Dispose();
 
@@ -244,6 +244,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var deviceDebug = new SharpDX.Direct3D11.DeviceDebug(NativeDevice);
                 deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
+                deviceDebug.Dispose();
             }
 
             nativeDevice.Dispose();

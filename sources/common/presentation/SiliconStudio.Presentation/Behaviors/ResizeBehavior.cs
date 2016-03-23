@@ -35,16 +35,17 @@ namespace SiliconStudio.Presentation.Behaviors
             var desiredSize = AssociatedObject.DesiredSize;
             var surface = desiredSize.Height*desiredSize.Width;
 
-            var height = Math.Round(Math.Sqrt(SizeRatio.Height*surface/SizeRatio.Width));
-            height = MathUtil.Clamp(height, AssociatedObject.MinHeight, AssociatedObject.MaxHeight);
+            var width = Math.Round(Math.Sqrt(SizeRatio.Width * surface / SizeRatio.Height));
+            width = MathUtil.Clamp(width, AssociatedObject.MinWidth, AssociatedObject.MaxWidth);
+            AssociatedObject.Width = width;
 
-            var width = Math.Round(SizeRatio.Width*height/SizeRatio.Height);
-            AssociatedObject.Width = MathUtil.Clamp(width, AssociatedObject.MinWidth, AssociatedObject.MaxWidth);
-            if (width < AssociatedObject.MinWidth)
+            if (width <= AssociatedObject.MinWidth)
             {
                 // Keep default value for height
                 return;
             }
+            var height = Math.Round(SizeRatio.Height * width / SizeRatio.Width);
+            height = MathUtil.Clamp(height, AssociatedObject.MinHeight, AssociatedObject.MaxHeight);
             AssociatedObject.Height = height;
         }
 

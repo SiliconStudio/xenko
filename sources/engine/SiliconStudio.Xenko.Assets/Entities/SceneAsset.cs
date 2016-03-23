@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// A scene asset.
     /// </summary>
     [DataContract("SceneAsset")]
-    [AssetDescription(FileSceneExtension)]
+    [AssetDescription(FileSceneExtension, AllowArchetype = false)]
     [ObjectFactory(typeof(SceneFactory))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(SceneAssetCompiler))]

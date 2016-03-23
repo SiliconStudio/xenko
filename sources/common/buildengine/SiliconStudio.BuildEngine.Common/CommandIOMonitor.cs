@@ -15,14 +15,9 @@ namespace SiliconStudio.BuildEngine
     internal class CommandIOMonitor
     {
         /// <summary>
-        /// A dictionary containing read access timings (value) of a given object url (key)
+        /// A dictionary containing read and write access timings (value) of a given object url (key)
         /// </summary>
-        private readonly Dictionary<ObjectUrl, List<TimeInterval<BuildStep>>> readAccesses = new Dictionary<ObjectUrl, List<TimeInterval<BuildStep>>>();
-
-        /// <summary>
-        /// A dictionary containing write access timings (value) of a given object url (key)
-        /// </summary>
-        private readonly Dictionary<ObjectUrl, List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>>> writeAccesses = new Dictionary<ObjectUrl, List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>>>();
+        private readonly Dictionary<ObjectUrl, ObjectAccesses> objectsAccesses = new Dictionary<ObjectUrl, ObjectAccesses>();
 
         /// <summary>
         /// A dictionary containing execution intervals of BuildStep
@@ -36,6 +31,9 @@ namespace SiliconStudio.BuildEngine
         private readonly object lockObject = new object();
 
         private readonly Stopwatch stopWatch = new Stopwatch();
+
+        // Store earliest start time of command still running (to clean up accesses as time goes)
+        private long earliestCommandAliveStartTime;
 
         public CommandIOMonitor(ILogger logger)
         {
@@ -63,16 +61,12 @@ namespace SiliconStudio.BuildEngine
                         logger.Error("The command '{0}' has several times the file '{1}' as input. Input Files must not be duplicated", command.Title, inputUrl.Path);
                     inputHash.Add(inputUrl);
 
-                    List<TimeInterval<BuildStep>> inputReadAccess;
-                    if (!readAccesses.TryGetValue(inputUrl, out inputReadAccess))
+                    ObjectAccesses inputAccesses;
+                    if (!objectsAccesses.TryGetValue(inputUrl, out inputAccesses))
                     {
-                        inputReadAccess = new List<TimeInterval<BuildStep>> { new TimeInterval<BuildStep>(command, startTime) };
-                        readAccesses.Add(inputUrl, inputReadAccess);
+                        objectsAccesses.Add(inputUrl, inputAccesses = new ObjectAccesses());
                     }
-                    else
-                    {
-                        inputReadAccess.Add(new TimeInterval<BuildStep>(command, startTime));
-                    }
+                    inputAccesses.Reads.Add(new TimeInterval<BuildStep>(command, startTime));
                 }
             }
         }
@@ -82,45 +76,46 @@ namespace SiliconStudio.BuildEngine
             lock (lockObject)
             {
                 TimeInterval commandInterval = commandExecutionIntervals[command];
+
                 long startTime = commandInterval.StartTime;
                 long endTime = stopWatch.ElapsedTicks;
                 commandInterval.End(endTime);
 
+                commandExecutionIntervals.Remove(command);
+
                 foreach (var outputObject in command.Result.OutputObjects)
                 {
                     var outputUrl = outputObject.Key;
-                    List<TimeInterval<BuildStep>> inputReadAccess;
-                    if (readAccesses.TryGetValue(outputUrl, out inputReadAccess))
+                    ObjectAccesses inputAccess;
+                    if (objectsAccesses.TryGetValue(outputUrl, out inputAccess))
                     {
-                        foreach (TimeInterval<BuildStep> input in inputReadAccess.Where(input => input.Object != command && input.Overlap(startTime, endTime)))
+                        foreach (TimeInterval<BuildStep> input in inputAccess.Reads.Where(input => input.Object != command && input.Overlap(startTime, endTime)))
                         {
                             logger.Error("Command {0} is writing {1} while command {2} is reading it", command, outputUrl, input.Object);
                         }
                     }
 
-                    List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>> outputWriteAccess;
-                    if (!writeAccesses.TryGetValue(outputUrl, out outputWriteAccess))
+                    ObjectAccesses outputAccess;
+                    if (!objectsAccesses.TryGetValue(outputUrl, out outputAccess))
                     {
-                        outputWriteAccess = new List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>> { new TimeInterval<KeyValuePair<BuildStep, ObjectId>>(new KeyValuePair<BuildStep, ObjectId>(command, outputObject.Value), startTime, endTime) };
-                        writeAccesses.Add(outputUrl, outputWriteAccess);
+                        objectsAccesses.Add(outputUrl, outputAccess = new ObjectAccesses());
                     }
-                    else
+
+                    foreach (var output in outputAccess.Writes.Where(output => output.Object.Key != command && output.Overlap(startTime, endTime)))
                     {
-                        foreach (var output in outputWriteAccess.Where(output => output.Object.Key != command && output.Overlap(startTime, endTime)))
-                        {
-                            if (outputObject.Value != output.Object.Value)
-                                logger.Error("Commands {0} and {1} are both writing {2} at the same time, but they are different objects", command, output.Object, outputUrl);
-                        }
-                        outputWriteAccess.Add(new TimeInterval<KeyValuePair<BuildStep, ObjectId>>(new KeyValuePair<BuildStep, ObjectId>(command, outputObject.Value), startTime, endTime));
+                        if (outputObject.Value != output.Object.Value)
+                            logger.Error("Commands {0} and {1} are both writing {2} at the same time, but they are different objects", command, output.Object, outputUrl);
                     }
+
+                    outputAccess.Writes.Add(new TimeInterval<KeyValuePair<BuildStep, ObjectId>>(new KeyValuePair<BuildStep, ObjectId>(command, outputObject.Value), startTime, endTime));
                 }
 
                 foreach (ObjectUrl inputUrl in command.Result.InputDependencyVersions.Keys)
                 {
-                    List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>> outputWriteAccess;
-                    if (writeAccesses.TryGetValue(inputUrl, out outputWriteAccess))
+                    ObjectAccesses outputAccess;
+                    if (objectsAccesses.TryGetValue(inputUrl, out outputAccess))
                     {
-                        foreach (TimeInterval<KeyValuePair<BuildStep, ObjectId>> output in outputWriteAccess.Where(output => output.Object.Key != command && output.Overlap(startTime, endTime)))
+                        foreach (TimeInterval<KeyValuePair<BuildStep, ObjectId>> output in outputAccess.Writes.Where(output => output.Object.Key != command && output.Overlap(startTime, endTime)))
                         {
                             logger.Error("Command {0} is writing {1} while command {2} is reading it", output.Object, inputUrl, command);
                         }
@@ -134,10 +129,32 @@ namespace SiliconStudio.BuildEngine
                     commandInputFiles.Remove(command);
                     foreach (ObjectUrl input in inputFiles)
                     {
-                        readAccesses[input].Single(x => x.Object == command).End(endTime);
+                        objectsAccesses[input].Reads.Single(x => x.Object == command).End(endTime);
+                    }
+                }
+
+                // "Garbage collection" of accesses
+                var newEarliestCommandAliveStartTime = commandExecutionIntervals.Count > 0 ? commandExecutionIntervals.Min(x => x.Value.StartTime) : endTime;
+                if (newEarliestCommandAliveStartTime > earliestCommandAliveStartTime)
+                {
+                    earliestCommandAliveStartTime = newEarliestCommandAliveStartTime;
+
+                    // We can remove objects whose all R/W accesses are "completed" (EndTime is set)
+                    // and happened before all the current running commands started, since they won't affect us
+                    foreach (var objectAccesses in objectsAccesses.ToList())
+                    {
+                        if (objectAccesses.Value.Reads.All(x => x.EndTime != 0 && x.EndTime < earliestCommandAliveStartTime)
+                            && objectAccesses.Value.Writes.All(x => x.EndTime != 0 && x.EndTime < earliestCommandAliveStartTime))
+                            objectsAccesses.Remove(objectAccesses.Key);
                     }
                 }
             }
+        }
+
+        class ObjectAccesses
+        {
+            public List<TimeInterval<BuildStep>> Reads { get; } = new List<TimeInterval<BuildStep>>();
+            public List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>> Writes { get; } = new List<TimeInterval<KeyValuePair<BuildStep, ObjectId>>>();
         }
     }
 }

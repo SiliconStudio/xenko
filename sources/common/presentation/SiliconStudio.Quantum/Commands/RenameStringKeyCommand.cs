@@ -1,15 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RenameStringKeyCommand : SyncNodeCommand
+    public class RenameStringKeyCommand : NodeCommandBase
     {
         /// <inheritdoc/>
         public override string Name => "RenameStringKey";
@@ -31,14 +29,13 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        protected override IActionItem ExecuteSync(IContent content, object index, object parameter)
+        public override void Execute(IContent content, object index, object parameter)
         {
             var oldName = (string)index;
             var newName = (string)parameter;
             var renamedObject = content.Retrieve(oldName);
             content.Remove(oldName, renamedObject);
             content.Add(newName, renamedObject);
-            return null;
         }
     }
 }

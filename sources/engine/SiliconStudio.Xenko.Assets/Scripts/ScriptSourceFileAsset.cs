@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     }
 
     [DataContract("ScriptSourceFileAsset")]
-    [AssetDescription(Extension, AlwaysMarkAsRoot = true)]
+    [AssetDescription(Extension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [Display(95, "Script Source Code")]
     public sealed class ScriptSourceFileAsset : ProjectSourceCodeAsset
     {
