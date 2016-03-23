@@ -78,6 +78,44 @@ namespace SiliconStudio.ActionStack.Tests
         }
 
         [Test]
+        public void TestSingleItemTransaction()
+        {
+            var stack = new TransactionalActionStackTestContainer(5);
+            stack.Stack.BeginTransaction();
+            var current = stack.Stack.GetCurrentTransactions();
+            Assert.AreEqual(0, current.Count);
+            stack.Stack.Add(new SimpleActionItem());
+            stack.Stack.EndTransaction("Test");
+            Assert.Throws<InvalidOperationException>(() => stack.Stack.GetCurrentTransactions());
+            // The transaction should be removed and replaced by the actual item
+            var items = stack.Stack.ActionItems.ToList();
+            Assert.AreEqual(1, items.Count);
+            Assert.IsInstanceOf<SimpleActionItem>(items[0]);
+            stack.CheckRaiseCount(1, 0, 0, 0, 0);
+            stack.CheckTransactionCount(1, 1, 0, 0);
+        }
+
+        [Test]
+        public void TestNestedSingleItemTransaction()
+        {
+            var stack = new TransactionalActionStackTestContainer(5);
+            stack.Stack.BeginTransaction();
+            stack.Stack.BeginTransaction();
+            var current = stack.Stack.GetCurrentTransactions();
+            Assert.AreEqual(0, current.Count);
+            stack.Stack.Add(new SimpleActionItem());
+            stack.Stack.EndTransaction("Test");
+            stack.Stack.EndTransaction("Test");
+            Assert.Throws<InvalidOperationException>(() => stack.Stack.GetCurrentTransactions());
+            // The transaction should be removed and replaced by the actual item
+            var items = stack.Stack.ActionItems.ToList();
+            Assert.AreEqual(1, items.Count);
+            Assert.IsInstanceOf<SimpleActionItem>(items[0]);
+            stack.CheckRaiseCount(1, 0, 0, 0, 0);
+            stack.CheckTransactionCount(2, 2, 0, 0);
+        }
+
+        [Test]
         public void TestBeginCancel()
         {
             var stack = new TransactionalActionStackTestContainer(5);
@@ -324,6 +362,81 @@ namespace SiliconStudio.ActionStack.Tests
             stack.Stack.Add(action2);
             stack.Stack.DiscardTransaction();
             stack.CheckTransactionCount(1, 0, 0, 1);
+        }
+
+        [Test]
+        public void TestDontReverseOrder()
+        {
+            var stack = new TransactionalActionStackTestContainer(5);
+            int undoOrderCheck = 0;
+            int redoOrderCheck = 0;
+            var action1 = new SimpleActionItem(); action1.OnUndo += () => { Assert.AreEqual(0, undoOrderCheck); undoOrderCheck++; }; action1.OnRedo += () => { Assert.AreEqual(0, redoOrderCheck); redoOrderCheck++; };
+            var action2 = new SimpleActionItem(); action2.OnUndo += () => { Assert.AreEqual(1, undoOrderCheck); undoOrderCheck++; }; action2.OnRedo += () => { Assert.AreEqual(1, redoOrderCheck); redoOrderCheck++; };
+            stack.Stack.BeginTransaction();
+            stack.Stack.Add(action1);
+            stack.Stack.Add(action2);
+            stack.Stack.EndTransaction("Test", false);
+            Assert.AreEqual(0, undoOrderCheck);
+            Assert.AreEqual(0, redoOrderCheck);
+            stack.Stack.Undo();
+            Assert.AreEqual(2, undoOrderCheck);
+            Assert.AreEqual(0, redoOrderCheck);
+            stack.Stack.Redo();
+            Assert.AreEqual(2, undoOrderCheck);
+            Assert.AreEqual(2, redoOrderCheck);
+        }
+
+        [Test]
+        public void TestDontReverseNestedOrder()
+        {
+            var stack = new TransactionalActionStackTestContainer(5);
+            int undoOrderCheck = 0;
+            int redoOrderCheck = 0;
+            var action1 = new SimpleActionItem(); action1.OnUndo += () => { Assert.AreEqual(2, undoOrderCheck); undoOrderCheck++; }; action1.OnRedo += () => { Assert.AreEqual(0, redoOrderCheck); redoOrderCheck++; };
+            var action2 = new SimpleActionItem(); action2.OnUndo += () => { Assert.AreEqual(3, undoOrderCheck); undoOrderCheck++; }; action2.OnRedo += () => { Assert.AreEqual(1, redoOrderCheck); redoOrderCheck++; };
+            var action3 = new SimpleActionItem(); action3.OnUndo += () => { Assert.AreEqual(1, undoOrderCheck); undoOrderCheck++; }; action3.OnRedo += () => { Assert.AreEqual(2, redoOrderCheck); redoOrderCheck++; };
+            var action4 = new SimpleActionItem(); action4.OnUndo += () => { Assert.AreEqual(0, undoOrderCheck); undoOrderCheck++; }; action4.OnRedo += () => { Assert.AreEqual(3, redoOrderCheck); redoOrderCheck++; };
+            stack.Stack.BeginTransaction();
+            stack.Stack.BeginTransaction();
+            stack.Stack.Add(action1);
+            stack.Stack.Add(action2);
+            stack.Stack.EndTransaction("Test", false);
+            stack.Stack.BeginTransaction();
+            stack.Stack.Add(action3);
+            stack.Stack.Add(action4);
+            stack.Stack.EndTransaction("Test");
+            stack.Stack.EndTransaction("Test");
+            Assert.AreEqual(0, undoOrderCheck);
+            Assert.AreEqual(0, redoOrderCheck);
+            stack.Stack.Undo();
+            Assert.AreEqual(4, undoOrderCheck);
+            Assert.AreEqual(0, redoOrderCheck);
+            stack.Stack.Redo();
+            Assert.AreEqual(4, undoOrderCheck);
+            Assert.AreEqual(4, redoOrderCheck);
+        }
+        [Test]
+        public void TestDontReverseSingleNestedOrder()
+        {
+            var stack = new TransactionalActionStackTestContainer(5);
+            int undoOrderCheck = 0;
+            int redoOrderCheck = 0;
+            var action1 = new SimpleActionItem(); action1.OnUndo += () => { Assert.AreEqual(0, undoOrderCheck); undoOrderCheck++; }; action1.OnRedo += () => { Assert.AreEqual(0, redoOrderCheck); redoOrderCheck++; };
+            var action2 = new SimpleActionItem(); action2.OnUndo += () => { Assert.AreEqual(1, undoOrderCheck); undoOrderCheck++; }; action2.OnRedo += () => { Assert.AreEqual(1, redoOrderCheck); redoOrderCheck++; };
+            stack.Stack.BeginTransaction();
+            stack.Stack.BeginTransaction();
+            stack.Stack.Add(action1);
+            stack.Stack.Add(action2);
+            stack.Stack.EndTransaction("Test", false);
+            stack.Stack.EndTransaction("Test");
+            Assert.AreEqual(0, undoOrderCheck);
+            Assert.AreEqual(0, redoOrderCheck);
+            stack.Stack.Undo();
+            Assert.AreEqual(2, undoOrderCheck);
+            Assert.AreEqual(0, redoOrderCheck);
+            stack.Stack.Redo();
+            Assert.AreEqual(2, undoOrderCheck);
+            Assert.AreEqual(2, redoOrderCheck);
         }
     }
 }
