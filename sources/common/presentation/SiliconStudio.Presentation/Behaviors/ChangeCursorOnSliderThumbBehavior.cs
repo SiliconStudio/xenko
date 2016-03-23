@@ -10,13 +10,13 @@ namespace SiliconStudio.Presentation.Behaviors
 {
     public class ChangeCursorOnSliderThumbBehavior : DeferredBehaviorBase<Slider>
     {
-        protected override void OnAttachedOverride()
+        protected override void OnAttachedAndLoaded()
         {
             var thumb = AssociatedObject.FindVisualChildOfType<Thumb>();
             if (thumb != null)
                 thumb.Cursor = Cursors.SizeWE;
 
-            base.OnAttachedOverride();
+            base.OnAttachedAndLoaded();
         }
     }
 }

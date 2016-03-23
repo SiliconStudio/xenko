@@ -105,7 +105,7 @@ namespace SiliconStudio.Quantum.References
         internal IGraphNode SetTarget(NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IGraphNode targetNode = nodeContainer.GetOrCreateNode(ObjectValue, nodeFactory);
+            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(ObjectValue, nodeFactory);
             if (targetNode != null)
             {
                 if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");

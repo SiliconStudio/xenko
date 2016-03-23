@@ -179,12 +179,12 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         value = computeValue(source);
                         storage.Add(key, value);
+                        reverse.Add(value, key);
+                        counter.Add(value, 1);
                     }
                     else
                     {
-                        int currentCounter;
-                        counter.TryGetValue(value, out currentCounter);
-                        counter[value] = currentCounter + 1;
+                        counter[value] = counter[value] + 1;
                     }
 
                     return value;
@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.Graphics
                 lock (lockObject)
                 {
                     var newRefCount = counter[value] - 1;
-                    counter[value] = newRefCount--;
+                    counter[value] = newRefCount;
                     if (newRefCount == 0)
                     {
                         counter.Remove(value);
