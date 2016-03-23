@@ -170,7 +170,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             switch (request.Type)
             {
                 case RequestType.Loading:
-                    Load(image, libraryData, (LoadingRequest)request);
+                    Load(image, (LoadingRequest)request);
                     break;
                 case RequestType.Compressing:
                     Compress(image, libraryData, (CompressingRequest)request);
@@ -206,16 +206,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// Loads the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
-        /// <param name="libraryData">The library data.</param>
         /// <param name="loader">The loader.</param>
         /// <exception cref="TextureToolsException">Loading dds file failed</exception>
-        private void Load(TexImage image, DxtTextureLibraryData libraryData, LoadingRequest loader)
+        private void Load(TexImage image, LoadingRequest loader)
         {
             Log.Debug("Loading " + loader.FilePath + " ...");
 
-            libraryData = new DxtTextureLibraryData();
+            var libraryData = new DxtTextureLibraryData();
             image.LibraryData[this] = libraryData;
-
             libraryData.Image = new ScratchImage();
             libraryData.Metadata = new TexMetadata();
 

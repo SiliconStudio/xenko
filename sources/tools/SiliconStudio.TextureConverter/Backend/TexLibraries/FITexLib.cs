@@ -175,7 +175,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             switch (request.Type)
             {
                 case RequestType.Loading:
-                    Load(image, libraryData, (LoadingRequest)request);
+                    Load(image, (LoadingRequest)request);
                     break;
 
                 case RequestType.Rescaling:
@@ -217,10 +217,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// Loads the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
-        /// <param name="libraryData">The library data.</param>
         /// <param name="loader">The loader.</param>
         /// <exception cref="TextureToolsException">If loading failed : mostly not supported format or path error (FileNotFound).</exception>
-        private void Load(TexImage image, FreeImageTextureLibraryData libraryData, LoadingRequest loader)
+        private void Load(TexImage image, LoadingRequest loader)
         {
             Log.Verbose("Loading " + loader.FilePath + " ...");
 
@@ -241,7 +240,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             // Converting the image into BGRA_8888 format
-            libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
+            var libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
             image.LibraryData[this] = libraryData;
             int alphaSize = GetAlphaDepth(fileFormat, temp);
 
