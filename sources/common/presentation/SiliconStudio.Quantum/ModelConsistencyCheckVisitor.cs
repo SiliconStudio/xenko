@@ -126,8 +126,7 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             bool shouldProcessReference;
-            if (!nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference))
-                return;
+            nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
 
             var node = GetContextNode();
             GraphNode child;
