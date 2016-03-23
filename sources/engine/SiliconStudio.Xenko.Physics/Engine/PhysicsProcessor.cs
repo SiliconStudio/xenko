@@ -1,14 +1,12 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Physics.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
@@ -37,6 +35,7 @@ namespace SiliconStudio.Xenko.Physics
 
         private bool colliderShapesRendering;
 
+        private SceneChildRenderer debugSceneRenderer;
         private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
@@ -52,8 +51,16 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                //this should be enough to remove everything
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
+
+                foreach (var element in elements)
+                {
+                    element.RemoveDebugEntity(scene);
+                }
+
                 sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+                mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
             {
@@ -76,7 +83,9 @@ namespace SiliconStudio.Xenko.Physics
 
                 var childComponent = new ChildSceneComponent { Scene = debugScene };
                 debugEntityScene = new Entity { childComponent };
-                mainCompositor.Master.Add(new SceneChildRenderer(childComponent));
+                debugSceneRenderer = new SceneChildRenderer(childComponent);
+
+                mainCompositor.Master.Add(debugSceneRenderer);
                 sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
 
                 foreach (var element in elements)
@@ -205,6 +214,22 @@ namespace SiliconStudio.Xenko.Physics
             {
                 element.UpdateBones();
             }
+        }
+
+        public void UpdateContacts()
+        {
+            Simulation.BeginContactTesting();
+
+            foreach (var dataPair in ComponentDatas)
+            {
+                var data = dataPair.Value;
+                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions)
+                {
+                    Simulation.ContactTest(data.PhysicsComponent);
+                }
+            }
+
+            Simulation.EndContactTesting();
         }
     }
 }

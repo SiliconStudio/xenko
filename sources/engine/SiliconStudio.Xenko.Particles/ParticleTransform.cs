@@ -62,34 +62,22 @@ namespace SiliconStudio.Xenko.Particles
         public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);
 
 
-        public void SetParentTransform(ParticleTransform parent)
+        public void SetParentTransform(ref Vector3 translation, ref Quaternion rotation, float scale)
         {
-            if (parent == null)
-            {
-                WorldPosition = Position;
-                WorldRotation = Rotation;
-                WorldScale = Scale * ScaleUniform;
-                return;
-            }
-
-            // Note! The ParticleTransform presumes only uniform scale for any parent transforms.
-            // In this is not the case, parent.WorldScale should change based on the transform's own rotation
             var ownScale = Scale * ScaleUniform;
-            WorldScale = (InheritScale) ? ownScale * parent.WorldScale : ownScale;
+            WorldScale = (InheritScale) ? ownScale * scale : ownScale;
 
-            WorldRotation = (InheritRotation) ? Rotation * parent.WorldRotation : Rotation;
+            WorldRotation = (InheritRotation) ? Rotation * rotation : Rotation;
 
-            var offsetTranslation = Position * ((InheritScale) ? parent.WorldScale.X : 1f);
+            var offsetTranslation = Position * ((InheritScale) ? scale : 1f);
 
             if (InheritRotation)
             {
-                parent.WorldRotation.Rotate(ref offsetTranslation);
+                rotation.Rotate(ref offsetTranslation);
             }
 
-            WorldPosition = (InheritPosition) ? parent.WorldPosition + offsetTranslation : offsetTranslation;
-
+            WorldPosition = (InheritPosition) ? translation + offsetTranslation : offsetTranslation;
         }
-
     }
 }
 

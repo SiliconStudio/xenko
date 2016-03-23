@@ -10,6 +10,41 @@ using System.Threading.Tasks.Dataflow;
 namespace SiliconStudio.Xenko.Engine.Events
 {
     /// <summary>
+    /// Creates an event receiver that is used to receive events from an EventKey
+    /// </summary>
+    public class EventReceiver : EventReceiver<byte>
+    {
+        /// <summary>
+        /// Creates an event receiver, ready to receive broadcasts from the key
+        /// </summary>
+        /// <param name="key">The event key to listen from</param>
+        /// <param name="options">Option flags</param>
+        public EventReceiver(EventKey key, EventReceiverOptions options = EventReceiverOptions.None) : base(key, options)
+        {
+            
+        }
+
+        /// <summary>
+        /// Creates an event receiver, ready to receive broadcasts from the key
+        /// </summary>
+        /// <param name="key">The event key to listen from</param>
+        /// <param name="attachedScript">The script from where this receiver is created, useful if we have the ClearEveryFrame option set</param>
+        /// <param name="options">Option flags</param>
+        public EventReceiver(EventKey key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None) : base(key, attachedScript, options)
+        {
+        }
+
+        /// <summary>
+        /// Awaits a single event
+        /// </summary>
+        /// <returns></returns>
+        public new async Task ReceiveAsync()
+        {
+            await BufferBlock.ReceiveAsync();
+        }
+    }
+
+    /// <summary>
     /// Creates an event receiver that is used to receive T type events from an EventKey
     /// </summary>
     /// <typeparam name="T">The type of data the EventKey will send</typeparam>

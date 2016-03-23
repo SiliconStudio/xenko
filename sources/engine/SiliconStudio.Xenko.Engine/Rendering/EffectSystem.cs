@@ -111,6 +111,15 @@ namespace SiliconStudio.Xenko.Rendering
                 isInitialized = false;
             }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            if (directoryWatcher != null)
+            {
+                directoryWatcher.Modified -= FileModifiedEvent;
+                directoryWatcher.Dispose();
+                directoryWatcher = null;
+            }
+#endif
+
             base.Destroy();
         }
 

@@ -12,6 +12,11 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public static class IdentifiableHelper
     {
+        /// <summary>
+        /// Special member id used to serialize attached id to an object.
+        /// </summary>
+        public const string YamlSpecialId = "~Id";
+
         // TODO: Should we reinitialize this when assemblies are reloaded?
         private static readonly Dictionary<Type, bool> IdentifiableTypes = new Dictionary<Type, bool>();
 

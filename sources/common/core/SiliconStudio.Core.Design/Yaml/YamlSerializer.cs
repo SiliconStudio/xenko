@@ -261,7 +261,7 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 localSerializer = new Serializer(config);
-                localSerializer.Settings.ObjectSerializerBackend = new OverrideKeyMappingTransform(TypeDescriptorFactory.Default);
+                localSerializer.Settings.ObjectSerializerBackend = new CustomObjectSerializerBackend(TypeDescriptorFactory.Default);
 
                 // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
             }
@@ -287,9 +287,7 @@ namespace SiliconStudio.Core.Yaml
         
         private class CustomDynamicMember : DynamicMemberDescriptorBase
         {
-            private const string StringId = "~Id";
-
-            public CustomDynamicMember() : base(StringId, typeof(Guid))
+            public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid))
             {
                 Order = -int.MaxValue;
             }

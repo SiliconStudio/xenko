@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void Apply(BlendState oldBlendState)
+        public void Apply(CommandList commandList, BlendState oldBlendState)
         {
             // note: need to update blend equation, blend function and color mask even when the blend state is disable in order to keep the hash based caching system valid
 
@@ -128,6 +128,12 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (blendFuncHash != oldBlendState.blendFuncHash)
                 GL.BlendFuncSeparate(blendFactorSrcColor, blendFactorDestColor, blendFactorSrcAlpha, blendFactorDestAlpha);
+
+            if (commandList.NewBlendFactor != commandList.BoundBlendFactor)
+            {
+                commandList.BoundBlendFactor = commandList.NewBlendFactor;
+                GL.BlendColor(OpenGLConvertExtensions.ToOpenGL(commandList.NewBlendFactor));
+            }
 
             if (ColorWriteChannels != oldBlendState.ColorWriteChannels)
             {
