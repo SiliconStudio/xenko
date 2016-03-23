@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class CylinderColliderShape : ColliderShape
     {
+        private readonly ShapeOrientation shapeOrientation;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
         /// </summary>
@@ -25,26 +27,29 @@ namespace SiliconStudio.Xenko.Physics
 
             Matrix rotation;
 
+            CachedScaling = Vector3.One;
+            shapeOrientation = orientation;
+
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
                     InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0))
                     {
-                        LocalScaling = Vector3.One
+                        LocalScaling = CachedScaling
                     };
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
                     InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0))
                     {
-                        LocalScaling = Vector3.One
+                        LocalScaling = CachedScaling
                     };
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
                     InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2))
                     {
-                        LocalScaling = Vector3.One
+                        LocalScaling = CachedScaling
                     };
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
@@ -58,6 +63,36 @@ namespace SiliconStudio.Xenko.Physics
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
             return GeometricPrimitive.Cylinder.New(device).ToMeshDraw();
+        }
+
+        public override Vector3 Scaling
+        {
+            get { return base.Scaling; }
+            set
+            {
+                Vector3 newScaling;
+                switch (shapeOrientation)
+                {
+                    case ShapeOrientation.UpX:
+                        {
+                            newScaling = new Vector3(value.X, value.Z, value.Z);
+                            break;
+                        }
+                    case ShapeOrientation.UpY:
+                        {
+                            newScaling = new Vector3(value.X, value.Y, value.X);
+                            break;
+                        }
+                    case ShapeOrientation.UpZ:
+                        {
+                            newScaling = new Vector3(value.Y, value.Y, value.Z);
+                            break;
+                        }
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                base.Scaling = newScaling;
+            }
         }
     }
 }
