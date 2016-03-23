@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             DistanceBased,
         }
 
+
         /// <summary>
         /// Specifies if the ribbon should be additionally smoothed or rendered as is.
         /// </summary>
@@ -26,6 +27,16 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             None,   // Ribbons only use control points and edges are hard. Good for straight lines
             Fast,   // Smoothing using Catmull-Rom interpolation. Generally looks good
             Best,   // Smoothing based on circumcircles generated around every three adjacent points. Best suited for rapid, circular motions
+        }
+
+
+        /// <summary>
+        /// Specifies if the trail lies on one edge on the axis or is the axis in its center.
+        /// </summary>
+        public enum EdgePolicy
+        {
+            Edge,
+            Center,
         }
     }
 }
