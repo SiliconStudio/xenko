@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         protected override Task LoadContent()
         {
             //Profiler.Enable(GameProfilingKeys.GameDrawFPS);
-//            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
+            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
 
             model = Content.Load<Model>("Model");
             material1 = Content.Load<Material>("Material1");

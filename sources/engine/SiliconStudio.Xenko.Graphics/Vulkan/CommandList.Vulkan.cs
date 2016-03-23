@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using SharpVulkan;
 using SiliconStudio.Core;
@@ -78,7 +79,7 @@ namespace SiliconStudio.Xenko.Graphics
             var beginInfo = new CommandBufferBeginInfo
             {
                 StructureType = StructureType.CommandBufferBeginInfo,
-                //Flags = CommandBufferUsageFlags.OneTimeSubmit,
+                Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             NativeCommandBuffer.Begin(ref beginInfo);
 
@@ -87,22 +88,13 @@ namespace SiliconStudio.Xenko.Graphics
             // GraphicsDevice.NativeDevice.ResetCommandPool(nativeCommandPool, CommandPoolResetFlags.ReleseResources);
         }
 
-        public unsafe void Close()
+        public void Close()
         {
-            // Close the command buffer
+            // Close
             NativeCommandBuffer.End();
 
-            // Submit commands
-            var nativeCommandBufferCopy = NativeCommandBuffer;
-            var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
-            var submitInfo = new SubmitInfo
-            {
-                StructureType = StructureType.SubmitInfo,
-                CommandBufferCount = 1,
-                CommandBuffers = new IntPtr(&nativeCommandBufferCopy),
-                WaitDstStageMask = new IntPtr(&pipelineStageFlags),
-            };
-            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+            // Submit
+            GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
         }
 
         private void ClearStateImpl()
@@ -790,6 +782,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>Pointer to the sub resource to map.</returns>
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
         {
+
+
             if (resource == null) throw new ArgumentNullException("resource");
             var texture = resource as Texture;
             if (texture != null)
@@ -818,13 +812,17 @@ namespace SiliconStudio.Xenko.Graphics
             };
         }
 
+        private int f;
+
         // TODO GRAPHICS REFACTOR what should we do with this?
         public unsafe void UnmapSubresource(MappedResource unmapped)
         {
-            // Copy back
+             // Copy back
             var buffer = unmapped.Resource as Buffer;
             if (buffer != null)
             {
+                // TODO VULKAN: Synchronize host acccess to upload buffer?
+
                 var memoryBarrier = new BufferMemoryBarrier
                 {
                     StructureType = StructureType.BufferMemoryBarrier,
@@ -832,17 +830,17 @@ namespace SiliconStudio.Xenko.Graphics
                     Offset = (uint)unmapped.OffsetInBytes,
                     Size = (uint)unmapped.SizeInBytes,
                     SourceAccessMask = buffer.NativeAccessMask,
-                    DestinationAccessMask = AccessFlags.TransferWrite,                   
+                    DestinationAccessMask = AccessFlags.TransferWrite,
                 };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
 
                 var bufferCopy = new BufferCopy
                 {
                     DestinationOffset = (uint)unmapped.OffsetInBytes,
                     SourceOffset = (uint)unmapped.UploadOffset,
-                    Size = (uint)unmapped.OffsetInBytes
+                    Size = (uint)unmapped.SizeInBytes
                 };
-                NativeCommandBuffer.CopyBuffer(buffer.NativeBuffer, unmapped.UploadResource, 1, &bufferCopy);
+                NativeCommandBuffer.CopyBuffer(unmapped.UploadResource, buffer.NativeBuffer, 1, &bufferCopy);
 
                 memoryBarrier = new BufferMemoryBarrier
                 {
@@ -853,8 +851,7 @@ namespace SiliconStudio.Xenko.Graphics
                     SourceAccessMask = AccessFlags.TransferWrite,
                     DestinationAccessMask = buffer.NativeAccessMask,
                 };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
-
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
             }
         }
     }

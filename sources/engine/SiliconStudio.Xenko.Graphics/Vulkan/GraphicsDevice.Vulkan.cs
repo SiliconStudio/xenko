@@ -9,6 +9,7 @@ using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Diagnostics;
@@ -44,9 +45,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal int SrvHandleIncrementSize;
         internal int SamplerHandleIncrementSize;
 
-        private Fence nativeFence;
         private long lastCompletedFence;
-        internal long NextFenceValue = 1;
+        private FastList<Fence> fences = new FastList<Fence>(); 
         private AutoResetEvent fenceEvent = new AutoResetEvent(false);
         internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
 
@@ -287,7 +287,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
                 {
                     NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
+                    TemporaryResources.Enqueue(new BufferInfo(fences.Count, nativeUploadBuffer, nativeUploadBufferMemory));
                 }
 
                 // Allocate new buffer
@@ -303,7 +303,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Usage = BufferUsageFlags.TransferSource,
                 };
                 nativeUploadBuffer = NativeDevice.CreateBuffer(ref bufferCreateInfo);
-                AllocateMemory(MemoryPropertyFlags.HostVisible);
+                AllocateMemory(MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent);
 
                 nativeUploadBufferStart = NativeDevice.MapMemory(nativeUploadBufferMemory, 0, (ulong)nativeUploadBufferSize, MemoryMapFlags.None);
                 nativeUploadBufferOffset = 0;
@@ -318,9 +318,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected unsafe void AllocateMemory(MemoryPropertyFlags memoryProperties)
         {
-            if (nativeUploadBufferMemory != DeviceMemory.Null)
-                return;
-
             MemoryRequirements memoryRequirements;
             NativeDevice.GetBufferMemoryRequirements(nativeUploadBuffer, out memoryRequirements);
 
@@ -367,6 +364,7 @@ namespace SiliconStudio.Xenko.Graphics
             foreach (var temporaryResource in TemporaryResources)
             {
                 //var temporaryResource = TemporaryResources.Dequeue();
+
                 NativeDevice.FreeMemory(temporaryResource.Memory);
                 NativeDevice.DestroyBuffer(temporaryResource.Buffer);
             }
@@ -396,15 +394,33 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal unsafe long ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer)
         {
+            if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+            {
+                NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+                TemporaryResources.Enqueue(new BufferInfo(fences.Count, nativeUploadBuffer, nativeUploadBufferMemory));
+
+                nativeUploadBuffer = SharpVulkan.Buffer.Null;
+                nativeUploadBufferMemory = DeviceMemory.Null;
+            }
+
+            //var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
+            //var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
+            //fences.Add(fence);
+
+            // Submit commands
+            var nativeCommandBufferCopy = nativeCommandBuffer;
+            var pipelineStageFlags = PipelineStageFlags.AllCommands;
+
             var submitInfo = new SubmitInfo
             {
                 StructureType = StructureType.SubmitInfo,
                 CommandBufferCount = 1,
-                CommandBuffers = new IntPtr(&nativeCommandBuffer)
+                CommandBuffers = new IntPtr(&nativeCommandBufferCopy),
+                WaitDstStageMask = new IntPtr(&pipelineStageFlags),
             };
-            NativeCommandQueue.Submit(1, &submitInfo, nativeFence);
+            NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
 
-            return NextFenceValue++;
+            return fences.Count - 1;
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)
@@ -417,17 +433,20 @@ namespace SiliconStudio.Xenko.Graphics
             return false;
         }
 
-        internal void WaitForFenceInternal(long fenceValue)
+        internal unsafe void WaitForFenceInternal(long fenceValue)
         {
-            //if (IsFenceCompleteInternal(fenceValue))
-            //    return;
+            if (IsFenceCompleteInternal(fenceValue))
+                return;
 
             //// TODO D3D12 in case of concurrency, this lock could end up blocking too long a second thread with lower fenceValue then first one
-            //lock (nativeFence)
+            //lock (fences)
             //{
             //    nativeFence.SetEventOnCompletion(fenceValue, fenceEvent.SafeWaitHandle.DangerousGetHandle());
             //    fenceEvent.WaitOne();
             //    lastCompletedFence = fenceValue;
+
+            //    var fenceCopy = fences[(int)fenceValue];
+            //    //NativeDevice.WaitForFences(1, &fenceCopy, true, -1);
             //}
         }
 

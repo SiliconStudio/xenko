@@ -91,22 +91,31 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = BufferCreateFlags.None,
             };
 
-            if (bufferDescription.Usage == GraphicsResourceUsage.Dynamic)
+            if (bufferDescription.Usage != GraphicsResourceUsage.Immutable)
                 createInfo.Usage |= BufferUsageFlags.TransferDestination;
 
             if ((ViewFlags & BufferFlags.VertexBuffer) != 0)
+            {
                 createInfo.Usage |= BufferUsageFlags.VertexBuffer;
+                NativeAccessMask = AccessFlags.VertexAttributeRead;
+            }
 
             if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
+            {
                 createInfo.Usage |= BufferUsageFlags.IndexBuffer;
+                NativeAccessMask = AccessFlags.IndexRead;
+            }
 
             if ((ViewFlags & BufferFlags.ConstantBuffer) != 0)
+            {
                 createInfo.Usage |= BufferUsageFlags.UniformBuffer;
+                NativeAccessMask = AccessFlags.UniformRead;
+            }
 
             // Create buffer
             var isStaging = bufferDescription.Usage != GraphicsResourceUsage.Staging;
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
-            AllocateMemory(dataPointer, isStaging ? MemoryPropertyFlags.HostVisible : MemoryPropertyFlags.DeviceLocal);
+            AllocateMemory(dataPointer, isStaging ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal);
 
             // Staging resource don't have any views
             if (!isStaging)
