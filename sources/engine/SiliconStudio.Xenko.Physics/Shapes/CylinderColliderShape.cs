@@ -33,28 +33,28 @@ namespace SiliconStudio.Xenko.Physics
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
-                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0))
+                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, radius))
                     {
                         LocalScaling = CachedScaling
                     };
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
-                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0))
+                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, radius))
                     {
                         LocalScaling = CachedScaling
                     };
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
-                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2))
+                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, radius, height/2))
                     {
                         LocalScaling = CachedScaling
                     };
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("orientation");
+                    throw new ArgumentOutOfRangeException(nameof(orientation));
             }
 
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, height, radius * 2) * 1.01f) * rotation;
@@ -70,28 +70,29 @@ namespace SiliconStudio.Xenko.Physics
             get { return base.Scaling; }
             set
             {
-                Vector3 newScaling;
-                switch (shapeOrientation)
-                {
-                    case ShapeOrientation.UpX:
-                        {
-                            newScaling = new Vector3(value.X, value.Z, value.Z);
-                            break;
-                        }
-                    case ShapeOrientation.UpY:
-                        {
-                            newScaling = new Vector3(value.X, value.Y, value.X);
-                            break;
-                        }
-                    case ShapeOrientation.UpZ:
-                        {
-                            newScaling = new Vector3(value.Y, value.Y, value.Z);
-                            break;
-                        }
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                base.Scaling = newScaling;
+//                Vector3 newScaling;
+//                switch (shapeOrientation)
+//                {
+//                    case ShapeOrientation.UpX:
+//                        {
+//                            newScaling = new Vector3(value.X, value.Z, value.Z);
+//                            break;
+//                        }
+//                    case ShapeOrientation.UpY:
+//                        {
+//                            newScaling = new Vector3(value.X, value.Y, value.X);
+//                            break;
+//                        }
+//                    case ShapeOrientation.UpZ:
+//                        {
+//                            newScaling = new Vector3(value.Y, value.Y, value.Z);
+//                            break;
+//                        }
+//                    default:
+//                        throw new ArgumentOutOfRangeException();
+//                }
+//                base.Scaling = newScaling;
+                base.Scaling = value;
             }
         }
     }
