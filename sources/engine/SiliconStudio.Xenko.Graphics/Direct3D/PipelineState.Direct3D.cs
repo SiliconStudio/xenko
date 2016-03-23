@@ -119,9 +119,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected override void DestroyImpl()
         {
-            base.DestroyImpl();
-
             var pipelineStateCache = GetPipelineStateCache();
+
+            if (blendState != null)
+                pipelineStateCache.BlendStateCache.Release(blendState);
+            if (rasterizerState != null)
+                pipelineStateCache.RasterizerStateCache.Release(rasterizerState);
+            if (depthStencilState != null)
+                pipelineStateCache.DepthStencilStateCache.Release(depthStencilState);
 
             if (vertexShader != null)
                 pipelineStateCache.VertexShaderCache.Release(vertexShader);
@@ -135,6 +140,10 @@ namespace SiliconStudio.Xenko.Graphics
                 pipelineStateCache.DomainShaderCache.Release(domainShader);
             if (computeShader != null)
                 pipelineStateCache.ComputeShaderCache.Release(computeShader);
+
+            inputLayout?.Dispose();
+
+            base.DestroyImpl();
         }
 
         private void CreateInputLayout(InputElementDescription[] inputElements)
@@ -218,7 +227,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         // Small helper to cache SharpDX graphics objects
-        class GraphicsCache<TSource, TKey, TValue> where TValue : SharpDX.IUnknown
+        class GraphicsCache<TSource, TKey, TValue> : IDisposable where TValue : SharpDX.IUnknown
         {
             private object lockObject = new object();
 
@@ -246,6 +255,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         value = computeValue(source);
                         storage.Add(key, value);
+                        reverse.Add(value, key);
                     }
                     else
                     {
@@ -271,6 +281,21 @@ namespace SiliconStudio.Xenko.Graphics
                             storage.Remove(key);
                         }
                     }
+                }
+            }
+
+            public void Dispose()
+            {
+                lock (lockObject)
+                {
+                    // Release everything
+                    foreach (var entry in reverse)
+                    {
+                        while (entry.Key.Release() > 0) {}
+                    }
+
+                    reverse.Clear();
+                    storage.Clear();
                 }
             }
         }
@@ -377,6 +402,15 @@ namespace SiliconStudio.Xenko.Graphics
 
             public void Dispose()
             {
+                VertexShaderCache.Dispose();
+                PixelShaderCache.Dispose();
+                GeometryShaderCache.Dispose();
+                HullShaderCache.Dispose();
+                DomainShaderCache.Dispose();
+                ComputeShaderCache.Dispose();
+                BlendStateCache.Dispose();
+                RasterizerStateCache.Dispose();
+                DepthStencilStateCache.Dispose();
             }
         }
     }

@@ -50,6 +50,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The native device context.</value>
         internal SharpDX.Direct3D11.DeviceContext NativeDeviceContext => nativeDeviceContext;
 
+        protected internal override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            DestroyImpl();
+        }
+
+        protected override void DestroyImpl()
+        {
+            Utilities.Dispose(ref nativeDeviceProfiler);
+
+            base.DestroyImpl();
+        }
+
         public void Reset()
         {
         }
