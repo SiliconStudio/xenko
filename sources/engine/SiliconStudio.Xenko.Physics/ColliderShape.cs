@@ -6,7 +6,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Physics
 {
