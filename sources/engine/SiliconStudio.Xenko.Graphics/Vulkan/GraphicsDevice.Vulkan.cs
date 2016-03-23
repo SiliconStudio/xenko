@@ -360,7 +360,9 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Release previous frame resources
             //while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().FenceValue))
-            NativeCommandQueue.WaitIdle();
+
+            if (TemporaryResources.Count > 0)
+                NativeCommandQueue.WaitIdle();
 
             foreach (var temporaryResource in TemporaryResources)
             {

@@ -31,6 +31,10 @@ namespace SiliconStudio.Xenko.Graphics
                 Marshal.StringToHGlobalAnsi("VK_KHR_surface"),
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                 Marshal.StringToHGlobalAnsi("VK_KHR_win32_surface"),
+#elif SILICONSTUDIO_PLATFORM_ANDROID
+            
+#elif SILICONSTUDIO_PLATFORM_LINUX
+            
 #endif
             };
 

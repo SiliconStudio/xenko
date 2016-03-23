@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Graphics
         private bool isNotOwningResources;
         private bool isPersistentImage;
 
-        private Format nativeFormat;
+        internal Format NativeFormat;
         internal int RowPitch;
         internal int DepthPitch;
         internal bool HasStencil;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             int pixelSize;
             bool compressed;
-            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeFormat, out pixelSize, out compressed);
+            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out NativeFormat, out pixelSize, out compressed);
 
             DepthPitch = Description.Width * Description.Height * pixelSize;
             RowPitch = Description.Width * pixelSize;
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Graphics
                             Extent = new Extent3D((uint)Width, (uint)Height, (uint)Depth),
                             MipLevels = (uint)MipLevels,
                             Samples = SampleCountFlags.Sample1,
-                            Format = nativeFormat,
+                            Format = NativeFormat,
                             Flags = ImageCreateFlags.None,
                             Tiling = ImageTiling.Optimal,
                             InitialLayout = dataBoxes == null ? NativeLayout : ImageLayout.Preinitialized

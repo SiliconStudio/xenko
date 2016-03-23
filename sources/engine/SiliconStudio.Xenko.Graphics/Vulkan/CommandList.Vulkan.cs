@@ -57,14 +57,14 @@ namespace SiliconStudio.Xenko.Graphics
             //nativeCommandAllocator = device.NativeDevice.CreateCommandAllocator(CommandListType.Direct);
             //NativeCommandList = device.NativeDevice.CreateCommandList(CommandListType.Direct, nativeCommandAllocator, null);
 
-            ResetSrvHeap();
-            ResetSamplerHeap();
+            //ResetSrvHeap();
+            //ResetSamplerHeap();
+
+            Reset();
         }
 
         public void Reset()
         {
-            NativeCommandBuffer.Reset(CommandBufferResetFlags.ReleaseResources);
-
             GraphicsDevice.ReleaseTemporaryResources();
 
             //ResetSrvHeap();
@@ -74,29 +74,35 @@ namespace SiliconStudio.Xenko.Graphics
             //srvMapping.Clear();
             //samplerMapping.Clear();
 
-            NativeCommandBuffer.Reset(CommandBufferResetFlags.ReleaseResources);
-            GraphicsDevice.NativeDevice.ResetCommandPool(nativeCommandPool, CommandPoolResetFlags.ReleseResources);
+            // NOTE: Begin implicities Reset(CommandBufferResetFlags.None)
+            var beginInfo = new CommandBufferBeginInfo
+            {
+                StructureType = StructureType.CommandBufferBeginInfo,
+                //Flags = CommandBufferUsageFlags.OneTimeSubmit,
+            };
+            NativeCommandBuffer.Begin(ref beginInfo);
 
-            //// TODO D3D12 This should happen at beginning of frame only on main command list
-            //NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.Present, ResourceStates.RenderTarget);
+            // TODO VULKAN: Reset whole pool per frame?
+            // NativeCommandBuffer.Reset(CommandBufferResetFlags.ReleaseResources);
+            // GraphicsDevice.NativeDevice.ResetCommandPool(nativeCommandPool, CommandPoolResetFlags.ReleseResources);
         }
 
         public unsafe void Close()
         {
+            // Close the command buffer
+            NativeCommandBuffer.End();
+
+            // Submit commands
             var nativeCommandBufferCopy = NativeCommandBuffer;
+            var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
             var submitInfo = new SubmitInfo
             {
                 StructureType = StructureType.SubmitInfo,
                 CommandBufferCount = 1,
                 CommandBuffers = new IntPtr(&nativeCommandBufferCopy),
+                WaitDstStageMask = new IntPtr(&pipelineStageFlags),
             };
             GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
-
-            //// TODO D3D12 This should happen at end of frame only on main command list
-            //NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.RenderTarget, ResourceStates.Present);
-
-            //NativeCommandList.Close();
-            //GraphicsDevice.NativeCommandQueue.ExecuteCommandList(NativeCommandList);
         }
 
         private void ClearStateImpl()
@@ -227,19 +233,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         public unsafe void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
         {
-            //// Find parent resource
-            //if (resource.ParentResource != null)
-            //    resource = resource.ParentResource;
-
-            //var currentState = resource.NativeResourceState;
-            //if (currentState != (ResourceStates)newState)
-            //{
-            //    resource.NativeResourceState = (ResourceStates)newState;
-            //    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, currentState, (ResourceStates)newState);
-            //}
-
-
-
             var texture = resource as Texture;
             if (texture != null)
             {
@@ -606,16 +599,8 @@ namespace SiliconStudio.Xenko.Graphics
             };
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
-            var clearRange = new ImageSubresourceRange
-            {
-                BaseMipLevel = (uint)depthStencilBuffer.MipLevel,
-                LevelCount = (uint)depthStencilBuffer.MipLevels,
-                BaseArrayLayer = (uint)depthStencilBuffer.ArraySlice,
-                LayerCount = (uint)depthStencilBuffer.ArraySize,
-                AspectMask = ImageAspectFlags.Color
-            };
-
-            NativeCommandBuffer.ClearColorImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, ColorHelper.Convert(color), 1, &clearRange);
+            var clearRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)renderTarget.ArraySlice, (uint)renderTarget.ArraySize, (uint)renderTarget.MipLevel, (uint)renderTarget.MipLevels);
+            NativeCommandBuffer.ClearColorImage(renderTarget.NativeImage, ImageLayout.TransferDestinationOptimal, ColorHelper.Convert(color), 1, &clearRange);
 
             memoryBarrier = new ImageMemoryBarrier
             {
@@ -846,7 +831,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Buffer = buffer.NativeBuffer,
                     Offset = (uint)unmapped.OffsetInBytes,
                     Size = (uint)unmapped.SizeInBytes,
-                    //SourceAccessMask = buffer.NativeAccessMask,
+                    SourceAccessMask = buffer.NativeAccessMask,
                     DestinationAccessMask = AccessFlags.TransferWrite,                   
                 };
                 NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
@@ -866,7 +851,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Offset = (uint)unmapped.OffsetInBytes,
                     Size = (uint)unmapped.SizeInBytes,
                     SourceAccessMask = AccessFlags.TransferWrite,
-                    //DestinationAccessMask = buffer.NativeAccessMask,
+                    DestinationAccessMask = buffer.NativeAccessMask,
                 };
                 NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
 

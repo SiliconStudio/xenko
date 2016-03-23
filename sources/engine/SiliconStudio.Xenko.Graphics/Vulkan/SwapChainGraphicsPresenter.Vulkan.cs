@@ -24,10 +24,8 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Windows.Forms;
 using SharpVulkan;
-using ImageLayout = SharpVulkan.ImageLayout;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -40,9 +38,14 @@ namespace SiliconStudio.Xenko.Graphics
         private Surface surface;
 
         private Texture backbuffer;
-        private Texture[] buffers;
+        private SwapChainImageInfo[] swapchainImages;
         private uint currentBufferIndex;
-        private int presentCount;
+
+        private struct SwapChainImageInfo
+        {
+            public SharpVulkan.Image NativeImage;
+            public ImageView NativeColorAttachmentView;
+        }
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters)
             : base(device, presentationParameters)
@@ -172,13 +175,7 @@ namespace SiliconStudio.Xenko.Graphics
                 currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, presentCompleteSemaphore, Fence.Null);
 
                 // Flip render targets
-                backbuffer.SetNativeHandles(buffers[currentBufferIndex].NativeImage, buffers[currentBufferIndex].NativeColorAttachmentView);
-
-                if (++presentCount < buffers.Length)
-                {
-                    backbuffer.NativeLayout = ImageLayout.ColorAttachmentOptimal;
-                    backbuffer.NativeAccessMask = AccessFlags.ColorAttachmentWrite;
-                }
+                backbuffer.SetNativeHandles(swapchainImages[currentBufferIndex].NativeImage, swapchainImages[currentBufferIndex].NativeColorAttachmentView);
             }
             catch (SharpVulkanException e) when (e.Result == Result.ErrorOutOfDate)
             {
@@ -197,7 +194,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         public override void EndDraw(CommandList commandList, bool present)
         {
-            
         }
 
         protected override void OnNameChanged()
@@ -210,11 +206,11 @@ namespace SiliconStudio.Xenko.Graphics
             backbuffer.Dispose();
             backbuffer = null;
 
-            foreach (var buffer in buffers)
+            foreach (var swapchainImage in swapchainImages)
             {
-                buffer.Dispose();
+                GraphicsDevice.NativeDevice.DestroyImageView(swapchainImage.NativeColorAttachmentView);
             }
-            buffers = null;
+            swapchainImages = null;
 
             GraphicsDevice.NativeDevice.DestroySwapchain(swapChain);
             swapChain = Swapchain.Null;
@@ -233,11 +229,6 @@ namespace SiliconStudio.Xenko.Graphics
         protected override void ResizeBackBuffer(int width, int height, PixelFormat format)
         {
             throw new NotImplementedException();
-
-            foreach (var buffer in buffers)
-            {
-                buffer.OnDestroyed();
-            }
         }
 
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
@@ -256,7 +247,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe Swapchain CreateSwapChain()
         {
-
             Description.BackBufferFormat = PixelFormat.B8G8R8A8_UNorm;
 
             CreateSurface();
@@ -299,6 +289,8 @@ namespace SiliconStudio.Xenko.Graphics
                     swapChainPresentMode = PresentMode.Immediate;
                 }
             }
+
+            swapChainPresentMode = PresentMode.Fifo;
 
             // Native format
             Format backBufferFormat;
@@ -356,11 +348,18 @@ namespace SiliconStudio.Xenko.Graphics
                 WindowHandle = control.Handle,
             };
             surface = GraphicsAdapterFactory.Instance.CreateWin32Surface(surfaceCreateInfo);
+#elif SILICONSTUDIO_PLATFORM_ANDROID
+            throw new NotImplementedException();
+#elif SILICONSTUDIO_PLATFORM_LINUX
+            throw new NotImplementedException();
+#else
+            throw new NotSupportedException();
 #endif
         }
 
-        private void CreateBackBuffers()
+        private unsafe void CreateBackBuffers()
         {
+            // Create the texture object
             var backBufferDescription = new TextureDescription
             {
                 ArraySize = 1,
@@ -375,15 +374,26 @@ namespace SiliconStudio.Xenko.Graphics
                 Usage = GraphicsResourceUsage.Default
             };
 
-            var swapChainImages = GraphicsDevice.NativeDevice.GetSwapchainImages(swapChain);
-            buffers = new Texture[swapChainImages.Length];
-            for (int i = 0; i < swapChainImages.Length; i++)
+            backbuffer = new Texture(GraphicsDevice).InitializeWithoutResources(backBufferDescription);
+
+            // Create image views
+            var createInfo = new ImageViewCreateInfo
             {
-                buffers[i] = new Texture(GraphicsDevice).InitializeFromPersistent(backBufferDescription, swapChainImages[i]);
+                StructureType = StructureType.ImageViewCreateInfo,
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, 1, 0, 1),
+                Format = backbuffer.NativeFormat,
+            };
+
+            var buffers = GraphicsDevice.NativeDevice.GetSwapchainImages(swapChain);
+            swapchainImages = new SwapChainImageInfo[buffers.Length];
+            for (int i = 0; i < buffers.Length; i++)
+            {
+                swapchainImages[i].NativeImage = createInfo.Image = buffers[i];
+                swapchainImages[i].NativeColorAttachmentView = GraphicsDevice.NativeDevice.CreateImageView(ref createInfo);
             }
 
-            backbuffer = new Texture(GraphicsDevice).InitializeWithoutResources(backBufferDescription);
-            backbuffer.SetNativeHandles(buffers[0].NativeImage, buffers[0].NativeColorAttachmentView);
+            // Apply the first swap chain image to the texture
+            backbuffer.SetNativeHandles(swapchainImages[0].NativeImage, swapchainImages[0].NativeColorAttachmentView);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal SharpVulkan.Buffer NativeBuffer;
         internal BufferView NativeBufferView;
-        internal AccessFlags AccessMask;
+        internal AccessFlags NativeAccessMask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
