@@ -24,10 +24,10 @@ TemplateFolders:
       Group: Core
       Exclude: "**/*.cs;**/*.xaml"
       Files:
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/NewPackage.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectExecutable.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibrary.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatforms.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/NewPackage.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/ProjectExecutable.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/ProjectLibrary.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/UpdatePlatforms.xktpl
     - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts
       Group: Scripts
       Files:
