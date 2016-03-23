@@ -44,9 +44,6 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
 
-        /// <inheritdoc/>
-        public event EventHandler<NodeConstructedArgs> NodeConstructed;
-
         /// <summary>
         /// Reset the visitor in order to use it to generate another model.
         /// </summary>
@@ -98,7 +95,6 @@ namespace SiliconStudio.Quantum
                     referenceContents.Add(content);
 
                 AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
-                NotifyNodeConstructed(content);
 
                 if (obj == null)
                 {
@@ -189,16 +185,6 @@ namespace SiliconStudio.Quantum
             return true;
         }
 
-        /// <summary>
-        /// Raises the <see cref="NodeConstructed"/> event.
-        /// </summary>
-        /// <param name="content">The content of the node that has been constructed.</param>
-        /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal void NotifyNodeConstructed(IContent content)
-        {
-            NodeConstructed?.Invoke(this, new NodeConstructedArgs(content));
-        }
-
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
@@ -224,7 +210,6 @@ namespace SiliconStudio.Quantum
             PopContextNode();
 
             AvailableCommands.Where(x => x.CanAttach(node.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(node.AddCommand);
-            NotifyNodeConstructed(content);
 
             node.Seal();
         }
