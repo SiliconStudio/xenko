@@ -34,6 +34,7 @@
     <Compile Include="TestDictionaries.cs" />
     <Compile Include="TestLists.cs" />
     <Compile Include="TestMultipleReferencer.cs" />
+    <Compile Include="TestReferences.cs" />
     <Compile Include="TestStructs.cs" />
     <Compile Include="TestUpdate.cs" />
   </ItemGroup>
