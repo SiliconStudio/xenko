@@ -90,7 +90,10 @@ namespace SiliconStudio.Xenko.Physics
 
                 foreach (var element in elements)
                 {
-                    element.AddDebugEntity(debugScene);
+                    if (element.Enabled)
+                    {
+                        element.AddDebugEntity(debugScene);
+                    }
                 }
             }
         }

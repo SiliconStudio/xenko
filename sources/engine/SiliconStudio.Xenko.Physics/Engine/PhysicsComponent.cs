@@ -405,10 +405,10 @@ namespace SiliconStudio.Xenko.Engine
 
             var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this);
             DebugEntity = entity;
-            if (DebugEntity != null)
-            {
-                scene.Entities.Add(entity);
-            }
+
+            if (DebugEntity == null) return;
+
+            scene.Entities.Add(entity);
         }
 
         public void RemoveDebugEntity(Scene scene)
@@ -441,14 +441,9 @@ namespace SiliconStudio.Xenko.Engine
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
             {
-                if (scale != ColliderShape.Scaling)
+                if (ColliderShape.Scaling != scale)
                 {
                     ColliderShape.Scaling = scale;
-
-                    if (DebugEntity != null)
-                    {
-                        DebugEntity.Transform.Scale = scale;
-                    }
                 }
             }
 
@@ -473,14 +468,9 @@ namespace SiliconStudio.Xenko.Engine
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
             {
-                if (scale != ColliderShape.Scaling)
+                if (ColliderShape.Scaling != scale)
                 {
                     ColliderShape.Scaling = scale;
-
-                    if (DebugEntity != null)
-                    {
-                        DebugEntity.Transform.Scale = scale;
-                    }
                 }
             }
 
