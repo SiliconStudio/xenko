@@ -125,27 +125,23 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 /* WM_GETMINMAXINFO */
                 case 0x0024:
+                    var monitorInfo = WindowHelper.GetMonitorInfo(hwnd);
+                    if (monitorInfo == null)
+                        break;
+
                     var mmi = (NativeHelper.MINMAXINFO)Marshal.PtrToStructure(lparam, typeof(NativeHelper.MINMAXINFO));
-                    var monitor = NativeHelper.MonitorFromWindow(hwnd, NativeHelper.MONITOR_DEFAULTTONEAREST);
-                    if (monitor != IntPtr.Zero)
-                    {
-                        var monitorInfo = new NativeHelper.MONITORINFO();
-                        NativeHelper.GetMonitorInfo(monitor, monitorInfo);
-                        NativeHelper.RECT rcWorkArea = monitorInfo.rcWork;
-                        NativeHelper.RECT rcMonitorArea = monitorInfo.rcMonitor;
-                        mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
-                        mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
-                        // Get maximum width and height from WPF
-                        var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
-                        var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
-                        mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
-                        mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
-                        mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
-                        mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
-                        // Synchronize with WPF
-                        window.MaxWidth = mmi.ptMaxSize.X;
-                        window.MaxHeight = mmi.ptMaxSize.Y;
-                    }
+                    var rcWorkArea = monitorInfo.rcWork;
+                    var rcMonitorArea = monitorInfo.rcMonitor;
+
+                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    // Get maximum width and height from WPF
+                    var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
+                    var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
+                    mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
+                    mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
+                    mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                    mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
 
                     Marshal.StructureToPtr(mmi, lparam, true);
                     handled = true;

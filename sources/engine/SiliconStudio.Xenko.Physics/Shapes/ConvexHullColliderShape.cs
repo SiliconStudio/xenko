@@ -21,9 +21,10 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.ConvexHull;
             Is2D = false;
 
+            CachedScaling = scaling;
             InternalShape = new BulletSharp.ConvexHullShape(points)
             {
-                LocalScaling = scaling
+                LocalScaling = CachedScaling
             };
 
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
