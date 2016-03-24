@@ -223,6 +223,11 @@ namespace SiliconStudio.Core.Mathematics
         public static readonly Color DimGray = Color.FromBgra(0xFF696969);
 
         /// <summary>
+        /// VeryDimGray color.
+        /// </summary>
+        public static readonly Color VeryDimGray = Color.FromBgra(0xFF404040);
+
+        /// <summary>
         /// DodgerBlue color.
         /// </summary>
         public static readonly Color DodgerBlue = Color.FromBgra(0xFF1E90FF);
