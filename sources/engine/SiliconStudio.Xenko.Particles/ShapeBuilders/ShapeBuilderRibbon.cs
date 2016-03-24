@@ -355,21 +355,16 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     var particlePos = new Vector3(0, 0, 0);
                     var uvCoord = new Vector2(0, 0);
 
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                    vtxBuilder.NextVertex();
+                    for (var particleIdx = 0; particleIdx < lastParticle; particleIdx++)
+                    {
+                        for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
+                        {
+                            vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                            vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                            vtxBuilder.NextVertex();
+                        }
+                    }
 
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                    vtxBuilder.NextVertex();
-
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                    vtxBuilder.NextVertex();
-
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                    vtxBuilder.NextVertex();
                     return;
                 }
 
