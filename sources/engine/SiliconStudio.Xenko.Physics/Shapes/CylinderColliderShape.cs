@@ -64,36 +64,5 @@ namespace SiliconStudio.Xenko.Physics
         {
             return GeometricPrimitive.Cylinder.New(device).ToMeshDraw();
         }
-
-        public override Vector3 Scaling
-        {
-            get { return base.Scaling; }
-            set
-            {
-//                Vector3 newScaling;
-//                switch (shapeOrientation)
-//                {
-//                    case ShapeOrientation.UpX:
-//                        {
-//                            newScaling = new Vector3(value.X, value.Z, value.Z);
-//                            break;
-//                        }
-//                    case ShapeOrientation.UpY:
-//                        {
-//                            newScaling = new Vector3(value.X, value.Y, value.X);
-//                            break;
-//                        }
-//                    case ShapeOrientation.UpZ:
-//                        {
-//                            newScaling = new Vector3(value.Y, value.Y, value.Z);
-//                            break;
-//                        }
-//                    default:
-//                        throw new ArgumentOutOfRangeException();
-//                }
-//                base.Scaling = newScaling;
-                base.Scaling = value;
-            }
-        }
     }
 }
