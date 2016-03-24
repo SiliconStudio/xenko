@@ -13,6 +13,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class SamplerState
     {
+        internal Sampler NativeSampler;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SamplerState"/> class.
         /// </summary>
@@ -23,12 +25,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
             Description = samplerStateDescription;
 
-            CreateNativeDeviceChild();
+            CreateNativeSampler();
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
+        protected internal unsafe override void OnDestroyed()
         {
+            GraphicsDevice.NativeDevice.DestroySampler(NativeSampler);
+
             base.OnDestroyed();
             DestroyImpl();
         }
@@ -37,39 +41,147 @@ namespace SiliconStudio.Xenko.Graphics
         protected internal override bool OnRecreate()
         {
             base.OnRecreate();
-            CreateNativeDeviceChild();
+            CreateNativeSampler();
             return true;
         }
 
-        private void CreateNativeDeviceChild()
+        private unsafe void CreateNativeSampler()
         {
-            //SharpDX.Direct3D12.SamplerStateDescription nativeDescription;
+            var createInfo = new SamplerCreateInfo
+            {
+                StructureType = StructureType.SamplerCreateInfo,
+                AddressModeU = ConvertAddressMode(Description.AddressU),
+                AddressModeV = ConvertAddressMode(Description.AddressV),
+                AddressModeW = ConvertAddressMode(Description.AddressW),
+                MipLodBias = Description.MipMapLevelOfDetailBias,
+                MaxAnisotropy = Description.MaxAnisotropy,
+                CompareOperation = VulkanConvertExtensions.ConvertComparisonFunction(Description.CompareFunction),
+                MinLod = Description.MinMipLevel,
+                MaxLod = Description.MaxMipLevel,
+                // TODO VULKAN: How to handle BorderColor
+            };
 
-            //nativeDescription.AddressU = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressU;
-            //nativeDescription.AddressV = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressV;
-            //nativeDescription.AddressW = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressW;
-            //nativeDescription.BorderColor = ColorHelper.Convert(Description.BorderColor);
-            //nativeDescription.ComparisonFunction = (SharpDX.Direct3D12.Comparison)Description.CompareFunction;
-            //nativeDescription.Filter = (SharpDX.Direct3D12.Filter)Description.Filter;
-            //nativeDescription.MaximumAnisotropy = Description.MaxAnisotropy;
-            //nativeDescription.MaximumLod = Description.MaxMipLevel;
-            //nativeDescription.MinimumLod = Description.MinMipLevel;
-            //nativeDescription.MipLodBias = Description.MipMapLevelOfDetailBias;
+            ConvertMinFilter(Description.Filter, out createInfo.MinFilter, out createInfo.MagFilter, out createInfo.MipmapMode, out createInfo.CompareEnable, out createInfo.AnisotropyEnable);
 
-            //// For 9.1, anisotropy cannot be larger then 2
-            //// mirror once is not supported either
-            //if (GraphicsDevice.Features.Profile == GraphicsProfile.Level_9_1)
-            //{
-            //    // TODO: Min with user-value instead?
-            //    nativeDescription.MaximumAnisotropy = 2;
+            NativeSampler = GraphicsDevice.NativeDevice.CreateSampler(ref createInfo);
+        }
 
-            //    if (nativeDescription.AddressU == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
-            //        nativeDescription.AddressU = SharpDX.Direct3D12.TextureAddressMode.Mirror;
-            //    if (nativeDescription.AddressV == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
-            //        nativeDescription.AddressV = SharpDX.Direct3D12.TextureAddressMode.Mirror;
-            //    if (nativeDescription.AddressW == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
-            //        nativeDescription.AddressW = SharpDX.Direct3D12.TextureAddressMode.Mirror;
-            //}
+        private static SamplerAddressMode ConvertAddressMode(TextureAddressMode addressMode)
+        {
+            switch (addressMode)
+            {
+                case TextureAddressMode.Wrap:
+                    return SamplerAddressMode.Repeat;
+                case TextureAddressMode.Border:
+                    return SamplerAddressMode.ClampToBorder;
+                case TextureAddressMode.Clamp:
+                    return SamplerAddressMode.ClampToEdge;
+                case TextureAddressMode.Mirror:
+                    return SamplerAddressMode.MirroredRepeat;
+                case TextureAddressMode.MirrorOnce:
+                    return SamplerAddressMode.MirrorClampToEdge;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void ConvertMinFilter(TextureFilter filter, out Filter minFilter, out Filter magFilter, out SamplerMipmapMode mipmapMode, out RawBool enableComparison, out RawBool enableAnisotropy)
+        {
+            minFilter = magFilter = Filter.Nearest;
+            mipmapMode = SamplerMipmapMode.Nearest;
+            enableComparison = false;
+            enableAnisotropy = false;
+
+            switch (filter)
+            {
+                // Mip point
+                case TextureFilter.Point:
+                    break;
+                case TextureFilter.MinLinearMagMipPoint:
+                    minFilter = Filter.Linear;
+                    break;
+                case TextureFilter.MinPointMagLinearMipPoint:
+                    magFilter = Filter.Linear;
+                    break;
+                case TextureFilter.MinMagLinearMipPoint:
+                    minFilter = Filter.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+
+                // Mip linear
+                case TextureFilter.MinMagPointMipLinear:
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    break;
+                case TextureFilter.MinLinearMagPointMipLinear:
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    minFilter = Filter.Linear;
+                    break;
+                case TextureFilter.MinPointMagMipLinear:
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+                case TextureFilter.Linear:
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    minFilter = Filter.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+                case TextureFilter.Anisotropic:
+                    enableAnisotropy = true;
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    minFilter = Filter.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+
+                // Comparison mip point
+                case TextureFilter.ComparisonPoint:
+                    enableComparison = true;
+                    break;
+                case TextureFilter.ComparisonMinLinearMagMipPoint:
+                    enableComparison = true;
+                    minFilter = Filter.Linear;
+                    break;
+                case TextureFilter.ComparisonMinPointMagLinearMipPoint:
+                    enableComparison = true;
+                    magFilter = Filter.Linear;
+                    break;
+                case TextureFilter.ComparisonMinMagLinearMipPoint:
+                    enableComparison = true;
+                    minFilter = Filter.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+
+                // Comparison mip linear
+                case TextureFilter.ComparisonMinMagPointMipLinear:
+                    enableComparison = true;
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    break;
+                case TextureFilter.ComparisonMinLinearMagPointMipLinear:
+                    enableComparison = true;
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    minFilter = Filter.Linear;
+                    break;
+                case TextureFilter.ComparisonMinPointMagMipLinear:
+                    enableComparison = true;
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+                case TextureFilter.ComparisonLinear:
+                    enableComparison = true;
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    minFilter = Filter.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+                case TextureFilter.ComparisonAnisotropic:
+                    enableComparison = true;
+                    enableAnisotropy = true;
+                    mipmapMode = SamplerMipmapMode.Linear;
+                    minFilter = Filter.Linear;
+                    magFilter = Filter.Linear;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 } 

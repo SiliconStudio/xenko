@@ -3,11 +3,92 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using SharpVulkan;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     internal static class VulkanConvertExtensions
     {
+        public static PolygonMode ConvertFillMode(FillMode fillMode)
+        {
+            // NOTE: Vulkan's PolygonMode.Point is not exposed
+
+            switch (fillMode)
+            {
+                case FillMode.Solid:
+                    return PolygonMode.Fill;
+                case FillMode.Wireframe:
+                    return PolygonMode.Line;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(fillMode));
+            }
+        }
+
+        public static CullModeFlags ConvertCullMode(CullMode cullMode)
+        {
+            // NOTE: Vulkan's CullModeFlags.FrontAndBack is not exposed
+
+            switch (cullMode)
+            {
+                case CullMode.Back:
+                    return CullModeFlags.Back;
+                case CullMode.Front:
+                    return CullModeFlags.Front;
+                case CullMode.None:
+                    return CullModeFlags.None;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(cullMode));
+            }
+        }
+
+        public static PrimitiveTopology ConvertPrimitiveType(PrimitiveType primitiveType)
+        {
+            switch (primitiveType)
+            {
+                case PrimitiveType.PointList:
+                    return PrimitiveTopology.PointList;
+                case PrimitiveType.LineList:
+                    return PrimitiveTopology.LineList;
+                case PrimitiveType.LineStrip:
+                    return PrimitiveTopology.LineStrip;
+                case PrimitiveType.TriangleList:
+                    return PrimitiveTopology.TriangleList;
+                case PrimitiveType.TriangleStrip:
+                    return PrimitiveTopology.TriangleStrip;
+                case PrimitiveType.LineListWithAdjacency:
+                    return PrimitiveTopology.LineListWithAdjacency;
+                case PrimitiveType.LineStripWithAdjacency:
+                    return PrimitiveTopology.LineStripWithAdjacency;
+                case PrimitiveType.TriangleListWithAdjacency:
+                    return PrimitiveTopology.TriangleListWithAdjacency;
+                case PrimitiveType.TriangleStripWithAdjacency:
+                    return PrimitiveTopology.TriangleStripWithAdjacency;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(primitiveType));
+            }
+        }
+
+        public static ShaderStageFlags Convert(ShaderStage stage)
+        {
+            switch (stage)
+            {
+                case ShaderStage.Vertex:
+                    return ShaderStageFlags.Vertex;
+                case ShaderStage.Hull:
+                    return ShaderStageFlags.TessellationControl;
+                case ShaderStage.Domain:
+                    return ShaderStageFlags.TessellationEvaluation;
+                case ShaderStage.Geometry:
+                    return ShaderStageFlags.Geometry;
+                case ShaderStage.Pixel:
+                    return ShaderStageFlags.Fragment;
+                case ShaderStage.Compute:
+                    return ShaderStageFlags.Compute;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public static CompareOperation ConvertComparisonFunction(CompareFunction comparison)
         {
             switch (comparison)
@@ -208,73 +289,78 @@ namespace SiliconStudio.Xenko.Graphics
                 case PixelFormat.ETC2_RGB: // ETC1 upper compatible
                     format = Format.Etc2R8G8B8UNormBlock;
                     compressed = true;
-                    pixelSize = 1;  // 4bpp
+                    pixelSize = 1; // 4bpp
                     break;
                 case PixelFormat.ETC2_RGB_A1:
                     format = Format.Etc2R8G8B8A1UNormBlock;
                     compressed = true;
-                    pixelSize = 1;  // 4bpp
+                    pixelSize = 1; // 4bpp
                     break;
                 case PixelFormat.ETC2_RGBA: // ETC2 + EAC
                     format = Format.Etc2R8G8B8A8UNormBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 case PixelFormat.EAC_R11_Unsigned:
                     format = Format.EacR11UNormBlock;
                     compressed = true;
-                    pixelSize = 1;  // 4bpp
+                    pixelSize = 1; // 4bpp
                     break;
                 case PixelFormat.EAC_R11_Signed:
                     format = Format.EacR11SNormBlock;
                     compressed = true;
-                    pixelSize = 1;  // 4bpp
+                    pixelSize = 1; // 4bpp
                     break;
                 case PixelFormat.EAC_RG11_Unsigned:
                     format = Format.EacR11G11UNormBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 case PixelFormat.EAC_RG11_Signed:
                     format = Format.EacR11G11SNormBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 case PixelFormat.BC1_UNorm:
                     format = Format.Bc1RgbaUNormBlock;
                     //format = Format.RAD_TEXTURE_FORMAT_DXT1_RGBA;
                     compressed = true;
-                    pixelSize = 1;  // 4bpp
+                    pixelSize = 1; // 4bpp
                     break;
                 case PixelFormat.BC1_UNorm_SRgb:
                     format = Format.Bc1RgbaSRgbBlock;
                     //format = Format.RAD_TEXTURE_FORMAT_DXT1_RGBA_SRgb;
                     compressed = true;
-                    pixelSize = 1;  // 4bpp
+                    pixelSize = 1; // 4bpp
                     break;
                 case PixelFormat.BC2_UNorm:
                     format = Format.Bc2UNormBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 case PixelFormat.BC2_UNorm_SRgb:
                     format = Format.Bc2SRgbBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 case PixelFormat.BC3_UNorm:
                     format = Format.Bc3UNormBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 case PixelFormat.BC3_UNorm_SRgb:
                     format = Format.Bc3SRgbBlock;
                     compressed = true;
-                    pixelSize = 2;  // 8bpp
+                    pixelSize = 2; // 8bpp
                     break;
                 default:
                     throw new InvalidOperationException("Unsupported texture format");
             }
+        }
+
+        public unsafe static ColorComponentFlags ConvertColorWriteChannels(ColorWriteChannels colorWriteChannels)
+        {
+            return *(ColorComponentFlags*)&colorWriteChannels;
         }
     }
 }

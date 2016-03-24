@@ -2,223 +2,423 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using SharpVulkan;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Shaders;
+using Encoding = System.Text.Encoding;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class PipelineState
     {
-        //internal SharpDX.Direct3D12.PipelineState CompiledState;
-        //internal SharpDX.Direct3D12.RootSignature RootSignature;
+        internal Pipeline NativePipeline;
+        internal RenderPass NativeRenderPass;
         internal PrimitiveTopology PrimitiveTopology;
         internal int[] SrvBindCounts;
         internal int[] SamplerBindCounts;
 
-        internal PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
+        // State exposed by the CommandList
+        private static readonly DynamicState[] dynamicStates =
         {
-            //if (pipelineStateDescription.RootSignature != null)
-            //{
-            //    var effectReflection = pipelineStateDescription.EffectBytecode.Reflection;
+            DynamicState.Viewport,
+            DynamicState.Scissor,
+            DynamicState.BlendConstants,
+            DynamicState.StencilReference,
+        };
 
-            //    var rootSignatureParameters = new List<RootParameter>();
-            //    var immutableSamplers = new List<StaticSamplerDescription>();
-            //    SrvBindCounts = new int[pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts.Count];
-            //    SamplerBindCounts = new int[pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts.Count];
-            //    for (int layoutIndex = 0; layoutIndex < pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts.Count; layoutIndex++)
-            //    {
-            //        var layout = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts[layoutIndex];
+        internal unsafe PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
+        {
+            if (pipelineStateDescription.RootSignature == null)
+                return;
 
-            //        // TODO D3D12 for now, we don't control register so we simply generate one resource table per shader stage and per descriptor set layout
-            //        //            we should switch to a model where we make sure VS/PS don't overlap for common descriptors so that they can be shared
-            //        var srvDescriptorRangesVS = new List<DescriptorRange>();
-            //        var srvDescriptorRangesPS = new List<DescriptorRange>();
-            //        var samplerDescriptorRangesVS = new List<DescriptorRange>();
-            //        var samplerDescriptorRangesPS = new List<DescriptorRange>();
+            var pipelineLayout = CreatePipelineLayout(pipelineStateDescription);
 
-            //        int descriptorSrvOffset = 0;
-            //        int descriptorSamplerOffset = 0;
-            //        foreach (var item in layout.Layout.Entries)
-            //        {
-            //            var isSampler = item.Class == EffectParameterClass.Sampler;
+            // Create shader stages
+            var stages = CreateShaderStages(pipelineStateDescription);
 
-            //            // Find matching resource bindings
-            //            foreach (var binding in effectReflection.ResourceBindings)
-            //            {
-            //                if (binding.Param.Key != item.Key)
-            //                    continue;
 
-            //                List<DescriptorRange> descriptorRanges;
-            //                switch (binding.Stage)
-            //                {
-            //                    case ShaderStage.Vertex:
-            //                        descriptorRanges = isSampler ? samplerDescriptorRangesVS : srvDescriptorRangesVS;
-            //                        break;
-            //                    case ShaderStage.Pixel:
-            //                        descriptorRanges = isSampler ? samplerDescriptorRangesPS : srvDescriptorRangesPS;
-            //                        break;
-            //                    default:
-            //                        throw new NotImplementedException();
-            //                }
+            var inputAttributes = new VertexInputAttributeDescription[pipelineStateDescription.InputElements.Length];
+            var inputBindings = new VertexInputBindingDescription[inputAttributes.Length];
+            int inputBindingCount = 0;
 
-            //                if (isSampler)
-            //                {
-            //                    if (item.ImmutableSampler != null)
-            //                    {
-            //                        immutableSamplers.Add(new StaticSamplerDescription((ShaderVisibility)binding.Stage, binding.SlotStart, 0)
-            //                        {
-            //                            // TODO D3D12 other states
-            //                            // TODO D3D12 ImmutableSampler should only be a state description instead of a GPU object?
-            //                            Filter = (Filter)item.ImmutableSampler.Description.Filter,
-            //                            AddressU = (SharpDX.Direct3D12.TextureAddressMode)item.ImmutableSampler.Description.AddressU,
-            //                            AddressV = (SharpDX.Direct3D12.TextureAddressMode)item.ImmutableSampler.Description.AddressV,
-            //                            AddressW = (SharpDX.Direct3D12.TextureAddressMode)item.ImmutableSampler.Description.AddressW,
-            //                        });
-            //                    }
-            //                    else
-            //                    {
-            //                        // Add descriptor range
-            //                        descriptorRanges.Add(new DescriptorRange(DescriptorRangeType.Sampler, item.ArraySize, binding.SlotStart, 0, descriptorSamplerOffset));
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    DescriptorRangeType descriptorRangeType;
-            //                    switch (binding.Param.Class)
-            //                    {
-            //                        case EffectParameterClass.ConstantBuffer:
-            //                            descriptorRangeType = DescriptorRangeType.ConstantBufferView;
-            //                            break;
-            //                        case EffectParameterClass.ShaderResourceView:
-            //                            descriptorRangeType = DescriptorRangeType.ShaderResourceView;
-            //                            break;
-            //                        case EffectParameterClass.UnorderedAccessView:
-            //                            descriptorRangeType = DescriptorRangeType.UnorderedAccessView;
-            //                            break;
-            //                        default:
-            //                            throw new NotImplementedException();
-            //                    }
+            for (int inputElementIndex = 0; inputElementIndex < inputAttributes.Length; inputElementIndex++)
+            {
+                var inputElement = pipelineStateDescription.InputElements[inputElementIndex];
+                var slotIndex = inputElement.InputSlot;
 
-            //                    // Add descriptor range
-            //                    descriptorRanges.Add(new DescriptorRange(descriptorRangeType, item.ArraySize, binding.SlotStart, 0, descriptorSrvOffset));
-            //                }
-            //            }
+                if (inputElement.InstanceDataStepRate > 1)
+                {
+                    throw new NotImplementedException();
+                }
 
-            //            // Move to next element (mirror what is done in DescriptorSetLayout)
-            //            if (isSampler)
-            //            {
-            //                if (item.ImmutableSampler == null)
-            //                    descriptorSamplerOffset += item.ArraySize;
-            //            }
-            //            else
-            //            {
-            //                descriptorSrvOffset += item.ArraySize;
-            //            }
-            //        }
-            //        if (srvDescriptorRangesVS.Count > 0)
-            //        {
-            //            rootSignatureParameters.Add(new RootParameter(ShaderVisibility.Vertex, srvDescriptorRangesVS.ToArray()));
-            //            SrvBindCounts[layoutIndex]++;
-            //        }
-            //        if (srvDescriptorRangesPS.Count > 0)
-            //        {
-            //            rootSignatureParameters.Add(new RootParameter(ShaderVisibility.Pixel, srvDescriptorRangesPS.ToArray()));
-            //            SrvBindCounts[layoutIndex]++;
-            //        }
-            //        if (samplerDescriptorRangesVS.Count > 0)
-            //        {
-            //            rootSignatureParameters.Add(new RootParameter(ShaderVisibility.Vertex, samplerDescriptorRangesVS.ToArray()));
-            //            SamplerBindCounts[layoutIndex]++;
-            //        }
-            //        if (samplerDescriptorRangesPS.Count > 0)
-            //        {
-            //            rootSignatureParameters.Add(new RootParameter(ShaderVisibility.Pixel, samplerDescriptorRangesPS.ToArray()));
-            //            SamplerBindCounts[layoutIndex]++;
-            //        }
-            //    }
-            //    var rootSignatureDesc = new RootSignatureDescription(RootSignatureFlags.AllowInputAssemblerInputLayout, rootSignatureParameters.ToArray(), immutableSamplers.ToArray());
+                Format format;
+                int size;
+                bool isCompressed;
+                VulkanConvertExtensions.ConvertPixelFormat(inputElement.Format, out format, out size, out isCompressed);
 
-            //    var rootSignature = NativeDevice.CreateRootSignature(0, rootSignatureDesc.Serialize());
+                inputAttributes[inputElementIndex] = new VertexInputAttributeDescription
+                {
+                    Format = format,
+                    Offset = (uint)inputElement.AlignedByteOffset,
+                    Binding = (uint)inputElement.InputSlot,
+                    Location = (uint)inputElementIndex
+                };
 
-            //    var inputElements = new InputElement[pipelineStateDescription.InputElements.Length];
-            //    for (int i = 0; i < inputElements.Length; ++i)
-            //    {
-            //        var inputElement = pipelineStateDescription.InputElements[i];
-            //        inputElements[i] = new InputElement
-            //        {
-            //            Format = (SharpDX.DXGI.Format)inputElement.Format,
-            //            AlignedByteOffset = inputElement.AlignedByteOffset,
-            //            SemanticName = inputElement.SemanticName,
-            //            SemanticIndex = inputElement.SemanticIndex,
-            //            Slot = inputElement.InputSlot,
-            //            Classification = (SharpDX.Direct3D12.InputClassification)inputElement.InputSlotClass,
-            //            InstanceDataStepRate = inputElement.InstanceDataStepRate,
-            //        };
-            //    }
+                inputBindings[slotIndex].Binding = (uint)slotIndex;
+                inputBindings[slotIndex].InputRate = inputElement.InputSlotClass == InputClassification.Vertex ? VertexInputRate.Vertex : VertexInputRate.Instance;
 
-            //    PrimitiveTopologyType primitiveTopologyType;
-            //    switch (pipelineStateDescription.PrimitiveType)
-            //    {
-            //        case PrimitiveType.Undefined:
-            //            throw new ArgumentOutOfRangeException();
-            //        case PrimitiveType.PointList:
-            //            primitiveTopologyType = PrimitiveTopologyType.Point;
-            //            break;
-            //        case PrimitiveType.LineList:
-            //        case PrimitiveType.LineStrip:
-            //        case PrimitiveType.LineListWithAdjacency:
-            //        case PrimitiveType.LineStripWithAdjacency:
-            //            primitiveTopologyType = PrimitiveTopologyType.Line;
-            //            break;
-            //        case PrimitiveType.TriangleList:
-            //        case PrimitiveType.TriangleStrip:
-            //        case PrimitiveType.TriangleListWithAdjacency:
-            //        case PrimitiveType.TriangleStripWithAdjacency:
-            //            primitiveTopologyType = PrimitiveTopologyType.Triangle;
-            //            break;
-            //        default:
-            //            if (pipelineStateDescription.PrimitiveType >= PrimitiveType.PatchList && pipelineStateDescription.PrimitiveType < PrimitiveType.PatchList + 32)
-            //                primitiveTopologyType = PrimitiveTopologyType.Patch;
-            //            else
-            //                throw new ArgumentOutOfRangeException("pipelineStateDescription.PrimitiveType");
-            //            break;
-            //    }
+                // TODO VULKAN: This is currently an argument to Draw() overloads.
+                if (inputBindings[slotIndex].Stride < inputElement.AlignedByteOffset + size)
+                    inputBindings[slotIndex].Stride = (uint)(inputElement.AlignedByteOffset + size);
 
-            //    var nativePipelineStateDescription = new GraphicsPipelineStateDescription
-            //    {
-            //        InputLayout = new InputLayoutDescription(inputElements),
-            //        RootSignature = rootSignature,
-            //        // TODO D3D12 only VS/PS for now
-            //        VertexShader = pipelineStateDescription.EffectBytecode.Stages.First(x => x.Stage == ShaderStage.Vertex).Data, PixelShader = pipelineStateDescription.EffectBytecode.Stages.First(x => x.Stage == ShaderStage.Pixel).Data,
-            //        // TODO D3D12 hardcoded
-            //        RasterizerState = CreateRasterizerState(pipelineStateDescription.RasterizerState),
-            //        // TODO D3D12 hardcoded
-            //        BlendState = CreateBlendState(pipelineStateDescription.BlendState),
-            //        SampleMask = (int)pipelineStateDescription.SampleMask,
-            //        // TODO D3D12 hardcoded
-            //        DepthStencilFormat = SharpDX.DXGI.Format.D32_Float,
-            //        // TODO D3D12 hardcoded
-            //        DepthStencilState = CreateDepthStencilState(pipelineStateDescription.DepthStencilState),
-            //        // TODO D3D12 hardcoded
-            //        RenderTargetCount = 1,
-            //        // TODO D3D12 hardcoded
-            //        StreamOutput = new StreamOutputDescription(),
-            //        PrimitiveTopologyType = primitiveTopologyType,
-            //        // TODO D3D12 hardcoded
-            //        SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
-            //    };
+                if (inputElement.InputSlot >= inputBindingCount)
+                    inputBindingCount = inputElement.InputSlot + 1;
+            }
 
-            //    // TODO D3D12 hardcoded
-            //    nativePipelineStateDescription.RenderTargetFormats[0] = SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
+            var inputAssemblyState = new PipelineInputAssemblyStateCreateInfo
+            {
+                StructureType = StructureType.PipelineInputAssemblyStateCreateInfo,
+                Topology = VulkanConvertExtensions.ConvertPrimitiveType(pipelineStateDescription.PrimitiveType),
+                PrimitiveRestartEnable = true,
+            };
 
-            //    CompiledState = NativeDevice.CreateGraphicsPipelineState(nativePipelineStateDescription);
-            //    RootSignature = rootSignature;
-            //    PrimitiveTopology = (PrimitiveTopology)pipelineStateDescription.PrimitiveType;
-            //}
+            //var tesselationState = new PipelineTessellationStateCreateInfo();
+            //var viewportState = new PipelineViewportStateCreateInfo();
+
+            var rasterizationState = CreateRasterizationState(pipelineStateDescription.RasterizerState);
+
+            //var multisampleState = new PipelineMultisampleStateCreateInfo();
+
+            var depthStencilState = CreateDepthStencilState(pipelineStateDescription);
+
+            var description = pipelineStateDescription.BlendState;
+
+            var renderTargetCount = pipelineStateDescription.Output.RenderTargetCount;
+            var colorBlendAttachments = new PipelineColorBlendAttachmentState[renderTargetCount];
+
+            var renderTargetBlendState = &description.RenderTarget0;
+            for (int i = 0; i < renderTargetCount; i++)
+            {
+                colorBlendAttachments[i] = new PipelineColorBlendAttachmentState
+                {
+                    BlendEnable = renderTargetBlendState->BlendEnable,
+                    AlphaBlendOperation = VulkanConvertExtensions.ConvertBlendFunction(renderTargetBlendState->AlphaBlendFunction),
+                    ColorBlendOperation = VulkanConvertExtensions.ConvertBlendFunction(renderTargetBlendState->ColorBlendFunction),
+                    DestinationAlphaBlendFactor = VulkanConvertExtensions.ConvertBlend(renderTargetBlendState->AlphaDestinationBlend),
+                    DestinationColorBlendFactor = VulkanConvertExtensions.ConvertBlend(renderTargetBlendState->ColorDestinationBlend),
+                    SourceAlphaBlendFactor = VulkanConvertExtensions.ConvertBlend(renderTargetBlendState->AlphaSourceBlend),
+                    SourceColorBlendFactor = VulkanConvertExtensions.ConvertBlend(renderTargetBlendState->ColorSourceBlend),
+                    ColorWriteMask = VulkanConvertExtensions.ConvertColorWriteChannels(renderTargetBlendState->ColorWriteChannels),
+                };
+
+                if (description.IndependentBlendEnable)
+                    renderTargetBlendState++;
+            }
+
+            var attachmentCount = renderTargetCount;
+            bool hasDepthStencilAttachment = pipelineStateDescription.Output.DepthStencilFormat != PixelFormat.None;
+
+            if (hasDepthStencilAttachment)
+                attachmentCount++;
+
+            var attachments = new AttachmentDescription[attachmentCount];
+            var colorAttachmentReferences = new AttachmentReference[renderTargetCount];
+
+            fixed (PixelFormat* renderTargetFormat = &pipelineStateDescription.Output.RenderTargetFormat0)
+            {
+                for (int i = 0; i < renderTargetCount; i++)
+                {
+                    attachments[i] = new AttachmentDescription
+                    {
+                        Format = VulkanConvertExtensions.ConvertPixelFormat(*(renderTargetFormat + i)),
+                        Samples = SampleCountFlags.Sample1,
+                        LoadOperation = AttachmentLoadOperation.Clear,
+                        StoreOperation = AttachmentStoreOperation.Store,
+                        StencilLoadOperation = AttachmentLoadOperation.DontCare,
+                        StencilStoreOperation = AttachmentStoreOperation.DontCare,
+                        InitialLayout = ImageLayout.ColorAttachmentOptimal,
+                        FinalLayout = ImageLayout.ColorAttachmentOptimal,
+                    };
+
+                    colorAttachmentReferences[i] = new AttachmentReference
+                    {
+                        Attachment = (uint)i,
+                        Layout = ImageLayout.ColorAttachmentOptimal,
+                    };
+                }
+            }
+
+            if (hasDepthStencilAttachment)
+            {
+                attachments[attachmentCount - 1] = new AttachmentDescription
+                {
+                    Format = VulkanConvertExtensions.ConvertPixelFormat(pipelineStateDescription.Output.DepthStencilFormat),
+                    Samples = SampleCountFlags.Sample1,
+                    LoadOperation = AttachmentLoadOperation.Clear,
+                    StoreOperation = AttachmentStoreOperation.DontCare,
+                    StencilLoadOperation = AttachmentLoadOperation.DontCare,
+                    StencilStoreOperation = AttachmentStoreOperation.DontCare,
+                    InitialLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                    FinalLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                };
+            }
+
+            var depthAttachmentReference = new AttachmentReference
+            {
+                Attachment = (uint)attachments.Length - 1,
+                Layout = ImageLayout.DepthStencilAttachmentOptimal,
+            };
+
+            RenderPass renderPass;
+            fixed (AttachmentDescription* attachmentsPointer = &attachments[0])
+            fixed (AttachmentReference* colorAttachmentReferencesPointer = &colorAttachmentReferences[0])
+            {
+                var subpass = new SubpassDescription
+                {
+                    PipelineBindPoint = PipelineBindPoint.Graphics,
+                    ColorAttachmentCount = (uint)renderTargetCount,
+                    ColorAttachments = new IntPtr(colorAttachmentReferencesPointer),
+                    DepthStencilAttachment = new IntPtr(&depthAttachmentReference)
+                };
+
+                var renderPassCreateInfo = new RenderPassCreateInfo
+                {
+                    StructureType = StructureType.RenderPassCreateInfo,
+                    AttachmentCount = (uint)attachmentCount,
+                    Attachments = new IntPtr(attachmentsPointer),
+                    SubpassCount = 1,
+                    Subpasses = new IntPtr(&subpass)
+                };
+                renderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
+            }
+
+            fixed (PipelineShaderStageCreateInfo* stagesPointer = &stages[0])
+            fixed (VertexInputAttributeDescription* inputAttributesPointer = &inputAttributes[0])
+            fixed (VertexInputBindingDescription* inputBindingsPointer = &inputBindings[0])
+            fixed (PipelineColorBlendAttachmentState* attachmentsPointer = &colorBlendAttachments[0])
+            fixed (DynamicState* dynamicStatesPointer = &dynamicStates[0])
+            {
+                var vertexInputState = new PipelineVertexInputStateCreateInfo
+                {
+                    StructureType = StructureType.PipelineVertexInputStateCreateInfo,
+                    VertexAttributeDescriptionCount = (uint)inputAttributes.Length,
+                    VertexAttributeDescriptions = new IntPtr(inputAttributesPointer),
+                    VertexBindingDescriptionCount = (uint)inputBindingCount,
+                    VertexBindingDescriptions = new IntPtr(inputBindingsPointer),
+                };
+
+                var colorBlendState = new PipelineColorBlendStateCreateInfo
+                {
+                    StructureType = StructureType.PipelineColorBlendStateCreateInfo,
+                    AttachmentCount = (uint)renderTargetCount,
+                    Attachments = new IntPtr(attachmentsPointer)
+                };
+
+                var dynamicState = new PipelineDynamicStateCreateInfo
+                {
+                    StructureType = StructureType.PipelineDynamicStateCreateInfo,
+                    DynamicStateCount = (uint)dynamicStates.Length,
+                    DynamicStates = new IntPtr(dynamicStatesPointer)
+                };
+
+                var createInfo = new GraphicsPipelineCreateInfo
+                {
+                    StructureType = StructureType.GraphicsPipelineCreateInfo,
+                    Layout = pipelineLayout,
+                    StageCount = (uint)stages.Length,
+                    Stages = new IntPtr(stagesPointer),
+                    //TessellationState = new IntPtr(&tesselationState),
+                    VertexInputState = new IntPtr(&vertexInputState),
+                    InputAssemblyState = new IntPtr(&inputAssemblyState),
+                    //ViewportState = new IntPtr(&viewportState),
+                    RasterizationState = new IntPtr(&rasterizationState),
+                    //MultisampleState = new IntPtr(&multisampleState),
+                    DepthStencilState = new IntPtr(&depthStencilState),
+                    ColorBlendState = new IntPtr(&colorBlendState),
+                    DynamicState = new IntPtr(&dynamicState),
+                    RenderPass = renderPass,
+                    Subpass = 0,
+                };
+                NativePipeline = graphicsDevice.NativeDevice.CreateGraphicsPipelines(PipelineCache.Null, 1, ref createInfo);
+            }
+
+            // Cleanup shader modules
+            foreach (var stage in stages)
+            {
+                GraphicsDevice.NativeDevice.DestroyShaderModule(stage.Module);
+            }
+        }
+
+        protected internal unsafe override void OnDestroyed()
+        {
+            GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
+
+            base.OnDestroyed();
+        }
+
+        private unsafe PipelineLayout CreatePipelineLayout(PipelineStateDescription pipelineStateDescription)
+        {
+            var layouts = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts;
+
+            var nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
+
+            for (int layoutIndex = 0; layoutIndex < layouts.Count; layoutIndex++)
+            {
+                var layout = layouts[layoutIndex].Layout;
+                var bindings = pipelineStateDescription.EffectBytecode.Reflection.ResourceBindings;
+
+                var nativeBindings = new DescriptorSetLayoutBinding[bindings.Count];
+                uint nativeBindingIndex = 0;
+
+                foreach (var entry in layout.Entries)
+                {
+                    foreach (var binding in pipelineStateDescription.EffectBytecode.Reflection.ResourceBindings)
+                    {
+                        if (binding.Param.Key != entry.Key)
+                            continue;
+
+                        DescriptorType descriptorType;
+                        var immutableSampler = entry.ImmutableSampler != null ? entry.ImmutableSampler.NativeSampler : Sampler.Null;
+
+                        switch (binding.Param.Class)
+                        {
+                            case EffectParameterClass.Sampler:
+                                descriptorType = DescriptorType.Sampler;
+                                break;
+                            case EffectParameterClass.ConstantBuffer:
+                                descriptorType = DescriptorType.UniformBuffer;
+                                break;
+                            case EffectParameterClass.ShaderResourceView:
+                                descriptorType = DescriptorType.SampledImage;
+                                break;
+                            case EffectParameterClass.UnorderedAccessView:
+                                descriptorType = DescriptorType.StorageBuffer;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                        nativeBindings[nativeBindingIndex++] = new DescriptorSetLayoutBinding
+                        {
+                            DescriptorType = descriptorType,
+                            StageFlags = VulkanConvertExtensions.Convert(binding.Stage),
+                            Binding = (uint)binding.SlotStart,
+                            DescriptorCount = (uint)binding.SlotCount,
+                            ImmutableSamplers = new IntPtr(&immutableSampler)
+                        };
+                    }
+                }
+
+                fixed (DescriptorSetLayoutBinding* bindingsPointer = &nativeBindings[0])
+                {
+                    var createInfo = new SharpVulkan.DescriptorSetLayoutCreateInfo
+                    {
+                        StructureType = StructureType.DescriptorSetLayoutCreateInfo,
+                        BindingCount = nativeBindingIndex,
+                        Bindings = new IntPtr(bindingsPointer)
+                    };
+                    nativeDescriptorSetLayouts[layoutIndex] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
+                }
+            }
+
+            fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeDescriptorSetLayouts[0])
+            {
+                var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
+                {
+                    StructureType = StructureType.PipelineLayoutCreateInfo,
+                    SetLayoutCount = (uint)nativeDescriptorSetLayouts.Length,
+                    SetLayouts = new IntPtr(nativeDescriptorSetLayoutsPointer),
+                };
+                
+                return GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
+            }
+        }
+
+        private unsafe PipelineShaderStageCreateInfo[] CreateShaderStages(PipelineStateDescription pipelineStateDescription)
+        {
+            var stages = pipelineStateDescription.EffectBytecode.Stages;
+            var nativeStages = new PipelineShaderStageCreateInfo[stages.Length];
+
+            // GLSL converter always outputs entry point main()
+            var entryPoint = Encoding.UTF8.GetBytes("main\0");
+
+            for (int i = 0; i < stages.Length; i++)
+            {
+                fixed (byte* entryPointPointer = &entryPoint[0])
+                fixed (byte* codePointer = &stages[i].Data[0])
+                {
+                    // Create shader module
+                    var moduleCreateInfo = new ShaderModuleCreateInfo
+                    {
+                        StructureType = StructureType.ShaderModuleCreateInfo,
+                        Code = new IntPtr(codePointer),
+                        CodeSize = stages[i].Data.Length
+                    };
+
+                    // Create stage
+                    nativeStages[i] = new PipelineShaderStageCreateInfo
+                    {
+                        StructureType = StructureType.PipelineShaderStageCreateInfo,
+                        Stage = VulkanConvertExtensions.Convert(stages[i].Stage),
+                        Name = new IntPtr(entryPointPointer),
+                        Module = GraphicsDevice.NativeDevice.CreateShaderModule(ref moduleCreateInfo)
+                    };
+                }
+            };
+
+            return nativeStages;
+        }
+
+        private PipelineRasterizationStateCreateInfo CreateRasterizationState(RasterizerStateDescription description)
+        {
+            return new PipelineRasterizationStateCreateInfo
+            {
+                StructureType = StructureType.PipelineRasterizationStateCreateInfo,
+                CullMode = VulkanConvertExtensions.ConvertCullMode(description.CullMode),
+                FrontFace = description.FrontFaceCounterClockwise ? FrontFace.CounterClockwise : FrontFace.Clockwise,
+                PolygonMode = VulkanConvertExtensions.ConvertFillMode(description.FillMode),
+                DepthBiasEnable = true, // TODO VULKAN
+                DepthBiasConstantFactor = description.DepthBias,
+                DepthBiasSlopeFactor = description.SlopeScaleDepthBias,
+                DepthBiasClamp = description.DepthBiasClamp,
+                LineWidth = 1.0f,
+                DepthClampEnable = false,
+                RasterizerDiscardEnable = false,
+            };
+        }
+
+        private PipelineDepthStencilStateCreateInfo CreateDepthStencilState(PipelineStateDescription pipelineStateDescription)
+        {
+            var description = pipelineStateDescription.DepthStencilState;
+
+            return new PipelineDepthStencilStateCreateInfo
+            {
+                StructureType = StructureType.PipelineDepthStencilStateCreateInfo,
+                DepthTestEnable = description.DepthBufferEnable,
+                StencilTestEnable = description.StencilEnable,
+                DepthWriteEnable = description.DepthBufferWriteEnable,
+                DepthBoundsTestEnable = pipelineStateDescription.RasterizerState.DepthClipEnable,
+                MinDepthBounds = 0f,
+                MaxDepthBounds = 1f,
+                DepthCompareOperation = VulkanConvertExtensions.ConvertComparisonFunction(description.DepthBufferFunction),
+                Front = new StencilOperationState
+                {
+                    CompareOperation = VulkanConvertExtensions.ConvertComparisonFunction(description.FrontFace.StencilFunction),
+                    DepthFailOperation = VulkanConvertExtensions.ConvertStencilOperation(description.FrontFace.StencilDepthBufferFail),
+                    FailOperation = VulkanConvertExtensions.ConvertStencilOperation(description.FrontFace.StencilFail),
+                    PassOperation = VulkanConvertExtensions.ConvertStencilOperation(description.FrontFace.StencilPass),
+                    CompareMask = description.StencilMask,
+                    WriteMask = description.StencilWriteMask
+                },
+                Back = new StencilOperationState
+                {
+                    CompareOperation = VulkanConvertExtensions.ConvertComparisonFunction(description.BackFace.StencilFunction),
+                    DepthFailOperation = VulkanConvertExtensions.ConvertStencilOperation(description.BackFace.StencilDepthBufferFail),
+                    FailOperation = VulkanConvertExtensions.ConvertStencilOperation(description.BackFace.StencilFail),
+                    PassOperation = VulkanConvertExtensions.ConvertStencilOperation(description.BackFace.StencilPass),
+                    CompareMask = description.StencilMask,
+                    WriteMask = description.StencilWriteMask
+                }
+            };
         }
 
         //private SharpDX.Direct3D12.BlendStateDescription CreateBlendState(BlendStateDescription description)

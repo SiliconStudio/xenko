@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 // TODO VULKAN api
                 var propertiesCopy = properties;
-                return Marshal.PtrToStringAnsi(new IntPtr((void*)propertiesCopy.DeviceName));
+                return Marshal.PtrToStringAnsi(new IntPtr(&propertiesCopy.DeviceName));
             }
         }
 

@@ -177,12 +177,14 @@ namespace SiliconStudio.Xenko.Graphics
         ///     Prepares a draw call. This method is called before each Draw() method to setup the correct Primitive, InputLayout and VertexBuffers.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
-        private void PrepareDraw()
+        private unsafe void PrepareDraw()
         {
             //// TODO D3D12 Hardcoded for one viewport
-            //var viewport = viewports[0];
-            //NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
-            //NativeCommandList.SetScissorRectangles(new RawRectangle { Right = (int)viewport.Width, Bottom = (int)viewport.Height });
+            var viewport = Viewport;
+            NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewport);
+
+            var scissor = new Rect2D(0, 0, (uint)Viewport.Width, (uint)Viewport.Height);
+            NativeCommandBuffer.SetScissor(0, 1, &scissor);            
         }
 
         public void SetStencilReference(int stencilReference)
@@ -192,36 +194,27 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            //boundPipelineState = pipelineState;
-            //if (pipelineState.CompiledState != null)
-            //{
-            //    NativeCommandList.PipelineState = pipelineState.CompiledState;
-            //    NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
-            //}
-            //NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
+            NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, pipelineState.NativePipeline);
         }
 
-        public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
+        public unsafe void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
         {
-            //NativeCommandList.SetVertexBuffer(index, new VertexBufferView
-            //{
-            //    BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-            //    StrideInBytes = stride,
-            //    SizeInBytes = buffer.SizeInBytes - offset
-            //});
+            // TODO VULKAN: Stride is part of Pipeline 
+
+            // TODO VULKAN: Handle multiple buffers. Collect and apply before draw?
+            if (index != 0)
+                throw new NotImplementedException();
+
+            var bufferCopy = buffer.NativeBuffer;
+            var offsetCopy = (ulong)offset;
+
+            NativeCommandBuffer.BindVertexBuffers((uint)index, 1, ref bufferCopy, &offsetCopy);
         }
 
         public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
         {
-            //NativeCommandList.SetIndexBuffer(buffer != null ? (IndexBufferView?)new IndexBufferView
-            //{
-            //    BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-            //    Format = is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
-            //    SizeInBytes = buffer.SizeInBytes - offset
-            //} : null);
+            NativeCommandBuffer.BindIndexBuffer(buffer.NativeBuffer, (ulong)offset, is32bits ? IndexType.UInt32 : IndexType.UInt16);
         }
-
-        private int i = 0;
 
         public unsafe void ResourceBarrierTransition(GraphicsResource resource, GraphicsResourceState newState)
         {
@@ -271,7 +264,6 @@ namespace SiliconStudio.Xenko.Graphics
                     newState == GraphicsResourceState.Present ? PipelineStageFlags.AllCommands : PipelineStageFlags.TopOfPipe,
                     newState == GraphicsResourceState.Present ? PipelineStageFlags.BottomOfPipe : PipelineStageFlags.TopOfPipe,
                     DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
-                i++;
             }
             else
             {
@@ -408,12 +400,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="startVertexLocation">Index of the first vertex, which is usually an offset in a vertex buffer; it could also be used as the first vertex id generated for a shader parameter marked with the <strong>SV_TargetId</strong> system-value semantic.</param>
         public void Draw(int vertexCount, int startVertexLocation = 0)
         {
-            return;
-
             PrepareDraw();
 
             NativeCommandBuffer.Draw((uint)vertexCount, 1, (uint)startVertexLocation, 0);
-            //NativeCommandList.DrawInstanced(vertexCount, 1, startVertexLocation, 0);
 
             GraphicsDevice.FrameTriangleCount += (uint)vertexCount;
             GraphicsDevice.FrameDrawCalls++;
@@ -440,12 +429,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="baseVertexLocation">A value added to each index before reading a vertex from the vertex buffer.</param>
         public void DrawIndexed(int indexCount, int startIndexLocation = 0, int baseVertexLocation = 0)
         {
-            return;
-
             PrepareDraw();
 
-            NativeCommandBuffer.DrawIndexed((uint)indexCount, 1, (uint)startIndexLocation, baseVertexLocation, 0);
-            //NativeCommandList.DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
+            //NativeCommandBuffer.DrawIndexed((uint)indexCount, 1, (uint)startIndexLocation, baseVertexLocation, 0);
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)indexCount;
@@ -782,8 +768,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>Pointer to the sub resource to map.</returns>
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
         {
-
-
             if (resource == null) throw new ArgumentNullException("resource");
             var texture = resource as Texture;
             if (texture != null)
