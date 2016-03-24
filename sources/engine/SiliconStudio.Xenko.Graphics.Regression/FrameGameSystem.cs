@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
@@ -25,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// <summary>
         /// The frames to take screenshot of.
         /// </summary>
-        private readonly HashSet<int> screenshotFrames;
+        private readonly Dictionary<int, string> screenshotFrames;
 
         /// <summary>
         /// The current frame.
@@ -46,16 +47,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// </summary>
         public bool AllTestsCompleted => frameCount > lastFrame;
 
-        public string TestName;
-
-        /// <summary>
-        /// Flag stating that a screenshot should be taken.
-        /// </summary>
-        public bool TakeSnapshot
+        public IEnumerable<string> TestNames
         {
             get
             {
-                return screenshotFrames.Contains(frameCount);
+                return screenshotFrames.Select(x => x.Value).Distinct();
             }
         }
 
@@ -85,7 +81,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// Gets or sets a value indicating whether this instance is test feeding.
         /// </summary>
         /// <value><c>true</c> if this instance is test feeding; otherwise, <c>false</c>.</value>
-        public bool IsUnityTestFeeding { get; set; }
+        public bool IsUnitTestFeeding { get; set; }
 
         #endregion
 
@@ -96,7 +92,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             updateMethods = new List<SetupMethodInfo>();
             drawMethods = new List<SetupMethodInfo>();
-            screenshotFrames = new HashSet<int>();
+            screenshotFrames = new Dictionary<int, string>();
             lastFrame = -1;
         }
 
@@ -151,25 +147,27 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         }
 
         /// <summary>
-        /// Take a screenshot at the desired frame.
+        /// Determine if a screenshot needs to be taken this frame.
         /// </summary>
-        /// <param name="frameIndex">the frame index.</param>
-        /// <returns>this</returns>
-        public FrameGameSystem TakeScreenshot(int frameIndex)
+        /// <param name="testName"></param>
+        /// <returns></returns>
+        public bool IsScreenshotNeeded(out string testName)
         {
-            screenshotFrames.Add(frameIndex);
-            if (frameIndex > lastFrame)
-                lastFrame = frameIndex;
-            return this;
+            return screenshotFrames.TryGetValue(frameCount, out testName);
         }
 
         /// <summary>
         /// Take a screenshot at the desired frame.
         /// </summary>
         /// <returns>this</returns>
-        public FrameGameSystem TakeScreenshot()
+        public FrameGameSystem TakeScreenshot(int? frameIndex = null, string testName = null)
         {
-            return TakeScreenshot(lastFrame + 1);
+            var realFrameIndex = frameIndex ?? lastFrame + 1;
+
+            screenshotFrames.Add(realFrameIndex, testName);
+            if (realFrameIndex > lastFrame)
+                lastFrame = realFrameIndex;
+            return this;
         }
 
         public override void Draw(GameTime gameTime)
