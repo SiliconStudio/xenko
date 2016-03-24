@@ -75,9 +75,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
             }
 
             var colliderEntity = CreateChildEntity(component, component.ColliderShape, true);
-            if (colliderEntity == null) return null;
-
-            debugEntity.AddChild(colliderEntity);
+            if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;
         }
