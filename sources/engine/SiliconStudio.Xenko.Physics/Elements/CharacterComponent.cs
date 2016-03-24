@@ -162,7 +162,13 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="targetPosition">The target position.</param>
         public void Teleport(Vector3 targetPosition)
         {
-            KinematicCharacter?.Warp(targetPosition);
+            if (KinematicCharacter == null) return;
+
+            //we assume that the user wants to teleport in world/entity space
+            var entityPos = Entity.Transform.Position;
+            var physPos = PhysicsWorldTransform.TranslationVector;
+            var diff = physPos - entityPos;
+            KinematicCharacter.Warp(targetPosition + diff);
         }
 
         /// <summary>
