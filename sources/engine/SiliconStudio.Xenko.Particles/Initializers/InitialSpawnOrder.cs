@@ -6,13 +6,19 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
+    /// <summary>
+    /// The <see cref="InitialSpawnOrder"/> is an initializer which assigns all particles an increasing number based on the order of their spawning
+    /// </summary>
     [DataContract("InitialSpawnOrder")]
     [Display("Spawn Order")]
     public class InitialSpawnOrder : ParticleInitializer
     {
-        // Will loop every so often, but the loop condition should be almost unreachable for normal games (~800 hours for spawning rate of 100 particles/second)
+        // Will loop every so often, but the loop condition should be unreachable for normal games (~800 hours for spawning rate of 100 particles/second)
         private UInt32 spawnOrder = 0;
 
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
         public InitialSpawnOrder()
         {
             spawnOrder = 0;
@@ -20,6 +26,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             RequiredFields.Add(ParticleFields.Order);
         }
 
+        /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
             if (!pool.FieldExists(ParticleFields.Order))
@@ -33,7 +40,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 var particle = pool.FromIndex(i);
 
 
-                (*((UInt32*)particle[orderField])) = spawnOrder++;
+                (*((UInt32*)particle[orderField])) = spawnOrder++; // Will loop every so often, but the loop condition should be unreachable for normal games
 
                 i = (i + 1) % maxCapacity;
             }
