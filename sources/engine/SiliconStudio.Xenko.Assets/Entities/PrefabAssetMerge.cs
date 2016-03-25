@@ -74,6 +74,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             FixHierarchy();
 
+            CleanupEntities();
+
             return result;
         }
 
@@ -381,6 +383,32 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityEntry in newAsset.Hierarchy.Entities)
             {
                 FixReferencesToEntities(entityEntry, finalMapBaseIdToNewId);
+            }
+        }
+
+        /// <summary>
+        /// If an entity was removed from a Children during the FixHierarchy phase, we have to remove it from the asset.
+        /// </summary>
+        private void CleanupEntities()
+        {
+            // Collect all Entity ids used (either as RootEntities or child entities)
+            var entityIds = new HashSet<Guid>(newAsset.Hierarchy.RootEntities);
+            foreach (var entityEntry in newAsset.Hierarchy.Entities)
+            {
+                foreach (var children in entityEntry.Entity.Transform.Children)
+                {
+                    entityIds.Add(children.Entity.Id);
+                }
+            }
+
+            // Remove them from the list
+            var tempList = new List<EntityDesign>(newAsset.Hierarchy.Entities);
+            foreach (var entityEntry in tempList)
+            {
+                if (!entityIds.Contains(entityEntry.Entity.Id))
+                {
+                    newAsset.Hierarchy.Entities.Remove(entityEntry.Entity.Id);
+                }
             }
         }
 
