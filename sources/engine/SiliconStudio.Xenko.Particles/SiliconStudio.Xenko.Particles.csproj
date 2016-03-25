@@ -91,12 +91,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="ShapeBuilders\EdgePolicy.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderTrail.cs" />
-    <Compile Include="ShapeBuilders\ShapeBuilder.Extenstions.cs" />
+    <Compile Include="ShapeBuilders\SmoothingPolicy.cs" />
+    <Compile Include="ShapeBuilders\TextureCoordinayePolicy.cs" />
     <Compile Include="ShapeBuilders\UVRotate.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
