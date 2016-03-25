@@ -97,6 +97,9 @@ namespace SiliconStudio.Xenko.Graphics
                 DestroyImpl();
             }
 
+            // No need for reload anymore, allow it to be GC
+            Reload = null;
+
             base.Destroy();
         }
     }

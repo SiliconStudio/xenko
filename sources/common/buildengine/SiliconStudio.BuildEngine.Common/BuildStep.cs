@@ -164,9 +164,13 @@ namespace SiliconStudio.BuildEngine
 
         public Task<BuildStep> ExecutedAsync()
         {
+            // Already processed?
+            if (Processed)
+                return Task.FromResult(this);
+
             var tcs = new TaskCompletionSource<BuildStep>();
             StepProcessed += (sender, e) => tcs.TrySetResult(e.Step);
-            return Processed ? Task.FromResult(this) : tcs.Task;
+            return tcs.Task;
         }
 
         /// <summary>

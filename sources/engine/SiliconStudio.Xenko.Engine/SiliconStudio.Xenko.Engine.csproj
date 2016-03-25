@@ -117,6 +117,7 @@
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
+    <Compile Include="Engine\Network\SimpleSocketException.cs" />
     <Compile Include="Engine\Network\SocketExtensions.cs" />
     <Compile Include="Engine\Network\SocketMessageLayer.cs" />
     <Compile Include="Engine\Network\Sockets.Implementation.NET\CommsInterface.cs" />

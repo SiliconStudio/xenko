@@ -86,6 +86,17 @@ namespace SiliconStudio.Xenko.Engine
             renderDrawContext = new RenderDrawContext(Services, renderContext, graphicsContext);
         }
 
+        protected override void Destroy()
+        {
+            if (SceneInstance != null)
+            {
+                ((IReferencable)SceneInstance).Release();
+                SceneInstance = null;
+            }
+
+            base.Destroy();
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (SceneInstance != null)

@@ -33,6 +33,19 @@ namespace SiliconStudio.Xenko.Graphics
             SetupNextBufferPool();
         }
 
+        protected override void Destroy()
+        {
+            foreach (var descriptorPool in descriptorPools)
+                descriptorPool.Dispose();
+            descriptorPools.Clear();
+
+            foreach (var bufferPool in bufferPools)
+                bufferPool.Dispose();
+            bufferPools.Clear();
+
+            base.Destroy();
+        }
+
         public void Reset()
         {
             foreach (var descriptorPool in descriptorPools)

@@ -90,8 +90,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal void Apply(CommandList commandList, PipelineState previousPipeline)
         {
             // Apply states
-            if (BlendState != previousPipeline.BlendState)
-                BlendState.Apply(previousPipeline.BlendState);
+            if (BlendState != previousPipeline.BlendState || commandList.NewBlendFactor != commandList.BoundBlendFactor)
+                BlendState.Apply(commandList, previousPipeline.BlendState);
             if (RasterizerState != previousPipeline.RasterizerState)
                 RasterizerState.Apply(commandList);
             if (DepthStencilState != previousPipeline.DepthStencilState || commandList.NewStencilReference != commandList.BoundStencilReference)
@@ -179,12 +179,12 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         value = computeValue(source);
                         storage.Add(key, value);
+                        reverse.Add(value, key);
+                        counter.Add(value, 1);
                     }
                     else
                     {
-                        int currentCounter;
-                        counter.TryGetValue(value, out currentCounter);
-                        counter[value] = currentCounter + 1;
+                        counter[value] = counter[value] + 1;
                     }
 
                     return value;
@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.Graphics
                 lock (lockObject)
                 {
                     var newRefCount = counter[value] - 1;
-                    counter[value] = newRefCount--;
+                    counter[value] = newRefCount;
                     if (newRefCount == 0)
                     {
                         counter.Remove(value);

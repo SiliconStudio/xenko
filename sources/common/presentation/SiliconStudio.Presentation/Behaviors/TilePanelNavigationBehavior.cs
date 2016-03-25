@@ -15,7 +15,7 @@ namespace SiliconStudio.Presentation.Behaviors
     {
         private Selector selector;
 
-        protected override void OnAttachedOverride()
+        protected override void OnAttachedAndLoaded()
         {
             DependencyObject parent = AssociatedObject;
             while (parent != null)
@@ -38,9 +38,8 @@ namespace SiliconStudio.Presentation.Behaviors
             selector.PreviewKeyDown += OnAssociatedObjectKeyDown;
         }
 
-        protected override void OnDetachingOverride()
+        protected override void OnDetachingAndUnloaded()
         {
-            // TODO: Not sure why, but it seems that we get an Unloaded event before the Loaded event if loading a broken package. Need to investigate
             if (selector != null)
                 selector.PreviewKeyDown -= OnAssociatedObjectKeyDown;
             selector = null;
@@ -138,8 +137,7 @@ namespace SiliconStudio.Presentation.Behaviors
                     if (selector.ItemContainerGenerator != null && selector.SelectedItem != null)
                     {
                         var lbi = selector.ItemContainerGenerator.ContainerFromItem(selector.SelectedItem) as UIElement;
-                        if (lbi != null)
-                            lbi.Focus();
+                        lbi?.Focus();
                     }
                 }
             }
