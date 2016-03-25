@@ -390,9 +390,9 @@ namespace SiliconStudio.Xenko.Particles
             {
                 // This sorting policy doesn't check if you actually have a Order field.
                 // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
-                GetSortIndex<UInt32> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
+                GetSortIndex<uint> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
 
-                ParticleSorter = new ParticleSorterCustom<UInt32>(pool, ParticleFields.Order, sortByOrder);
+                ParticleSorter = new ParticleSorterCustom<uint>(pool, ParticleFields.Order, sortByOrder);
                 return;
             }
 
@@ -491,12 +491,12 @@ namespace SiliconStudio.Xenko.Particles
 
             // RandomNumberGenerator creation
             {
-                UInt32 rngSeed = 0; // EmitterRandomSeedMethod.Fixed
+                uint rngSeed = 0; // EmitterRandomSeedMethod.Fixed
 
                 if (randomSeedMethod == EmitterRandomSeedMethod.Time)
                 {
                     // Stopwatch has maximum possible frequency, so rngSeeds initialized at different times will be different
-                    rngSeed = unchecked((UInt32)Stopwatch.GetTimestamp());
+                    rngSeed = unchecked((uint)Stopwatch.GetTimestamp());
                 }
                 else if (randomSeedMethod == EmitterRandomSeedMethod.Position)
                 {
@@ -506,9 +506,9 @@ namespace SiliconStudio.Xenko.Particles
                     var posY = parentSystem.Translation.Y;
                     var posZ = parentSystem.Translation.Z;
 
-                    var uintX = *((UInt32*)(&posX));
-                    var uintY = *((UInt32*)(&posY));
-                    var uintZ = *((UInt32*)(&posZ));
+                    var uintX = *((uint*)(&posX));
+                    var uintY = *((uint*)(&posY));
+                    var uintZ = *((uint*)(&posZ));
 
                     // Add some randomness to prevent glitches when positions are the same (diagonal)
                     uintX ^= (uintX >> 19);

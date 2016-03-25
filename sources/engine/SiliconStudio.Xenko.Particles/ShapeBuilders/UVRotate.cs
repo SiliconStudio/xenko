@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders.Tools
 {
-    public enum UvClockwiseRotation
+    public enum UVClockwiseRotation
     {
         [Display("No rotation")]
         Degree0,
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders.Tools
     {
         private bool flipX;
         private bool flipY;
-        private UvClockwiseRotation uvClockwise;
+        private UVClockwiseRotation uvClockwise;
 
         // Because we only support multiple of 90-degree rotations, flipping and rotating texture coordinates becomes a trivial binary swapping
         private bool innerFlipX;    // Read x' = (1 - x) rather than x' = x
@@ -65,16 +65,16 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders.Tools
         /// If <c>True</c>, the texture coordinates will be rotated clockwise by the specified angle prior to texture sampling.
         /// </userdoc>
         [Display("Clockwise")]
-        public UvClockwiseRotation UvClockwise { get { return uvClockwise; } set { uvClockwise = value; ApplyChanges(); } }
+        public UVClockwiseRotation UvClockwise { get { return uvClockwise; } set { uvClockwise = value; ApplyChanges(); } }
 
         /// <summary>
         /// Precalculate the flags required for sampling and swapping texture coordinates
         /// </summary>
         private void ApplyChanges()
         {
-            innerFlipX = (FlipX ^ (uvClockwise == UvClockwiseRotation.Degree180 || uvClockwise == UvClockwiseRotation.Degree90));
-            innerFlipY = (FlipY ^ (uvClockwise == UvClockwiseRotation.Degree180 || uvClockwise == UvClockwiseRotation.Degree270));
-            innerRotated = (uvClockwise == UvClockwiseRotation.Degree90 || uvClockwise == UvClockwiseRotation.Degree270);
+            innerFlipX = (FlipX ^ (uvClockwise == UVClockwiseRotation.Degree180 || uvClockwise == UVClockwiseRotation.Degree90));
+            innerFlipY = (FlipY ^ (uvClockwise == UVClockwiseRotation.Degree180 || uvClockwise == UVClockwiseRotation.Degree270));
+            innerRotated = (uvClockwise == UVClockwiseRotation.Degree90 || uvClockwise == UVClockwiseRotation.Degree270);
         }
 
         /// <summary>
