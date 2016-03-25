@@ -114,29 +114,71 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
+            object existingStyle;
+
             // Set dependency properties test values.
-            TextBlock.TextColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.LightGray);
-            EditText.TextColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.LightGray);
-            EditText.SelectionColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.FromAbgr(0x623574FF));
-            EditText.CaretColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF));
+            UI.DefaultResourceDictionary.TryGetValue(typeof(TextBlock), out existingStyle);
+            UI.DefaultResourceDictionary[typeof(TextBlock)] = new Style(typeof(TextBlock), (Style)existingStyle)
+            {
+                Setters =
+                {
+                    new Setter<Color>(TextBlock.TextColorPropertyKey, Color.LightGray),
+                }
+            };
+
+            UI.DefaultResourceDictionary.TryGetValue(typeof(ScrollingText), out existingStyle);
+            UI.DefaultResourceDictionary[typeof(ScrollingText)] = new Style(typeof(ScrollingText), (Style)existingStyle)
+            {
+                Setters =
+                {
+                    new Setter<Color>(TextBlock.TextColorPropertyKey, Color.LightGray),
+                }
+            };
+
             var buttonPressedTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonPressed);
             var buttonNotPressedTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonNotPressed);
             var buttonOverredTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonOverred);
-            Button.PressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One });
-            Button.NotPressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One });
-            Button.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One });
+            UI.DefaultResourceDictionary.TryGetValue(typeof(Button), out existingStyle);
+            UI.DefaultResourceDictionary[typeof(Button)] = new Style(typeof(Button), (Style)existingStyle)
+            {
+                Setters =
+                {
+                    new Setter<Sprite>(Button.PressedImagePropertyKey, new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One }),
+                    new Setter<Sprite>(Button.NotPressedImagePropertyKey, new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One }),
+                    new Setter<Sprite>(Button.MouseOverImagePropertyKey, new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One }),
+                }
+            };
+
             var editActiveTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextActive);
             var editInactiveTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextInactive);
             var editOverredTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextOverred);
-            EditText.ActiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One });
-            EditText.InactiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One });
-            EditText.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One });
+            UI.DefaultResourceDictionary.TryGetValue(typeof(EditText), out existingStyle);
+            UI.DefaultResourceDictionary[typeof(EditText)] = new Style(typeof(EditText), (Style)existingStyle)
+            {
+                Setters =
+                {
+                    new Setter<Color>(EditText.TextColorPropertyKey, Color.LightGray),
+                    new Setter<Color>(EditText.SelectionColorPropertyKey, Color.FromAbgr(0x623574FF)),
+                    new Setter<Color>(EditText.CaretColorPropertyKey, Color.FromAbgr(0xF0F0F0FF)),
+                    new Setter<Sprite>(EditText.ActiveImagePropertyKey, new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One }),
+                    new Setter<Sprite>(EditText.InactiveImagePropertyKey, new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One }),
+                    new Setter<Sprite>(EditText.MouseOverImagePropertyKey, new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One }),
+                }
+            };
+
             var toggleButtonChecked = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonChecked);
             var toggleButtonUnchecked = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonUnchecked);
             var toggleButtonIndeterminate = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonIndeterminate);
-            ToggleButton.CheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One });
-            ToggleButton.UncheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One });
-            ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One });
+            UI.DefaultResourceDictionary.TryGetValue(typeof(ToggleButton), out existingStyle);
+            UI.DefaultResourceDictionary[typeof(ToggleButton)] = new Style(typeof(ToggleButton), (Style)existingStyle)
+            {
+                Setters =
+                {
+                    new Setter<Sprite>(ToggleButton.CheckedImagePropertyKey, new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One }),
+                    new Setter<Sprite>(ToggleButton.UncheckedImagePropertyKey, new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One }),
+                    new Setter<Sprite>(ToggleButton.IndeterminateImagePropertyKey, new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One }),
+                }
+            };
 
             Window.IsMouseVisible = true;
 
