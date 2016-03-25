@@ -205,13 +205,14 @@ namespace SiliconStudio.Xenko.Graphics
 
             // TODO VULKAN
             // Create Vulkan device based on profile
+            uint queuePriorities = 0;
             var queueCreateInfo = new DeviceQueueCreateInfo
             {
                 StructureType = StructureType.DeviceQueueCreateInfo,
                 QueueFamilyIndex = 0,
                 QueueCount = 1,
+                QueuePriorities = new IntPtr(&queuePriorities)
             };
-
 
             var enabledExtensionNames = new[]
             {
