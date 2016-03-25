@@ -20,9 +20,11 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.StaticPlane;
             Is2D = false;
 
+            CachedScaling = Vector3.One;
+
             InternalShape = new BulletSharp.StaticPlaneShape(normal, offset)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
         }
     }
