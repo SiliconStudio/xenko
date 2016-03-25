@@ -20,6 +20,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
+        private static readonly Type[] InternalPrimitiveTypes = { typeof(string), typeof(Guid) };
         private GraphNode rootNode;
         private Guid rootGuid;
         private NodeFactoryDelegate currentNodeFactory;
@@ -27,13 +28,14 @@ namespace SiliconStudio.Quantum
         public DefaultNodeBuilder(NodeContainer nodeContainer)
         {
             NodeContainer = nodeContainer;
+            primitiveTypes.AddRange(InternalPrimitiveTypes);
         }
 
         /// <inheritdoc/>
         public NodeContainer NodeContainer { get; }
         
         /// <inheritdoc/>
-        public ICollection<Type> PrimitiveTypes { get; } = new List<Type>();
+        private readonly List<Type> primitiveTypes = new List<Type>();
 
         /// <inheritdoc/>
         public ICollection<INodeCommand> AvailableCommands { get; } = new List<INodeCommand>();
@@ -56,6 +58,33 @@ namespace SiliconStudio.Quantum
             contextStack.Clear();
             referenceContents.Clear();
             base.Reset();
+        }
+
+        public void RegisterPrimitiveType(Type type)
+        {
+            if (type.IsPrimitive || type.IsEnum || primitiveTypes.Contains(type))
+                return;
+
+            primitiveTypes.Add(type);
+        }
+
+        public void UnregisterPrimitiveType(Type type)
+        {
+            if (type.IsPrimitive || type.IsEnum || InternalPrimitiveTypes.Contains(type))
+                throw new InvalidOperationException("The given type cannot be unregistered from the list of primitive types");
+
+            primitiveTypes.Remove(type);
+        }
+
+        public bool IsPrimitiveType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            if (type.IsNullable())
+                type = Nullable.GetUnderlyingType(type);
+
+            return type.IsPrimitive || type.IsEnum || primitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
 
         /// <inheritdoc/>
@@ -262,17 +291,6 @@ namespace SiliconStudio.Quantum
         private static bool IsCollection(Type type)
         {
             return typeof(ICollection).IsAssignableFrom(type);
-        }
-
-        private bool IsPrimitiveType(Type type)
-        {
-            if (type == null)
-                return false;
-
-            if (type.IsNullable())
-                type = Nullable.GetUnderlyingType(type);
-
-            return type.IsPrimitive || type == typeof(string) || type == typeof(Guid) || type.IsEnum || PrimitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
 
         private static Type GetElementValueType(ITypeDescriptor descriptor)
