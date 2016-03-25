@@ -1,7 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Shaders.Compiler.Internals;
 
@@ -33,7 +35,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 // Send any effect request remotely (should fail if not connected)
                 var socketMessageLayer = await socketMessageLayerTask;
-                await socketMessageLayer.Send(new RemoteEffectCompilerEffectRequested { Request = effectCompileRequest });
+
+                var memoryStream = new MemoryStream();
+                var binaryWriter = new BinarySerializationWriter(memoryStream);
+                binaryWriter.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                binaryWriter.SerializeExtended(effectCompileRequest, ArchiveMode.Serialize, null);
+
+                await socketMessageLayer.Send(new RemoteEffectCompilerEffectRequested { Request = memoryStream.ToArray() });
             });
         }
 
