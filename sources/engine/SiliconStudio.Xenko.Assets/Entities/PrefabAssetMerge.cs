@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// </summary>
     internal class PrefabAssetMerge
     {
-        private readonly Dictionary<GroupPartKey, EntityRemapEntry> baseEntities;
-        private readonly Dictionary<GroupPartKey, EntityRemapEntry> newBaseEntities;
-        private readonly Dictionary<GroupPartKey, EntityRemapEntry> newEntities; // specific to this instance, GroupPartKey.PartInstanceId is always Guid.Empty
+        private readonly Dictionary<GroupPartKey, BaseEntityEntry> baseEntities;
+        private readonly Dictionary<GroupPartKey, BaseEntityEntry> newBaseEntities;
+        private readonly Dictionary<GroupPartKey, NewEntityEntry> newEntities; // specific to this instance, GroupPartKey.PartInstanceId is always Guid.Empty
         private readonly HashSet<Guid> entitiesRemovedInNewBase;
         private readonly HashSet<Guid> entitiesToRemoveFromNew;
         private readonly EntityHierarchyAssetBase baseAsset;
@@ -49,9 +49,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             this.newBaseAsset = newBaseAsset;
             this.newBaseParts = newBaseParts;
             this.baseAsset = baseAsset;
-            baseEntities = new Dictionary<GroupPartKey, EntityRemapEntry>();
-            newEntities = new Dictionary<GroupPartKey, EntityRemapEntry>();
-            newBaseEntities = new Dictionary<GroupPartKey, EntityRemapEntry>();
+            baseEntities = new Dictionary<GroupPartKey, BaseEntityEntry>();
+            newEntities = new Dictionary<GroupPartKey, NewEntityEntry>();
+            newBaseEntities = new Dictionary<GroupPartKey, BaseEntityEntry>();
             entitiesRemovedInNewBase = new HashSet<Guid>();
             entitiesToRemoveFromNew = new HashSet<Guid>();
             entitiesInHierarchy = new HashSet<Guid>();
@@ -84,10 +84,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         private void PrepareMerge()
         {
-            // Prepare mapping for new asset
+            // Process NewAsset
             MapEntities(newAsset.Hierarchy, newEntities);
 
-            // Prepare mappings for base
+            // Process BaseAsset
             MapEntities(baseAsset?.Hierarchy, baseEntities);
             if (newAsset.BaseParts != null)
             {
@@ -95,12 +95,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     foreach (var groupPartId in partItem.Value)
                     {
+                        // Because we have a groupPartId, it will clone the hierarchy so that
+                        // we can safely merge instances later with NewEntity
                         MapEntities(partItem.Key.Hierarchy, baseEntities, groupPartId);
                     }
                 }
             }
 
-            // Prepare mapping for new base
+            // Process NewBaseAsset
             MapEntities(newBaseAsset?.Hierarchy, newBaseEntities);
             if (newBaseParts != null)
             {
@@ -108,12 +110,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     foreach (var groupPartId in partItem.Value)
                     {
+                        // Because we have a groupPartId, it will clone the hierarchy so that
+                        // we can safely merge instances later with NewEntity
                         MapEntities(partItem.Key.Hierarchy, newBaseEntities, groupPartId);
                     }
                 }
             }
-
-
 
             // Compute Entities Added by newbase (not present in base)
             foreach (var entityFromNewBase in newBaseEntities)
@@ -121,25 +123,27 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var entityId = entityFromNewBase.Value.EntityDesign.Entity.Id;
                 // For PartInstanceId key, we take it from the entityFromNewBase.Key
                 var basePartInstanceId = entityFromNewBase.Key.PartInstanceId;
-                var key = new GroupPartKey(entityFromNewBase.Key.PartInstanceId, entityId);
+                var key = new GroupPartKey(basePartInstanceId, entityId);
 
                 if (!baseEntities.ContainsKey(key))
                 {
                     var tempHiearchy = new EntityHierarchyData();
                     tempHiearchy.Entities.Add(entityFromNewBase.Value.EntityDesign);
-                    var newEntityDesign = ((EntityHierarchyData)AssetCloner.Clone(tempHiearchy)).Entities[0];
-
-                    // Because we are going to modify the NewBase we need to clone it
-                    var item = new EntityRemapEntry(newEntityDesign, null, newEntities.Count);
-                    item.PushChildren();
 
                     // The new entity added by the newbase
-                    var baseId = item.EntityDesign.Entity.Id;
+                    var newEntityDesign = ((EntityHierarchyData)AssetCloner.Clone(tempHiearchy)).Entities[0];
+                    var baseId = newEntityDesign.Entity.Id;
                     var newId = Guid.NewGuid();
-                    item.EntityDesign.Entity.Id = newId;
-                    item.EntityDesign.Design.BaseId = baseId;
-                    item.EntityDesign.Design.BasePartInstanceId = basePartInstanceId;
-                    item.IsNewBase = true;
+                    newEntityDesign.Entity.Id = newId;
+                    newEntityDesign.Design.BaseId = baseId;
+                    newEntityDesign.Design.BasePartInstanceId = basePartInstanceId;
+
+                    // Because we are going to modify the NewBase we need to clone it
+                    // We tag this entry as special, as we will have to process its children differently later in the merge hierarchy
+                    var item = new NewEntityEntry(newEntityDesign, null, newEntities.Count)
+                    {
+                        IsNewBase = true
+                    };
 
                     // Add this to the list of entities from newAsset
                     // Specific to the newEntities, GroupPartKey.PartInstanceId is always Guid.Empty
@@ -165,6 +169,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
 
+            // Compute the GUID -> index in list for RootEntities for Base and NewBase
             var baseRootEntities = new Dictionary<Guid, int>();
             if (baseAsset != null)
             {
@@ -184,59 +189,63 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
 
-            // Prebuild the list of entities that we will have to remove
-            foreach (var entityEntry in newEntities.ToList()) // use ToList so we can modify the dictionary while iterating
+            // Associate all NewEntity entries to their base
+            foreach (var newEntityEntry in newEntities.ToList()) // use ToList so we can modify the dictionary while iterating
             {
-                var entityDesign = entityEntry.Value.EntityDesign;
-                var newEntity = entityDesign.Entity;
-
-                if (entityDesign.Design.BaseId.HasValue)
+                // Skip entities that don't have a base, as we don't have to do anything in the merge
+                var entityDesign = newEntityEntry.Value.EntityDesign;
+                if (!entityDesign.Design.BaseId.HasValue)
                 {
-                    var baseId = entityDesign.Design.BaseId.Value;
-                    var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
+                    continue;
+                }
 
-                    EntityRemapEntry baseRemap;
-                    EntityRemapEntry newBaseRemap;
-                    baseEntities.TryGetValue(baseKey, out baseRemap);
-                    newBaseEntities.TryGetValue(baseKey, out newBaseRemap);
+                // Else we will associate entries
+                var newEntity = entityDesign.Entity;
+                var baseId = entityDesign.Design.BaseId.Value;
+                var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
 
-                    // Link between base and new entity
-                    if (baseRemap != null)
+                BaseEntityEntry baseRemap;
+                BaseEntityEntry newBaseRemap;
+                baseEntities.TryGetValue(baseKey, out baseRemap);
+                newBaseEntities.TryGetValue(baseKey, out newBaseRemap);
+
+                // Link between base and new entity
+                if (baseRemap != null)
+                {
+                    baseRemap.NewEntity = newEntityEntry.Value;
+                }
+
+                if (newBaseRemap != null)
+                {
+                    newBaseRemap.NewEntity = newEntityEntry.Value;
+                }
+
+                // Link the new entity to its base
+                newEntityEntry.Value.Base = baseRemap;
+                newEntityEntry.Value.NewBase = newBaseRemap;
+
+                if (entitiesRemovedInNewBase.Contains(baseId))
+                {
+                    entitiesToRemoveFromNew.Add(newEntity.Id);
+
+                    // Else the entity has been removed
+                    newEntities.Remove(newEntityEntry.Key);
+                }
+                else
+                {
+                    // Remap ids in the RootEntities for base
+                    int index;
+                    if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
                     {
-                        baseRemap.NewEntity = entityEntry.Value;
+                        baseRootEntities.Remove(baseId);
+                        baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
                     }
 
-                    if (newBaseRemap != null)
+                    // Remap ids in the RootEntities for newBase
+                    if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
                     {
-                        newBaseRemap.NewEntity = entityEntry.Value;
-                    }
-
-                    if (entitiesRemovedInNewBase.Contains(baseId))
-                    {
-                        entitiesToRemoveFromNew.Add(newEntity.Id);
-
-                        // Else the entity has been removed
-                        newEntities.Remove(entityEntry.Key);
-                    }
-                    else
-                    {
-                        entityEntry.Value.Base = baseRemap;
-                        entityEntry.Value.NewBase = newBaseRemap;
-
-                        // Remap ids in the RootEntities for base
-                        int index;
-                        if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
-                        {
-                            baseRootEntities.Remove(baseId);
-                            baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
-                        }
-
-                        // Remap ids in the RootEntities for newBase
-                        if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
-                        {
-                            newBaseRootEntities.Remove(baseId);
-                            newBaseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
-                        }
+                        newBaseRootEntities.Remove(baseId);
+                        newBaseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
                     }
                 }
             }
@@ -494,7 +503,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var entity = remap.EntityDesign.Entity;
 
                 // If we have a base/newbase, we can 3-ways merge lists
-                if (remap.Base != null && remap.NewBase != null)
+                if (remap.Base != null)
                 {
                     // Build a list of Entities Ids for the BaseEntity.Transform.Children remapped to the new entities (using the BasePartInstanceId of the entity being processed)
                     var baseChildrenId = new List<Guid>();
@@ -505,10 +514,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         foreach (var transformComponent in remap.Base.Children)
                         {
-                            EntityRemapEntry baseToNew;
-                            if (baseEntities.TryGetValue(new GroupPartKey(basePartInstanceId, transformComponent.Entity.Id), out baseToNew) && baseToNew.NewEntity != null)
+                            BaseEntityEntry baseEntry;
+                            if (baseEntities.TryGetValue(new GroupPartKey(basePartInstanceId, transformComponent.Entity.Id), out baseEntry) && baseEntry.NewEntity != null)
                             {
-                                baseChildrenId.Add(baseToNew.NewEntity.EntityDesign.Entity.Id);
+                                baseChildrenId.Add(baseEntry.NewEntity.EntityDesign.Entity.Id);
                             }
                         }
                     }
@@ -517,36 +526,22 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var currentChildrenIds = new List<Guid>();
                     if (remap.Children != null)
                     {
-                        if (remap.IsNewBase)
+                        foreach (var transformComponent in remap.Children)
                         {
-                            foreach (var transformComponent in remap.Children)
-                            {
-                                EntityRemapEntry baseToNew = null;
-                                if (newBaseEntities.TryGetValue(new GroupPartKey(basePartInstanceId, transformComponent.Entity.Id), out baseToNew) && baseToNew.NewEntity != null)
-                                {
-                                    currentChildrenIds.Add(baseToNew.NewEntity.EntityDesign.Entity.Id);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            foreach (var transformComponent in remap.Children)
-                            {
-                                currentChildrenIds.Add(transformComponent.Entity.Id);
-                            }
+                            currentChildrenIds.Add(transformComponent.Entity.Id);
                         }
                     }
 
                     // Build a list of Entities Ids for the NewBaseEntity.Transform.Children remapped to the new entities (using the BasePartInstanceId of the entity being processed)
                     var newBaseChildrenIds = new List<Guid>();
-                    if (remap.NewBase.Children != null)
+                    if (remap.NewBase?.Children != null)
                     {
                         foreach (var transformComponent in remap.NewBase.Children)
                         {
-                            EntityRemapEntry baseToNew = null;
-                            if (newBaseEntities.TryGetValue(new GroupPartKey(basePartInstanceId, transformComponent.Entity.Id), out baseToNew) && baseToNew.NewEntity != null)
+                            BaseEntityEntry baseEntry = null;
+                            if (newBaseEntities.TryGetValue(new GroupPartKey(basePartInstanceId, transformComponent.Entity.Id), out baseEntry) && baseEntry.NewEntity != null)
                             {
-                                newBaseChildrenIds.Add(baseToNew.NewEntity.EntityDesign.Entity.Id);
+                                newBaseChildrenIds.Add(baseEntry.NewEntity.EntityDesign.Entity.Id);
                             }
                         }
                     }
@@ -570,7 +565,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     foreach (var childId in currentChildrenIds)
                     {
-                        EntityRemapEntry newChildRemap;
+                        NewEntityEntry newChildRemap;
                         if (newEntities.TryGetValue(new GroupPartKey(null, childId), out newChildRemap))
                         {
                             if (remap.Children == null)
@@ -583,6 +578,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
                 else if (remap.IsNewBase && remap.Children != null)
                 {
+                    // If the entity is coming from NewBase, we need to transform the previous children
+                    // to the new one mapped
                     var children = new List<TransformComponent>(remap.Children);
                     remap.Children.Clear();
 
@@ -590,7 +587,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     foreach (var transformComponent in children)
                     {
-                        EntityRemapEntry baseToNew = null;
+                        BaseEntityEntry baseToNew = null;
                         if (newBaseEntities.TryGetValue(new GroupPartKey(basePartInstanceId, transformComponent.Entity.Id), out baseToNew) && baseToNew.NewEntity != null)
                         {
                             remap.Children.Add(baseToNew.NewEntity.EntityDesign.Entity.Transform);
@@ -624,7 +621,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return nextEntityIds;
         }
 
-        private void MapEntities(EntityHierarchyData hierarchyData, Dictionary<GroupPartKey, EntityRemapEntry> entities, Guid? instancePartIdArg = null)
+        private void MapEntities<T>(EntityHierarchyData hierarchyData, Dictionary<GroupPartKey, T> entities, Guid? instancePartIdArg = null) where T : EntityEntry
         {
             if (hierarchyData == null)
             {
@@ -653,70 +650,83 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     continue;
                 }
 
-                var remap = new EntityRemapEntry(entityDesign, hierarchyData, entities.Count);
-                // We are removing children from transform component for the diff
-                remap.PushChildren();
+                EntityEntry remap;
+                if (typeof(T) == typeof(NewEntityEntry))
+                {
+                    remap = new NewEntityEntry(entityDesign, hierarchyData, entities.Count);
+                }
+                else if (typeof(T) == typeof(BaseEntityEntry))
+                {
+                    remap = new BaseEntityEntry(entityDesign, hierarchyData, entities.Count);
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid type [{typeof(T)}]. Expecting concrete type NewEntityEntry or BaseEntityEntry");
+                    
+                }
 
-                entities[key] = remap;
+                entities[key] = (T)remap;
             }
         }
 
+        private class BaseEntityEntry : EntityEntry
+        {
+
+            public BaseEntityEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order) : base(entityDesign, hierarchy, order)
+            {
+            }
+
+            /// <summary>
+            /// Map a base to the new entity
+            /// </summary>
+            public NewEntityEntry NewEntity { get; set; }
+
+        }
+
+        private class NewEntityEntry : EntityEntry
+        {
+            public NewEntityEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order) : base(entityDesign, hierarchy, order)
+            {
+            }
+
+            /// <summary>
+            /// <c>true</c> if this entity is a new entity from the new base
+            /// </summary>
+            public bool IsNewBase { get; set; }
+
+            /// <summary>
+            /// Map this entity to its base
+            /// </summary>
+            public BaseEntityEntry Base { get; set; }
+
+            /// <summary>
+            /// Map this entity to its new base
+            /// </summary>
+            public BaseEntityEntry NewBase { get; set; }
+        }
 
 
         [DebuggerDisplay("Remap {EntityDesign}")]
-        private class EntityRemapEntry
+        private abstract class EntityEntry
         {
-
-            public EntityRemapEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order)
+            public EntityEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order)
             {
+                if (entityDesign == null) throw new ArgumentNullException(nameof(entityDesign));
                 Order = order;
                 Hierarchy = hierarchy;
-                if (entityDesign == null) throw new ArgumentNullException(nameof(entityDesign));
                 EntityDesign = entityDesign;
+
+                // Remove children from transform component in order to process them later
+                PushChildren();
             }
 
             public int Order { get; set; }
 
             public EntityHierarchyData Hierarchy { get; }
 
-            public bool IsNewBase { get; set; }
-
             public readonly EntityDesign EntityDesign;
 
             public List<TransformComponent> Children;
-
-
-            /// <summary>
-            /// Only valid for a NewBaseEntity, when the entity is remapped to a new entity in the NewEntity
-            /// </summary>
-            public EntityRemapEntry NewEntity { get; set; }
-
-
-            /// <summary>
-            /// Only valid for a NewEntity
-            /// </summary>
-            public EntityRemapEntry Base { get; set; }
-
-            /// <summary>
-            /// Only valid for a NewEntity
-            /// </summary>
-            public EntityRemapEntry NewBase { get; set; }
-
-            /// <summary>
-            /// Transfers children from entity to this remap instance. Clear the children list on the entity.
-            /// </summary>
-            public void PushChildren()
-            {
-                foreach (var child in EntityDesign.Entity.Transform.Children)
-                {
-                    if (Children == null)
-                    {
-                        Children = new List<TransformComponent>();
-                    }
-                    Children.Add(child);
-                }
-                EntityDesign.Entity.Transform.Children.Clear();
-            }
 
             /// <summary>
             /// Transfrers the children from this remap instance to the associated entity. Clear the children list of this instance.
@@ -729,8 +739,28 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     Children.Clear();
                 }
             }
+
+            /// <summary>
+            /// Transfers children from entity to this remap instance. Clear the children list on the entity.
+            /// </summary>
+            private void PushChildren()
+            {
+                foreach (var child in EntityDesign.Entity.Transform.Children)
+                {
+                    if (Children == null)
+                    {
+                        Children = new List<TransformComponent>();
+                    }
+                    Children.Add(child);
+                }
+                EntityDesign.Entity.Transform.Children.Clear();
+            }
         }
 
+        /// <summary>
+        /// Key used to associate an instance of a base Entity.
+        /// The PartInstanceId allows to use the same baseId multiple times if the entity is instantiated multiple times.
+        /// </summary>
         [DebuggerDisplay("BaseId: {BaseId} PartInstanceId: {PartInstanceId}")]
         private struct GroupPartKey : IEquatable<GroupPartKey>
         {
