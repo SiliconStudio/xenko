@@ -333,7 +333,6 @@ namespace SiliconStudio.Xenko.Games
         protected override void WndProc(ref Message m)
         {
             long wparam = m.WParam.ToInt64();
-            int lparam = m.LParam.ToInt32();
 
             switch (m.Msg)
             {
