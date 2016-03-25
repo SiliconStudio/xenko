@@ -1,15 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-
 using NUnit.Framework;
-
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Quantum.Tests
+namespace SiliconStudio.Quantum.Tests.Obsolete
 {
-    [TestFixture]
-    class TestUpdate
+    [TestFixture(Ignore = true)]
+    class ObsoleteTestUpdate
     {
         #region Test class definitions
         public class SimpleClass

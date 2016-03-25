@@ -3,13 +3,12 @@
 
 using System.Collections.Generic;
 using NUnit.Framework;
-
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Quantum.Tests
+namespace SiliconStudio.Quantum.Tests.Obsolete
 {
-    [TestFixture]
-    public class TestMultipleReferencer
+    [TestFixture(Ignore = true)]
+    public class ObsoleteTestMultipleReferencer
     {
         public class SimpleObject
         {
