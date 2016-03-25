@@ -156,6 +156,8 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         public event EventHandler<EventArgs> FullscreenToggle;
 
+        protected bool EnableFullscreenToggle = true;
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is processing keys. By default is <c>false</c>
         /// </summary>
@@ -428,6 +430,7 @@ namespace SiliconStudio.Xenko.Games
                 case Win32Native.WM_SYSKEYDOWN: //alt is down
                     if(wparam == VK_RETURN)
                     {
+                        if(!EnableFullscreenToggle) return;
                         OnFullscreenToggle(new EventArgs()); //we handle alt enter manually
                     }
                     break;
