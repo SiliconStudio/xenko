@@ -47,11 +47,6 @@ namespace SiliconStudio.Quantum
         event EventHandler<NodeConstructingArgs> NodeConstructing;
 
         /// <summary>
-        /// Raised when a node has been constructed.
-        /// </summary>
-        event EventHandler<NodeConstructedArgs> NodeConstructed;
-
-        /// <summary>
         /// Build the node hierarchy corresponding to the given object.
         /// </summary>
         /// <param name="obj">The object. Can be <c>null</c>.</param>

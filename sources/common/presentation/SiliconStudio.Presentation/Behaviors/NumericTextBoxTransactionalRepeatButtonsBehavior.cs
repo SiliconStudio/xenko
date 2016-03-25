@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Linq;
 using System.Windows;
-
+using System.Windows.Interactivity;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Presentation.Controls;
 
@@ -11,19 +11,19 @@ namespace SiliconStudio.Presentation.Behaviors
     /// <summary>
     /// This behavior allows more convenient editing of the value of a char using a TextBox.
     /// </summary>
-    public class NumericTextBoxTransactionalRepeatButtonsBehavior : DeferredBehaviorBase<NumericTextBox>
+    public class NumericTextBoxTransactionalRepeatButtonsBehavior : Behavior<NumericTextBox>
     {
         public static DependencyProperty ActionStackProperty = DependencyProperty.Register("ActionStack", typeof(TransactionalActionStack), typeof(NumericTextBoxTransactionalRepeatButtonsBehavior));
 
         public TransactionalActionStack ActionStack { get { return (TransactionalActionStack)GetValue(ActionStackProperty); } set { SetValue(ActionStackProperty, value); } }
 
-        protected override void OnAttachedOverride()
+        protected override void OnAttached()
         {
             AssociatedObject.RepeatButtonPressed += RepeatButtonPressed;
             AssociatedObject.RepeatButtonReleased += RepeatButtonReleased;
         }
 
-        protected override void OnDetachingOverride()
+        protected override void OnDetaching()
         {
             AssociatedObject.RepeatButtonPressed -= RepeatButtonPressed;
             AssociatedObject.RepeatButtonReleased -= RepeatButtonReleased;
@@ -31,10 +31,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void RepeatButtonPressed(object sender, RepeatButtonPressedRoutedEventArgs e)
         {
-            if (ActionStack != null)
-            {
-                ActionStack.BeginTransaction();
-            }
+            ActionStack?.BeginTransaction();
         }
 
         private void RepeatButtonReleased(object sender, RepeatButtonPressedRoutedEventArgs e)
