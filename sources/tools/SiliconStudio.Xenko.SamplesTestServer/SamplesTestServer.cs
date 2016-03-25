@@ -37,8 +37,10 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
+            GameTestingSystem.Initialized = true;
+
             //start logging the iOS device if we have the proper tools avail
-            if (IosTracker.CanProxy()) 
+            if (IosTracker.CanProxy())
             {
                 var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
                 {
@@ -233,15 +235,16 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                         currentTester = socketMessageLayer;
                                     }
 
-                                    
-
                                     var currenTestPair = new TestPair
                                     {
-                                        TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process, TestEndAction = () =>
-                                        {
+                                        TesterSocket = socketMessageLayer,
+                                        GameName = request.GameAssembly,
+                                        Process = process,
+                                        TestEndAction = () =>
+{
                                             // force stop - only works for Android 3.0 and above.
                                             Process.Start("cmd.exe", $"/C adb shell am force-stop {request.GameAssembly}.{request.GameAssembly}");
-                                        }
+}
                                     };
                                     processes[request.GameAssembly] = currenTestPair;
                                     testerToGame[socketMessageLayer] = currenTestPair;
