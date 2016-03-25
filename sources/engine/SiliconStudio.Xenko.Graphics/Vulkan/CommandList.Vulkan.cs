@@ -458,7 +458,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             PrepareDraw();
 
-            //NativeCommandBuffer.DrawIndexed((uint)indexCount, 1, (uint)startIndexLocation, baseVertexLocation, 0);
+            NativeCommandBuffer.DrawIndexed((uint)indexCount, 1, (uint)startIndexLocation, baseVertexLocation, 0);
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)indexCount;
