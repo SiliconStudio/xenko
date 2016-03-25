@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
+using System.Runtime.InteropServices;
 using SharpVulkan;
 using SiliconStudio.Xenko.Shaders;
 using Encoding = System.Text.Encoding;
@@ -10,6 +11,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class PipelineState
     {
+        internal PipelineLayout NativeLayout;
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
         internal PrimitiveTopology PrimitiveTopology;
@@ -32,7 +34,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             CreateRenderPass(pipelineStateDescription);
 
-            var pipelineLayout = CreatePipelineLayout(pipelineStateDescription);
+            CreatePipelineLayout(pipelineStateDescription);
 
             // Create shader stages
             var stages = CreateShaderStages(pipelineStateDescription);
@@ -147,7 +149,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var createInfo = new GraphicsPipelineCreateInfo
                 {
                     StructureType = StructureType.GraphicsPipelineCreateInfo,
-                    Layout = pipelineLayout,
+                    Layout = NativeLayout,
                     StageCount = (uint)stages.Length,
                     Stages = new IntPtr(stagesPointer),
                     //TessellationState = new IntPtr(&tessellationState),
@@ -261,81 +263,33 @@ namespace SiliconStudio.Xenko.Graphics
             base.OnDestroyed();
         }
 
-        private unsafe PipelineLayout CreatePipelineLayout(PipelineStateDescription pipelineStateDescription)
+        private unsafe void CreatePipelineLayout(PipelineStateDescription pipelineStateDescription)
         {
             var layouts = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts;
 
-            var nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
-
-            for (int layoutIndex = 0; layoutIndex < layouts.Count; layoutIndex++)
+            // Create temporary descriptor set layouts
+            var nativeLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
+            for (int i = 0; i < layouts.Count; i++)
             {
-                var layout = layouts[layoutIndex].Layout;
-                var bindings = pipelineStateDescription.EffectBytecode.Reflection.ResourceBindings;
-
-                var nativeBindings = new DescriptorSetLayoutBinding[bindings.Count];
-                uint nativeBindingIndex = 0;
-
-                foreach (var entry in layout.Entries)
-                {
-                    foreach (var binding in pipelineStateDescription.EffectBytecode.Reflection.ResourceBindings)
-                    {
-                        if (binding.Param.Key != entry.Key)
-                            continue;
-
-                        DescriptorType descriptorType;
-                        var immutableSampler = entry.ImmutableSampler != null ? entry.ImmutableSampler.NativeSampler : Sampler.Null;
-
-                        switch (binding.Param.Class)
-                        {
-                            case EffectParameterClass.Sampler:
-                                descriptorType = DescriptorType.Sampler;
-                                break;
-                            case EffectParameterClass.ConstantBuffer:
-                                descriptorType = DescriptorType.UniformBuffer;
-                                break;
-                            case EffectParameterClass.ShaderResourceView:
-                                descriptorType = DescriptorType.SampledImage;
-                                break;
-                            case EffectParameterClass.UnorderedAccessView:
-                                descriptorType = DescriptorType.StorageBuffer;
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-
-                        nativeBindings[nativeBindingIndex++] = new DescriptorSetLayoutBinding
-                        {
-                            DescriptorType = descriptorType,
-                            StageFlags = VulkanConvertExtensions.Convert(binding.Stage),
-                            Binding = (uint)binding.SlotStart,
-                            DescriptorCount = (uint)binding.SlotCount,
-                            ImmutableSamplers = new IntPtr(&immutableSampler)
-                        };
-                    }
-                }
-
-                fixed (DescriptorSetLayoutBinding* bindingsPointer = &nativeBindings[0])
-                {
-                    var createInfo = new SharpVulkan.DescriptorSetLayoutCreateInfo
-                    {
-                        StructureType = StructureType.DescriptorSetLayoutCreateInfo,
-                        BindingCount = nativeBindingIndex,
-                        Bindings = new IntPtr(bindingsPointer)
-                    };
-                    nativeDescriptorSetLayouts[layoutIndex] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
-                }
+                nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout);
             }
 
-            fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeDescriptorSetLayouts[0])
+            // Create pipeline layout
+            fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeLayouts[0])
             {
                 var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
                 {
                     StructureType = StructureType.PipelineLayoutCreateInfo,
-                    SetLayoutCount = (uint)nativeDescriptorSetLayouts.Length,
+                    SetLayoutCount = (uint)nativeLayouts.Length,
                     SetLayouts = new IntPtr(nativeDescriptorSetLayoutsPointer),
                 };
-                
-                return GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
+                NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
+            }
+
+            // Cleanup temporary layouts
+            foreach (var nativeLayout in nativeLayouts)
+            {
+                GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(nativeLayout);
             }
         }
 

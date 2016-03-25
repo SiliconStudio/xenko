@@ -9,34 +9,26 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial struct DescriptorSet
     {
-        internal readonly GraphicsDevice Device;
-        internal readonly int[] BindingOffsets;
+        internal readonly SharpVulkan.DescriptorSet NativeDescriptorSet;
+        internal readonly GraphicsDevice GraphicsDevice;
         internal readonly DescriptorSetLayout Description;
-
-        //internal readonly CpuDescriptorHandle SrvStart;
-        //internal readonly CpuDescriptorHandle SamplerStart;
-
+        
         public bool IsValid => Description != null;
 
-        private DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
+        private unsafe DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
         {
-            Device = graphicsDevice;
-            BindingOffsets = desc.BindingOffsets;
             Description = desc;
+            GraphicsDevice = graphicsDevice;
 
-            if (pool.SrvOffset + desc.SrvCount > pool.SrvCount || pool.SamplerOffset + desc.SamplerCount > pool.SamplerCount)
+            var nativeLayoutCopy = desc.NativeLayout;
+            var allocateInfo = new DescriptorSetAllocateInfo
             {
-                throw new OutOfMemoryException("Descriptor Pool is full");
-            }
-
-            // Store start CpuDescriptorHandle
-            //SrvStart = desc.SrvCount > 0 ? (pool.SrvHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
-            //SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
-
-            // Allocation is done, bump offsets
-            // TODO D3D12 thread safety?
-            pool.SrvOffset += desc.SrvCount;
-            pool.SamplerOffset += desc.SamplerCount;
+                StructureType = StructureType.DescriptorSetAllocateInfo,
+                DescriptorPool = pool.NativeDescriptorPool,
+                DescriptorSetCount = 1,
+                SetLayouts = new IntPtr(&nativeLayoutCopy)
+            };
+            NativeDescriptorSet = graphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo);
         }
 
         /// <summary>
@@ -58,9 +50,31 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="slot">The slot.</param>
         /// <param name="shaderResourceView">The shader resource view.</param>
-        public void SetShaderResourceView(int slot, GraphicsResource shaderResourceView)
+        public unsafe void SetShaderResourceView(int slot, GraphicsResource shaderResourceView)
         {
-            //Device.NativeDevice.CopyDescriptorsSimple(1, SrvStart + BindingOffsets[slot], shaderResourceView.NativeShaderResourceView, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+            var write = new WriteDescriptorSet
+            {
+                StructureType = StructureType.WriteDescriptorSet,
+                DescriptorCount = 1,
+                DestinationSet = NativeDescriptorSet,
+                DestinationBinding = (uint)slot, // TODO VULKAN: ?
+                DestinationArrayElement = 0,
+            };
+
+            var texture = shaderResourceView as Texture;
+            if (texture != null)
+            {
+                var imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = texture.NativeLayout };
+
+                write.DescriptorType = DescriptorType.SampledImage;
+                write.ImageInfo = new IntPtr(&imageInfo);
+
+                GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -81,13 +95,23 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="buffer">The constant buffer.</param>
         /// <param name="offset">The constant buffer view start offset.</param>
         /// <param name="size">The constant buffer view size.</param>
-        public void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
+        public unsafe void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
-            //Device.NativeDevice.CreateConstantBufferView(new ConstantBufferViewDescription
-            //{
-            //    BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-            //    SizeInBytes = (size + 255) & ~255, // CB size needs to be 256-byte aligned
-            //}, SrvStart + BindingOffsets[slot]);
+            // TODO VULKAN: Alignment needed, like D3D12?
+            var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = (ulong)size };
+
+            var write = new WriteDescriptorSet
+            {
+                StructureType = StructureType.WriteDescriptorSet,
+                DescriptorCount = 1,
+                DestinationSet = NativeDescriptorSet,
+                DestinationBinding = (uint)slot, // TODO VULKAN: ?
+                DestinationArrayElement = 0,
+                DescriptorType = DescriptorType.UniformBuffer,
+                BufferInfo = new IntPtr(&bufferInfo)
+            };
+            
+            GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
         }
 
         /// <summary>

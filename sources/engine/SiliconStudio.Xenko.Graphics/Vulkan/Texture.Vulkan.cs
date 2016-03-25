@@ -87,7 +87,11 @@ namespace SiliconStudio.Xenko.Graphics
             DepthPitch = Description.Width * Description.Height * pixelSize;
             RowPitch = Description.Width * pixelSize;
 
-            NativeLayout = IsRenderTarget ? ImageLayout.ColorAttachmentOptimal : IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal : IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal : ImageLayout.General;
+            NativeLayout =
+                IsRenderTarget ? ImageLayout.ColorAttachmentOptimal :
+                IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal :
+                IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal :
+                ImageLayout.General;
 
             if (ParentTexture != null)
             {

@@ -1,37 +1,51 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using SharpVulkan;
 using SiliconStudio.Xenko.Shaders;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial class DescriptorSetLayout
+    public partial class DescriptorSetLayout // TODO VULKAN API: GraphicsResource
     {
-        internal int SrvCount;
-        internal int SamplerCount;
-
-        // Need to remap for proper separation of samplers from the rest
-        internal int[] BindingOffsets;
+        internal readonly SharpVulkan.DescriptorSetLayout NativeLayout;
 
         private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
         {
-            BindingOffsets = new int[builder.ElementCount];
-            int currentBindingOffset = 0;
-            foreach (var entry in builder.Entries)
+            NativeLayout = CreateNativeDescriptorSetLayout(device, builder);
+        }
+
+        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
+        {
+            var bindings = new DescriptorSetLayoutBinding[builder.Entries.Count];
+
+            for (int i = 0; i < builder.Entries.Count; i++)
             {
-                // We will both setup BindingOffsets and increment SamplerCount/SrvCount at the same time
-                if (entry.Class == EffectParameterClass.Sampler)
+                var entry = builder.Entries[i];
+                var immutableSampler = entry.ImmutableSampler != null ? entry.ImmutableSampler.NativeSampler : Sampler.Null;
+
+                bindings[i] = new DescriptorSetLayoutBinding
                 {
-                    for (int i = 0; i < entry.ArraySize; ++i)
-                        BindingOffsets[currentBindingOffset++] = entry.ImmutableSampler != null ? -1 : SamplerCount++ * device.SamplerHandleIncrementSize;
-                }
-                else
+                    DescriptorType = VulkanConvertExtensions.ConvertDescriptorType(entry.Class),
+                    StageFlags = ShaderStageFlags.All, // TODO VULKAN: Filter
+                    Binding = (uint)i,
+                    DescriptorCount = (uint)entry.ArraySize,
+                    ImmutableSamplers = new IntPtr(&immutableSampler)
+                };
+            }
+
+            fixed (DescriptorSetLayoutBinding* bindingsPointer = &bindings[0])
+            {
+                var createInfo = new DescriptorSetLayoutCreateInfo
                 {
-                    for (int i = 0; i < entry.ArraySize; ++i)
-                        BindingOffsets[currentBindingOffset++] = SrvCount++ * device.SrvHandleIncrementSize;
-                }
+                    StructureType = StructureType.DescriptorSetLayoutCreateInfo,
+                    BindingCount = (uint)bindings.Length,
+                    Bindings = new IntPtr(bindingsPointer)
+                };
+                return device.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+using System;
 using SharpVulkan;
 using SiliconStudio.Xenko.Shaders;
 
@@ -11,53 +12,50 @@ namespace SiliconStudio.Xenko.Graphics
         //internal DescriptorHeap SrvHeap;
         //internal DescriptorHeap SamplerHeap;
 
-        internal int SrvOffset;
-        internal int SrvCount;
-        internal int SamplerOffset;
-        internal int SamplerCount;
+        internal int Offset;
+        internal int Count;
+
+        internal SharpVulkan.DescriptorPool NativeDescriptorPool;
 
         public void Reset()
         {
-            SrvOffset = 0;
-            SamplerOffset = 0;
+            Offset = 0;
+            GraphicsDevice.NativeDevice.ResetDescriptorPool(NativeDescriptorPool, DescriptorPoolResetFlags.None);
         }
 
-        private DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts) : base(graphicsDevice)
+        private unsafe DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts) : base(graphicsDevice)
         {
             // For now, we put everything together so let's compute total count
-            foreach (var count in counts)
+            Count = counts.Length;
+
+            var poolSizes = new DescriptorPoolSize[Count];
+            for (int i = 0; i < Count; i++)
             {
-                if (count.Type == EffectParameterClass.Sampler)
-                    SamplerCount += count.Count;
-                else
-                    SrvCount += count.Count;
+                poolSizes[i] = new DescriptorPoolSize
+                {
+                    Type = VulkanConvertExtensions.ConvertDescriptorType(counts[i].Type),
+                    DescriptorCount = (uint)counts[i].Count
+                };
             }
 
-            //if (SrvCount > 0)
-            //{
-            //    SrvHeap = graphicsDevice.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            //    {
-            //        DescriptorCount = SrvCount,
-            //        Flags = DescriptorHeapFlags.None,
-            //        Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
-            //    });
-            //}
-
-            //if (SamplerCount > 0)
-            //{
-            //    SamplerHeap = graphicsDevice.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            //    {
-            //        DescriptorCount = SamplerCount,
-            //        Flags = DescriptorHeapFlags.None,
-            //        Type = DescriptorHeapType.Sampler,
-            //    });
-            //}
+            fixed (DescriptorPoolSize* poolSizesPointer = &poolSizes[0])
+            {
+                var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
+                {
+                    StructureType = StructureType.DescriptorPoolCreateInfo,
+                    //Flags = DescriptorPoolCreateFlags.FreeDescriptorSet // We are resetting the pool
+                    PoolSizeCount = (uint)Count,
+                    PoolSizes = new IntPtr(poolSizesPointer),
+                    MaxSets = 16384, // TODO VULKAN API: Expose
+                };
+                NativeDescriptorPool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
+            }
         }
 
-        protected override void DestroyImpl()
+        protected unsafe override void DestroyImpl()
         {
-            //GraphicsDevice.TemporaryResources.Add(SrvHeap);
-            //GraphicsDevice.TemporaryResources.Add(SamplerHeap);
+            // TODO VULKAN: Defer?
+            GraphicsDevice.NativeDevice.DestroyDescriptorPool(NativeDescriptorPool);
         }
     }
 }

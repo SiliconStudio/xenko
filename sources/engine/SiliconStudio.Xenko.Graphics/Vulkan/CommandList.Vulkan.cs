@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandBuffer NativeCommandBuffer;
 
         private RenderPass activeRenderPass;
-        private RenderPass pipelineRenderPass;
+        private PipelineState activePipeline;
 
         private readonly ImageView[] framebufferAttachments = new ImageView[9];
         private int framebufferAttachmentCount;
@@ -221,12 +221,12 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, pipelineState.NativePipeline);
 
             // The renderpass that will be started (lazily) by draw calls
-            pipelineRenderPass = pipelineState.NativeRenderPass;
+            activePipeline = pipelineState;
         }
 
         public unsafe void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
         {
-            // TODO VULKAN: Stride is part of Pipeline 
+            // TODO VULKAN API: Stride is part of Pipeline 
 
             // TODO VULKAN: Handle multiple buffers. Collect and apply before draw?
             if (index != 0)
@@ -298,8 +298,18 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
+        public unsafe void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
+            // TODO VULKAN: Do this late, so SetPipelineState and SetDescriptorSets can be unordered?
+
+            //for (int i = 0; i < descriptorSets.Length; ++i)
+            //{
+            //    // Find what is already mapped
+            //    var descriptorSet = descriptorSets[i];
+            //}
+
+            //NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, (uint)descriptorSets.Length, );
+
         //RestartWithNewHeap:
         //    NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
         //    var descriptorTableIndex = 0;
@@ -875,6 +885,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void EnsureRenderPass()
         {
+            var pipelineRenderPass = activePipeline.NativeRenderPass;
             if (!framebufferDirty && activeRenderPass == pipelineRenderPass)
                 return;
 
