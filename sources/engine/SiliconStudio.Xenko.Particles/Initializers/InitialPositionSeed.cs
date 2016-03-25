@@ -9,10 +9,16 @@ using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
+    /// <summary>
+    /// The <see cref="InitialPositionSeed"/> is an initializer which sets the particle's initial position at the time of spawning
+    /// </summary>
     [DataContract("InitialPositionSeed")]
     [Display("Initial Position")]
     public class InitialPositionSeed : ParticleInitializer
     {
+        /// <summary>
+        /// Default constructor which also registers the fields required by this updater
+        /// </summary>
         public InitialPositionSeed()
         {
             RequiredFields.Add(ParticleFields.Position);
@@ -23,6 +29,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             DisplayParticleScaleUniform = true;
         }
 
+        /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
