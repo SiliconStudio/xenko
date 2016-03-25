@@ -124,6 +124,24 @@ namespace SiliconStudio.Quantum.Tests
             //Assert.IsNull(reference.Index);
         }
 
+        public static void TestStructContentNode(IGraphNode structNode, object structValue, int childCount)
+        {
+            if (structNode == null) throw new ArgumentNullException(nameof(structNode));
+            if (structValue == null) throw new ArgumentNullException(nameof(structValue));
+            // Check that the content is of the expected type.
+            Assert.AreEqual(typeof(MemberContent), structNode.Content.GetType());
+            // Check that the content is properly referencing its node.
+            Assert.AreEqual(structNode, structNode.Content.OwnerNode);
+            // A node with an ObjectContent should be a root node.
+            Assert.IsNotNull(structNode.Parent);
+            // A node with an ObjectContent should have the related object as value of its content.
+            Assert.AreEqual(structValue, structNode.Content.Retrieve());
+            // A node with an ObjectContent should not contain a reference.
+            Assert.AreEqual(false, structNode.Content.IsReference);
+            // Check that we have the expected number of children.
+            Assert.AreEqual(childCount, structNode.Children.Count);
+        }
+
         [Obsolete]
         public static void PrintModelContainerContent(NodeContainer container, IGraphNode rootNode = null)
         {
