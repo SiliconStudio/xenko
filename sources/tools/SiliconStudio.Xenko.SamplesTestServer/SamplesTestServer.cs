@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
@@ -88,12 +89,14 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             }
 
             //Start also adb in case of android device
+            var adbPath = AndroidDeviceEnumerator.GetAdbPath();
+            if (!adbPath.IsNullOrEmpty() && AndroidDeviceEnumerator.ListAndroidDevices().Length > 0)
             {
                 //clear the log first
-                ShellHelper.RunProcessAndGetOutput("cmd.exe", "/C adb logcat -c");
+                ShellHelper.RunProcessAndGetOutput("cmd.exe", $"/C {adbPath} logcat -c");
 
                 //start logger
-                var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", "/C adb logcat")
+                var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", $"/C {adbPath} logcat")
                 {
                     UseShellExecute = false,
                     CreateNoWindow = true,
