@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters = null)
         {
             var log = new LoggerResult();
 
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             shaderMixinSource = shaderMixinSourceCopy;
 
             // Generate platform-specific macros
-            switch (compilerParameters.EffectParameters.Platform)
+            switch (effectParameters.Platform)
             {
                 case GraphicsPlatform.Direct3D11:
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
 
             // Generate profile-specific macros
-            shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_PROFILE", (int)compilerParameters.EffectParameters.Profile);
+            shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_PROFILE", (int)effectParameters.Profile);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_1", (int)GraphicsProfile.Level_9_1);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_2", (int)GraphicsProfile.Level_9_2);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_3", (int)GraphicsProfile.Level_9_3);
@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             // Select the correct backend compiler
             IShaderCompiler compiler;
-            switch (compilerParameters.EffectParameters.Platform)
+            switch (effectParameters.Platform)
             {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
@@ -236,7 +236,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             var stageStringBuilder = new StringBuilder();
 #endif
             // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
-            if (compilerParameters.EffectParameters.Platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            if (effectParameters.Platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
             {
                 parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
             }
@@ -245,7 +245,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
                 // Compile
                 // TODO: We could compile stages in different threads to improve compiler throughput?
-                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, compilerParameters, bytecode.Reflection, shaderSourceFilename);
+                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, effectParameters, bytecode.Reflection, shaderSourceFilename);
                 result.CopyTo(log);
 
                 if (result.HasErrors)
@@ -284,7 +284,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 builder.AppendLine("***************************");
                 builder.Append("@P EffectName: ");
                 builder.AppendLine(fullEffectName ?? "");
-                builder.Append(compilerParameters.ToStringPermutationsDetailed());
+                builder.Append(compilerParameters?.ToStringPermutationsDetailed());
                 builder.AppendLine("***************************");
 
                 if (bytecode.Reflection.ConstantBuffers.Count > 0)

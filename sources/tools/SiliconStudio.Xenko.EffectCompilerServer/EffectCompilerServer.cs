@@ -67,9 +67,6 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
 
                 Console.WriteLine("Client connected");
 
-                // TODO: Properly close the file, and choose where to copy/move it?
-                var recordedEffectCompile = new EffectLogStore(new MemoryStream());
-
                 // TODO: This should come from an "init" packet
                 effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
 
@@ -79,7 +76,7 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
                 VirtualFileSystem.RegisterProvider(networkVFS);
                 effectCompiler.FileProvider = networkVFS;
 
-                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequest>((packet) => ShaderCompilerRequestHandler(socketMessageLayer, recordedEffectCompile, effectCompiler, packet));
+                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequest>((packet) => ShaderCompilerRequestHandler(socketMessageLayer, effectCompiler, packet));
 
                 socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequested>((packet) =>
                 {
@@ -101,7 +98,7 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             Task.Run(() => socketMessageLayer.MessageLoop());
         }
 
-        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, RemoteEffectCompilerEffectRequest remoteEffectCompilerEffectRequest)
+        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectCompiler effectCompiler, RemoteEffectCompilerEffectRequest remoteEffectCompilerEffectRequest)
         {
             // Yield so that this socket can continue its message loop to answer to shader file request
             // TODO: maybe not necessary anymore with RouterServiceServer?
@@ -109,15 +106,9 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
 
             Console.WriteLine("Compiling shader");
 
-            // Copy back effect parameters since they are not serialized (should we?)
-            remoteEffectCompilerEffectRequest.CompilerParameters.EffectParameters = remoteEffectCompilerEffectRequest.EffectParameters;
-
             // A shader has been requested, compile it (asynchronously)!
-            var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.CompilerParameters).AwaitResult();
+            var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
 
-            // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(remoteEffectCompilerEffectRequest.MixinTree.Name, remoteEffectCompilerEffectRequest.CompilerParameters)] = true;
-            
             // Send compiled shader
             socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
         }
