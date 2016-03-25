@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Order of the particle, which can be based on spawn order or something else
         /// </summary>
-        public static readonly ParticleFieldDescription<UInt32> Order           = new ParticleFieldDescription<UInt32>("Order", 0);
+        public static readonly ParticleFieldDescription<uint> Order           = new ParticleFieldDescription<uint>("Order", 0);
 
     }
 }

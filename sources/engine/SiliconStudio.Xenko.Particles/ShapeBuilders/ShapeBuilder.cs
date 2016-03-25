@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     /// The <see cref="ShapeBuilder"/> base class is responsible for generating shapes (procedural mesh) ready for rendering from the particle data
     /// </summary>
     [DataContract("ShapeBuilder")]
-    public abstract partial class ShapeBuilder
+    public abstract class ShapeBuilder
     {
         /// <summary>
         /// Returns the number of quads required per particle to draw all particles. Assuming 1 Quad = 4 Vertices = 6 Indices

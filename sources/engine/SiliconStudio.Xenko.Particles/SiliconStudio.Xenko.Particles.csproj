@@ -96,8 +96,8 @@
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderTrail.cs" />
-    <Compile Include="ShapeBuilders\Tools\ShapeBuilder.cs" />
-    <Compile Include="ShapeBuilders\Tools\UVRotate.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilder.Extenstions.cs" />
+    <Compile Include="ShapeBuilders\UVRotate.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />

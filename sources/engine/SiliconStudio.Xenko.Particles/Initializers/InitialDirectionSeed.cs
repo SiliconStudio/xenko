@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(8)]
         [Display("Random Seed")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public uint SeedOffset { get; set; } = 0;
 
         /// <summary>
         /// Lower direction value
