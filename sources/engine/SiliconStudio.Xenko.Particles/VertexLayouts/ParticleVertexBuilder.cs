@@ -34,6 +34,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         private IntPtr vertexBuffer = IntPtr.Zero;
         private IntPtr vertexBufferOrigin = IntPtr.Zero;
 
+        private int currentVertex;
+        private int maxVertices;
+
+        private int currentParticleIndex;
+        private int maxParticles;
         public int LivingQuads { get; private set; }
 
         public DeviceResourceContext ResourceContext { get; private set; }
@@ -55,6 +60,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             UpdateVertexLayout();
         }
+
+        protected int VerticesPerSegFirst { get; private set; }
+        protected int VerticesPerSegMiddle { get; private set; }
+        protected int VerticesPerSegLast { get; private set; }
+
+        protected int VerticesPerSegCurrent { get; private set; }
 
         /// <summary>
         /// The current <see cref="Graphics.VertexDeclaration"/> of the contained vertex buffer
@@ -132,6 +143,10 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             var maxQuads = quadsPerParticle * totalParticles;
 
             LivingQuads = minQuads;
+            maxParticles = livingParticles;
+
+            currentVertex = 0;
+            maxVertices = livingParticles * verticesPerParticle;
 
             if (requiredQuads == 0 || minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
             {
@@ -162,6 +177,24 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
                 ResourceContext?.Dispose();
                 ResourceContext = new DeviceResourceContext(graphicsDevice, VertexDeclaration, requiredQuads * verticesPerQuad, indexStructSize, requiredQuads * IndicesPerQuad);
             }
+
+            // The default assumption is that every particle defines a separate segment and no segments are shared
+            SetVerticesPerSegment(verticesPerParticle, verticesPerParticle, verticesPerParticle);
+        }
+
+        /// <summary>
+        /// Sets how many vertices are associated with the first, middle and last quad segments of the buffer. In case of billboards 1 segment = 1 quad but other shapes might be laid out differently
+        /// </summary>
+        /// <param name="verticesForFirstSegment">Number of vertices for the first segment</param>
+        /// <param name="verticesForMiddleSegment">Number of vertices for the middle segments</param>
+        /// <param name="verticesForLastSegment">Number of vertices for the last segment</param>
+        public void SetVerticesPerSegment(int verticesForFirstSegment, int verticesForMiddleSegment, int verticesForLastSegment)
+        {
+            VerticesPerSegFirst = verticesForFirstSegment;
+            VerticesPerSegMiddle = verticesForMiddleSegment;
+            VerticesPerSegLast = verticesForLastSegment;
+
+            VerticesPerSegCurrent = VerticesPerSegFirst;
         }
 
         /// <summary>
@@ -224,6 +257,9 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public void RestartBuffer()
         {
             vertexBuffer = vertexBufferOrigin;
+            currentParticleIndex = 0;
+            currentVertex = 0;
+            VerticesPerSegCurrent = VerticesPerSegFirst;
         }
 
         /// <summary>
@@ -237,6 +273,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             vertexBuffer = IntPtr.Zero;
             vertexBufferOrigin = IntPtr.Zero;
+            currentParticleIndex = 0;
+            currentVertex = 0;
 
             commandList.UnmapSubresource(mappedVertices);
         }
@@ -246,15 +284,38 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         public void NextVertex()
         {
-            vertexBuffer += VertexDeclaration.VertexStride;
+            if (++currentVertex >= maxVertices)
+                currentVertex = maxVertices - 1;
+
+            vertexBuffer = vertexBufferOrigin + VertexDeclaration.VertexStride * currentVertex;
         }
 
         /// <summary>
-        /// Advanes the pointer to the next particle in the buffer, so that its first vertex can be written
+        /// Advances the pointer to the next particle in the buffer, so that its first vertex can be written
         /// </summary>
         public void NextParticle()
         {
-            vertexBuffer += VertexDeclaration.VertexStride * verticesPerParticle;
+            if (++currentParticleIndex >= maxParticles)
+                currentParticleIndex = maxParticles - 1;
+
+            vertexBuffer = vertexBufferOrigin + (VertexDeclaration.VertexStride * currentParticleIndex * verticesPerParticle);
+        }
+
+        /// <summary>
+        /// Advances the pointer to the next segment in the buffer, so that its first vertex can be written
+        /// </summary>
+        public void NextSegment()
+        {
+            // The number of segments is tied to the number of particles
+            if (++currentParticleIndex >= maxParticles)
+            {
+                // Already at the last particle
+                currentParticleIndex = maxParticles - 1;
+                return;
+            }
+
+            vertexBuffer += VertexDeclaration.VertexStride * VerticesPerSegCurrent;
+            VerticesPerSegCurrent = (currentParticleIndex < maxParticles - 1) ? VerticesPerSegMiddle : VerticesPerSegLast;
         }
 
         public AttributeAccessor GetAccessor(AttributeDescription desc) 
@@ -288,6 +349,38 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             for (var i = 0; i < verticesPerParticle; i++)
             {
                 Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
+            }
+        }
+
+        /// <summary>
+        /// Sets the same data for the all vertices in the current particle using the provided <see cref="AttributeAccessor"/>
+        /// </summary>
+        /// <param name="accessor">Accessor to the vertex data</param>
+        /// <param name="ptrRef">Pointer to the source data</param>
+        public void SetAttributePerSegment(AttributeAccessor accessor, IntPtr ptrRef)
+        {
+            for (var i = 0; i < VerticesPerSegCurrent; i++)
+            {
+                Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
+            }
+        }
+
+        /// <summary>
+        /// Transforms attribute data using already written data from another attribute
+        /// </summary>
+        /// <typeparam name="T">Type data</typeparam>
+        /// <param name="accessorTo">Vertex attribute accessor to the destination attribute</param>
+        /// <param name="accessorFrom">Vertex attribute accessor to the source attribute</param>
+        /// <param name="transformMethod">Transform method for the type data</param>
+        public void TransformAttributePerSegment<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
+        {
+            for (var i = 0; i < VerticesPerSegCurrent; i++)
+            {
+                var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
+
+                transformMethod.Transform(ref temp);
+
+                Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
         }
 

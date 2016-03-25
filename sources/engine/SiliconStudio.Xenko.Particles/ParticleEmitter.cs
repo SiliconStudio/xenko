@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Particles
         None = 0,
         ByDepth = 1,
         ByAge = 2,
+        ByOrder = 3,
     }
 
     /// <summary>
@@ -385,6 +386,16 @@ namespace SiliconStudio.Xenko.Particles
                 return;
             }
 
+            if (SortingPolicy == EmitterSortingPolicy.ByOrder)
+            {
+                // This sorting policy doesn't check if you actually have a Order field.
+                // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
+                GetSortIndex<uint> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
+
+                ParticleSorter = new ParticleSorterCustom<uint>(pool, ParticleFields.Order, sortByOrder);
+                return;
+            }
+
             // Default - no sorting
             ParticleSorter = new ParticleSorterDefault(pool);
         }
@@ -480,12 +491,12 @@ namespace SiliconStudio.Xenko.Particles
 
             // RandomNumberGenerator creation
             {
-                UInt32 rngSeed = 0; // EmitterRandomSeedMethod.Fixed
+                uint rngSeed = 0; // EmitterRandomSeedMethod.Fixed
 
                 if (randomSeedMethod == EmitterRandomSeedMethod.Time)
                 {
                     // Stopwatch has maximum possible frequency, so rngSeeds initialized at different times will be different
-                    rngSeed = unchecked((UInt32)Stopwatch.GetTimestamp());
+                    rngSeed = unchecked((uint)Stopwatch.GetTimestamp());
                 }
                 else if (randomSeedMethod == EmitterRandomSeedMethod.Position)
                 {
@@ -495,9 +506,9 @@ namespace SiliconStudio.Xenko.Particles
                     var posY = parentSystem.Translation.Y;
                     var posZ = parentSystem.Translation.Z;
 
-                    var uintX = *((UInt32*)(&posX));
-                    var uintY = *((UInt32*)(&posY));
-                    var uintZ = *((UInt32*)(&posZ));
+                    var uintX = *((uint*)(&posX));
+                    var uintY = *((uint*)(&posY));
+                    var uintZ = *((uint*)(&posZ));
 
                     // Add some randomness to prevent glitches when positions are the same (diagonal)
                     uintX ^= (uintX >> 19);
@@ -867,6 +878,7 @@ namespace SiliconStudio.Xenko.Particles
 
             VertexBuilder.RestartBuffer();
 
+            ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
             Material.PatchVertexBuffer(VertexBuilder, unitX, unitY, ParticleSorter);
 
             VertexBuilder.UnmapBuffer(commandList);
