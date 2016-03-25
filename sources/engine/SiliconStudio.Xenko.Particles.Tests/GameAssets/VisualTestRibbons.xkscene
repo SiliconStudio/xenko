@@ -53,9 +53,9 @@ Hierarchy:
                                         ~Id: 27651b40-5b6c-49f0-992e-1ebe18d77ede
                                         SmoothingPolicy: None
                                         Segments: 5
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -156,9 +156,9 @@ Hierarchy:
                                         SmoothingPolicy: None
                                         Segments: 5
                                         EdgePolicy: Edge
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -279,9 +279,9 @@ Hierarchy:
                                         ~Id: 27651b40-5b6c-49f0-992e-1ebe18d77ede
                                         SmoothingPolicy: None
                                         Segments: 5
-                                        TexCoordsPolicy: Stretched
+                                        TextureCoordinatePolicy: Stretched
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -400,9 +400,9 @@ Hierarchy:
                                         ~Id: 27651b40-5b6c-49f0-992e-1ebe18d77ede
                                         SmoothingPolicy: None
                                         Segments: 5
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -532,9 +532,9 @@ Hierarchy:
                                         ~Id: 27651b40-5b6c-49f0-992e-1ebe18d77ede
                                         SmoothingPolicy: Best
                                         Segments: 15
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -634,9 +634,9 @@ Hierarchy:
                                         ~Id: 27651b40-5b6c-49f0-992e-1ebe18d77ede
                                         SmoothingPolicy: Fast
                                         Segments: 5
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -737,9 +737,9 @@ Hierarchy:
                                         SmoothingPolicy: Best
                                         Segments: 10
                                         EdgePolicy: Edge
-                                        TexCoordsPolicy: Stretched
+                                        TextureCoordinatePolicy: Stretched
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -903,9 +903,9 @@ Hierarchy:
                                         SmoothingPolicy: None
                                         Segments: 5
                                         EdgePolicy: Edge
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -1059,9 +1059,9 @@ Hierarchy:
                                         SmoothingPolicy: Best
                                         Segments: 10
                                         EdgePolicy: Edge
-                                        TexCoordsPolicy: Stretched
+                                        TextureCoordinatePolicy: Stretched
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
@@ -1196,9 +1196,9 @@ Hierarchy:
                                         ~Id: 27651b40-5b6c-49f0-992e-1ebe18d77ede
                                         SmoothingPolicy: None
                                         Segments: 5
-                                        TexCoordsPolicy: DistanceBased
+                                        TextureCoordinatePolicy: DistanceBased
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
                                             UvClockwise: Degree0
