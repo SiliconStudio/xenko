@@ -30,7 +30,6 @@
   <ItemGroup>
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Obsolete\ObsoleteTestConstruction.cs" />
     <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
     <Compile Include="Obsolete\ObsoleteTestLists.cs" />
     <Compile Include="Obsolete\ObsoleteTestMultipleReferencer.cs" />
