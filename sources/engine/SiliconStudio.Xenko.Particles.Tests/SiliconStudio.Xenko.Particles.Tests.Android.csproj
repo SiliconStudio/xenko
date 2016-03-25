@@ -214,6 +214,7 @@
     <Compile Include="VisualTestInitializers.cs" />
     <Compile Include="VisualTestMaterials.cs" />
     <Compile Include="VisualTestSpawners.cs" />
+    <Compile Include="VisualTestsRibbons.cs" />
     <Compile Include="VisualTestUpdaters.cs" />
     <None Include="SiliconStudio.Xenko.Particles.Tests.xkpkg" />
   </ItemGroup>

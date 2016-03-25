@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles
@@ -65,6 +66,11 @@ namespace SiliconStudio.Xenko.Particles
         public static readonly ParticleFieldDescription<Color4> Rgba            = new ParticleFieldDescription<Color4>("RGBA", new Color4(1,1,1,1));
         public static readonly ParticleFieldDescription<Color4> Color           = Rgba;
         public static readonly ParticleFieldDescription<Color4> Color4          = Rgba;
+
+        /// <summary>
+        /// Order of the particle, which can be based on spawn order or something else
+        /// </summary>
+        public static readonly ParticleFieldDescription<uint> Order           = new ParticleFieldDescription<uint>("Order", 0);
 
     }
 }

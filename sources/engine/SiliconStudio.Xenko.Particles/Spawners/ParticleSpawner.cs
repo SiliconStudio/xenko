@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         private RandomSeed randomSeed = new RandomSeed(0);
 
         [DataMemberIgnore]
-        private UInt32 randomOffset = 0;
+        private uint randomOffset = 0;
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleSpawner"/> is enabled.

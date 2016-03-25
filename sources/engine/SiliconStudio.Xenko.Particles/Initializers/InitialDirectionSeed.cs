@@ -10,38 +10,33 @@ using SiliconStudio.Xenko.Particles.DebugDraw;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     /// <summary>
-    /// The <see cref="InitialPositionSeed"/> is an initializer which sets the particle's initial position at the time of spawning
+    /// Initializer which sets the initial velocity for particles based on RandomSeed information
     /// </summary>
-    [DataContract("InitialPositionSeed")]
-    [Display("Initial Position")]
-    public class InitialPositionSeed : ParticleInitializer
+    [DataContract("InitialDirectionSeed")]
+    [Display("Initial Direction")]
+    public class InitialDirectionSeed : ParticleInitializer
     {
-        /// <summary>
-        /// Default constructor which also registers the fields required by this updater
-        /// </summary>
-        public InitialPositionSeed()
+        public InitialDirectionSeed()
         {
-            RequiredFields.Add(ParticleFields.Position);
+            RequiredFields.Add(ParticleFields.Direction);
             RequiredFields.Add(ParticleFields.RandomSeed);
 
-            // DisplayPosition = true; // Always inherit the position and don't allow to opt out
             DisplayParticleRotation = true;
             DisplayParticleScaleUniform = true;
         }
 
-        /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
-            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
+            if (!pool.FieldExists(ParticleFields.Direction) || !pool.FieldExists(ParticleFields.RandomSeed))
                 return;
 
-            var posField = pool.GetField(ParticleFields.Position);
+            var dirField = pool.GetField(ParticleFields.Direction);
             var rndField = pool.GetField(ParticleFields.RandomSeed);
 
-            var leftCorner = PositionMin * WorldScale;
-            var xAxis = new Vector3(PositionMax.X * WorldScale.X - leftCorner.X, 0, 0);
-            var yAxis = new Vector3(0, PositionMax.Y * WorldScale.Y - leftCorner.Y, 0);
-            var zAxis = new Vector3(0, 0, PositionMax.Z * WorldScale.Z - leftCorner.Z);
+            var leftCorner = DirectionMin * WorldScale;
+            var xAxis = new Vector3(DirectionMax.X * WorldScale.X - leftCorner.X, 0, 0);
+            var yAxis = new Vector3(0, DirectionMax.Y * WorldScale.Y - leftCorner.Y, 0);
+            var zAxis = new Vector3(0, 0, DirectionMax.Z * WorldScale.Z - leftCorner.Z);
 
             if (!WorldRotation.IsIdentity)
             {
@@ -51,22 +46,18 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 WorldRotation.Rotate(ref zAxis);
             }
 
-            leftCorner += WorldPosition;
-
-
             var i = startIdx;
             while (i != endIdx)
             {
                 var particle = pool.FromIndex(i);
                 var randSeed = particle.Get(rndField);
 
-                var particleRandPos = leftCorner;
+                var particleRandDir = leftCorner;
+                particleRandDir += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
+                particleRandDir += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
+                particleRandDir += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
 
-                particleRandPos += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
-                particleRandPos += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
-                particleRandPos += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
-
-                (*((Vector3*)particle[posField])) = particleRandPos;
+                (*((Vector3*)particle[dirField])) = particleRandDir;
 
                 i = (i + 1) % maxCapacity;
             }
@@ -83,24 +74,24 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         public uint SeedOffset { get; set; } = 0;
 
         /// <summary>
-        /// The left bottom back corner of the box
+        /// Lower direction value
         /// </summary>
         /// <userdoc>
-        /// The left bottom back corner of the box
+        /// Lower direction value
         /// </userdoc>
         [DataMember(30)]
-        [Display("Position min")]
-        public Vector3 PositionMin { get; set; } = new Vector3(-1, 1, -1);
+        [Display("Direction min")]
+        public Vector3 DirectionMin { get; set; } = new Vector3(-1, 1, -1);
 
         /// <summary>
-        /// The right upper front corner of the box
+        /// Upper direction value
         /// </summary>
         /// <userdoc>
-        /// The right upper front corner of the box
+        /// Upper direction value
         /// </userdoc>
         [DataMember(40)]
-        [Display("Position max")]
-        public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
+        [Display("Direction max")]
+        public Vector3 DirectionMax { get; set; } = new Vector3(1, 1, 1);
 
         /// <summary>
         /// Should this Particle Module's bounds be displayed as a debug draw
@@ -112,7 +103,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DefaultValue(false)]
         public bool DebugDraw { get; set; } = false;
 
-        /// <inheritdoc />
         public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             if (!DebugDraw)
@@ -122,8 +112,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             rotation = WorldRotation;
 
-            scale = (PositionMax - PositionMin);
-            translation = (PositionMax + PositionMin) * 0.5f * WorldScale;
+            scale = (DirectionMax - DirectionMin);
+            translation = (DirectionMax + DirectionMin) * 0.5f * WorldScale;
 
             scale *= WorldScale;
             rotation.Rotate(ref translation);
@@ -131,5 +121,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             return true;
         }
+
     }
 }
