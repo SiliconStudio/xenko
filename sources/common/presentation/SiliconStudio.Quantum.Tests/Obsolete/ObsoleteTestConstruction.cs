@@ -1,38 +1,21 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-
 using SiliconStudio.Core;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Quantum.Tests
+namespace SiliconStudio.Quantum.Tests.Obsolete
 {
-    [TestFixture]
-    public class TestConstruction
+    [TestFixture(Ignore = true)]
+    public class ObsoleteTestConstruction
     {
         public class PrimitiveMember
         {
             public int Member { get; set; }
-        }
-
-        [Test]
-        public void TestPrimitiveMember()
-        {
-            var obj = new PrimitiveMember { Member = 5 };
-
-            var container = new NodeContainer();
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(PrimitiveMember.Member), node.Children.First().Name);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
-            obj.Member = 6;
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
-            node.Children.First().Content.Update(7);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
         }
 
         public class StringMember
@@ -40,34 +23,19 @@ namespace SiliconStudio.Quantum.Tests
             public string Member { get; set; }
         }
 
-        [Test]
-        public void TestStringMember()
-        {
-            var obj = new StringMember { Member = "a" };
-
-            var container = new NodeContainer();
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
-            obj.Member = "b";
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
-            node.Children.First().Content.Update("c");
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
-        }
-
         public class ReferenceMember
         {
             public StringMember Member { get; set; }
         }
 
+
         [Test]
-        public void TestReferenceMember()
+        public void TestObjectReferenceMember()
         {
             var obj = new ReferenceMember { Member = new StringMember { Member = "a" } };
-
             var container = new NodeContainer();
+
+            // Construction
             var node = container.GetOrCreateNode(obj);
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
