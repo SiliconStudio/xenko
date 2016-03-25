@@ -30,6 +30,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (pipelineStateDescription.RootSignature == null)
                 return;
 
+            CreateRenderPass(pipelineStateDescription);
+
             var pipelineLayout = CreatePipelineLayout(pipelineStateDescription);
 
             // Create shader stages
@@ -81,12 +83,11 @@ namespace SiliconStudio.Xenko.Graphics
                 PrimitiveRestartEnable = true,
             };
 
-            //var tesselationState = new PipelineTessellationStateCreateInfo();
-            //var viewportState = new PipelineViewportStateCreateInfo();
+            // TODO VULKAN: Tessellation and multisampling
+            var multisampleState = new PipelineMultisampleStateCreateInfo();
+            var tessellationState = new PipelineTessellationStateCreateInfo();
 
             var rasterizationState = CreateRasterizationState(pipelineStateDescription.RasterizerState);
-
-            //var multisampleState = new PipelineMultisampleStateCreateInfo();
 
             var depthStencilState = CreateDepthStencilState(pipelineStateDescription);
 
@@ -112,83 +113,6 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (description.IndependentBlendEnable)
                     renderTargetBlendState++;
-            }
-
-            var attachmentCount = renderTargetCount;
-            bool hasDepthStencilAttachment = pipelineStateDescription.Output.DepthStencilFormat != PixelFormat.None;
-
-            if (hasDepthStencilAttachment)
-                attachmentCount++;
-
-            var attachments = new AttachmentDescription[attachmentCount];
-            var colorAttachmentReferences = new AttachmentReference[renderTargetCount];
-
-            fixed (PixelFormat* renderTargetFormat = &pipelineStateDescription.Output.RenderTargetFormat0)
-            {
-                for (int i = 0; i < renderTargetCount; i++)
-                {
-                    attachments[i] = new AttachmentDescription
-                    {
-                        Format = VulkanConvertExtensions.ConvertPixelFormat(*(renderTargetFormat + i)),
-                        Samples = SampleCountFlags.Sample1,
-                        LoadOperation = AttachmentLoadOperation.Clear,
-                        StoreOperation = AttachmentStoreOperation.Store,
-                        StencilLoadOperation = AttachmentLoadOperation.DontCare,
-                        StencilStoreOperation = AttachmentStoreOperation.DontCare,
-                        InitialLayout = ImageLayout.ColorAttachmentOptimal,
-                        FinalLayout = ImageLayout.ColorAttachmentOptimal,
-                    };
-
-                    colorAttachmentReferences[i] = new AttachmentReference
-                    {
-                        Attachment = (uint)i,
-                        Layout = ImageLayout.ColorAttachmentOptimal,
-                    };
-                }
-            }
-
-            if (hasDepthStencilAttachment)
-            {
-                attachments[attachmentCount - 1] = new AttachmentDescription
-                {
-                    Format = VulkanConvertExtensions.ConvertPixelFormat(pipelineStateDescription.Output.DepthStencilFormat),
-                    Samples = SampleCountFlags.Sample1,
-                    LoadOperation = AttachmentLoadOperation.Clear,
-                    StoreOperation = AttachmentStoreOperation.DontCare,
-                    StencilLoadOperation = AttachmentLoadOperation.DontCare,
-                    StencilStoreOperation = AttachmentStoreOperation.DontCare,
-                    InitialLayout = ImageLayout.DepthStencilAttachmentOptimal,
-                    FinalLayout = ImageLayout.DepthStencilAttachmentOptimal,
-                };
-            }
-
-            var depthAttachmentReference = new AttachmentReference
-            {
-                Attachment = (uint)attachments.Length - 1,
-                Layout = ImageLayout.DepthStencilAttachmentOptimal,
-            };
-
-            RenderPass renderPass;
-            fixed (AttachmentDescription* attachmentsPointer = &attachments[0])
-            fixed (AttachmentReference* colorAttachmentReferencesPointer = &colorAttachmentReferences[0])
-            {
-                var subpass = new SubpassDescription
-                {
-                    PipelineBindPoint = PipelineBindPoint.Graphics,
-                    ColorAttachmentCount = (uint)renderTargetCount,
-                    ColorAttachments = new IntPtr(colorAttachmentReferencesPointer),
-                    DepthStencilAttachment = new IntPtr(&depthAttachmentReference)
-                };
-
-                var renderPassCreateInfo = new RenderPassCreateInfo
-                {
-                    StructureType = StructureType.RenderPassCreateInfo,
-                    AttachmentCount = (uint)attachmentCount,
-                    Attachments = new IntPtr(attachmentsPointer),
-                    SubpassCount = 1,
-                    Subpasses = new IntPtr(&subpass)
-                };
-                renderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
             }
 
             fixed (PipelineShaderStageCreateInfo* stagesPointer = &stages[0])
@@ -226,16 +150,16 @@ namespace SiliconStudio.Xenko.Graphics
                     Layout = pipelineLayout,
                     StageCount = (uint)stages.Length,
                     Stages = new IntPtr(stagesPointer),
-                    //TessellationState = new IntPtr(&tesselationState),
+                    //TessellationState = new IntPtr(&tessellationState),
                     VertexInputState = new IntPtr(&vertexInputState),
                     InputAssemblyState = new IntPtr(&inputAssemblyState),
-                    //ViewportState = new IntPtr(&viewportState),
                     RasterizationState = new IntPtr(&rasterizationState),
                     //MultisampleState = new IntPtr(&multisampleState),
                     DepthStencilState = new IntPtr(&depthStencilState),
                     ColorBlendState = new IntPtr(&colorBlendState),
                     DynamicState = new IntPtr(&dynamicState),
-                    RenderPass = renderPass,
+                    ViewportState = IntPtr.Zero, // Dynamic
+                    RenderPass = NativeRenderPass,
                     Subpass = 0,
                 };
                 NativePipeline = graphicsDevice.NativeDevice.CreateGraphicsPipelines(PipelineCache.Null, 1, ref createInfo);
@@ -248,8 +172,90 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        private unsafe void CreateRenderPass(PipelineStateDescription pipelineStateDescription)
+        {
+            bool hasDepthStencilAttachment = pipelineStateDescription.Output.DepthStencilFormat != PixelFormat.None;
+
+            var renderTargetCount = pipelineStateDescription.Output.RenderTargetCount;
+
+            var attachmentCount = renderTargetCount;
+            if (hasDepthStencilAttachment)
+                attachmentCount++;
+
+            var attachments = new AttachmentDescription[attachmentCount];
+            var colorAttachmentReferences = new AttachmentReference[renderTargetCount];
+
+            fixed (PixelFormat* renderTargetFormat = &pipelineStateDescription.Output.RenderTargetFormat0)
+            {
+                for (int i = 0; i < renderTargetCount; i++)
+                {
+                    attachments[i] = new AttachmentDescription
+                    {
+                        Format = VulkanConvertExtensions.ConvertPixelFormat(*(renderTargetFormat + i)),
+                        Samples = SampleCountFlags.Sample1,
+                        LoadOperation = AttachmentLoadOperation.Load, // TODO VULKAN: Only if any destination blend?
+                        StoreOperation = AttachmentStoreOperation.Store,
+                        StencilLoadOperation = AttachmentLoadOperation.DontCare,
+                        StencilStoreOperation = AttachmentStoreOperation.DontCare,
+                        InitialLayout = ImageLayout.ColorAttachmentOptimal,
+                        FinalLayout = ImageLayout.ColorAttachmentOptimal,
+                    };
+
+                    colorAttachmentReferences[i] = new AttachmentReference
+                    {
+                        Attachment = (uint)i,
+                        Layout = ImageLayout.ColorAttachmentOptimal,
+                    };
+                }
+            }
+
+            if (hasDepthStencilAttachment)
+            {
+                attachments[attachmentCount - 1] = new AttachmentDescription
+                {
+                    Format = VulkanConvertExtensions.ConvertPixelFormat(pipelineStateDescription.Output.DepthStencilFormat),
+                    Samples = SampleCountFlags.Sample1,
+                    LoadOperation = AttachmentLoadOperation.Load, // TODO VULKAN: Only if depth read enabled?
+                    StoreOperation = AttachmentStoreOperation.DontCare,
+                    StencilLoadOperation = AttachmentLoadOperation.DontCare, // TODO VULKAN: Handle stencil
+                    StencilStoreOperation = AttachmentStoreOperation.DontCare,
+                    InitialLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                    FinalLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                };
+            }
+
+            var depthAttachmentReference = new AttachmentReference
+            {
+                Attachment = (uint)attachments.Length - 1,
+                Layout = ImageLayout.DepthStencilAttachmentOptimal,
+            };
+
+            fixed (AttachmentDescription* attachmentsPointer = &attachments[0])
+            fixed (AttachmentReference* colorAttachmentReferencesPointer = &colorAttachmentReferences[0])
+            {
+                var subpass = new SubpassDescription
+                {
+                    PipelineBindPoint = PipelineBindPoint.Graphics,
+                    ColorAttachmentCount = (uint)renderTargetCount,
+                    ColorAttachments = new IntPtr(colorAttachmentReferencesPointer),
+                    DepthStencilAttachment = new IntPtr(&depthAttachmentReference)
+                };
+
+                var renderPassCreateInfo = new RenderPassCreateInfo
+                {
+                    StructureType = StructureType.RenderPassCreateInfo,
+                    AttachmentCount = (uint)attachmentCount,
+                    Attachments = new IntPtr(attachmentsPointer),
+                    SubpassCount = 1,
+                    Subpasses = new IntPtr(&subpass)
+                };
+                NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
+            }
+        }
+
         protected internal unsafe override void OnDestroyed()
         {
+            GraphicsDevice.NativeDevice.DestroyRenderPass(NativeRenderPass);
             GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
 
             base.OnDestroyed();
