@@ -187,3 +187,17 @@ UsedParameters:
             Macros: []
             Mixins:
                 -   ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.BaseColor: !ShaderMixinSource
+        Compositions:
+            color1: !ShaderClassSource
+                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+            color2: !ShaderClassSource
+                ClassName: ComputeColorConstantColorLink
+                GenericArguments: [ParticleBase.EmissiveValue]
+        Mixins:
+            -   ClassName: ComputeColorDarken3ds
