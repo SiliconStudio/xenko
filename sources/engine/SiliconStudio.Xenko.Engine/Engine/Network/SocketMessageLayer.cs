@@ -121,9 +121,20 @@ namespace SiliconStudio.Xenko.Engine.Network
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 context.Dispose();
+
+                lock (packetCompletionTasks)
+                {
+                    // Cancel all pending packets
+                    foreach (var packetCompletionTask in packetCompletionTasks)
+                    {
+                        packetCompletionTask.Value.TrySetException(e);
+                    }
+                    packetCompletionTasks.Clear();
+                }
+
                 throw;
             }
         }
