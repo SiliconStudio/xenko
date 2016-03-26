@@ -84,16 +84,6 @@
     <Compile Include="PhysicsProfilingKeys.cs" />
     <Compile Include="PhysicsScriptComponentExtensions.cs" />
     <Compile Include="XenkoMotionState.cs" />
-    <Compile Include="PhysicsDebugEffect.cs" />
-    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Direct3D11.Level_9_3.cs" />
-    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.OpenGL.Level_9_3.cs" />
-    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.OpenGLES.Level_9_3.cs" />
-    <Compile Include="Shaders\PhysicsDebugEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PhysicsDebugEffect.xksl</DependentUpon>
-    </Compile>
     <Compile Include="ShapeOrientation.cs" />
     <Compile Include="Shapes\Box2DColliderShape.cs" />
     <Compile Include="Shapes\BoxColliderShape.cs" />
@@ -123,12 +113,6 @@
     <Compile Include="HitResult.cs" />
     <Compile Include="PhysicsEngineFlags.cs" />
     <Compile Include="RigidBodyTypes.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\PhysicsDebugEffect.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>PhysicsDebugEffect.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
