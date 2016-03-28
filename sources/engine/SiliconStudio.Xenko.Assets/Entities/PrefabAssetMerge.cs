@@ -131,11 +131,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     tempHiearchy.Entities.Add(entityFromNewBase.Value.EntityDesign);
 
                     // The new entity added by the newbase
+                    // Because we are cloning the entity, we need to restore children temporarely in order to clone them as well
+                    entityFromNewBase.Value.PopChildren();
                     var newEntityDesign = ((EntityHierarchyData)AssetCloner.Clone(tempHiearchy)).Entities[0];
-                    var baseId = newEntityDesign.Entity.Id;
+                    entityFromNewBase.Value.PushChildren();
+
                     var newId = Guid.NewGuid();
                     newEntityDesign.Entity.Id = newId;
-                    newEntityDesign.Design.BaseId = baseId;
+                    newEntityDesign.Design.BaseId = entityId;
                     newEntityDesign.Design.BasePartInstanceId = basePartInstanceId;
 
                     // Because we are going to modify the NewBase we need to clone it
@@ -150,7 +153,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     newEntities.Add(new GroupPartKey(null, newId), item);
 
                     // If the entity is coming from a part and is from root Entities, we need to add it to the rootEntities by default
-                    if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootEntities.Contains(baseId))
+                    if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootEntities.Contains(entityId))
                     {
                         rootEntitiesToAdd.Add(newId);
                     }
@@ -249,6 +252,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
                 }
             }
+
+            // Uncomment the following code to dump the content of the different entities and how 
+            // they are remapped
+            //Dump("\n**********\nBase\n==========", baseEntities);
+            //Dump("\n**********\nNewBase\n==========", newBaseEntities);
+            //Dump("\n**********\nNew\n==========", newEntities);
         }
 
         /// <summary>
@@ -375,7 +384,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 newAsset.Hierarchy.Entities.Remove(entityId);
             }
 
-            // Collect PartInstanceId,baseId => newId
+            // Collect PartInstanceId,EntityId => newId
             // If no group part (plain base), use the empty Guid
             var finalMapBaseIdToNewId = new Dictionary<GroupPartKey, Guid>();
             foreach (var entityEntry in newAsset.Hierarchy.Entities)
@@ -593,7 +602,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             remap.Children.Add(baseToNew.NewEntity.EntityDesign.Entity.Transform);
                         }
                     }
-                    remap.Children = children;
                 }
 
                 // Popup the children
@@ -619,6 +627,31 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             return nextEntityIds;
+        }
+
+        /// <summary>
+        /// Utility method to trace/dump maps
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="title"></param>
+        /// <param name="entities"></param>
+        private static void Dump<T>(string title, Dictionary<GroupPartKey, T> entities) where T : EntityEntry
+        {
+            Debug.WriteLine(title);
+            foreach (var entityPair in entities.OrderBy(pair => pair.Value.Order))
+            {
+                var baseEntry = entityPair.Value as BaseEntityEntry;
+                var newEntry = entityPair.Value as NewEntityEntry;
+                if (baseEntry != null)
+                {
+                    var newEntity = baseEntry.NewEntity?.EntityDesign.Entity;
+                    Debug.WriteLine($"{baseEntry.EntityDesign.Entity} / {entityPair.Key} => New: {newEntity}/{newEntity?.Id}");
+                }
+                else if (newEntry != null)
+                {
+                    Debug.WriteLine($"{newEntry.EntityDesign.Entity} / {entityPair.Key}, FromNewBase: {newEntry.IsNewBase} => Base: {newEntry.Base?.EntityDesign.Entity}/{newEntry.Base?.EntityDesign.Entity.Id}, NewBase: {newEntry.NewBase?.EntityDesign.Entity}/{newEntry.NewBase?.EntityDesign.Entity.Id}");
+                }
+            }
         }
 
         private void MapEntities<T>(EntityHierarchyData hierarchyData, Dictionary<GroupPartKey, T> entities, Guid? instancePartIdArg = null) where T : EntityEntry
@@ -743,7 +776,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             /// <summary>
             /// Transfers children from entity to this remap instance. Clear the children list on the entity.
             /// </summary>
-            private void PushChildren()
+            public void PushChildren()
             {
                 foreach (var child in EntityDesign.Entity.Transform.Children)
                 {
@@ -759,25 +792,25 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         /// <summary>
         /// Key used to associate an instance of a base Entity.
-        /// The PartInstanceId allows to use the same baseId multiple times if the entity is instantiated multiple times.
+        /// The PartInstanceId allows to use the same EntityId multiple times if the entity is instantiated multiple times.
         /// </summary>
-        [DebuggerDisplay("BaseId: {BaseId} PartInstanceId: {PartInstanceId}")]
+        [DebuggerDisplay("EntityId: {EntityId} PartInstanceId: {PartInstanceId}")]
         private struct GroupPartKey : IEquatable<GroupPartKey>
         {
-            public GroupPartKey(Guid? partInstanceId, Guid baseId)
+            public GroupPartKey(Guid? partInstanceId, Guid entityId)
             {
                 PartInstanceId = partInstanceId;
-                BaseId = baseId;
+                EntityId = entityId;
             }
 
             public readonly Guid? PartInstanceId;
 
-            public readonly Guid BaseId;
+            public readonly Guid EntityId;
 
 
             public bool Equals(GroupPartKey other)
             {
-                return PartInstanceId.Equals(other.PartInstanceId) && BaseId.Equals(other.BaseId);
+                return PartInstanceId.Equals(other.PartInstanceId) && EntityId.Equals(other.EntityId);
             }
 
             public override bool Equals(object obj)
@@ -790,7 +823,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 unchecked
                 {
-                    return (PartInstanceId.GetHashCode()*397) ^ BaseId.GetHashCode();
+                    return (PartInstanceId.GetHashCode()*397) ^ EntityId.GetHashCode();
                 }
             }
 
@@ -802,6 +835,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public static bool operator !=(GroupPartKey left, GroupPartKey right)
             {
                 return !left.Equals(right);
+            }
+
+            public override string ToString()
+            {
+                return $"EntityId: {EntityId}, PartInstanceId: {PartInstanceId}";
             }
         }
 
