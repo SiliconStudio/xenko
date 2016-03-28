@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public static ShaderSourceWithHash CreateShaderSourceWithHash(string type, string source)
         {
-            return new ShaderSourceWithHash()
+            return new ShaderSourceWithHash
             {
                 Path = type,
                 Source = source,
@@ -178,10 +178,17 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                 using (var sr = new StreamReader(sourceStream))
                                     shaderSource.Source = sr.ReadToEnd();
 
-                                sourceStream.Position = 0;
-                                var data = new byte[sourceStream.Length];
-                                sourceStream.Read(data, 0, (int)sourceStream.Length);
-                                shaderSource.Hash = databaseStream?.ObjectId ?? ObjectId.FromBytes(data);
+                                if (databaseStream == null)
+                                {
+                                    sourceStream.Position = 0;
+                                    var data = new byte[sourceStream.Length];
+                                    sourceStream.Read(data, 0, (int)sourceStream.Length);
+                                    shaderSource.Hash = ObjectId.FromBytes(data);
+                                }
+                                else
+                                {
+                                    shaderSource.Hash = databaseStream.ObjectId;
+                                }
                             }
                         }
 
@@ -189,7 +196,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     }
                     else
                     {
-                        throw new FileNotFoundException(string.Format("Unable to find shader [{0}]", type), string.Format("{0}.xksl", type));
+                        throw new FileNotFoundException($"Unable to find shader [{type}]", $"{type}.xksl");
                     }
                 }
                 return shaderSource;
