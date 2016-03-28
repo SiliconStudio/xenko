@@ -709,6 +709,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMultiplePrefabsMixedInheritance()
         {
+            PrefabAssetMerge.Debug = true;
+
             // The purpose of this test is to check that modifying a prefab base is correctly propagated through all 
             // derived prefabs. We use the following scenario:
             // a1: base asset)
@@ -788,6 +790,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMultiplePrefabsInheritanceAndChildren()
         {
+            PrefabAssetMerge.Debug = true;
+
             // The purpose of this test is to check that modifying a prefab base is correctly propagated through all 
             // derived prefabs. We use the following scenario:
             //

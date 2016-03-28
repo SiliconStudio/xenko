@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -203,9 +204,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return clonedHierarchy;
         }
 
-        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
+        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
         {
-            var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts);
+            var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts, debugLocation);
             return entityMerge.Merge();
         }
 

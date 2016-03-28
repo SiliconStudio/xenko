@@ -271,7 +271,7 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             // Delegates actual merge to the asset implem
-            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts);
+            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts, item.Location);
 
             if (result.HasErrors)
             {
