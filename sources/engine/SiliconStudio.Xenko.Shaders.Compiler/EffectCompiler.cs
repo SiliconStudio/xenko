@@ -91,6 +91,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 d3dCompilerLoaded = true;
             }
 
+            Console.WriteLine(@"Loaded library d3dcompiler_47");
+
             var shaderMixinSource = mixinTree;
             var fullEffectName = mixinTree.Name;
 
@@ -133,10 +135,16 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_11_1", (int)GraphicsProfile.Level_11_1);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_11_2", (int)GraphicsProfile.Level_11_2);
 
+            Console.WriteLine(@"Pre parsing");
+
             var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
+
+            Console.WriteLine(@"Post parsing");
 
             // Copy log from parser results to output
             CopyLogs(parsingResult, log);
+
+            Console.WriteLine(@"CopyLogs");
 
             // Return directly if there are any errors
             if (parsingResult.HasErrors)
@@ -151,6 +159,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             };
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;
+
+            Console.WriteLine(@"Hlsl.HlslWriter Visit");
 
             if (string.IsNullOrEmpty(shaderSourceText))
             {
@@ -230,6 +240,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     throw new NotSupportedException();
             }
 
+            Console.WriteLine(@"Direct3D.ShaderCompiler()");
+
             var shaderStageBytecodes = new List<ShaderBytecode>();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -253,6 +265,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     continue;
                 }
 
+                Console.WriteLine(@"Compiled one stage");
+
                 // -------------------------------------------------------
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -274,6 +288,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             // Remove unused reflection data, as it is entirely resolved at compile time.
             CleanupReflection(bytecode.Reflection);
             bytecode.Stages = shaderStageBytecodes.ToArray();
+
+            Console.WriteLine(@"CleanupReflection");
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             lock (WriterLock) // protect write in case the same shader is created twice
@@ -340,6 +356,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 File.WriteAllText(shaderSourceFilename, builder.ToString());
             }
 #endif
+
+            Console.WriteLine(@"Done one");
 
             return new EffectBytecodeCompilerResult(bytecode, log);
         }

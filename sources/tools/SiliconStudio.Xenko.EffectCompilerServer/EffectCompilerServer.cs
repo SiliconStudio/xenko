@@ -104,13 +104,13 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             // TODO: maybe not necessary anymore with RouterServiceServer?
             await Task.Yield();
 
-            Console.WriteLine("Compiling shader");
+            Console.WriteLine(@"Compiling shader");
 
             // A shader has been requested, compile it (asynchronously)!
             var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
 
             // Send compiled shader
-            socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
         }
     }
 }
