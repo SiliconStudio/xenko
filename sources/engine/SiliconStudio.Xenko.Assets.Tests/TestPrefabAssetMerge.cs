@@ -835,9 +835,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var member = TypeDescriptorFactory.Default.Find(typeof(Entity))["Name"];
             
-
-
-
             var a2 = new PrefabAsset();
             var a2PartInstance1 = a1.CreatePrefabInstance(a2, "a1");
             foreach (var entity in a2PartInstance1.Entities)
@@ -945,12 +942,68 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.False(logger.HasErrors);
 
+                // ------------------------------------------------
                 // Check for a2
-                Assert.AreEqual(4, a2.Hierarchy.RootEntities.Count);
-                Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+                // ------------------------------------------------
+                {
+                    Assert.AreEqual(4, a2.Hierarchy.RootEntities.Count);
+                    Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
 
-                // TODO: WIP THIS IS NOT WORKING
-                Assert.AreEqual(12, a2.Hierarchy.Entities.Count);
+                    // Check that we have all expected entities
+                    Assert.AreEqual(12, a2.Hierarchy.Entities.Count);
+
+                    var eb1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1")?.Entity;
+                    var eb2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb2")?.Entity;
+                    Assert.NotNull(eb1);
+                    Assert.NotNull(eb2);
+
+                    // Check that we have ex and ey
+                    var exList = a2.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    Assert.AreEqual(2, exList.Count);
+
+                    // Check that both [ex] have both 1 element [ey] and the links to eb1/eb2 are correct
+                    {
+                        var ex1 = exList[0].Entity;
+                        Assert.AreEqual(1, ex1.Transform.Children.Count);
+                        var ey1 = ex1.Transform.Children[0].Entity;
+                        Assert.AreEqual(ey.Name, ey1.Name);
+                        Assert.NotNull(ey1.Get<TestEntityComponent>());
+
+                        bool expectEb1ForEy2 = eb1 == ey1.Get<TestEntityComponent>().EntityLink;
+                        Assert.AreEqual(expectEb1ForEy2 ? eb1 : eb2, ey1.Get<TestEntityComponent>().EntityLink);
+
+                        var ex2 = exList[1].Entity;
+                        Assert.AreEqual(1, ex2.Transform.Children.Count);
+                        var ey2 = ex2.Transform.Children[0].Entity;
+                        Assert.AreEqual(ey.Name, ey2.Name);
+                        Assert.NotNull(ey2.Get<TestEntityComponent>());
+                        Assert.AreEqual(expectEb1ForEy2 ? eb2 : eb1, ey2.Get<TestEntityComponent>().EntityLink);
+                    }
+
+                    // Check link from ec1 to ea1
+                    {
+                        var ec1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec1")?.Entity;
+                        Assert.NotNull(ec1);
+
+                        var ea1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea1")?.Entity;
+                        Assert.NotNull(ea1);
+
+                        Assert.NotNull(ec1.Get<TestEntityComponent>());
+                        Assert.AreEqual(ea1, ec1.Get<TestEntityComponent>().EntityLink);
+                    }
+
+                    // Check link from ec2 to ea2
+                    {
+                        var ec2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec2")?.Entity;
+                        Assert.NotNull(ec2);
+
+                        var ea2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea2")?.Entity;
+                        Assert.NotNull(ea2);
+
+                        Assert.NotNull(ec2.Get<TestEntityComponent>());
+                        Assert.AreEqual(ea2, ec2.Get<TestEntityComponent>().EntityLink);
+                    }
+                }
 
                 // Check for a3
                 // TODO
