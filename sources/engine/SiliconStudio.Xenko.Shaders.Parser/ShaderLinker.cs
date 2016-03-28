@@ -417,6 +417,21 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                                 parameterKey.Type = EffectParameterType.Texture3D;
                                 break;
 
+                            case "texture1darray":
+                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
+                                parameterKey.Type = EffectParameterType.Texture1DArray;
+                                break;
+
+                            case "texturecubearray":
+                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
+                                parameterKey.Type = EffectParameterType.TextureCubeArray;
+                                break;
+
+                            case "texture2darray":
+                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
+                                parameterKey.Type = EffectParameterType.Texture2DArray;
+                                break;
+
                             case "rwtexture1d":
                                 parameterKey.Class = EffectParameterClass.UnorderedAccessView;
                                 parameterKey.Type = EffectParameterType.RWTexture1D;
@@ -430,6 +445,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                             case "rwtexture3d":
                                 parameterKey.Class = EffectParameterClass.UnorderedAccessView;
                                 parameterKey.Type = EffectParameterType.RWTexture3D;
+                                break;
+
+                            case "rwtexture1darray":
+                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
+                                parameterKey.Type = EffectParameterType.RWTexture1DArray;
+                                break;
+
+                            case "rwtexture2darray":
+                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
+                                parameterKey.Type = EffectParameterType.RWTexture2DArray;
                                 break;
 
                             case "samplerstate":

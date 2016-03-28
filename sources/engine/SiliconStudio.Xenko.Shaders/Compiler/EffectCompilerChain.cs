@@ -43,9 +43,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             compiler.ResetCache(modifiedShaders);
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters = null)
         {
-            return compiler.Compile(mixinTree, compilerParameters);
+            return compiler.Compile(mixinTree, effectParameters, compilerParameters);
         }
     }
 }

@@ -2,16 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-
 using NUnit.Framework;
-
 using SiliconStudio.Core;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Quantum.Tests
+namespace SiliconStudio.Quantum.Tests.Obsolete
 {
-    [TestFixture]
-    class TestDictionaries
+    [TestFixture(Ignore = true)]
+    class ObsoleteTestDictionaries
     {
         #region Test class definitions
         public class SimpleClass

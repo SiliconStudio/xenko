@@ -285,9 +285,13 @@ namespace SiliconStudio.Presentation.Quantum
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, graphNodePath, type, reference.Index);
-                            AddChild(observableNode);
-                            observableNode.Initialize();
+                            bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, reference.Index);
+                            if (shouldConstruct)
+                            {
+                                var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, graphNodePath, type, reference.Index);
+                                AddChild(observableNode);
+                                observableNode.Initialize();
+                            }
                         }
                     }
                 }
@@ -301,9 +305,13 @@ namespace SiliconStudio.Presentation.Quantum
                     // Dictionary of primitive objects
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, dictionary.ValueType, key);
-                        AddChild(observableChild);
-                        observableChild.Initialize();
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, key);
+                        if (shouldConstruct)
+                        {
+                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, dictionary.ValueType, key);
+                            AddChild(observableChild);
+                            observableChild.Initialize();
+                        }
                     }
                 }
                 else if (list != null && modelNode.Content.Value != null)
@@ -311,9 +319,13 @@ namespace SiliconStudio.Presentation.Quantum
                     // List of primitive objects
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, list.ElementType, i);
-                        AddChild(observableChild);
-                        observableChild.Initialize();
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, i);
+                        if (shouldConstruct)
+                        {
+                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, list.ElementType, i);
+                            AddChild(observableChild);
+                            observableChild.Initialize();
+                        }
                     }
                 }
                 else
@@ -321,10 +333,14 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        var childPath = graphNodePath.GetChildPath(modelNode, child);
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
-                        AddChild(observableChild);
-                        observableChild.Initialize();
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, null);
+                        if (shouldConstruct)
+                        {
+                            var childPath = graphNodePath.GetChildPath(modelNode, child);
+                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
+                            AddChild(observableChild);
+                            observableChild.Initialize();
+                        }
                     }
                 }
             }
@@ -443,7 +459,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
                 // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
-                if (!IsPrimitive && !IsDisposed)
+                if (!IsPrimitive && !IsDisposed && !(Value?.GetType().IsStruct() ?? true))
                 {
                     Refresh();
                 }
