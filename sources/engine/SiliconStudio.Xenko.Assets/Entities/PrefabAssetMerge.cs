@@ -8,6 +8,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
 
@@ -27,9 +28,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private readonly EntityHierarchyAssetBase newAsset;
         private readonly EntityHierarchyAssetBase newBaseAsset;
         private readonly List<AssetBase> newBaseParts;
+        private readonly UFile debugLocation;
         private readonly HashSet<Guid> entitiesInHierarchy;
         private readonly List<Guid> rootEntitiesToAdd;
         private MergeResult result;
+
+        /// <summary>
+        /// Internal property used to dunp to debug output some internal states.
+        /// </summary>
+        public static bool Debug { get; set; }
 
         /// <summary>
         /// Initialize a new instance of <see cref="PrefabAssetMerge"/>
@@ -38,7 +45,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="newAsset">The new asset (cannot be null)</param>
         /// <param name="newBaseAsset">The new base asset (can be null)</param>
         /// <param name="newBaseParts">The new base parts (can be null)</param>
-        public PrefabAssetMerge(EntityHierarchyAssetBase baseAsset, EntityHierarchyAssetBase newAsset, EntityHierarchyAssetBase newBaseAsset, List<AssetBase> newBaseParts)
+        /// <param name="debugLocation">The location of the asset being merged, used only for debug/log purpose</param>
+        public PrefabAssetMerge(EntityHierarchyAssetBase baseAsset, EntityHierarchyAssetBase newAsset, EntityHierarchyAssetBase newBaseAsset, List<AssetBase> newBaseParts, UFile debugLocation = null)
         {
             if (newAsset == null) throw new ArgumentNullException(nameof(newAsset));
 
@@ -48,6 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             this.newAsset = newAsset;
             this.newBaseAsset = newBaseAsset;
             this.newBaseParts = newBaseParts;
+            this.debugLocation = debugLocation;
             this.baseAsset = baseAsset;
             baseEntities = new Dictionary<GroupPartKey, BaseEntityEntry>();
             newEntities = new Dictionary<GroupPartKey, NewEntityEntry>();
@@ -255,9 +264,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Uncomment the following code to dump the content of the different entities and how 
             // they are remapped
-            //Dump("\n**********\nBase\n==========", baseEntities);
-            //Dump("\n**********\nNewBase\n==========", newBaseEntities);
-            //Dump("\n**********\nNew\n==========", newEntities);
+            if (Debug)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Empty);
+                System.Diagnostics.Debug.WriteLine("**********************************");
+                System.Diagnostics.Debug.WriteLine($"Merge Entity [{debugLocation}] => {newAsset.Id} Base: {baseAsset?.Id}");
+                System.Diagnostics.Debug.WriteLine("==================================");
+                Dump("\n**********\nBase\n==========", baseEntities);
+                Dump("\n**********\nNewBase\n==========", newBaseEntities);
+                Dump("\n**********\nNew\n==========", newEntities);
+            }
         }
 
         /// <summary>
@@ -637,7 +653,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="entities"></param>
         private static void Dump<T>(string title, Dictionary<GroupPartKey, T> entities) where T : EntityEntry
         {
-            Debug.WriteLine(title);
+            System.Diagnostics.Debug.WriteLine(title);
             foreach (var entityPair in entities.OrderBy(pair => pair.Value.Order))
             {
                 var baseEntry = entityPair.Value as BaseEntityEntry;
@@ -645,11 +661,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (baseEntry != null)
                 {
                     var newEntity = baseEntry.NewEntity?.EntityDesign.Entity;
-                    Debug.WriteLine($"{baseEntry.EntityDesign.Entity} / {entityPair.Key} => New: {newEntity}/{newEntity?.Id}");
+                    System.Diagnostics.Debug.WriteLine($"{baseEntry.EntityDesign.Entity} / {entityPair.Key} => New: {newEntity}/{newEntity?.Id}");
                 }
                 else if (newEntry != null)
                 {
-                    Debug.WriteLine($"{newEntry.EntityDesign.Entity} / {entityPair.Key}, FromNewBase: {newEntry.IsNewBase} => Base: {newEntry.Base?.EntityDesign.Entity}/{newEntry.Base?.EntityDesign.Entity.Id}, NewBase: {newEntry.NewBase?.EntityDesign.Entity}/{newEntry.NewBase?.EntityDesign.Entity.Id}");
+                    System.Diagnostics.Debug.WriteLine($"{newEntry.EntityDesign.Entity} / {entityPair.Key}, FromNewBase: {newEntry.IsNewBase} => Base: {newEntry.Base?.EntityDesign.Entity}/{newEntry.Base?.EntityDesign.Entity.Id}, NewBase: {newEntry.NewBase?.EntityDesign.Entity}/{newEntry.NewBase?.EntityDesign.Entity.Id}");
                 }
             }
         }
