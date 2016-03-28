@@ -63,7 +63,7 @@ namespace SiliconStudio.Presentation.Dialogs
             var parentWindow = ParentWindow;
             var localIsChecked = isChecked;
             var result = dispatcher.Invoke(() =>
-                Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
+                CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
             isChecked = localIsChecked;
             return result;
         }

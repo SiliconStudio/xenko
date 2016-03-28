@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
@@ -37,8 +38,10 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
+            GameTestingSystem.Initialized = true;
+
             //start logging the iOS device if we have the proper tools avail
-            if (IosTracker.CanProxy()) 
+            if (IosTracker.CanProxy())
             {
                 var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
                 {
@@ -86,12 +89,14 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             }
 
             //Start also adb in case of android device
+            var adbPath = AndroidDeviceEnumerator.GetAdbPath();
+            if (!adbPath.IsNullOrEmpty() && AndroidDeviceEnumerator.ListAndroidDevices().Length > 0)
             {
                 //clear the log first
-                ShellHelper.RunProcessAndGetOutput("cmd.exe", "/C adb logcat -c");
+                ShellHelper.RunProcessAndGetOutput("cmd.exe", $"/C {adbPath} logcat -c");
 
                 //start logger
-                var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", "/C adb logcat")
+                var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", $"/C {adbPath} logcat")
                 {
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -233,15 +238,16 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                         currentTester = socketMessageLayer;
                                     }
 
-                                    
-
                                     var currenTestPair = new TestPair
                                     {
-                                        TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process, TestEndAction = () =>
-                                        {
+                                        TesterSocket = socketMessageLayer,
+                                        GameName = request.GameAssembly,
+                                        Process = process,
+                                        TestEndAction = () =>
+{
                                             // force stop - only works for Android 3.0 and above.
                                             Process.Start("cmd.exe", $"/C adb shell am force-stop {request.GameAssembly}.{request.GameAssembly}");
-                                        }
+}
                                     };
                                     processes[request.GameAssembly] = currenTestPair;
                                     testerToGame[socketMessageLayer] = currenTestPair;
