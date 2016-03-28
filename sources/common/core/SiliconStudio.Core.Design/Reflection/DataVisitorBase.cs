@@ -133,31 +133,32 @@ namespace SiliconStudio.Core.Reflection
                     VisitPrimitive(obj, (PrimitiveDescriptor)descriptor);
                     break;
                 default:
-                    if (CanVisit(obj))
+                    // Note that the behaviour is slightly different if a type has a custom visitor or not.
+                    // If it has a custom visitor, it will visit the object even if the object has been already visited
+                    // otherwise it will use CanVisit() on this instance. The CanVisit() is tracking a list of 
+                    // visited objects and it will not revisit the object.
+                    IDataCustomVisitor customVisitor;
+                    if (!mapTypeToCustomVisitors.TryGetValue(objectType, out customVisitor) && CustomVisitors.Count > 0)
                     {
-                        IDataCustomVisitor customVisitor;
-                        if (!mapTypeToCustomVisitors.TryGetValue(objectType, out customVisitor) && CustomVisitors.Count > 0)
+                        for (int i = CustomVisitors.Count - 1; i >= 0; i--)
                         {
-                            for (int i = CustomVisitors.Count - 1; i >= 0; i--)
+                            var dataCustomVisitor = CustomVisitors[i];
+                            if (dataCustomVisitor.CanVisit(objectType))
                             {
-                                var dataCustomVisitor = CustomVisitors[i];
-                                if (dataCustomVisitor.CanVisit(objectType))
-                                {
-                                    customVisitor = dataCustomVisitor;
-                                    mapTypeToCustomVisitors.Add(objectType, dataCustomVisitor);
-                                    break;
-                                }
+                                customVisitor = dataCustomVisitor;
+                                mapTypeToCustomVisitors.Add(objectType, dataCustomVisitor);
+                                break;
                             }
                         }
+                    }
 
-                        if (customVisitor != null)
-                        {
-                            customVisitor.Visit(ref context);
-                        }
-                        else
-                        {
-                            VisitObject(obj, context.Descriptor, true);
-                        }
+                    if (customVisitor != null)
+                    {
+                        customVisitor.Visit(ref context);
+                    }
+                    else if (CanVisit(obj))
+                    {
+                        VisitObject(obj, context.Descriptor, true);
                     }
                     break;
             }
