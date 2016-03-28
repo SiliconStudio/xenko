@@ -212,7 +212,16 @@
   </Style>
   <Style TargetType="{x:Type wnd:MessageDialogBase}" x:Key="MessageDialogChromeStyle" BasedOn="{StaticResource WindowChromeStyle}">
     <Setter Property="Icon" Value="{DynamicResource EditorIcon}" />
-    <Setter Property="ShowInTaskbar" Value="False" />
+    <!-- Show the dialog window in the task bar if at least one of the following is true:
+      - the dialog window does not have a parent window (Owner is null, thus the first binding returns its FallbackValue)
+      - the parent window is not loaded
+      - the parent window is not visible
+      - the parent window is minimized
+    -->
+    <Setter Property="ShowInTaskbar" Value="{me:MultiBinding {Binding Owner.IsLoaded, Converter={cvt:InvertBool}, FallbackValue={me:True}, RelativeSource={RelativeSource Self}},
+                                                             {Binding Owner.IsVisible, Converter={cvt:InvertBool}, RelativeSource={RelativeSource Self}},
+                                                             {Binding Owner.WindowState, Converter={cvt:IsEqualToParam}, ConverterParameter={x:Static WindowState.Minimized}, RelativeSource={RelativeSource Self}},
+                                                             Converter={cvt:OrMultiConverter}, FallbackValue={me:True}}" />
     <Setter Property="ContentTemplate">
       <Setter.Value>
         <DataTemplate>

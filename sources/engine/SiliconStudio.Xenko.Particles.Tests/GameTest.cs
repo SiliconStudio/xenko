@@ -142,6 +142,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
             using (var game = new VisualTestMaterials()) { game.Run(); }
 
             using (var game = new VisualTestCurves()) { game.Run(); }
+
+            using (var game = new VisualTestRibbons()) { game.Run(); }
         }
     }
 }

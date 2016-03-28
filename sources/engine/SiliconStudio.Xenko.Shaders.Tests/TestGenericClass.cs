@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
 
-            var effectByteCode = compiler.Compile(mixinSource, compilerParameters);
+            var effectByteCode = compiler.Compile(mixinSource, compilerParameters.EffectParameters, compilerParameters);
         }
 
 

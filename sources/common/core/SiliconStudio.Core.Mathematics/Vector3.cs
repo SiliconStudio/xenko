@@ -1651,6 +1651,24 @@ namespace SiliconStudio.Core.Mathematics
 
             return Equals((Vector3)value);
         }
+
+
+        /// <summary>
+        /// Finds the circumcenter coordinates for triangle ABC
+        /// </summary>
+        public static Vector3 Circumcenter(ref Vector3 A, ref Vector3 B, ref Vector3 C)
+        {
+            var a = A - C;
+            var b = B - C;
+
+            var crossAB = Vector3.Cross(a, b);
+            var lenAB = crossAB.LengthSquared();
+            if (lenAB < MathUtil.ZeroTolerance)
+                return C;
+
+            return C + Cross(a.LengthSquared() * b - b.LengthSquared() * a, crossAB) / (2 * lenAB);
+        }
+
 #if WPFInterop
         /// <summary>
         /// Performs an implicit conversion from <see cref="SiliconStudio.Core.Mathematics.Vector3"/> to <see cref="System.Windows.Media.Media3D.Vector3D"/>.

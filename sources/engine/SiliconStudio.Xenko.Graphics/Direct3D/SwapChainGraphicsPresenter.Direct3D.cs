@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private SwapChain swapChain;
 
-        private Texture backBuffer;
+        private readonly Texture backBuffer;
 
         private int bufferCount;
 
@@ -64,21 +64,9 @@ namespace SiliconStudio.Xenko.Graphics
             //backBufferTexture.Reload = graphicsResource => ((Texture)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture>(0));
         }
 
-        public override Texture BackBuffer
-        {
-            get
-            {
-                return backBuffer;
-            }
-        }
+        public override Texture BackBuffer => backBuffer;
 
-        public override object NativePresenter
-        {
-            get
-            {
-                return swapChain;
-            }
-        }
+        public override object NativePresenter => swapChain;
 
         public override bool IsFullScreen
         {
@@ -124,18 +112,11 @@ namespace SiliconStudio.Xenko.Graphics
                 var description = new ModeDescription(backBuffer.ViewWidth, backBuffer.ViewHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)Description.BackBufferFormat);
                 if (switchToFullScreen)
                 {
-                    // Force render target destruction
-                    // TODO: We should track all user created render targets that points to back buffer as well (or deny their creation?)
-                    backBuffer.OnDestroyed();
-
                     OnDestroyed();
 
                     Description.IsFullScreen = true;
 
                     OnRecreated();
-
-                    // Recreate render target
-                    backBuffer.OnRecreate();
                 }
                 else
                 {
@@ -191,7 +172,20 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        protected override void Destroy()
+        {
+            base.Destroy();
+            DestroyImpl();
+        }
+
         public override void OnDestroyed()
+        {
+            DestroyImpl();
+
+            base.OnDestroyed();
+        }
+
+        private void DestroyImpl()
         {
             // Manually update back buffer texture
             backBuffer.OnDestroyed();
@@ -199,8 +193,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             swapChain.Dispose();
             swapChain = null;
-
-            base.OnDestroyed();
         }
 
         public override void OnRecreated()
@@ -327,19 +319,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns></returns>
         private SwapChain CreateSwapChainForWindows()
         {
-            IntPtr hwndPtr = IntPtr.Zero;
             var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
             var handleProperty = nativeHandle.GetType().GetProperty("Handle", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (handleProperty != null && handleProperty.PropertyType == typeof(IntPtr))
             {
-                hwndPtr = (IntPtr)handleProperty.GetValue(nativeHandle);
+                var hwndPtr = (IntPtr)handleProperty.GetValue(nativeHandle);
                 if (hwndPtr != IntPtr.Zero)
                 {
                     return CreateSwapChainForDesktop(hwndPtr);
                 }
             }
-            throw new NotSupportedException(string.Format("Form of type [{0}] is not supported. Only System.Windows.Control or SDL2.Window are supported",
-                Description.DeviceWindowHandle != null ? Description.DeviceWindowHandle.GetType().Name : "null"));
+            throw new NotSupportedException($"Form of type [{Description.DeviceWindowHandle?.GetType().Name ?? "null"}] is not supported. Only System.Windows.Control or SDL2.Window are supported");
         }
 
         private SwapChain CreateSwapChainForDesktop(IntPtr handle)
@@ -373,6 +363,10 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
             var newSwapChain = new SwapChain(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeCommandQueue, description);
 #endif
+
+            //prevent normal alt-tab
+            GraphicsAdapterFactory.NativeFactory.MakeWindowAssociation(handle, WindowAssociationFlags.IgnoreAltEnter);
+
             if (Description.IsFullScreen)
             {
                 // Before fullscreen switch

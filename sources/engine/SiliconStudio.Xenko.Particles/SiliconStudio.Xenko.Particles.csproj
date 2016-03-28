@@ -33,6 +33,8 @@
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitialDefaultFields.cs" />
+    <Compile Include="Initializers\InitialDirectionSeed.cs" />
+    <Compile Include="Initializers\InitialSpawnOrder.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
     <Compile Include="Initializers\InitialRotationSeed.cs" />
@@ -89,9 +91,15 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="ShapeBuilders\EdgePolicy.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderTrail.cs" />
+    <Compile Include="ShapeBuilders\SmoothingPolicy.cs" />
+    <Compile Include="ShapeBuilders\TextureCoordinayePolicy.cs" />
+    <Compile Include="ShapeBuilders\UVRotate.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
@@ -135,6 +143,7 @@
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
     <Compile Include="VertexLayouts\AttributeAccessor.cs" />
     <Compile Include="VertexLayouts\AttributeDescription.cs" />
+    <Compile Include="VertexLayouts\AttributeTransformer.cs" />
     <Compile Include="VertexLayouts\ParticleVertexBuilder.cs" />
     <Compile Include="VertexLayouts\ParticleVertexElements.cs" />
     <Compile Include="VertexLayouts\VertexAttributes.cs" />

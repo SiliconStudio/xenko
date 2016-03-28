@@ -11,6 +11,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
+    [Obsolete("This class will be removed soon")]
     public class ModelConsistencyCheckVisitor : DataVisitorBase
     {
         private class ReferenceInfo
@@ -36,8 +37,6 @@ namespace SiliconStudio.Quantum
             this.nodeBuilder = nodeBuilder as DefaultNodeBuilder;
             if (this.nodeBuilder == null) throw new ArgumentException(@"This argument should be a DefaultNodeBuilder", nameof(nodeBuilder));
         }
-
-        public ICollection<Type> PrimitiveTypes => nodeBuilder.PrimitiveTypes;
 
         public override void Reset()
         {
@@ -126,8 +125,7 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             bool shouldProcessReference;
-            if (!nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference))
-                return;
+            nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
 
             var node = GetContextNode();
             GraphNode child;
@@ -188,14 +186,14 @@ namespace SiliconStudio.Quantum
         private ReferenceInfo GetReferenceInfo(Type type, object value)
         {
             // Is it a reference?
-            if ((!type.IsClass && !type.IsStruct()) || IsPrimitiveType(type))
+            if (!type.IsClass && (type.IsStruct() || IsPrimitiveType(type)))
                 return null;
 
-            ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
+            var descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || !IsPrimitiveType(valueType, false))
+            if (valueType == null || (!type.IsStruct() && !IsPrimitiveType(valueType, false)))
             {
                 var refType = Reference.GetReferenceType(value, Reference.NotInCollection);
                 if (refType == typeof(ReferenceEnumerable))
@@ -261,10 +259,10 @@ namespace SiliconStudio.Quantum
 
         private bool IsPrimitiveType(Type type, bool includeAdditionalPrimitiveTypes = true)
         {
-            if (type == null)
+            //if (type == null)
                 return false;
 
-            return type.IsPrimitive || type == typeof(string) || type.IsEnum || (includeAdditionalPrimitiveTypes && PrimitiveTypes.Any(x => x.IsAssignableFrom(type)));
+            //return type.IsPrimitive || type == typeof(string) || type.IsEnum || (includeAdditionalPrimitiveTypes && PrimitiveTypes.Any(x => x.IsAssignableFrom(type)));
         }
 
         private static Type GetElementValueType(ITypeDescriptor descriptor)

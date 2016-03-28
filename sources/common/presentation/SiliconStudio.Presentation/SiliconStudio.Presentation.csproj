@@ -111,10 +111,8 @@
     <Compile Include="Behaviors\ButtonCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ItemsControlCollectionViewBehavior.cs" />
     <Compile Include="Behaviors\CommandBindingBehavior.cs" />
-    <Compile Include="Behaviors\SynchronizeLargestSizeBehavior.cs" />
     <Compile Include="Commands\ICommandBase.cs" />
     <Compile Include="Behaviors\DropCommandParameters.cs" />
-    <Compile Include="Behaviors\GridViewAutoSizeBehavior.cs" />
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />

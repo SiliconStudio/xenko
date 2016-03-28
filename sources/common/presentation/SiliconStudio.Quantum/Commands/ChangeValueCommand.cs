@@ -14,7 +14,7 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : NodeCommandBase
     {
-        public override Task<IActionItem> Execute(IContent content, object index, object parameter)
+        public override void Execute(IContent content, object index, object parameter)
         {
             var currentValue = content.Retrieve(index);
             var newValue = ChangeValue(currentValue, parameter);
@@ -22,7 +22,6 @@ namespace SiliconStudio.Quantum.Commands
             {
                 content.Update(newValue, index);
             }
-            return Task.FromResult<IActionItem>(null);
         }
 
         protected abstract object ChangeValue(object currentValue, object parameter);

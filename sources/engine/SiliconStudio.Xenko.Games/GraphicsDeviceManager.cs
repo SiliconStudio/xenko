@@ -151,6 +151,7 @@ namespace SiliconStudio.Xenko.Games
         {
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             game.Window.OrientationChanged += Window_OrientationChanged;
+            game.Window.FullscreenToggle += WindowOnFullscreenToggle;
         }
 
         #endregion
@@ -245,11 +246,10 @@ namespace SiliconStudio.Xenko.Games
 
             set
             {
-                if (isFullScreen != value)
-                {
-                    isFullScreen = value;
-                    deviceSettingsChanged = true;
-                }
+                if (isFullScreen == value) return;
+
+                isFullScreen = value;
+                deviceSettingsChanged = true;
             }
         }
 
@@ -601,7 +601,12 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsDevice.Presenter = null;
                 }
 
+                //GraphicsDevice.DeviceResetting -= GraphicsDevice_DeviceResetting;
+                //GraphicsDevice.DeviceReset -= GraphicsDevice_DeviceReset;
+                //GraphicsDevice.DeviceLost -= GraphicsDevice_DeviceLost;
+
                 GraphicsDevice.Dispose();
+                GraphicsDevice.Disposing -= GraphicsDevice_Disposing;
                 GraphicsDevice = null;
             }
 
@@ -936,6 +941,11 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
+        private void WindowOnFullscreenToggle(object sender, EventArgs eventArgs)
+        {
+            IsFullScreen = !IsFullScreen;
+            ApplyChanges();
+        }
 
         private void CreateDevice(GraphicsDeviceInformation newInfo)
         {

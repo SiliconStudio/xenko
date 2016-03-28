@@ -49,14 +49,14 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <param name="shaderSource">the hlsl shader</param>
         /// <param name="entryPoint">the entrypoint function name</param>
         /// <param name="stage">the shader pipeline stage</param>
-        /// <param name="compilerParameters"></param>
+        /// <param name="effectParameters"></param>
         /// <param name="reflection">the reflection gathered from the hlsl analysis</param>
         /// <param name="sourceFilename">the name of the source file</param>
         /// <returns></returns>
-        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
+        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isOpenGLES = compilerParameters.EffectParameters.Platform == GraphicsPlatform.OpenGLES;
-            var isOpenGLES3 = compilerParameters.EffectParameters.Profile >= GraphicsProfile.Level_10_0;
+            var isOpenGLES = effectParameters.Platform == GraphicsPlatform.OpenGLES;
+            var isOpenGLES3 = effectParameters.Profile >= GraphicsProfile.Level_10_0;
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 

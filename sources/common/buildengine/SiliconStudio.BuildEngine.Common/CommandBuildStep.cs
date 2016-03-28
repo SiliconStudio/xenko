@@ -154,7 +154,22 @@ namespace SiliconStudio.BuildEngine
 
                         executeContext.Logger.Debug("Command {0} scheduled...", Command.ToString());
 
-                        status = await StartCommand(executeContext, commandResultEntries, builderContext);
+                        // Register the cancel callback
+                        var cancellationTokenSource = executeContext.CancellationTokenSource;
+                        cancellationTokenSource.Token.Register(x => ((Command)x).Cancel(), Command);
+
+                        Command.CancellationToken = cancellationTokenSource.Token;
+
+                        try
+                        {
+                            status = await StartCommand(executeContext, commandResultEntries, builderContext);
+                        }
+                        finally
+                        {
+                            // Restore cancellation token (to avoid memory leak due to previous CancellationToken.Register
+                            Command.CancellationToken = CancellationToken.None;
+                        }
+
                         executeContext.NotifyCommandBuildStepFinished(this, commandHash);
                     }
                 }
@@ -295,12 +310,6 @@ namespace SiliconStudio.BuildEngine
         private async Task<ResultStatus> StartCommand(IExecuteContext executeContext, ListStore<CommandResultEntry> commandResultEntries, BuilderContext builderContext)
         {
             var logger = executeContext.Logger;
-
-            // Register the cancel callback
-            var cancellationTokenSource = executeContext.CancellationTokenSource;
-            cancellationTokenSource.Token.Register(x => ((Command)x).Cancel(), Command);
-
-            Command.CancellationToken = cancellationTokenSource.Token;
 
             //await Scheduler.Yield();
 

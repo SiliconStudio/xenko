@@ -1,14 +1,12 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Physics.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
@@ -31,12 +29,12 @@ namespace SiliconStudio.Xenko.Physics
 
         private Bullet2PhysicsSystem physicsSystem;
         private SceneSystem sceneSystem;
-        private Simulation simulation;
         private Scene debugScene;
         private Entity debugEntityScene;
 
         private bool colliderShapesRendering;
 
+        private SceneChildRenderer debugSceneRenderer;
         private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
@@ -44,7 +42,7 @@ namespace SiliconStudio.Xenko.Physics
         {
         }
 
-        public Simulation Simulation => simulation;
+        public Simulation Simulation { get; private set; }
 
         internal void RenderColliderShapes(bool enabled)
         {
@@ -52,8 +50,16 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                //this should be enough to remove everything
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
+
+                foreach (var element in elements)
+                {
+                    element.RemoveDebugEntity(scene);
+                }
+
                 sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+                mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
             {
@@ -76,12 +82,17 @@ namespace SiliconStudio.Xenko.Physics
 
                 var childComponent = new ChildSceneComponent { Scene = debugScene };
                 debugEntityScene = new Entity { childComponent };
-                mainCompositor.Master.Add(new SceneChildRenderer(childComponent));
+                debugSceneRenderer = new SceneChildRenderer(childComponent);
+
+                mainCompositor.Master.Add(debugSceneRenderer);
                 sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
 
                 foreach (var element in elements)
                 {
-                    element.AddDebugEntity(debugScene);
+                    if (element.Enabled)
+                    {
+                        element.AddDebugEntity(debugScene);
+                    }
                 }
             }
         }
@@ -95,7 +106,7 @@ namespace SiliconStudio.Xenko.Physics
                 ModelComponent = entity.Get<ModelComponent>()
             };
 
-            data.PhysicsComponent.Simulation = simulation;
+            data.PhysicsComponent.Simulation = Simulation;
             data.PhysicsComponent.DebugShapeRendering = debugShapeRendering;
 
             return data;
@@ -154,7 +165,7 @@ namespace SiliconStudio.Xenko.Physics
                 game?.GameSystems.Add(debugShapeRendering);
             }
 
-            simulation = physicsSystem.Create(this);
+            Simulation = physicsSystem.Create(this);
 
             sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
         }
@@ -171,7 +182,7 @@ namespace SiliconStudio.Xenko.Physics
             //characters need manual updating
             foreach (var element in characters)
             {
-                if(!element.Enabled) continue;
+                if(!element.Enabled || element.ColliderShape == null) continue;
 
                 var worldTransform = element.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
@@ -214,7 +225,7 @@ namespace SiliconStudio.Xenko.Physics
             foreach (var dataPair in ComponentDatas)
             {
                 var data = dataPair.Value;
-                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions)
+                if (data.PhysicsComponent.Enabled && data.PhysicsComponent.ProcessCollisions && data.PhysicsComponent.ColliderShape != null)
                 {
                     Simulation.ContactTest(data.PhysicsComponent);
                 }

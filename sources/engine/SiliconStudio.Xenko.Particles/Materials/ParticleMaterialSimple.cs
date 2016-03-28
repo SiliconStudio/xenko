@@ -105,9 +105,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             {
                 // Set the vertex color attribute to the particle's color field
                 var color = (uint)(*(Color4*)particle[colorField]).ToRgba();
-                vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                vertexBuilder.SetAttributePerSegment(colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextParticle();
+                vertexBuilder.NextSegment();
             }
 
             vertexBuilder.RestartBuffer();

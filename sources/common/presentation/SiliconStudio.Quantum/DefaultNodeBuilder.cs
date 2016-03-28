@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
@@ -20,6 +20,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
+        private static readonly Type[] InternalPrimitiveTypes = { typeof(string), typeof(Guid) };
         private GraphNode rootNode;
         private Guid rootGuid;
         private NodeFactoryDelegate currentNodeFactory;
@@ -27,13 +28,14 @@ namespace SiliconStudio.Quantum
         public DefaultNodeBuilder(NodeContainer nodeContainer)
         {
             NodeContainer = nodeContainer;
+            primitiveTypes.AddRange(InternalPrimitiveTypes);
         }
 
         /// <inheritdoc/>
         public NodeContainer NodeContainer { get; }
         
         /// <inheritdoc/>
-        public ICollection<Type> PrimitiveTypes { get; } = new List<Type>();
+        private readonly List<Type> primitiveTypes = new List<Type>();
 
         /// <inheritdoc/>
         public ICollection<INodeCommand> AvailableCommands { get; } = new List<INodeCommand>();
@@ -41,11 +43,10 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public IContentFactory ContentFactory { get; set; } = new DefaultContentFactory();
 
-        /// <inheritdoc/>
-        public event EventHandler<NodeConstructingArgs> NodeConstructing;
+        public bool DiscardUnbrowsable { get; set; } = true;
 
         /// <inheritdoc/>
-        public event EventHandler<NodeConstructedArgs> NodeConstructed;
+        public event EventHandler<NodeConstructingArgs> NodeConstructing;
 
         /// <summary>
         /// Reset the visitor in order to use it to generate another model.
@@ -57,6 +58,33 @@ namespace SiliconStudio.Quantum
             contextStack.Clear();
             referenceContents.Clear();
             base.Reset();
+        }
+
+        public void RegisterPrimitiveType(Type type)
+        {
+            if (type.IsPrimitive || type.IsEnum || primitiveTypes.Contains(type))
+                return;
+
+            primitiveTypes.Add(type);
+        }
+
+        public void UnregisterPrimitiveType(Type type)
+        {
+            if (type.IsPrimitive || type.IsEnum || InternalPrimitiveTypes.Contains(type))
+                throw new InvalidOperationException("The given type cannot be unregistered from the list of primitive types");
+
+            primitiveTypes.Remove(type);
+        }
+
+        public bool IsPrimitiveType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            if (type.IsNullable())
+                type = Nullable.GetUnderlyingType(type);
+
+            return type.IsPrimitive || type.IsEnum || primitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
 
         /// <inheritdoc/>
@@ -82,8 +110,7 @@ namespace SiliconStudio.Quantum
             if (isRootNode)
             {
                 bool shouldProcessReference;
-                if (!NotifyNodeConstructing(descriptor, out shouldProcessReference))
-                    return;
+                NotifyNodeConstructing(descriptor, out shouldProcessReference);
 
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
@@ -98,7 +125,6 @@ namespace SiliconStudio.Quantum
                     referenceContents.Add(content);
 
                 AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
-                NotifyNodeConstructed(content);
 
                 if (obj == null)
                 {
@@ -146,6 +172,15 @@ namespace SiliconStudio.Quantum
             }
         }
 
+        private bool ShouldDiscardMember(MemberDescriptorBase memberDescriptor)
+        {
+            if (memberDescriptor == null || !DiscardUnbrowsable)
+                return false;
+
+            var displayAttribute = TypeDescriptorFactory.AttributeRegistry.GetAttribute<DisplayAttribute>(memberDescriptor.MemberInfo);
+            return displayAttribute != null && !displayAttribute.Browsable;
+        }
+
         /// <summary>
         /// Raises the <see cref="NodeConstructing"/> event.
         /// </summary>
@@ -153,18 +188,19 @@ namespace SiliconStudio.Quantum
         /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
         /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal bool NotifyNodeConstructing(ObjectDescriptor descriptor, out bool shouldProcessReference)
+        private void NotifyNodeConstructing(ObjectDescriptor descriptor, out bool shouldProcessReference)
         {
             var handler = NodeConstructing;
             if (handler != null)
             {
                 var args = new NodeConstructingArgs(descriptor, null);
                 handler(this, args);
-                shouldProcessReference = !args.Discard && args.ShouldProcessReference;
-                return !args.Discard;
+                shouldProcessReference = args.ShouldProcessReference;
             }
-            shouldProcessReference = true;
-            return true;
+            else
+            {
+                shouldProcessReference = true;
+            }
         }
 
         /// <summary>
@@ -175,36 +211,29 @@ namespace SiliconStudio.Quantum
         /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
         /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal bool NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
+        internal void NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
         {
             var handler = NodeConstructing;
             if (handler != null)
             {
                 var args = new NodeConstructingArgs(containerDescriptor, (MemberDescriptorBase)member);
                 handler(this, args);
-                shouldProcessReference = !args.Discard && args.ShouldProcessReference;
-                return !args.Discard;
+                shouldProcessReference = args.ShouldProcessReference;
             }
-            shouldProcessReference = true;
-            return true;
-        }
-
-        /// <summary>
-        /// Raises the <see cref="NodeConstructed"/> event.
-        /// </summary>
-        /// <param name="content">The content of the node that has been constructed.</param>
-        /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal void NotifyNodeConstructed(IContent content)
-        {
-            NodeConstructed?.Invoke(this, new NodeConstructedArgs(content));
+            else
+            {
+                shouldProcessReference = true;
+            }
         }
 
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             bool shouldProcessReference;
-            if (!NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference))
+            if (ShouldDiscardMember(member as MemberDescriptorBase))
                 return;
+
+            NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
 
             // If this member should contains a reference, create it now.
             GraphNode containerNode = GetContextNode();
@@ -224,7 +253,6 @@ namespace SiliconStudio.Quantum
             PopContextNode();
 
             AvailableCommands.Where(x => x.CanAttach(node.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(node.AddCommand);
-            NotifyNodeConstructed(content);
 
             node.Seal();
         }
@@ -232,14 +260,14 @@ namespace SiliconStudio.Quantum
         public IReference CreateReferenceForNode(Type type, object value)
         {
             // We don't create references for primitive types
-            if (IsPrimitiveType(type))
+            if (IsPrimitiveType(type) || type.IsStruct())
                 return null;
 
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || !IsPrimitiveType(valueType))
+            if (valueType == null || (!IsPrimitiveType(valueType) && !valueType.IsStruct()))
                 return Reference.CreateReference(value, type, Reference.NotInCollection);
 
             return null;
@@ -263,17 +291,6 @@ namespace SiliconStudio.Quantum
         private static bool IsCollection(Type type)
         {
             return typeof(ICollection).IsAssignableFrom(type);
-        }
-
-        private bool IsPrimitiveType(Type type)
-        {
-            if (type == null)
-                return false;
-
-            if (type.IsNullable())
-                type = Nullable.GetUnderlyingType(type);
-
-            return type.IsPrimitive || type == typeof(string) || type.IsEnum || PrimitiveTypes.Any(x => x.IsAssignableFrom(type));
         }
 
         private static Type GetElementValueType(ITypeDescriptor descriptor)

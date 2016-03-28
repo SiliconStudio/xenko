@@ -58,6 +58,7 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
+    - 224c05c6-a9fd-43ad-b7e8-727bf088b554:VisualTestRibbons
     - 2281b29e-cfae-4a65-ba18-ffa926b92b68:VisualTestGeneral
     - 9a462c4a-207b-4a29-8ea3-748cb3dad8da:Scene01
     - 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot

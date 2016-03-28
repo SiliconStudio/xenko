@@ -1000,17 +1000,22 @@ namespace SiliconStudio.Xenko.Physics
             handler?.Invoke(this, e);
         }
 
+        //todo lots of data dupes, this needs rework soon
         readonly HashSet<Collision> skippedCollisions = new HashSet<Collision>();
+        readonly HashSet<Collision> newCollisions = new HashSet<Collision>();
 
         internal void BeginContactTesting()
         {
             skippedCollisions.Clear();
+            newCollisions.Clear();
         }
 
         internal void EndContactTesting()
         {
             foreach (var collision in skippedCollisions)
             {
+                if(newCollisions.Contains(collision)) continue;
+
                 collision.ColliderA.Collisions.Remove(collision);
                 collision.ColliderB.Collisions.Remove(collision);
                 removedCollisionsCache.Add(collision);
@@ -1108,7 +1113,10 @@ namespace SiliconStudio.Xenko.Physics
                     component1.Collisions.Add(newCollision);
 
                     newCollisionsCache.Add(newCollision);
+
                     newContactsFastCache.Add(newContact);
+
+                    newCollisions.Add(newCollision);
                 }
             }
         }

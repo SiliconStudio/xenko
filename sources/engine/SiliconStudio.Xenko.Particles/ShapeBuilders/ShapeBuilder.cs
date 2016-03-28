@@ -60,5 +60,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             VertexLayoutHasChanged = false;
         }
+
+        /// <summary>
+        /// Sets the required quads per particle and number of particles so that a sufficiently big buffer can be allocated
+        /// </summary>
+        /// <param name="quadsPerParticle">Required quads per particle, assuming 1 quad = 4 vertices = 6 indices</param>
+        /// <param name="livingParticles">Number of living particles this frame</param>
+        /// <param name="totalParticles">Number of total number of possible particles for the parent emitter</param>
+        public virtual void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles) { }
     }
 }
