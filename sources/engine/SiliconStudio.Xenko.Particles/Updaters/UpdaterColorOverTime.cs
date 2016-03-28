@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -16,6 +17,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
     [Display("Color Animation")]
     public class UpdaterColorOverTime : ParticleUpdater
     {
+
         /// <summary>
         /// Default constructor which also registers the fields required by this updater
         /// </summary>
@@ -23,9 +25,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         {
             RequiredFields.Add(ParticleFields.Color);
 
-            var curve = new ComputeAnimationCurveColor4();
+            var curve = new ComputeAnimationCurveVector4();
             SamplerMain.Curve = curve;
         }
+
 
         /// <inheritdoc />
         [DataMemberIgnore]
@@ -40,7 +43,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         [DataMember(100)]
         [NotNull]
         [Display("Main")]
-        public ComputeCurveSampler<Color4> SamplerMain { get; set; } = new ComputeCurveSamplerColor4();
+        public ComputeCurveSampler<Vector4> SamplerMain { get; set; } = new ComputeCurveSamplerVector4();
 
         /// <summary>
         /// Optional sampler. If present, particles will pick a random value between the two sampled curves
@@ -50,7 +53,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         /// </userdoc>
         [DataMember(200)]
         [Display("Optional")]
-        public ComputeCurveSampler<Color4> SamplerOptional { get; set; }
+        public ComputeCurveSampler<Vector4> SamplerOptional { get; set; }
 
         /// <summary>
         /// Seed offset. You can use this offset to bind the randomness to other random values, or to make them completely unrelated
@@ -60,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         /// </userdoc>
         [DataMember(300)]
         [Display("Random Seed")]
-        public uint SeedOffset { get; set; } = 0;
+        public UInt32 SeedOffset { get; set; } = 0;
         
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
@@ -92,7 +95,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             {
                 var life = 1f - (*((float*)particle[lifeField]));   // The Life field contains remaining life, so for sampling we take (1 - life)
 
-                var color = SamplerMain.Evaluate(life);
+                var color = (Color4)SamplerMain.Evaluate(life);
 
                 // Premultiply alpha
                 color.R *= color.A;
@@ -123,8 +126,8 @@ namespace SiliconStudio.Xenko.Particles.Updaters
                 var randSeed = particle.Get(randField);
                 var lerp = randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
 
-                var colorMin = SamplerMain.Evaluate(life);
-                var colorMax = SamplerOptional.Evaluate(life);                
+                var colorMin = (Color4) SamplerMain.Evaluate(life);
+                var colorMax = (Color4) SamplerOptional.Evaluate(life);                
                 var color    =  Color4.Lerp(colorMin, colorMax, lerp);
 
                 // Premultiply alpha
