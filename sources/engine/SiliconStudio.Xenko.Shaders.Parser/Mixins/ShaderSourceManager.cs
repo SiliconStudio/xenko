@@ -174,21 +174,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                             using (var sourceStream = OpenStream(sourceUrl))
                             {
                                 var databaseStream = sourceStream as IDatabaseStream;
-                                var fileStream = sourceStream as FileStream;
-                                if (databaseStream != null || fileStream != null)
-                                {
-                                    using (var sr = new StreamReader(sourceStream))
-                                        shaderSource.Source = sr.ReadToEnd();
 
-                                    if (databaseStream != null)
-                                        shaderSource.Hash = databaseStream.ObjectId;
-                                    else
-                                        shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(sourceUrl));
-                                }
-                                else
-                                {
-                                    throw new Exception(string.Format("Unsupported Stream type to load shader [{0}.xksl]", type));
-                                }
+                                using (var sr = new StreamReader(sourceStream))
+                                    shaderSource.Source = sr.ReadToEnd();
+
+                                sourceStream.Position = 0;
+                                var data = new byte[sourceStream.Length];
+                                sourceStream.Read(data, 0, (int)sourceStream.Length);
+                                shaderSource.Hash = databaseStream?.ObjectId ?? ObjectId.FromBytes(data);
                             }
                         }
 
