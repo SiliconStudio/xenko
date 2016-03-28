@@ -45,17 +45,7 @@ namespace SiliconStudio.Presentation.Controls
         /// The name of the part for the <see cref="Canvas"/>.
         /// </summary>
         private const string GridPartName = "PART_Grid";
-
-        /// <summary>
-        /// Identifies the <see cref="CanvasBounds"/> dependency property key.
-        /// </summary>
-        private static readonly DependencyPropertyKey CanvasBoundsPropertyKey =
-            DependencyProperty.RegisterReadOnly(nameof(CanvasBounds), typeof(Rect), typeof(CanvasView), new PropertyMetadata(new Rect()));
-        /// <summary>
-        /// Identifies the <see cref="CanvasBounds"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CanvasBoundsProperty = CanvasBoundsPropertyKey.DependencyProperty;
-
+        
         /// <summary>
         /// Identifies the <see cref="IsCanvasValid"/> dependency property key.
         /// </summary>
@@ -91,8 +81,6 @@ namespace SiliconStudio.Presentation.Controls
             Loaded += OnLoaded;
             SizeChanged += OnSizeChanged;
         }
-
-        public Rect CanvasBounds { get { return (Rect)GetValue(CanvasBoundsProperty); } private set { SetValue(CanvasBoundsPropertyKey, value); } }
 
         /// <summary>
         /// Returns True if the current rendering is valid. False otherwise.
@@ -136,6 +124,7 @@ namespace SiliconStudio.Presentation.Controls
                 if (!IsCanvasValid)
                 {
                     UpdateVisuals();
+                    IsCanvasValid = true;
                 }
             }
 
@@ -169,12 +158,6 @@ namespace SiliconStudio.Presentation.Controls
                 // After the invalidation, the element will have its layout updated,
                 // which will occur asynchronously unless subsequently forced by UpdateLayout.
                 InvalidateArrange();
-                Dispatcher.InvokeAsync(() =>
-                {
-                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(renderer.Canvas);
-                    IsCanvasValid = true;
-                    // We must wait after the canvas is rendered to get correct values
-                }, DispatcherPriority.Loaded);
             }, DispatcherPriority.Background);
         }
         
