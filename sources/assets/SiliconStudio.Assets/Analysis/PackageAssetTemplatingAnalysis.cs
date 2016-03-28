@@ -3,10 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -271,7 +275,7 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             // Delegates actual merge to the asset implem
-            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts);
+            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts, item.Location);
 
             if (result.HasErrors)
             {
@@ -289,6 +293,18 @@ namespace SiliconStudio.Assets.Analysis
             if (existingBaseParts != null)
             {
                 item.Asset.BaseParts = existingBaseParts;
+            }
+
+            // Set this variable to true at debug time to check what is the output of the merge
+            bool writeToDebug = false;
+            if (writeToDebug)
+            {
+                var writer = new MemoryStream();
+                YamlSerializer.Serialize(writer, item.Asset);
+                writer.Flush();
+                writer.Position = 0;
+                var text = Encoding.UTF8.GetString(writer.ToArray());
+                Debug.WriteLine(text);
             }
 
             item.IsDirty = true;
