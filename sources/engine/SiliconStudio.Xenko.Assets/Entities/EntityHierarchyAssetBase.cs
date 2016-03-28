@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
@@ -29,6 +30,23 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </value>
         [DataMember(20)]
         public EntityHierarchyData Hierarchy { get; set; }
+
+        /// <summary>
+        /// Dumps this asset to a writer for debug purposes.
+        /// </summary>
+        /// <param name="writer">A text writer output</param>
+        /// <param name="name">Name of this asset</param>
+        /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
+        public bool DumpTo(TextWriter writer, string name)
+        {
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+
+            writer.WriteLine();
+            writer.WriteLine("*************************************");
+            writer.WriteLine($"{GetType().Name}: {name}");
+            writer.WriteLine("=====================================");
+            return Hierarchy?.DumpTo(writer) ?? false;
+        }
 
         public override Asset CreateChildAsset(string location)
         {

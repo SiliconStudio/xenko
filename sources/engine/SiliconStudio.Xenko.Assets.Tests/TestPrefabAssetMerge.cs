@@ -903,6 +903,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             assetItems.Add(new AssetItem("a4", a4));
 
+            Assert.True(a1.DumpTo(Console.Out, "a1 BEFORE PrefabMergeAsset"));
+            Assert.True(a2.DumpTo(Console.Out, "a2 BEFORE PrefabMergeAsset"));
+            Assert.True(a3.DumpTo(Console.Out, "a3 BEFORE PrefabMergeAsset"));
+            Assert.True(a4.DumpTo(Console.Out, "a4 BEFORE PrefabMergeAsset"));
+
+
             // Then we simulate a concurrent change to a1 by someone that didn't have a2/a3/a4
             // - Add one component to a1, linking to an existing entity ea
             // - Add a root entity to a1 with a link to an existing entity eb
@@ -947,6 +953,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.False(logger.HasErrors);
 
+                Assert.True(a1.DumpTo(Console.Out, "a1 AFTER PrefabMergeAsset"));
+
                 // ------------------------------------------------
                 // Check for a2
                 // ------------------------------------------------
@@ -964,6 +972,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 //  | ex(2)                          
                 //    | ey(2) + link eb2             
                 {
+                    Assert.True(a2.DumpTo(Console.Out, "a2 AFTER PrefabMergeAsset"));
                     Assert.AreEqual(4, a2.Hierarchy.RootEntities.Count);
                     Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
 
@@ -1032,6 +1041,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 //  | ex1' (base: ex)              
                 //    | ey1' + link eb1'           
                 {
+                    Assert.True(a3.DumpTo(Console.Out, "a3 AFTER PrefabMergeAsset"));
+
                     Assert.AreEqual(2, a3.Hierarchy.RootEntities.Count);
                     Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
 
@@ -1092,6 +1103,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 //  | ex(1') (base: ex)   
                 //    | ey(1') + link eb1'*
                 {
+                    Assert.True(a4.DumpTo(Console.Out, "a4 AFTER PrefabMergeAsset"));
+
                     Assert.AreEqual(5, a4.Hierarchy.RootEntities.Count);
                     Assert.True(a4.Hierarchy.Entities.Where(it => it.Entity.Name != "eRoot").All(it => it.Entity.Name != "eRoot" && it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
 
