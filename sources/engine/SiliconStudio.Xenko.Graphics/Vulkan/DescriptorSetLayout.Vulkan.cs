@@ -11,21 +11,27 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class DescriptorSetLayout // TODO VULKAN API: GraphicsResource
     {
+        internal struct BindingInfo
+        {
+            public bool HasImmutableSampler;
+        }
+
         internal readonly SharpVulkan.DescriptorSetLayout NativeLayout;
+        internal readonly BindingInfo[] Bindings;
 
         private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
         {
-            NativeLayout = CreateNativeDescriptorSetLayout(device, builder);
+            NativeLayout = CreateNativeDescriptorSetLayout(device, builder, out Bindings);
         }
 
-        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
+        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder, out BindingInfo[] bindingInfos)
         {
             var bindings = new DescriptorSetLayoutBinding[builder.Entries.Count];
+            bindingInfos = new BindingInfo[builder.Entries.Count];
 
             for (int i = 0; i < builder.Entries.Count; i++)
             {
                 var entry = builder.Entries[i];
-                var immutableSampler = entry.ImmutableSampler != null ? entry.ImmutableSampler.NativeSampler : Sampler.Null;
 
                 bindings[i] = new DescriptorSetLayoutBinding
                 {
@@ -33,8 +39,23 @@ namespace SiliconStudio.Xenko.Graphics
                     StageFlags = ShaderStageFlags.All, // TODO VULKAN: Filter
                     Binding = (uint)i,
                     DescriptorCount = (uint)entry.ArraySize,
-                    ImmutableSamplers = new IntPtr(&immutableSampler)
                 };
+
+                if (entry.Class == EffectParameterClass.ShaderResourceView && entry.ImmutableSampler != null)
+                {
+                    // TODO VULKAN: Handle immutable samplers for DescriptorCount > 1
+                    if (entry.ArraySize > 1)
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                    var immutableSampler = entry.ImmutableSampler.NativeSampler;
+                    bindings[i].DescriptorType = DescriptorType.CombinedImageSampler;
+                    bindings[i].ImmutableSamplers = new IntPtr(&immutableSampler);
+
+                    // Remember this, so we can choose the right DescriptorType in DescriptorSet.SetShaderResourceView
+                    bindingInfos[i].HasImmutableSampler = true;
+                }
             }
 
             fixed (DescriptorSetLayoutBinding* bindingsPointer = &bindings[0])

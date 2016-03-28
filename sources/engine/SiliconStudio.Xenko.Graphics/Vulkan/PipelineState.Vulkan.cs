@@ -271,7 +271,8 @@ namespace SiliconStudio.Xenko.Graphics
             var nativeLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
             for (int i = 0; i < layouts.Count; i++)
             {
-                nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout);
+                DescriptorSetLayout.BindingInfo[] bindingInfos;
+                nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout, out bindingInfos);
             }
 
             // Create pipeline layout

@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = texture.NativeLayout };
 
-                write.DescriptorType = DescriptorType.SampledImage;
+                write.DescriptorType = Description.Bindings[slot].HasImmutableSampler ? DescriptorType.CombinedImageSampler : DescriptorType.SampledImage;
                 write.ImageInfo = new IntPtr(&imageInfo);
 
                 GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
