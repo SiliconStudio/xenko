@@ -30,12 +30,11 @@
   <ItemGroup>
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="TestConstruction.cs" />
-    <Compile Include="TestDictionaries.cs" />
-    <Compile Include="TestLists.cs" />
-    <Compile Include="TestMultipleReferencer.cs" />
+    <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
+    <Compile Include="Obsolete\ObsoleteTestLists.cs" />
+    <Compile Include="TestPrimitiveMembers.cs" />
+    <Compile Include="TestReferences.cs" />
     <Compile Include="TestStructs.cs" />
-    <Compile Include="TestUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
@@ -69,6 +68,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

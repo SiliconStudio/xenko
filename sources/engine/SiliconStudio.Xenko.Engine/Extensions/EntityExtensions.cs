@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Extensions
         /// <param name="applyOnChildren">Recursively apply this method to the children of this entity</param>
         public static void EnableAll(this Entity entity, bool enabled = true, bool applyOnChildren = false)
         {
-            Enable<ActivableEntityComponent>(entity, false, applyOnChildren);
+            Enable<ActivableEntityComponent>(entity, enabled, applyOnChildren);
         }
     }
 }

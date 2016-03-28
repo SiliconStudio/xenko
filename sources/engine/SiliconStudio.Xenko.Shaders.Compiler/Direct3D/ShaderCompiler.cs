@@ -18,11 +18,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 {
     internal class ShaderCompiler : IShaderCompiler
     {
-        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
+        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isDebug = compilerParameters.EffectParameters.Debug;
-            var optimLevel = compilerParameters.EffectParameters.OptimizationLevel;
-            var profile = compilerParameters.EffectParameters.Profile;
+            var isDebug = effectParameters.Debug;
+            var optimLevel = effectParameters.OptimizationLevel;
+            var profile = effectParameters.Profile;
             
             var shaderModel = ShaderStageToString(stage) + "_" + ShaderProfileFromGraphicsProfile(profile);
 

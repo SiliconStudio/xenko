@@ -73,6 +73,7 @@ namespace SiliconStudio.Xenko.Games
         private const int SC_MONITORPOWER = 0xF170;
         private const int SC_SCREENSAVE = 0xF140;
         private const int MNC_CLOSE = 1;
+        private const byte VK_RETURN = 0x0D;
         private System.Drawing.Size cachedSize;
         private FormWindowState previousWindowState;
         //private DisplayMonitor monitor;
@@ -149,6 +150,13 @@ namespace SiliconStudio.Xenko.Games
         /// Occurs when [user resized].
         /// </summary>
         public event EventHandler<EventArgs> UserResized;
+
+        /// <summary>
+        /// Occurs when alt-enter key combination has been pressed.
+        /// </summary>
+        public event EventHandler<EventArgs> FullscreenToggle;
+
+        protected bool EnableFullscreenToggle = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is processing keys. By default is <c>false</c>
@@ -298,6 +306,16 @@ namespace SiliconStudio.Xenko.Games
                 Screensaver(this, e);
         }
 
+        /// <summary>
+        /// Raises the FullScreenToggle event
+        /// </summary>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void OnFullscreenToggle(EventArgs e)
+        {
+            if(FullscreenToggle != null)
+                FullscreenToggle(this, e);
+        }
+
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
@@ -407,6 +425,13 @@ namespace SiliconStudio.Xenko.Games
                             m.Result = IntPtr.Zero;
                             return;
                         }
+                    }
+                    break;
+                case Win32Native.WM_SYSKEYDOWN: //alt is down
+                    if(wparam == VK_RETURN)
+                    {
+                        if(!EnableFullscreenToggle) return;
+                        OnFullscreenToggle(new EventArgs()); //we handle alt enter manually
                     }
                     break;
             }

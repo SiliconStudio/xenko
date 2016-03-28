@@ -139,7 +139,9 @@ namespace SiliconStudio.Xenko.UI
         private Matrix localMatrix = Matrix.Identity;
         private MouseOverState mouseOverState;
         private LayoutingContext layoutingContext;
-        
+        private Style style;
+        private ResourceDictionary resourceDictionary;
+
         internal bool HierarchyDisablePicking;
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
@@ -254,9 +256,70 @@ namespace SiliconStudio.Xenko.UI
         internal bool ForceNextArrange = true;
 
         /// <summary>
+        /// Gets or sets the style of this UI element.
+        /// </summary>
+        internal Style Style
+        {
+            get { return style; }
+            set
+            {
+                // Style is same, skip
+                if (style == value)
+                    return;
+
+                // Check if we already had a style
+                if (style != null)
+                    throw new InvalidOperationException("Style can't be changed once it has been applied.");
+
+                // Run each setter for undefined values
+                var currentStyle = value;
+                while (currentStyle != null)
+                {
+                    foreach (var setter in currentStyle.Setters)
+                    {
+                        setter.ApplyIfNotSet(ref DependencyProperties);
+                    }
+                    currentStyle = currentStyle.BasedOn;
+                }
+
+                // Set it as current style
+                style = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the resource dictionary associated to this element.
+        /// </summary>
+        internal ResourceDictionary ResourceDictionary
+        {
+            get { return resourceDictionary; }
+            set
+            {
+                if (value == resourceDictionary)
+                    return;
+
+                resourceDictionary = value;
+
+                if (resourceDictionary != null)
+                {
+                    // Try to find matching style
+                    object matchingStyle;
+                    if (resourceDictionary.TryGetValue(GetType(), out matchingStyle))
+                    {
+                        // Apply style
+                        Style = (Style)matchingStyle;
+                    }
+                }
+
+                foreach (var child in VisualChildren)
+                    child.ResourceDictionary = value;
+            }
+        }
+
+        /// <summary>
         /// The ratio between the element real size on the screen and the element virtual size.
         /// </summary>
-        internal protected LayoutingContext LayoutingContext
+        protected internal LayoutingContext LayoutingContext
         {
             get { return layoutingContext; }
             set
@@ -1131,6 +1194,7 @@ namespace SiliconStudio.Xenko.UI
 
             if (parent != null)
             {
+                child.ResourceDictionary = parent.ResourceDictionary;
                 child.LayoutingContext = parent.layoutingContext;
                 parent.VisualChildrenCollection.Add(child);
             }

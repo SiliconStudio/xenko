@@ -18,13 +18,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [Display("Flipbook")]
     public class UVBuilderFlipbook : UVBuilder, IAttributeTransformer<Vector2>
     {
-        private UInt32 xDivisions = 4;
-        private UInt32 yDivisions = 4;
+        private uint xDivisions = 4;
+        private uint yDivisions = 4;
         private float xStep = 0.25f;
         private float yStep = 0.25f;
-        private UInt32 totalFrames = 16;
-        private UInt32 startingFrame = 0;
-        private UInt32 animationSpeedOverLife = 16;
+        private uint totalFrames = 16;
+        private uint startingFrame = 0;
+        private uint animationSpeedOverLife = 16;
 
         /// <summary>
         /// Number of columns (cells per row)
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(200)]
         [Display("X divisions")]
-        public UInt32 XDivisions
+        public uint XDivisions
         {
             get { return xDivisions; }
             set
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(240)]
         [Display("Y divisions")]
-        public UInt32 YDivisions
+        public uint YDivisions
         {
             get { return yDivisions; }
             set
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(280)]
         [Display("Starting frame")]
-        public UInt32 StartingFrame
+        public uint StartingFrame
         {
             get { return startingFrame; }
             set
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(320)]
         [Display("Animation speed")]
-        public UInt32 AnimationSpeed
+        public uint AnimationSpeed
         {
             get { return animationSpeedOverLife; }
             set { animationSpeedOverLife = value; }
