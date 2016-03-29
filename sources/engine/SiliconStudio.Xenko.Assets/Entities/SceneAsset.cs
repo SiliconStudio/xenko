@@ -2,21 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using SharpYaml.Serialization;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering.Lights;
-
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Xenko.Assets.Entities

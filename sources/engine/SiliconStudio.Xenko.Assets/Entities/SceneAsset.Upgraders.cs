@@ -5,14 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CSharp.RuntimeBinder;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
@@ -20,9 +16,12 @@ using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
+    // All upgraders for SceneAsset
     public partial class SceneAsset
     {
-        // All upgraders for SceneAsset
+        /// <summary>
+        /// Upgrader from version 0 to version 1.
+        /// </summary>
         class RemoveSourceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -34,6 +33,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 1 to 2.
+        /// </summary>
         class RemoveBaseUpgrader : IAssetUpgrader
         {
             public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
@@ -47,6 +49,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 2 to 3.
+        /// </summary>
         class RemoveModelDrawOrderUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -63,6 +68,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 3 to 4.
+        /// </summary>
         class RenameSpriteProviderUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -88,6 +96,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 4 to 5.
+        /// </summary>
         class RemoveSpriteExtrusionMethodUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -104,6 +115,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 5 to 6.
+        /// </summary>
         class RemoveModelParametersUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -120,6 +134,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 6 to 7.
+        /// </summary>
         class RemoveEnabledFromIncompatibleComponent : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -147,6 +164,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 7 to 8.
+        /// </summary>
         class SceneIsNotEntityUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -191,6 +211,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 8 to 9.
+        /// </summary>
         class ColliderShapeAssetOnlyUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -221,6 +244,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 9 to 10.
+        /// </summary>
         class NoBox2DUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -253,6 +279,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 10 to 11.
+        /// </summary>
         class RemoveShadowImportanceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -305,6 +334,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 11 to 12.
+        /// </summary>
         class NewElementLayoutUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -358,6 +390,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 12 to 13.
+        /// </summary>
         class NewElementLayoutUpgrader2 : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -386,6 +421,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 13 to 14.
+        /// </summary>
         private class RemoveGammaTransformUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -436,6 +474,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 14 to 15.
+        /// </summary>
         class EntityDesignUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -454,6 +495,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 15 to 16.
+        /// </summary>
         class NewElementLayoutUpgrader3 : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -493,6 +537,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 16 to 17.
+        /// </summary>
         class NewElementLayoutUpgrader4 : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -517,6 +564,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 17 to 18.
+        /// </summary>
         class RemoveSceneEditorCameraSettings : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -525,7 +575,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-
+        /// <summary>
+        /// Upgrader from version 0.0.18 to 1.5.0-alpha01.
+        /// </summary>
         class ChangeSpriteColorTypeAndTriggerElementRemoved : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -563,6 +615,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 1.5.0-alpha01 to 1.5.0-alpha02.
+        /// </summary>
         class MoveSceneSettingsToSceneAsset : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -575,6 +630,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// Upgrader from version 1.5.0-alpha02 to 1.6.0-beta.
+        /// </summary>
         class MigrateToNewComponents : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -817,7 +875,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        // Upgrades inconsistent Float and Float2 Min/Max fields into Float2 and Float4 MinMax fields respectively
+        /// <summary>
+        /// Upgrader from version 1.6.0-beta to 1.6.0-beta01.
+        /// </summary>
+        /// <remarks>
+        /// Upgrades inconsistent Float and Float2 Min/Max fields into Float2 and Float4 MinMax fields respectively
+        /// </remarks>
         class ParticleMinMaxFieldsUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
@@ -892,7 +955,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        private class ModelEffectUpgrader : AssetUpgraderBase
+        /// <summary>
+        /// Upgrader from version 1.6.0-beta01 to 1.6.0-beta02.
+        /// </summary>
+        class ModelEffectUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
@@ -962,7 +1028,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        private class PhysicsFiltersUpgrader : AssetUpgraderBase
+        /// <summary>
+        /// Upgrader from version 1.6.0-beta02 to 1.6.0-beta03.
+        /// </summary>
+        class PhysicsFiltersUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
