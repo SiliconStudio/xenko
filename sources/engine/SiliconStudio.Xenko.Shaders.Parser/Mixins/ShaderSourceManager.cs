@@ -176,18 +176,20 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                 var databaseStream = sourceStream as IDatabaseStream;
 
                                 using (var sr = new StreamReader(sourceStream))
+                                {
                                     shaderSource.Source = sr.ReadToEnd();
 
-                                if (databaseStream == null)
-                                {
-                                    sourceStream.Position = 0;
-                                    var data = new byte[sourceStream.Length];
-                                    sourceStream.Read(data, 0, (int)sourceStream.Length);
-                                    shaderSource.Hash = ObjectId.FromBytes(data);
-                                }
-                                else
-                                {
-                                    shaderSource.Hash = databaseStream.ObjectId;
+                                    if (databaseStream == null)
+                                    {
+                                        sourceStream.Position = 0;
+                                        var data = new byte[sourceStream.Length];
+                                        sourceStream.Read(data, 0, (int)sourceStream.Length);
+                                        shaderSource.Hash = ObjectId.FromBytes(data);
+                                    }
+                                    else
+                                    {
+                                        shaderSource.Hash = databaseStream.ObjectId;
+                                    }
                                 }
                             }
                         }
