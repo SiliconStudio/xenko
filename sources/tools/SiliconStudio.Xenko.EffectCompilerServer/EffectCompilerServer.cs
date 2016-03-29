@@ -106,23 +106,11 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
 
             Console.WriteLine($"Compiling shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
 
-            try
-            {
-                // A shader has been requested, compile it (asynchronously)!
-                var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
+            // A shader has been requested, compile it (asynchronously)!
+            var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
 
-                Console.WriteLine($"Compiled shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
-
-                // Send compiled shader
-                await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode, State = 0 });
-            }
-            catch (Exception)
-            {
-                Console.WriteLine($"Failed to compile shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
-
-                // Send failure token
-                await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, State = -1 });
-            }
+            // Send compiled shader
+            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
         }
     }
 }
