@@ -124,6 +124,7 @@ namespace SiliconStudio.Xenko.Particles
             return BoundingShape?.GetAABB(Translation, Rotation, UniformScale) ?? new BoundingBox(Translation, Translation);
         }
 
+        private int oldEmitterCount = 0;
         private readonly SafeList<ParticleEmitter> emitters;
         /// <summary>
         /// List of Emitters in this <see cref="ParticleSystem"/>. Each Emitter has a separate <see cref="ParticlePool"/> (group) of Particles in it
@@ -178,6 +179,16 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         public float UniformScale = 1f;
 
+
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public void InvalidateRelations()
+        {
+            // Setting the count to an invalid value will force validation update on the next step
+            oldEmitterCount = -1;
+        }
+
         /// <summary>
         /// Updates the particles
         /// </summary>
@@ -187,6 +198,17 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
+            // Check for changes in the emitters
+            if (oldEmitterCount != Emitters.Count)
+            {
+                foreach (var particleEmitter in Emitters)
+                {
+                    particleEmitter.InvalidateRelations();
+                }
+
+                oldEmitterCount = Emitters.Count;
+            }
+
             if (BoundingShape != null) BoundingShape.Dirty = true;
 
             // If the particle system is paused skip the rest of the update state

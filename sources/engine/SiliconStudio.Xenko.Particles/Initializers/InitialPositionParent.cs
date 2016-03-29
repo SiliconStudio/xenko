@@ -152,5 +152,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 isParentNameDirty = false;
             }
         }
+
+        /// <inheritdoc />
+        public override void InvalidateRelations()
+        {
+            isParentNameDirty = true;
+        }
     }
 }

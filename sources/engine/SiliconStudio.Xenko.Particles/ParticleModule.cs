@@ -67,5 +67,13 @@ namespace SiliconStudio.Xenko.Particles
         {
             SetParentTransform(transform);
         }
+
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public virtual void InvalidateRelations()
+        {
+            
+        }
     }
 }

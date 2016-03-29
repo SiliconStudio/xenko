@@ -137,6 +137,15 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         internal readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
 
+        /// <summary>
+        /// Optional name for the emitter
+        /// </summary>
+        private string emitterName;
+
+        /// <summary>
+        /// Cached parent particle system, used for notifications
+        /// </summary>
+        private ParticleSystem cachedParentSystem = null;
 
         /// <summary>
         /// Default constructor. Initializes the pool and all collections contained in the <see cref="ParticleEmitter"/>
@@ -200,7 +209,17 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(1)]
         [Display("Emitter Name")]
-        public string EmitterName;
+        public string EmitterName
+        {
+            get { return emitterName; }
+            set
+            {
+                emitterName = value;
+
+                // The emitter's name is used for creating child-parent relations between emitters and changing it should invalidate those relations
+                cachedParentSystem?.InvalidateRelations();
+            }
+        }
 
         /// <summary>
         /// Maximum particles (if positive) overrides the maximum particle count limitation
@@ -464,6 +483,8 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void UpdatePaused(ParticleSystem parentSystem)
         {
+            cachedParentSystem = parentSystem;
+
             UpdateLocations(parentSystem);
         }
 
@@ -474,6 +495,8 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
+            cachedParentSystem = parentSystem;
+
             if (!hasBeenInitialized)
             {
                 DelayedInitialization(parentSystem);
@@ -1065,5 +1088,20 @@ namespace SiliconStudio.Xenko.Particles
 
         #endregion
 
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public void InvalidateRelations()
+        {
+            foreach (var initializer in Initializers)
+            {
+                initializer.InvalidateRelations();
+            }
+
+            foreach (var updater in Updaters)
+            {
+                updater.InvalidateRelations();
+            }
+        }
     }
 }
