@@ -60,7 +60,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
 
             // Already inheriting from parent
-//            leftCorner += WorldPosition;
+            if (parentParticlesCount == 0)
+                leftCorner += WorldPosition;
 
 
             var i = startIdx;
@@ -91,9 +92,23 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         }
 
 
-        [DataMember(5)]
-        [Display("Parent")]
+        [DataMemberIgnore]
         public ParticleEmitter Parent;
+
+        private string parentName;
+        private bool isParentNameDirty = true;
+
+        [DataMember(5)]
+        [Display("Parent emitter")]
+        public string ParentName
+        {
+            get { return parentName; }
+            set
+            {
+                parentName = value;
+                isParentNameDirty = true;
+            }
+        }
 
         /// <summary>
         /// The seed offset used to match or separate random values
@@ -125,34 +140,17 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [Display("Position max")]
         public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
 
-        /// <summary>
-        /// Should this Particle Module's bounds be displayed as a debug draw
-        /// </summary>
-        /// <userdoc>
-        /// Display the Particle Module's bounds as a wireframe debug shape. Temporary feature (will be removed later)!
-        /// </userdoc>
-        [DataMember(-1)]
-        [DefaultValue(false)]
-        public bool DebugDraw { get; set; } = false;
 
         /// <inheritdoc />
-        public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
+        public override void SetParentTrs(ParticleTransform transform, ParticleSystem parentSystem)
         {
-            if (!DebugDraw)
-                return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
+            base.SetParentTrs(transform, parentSystem);
 
-            debugDrawShape = DebugDrawShape.Cube;
-
-            rotation = WorldRotation;
-
-            scale = (PositionMax - PositionMin);
-            translation = (PositionMax + PositionMin) * 0.5f * WorldScale;
-
-            scale *= WorldScale;
-            rotation.Rotate(ref translation);
-            translation += WorldPosition;
-
-            return true;
+            if (isParentNameDirty)
+            {
+                Parent = parentSystem?.GetEmitterByName(ParentName);
+                isParentNameDirty = false;
+            }
         }
     }
 }

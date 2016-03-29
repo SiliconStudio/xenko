@@ -3,9 +3,11 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.BoundingShapes;
 using SiliconStudio.Xenko.Particles.DebugDraw;
@@ -185,30 +187,6 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
-            // TODO DELETE!
-            /////////////////////////////////////////////////
-            /// AdHoc parenting
-            {
-                ParticleEmitter parentEmitter = null;
-                // Update all the emitters by delta time
-                foreach (var particleEmitter in Emitters)
-                {
-                    if (parentEmitter != null)
-                    {
-                        foreach (var particleInitializer in particleEmitter.Initializers)
-                        {
-                            if (particleInitializer is InitialPositionParent)
-                            {
-                                ((InitialPositionParent)particleInitializer).Parent = parentEmitter;
-                            }
-                        }
-                    }
-
-                    parentEmitter = particleEmitter;
-                }
-            }
-            ///////////////////////////////////////////////
-
             if (BoundingShape != null) BoundingShape.Dirty = true;
 
             // If the particle system is paused skip the rest of the update state
@@ -310,7 +288,17 @@ namespace SiliconStudio.Xenko.Particles
             isPaused = true;
         }
 
-
+        /// <summary>
+        /// Gets the first emitter with matching name which is contained in this <see cref="ParticleSystem"/>
+        /// </summary>
+        /// <param name="name">Name of the emitter. Some emitters might not have a name and cannot be referenced</param>
+        /// <returns><see cref="ParticleEmitter"/> with the same <see cref="ParticleEmitter.EmitterName"/> or <c>null</c> if not found</returns>
+        public ParticleEmitter GetEmitterByName(string name)
+        {
+            return (name.IsNullOrEmpty()) ?
+                null : 
+                Emitters.FirstOrDefault(e => !e.EmitterName.IsNullOrEmpty() && e.EmitterName.Equals(name));
+        }
 
         #region Dispose
         private bool disposed;

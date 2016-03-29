@@ -61,12 +61,11 @@ namespace SiliconStudio.Xenko.Particles
         /// Sets the parent (particle system's) translation, rotation and scale (uniform)
         /// The module can choose to inherit, use or ignore any of the elements
         /// </summary>
-        /// <param name="translation">Particle System's translation (from the Transform component)</param>
-        /// <param name="rotation">Particle System's quaternion rotation (from the Transform component)</param>
-        /// <param name="scale">Particle System's uniform scale (from the Transform component)</param>
-        public virtual void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
+        /// <param name="transform"><see cref="ParticleSystem"/>'s transform (from the Transform component) or identity if local space is used</param>
+        /// <param name="parent">The parent <see cref="ParticleSystem"/></param>
+        public virtual void SetParentTrs(ParticleTransform transform, ParticleSystem parent)
         {
-            SetParentTransform(ref translation, ref rotation, scale);
+            SetParentTransform(transform);
         }
     }
 }

@@ -119,9 +119,8 @@ namespace SiliconStudio.Xenko.Particles
         private Vector2 particleLifetime = new Vector2(1, 1);
 
         // Draw location can be different than the particle position if we are using local coordinate system
-        private Vector3 drawPosition = new Vector3(0, 0, 0);
-        private Quaternion drawRotation = new Quaternion(0, 0, 0, 1);
-        private float drawScale = 1f;
+        private readonly ParticleTransform drawTransform = new ParticleTransform();
+        private readonly ParticleTransform identityTransform = new ParticleTransform();
 
         /// <summary>
         /// A list of the required particle fields for the <see cref="ParticlePool"/>
@@ -192,6 +191,16 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(-10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// The emitter name is used to uniquely identify this emitter within the same particle system
+        /// </summary>
+        /// <userdoc>
+        /// The emitter name is used to uniquely identify this emitter within the same particle system
+        /// </userdoc>
+        [DataMember(1)]
+        [Display("Emitter Name")]
+        public string EmitterName;
 
         /// <summary>
         /// Maximum particles (if positive) overrides the maximum particle count limitation
@@ -559,9 +568,10 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem"><see cref="ParticleSystem"/> containing this emitter</param>
         private void UpdateLocations(ParticleSystem parentSystem)
         {
-            drawPosition = parentSystem.Translation;
-            drawRotation = parentSystem.Rotation;
-            drawScale = parentSystem.UniformScale;
+            drawTransform.Position = parentSystem.Translation;
+            drawTransform.Rotation = parentSystem.Rotation;
+            drawTransform.ScaleUniform = parentSystem.UniformScale;
+            drawTransform.SetParentTransform(null);
 
             if (simulationSpace == EmitterSimulationSpace.World)
             {
@@ -570,12 +580,12 @@ namespace SiliconStudio.Xenko.Particles
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                    initializer.SetParentTrs(drawTransform, parentSystem);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                    updater.SetParentTrs(drawTransform, parentSystem);
                 }
             }
             else
@@ -588,12 +598,12 @@ namespace SiliconStudio.Xenko.Particles
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
+                    initializer.SetParentTrs(identityTransform, parentSystem);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
+                    updater.SetParentTrs(identityTransform, parentSystem);
                 }
             }
         }
@@ -871,9 +881,9 @@ namespace SiliconStudio.Xenko.Particles
             var scaleIdentity = 1f;
             if (simulationSpace == EmitterSimulationSpace.Local)
             {
-                posIdentity = drawPosition;
-                rotIdentity = drawRotation;
-                scaleIdentity = drawScale;
+                posIdentity = drawTransform.WorldPosition;
+                rotIdentity = drawTransform.WorldRotation;
+                scaleIdentity = drawTransform.WorldScale.X;
             }
 
             VertexBuilder.MapBuffer(commandList);
@@ -910,9 +920,9 @@ namespace SiliconStudio.Xenko.Particles
             {
                 // World -> Local
 
-                var negativeTranslation = -drawPosition;
-                var negativeScale = (drawScale > 0) ? 1f/drawScale : 1f;
-                var negativeRotation = drawRotation;
+                var negativeTranslation = -drawTransform.WorldPosition;
+                var negativeScale = (drawTransform.WorldScale.X > 0) ? 1f/ drawTransform.WorldScale.X : 1f;
+                var negativeRotation = drawTransform.WorldRotation;
                 negativeRotation.Conjugate();
 
                 if (pool.FieldExists(ParticleFields.Position))
@@ -994,9 +1004,9 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var position = particle.Get(posField);
 
-                        drawRotation.Rotate( ref position );
+                        drawTransform.WorldRotation.Rotate( ref position );
 
-                        position = position * drawScale + drawPosition;
+                        position = position * drawTransform.WorldScale.X + drawTransform.WorldPosition;
 
                         particle.Set(posField, position);
                     }
@@ -1010,9 +1020,9 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var position = particle.Get(posField);
 
-                        drawRotation.Rotate(ref position);
+                        drawTransform.WorldRotation.Rotate(ref position);
 
-                        position = position * drawScale + drawPosition;
+                        position = position * drawTransform.WorldScale.X + drawTransform.WorldPosition;
 
                         particle.Set(posField, position);
                     }
@@ -1026,9 +1036,9 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var velocity = particle.Get(velField);
 
-                        drawRotation.Rotate(ref velocity);
+                        drawTransform.WorldRotation.Rotate(ref velocity);
 
-                        velocity = velocity * drawScale;
+                        velocity = velocity * drawTransform.WorldScale.X;
 
                         particle.Set(velField, velocity);
                     }
@@ -1042,7 +1052,7 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var size = particle.Get(sizeField);
 
-                        size = size * drawScale;
+                        size = size * drawTransform.WorldScale.X;
 
                         particle.Set(sizeField, size);
                     }
