@@ -75,11 +75,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 EffectParameters = effectParameters,
             });
 
-            if (shaderCompilerAnswer.State == -1)
-            {
-                throw new Exception($"Failed to compile shader {mixinTree.Name}.");
-            }
-
             // TODO: Get LoggerResult as well
             return new EffectBytecodeCompilerResult(shaderCompilerAnswer.EffectBytecode);
         }
