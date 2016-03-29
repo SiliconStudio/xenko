@@ -49,6 +49,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return Hierarchy?.DumpTo(writer) ?? false;
         }
 
+        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        {
+            EntityDesign entityEntry;
+            if (Hierarchy.Entities.TryGetValue(id, out entityEntry))
+            {
+                entityEntry.Design.BaseId = baseId;
+                entityEntry.Design.BasePartInstanceId = basePartInstanceId;
+            }
+        }
+
         public override Asset CreateChildAsset(string location)
         {
             var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(location);
