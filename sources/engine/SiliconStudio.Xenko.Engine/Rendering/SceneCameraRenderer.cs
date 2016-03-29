@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Composers;
 
@@ -87,6 +89,39 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Collect(RenderContext context)
         {
+            // Gets the current camera state from the slot
+            var camera = context.GetCameraFromSlot(Camera);
+
+            //override the viewport if we require custom aspect ratio
+            //...
+            if (camera.UseCustomAspectRatio)
+            {
+                var output = GetOutput(context);
+                var currentAr =  output.Width / (float)output.Height;
+                var requiredAr = camera.AspectRatio;
+
+                var arDiff = currentAr - requiredAr;
+                if (Math.Abs(arDiff) > 0.01f)
+                {
+                    IsViewportInPercentage = false;
+
+                    // Pillarbox 
+                    if (arDiff > 0.0f)
+                    {
+                        var newWidth = (float)Math.Max(1.0f, Math.Round(output.Height * requiredAr));
+                        var adjX = (float)Math.Round(0.5f * (output.Width - newWidth));
+                        Viewport = new RectangleF(adjX, 0.0f, newWidth, output.Height);         
+                    }
+                    // Letterbox
+                    else
+                    {
+                        var newHeight = (float)Math.Max(1.0f, Math.Round(output.Width / requiredAr));
+                        var adjY = (float)Math.Round(0.5f * (output.Height - newHeight));
+                        Viewport = new RectangleF(0.0f, adjY, output.Width, newHeight);
+                    }
+                }
+            }
+
             base.Collect(context);
 
             // Early exit if some properties are null
@@ -94,9 +129,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 return;
             }
-
-            // Gets the current camera state from the slot
-            var camera = context.GetCameraFromSlot(Camera);
 
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))

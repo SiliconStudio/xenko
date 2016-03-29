@@ -85,12 +85,6 @@ namespace SiliconStudio.Xenko.Rendering
             var currentViewport = SceneCameraRenderer.ComputedViewport;
             var aspectRatio = currentViewport.AspectRatio;
 
-            // Update the aspect ratio
-            if (Camera.UseCustomAspectRatio)
-            {
-                aspectRatio = Camera.AspectRatio;
-            }
-
             // If the aspect ratio is calculated automatically from the current viewport, update matrices here
             Camera.Update(aspectRatio);
 
