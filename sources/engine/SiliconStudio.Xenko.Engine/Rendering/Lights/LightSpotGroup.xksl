@@ -7,13 +7,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightSpotGroup<int TMaxLightCount> : DirectLightGroup, NormalStream, PositionStream4, LightUtil
     {
+        struct SpotLightData
+        {
+            float3 PositionWS;
+            float3 DirectionWS;
+            float3 AngleOffsetAndInvSquareRadius;
+            [Color]
+            float3 Color;
+        };
+
         cbuffer PerLighting
         {
-            float3 LightPositionWS[TMaxLightCount];
-            float3 LightDirectionsWS[TMaxLightCount];
-            float3 LightAngleOffsetAndInvSquareRadius[TMaxLightCount];
-            [Color]
-            float3 LightColor[TMaxLightCount];
+            SpotLightData Lights[TMaxLightCount];
         }
 
         override int GetMaxLightCount()
@@ -26,22 +31,22 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         override void PrepareDirectLightCore(int lightIndex)
         {
-            float3 lightVector = LightPositionWS[lightIndex] - streams.PositionWS;
+            float3 lightVector = Lights[lightIndex].PositionWS - streams.PositionWS;
             float lightVectorLength = length(lightVector);
             float3 lightVectorNorm = lightVector / lightVectorLength;
 
-            float3 lightAngleOffsetAndInvSquareRadius = LightAngleOffsetAndInvSquareRadius[lightIndex];
+            float3 lightAngleOffsetAndInvSquareRadius = Lights[lightIndex].AngleOffsetAndInvSquareRadius;
             float2 lightAngleAndOffset = lightAngleOffsetAndInvSquareRadius.xy;
             float lightInvSquareRadius = lightAngleOffsetAndInvSquareRadius.z;
 
             // TODO: Add support for disk based Directional light
-            float3 lightDirection = -LightDirectionsWS[lightIndex];
+            float3 lightDirection = -Lights[lightIndex].DirectionsWS;
 
             float attenuation = 1;
             attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
             attenuation *= GetAngleAttenuation(lightVectorNorm, lightDirection, lightAngleAndOffset.x, lightAngleAndOffset.y);
 
-            streams.lightColor = LightColor[lightIndex] * attenuation;
+            streams.lightColor = Lights[lightIndex].Color * attenuation;
             streams.lightDirectionWS = lightDirection;
         }
     };
