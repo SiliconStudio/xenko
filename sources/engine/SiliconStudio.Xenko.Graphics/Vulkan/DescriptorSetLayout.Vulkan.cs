@@ -29,6 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
             var bindings = new DescriptorSetLayoutBinding[builder.Entries.Count];
             bindingInfos = new BindingInfo[builder.Entries.Count];
 
+            int offset = 0;
             for (int i = 0; i < builder.Entries.Count; i++)
             {
                 var entry = builder.Entries[i];
@@ -36,9 +37,9 @@ namespace SiliconStudio.Xenko.Graphics
                 bindings[i] = new DescriptorSetLayoutBinding
                 {
                     DescriptorType = VulkanConvertExtensions.ConvertDescriptorType(entry.Class),
-                    StageFlags = ShaderStageFlags.All, // TODO VULKAN: Filter
+                    StageFlags = ShaderStageFlags.All, // TODO VULKAN: Filter?
                     Binding = (uint)i,
-                    DescriptorCount = (uint)entry.ArraySize,
+                    DescriptorCount = (uint)entry.ArraySize
                 };
 
                 if (entry.Class == EffectParameterClass.ShaderResourceView && entry.ImmutableSampler != null)
@@ -56,6 +57,8 @@ namespace SiliconStudio.Xenko.Graphics
                     // Remember this, so we can choose the right DescriptorType in DescriptorSet.SetShaderResourceView
                     bindingInfos[i].HasImmutableSampler = true;
                 }
+
+                offset += entry.ArraySize;
             }
 
             fixed (DescriptorSetLayoutBinding* bindingsPointer = &bindings[0])

@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
 using SiliconStudio.Core;
@@ -24,17 +25,21 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 StructureType = StructureType.ApplicationInfo,
                 ApiVersion = Vulkan.ApiVersion,
+                EngineName = Marshal.StringToHGlobalAnsi("Xenko"),
+                //EngineVersion = new SharpVulkan.Version()
             };
 
             var enabledExtensionNames = new[]
             {
+                //Marshal.StringToHGlobalAnsi("VK_EXT_debug_report"),
+
                 Marshal.StringToHGlobalAnsi("VK_KHR_surface"),
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                 Marshal.StringToHGlobalAnsi("VK_KHR_win32_surface"),
 #elif SILICONSTUDIO_PLATFORM_ANDROID
-            
+                Marshal.StringToHGlobalAnsi("VK_KHR_android_surface"),
 #elif SILICONSTUDIO_PLATFORM_LINUX
-            
+                Marshal.StringToHGlobalAnsi("VK_KHR_xlib_surface"),
 #endif
             };
 
@@ -60,6 +65,8 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     Marshal.FreeHGlobal(enabledExtensionName);
                 }
+
+                Marshal.FreeHGlobal(applicationInfo.EngineName);
             }
 
             staticCollector.Add(new AnonymousDisposable(() => NativeInstance.Destroy()));

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
 using SiliconStudio.Xenko.Shaders;
@@ -15,6 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
         internal PrimitiveTopology PrimitiveTopology;
+        internal int[] ResourceGroupMapping;
         internal int[] SrvBindCounts;
         internal int[] SamplerBindCounts;
 
@@ -164,7 +166,7 @@ namespace SiliconStudio.Xenko.Graphics
                     RenderPass = NativeRenderPass,
                     Subpass = 0,
                 };
-                NativePipeline = graphicsDevice.NativeDevice.CreateGraphicsPipelines(PipelineCache.Null, 1, ref createInfo);
+                NativePipeline = graphicsDevice.NativeDevice.CreateGraphicsPipelines(PipelineCache.Null, 1, &createInfo);
             }
 
             // Cleanup shader modules
@@ -265,15 +267,41 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void CreatePipelineLayout(PipelineStateDescription pipelineStateDescription)
         {
+            var resourceGroups = pipelineStateDescription.EffectBytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup).Distinct().ToList();
+
             var layouts = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts;
+            ResourceGroupMapping = new int[layouts.Count];
 
             // Create temporary descriptor set layouts
+
             var nativeLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
             for (int i = 0; i < layouts.Count; i++)
             {
                 DescriptorSetLayout.BindingInfo[] bindingInfos;
                 nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout, out bindingInfos);
             }
+
+            //var nativeLayouts = new SharpVulkan.DescriptorSetLayout[resourceGroups.Count];
+            //for (int i = 0; i < resourceGroups.Count; i++)
+            //{
+            //    var layoutIndex = resourceGroups[i] == null ? 0 : layouts.FindIndex(x => x.Name == resourceGroups[i]);
+            //    if (layoutIndex != -1)
+            //    {
+            //        DescriptorSetLayout.BindingInfo[] bindingInfos;
+            //        nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[layoutIndex].Layout, out bindingInfos);
+
+            //        ResourceGroupMapping[layoutIndex] = i;
+            //    }
+            //    else
+            //    {
+            //        var emptyLayout = new DescriptorSetLayoutCreateInfo
+            //        {
+            //            StructureType = StructureType.DescriptorSetLayoutCreateInfo,
+            //            BindingCount = 0,
+            //        };
+            //        nativeLayouts[i] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref emptyLayout);
+            //    }
+            //}
 
             // Create pipeline layout
             fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeLayouts[0])
@@ -381,73 +409,6 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             };
         }
-
-        //private SharpDX.Direct3D12.BlendStateDescription CreateBlendState(BlendStateDescription description)
-        //{
-        //    var nativeDescription = new SharpDX.Direct3D12.BlendStateDescription();
-
-        //    nativeDescription.AlphaToCoverageEnable = description.AlphaToCoverageEnable;
-        //    nativeDescription.IndependentBlendEnable = description.IndependentBlendEnable;
-        //    for (int i = 0; i < description.RenderTargets.Length; ++i)
-        //    {
-        //        nativeDescription.RenderTarget[i].IsBlendEnabled = description.RenderTargets[i].BlendEnable;
-        //        nativeDescription.RenderTarget[i].SourceBlend = (BlendOption)description.RenderTargets[i].ColorSourceBlend;
-        //        nativeDescription.RenderTarget[i].DestinationBlend = (BlendOption)description.RenderTargets[i].ColorDestinationBlend;
-        //        nativeDescription.RenderTarget[i].BlendOperation = (BlendOperation)description.RenderTargets[i].ColorBlendFunction;
-        //        nativeDescription.RenderTarget[i].SourceAlphaBlend = (BlendOption)description.RenderTargets[i].AlphaSourceBlend;
-        //        nativeDescription.RenderTarget[i].DestinationAlphaBlend = (BlendOption)description.RenderTargets[i].AlphaDestinationBlend;
-        //        nativeDescription.RenderTarget[i].AlphaBlendOperation = (BlendOperation)description.RenderTargets[i].AlphaBlendFunction;
-        //        nativeDescription.RenderTarget[i].RenderTargetWriteMask = (ColorWriteMaskFlags)description.RenderTargets[i].ColorWriteChannels;
-        //    }
-
-        //    return nativeDescription;
-        //}
-
-        //private SharpDX.Direct3D12.RasterizerStateDescription CreateRasterizerState(RasterizerStateDescription description)
-        //{
-        //    SharpDX.Direct3D12.RasterizerStateDescription nativeDescription;
-
-        //    nativeDescription.CullMode = (SharpDX.Direct3D12.CullMode)description.CullMode;
-        //    nativeDescription.FillMode = (SharpDX.Direct3D12.FillMode)description.FillMode;
-        //    nativeDescription.IsFrontCounterClockwise = description.FrontFaceCounterClockwise;
-        //    nativeDescription.DepthBias = description.DepthBias;
-        //    nativeDescription.SlopeScaledDepthBias = description.SlopeScaleDepthBias;
-        //    nativeDescription.DepthBiasClamp = description.DepthBiasClamp;
-        //    nativeDescription.IsDepthClipEnabled = description.DepthClipEnable;
-        //    //nativeDescription.IsScissorEnabled = description.ScissorTestEnable;
-        //    nativeDescription.IsMultisampleEnabled = description.MultiSampleAntiAlias;
-        //    nativeDescription.IsAntialiasedLineEnabled = description.MultiSampleAntiAliasLine;
-
-        //    nativeDescription.ConservativeRaster = ConservativeRasterizationMode.Off;
-        //    nativeDescription.ForcedSampleCount = 0;
-
-        //    return nativeDescription;
-        //}
-
-        //private SharpDX.Direct3D12.DepthStencilStateDescription CreateDepthStencilState(DepthStencilStateDescription description)
-        //{
-        //    SharpDX.Direct3D12.DepthStencilStateDescription nativeDescription;
-
-        //    nativeDescription.IsDepthEnabled = description.DepthBufferEnable;
-        //    nativeDescription.DepthComparison = (Comparison)description.DepthBufferFunction;
-        //    nativeDescription.DepthWriteMask = description.DepthBufferWriteEnable ? SharpDX.Direct3D12.DepthWriteMask.All : SharpDX.Direct3D12.DepthWriteMask.Zero;
-
-        //    nativeDescription.IsStencilEnabled = description.StencilEnable;
-        //    nativeDescription.StencilReadMask = description.StencilMask;
-        //    nativeDescription.StencilWriteMask = description.StencilWriteMask;
-
-        //    nativeDescription.FrontFace.FailOperation = (SharpDX.Direct3D12.StencilOperation)description.FrontFace.StencilFail;
-        //    nativeDescription.FrontFace.PassOperation = (SharpDX.Direct3D12.StencilOperation)description.FrontFace.StencilPass;
-        //    nativeDescription.FrontFace.DepthFailOperation = (SharpDX.Direct3D12.StencilOperation)description.FrontFace.StencilDepthBufferFail;
-        //    nativeDescription.FrontFace.Comparison = (SharpDX.Direct3D12.Comparison)description.FrontFace.StencilFunction;
-
-        //    nativeDescription.BackFace.FailOperation = (SharpDX.Direct3D12.StencilOperation)description.BackFace.StencilFail;
-        //    nativeDescription.BackFace.PassOperation = (SharpDX.Direct3D12.StencilOperation)description.BackFace.StencilPass;
-        //    nativeDescription.BackFace.DepthFailOperation = (SharpDX.Direct3D12.StencilOperation)description.BackFace.StencilDepthBufferFail;
-        //    nativeDescription.BackFace.Comparison = (SharpDX.Direct3D12.Comparison)description.BackFace.StencilFunction;
-
-        //    return nativeDescription;
-        //}
     }
 }
 

@@ -129,6 +129,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                 if (!File.Exists(outputFileName))
                 {
+                    Debugger.Launch();
                     shaderBytecodeResult.Error("Failed to generate SPIR-V from GLSL");
                     return shaderBytecodeResult;
                 }
@@ -202,7 +203,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 // Convert from HLSL to GLSL
                 // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
                 var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3, isVulkan);
-                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
+                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, reflection, shaderBytecodeResult);
 
                 if (glslShader == null || shaderBytecodeResult.HasErrors)
                     return null;
@@ -259,17 +260,20 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     // Find binding
                     var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == constantBuffer.Name);
                     if (resourceBindingIndex != -1)
+                    {
                         MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
+                    }
                 }
+
+
 
                 foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
                 {
                     // Check if we have a variable that starts or ends with this name (in case of samplers)
                     // TODO: Have real AST support for all the list in Keywords.glsl
-                    if (variable.Type.Name.Text.Contains("sampler1D")
+                    if (isVulkan && (variable.Type.Name.Text.Contains("sampler1D")
                         || variable.Type.Name.Text.Contains("sampler2D")
-                        || variable.Type.Name.Text.Contains("sampler3D")
-                        || variable.Type.Name.Text.Contains("samplerCube"))
+                        || variable.Type.Name.Text.Contains("sampler3D")))
                     {
                         // TODO: Make more robust
                         var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Param.RawName));
@@ -285,7 +289,56 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     {
                         var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == variable.Name);
                         if (resourceBindingIndex != -1)
+                        {
                             MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
+                        }
+                    }
+                }
+
+                //if (stage == ShaderStage.Pixel)
+                //    Debugger.Launch();
+
+                // Defines the ordering of resource groups in Vulkan. This is mirrored in the PipelineState
+                var resourceGroups = reflection.ResourceBindings.Select(x => x.Param.ResourceGroup).Distinct().ToList();
+
+                if (isVulkan)
+                {
+                    foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
+                    {
+                        var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == constantBuffer.Name);
+                        if (resourceBindingIndex != -1)
+                        {
+                            var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
+                            if (layoutQualifier == null)
+                            {
+                                layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                                constantBuffer.Qualifiers |= layoutQualifier;
+                            }
+
+                            var resourceGroup = reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup;
+                            var layoutBindingIndex = reflection.ResourceBindings.Where(x => x.Param.ResourceGroup == reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup).IndexOf(x => x.Param.RawName == constantBuffer.Name);
+                            layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
+                            layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
+                        }
+                    }
+
+                    foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
+                    {
+                        var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == variable.Name);
+                        if (resourceBindingIndex != -1)
+                        {
+                            var layoutQualifier = variable.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
+                            if (layoutQualifier == null)
+                            {
+                                layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                                variable.Qualifiers |= layoutQualifier;
+                            }
+
+                            var resourceGroup = reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup;
+                            var layoutBindingIndex = reflection.ResourceBindings.Where(x => x.Param.ResourceGroup == reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup).IndexOf(x => x.Param.RawName == variable.Name);
+                            layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
+                            layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
+                        }
                     }
                 }
 

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Shaders.Analysis.Hlsl;
 using SiliconStudio.Shaders.Convertor;
@@ -80,7 +81,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns>
         /// The resulting glsl AST tree.
         /// </returns>
-        public global::SiliconStudio.Shaders.Ast.Shader Convert(string hlslSourcecode, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, LoggerResult log)
+        public global::SiliconStudio.Shaders.Ast.Shader Convert(string hlslSourcecode, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, EffectReflection reflection, LoggerResult log)
         {
             try
             {
@@ -109,7 +110,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     return null;
                 }
 
-                return Convert(result, hlslEntryPoint, stage, inputHlslFilepath, log);
+                return Convert(result, hlslEntryPoint, stage, inputHlslFilepath, reflection, log);
             }
             catch (Exception ex)
             {
@@ -128,7 +129,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns>
         /// The resulting glsl AST tree.
         /// </returns>
-        private global::SiliconStudio.Shaders.Ast.Shader Convert(ParsingResult result, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, LoggerResult log)
+        private global::SiliconStudio.Shaders.Ast.Shader Convert(ParsingResult result, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, EffectReflection reflection, LoggerResult log)
         {
             try
             {
@@ -144,7 +145,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     ViewFrustumRemap = true,
                     FlipRenderTarget = !isVulkan,
                     KeepNonUniformArrayInitializers = !isOpenGLES,
-                    IsOpenGLES2 = isOpenGLES && !isOpenGLES3
+                    IsOpenGLES2 = isOpenGLES && !isOpenGLES3,
+                    KeepSamplers = isVulkan,
+                    CombinedSamplers = reflection.SamplerStates.Select(sampler => sampler.KeyName).ToList(),
                 };
                 convertor.Run(result);
 

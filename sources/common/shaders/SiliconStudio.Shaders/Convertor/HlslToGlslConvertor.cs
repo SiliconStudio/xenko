@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -251,6 +252,10 @@ namespace SiliconStudio.Shaders.Convertor
         /// </value>
         public bool UseBindingLayout { get; set; }
 
+        public bool KeepSamplers { get; set; }
+
+        public List<string> CombinedSamplers { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether [use builtin semantic].
         /// </summary>
@@ -419,6 +424,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// <param name="parserResultIn">The parser result.</param>
         public void Run(ParsingResult parserResultIn)
         {
+            if (CombinedSamplers.Any())
+                Debugger.Launch();
+
             parserResult = parserResultIn;
             shader = parserResultIn.Shader;
 
@@ -437,7 +445,7 @@ namespace SiliconStudio.Shaders.Convertor
 
             // Gather all samplers and create new samplers
             // Strips unused code 
-            this.GenerateSamplerMappingAndStrip();
+            GenerateSamplerMappingAndStrip();
 
             // Look for global uniforms used as global temp variable
             globalUniformVisitor = new GlobalUniformVisitor(shader);
@@ -1068,7 +1076,7 @@ namespace SiliconStudio.Shaders.Convertor
                 var resultBlock = new BlockStatement();
 
                 var textureSizeCall = new MethodInvocationExpression(new VariableReferenceExpression("textureSize"));
-                textureSizeCall.Arguments.Add(new VariableReferenceExpression(glslSampler.Name));
+                textureSizeCall.Arguments.Add(glslSampler);
                 textureSizeCall.Arguments.Add(new LiteralExpression(0));
 
                 // TODO: Support all the versions of GetDimensions based on texture type and parameter count
@@ -1412,13 +1420,11 @@ namespace SiliconStudio.Shaders.Convertor
                                 return methodInvocationExpression;
                             }
 
-                            var samplerParameter = new VariableReferenceExpression(glslSampler.Name);
-
                             // texture.Sample has a sampler parameter but texture.Load doesn't, so replace/add accordingly
                             if (isLoad)
-                                methodInvocationExpression.Arguments.Insert(0, samplerParameter);
+                                methodInvocationExpression.Arguments.Insert(0, glslSampler);
                             else
-                                methodInvocationExpression.Arguments[0] = samplerParameter;
+                                methodInvocationExpression.Arguments[0] = glslSampler;
 
                             // SampleBias and textureOffset conversion requires a parameter swap between bias and offset.
                             if (hasBias && methodName == "textureOffset")
@@ -1462,7 +1468,7 @@ namespace SiliconStudio.Shaders.Convertor
                                     methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
                                         BinaryOperator.Divide,
                                         new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP),
-                                        NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
+                                        NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", glslSampler, new LiteralExpression(0)))));
                                 }
                                 else
                                 {
@@ -2439,9 +2445,12 @@ namespace SiliconStudio.Shaders.Convertor
             // Then add the newly created variable
             foreach (var textureSampler in samplerMapping)
             {
-                declarationListToRemove.Add(textureSampler.Key.Sampler);
-                declarationListToRemove.Add(textureSampler.Key.Texture);
-                AddGlobalDeclaration(textureSampler.Value);
+                if (!KeepSamplers || CombinedSamplers.Contains(textureSampler.Key.Sampler.Name))
+                {
+                    declarationListToRemove.Add(textureSampler.Key.Sampler);
+                    declarationListToRemove.Add(textureSampler.Key.Texture);
+                    AddGlobalDeclaration(textureSampler.Value);
+                }
             }
         }
 
@@ -2754,18 +2763,18 @@ namespace SiliconStudio.Shaders.Convertor
         private void RemoveTextureAndSamplerDeclarations()
         {
             // Remove all texture declaration and sampler declaration
-            shader.Declarations.RemoveAll(x => (x is Variable) && (((Variable)x).Type is TextureType));
+            //shader.Declarations.RemoveAll(x => (x is Variable) && (((Variable)x).Type is TextureType));
             shader.Declarations.RemoveAll(declarationListToRemove.Contains);
 
             SearchVisitor.Run(
                 shader,
                 node =>
-                    {
-                        var variable = node as Variable;
+                {
+                    var variable = node as Variable;
                     if (variable != null)
                     {
                         var variableRef = variable.InitialValue as VariableReferenceExpression;
-                        if (variable.Type is TextureType || (variableRef != null && declarationListToRemove.Contains(variableRef.TypeInference.Declaration)))
+                        if (/*variable.Type is TextureType || */(variableRef != null && declarationListToRemove.Contains(variableRef.TypeInference.Declaration)))
                         {
                             return null;
                         }
@@ -3582,7 +3591,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// <returns>
         /// The variable associated with the sampler and the texture
         /// </returns>
-        private Variable GetGLSampler(Variable sampler, Variable texture, bool forceNullSampler)
+        private Expression GetGLSampler(Variable sampler, Variable texture, bool forceNullSampler)
         {
             Variable glslSampler;
 
@@ -3595,7 +3604,18 @@ namespace SiliconStudio.Shaders.Convertor
                     return null;
                 }
 
-                return matchingTextureSampler.First().Value;
+                return new VariableReferenceExpression(matchingTextureSampler.First().Value.Name);
+            }
+
+            if (KeepSamplers && !CombinedSamplers.Contains(sampler.Name))
+            {
+                var combinedTextureSampler =
+                    texture.Type == TextureType.Texture1D ? SamplerType.Sampler1D :
+                    texture.Type == TextureType.Texture2D ? SamplerType.Sampler2D :
+                    texture.Type == TextureType.Texture3D ? SamplerType.Sampler3D :
+                    texture.Type == TextureType.TextureCube ? SamplerType.SamplerCube : null;
+
+                return new MethodInvocationExpression(new TypeReferenceExpression(combinedTextureSampler), new VariableReferenceExpression(texture), new VariableReferenceExpression(sampler));
             }
 
             var samplerKey = new SamplerTextureKey(sampler, texture);
@@ -3604,7 +3624,7 @@ namespace SiliconStudio.Shaders.Convertor
                 return null;
             }
 
-            return glslSampler;
+            return new VariableReferenceExpression(glslSampler.Name);
         }
 
         /// <summary>
@@ -4098,6 +4118,18 @@ namespace SiliconStudio.Shaders.Convertor
             mapToGlsl.Add(new MatrixType(ScalarType.Float, 1, 1), ScalarType.Float);
 
             // Sampler objects
+            mapToGlsl.Add(SamplerStateType.SamplerState, new TypeName("sampler"));
+            mapToGlsl.Add(new StateType("SamplerState"), new TypeName("sampler"));
+            //mapToGlsl.Add(SamplerStateType.SamplerComparisonState, new TypeName("sampler"));
+
+            // Texture objects
+            mapToGlsl.Add(TextureType.Texture, new TextureType("texture2D"));
+            mapToGlsl.Add(TextureType.Texture1D, new TextureType("texture1D"));
+            mapToGlsl.Add(TextureType.Texture2D, new TextureType("texture2D"));
+            mapToGlsl.Add(TextureType.Texture3D, new TextureType("texture3D"));
+            mapToGlsl.Add(TextureType.TextureCube, new TextureType("textureCube"));
+
+            // Combined texture sampler objects
             mapToGlsl.Add(SamplerType.Sampler, SamplerType.Sampler2D);
             mapToGlsl.Add(SamplerType.SamplerCube, new TypeName("samplerCube"));
 
@@ -4110,8 +4142,11 @@ namespace SiliconStudio.Shaders.Convertor
                         {
                             var type = (TypeBase)node;
                             var targetType = type.ResolveType();
+
                             TypeBase outputType;
                             if (mapToGlsl.TryGetValue(targetType, out outputType))
+                                return outputType;
+                            if (mapToGlsl.TryGetValue(type, out outputType))
                                 return outputType;
                         }
 
