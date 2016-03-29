@@ -891,12 +891,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 foreach (dynamic entityAndDesign in entities)
                 {
                     var entity = entityAndDesign.Entity;
-                    var entityId = (string)entity.Id;
-                    var entityName = (string)entity.Name;
 
                     foreach (var component in entity.Components)
                     {
-                        var componentKey = (string)component.Key;
                         var componentTag = component.Node.Tag;
                         if (componentTag == "!ParticleSystemComponent")
                         {
@@ -1056,6 +1053,74 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             {
                                 component.CanCollideWith = CollisionFilterGroupFlags.AllFilter;
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Upgrader from version 1.6.0-beta03 to 1.6.0-beta04.
+        /// </summary>
+        /// <remarks>
+        /// UpdaterColorOverTime now uses a ComputeCurveSamplerColor4 instead of a ComputeCurveSamplerVector4.
+        /// </remarks>
+        class ParticleColorAnimationUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                // Replace ComputeCurveSamplerVector4 with ComputeCurveSamplerColor4.
+                // Replace ComputeAnimationCurveVector4 with ComputeAnimationCurveColor4.
+                // Replace Vector4 with Color4.
+                Action<dynamic> updateSampler = sampler =>
+                {
+                    if (sampler == null || sampler.Node.Tag != "!ComputeCurveSamplerVector4")
+                        return;
+
+                    sampler.Node.Tag = "!ComputeCurveSamplerColor4";
+
+                    var curve = sampler.Curve;
+                    curve.Node.Tag = "!ComputeAnimationCurveColor4";
+                    foreach (var kf in curve.KeyFrames)
+                    {
+                        var colorValue = new DynamicYamlMapping(new YamlMappingNode());
+                        colorValue.AddChild("R", kf.Value.X);
+                        colorValue.AddChild("G", kf.Value.Y);
+                        colorValue.AddChild("B", kf.Value.Z);
+                        colorValue.AddChild("A", kf.Value.W);
+
+                        kf.Value = colorValue;
+                    }
+                };
+
+                var hierarchy = asset.Hierarchy;
+                var entities = hierarchy.Entities;
+                foreach (var entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Node.Tag;
+                        if (componentTag != "!ParticleSystemComponent")
+                            continue;
+
+                        var particleSystem = component.ParticleSystem;
+                        if (particleSystem == null)
+                            continue;
+
+                        foreach (var emitter in particleSystem.Emitters)
+                        {
+                            // Updaters
+                            foreach (var updater in emitter.Updaters)
+                            {
+                                var updaterTag = updater.Node.Tag;
+                                if (updaterTag != "!UpdaterColorOverTime")
+                                    continue;
+
+                                 // Update the samplers
+                                updateSampler(updater.SamplerMain);
+                                updateSampler(updater.SamplerOptional);
+                            } 
                         }
                     }
                 }

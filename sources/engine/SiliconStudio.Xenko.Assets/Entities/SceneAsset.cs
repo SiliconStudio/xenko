@@ -43,12 +43,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.0-beta01", typeof(ParticleMinMaxFieldsUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta01", "1.6.0-beta02", typeof(ModelEffectUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta02", "1.6.0-beta03", typeof(PhysicsFiltersUpgrader))]
-
+    [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta03", "1.6.0-beta04", typeof(ParticleColorAnimationUpgrader))]
 
     [Display(200, "Scene")]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.6.0-beta03";
+        private const string CurrentVersion = "1.6.0-beta04";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
