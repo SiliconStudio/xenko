@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -169,6 +170,9 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         [DataMemberIgnore]
         public int LivingParticles => pool.LivingParticles;
+
+        [DataMemberIgnore]
+        internal ParticlePool Pool => pool;
 
         /// <summary>
         /// Maximum number of particles this <see cref="ParticleEmitter"/> can have at any given time
