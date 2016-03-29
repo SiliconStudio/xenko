@@ -2,10 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -29,6 +31,33 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </value>
         [DataMember(20)]
         public EntityHierarchyData Hierarchy { get; set; }
+
+        /// <summary>
+        /// Dumps this asset to a writer for debug purposes.
+        /// </summary>
+        /// <param name="writer">A text writer output</param>
+        /// <param name="name">Name of this asset</param>
+        /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
+        public bool DumpTo(TextWriter writer, string name)
+        {
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+
+            writer.WriteLine();
+            writer.WriteLine("*************************************");
+            writer.WriteLine($"{GetType().Name}: {name}");
+            writer.WriteLine("=====================================");
+            return Hierarchy?.DumpTo(writer) ?? false;
+        }
+
+        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        {
+            EntityDesign entityEntry;
+            if (Hierarchy.Entities.TryGetValue(id, out entityEntry))
+            {
+                entityEntry.Design.BaseId = baseId;
+                entityEntry.Design.BasePartInstanceId = basePartInstanceId;
+            }
+        }
 
         public override Asset CreateChildAsset(string location)
         {
@@ -185,9 +214,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return clonedHierarchy;
         }
 
-        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
+        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
         {
-            var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts);
+            var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts, debugLocation);
             return entityMerge.Merge();
         }
 
