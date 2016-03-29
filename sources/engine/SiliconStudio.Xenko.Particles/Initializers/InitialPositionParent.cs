@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// </summary>
     [DataContract("InitialPositionParent")]
     [Display("Position from parent")]
-    public class InitialPositionParent : ParticleInitializer
+    public class InitialPositionParent : ParticleChildInitializer
     {
         /// <summary>
         /// Default constructor which also registers the fields required by this updater
@@ -78,45 +78,37 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
                 if (parentParticlesCount > 0)
                 {
-                    var parentIndex = (int) (parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + 1111));
+                    var parentIndex = (int) (parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
 
                     var parentParticle = parentPool.FromIndex(parentIndex);
 
-                    particleRandPos += (*((Vector3*)parentParticle[posFieldParent]));
+                    var parentParticlePosition = (*((Vector3*)parentParticle[posFieldParent]));
+
+                    // Convert from Local -> World space if needed
+                    if (Parent.SimulationSpace == EmitterSimulationSpace.Local)
+                    {
+                        WorldRotation.Rotate(ref parentParticlePosition);
+                        parentParticlePosition *= WorldScale.X;
+                        parentParticlePosition += WorldPosition;
+                    }
+
+                    particleRandPos += parentParticlePosition;
                 }
+
 
                 (*((Vector3*)particle[posField])) = particleRandPos;
 
                 i = (i + 1) % maxCapacity;
             }
         }
-
-
-        [DataMemberIgnore]
-        public ParticleEmitter Parent;
-
-        private string parentName;
-        private bool isParentNameDirty = true;
-
-        [DataMember(5)]
-        [Display("Parent emitter")]
-        public string ParentName
-        {
-            get { return parentName; }
-            set
-            {
-                parentName = value;
-                isParentNameDirty = true;
-            }
-        }
-
+        
         /// <summary>
         /// The seed offset used to match or separate random values
         /// </summary>
         /// <userdoc>
         /// The seed offset used to match or separate random values
         /// </userdoc>
-        [DataMember(8)]
+        [DataMember(20)]
         [Display("Random Seed")]
         public uint SeedOffset { get; set; } = 0;
 
@@ -140,23 +132,5 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [Display("Position max")]
         public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
 
-
-        /// <inheritdoc />
-        public override void SetParentTrs(ParticleTransform transform, ParticleSystem parentSystem)
-        {
-            base.SetParentTrs(transform, parentSystem);
-
-            if (isParentNameDirty)
-            {
-                Parent = parentSystem?.GetEmitterByName(ParentName);
-                isParentNameDirty = false;
-            }
-        }
-
-        /// <inheritdoc />
-        public override void InvalidateRelations()
-        {
-            isParentNameDirty = true;
-        }
     }
 }

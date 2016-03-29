@@ -36,6 +36,7 @@
     <Compile Include="Initializers\InitialDirectionSeed.cs" />
     <Compile Include="Initializers\InitialPositionParent.cs" />
     <Compile Include="Initializers\InitialSpawnOrder.cs" />
+    <Compile Include="Initializers\ParticleChildInitializer.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
     <Compile Include="Initializers\InitialRotationSeed.cs" />
