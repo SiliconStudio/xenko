@@ -37,7 +37,6 @@ namespace SiliconStudio.Xenko.TestRunner
         {
             buildNumber = bn;
             branchName = branch;
-            buildNumber = -1;
         }
 
         public int RunAndroidTest(ConnectedDevice device, bool reinstall, string packageName, string packageFile, string resultFilename)

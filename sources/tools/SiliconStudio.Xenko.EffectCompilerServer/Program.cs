@@ -51,6 +51,14 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
                 var effectCompilerServer = new EffectCompilerServer();
                 effectCompilerServer.TryConnect("127.0.0.1", RouterClient.DefaultPort);
 
+                AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+                {
+                    var e = eventArgs.ExceptionObject as Exception;
+                    if (e == null) return;
+
+                    Console.WriteLine($"Unhandled Exception: {e.Message.ToString()}");
+                };
+
                 // Forbid process to terminate (unless ctrl+c)
                 while (true)
                 {

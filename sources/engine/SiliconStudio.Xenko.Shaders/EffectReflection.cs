@@ -19,8 +19,8 @@ namespace SiliconStudio.Xenko.Shaders
         public EffectReflection()
         {
             SamplerStates = new List<EffectSamplerStateBinding>();
-            ResourceBindings = new List<EffectParameterResourceData>();
-            ConstantBuffers = new List<ShaderConstantBufferDescription>();
+            ResourceBindings = new List<EffectResourceBindingDescription>();
+            ConstantBuffers = new List<EffectConstantBufferDescription>();
             ShaderStreamOutputDeclarations = new List<ShaderStreamOutputDeclarationEntry>();
         }
 
@@ -34,13 +34,13 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets the parameter binding descriptions.
         /// </summary>
         /// <value>The resource bindings.</value>
-        public List<EffectParameterResourceData> ResourceBindings { get; set; }
+        public List<EffectResourceBindingDescription> ResourceBindings { get; set; }
 
         /// <summary>
         /// Gets the constant buffer descriptions (if any).
         /// </summary>
         /// <value>The constant buffers.</value>
-        public List<ShaderConstantBufferDescription> ConstantBuffers { get; set; }
+        public List<EffectConstantBufferDescription> ConstantBuffers { get; set; }
 
         /// <summary>
         /// Gets or sets the stream output declarations.
