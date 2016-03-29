@@ -1,23 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using SharpYaml.Serialization;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering.Lights;
-
-using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -26,7 +13,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// </summary>
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
-    [ObjectFactory(typeof(SceneFactory))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
@@ -72,26 +58,5 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         [DataMember(30)]
         public SceneSettings SceneSettings { get; private set; }
-
-        public static SceneAsset Create()
-        {
-            // Create a new root entity, and make sure transformation component is created
-
-            return new SceneAsset
-            {
-                Hierarchy =
-                {
-                    Entities = {},
-                }
-            };
-        }
-
-        private class SceneFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return Create();
-            }
-        }
     }
 }

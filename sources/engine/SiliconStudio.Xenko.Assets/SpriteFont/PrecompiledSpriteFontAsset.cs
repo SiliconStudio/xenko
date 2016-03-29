@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Graphics.Font;
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
     [DataContract("PregeneratedSpriteFont")]
-    [AssetDescription(FileExtension, false)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]

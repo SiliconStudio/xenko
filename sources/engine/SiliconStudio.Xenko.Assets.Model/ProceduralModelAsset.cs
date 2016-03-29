@@ -11,7 +11,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Model
@@ -35,14 +34,6 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkpromodel;.pdxpromodel";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProceduralModelAsset"/> class.
-        /// </summary>
-        public ProceduralModelAsset()
-        {
-            Type = new CubeProceduralModel();
-        }
 
         /// <summary>
         /// Gets or sets the type.

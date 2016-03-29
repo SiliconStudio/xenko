@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
@@ -9,10 +8,8 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Graphics.Font;
-using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -22,7 +19,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [ObjectFactory(typeof(SpriteFontFactory))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [Display(140, "Sprite Font")]
@@ -46,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(10)]
         [Display(null, "Font")]
-        public UFile Source { get; set; }
+        public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
         /// Gets or sets the name of the font family to use when the <see cref="Source"/> is not specified.
@@ -65,9 +61,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
         /// </userdoc>
         [DataMember(30)]
+        [DefaultValue(16.0f)]
         [Display(null, "Font")]
-        public float Size { get; set; }
-        
+        public float Size { get; set; } = 16.0f;
+
         /// <summary>
         /// Gets or sets the style of the font. A combination of 'regular', 'bold', 'italic'. Default is 'regular'.
         /// </summary>
@@ -76,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(40)]
         [Display(null, "Font")]
-        public FontStyle Style { get; set; }
+        public FontStyle Style { get; set; } = FontStyle.Regular;
 
         /// <summary>
         ///  Gets or sets the value determining if the characters are pre-generated off-line or at run-time.
@@ -98,8 +95,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(60)]
         [Display(null, "Characters")]
-        public char DefaultCharacter { get; set; }
-        
+        public char DefaultCharacter { get; set; } = ' ';
+
         /// <summary>
         ///  Gets or sets the text file referencing which characters to include when generating the static fonts (eg. "ABCDEF...")
         /// </summary>
@@ -108,7 +105,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(70)]
         [Display(null, "Characters")]
-        public UFile CharacterSet { get; set; }
+        public UFile CharacterSet { get; set; } = new UFile("");
 
         /// <summary>
         /// Gets or set the additional character ranges to include when generating the static fonts (eg. "/CharacterRegion:0x20-0x7F /CharacterRegion:0x123")
@@ -121,7 +118,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [Category]
         [Display(null, "Characters")]
         [NotNullItems]
-        public List<CharacterRegion> CharacterRegions { get; set; }
+        public List<CharacterRegion> CharacterRegions { get; set; } = new List<CharacterRegion>();
 
         /// <summary>
         /// Gets or sets format of the texture used to render the font.
@@ -132,7 +129,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(100)]
         [DefaultValue(FontTextureFormat.Rgba32)]
         [Display(null, "Rendering")]
-        public FontTextureFormat Format { get; set; }
+        public FontTextureFormat Format { get; set; } = FontTextureFormat.Rgba32;
 
         /// <summary>
         /// Gets or sets the font anti-aliasing mode. By default, levels of grays are used.
@@ -142,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(110)]
         [Display(null, "Rendering")]
-        public FontAntiAliasMode AntiAlias { get; set; }
+        public FontAntiAliasMode AntiAlias { get; set; } = FontAntiAliasMode.Default;
 
         /// <summary>
         /// Gets or sets the value indicating if the font texture should be generated pre-multiplied by alpha component. 
@@ -163,6 +160,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The extra spacing to add between characters in pixels. Zero is default spacing, negative closer together, positive further apart.
         /// </userdoc>
         [DataMember(130)]
+        [DefaultValue(0.0f)]
         [DataMemberRange(-500, 500, 1, 10)]
         [Display(null, "Rendering")]
         public float Spacing { get; set; }
@@ -174,6 +172,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The extra interline space to add at each return of line (in pixels). Zero is default spacing, negative closer together, positive further apart.
         /// </userdoc>
         [DataMember(140)]
+        [DefaultValue(0.0f)]
         [DataMemberRange(-500, 500, 1, 10)]
         [Display(null, "Rendering")]
         public float LineSpacing { get; set; }
@@ -189,7 +188,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DefaultValue(1.0f)]
         [DataMemberRange(-500, 500, 1, 10)]
         [Display(null, "Rendering")]
-        public float LineGapFactor { get; set; }
+        public float LineGapFactor { get; set; } = 1.0f;
 
         /// <summary>
         /// Gets or sets the factor to apply to LineGap when calculating the font base line. See remarks. Default is <c>1.0f</c>
@@ -208,7 +207,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DefaultValue(1.0f)]
         [DataMemberRange(-500, 500, 1, 10)]
         [Display(null, "Rendering")]
-        public float LineGapBaseLineFactor { get; set; }
+        public float LineGapBaseLineFactor { get; set; } = 1.0f;
 
         /// <summary>
         /// Gets or sets the value specifying whether to use kerning information when rendering the font. Default value is false (NOT SUPPORTED YET).
@@ -220,16 +219,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [Display(null, "Rendering")]
         public bool UseKerning { get; set; }
 
-        public SpriteFontAsset()
-        {
-            DefaultCharacter = ' ';
-            Style = FontStyle.Regular;
-            CharacterRegions = new List<CharacterRegion>();
-            LineGapFactor = 1.0f;
-            LineGapBaseLineFactor = 1.0f;
-            Source = new UFile("");
-            CharacterSet = new UFile("");
-        }
+        internal string SafeCharacterSet => CharacterSet ?? "";
 
         class PremultiplyUpgrader : AssetUpgraderBase
         {
@@ -245,33 +235,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     asset.IsPremultiplied = !(bool)asset.IsNotPremultiply;
                     asset.IsNotPremultiply = DynamicYamlEmpty.Default;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Creates a default instance.
-        /// </summary>
-        /// <returns>A default instance of <see cref="SpriteFontAsset"/>.</returns>
-        public static SpriteFontAsset Default()
-        {
-            var font = new SpriteFontAsset
-                {
-                    Format = FontTextureFormat.Rgba32,
-                    FontName = "Arial",
-                    Size = 16,
-                };
-            font.CharacterRegions.Add(new CharacterRegion(' ', (char)127));
-
-            return font;
-        }
-
-        internal string SafeCharacterSet { get { return CharacterSet ?? ""; } }
-        
-        private class SpriteFontFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return Default();
             }
         }
     }

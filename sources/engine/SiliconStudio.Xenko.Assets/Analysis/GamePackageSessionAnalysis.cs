@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
         /// <param name="log">The log to output the result of the validation.</param>
         public override void Run(ILogger log)
         {
-            if (log == null) throw new ArgumentNullException("log");
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             foreach (var package in Session.Packages)
             {
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                     log.Error(package, null, AssetMessageCode.DefaultSceneNotFound, null);
 
                     var defaultSceneName = NamingHelper.ComputeNewName(GameSettingsAsset.DefaultSceneLocation, package.Assets, a => a.Location);
-                    var defaultSceneAsset = SceneAsset.Create();
+                    var defaultSceneAsset = DefaultAssetFactory<SceneAsset>.Create();
 
                     defaultScene = new AssetItem(defaultSceneName, defaultSceneAsset);
                     package.Assets.Add(defaultScene);
