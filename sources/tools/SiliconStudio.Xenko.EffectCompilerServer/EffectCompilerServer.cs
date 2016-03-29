@@ -104,8 +104,6 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             // TODO: maybe not necessary anymore with RouterServiceServer?
             await Task.Yield();
 
-            Console.WriteLine("Compiling shader");
-            Console.WriteLine(@"Compiling shader");
             Console.WriteLine($"Compiling shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
 
             try
@@ -122,10 +120,6 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             {
                 Console.WriteLine($"Failed to compile shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
 
-            // Send compiled shader
-            socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
-            // Send compiled shader
-            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
                 // Send failure token
                 await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, State = -1 });
             }
