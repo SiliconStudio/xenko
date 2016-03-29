@@ -14,19 +14,23 @@ namespace SiliconStudio.Xenko.Engine.Network
     /// </summary>
     public class SocketMessageLayer
     {
-        private readonly bool isServer;
+        private SimpleSocket context;
+        private bool isServer;
 
-        private readonly SemaphoreSlim sendLock = new SemaphoreSlim(1);
+        private SemaphoreSlim sendLock = new SemaphoreSlim(1);
         private readonly Dictionary<int, TaskCompletionSource<SocketMessage>> packetCompletionTasks = new Dictionary<int, TaskCompletionSource<SocketMessage>>();
-        private readonly Dictionary<Type, Tuple<Action<object>, bool>> packetHandlers = new Dictionary<Type, Tuple<Action<object>, bool>>();
+        private Dictionary<Type, Tuple<Action<object>, bool>> packetHandlers = new Dictionary<Type, Tuple<Action<object>, bool>>();
 
         public SocketMessageLayer(SimpleSocket context, bool isServer)
         {
-            Context = context;
+            this.context = context;
             this.isServer = isServer;
         }
 
-        public SimpleSocket Context { get; }
+        public SimpleSocket Context
+        {
+            get { return context; }
+        }
 
         public async Task<SocketMessage> SendReceiveAsync(SocketMessage query)
         {
@@ -36,7 +40,7 @@ namespace SiliconStudio.Xenko.Engine.Network
             {
                 packetCompletionTasks.Add(query.StreamId, tcs);
             }
-            await Send(query);
+            Send(query);
             return await tcs.Task;
         }
 
@@ -51,8 +55,9 @@ namespace SiliconStudio.Xenko.Engine.Network
         public async Task Send(object obj)
         {
             var memoryStream = new MemoryStream();
-            var binaryWriter = new BinarySerializationWriter(memoryStream) { Context = { SerializerSelector = SerializerSelector.AssetWithReuse } };
-            binaryWriter.SerializeExtended(obj, ArchiveMode.Serialize);
+            var binaryWriter = new BinarySerializationWriter(memoryStream);
+            binaryWriter.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+            binaryWriter.SerializeExtended(obj, ArchiveMode.Serialize, null);
 
             var memoryBuffer = memoryStream.ToArray();
 
@@ -60,9 +65,9 @@ namespace SiliconStudio.Xenko.Engine.Network
             await sendLock.WaitAsync();
             try
             {
-                await Context.WriteStream.WriteInt32Async((int)memoryStream.Length);
-                await Context.WriteStream.WriteAsync(memoryBuffer, 0, (int)memoryStream.Length);
-                await Context.WriteStream.FlushAsync();
+                await context.WriteStream.WriteInt32Async((int)memoryStream.Length);
+                await context.WriteStream.WriteAsync(memoryBuffer, 0, (int)memoryStream.Length);
+                await context.WriteStream.FlushAsync();
             }
             finally
             {
@@ -77,26 +82,25 @@ namespace SiliconStudio.Xenko.Engine.Network
                 while (true)
                 {
                     // Get next packet size
-                    var bufferSize = await Context.ReadStream.ReadInt32Async();
+                    var bufferSize = await context.ReadStream.ReadInt32Async();
 
                     // Get next packet data (until complete)
                     var buffer = new byte[bufferSize];
-                    await Context.ReadStream.ReadAllAsync(buffer, 0, bufferSize);
+                    await context.ReadStream.ReadAllAsync(buffer, 0, bufferSize);
 
                     // Deserialize as an object
                     var binaryReader = new BinarySerializationReader(new MemoryStream(buffer));
                     object obj = null;
                     binaryReader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
-                    binaryReader.SerializeExtended(ref obj, ArchiveMode.Deserialize);
+                    binaryReader.SerializeExtended<object>(ref obj, ArchiveMode.Deserialize, null);
 
                     // If it's a message, process it separately (StreamId)
-                    var message = obj as SocketMessage;
-                    if (message != null)
+                    if (obj is SocketMessage)
                     {
-                        var socketMessage = message;
+                        var socketMessage = (SocketMessage)obj;
                         ProcessMessage(socketMessage);
                     }
-                    
+
                     // Check if there is a specific handler for this packet type
                     bool handlerFound;
                     Tuple<Action<object>, bool> handler;
@@ -119,7 +123,7 @@ namespace SiliconStudio.Xenko.Engine.Network
             }
             catch (Exception e)
             {
-                Context.Dispose();
+                context.Dispose();
 
                 lock (packetCompletionTasks)
                 {
@@ -142,11 +146,10 @@ namespace SiliconStudio.Xenko.Engine.Network
             {
                 packetCompletionTasks.TryGetValue(socketMessage.StreamId, out tcs);
                 if (tcs != null)
-                {
                     packetCompletionTasks.Remove(socketMessage.StreamId);
-                }
             }
-            tcs?.TrySetResult(socketMessage);
+            if (tcs != null)
+                tcs.TrySetResult(socketMessage);
         }
     }
 }
