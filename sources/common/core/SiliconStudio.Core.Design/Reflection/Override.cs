@@ -15,6 +15,18 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         public static readonly PropertyKey<OverrideType> OverrideKey = new PropertyKey<OverrideType>("Override", typeof(Override), DefaultValueMetadata.Static(OverrideType.New));
 
+        internal const char PostFixSealed = '!';
+
+        internal const char PostFixNew = '*';
+
+        internal const string PostFixNewSealed = "*!";
+
+        internal const string PostFixNewSealedAlt = "!*";
+
+        internal const string PostFixSealedText = "!";
+
+        internal const string PostFixNewText = "*";
+
         /// <summary>
         /// Gets the override for the specified member.
         /// </summary>
