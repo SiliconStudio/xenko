@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
@@ -381,4 +381,90 @@ namespace SiliconStudio.Xenko.Animations
 
     #endregion
 
+    #region Color4
+    /// <summary>
+    /// Sampler container for Color4 data type
+    /// </summary>
+    [DataContract("ComputeCurveSamplerColor4")]
+    [Display("Sampler Color4")]
+    public class ComputeCurveSamplerColor4 : ComputeCurveSampler<Color4>
+    {
+        public ComputeCurveSamplerColor4()
+        {
+            curve = new ComputeAnimationCurveColor4();
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Color4 value1, ref Color4 value2, float t, out Color4 result)
+        {
+            Color4.Lerp(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Constant Color4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeConstCurveColor4")]
+    [Display("Constant")]
+    public class ComputeConstCurveColor4 : ComputeConstCurve<Color4> { }
+
+    /// <summary>
+    /// Constant Color4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveColor4")]
+    [Display("Animation", Expand = ExpandRule.Never)]
+    public class ComputeAnimationCurveColor4 : ComputeAnimationCurve<Color4>
+    {
+        /// <inheritdoc/>
+        public override void Cubic(ref Color4 value1, ref Color4 value2, ref Color4 value3, ref Color4 value4, float t, out Color4 result)
+        {
+            // FIXME: does it make sense to use the same kind of cubic computation than Vector4 for colors?
+
+            Vector4 vector1 = value1;
+            Vector4 vector2 = value2;
+            Vector4 vector3 = value3;
+            Vector4 vector4 = value4;
+            Vector4 vectorR;
+            Interpolator.Vector4.Cubic(ref vector1, ref vector2, ref vector3, ref vector4, t, out vectorR);
+            value1 = (Color4)vector1;
+            value2 = (Color4)vector2;
+            value3 = (Color4)vector3;
+            value4 = (Color4)vector4;
+            result = (Color4)vectorR;
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Color4 value1, ref Color4 value2, float t, out Color4 result)
+        {
+            Color4.Lerp(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Binary operator Color4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeBinaryCurveColor4")]
+    [Display("Binary Operation")]
+    public class ComputeBinaryCurveColor4 : ComputeBinaryCurve<Color4>
+    {
+        /// <inheritdoc/>
+        protected override Color4 Add(Color4 a, Color4 b)
+        {
+            return a + b;
+        }
+
+        /// <inheritdoc/>
+        protected override Color4 Subtract(Color4 a, Color4 b)
+        {
+            return a - b;
+        }
+
+        /// <inheritdoc/>
+        protected override Color4 Multiply(Color4 a, Color4 b)
+        {
+            return a * b;
+        }
+    }
+
+    #endregion
 }

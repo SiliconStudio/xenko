@@ -30,9 +30,9 @@ SOFTWARE.
 #endregion
 
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using SiliconStudio.Presentation.Drawing;
 
@@ -45,26 +45,6 @@ namespace SiliconStudio.Presentation.Controls
         /// The name of the part for the <see cref="Canvas"/>.
         /// </summary>
         private const string GridPartName = "PART_Grid";
-
-        /// <summary>
-        /// Identifies the <see cref="CanvasBounds"/> dependency property key.
-        /// </summary>
-        private static readonly DependencyPropertyKey CanvasBoundsPropertyKey =
-            DependencyProperty.RegisterReadOnly(nameof(CanvasBounds), typeof(Rect), typeof(CanvasView), new PropertyMetadata(new Rect()));
-        /// <summary>
-        /// Identifies the <see cref="CanvasBounds"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CanvasBoundsProperty = CanvasBoundsPropertyKey.DependencyProperty;
-
-        /// <summary>
-        /// Identifies the <see cref="IsCanvasValid"/> dependency property key.
-        /// </summary>
-        private static readonly DependencyPropertyKey IsCanvasValidPropertyKey =
-            DependencyProperty.RegisterReadOnly(nameof(IsCanvasValid), typeof(bool), typeof(CanvasView), new PropertyMetadata(true));
-        /// <summary>
-        /// Identifies the <see cref="IsCanvasValid"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty IsCanvasValidProperty = IsCanvasValidPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Identifies the <see cref="Model"/> dependency property.
@@ -80,7 +60,11 @@ namespace SiliconStudio.Presentation.Controls
         /// The renderer.
         /// </summary>
         private CanvasRenderer renderer;
-        
+        /// <summary>
+        /// Invalidation flag (0: no update, 1: update visual elements).
+        /// </summary>
+        private int isDrawingInvalidated;
+
         static CanvasView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CanvasView), new FrameworkPropertyMetadata(typeof(CanvasView)));
@@ -91,14 +75,6 @@ namespace SiliconStudio.Presentation.Controls
             Loaded += OnLoaded;
             SizeChanged += OnSizeChanged;
         }
-
-        public Rect CanvasBounds { get { return (Rect)GetValue(CanvasBoundsProperty); } private set { SetValue(CanvasBoundsPropertyKey, value); } }
-
-        /// <summary>
-        /// Returns True if the current rendering is valid. False otherwise.
-        /// </summary>
-        /// <remarks>When the value is False, it means that the canvas will be redrawn at the end of this frame.</remarks>
-        public bool IsCanvasValid { get { return (bool)GetValue(IsCanvasValidProperty); } private set { SetValue(IsCanvasValidPropertyKey, value); } }
 
         public IDrawingModel Model { get { return (IDrawingModel)GetValue(ModelProperty); } set { SetValue(ModelProperty, value); } }
 
@@ -133,7 +109,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (ActualWidth > 0 && ActualHeight > 0)
             {
-                if (!IsCanvasValid)
+                if (Interlocked.CompareExchange(ref this.isDrawingInvalidated, 0, 1) == 1)
                 {
                     UpdateVisuals();
                 }
@@ -155,33 +131,30 @@ namespace SiliconStudio.Presentation.Controls
 
         private void DoInvalidateDrawing()
         {
-            if (renderer == null || !IsCanvasValid)
+            if (ActualWidth <= 0 || ActualHeight <= 0)
                 return;
 
-            IsCanvasValid = false;
-            Dispatcher.InvokeAsync(() =>
+            if (renderer == null)
+                return;
+
+            if (Interlocked.CompareExchange(ref isDrawingInvalidated, 1, 0) == 0)
             {
-                // Makes sure the flag was not reset
-                IsCanvasValid = false;
-                // Updates the model before rendering
-                UpdateModel(true);
-                // Invalidate the arrange state for the element.
-                // After the invalidation, the element will have its layout updated,
-                // which will occur asynchronously unless subsequently forced by UpdateLayout.
-                InvalidateArrange();
                 Dispatcher.InvokeAsync(() =>
                 {
-                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(renderer.Canvas);
-                    IsCanvasValid = true;
-                    // We must wait after the canvas is rendered to get correct values
-                }, DispatcherPriority.Loaded);
-            }, DispatcherPriority.Background);
+                    // Updates the model before rendering
+                    UpdateModel(true);
+                    // Invalidate the arrange state for the element.
+                    // After the invalidation, the element will have its layout updated,
+                    // which will occur asynchronously unless subsequently forced by UpdateLayout.
+                    InvalidateArrange();
+                });
+            }
         }
         
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Make sure InvalidateArrange is called when the canvas is invalidated
-            IsCanvasValid = true;
+            Interlocked.Exchange(ref isDrawingInvalidated, 0);
             DoInvalidateDrawing();
         }
 
