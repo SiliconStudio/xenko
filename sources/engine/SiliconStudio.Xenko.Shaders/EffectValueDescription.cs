@@ -10,43 +10,33 @@ namespace SiliconStudio.Xenko.Shaders
     /// Describes a shader parameter for a valuetype (usually stored in constant buffers).
     /// </summary>
     [DataContract]
-    [DebuggerDisplay("{Param.Class}{RowCount}x{ColumnCount} {Param.KeyName} -> {Param.RawName}")]
-    public struct EffectParameterValueData
+    [DebuggerDisplay("{Type.Class}{Type.RowCount}x{Type.ColumnCount} {KeyInfo.KeyName} -> {RawName}")]
+    public struct EffectValueDescription
     {
+        /// <summary>
+        /// The type of this value.
+        /// </summary>
+        public EffectTypeDescription Type;
+
         /// <summary>
         /// The common description of this parameter.
         /// </summary>
-        public EffectParameterData Param;
+        public EffectParameterKeyInfo KeyInfo;
 
         /// <summary>
-        /// Source Offset in bytes from the parameter.
+        /// Name of this parameter in the original shader
         /// </summary>
-        public int SourceOffset;
-
+        public string RawName;
+        
         /// <summary>
         /// Offset in bytes into the constant buffer.
         /// </summary>
         public int Offset;
 
         /// <summary>
-        /// Number of elements.
-        /// </summary>
-        public int Count;
-
-        /// <summary>
         /// Size in bytes in a constant buffer.
         /// </summary>
         public int Size;
-
-        /// <summary>
-        /// Number of rows for this element.
-        /// </summary>
-        public int RowCount;
-
-        /// <summary>
-        /// Number of columns for this element.
-        /// </summary>
-        public int ColumnCount;
 
         /// <summary>
         /// The default value.
