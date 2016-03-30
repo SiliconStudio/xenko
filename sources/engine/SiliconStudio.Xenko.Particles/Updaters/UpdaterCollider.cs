@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
+using SiliconStudio.Xenko.Particles.Updaters;
 using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
 
 namespace SiliconStudio.Xenko.Particles.Modules
@@ -113,7 +114,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 var particlePos = (*((Vector3*)particle[posField]));
                 var particleVel = (*((Vector3*)particle[velField]));
 
-                uint collisionControlFlag = 0;
+                var collisionAttribute = (*((ParticleCollisionAttribute*)particle[controlField]));
+
+                collisionAttribute.HasColided = false;  // Reset the HasColided flag for this frame
 
                 var isInside = false;
                 if (FieldShape != null)
@@ -127,8 +130,6 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 {
                     if (IsHollow)
                         surfaceNormal *= -1;
-
-                    collisionControlFlag |= 0x0001;
 
                     // The particle is on the wrong side of the collision shape and must collide
                     (*((Vector3*)particle[posField])) = surfacePoint;
@@ -144,7 +145,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
                     (*((Vector3*)particle[velField])) = particleVel;
 
 
-                    // TODO Maybe set some collision flags if other calculations depend on them
+                    // Set some collision flags if other calculations depend on them
+                    collisionAttribute.HasColided = true;
 
                     // Possibly kill the particle
                     if (KillParticles)
@@ -154,7 +156,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
                     }
                 }
 
-                (*((uint*)particle[controlField])) = collisionControlFlag;
+                (*((ParticleCollisionAttribute*)particle[controlField])) = collisionAttribute;
             }
         }
 

@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Spawners;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
@@ -41,9 +42,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
                 return;
 
-            var childrenFlagsFieldParent = parentPool.GetField(ParticleFields.ChildrenFlags[0]);
-
-            var colFlagsFieldParent = parentPool.GetField(ParticleFields.CollisionControl);
+            var spawnControlField = GetSpawnControlField();
 
             var posField = pool.GetField(ParticleFields.Position);
             var rndField = pool.GetField(ParticleFields.RandomSeed);
@@ -86,7 +85,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                     var parentParticlePosition = new Vector3(0, 0, 0);
 
                     // It changes here
-                    if (childrenFlagsFieldParent.IsValid())
+                    if (spawnControlField.IsValid())
                     {
                         while (sequentialParentParticles == 0)
                         {
@@ -97,14 +96,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                             var tempParentParticle = parentPool.FromIndex(parentIndex);
                             sequentialParentIndex++;
 
-                            var childrenFlag = (*((uint*)tempParentParticle[childrenFlagsFieldParent]));
+                            var childrenAttribute = (*((ParticleChildrenAttribute*)tempParentParticle[spawnControlField]));
 
-                            sequentialParentParticles = (int) (childrenFlag & 0xFFFF);
-
-
-                            // TEST
-                            var collisionFlag = (*((uint*)tempParentParticle[colFlagsFieldParent]));
-                            sequentialParentParticles *= (collisionFlag > 0) ? 1 : 0;
+                            sequentialParentParticles = (int)childrenAttribute.ParticlesToEmit;
                         }
 
                         sequentialParentParticles--;

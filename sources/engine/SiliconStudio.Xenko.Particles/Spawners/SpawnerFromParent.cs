@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Particles.Updaters;
 
 namespace SiliconStudio.Xenko.Particles.Spawners
 {
@@ -26,7 +27,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private bool isParentNameDirty = true;
 
-        [DataMember(2)]
+        [DataMember(12)]
         [Display("Parent emitter")]
         public string ParentName
         {
@@ -36,6 +37,61 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                 parentName = value;
                 isParentNameDirty = true;
             }
+        }
+
+
+        /// <summary>
+        /// Some initializers require fine control between parent and child emitters. Use the control group to assign such meta-fields.
+        /// </summary>
+        [DataMember(13)]
+        [Display("Spawn Control Group")]
+        public ParentControlFlag ParentControlFlag
+        {
+            get { return parentControlFlag; }
+            set
+            {
+                RemoveControlGroup();
+                parentControlFlag = value;
+                AddControlGroup();
+            }
+        }
+        private ParentControlFlag parentControlFlag = ParentControlFlag.Group00;
+
+        /// <summary>
+        /// Removes the old required control group field from the parent emitter's pool
+        /// </summary>
+        private void RemoveControlGroup()
+        {
+            var groupIndex = (int)parentControlFlag;
+            if (groupIndex >= ParticleFields.ChildrenFlags.Length)
+                return;
+
+            Parent?.RemoveRequiredField(ParticleFields.ChildrenFlags[groupIndex]);
+        }
+
+        /// <summary>
+        /// Adds the required control group field to the parent emitter's pool
+        /// </summary>
+        private void AddControlGroup()
+        {
+            var groupIndex = (int)parentControlFlag;
+            if (groupIndex >= ParticleFields.ChildrenFlags.Length)
+                return;
+
+            Parent?.AddRequiredField(ParticleFields.ChildrenFlags[groupIndex]);
+        }
+
+        /// <summary>
+        /// Gets a field accessor to the parent emitter's spawn control field, if it exists
+        /// </summary>
+        /// <returns></returns>
+        protected ParticleFieldAccessor<ParticleChildrenAttribute> GetSpawnControlField()
+        {
+            var groupIndex = (int)parentControlFlag;
+            if (groupIndex >= ParticleFields.ChildrenFlags.Length)
+                return ParticleFieldAccessor<ParticleChildrenAttribute>.Invalid();
+
+            return Parent?.Pool?.GetField(ParticleFields.ChildrenFlags[groupIndex]) ?? ParticleFieldAccessor<ParticleChildrenAttribute>.Invalid();
         }
 
         [DataMemberIgnore]
@@ -82,11 +138,11 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         {
             if (isParentNameDirty)
             {
-                InvalidateRelations();
+                RemoveControlGroup();
 
                 Parent = emitter.CahcedParticleSystem?.GetEmitterByName(ParentName);
-                if (Parent != null)
-                    Parent.AddRequiredField(ParticleFields.ChildrenFlags[0]);
+
+                AddControlGroup();
 
                 isParentNameDirty = false;
             }
@@ -102,8 +158,9 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             var parentParticlesCount = parentPool.LivingParticles;
             if (parentParticlesCount == 0) return;
 
-            var childrenFlagsFieldParent = parentPool.GetField(ParticleFields.ChildrenFlags[0]);
-            if (!childrenFlagsFieldParent.IsValid()) return;
+            var spawnControlGroup = GetSpawnControlField();
+            if (!spawnControlGroup.IsValid())
+                return;
 
             var collisionControlFieldParent = parentPool.GetField(ParticleFields.CollisionControl);
 
@@ -111,36 +168,40 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
             foreach (var parentParticle in parentPool)
             {
-                uint childrenFlag = 0x0;
+                var parentEventTriggered = false;
+                ParticleChildrenAttribute childrenAttribute = ParticleChildrenAttribute.Empty;
 
-                uint particlesToEmit = 5;   // TODO Not-hardcoded
+                // Trigger event by parent's surface collision
                 if (collisionControlFieldParent.IsValid())
                 {
-                    var collisionControlFlag = (*((uint*)parentParticle[collisionControlFieldParent]));
-                    if ((collisionControlFlag & 0x0001) == 0)
-                        particlesToEmit = 0;
+                    var collisionAttribute = (*((ParticleCollisionAttribute*)parentParticle[collisionControlFieldParent]));
+                    parentEventTriggered |= collisionAttribute.HasColided;
                 }
 
-                particlesToEmit &= 0xFFFF;  // TODO Not-hardcoded limit
 
-                childrenFlag = particlesToEmit;
+                uint particlesToEmit = 0;
+                if (parentEventTriggered)
+                {
+                    // TODO Not-hardcoded
+                    particlesToEmit = 5;
+                }
+
+                childrenAttribute.ParticlesToEmit = particlesToEmit;
+                totalParticlesToEmit += (int)particlesToEmit;
 
 
-                (*((uint*)parentParticle[childrenFlagsFieldParent])) = childrenFlag;
-
-                totalParticlesToEmit += (int) particlesToEmit;
+                (*((ParticleChildrenAttribute*)parentParticle[spawnControlGroup])) = childrenAttribute;
             }
 
             emitter.EmitParticles(totalParticlesToEmit);
         }
 
         /// <inheritdoc />
-        public /*override*/ void InvalidateRelations()
+        public override void InvalidateRelations()
         {
-//            base.InvalidateRelations();
+            base.InvalidateRelations();
 
-            if (Parent != null)
-                Parent.RemoveRequiredField(ParticleFields.ChildrenFlags[0]);
+            RemoveControlGroup();
             
             Parent = null;
             isParentNameDirty = true;

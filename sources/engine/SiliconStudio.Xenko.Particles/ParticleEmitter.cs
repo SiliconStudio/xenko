@@ -1098,6 +1098,11 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public void InvalidateRelations()
         {
+            foreach (var particleSpawner in Spawners)
+            {
+                particleSpawner.InvalidateRelations();
+            }
+
             foreach (var initializer in Initializers)
             {
                 initializer.InvalidateRelations();

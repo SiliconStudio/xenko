@@ -106,7 +106,10 @@
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Spawners\ParentControlFlag.cs" />
+    <Compile Include="Spawners\ParticleChildrenAttribute.cs" />
     <Compile Include="Spawners\SpawnerFromParent.cs" />
+    <Compile Include="Updaters\ParticleCollisionAttribute.cs" />
     <Compile Include="Updaters\UpdaterColorOverTime.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterRotationOverTime.cs" />

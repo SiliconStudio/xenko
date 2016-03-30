@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Particles.Spawners;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
@@ -24,7 +25,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </summary>
         private bool isParentNameDirty = true;
 
-        [DataMember(2)]
+        [DataMember(11)]
         [Display("Parent emitter")]
         public string ParentName
         {
@@ -37,14 +38,34 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         }
 
         /// <summary>
-        /// The parent seed offset is used to determine which particle from the pool should be picked as a parent
+        /// The parent seed offset is used to determine which particle from the pool should be picked as a parent in case there is no control group
         /// </summary>
         /// <userdoc>
-        /// The parent seed offset is used to determine which particle from the pool should be picked as a parent
+        /// The parent seed offset is used to determine which particle from the pool should be picked as a parent in case there is no control group
         /// </userdoc>
-        [DataMember(3)]
+        [DataMember(12)]
         [Display("Parent Offset")]
         public uint ParentSeedOffset { get; set; } = 0;
+
+        /// <summary>
+        /// Some initializers require fine control between parent and child emitters. Use the control group to assign such meta-fields.
+        /// </summary>
+        [DataMember(13)]
+        [Display("Spawn Control Group")]
+        public ParentControlFlag ParentControlFlag { get; set; } = ParentControlFlag.Group00;
+
+        /// <summary>
+        /// Gets a field accessor to the parent emitter's spawn control field, if it exists
+        /// </summary>
+        /// <returns></returns>
+        protected ParticleFieldAccessor<ParticleChildrenAttribute> GetSpawnControlField()
+        {
+            var groupIndex = (int)ParentControlFlag;
+            if (groupIndex >= ParticleFields.ChildrenFlags.Length)
+                return ParticleFieldAccessor<ParticleChildrenAttribute>.Invalid();
+
+            return Parent?.Pool?.GetField(ParticleFields.ChildrenFlags[groupIndex]) ?? ParticleFieldAccessor<ParticleChildrenAttribute>.Invalid();
+        } 
 
         /// <inheritdoc />
         public override void SetParentTrs(ParticleTransform transform, ParticleSystem parentSystem)
@@ -53,11 +74,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             if (isParentNameDirty)
             {
-                InvalidateRelations();
-
                 Parent = parentSystem?.GetEmitterByName(ParentName);
-                if (Parent != null)
-                    Parent.AddRequiredField(ParticleFields.ChildrenFlags[0]);
 
                 isParentNameDirty = false;
             }
@@ -67,9 +84,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         public override void InvalidateRelations()
         {
             base.InvalidateRelations();
-
-            if (Parent != null)
-                Parent.RemoveRequiredField(ParticleFields.ChildrenFlags[0]);
 
             Parent = null;
             isParentNameDirty = true;
