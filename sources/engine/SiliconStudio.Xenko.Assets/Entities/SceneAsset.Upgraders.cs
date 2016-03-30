@@ -883,6 +883,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </remarks>
         class ParticleMinMaxFieldsUpgrader : AssetUpgraderBase
         {
+            // FIXME: check that this works for overrides as well (currently probably not). See DynamicYaml.
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
 
@@ -957,6 +958,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         class ModelEffectUpgrader : AssetUpgraderBase
         {
+            // FIXME: check that this works for overrides as well (currently probably not). See DynamicYaml.
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // TODO: Asset upgraders are called for BaseParts too, which might not be of the same type. Upgraders should be aware of this.
@@ -1030,6 +1032,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         class PhysicsFiltersUpgrader : AssetUpgraderBase
         {
+            // FIXME: check that this works for overrides as well (currently probably not). See DynamicYaml.
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
@@ -1067,6 +1070,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </remarks>
         class ParticleColorAnimationUpgrader : AssetUpgraderBase
         {
+            // FIXME: check that this works for overrides as well (currently probably not). See DynamicYaml.
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Replace ComputeCurveSamplerVector4 with ComputeCurveSamplerColor4.
