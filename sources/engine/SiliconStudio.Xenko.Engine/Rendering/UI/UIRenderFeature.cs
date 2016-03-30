@@ -120,8 +120,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             renderingContext.RenderTarget = currentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
             // cache the ratio between viewport and target.
-            var viewportSize = context.CommandList.Viewport.Size;
-            viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
+            var viewportSize = renderView.SceneCameraRenderer.ComputedViewport.Size;
+            viewportTargetRatio = new Vector2(viewportSize.X / renderView.SceneCameraRenderer.ComputedViewport.Width, viewportSize.Y / renderView.SceneCameraRenderer.ComputedViewport.Height);
 
             // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
             CompactPointerEvents();
@@ -237,7 +237,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
-                context.CommandList.SetRenderTargetAndViewport(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetViewport(renderView.SceneCameraRenderer.ComputedViewport);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
