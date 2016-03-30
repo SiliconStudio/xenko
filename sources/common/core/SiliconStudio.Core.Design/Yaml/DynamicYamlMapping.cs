@@ -38,6 +38,7 @@ namespace SiliconStudio.Core.Yaml
 
         public DynamicYamlMapping(YamlMappingNode node)
         {
+            if (node == null) throw new ArgumentNullException(nameof(node));
             this.node = node;
             ParseOverrides();
         }
