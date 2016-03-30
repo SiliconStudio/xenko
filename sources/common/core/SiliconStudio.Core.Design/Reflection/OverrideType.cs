@@ -27,10 +27,22 @@ namespace SiliconStudio.Core.Reflection
     }
 
     /// <summary>
-    /// Extensions for <see cref="OverrideType"/>.
+    /// This class is holding the PropertyKey using to store <see cref="OverrideType"/> per object into the <see cref="ShadowObject"/>.
     /// </summary>
-    public static class OverrideTypeExtensions
+    public static partial class Override
     {
+        internal const char PostFixSealed = '!';
+
+        internal const char PostFixNew = '*';
+
+        internal const string PostFixNewSealed = "*!";
+
+        internal const string PostFixNewSealedAlt = "!*";
+
+        internal const string PostFixSealedText = "!";
+
+        internal const string PostFixNewText = "*";
+
         /// <summary>
         /// Determines whether the specified type is sealed.
         /// </summary>
@@ -60,7 +72,6 @@ namespace SiliconStudio.Core.Reflection
         {
             return (type & OverrideType.New) != 0;
         }
-
 
         public static string ToText(this OverrideType type)
         {

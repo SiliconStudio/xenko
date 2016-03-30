@@ -8,24 +8,12 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// This class is holding the PropertyKey using to store <see cref="OverrideType"/> per object into the <see cref="ShadowObject"/>.
     /// </summary>
-    public static class Override
+    public static partial class Override
     {
         /// <summary>
         /// The OverrideType key.
         /// </summary>
         public static readonly PropertyKey<OverrideType> OverrideKey = new PropertyKey<OverrideType>("Override", typeof(Override), DefaultValueMetadata.Static(OverrideType.New));
-
-        internal const char PostFixSealed = '!';
-
-        internal const char PostFixNew = '*';
-
-        internal const string PostFixNewSealed = "*!";
-
-        internal const string PostFixNewSealedAlt = "!*";
-
-        internal const string PostFixSealedText = "!";
-
-        internal const string PostFixNewText = "*";
 
         /// <summary>
         /// Gets the override for the specified member.
