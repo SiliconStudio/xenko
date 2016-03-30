@@ -27,6 +27,7 @@ namespace SiliconStudio.Core.Yaml
 
         public DynamicYamlScalar(YamlScalarNode node)
         {
+            if (node == null) throw new ArgumentNullException(nameof(node));
             this.node = node;
         }
 
