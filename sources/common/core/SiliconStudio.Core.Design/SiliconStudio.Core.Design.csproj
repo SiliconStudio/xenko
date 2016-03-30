@@ -97,6 +97,7 @@
     <Compile Include="Settings\SettingsProfileSerializer.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
+    <Compile Include="Yaml\DynamicYaml.cs" />
     <Compile Include="Yaml\DynamicYamlExtensions.cs" />
     <Compile Include="Yaml\IDynamicYamlNode.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />

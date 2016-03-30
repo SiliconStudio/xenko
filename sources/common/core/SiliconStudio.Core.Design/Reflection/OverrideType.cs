@@ -60,5 +60,23 @@ namespace SiliconStudio.Core.Reflection
         {
             return (type & OverrideType.New) != 0;
         }
+
+
+        public static string ToText(this OverrideType type)
+        {
+            if (type == OverrideType.New)
+            {
+                return Override.PostFixNewText;
+            }
+            if (type == OverrideType.Sealed)
+            {
+                return Override.PostFixSealedText;
+            }
+            if (type == (OverrideType.New | OverrideType.Sealed))
+            {
+                return Override.PostFixNewSealed;
+            }
+            return string.Empty;
+        }
     }
 }
