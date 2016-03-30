@@ -13,24 +13,24 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The default value for the orientation.
         /// </summary>
-        Default = 0,
+        Default = DisplayOrientation.Default,
 
         /// <summary>
         /// Displays in landscape mode to the left.
         /// </summary>
         [Display("Landscape Left")]
-        LandscapeLeft = 1,
+        LandscapeLeft = DisplayOrientation.LandscapeLeft,
 
         /// <summary>
         /// Displays in landscape mode to the right.
         /// </summary>
         [Display("Landscape Right")]
-        LandscapeRight = 2,
+        LandscapeRight = DisplayOrientation.LandscapeRight,
 
         /// <summary>
         /// Displays in portrait mode.
         /// </summary>
-        Portrait = 4
+        Portrait = DisplayOrientation.Portrait
     }
 
     public enum PreferredGraphicsPlatform
