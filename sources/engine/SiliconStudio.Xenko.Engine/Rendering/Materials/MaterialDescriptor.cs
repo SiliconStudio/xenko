@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// A descriptor of a <see cref="Material"/>.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<MaterialDescriptor>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<MaterialDescriptor>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<MaterialDescriptor>))]
     [DataContract("MaterialDescriptor")]
     public class MaterialDescriptor : IMaterialDescriptor
@@ -49,6 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(null)]
         [DataMember(20)]
         [NotNull]
+        [NotNullItems]
         public MaterialBlendLayers Layers { get; set; }
 
         public void Visit(MaterialGeneratorContext context)

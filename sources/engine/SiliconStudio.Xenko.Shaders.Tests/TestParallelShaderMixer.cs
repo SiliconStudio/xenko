@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
 
             compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
@@ -81,13 +81,13 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         {
             Console.WriteLine(@"Inside Thread");
             
-            var parameters = new ShaderMixinParameters();
-            parameters.Set(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
-            parameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
+            var parameters = new CompilerParameters();
+            parameters.EffectParameters.Platform = GraphicsPlatform.Direct3D11;
+            parameters.EffectParameters.Profile = GraphicsProfile.Level_11_0;
 
-            var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix", UsedParameters = parameters };
+            var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix" };
 
-            var result = effectCompiler.Compile(mixinTree, new CompilerParameters()).WaitForResult();
+            var result = effectCompiler.Compile(mixinTree, parameters.EffectParameters, parameters).WaitForResult();
 
             Assert.IsFalse(result.CompilationLog.HasErrors);
             Assert.IsNotNull(result);

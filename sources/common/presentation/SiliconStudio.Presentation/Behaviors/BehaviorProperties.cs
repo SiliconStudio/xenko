@@ -97,51 +97,51 @@ namespace SiliconStudio.Presentation.Behaviors
         private static void KeepTaskbarWhenMaximizedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var window = d as Window;
-            if (window != null)
+            if (window == null)
+                return;
+
+            if (window.IsLoaded)
             {
-                if (window.IsLoaded)
+                var hwnd = new WindowInteropHelper(window).Handle;
+                var source = HwndSource.FromHwnd(hwnd);
+                source?.AddHook(
+                    (IntPtr h, int msg, IntPtr wparam, IntPtr lparam, ref bool handled) => WindowProc(window, h, msg, wparam, lparam, ref handled));
+            }
+            else
+            {
+                window.SourceInitialized += (sender, arg) =>
                 {
                     var hwnd = new WindowInteropHelper(window).Handle;
                     var source = HwndSource.FromHwnd(hwnd);
-                    if (source != null)
-                    {
-                        source.AddHook(WindowProc);
-                    }
-                }
-                else
-                {
-                window.SourceInitialized += (sender, arg) =>
-                    {
-                        var hwnd = new WindowInteropHelper(window).Handle;
-                        var source = HwndSource.FromHwnd(hwnd);
-                        if (source != null)
-                        {
-                            source.AddHook(WindowProc);
-                        }
-                    };
-                }
+                    source?.AddHook(
+                        (IntPtr h, int msg, IntPtr wparam, IntPtr lparam, ref bool handled) => WindowProc(window, h, msg, wparam, lparam, ref handled));
+                };
             }
         }
 
-        private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        private static IntPtr WindowProc(Window window, IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
             switch (msg)
             {
                 /* WM_GETMINMAXINFO */
                 case 0x0024:
+                    var monitorInfo = WindowHelper.GetMonitorInfo(hwnd);
+                    if (monitorInfo == null)
+                        break;
+
                     var mmi = (NativeHelper.MINMAXINFO)Marshal.PtrToStructure(lparam, typeof(NativeHelper.MINMAXINFO));
-                    var monitor = NativeHelper.MonitorFromWindow(hwnd, NativeHelper.MONITOR_DEFAULTTONEAREST);
-                    if (monitor != IntPtr.Zero)
-                    {
-                        var monitorInfo = new NativeHelper.MONITORINFO();
-                        NativeHelper.GetMonitorInfo(monitor, monitorInfo);
-                        NativeHelper.RECT rcWorkArea = monitorInfo.rcWork;
-                        NativeHelper.RECT rcMonitorArea = monitorInfo.rcMonitor;
-                        mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
-                        mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
-                        mmi.ptMaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
-                        mmi.ptMaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
-                    }
+                    var rcWorkArea = monitorInfo.rcWork;
+                    var rcMonitorArea = monitorInfo.rcMonitor;
+
+                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    // Get maximum width and height from WPF
+                    var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
+                    var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
+                    mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
+                    mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
+                    mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                    mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
 
                     Marshal.StructureToPtr(mmi, lparam, true);
                     handled = true;

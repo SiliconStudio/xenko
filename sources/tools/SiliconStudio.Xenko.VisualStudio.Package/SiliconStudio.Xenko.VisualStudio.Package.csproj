@@ -180,6 +180,9 @@
     <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
       <Link>Commands\NugetStore.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverrideType.cs">
+      <Link>Core\OverrideType.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
       <Link>Core\Design\Windows\FileLock.cs</Link>
     </Compile>
@@ -231,7 +234,6 @@
     <Compile Include="CodeGenerator\BaseCodeGenerator.cs" />
     <Compile Include="CodeGenerator\BaseCodeGeneratorWithSite.cs" />
     <Compile Include="Commands\BuildMonitorCallback.cs" />
-    <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\IXenkoCommands.cs" />
     <Compile Include="Commands\XenkoCommandsProxy.cs" />
     <Compile Include="MyControl.xaml.cs">

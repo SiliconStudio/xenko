@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine.Network;
 
@@ -21,12 +22,12 @@ namespace SiliconStudio.Xenko.ConnectionRouter
         private Dictionary<string, TaskCompletionSource<Service>> registeredServices = new Dictionary<string, TaskCompletionSource<Service>>();
         private Dictionary<Guid, TaskCompletionSource<SimpleSocket>> pendingServers = new Dictionary<Guid, TaskCompletionSource<SimpleSocket>>();
 
-        public void Listen(int port)
+        public async Task Listen(int port)
         {
             Log.Info("Start to listen on port {0}", port);
 
             var socketContext = CreateSocketContext();
-            Task.Run(() => socketContext.StartServer(port, false));
+            await socketContext.StartServer(port, false);
         }
 
         /// <summary>
@@ -58,9 +59,14 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
                         switch (routerMessage)
                         {
+                            case RouterMessage.TaskProvideServer:
+                            {
+                                await HandleMessageServiceProvideServer(clientSocketContext, true);
+                                break;
+                            }
                             case RouterMessage.ServiceProvideServer:
                             {
-                                await HandleMessageServiceProvideServer(clientSocketContext);
+                                await HandleMessageServiceProvideServer(clientSocketContext, false);
                                 break;
                             }
                             case RouterMessage.ServerStarted:
@@ -119,9 +125,13 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     case "service":
                     {
                         // From the URL, start service (if not started yet) and ask it to provide a server
-                        serverSocket = await SpawnServerFromService(url);
+                        serverSocket = await SpawnServerFromService(url, false);
                         break;
                     }
+                    case "task":
+                        // From the URL, start service (if not started yet) and ask it to provide a server
+                        serverSocket = await SpawnServerFromService(url, true);
+                        break;
                     default:
                         throw new InvalidOperationException("This type of URL is not supported");
                 }
@@ -167,7 +177,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             }
         }
 
-        private async Task<SimpleSocket> SpawnServerFromService(string url)
+        private async Task<SimpleSocket> SpawnServerFromService(string url, bool task)
         {
             // Ideally we would like to reuse Uri (or some other similar code), but it doesn't work without a Host
             var parameterIndex = url.IndexOf('?');
@@ -178,17 +188,19 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             RouterHelper.ParseUrl(url, out urlSegments, out urlParameters);
 
             // Find a matching server
-            TaskCompletionSource<Service> serviceTCS;
+            TaskCompletionSource<Service> serviceTcs;
 
             lock (registeredServices)
             {
-                if (!registeredServices.TryGetValue(urlWithoutParameters, out serviceTCS))
+                if (!registeredServices.TryGetValue(urlWithoutParameters, out serviceTcs))
                 {
-                    serviceTCS = new TaskCompletionSource<Service>();
-                    registeredServices.Add(urlWithoutParameters, serviceTCS);
+                    if (task) throw new Exception("ConnectionRouter task not found, a task won't spawn a new service on demand instead must be started explicitly.");
+
+                    serviceTcs = new TaskCompletionSource<Service>();
+                    registeredServices.Add(urlWithoutParameters, serviceTcs);
                 }
 
-                if (!serviceTCS.Task.IsCompleted)
+                if (!serviceTcs.Task.IsCompleted)
                 {
                     if (urlSegments.Length < 3)
                     {
@@ -211,14 +223,14 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 }
             }
 
-            var service = await serviceTCS.Task;
+            var service = await serviceTcs.Task;
 
             // Generate connection Guid
             var guid = Guid.NewGuid();
-            var serverSocketTCS = new TaskCompletionSource<SimpleSocket>();
+            var serverSocketTcs = new TaskCompletionSource<SimpleSocket>();
             lock (pendingServers)
             {
-                pendingServers.Add(guid, serverSocketTCS);
+                pendingServers.Add(guid, serverSocketTcs);
             }
 
             await service.SendLock.WaitAsync();
@@ -237,10 +249,10 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
             // Should answer within 2 sec
             var ct = new CancellationTokenSource(2000);
-            ct.Token.Register(() => serverSocketTCS.TrySetException(new TimeoutException("Server could not connect back in time")));
+            ct.Token.Register(() => serverSocketTcs.TrySetException(new TimeoutException("Server could not connect back in time")));
 
             // Wait for such a server to be available
-            return await serverSocketTCS.Task;
+            return await serverSocketTcs.Task;
         }
 
         private static Process RunServiceProcessAndLog(string servicePath)
@@ -300,18 +312,33 @@ namespace SiliconStudio.Xenko.ConnectionRouter
         /// Handles ServiceProvideServer messages. It allows service to publicize what "server" they can instantiate.
         /// </summary>
         /// <param name="clientSocket">The client socket context.</param>
+        /// <param name="task">If it's a task the service will overwrite old instances</param>
         /// <returns></returns>
-        private async Task HandleMessageServiceProvideServer(SimpleSocket clientSocket)
+        private async Task HandleMessageServiceProvideServer(SimpleSocket clientSocket, bool task)
         {
             var url = await clientSocket.ReadStream.ReadStringAsync();
-            TaskCompletionSource<Service> service;
 
             lock (registeredServices)
             {
-                if (!registeredServices.TryGetValue(url, out service))
+                TaskCompletionSource<Service> service;
+                if (task)
                 {
+                    if (registeredServices.TryGetValue(url, out service))
+                    {
+                        var result = service.Task.Result;
+                        result.Socket.Dispose();
+                    }
+
                     service = new TaskCompletionSource<Service>();
-                    registeredServices.Add(url, service);
+                    registeredServices[url] = service;
+                }
+                else
+                {
+                    if (!registeredServices.TryGetValue(url, out service))
+                    {
+                        service = new TaskCompletionSource<Service>();
+                        registeredServices.Add(url, service);
+                    }
                 }
 
                 service.TrySetResult(new Service(clientSocket));

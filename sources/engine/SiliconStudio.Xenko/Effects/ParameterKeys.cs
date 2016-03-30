@@ -46,87 +46,38 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        /// <summary>
-        /// Creates a value key.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="defaultValue">The default value.</param>
-        /// <param name="name">The name.</param>
-        /// <returns>ParameterKey{``0}.</returns>
-        public static ParameterKey<T> New<T>(T defaultValue, string name = null)
+        public static PermutationParameterKey<T> NewPermutation<T>(T defaultValue = default(T), string name = null)
         {
             if (name == null)
                 name = string.Empty;
 
             var length = typeof(T).IsArray ? (defaultValue != null ? ((Array)(object)defaultValue).Length : -1) : 1;
-            return new ParameterKey<T>(name, length, new ParameterKeyValueMetadata<T>(defaultValue));
+            return new PermutationParameterKey<T>(name, length, new ParameterKeyValueMetadata<T>(defaultValue));
         }
 
-
-        /// <summary>
-        /// Creates a value key.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>ParameterKey{``0}.</returns>
-        public static ParameterKey<T> NewWithMetas<T>(PropertyKeyMetadata metadata)
-        {
-            return NewWithMetas<T>(new[] { metadata });
-        }
-
-        /// <summary>
-        /// Creates a value key.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="metadatas">The metadatas.</param>
-        /// <returns>ParameterKey{``0}.</returns>
-        public static ParameterKey<T> NewWithMetas<T>(PropertyKeyMetadata[] metadatas)
-        {
-            if (metadatas.Length > 0)
-            {
-                var list = new List<PropertyKeyMetadata>(metadatas) { new ParameterKeyValueMetadata<T>(default(T)) };
-                metadatas = list.ToArray();
-            }
-
-            return new ParameterKey<T>(string.Empty, -1, metadatas);
-        }
-
-        public static ParameterKey<T> New<T>()
-        {
-            return New<T>(default(T));
-        }
-
-        internal static ParameterKey<T> New<T>(string name)
-        {
-            return New<T>(default(T), name);
-        }
-
-        public static ParameterKey<T> NewDynamic<T>(ParameterDynamicValue<T> dynamicValue, string name = null)
+        public static ValueParameterKey<T> NewValue<T>(T defaultValue = default(T), string name = null) where T : struct
         {
             if (name == null)
                 name = string.Empty;
 
-            var metadata = new ParameterKeyValueMetadata<T>(dynamicValue);
-            var result = new ParameterKey<T>(name, 1, metadata);
-            return result;
+            return new ValueParameterKey<T>(name, 1, new ParameterKeyValueMetadata<T>(defaultValue));
         }
 
-        public static ParameterKey<T[]> NewDynamic<T>(int arraySize, ParameterDynamicValue<T[]> dynamicValue, string name = null) where T : struct
+        public static ObjectParameterKey<T> NewObject<T>(T defaultValue = default(T), string name = null)
         {
             if (name == null)
                 name = string.Empty;
 
-            var metadata = new ParameterKeyValueMetadata<T[]>(dynamicValue);
-            var result = new ParameterKey<T[]>(name, arraySize, metadata);
-            return result;
+            var length = typeof(T).IsArray ? (defaultValue != null ? ((Array)(object)defaultValue).Length : -1) : 1;
+            return new ObjectParameterKey<T>(name, length, new ParameterKeyValueMetadata<T>(defaultValue));
         }
-        
+
         /// <summary>
         /// Creates the key with specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public static ParameterKey<T> IndexedKey<T>(ParameterKey<T> key, int index)
+        public static T IndexedKey<T>(T key, int index) where T : ParameterKey
         {
             if (index == 0)
                 return key;
@@ -142,7 +93,7 @@ namespace SiliconStudio.Xenko.Rendering
                 keyName = key.Name + index;
             }
 
-            return New<T>(default(T), keyName);
+            return (T)Activator.CreateInstance(typeof(T), keyName, key.Length, key.Metadatas);
         }
 
         public static ParameterKey Merge(ParameterKey key, Type ownerType, string name)
@@ -302,17 +253,13 @@ namespace SiliconStudio.Xenko.Rendering
                             baseParameterKeyType = baseParameterKeyType.GetTypeInfo().BaseType;
 
                         // Get default value and use it for the new subkey
-                        var defaultValue = key.DefaultValueMetadata.DefaultDynamicValue ?? key.DefaultValueMetadata.GetDefaultValue();
+                        var defaultValue = key.DefaultValueMetadata.GetDefaultValue();
 
                         // Create metadata
                         var metadataParameters = defaultValue != null ? new[] { defaultValue } : new object[0]; 
                         var metadata = Activator.CreateInstance(typeof(ParameterKeyValueMetadata<>).MakeGenericType(baseParameterKeyType.GetTypeInfo().GenericTypeArguments[0]), metadataParameters);
 
-                        var args = new[] { name, metadata };
-                        if (key.GetType().GetGenericTypeDefinition() == typeof(ParameterKey<>))
-                        {
-                            args = new[] { name, key.Length, metadata };
-                        }
+                        var args = new[] { name, key.Length, metadata };
                         key = (ParameterKey)Activator.CreateInstance(key.GetType(), args);
 
                         // Register key. Also register real name in case it was remapped.
@@ -343,7 +290,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 unchecked
                 {
-                    hashCode = hashCode = Key.GetHashCode();
+                    hashCode = Key.GetHashCode();
                     hashCode = (hashCode * 397) ^ Name.GetHashCode();
                     hashCode = (hashCode * 397) ^ Indexer;
                 }

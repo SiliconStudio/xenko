@@ -47,7 +47,8 @@ namespace SiliconStudio.Shaders.Ast
             if (list != null)
             {
                 var nodeProcessor = nodeProcessorContext.NodeProcessor;
-                for (int i = 0; i < list.Count;)
+                int i = 0;
+                while (i < list.Count)
                 {
                     var previousValue = (Node)list[i];
                     var temp = nodeProcessor(previousValue, ref nodeProcessorContext);
@@ -108,7 +109,7 @@ namespace SiliconStudio.Shaders.Ast
 
             // Get all types from most inherited
             var types = new List<Type>();
-            for (var type = rootType; type != null; type = type.BaseType)
+            for (var type = rootType; type != null; type = type.GetTypeInfo().BaseType)
                 types.Add(type);
             types.Reverse();
 
@@ -120,24 +121,24 @@ namespace SiliconStudio.Shaders.Ast
                 {
 
                     // If the property is not read-writable or contains a visitor ignore attribute, skip it
-                    if (sourceField.GetCustomAttributes(typeof(VisitorIgnoreAttribute), true).Length != 0)
+                    if (sourceField.GetCustomAttribute<VisitorIgnoreAttribute>(true) != null)
                     {
                         continue;
                     }
 
                     var propertyType = sourceField.FieldType;
 
-                    var interfaces = propertyType.GetInterfaces();
+                    var interfaces = propertyType.GetTypeInfo().ImplementedInterfaces;
 
                     // Get the property type and check if the property inherit from IList<>
-                    if (!typeof(StatementList).IsAssignableFrom(propertyType))
+                    if (!typeof(StatementList).GetTypeInfo().IsAssignableFrom(propertyType.GetTypeInfo()))
                     {
                         foreach (var interfaceBase in interfaces)
                         {
-                            if (interfaceBase.IsGenericType && interfaceBase.GetGenericTypeDefinition() == typeof(IList<>))
+                            if (interfaceBase.GetTypeInfo().IsGenericType && interfaceBase.GetTypeInfo().GetGenericTypeDefinition() == typeof(IList<>))
                             {
-                                var parameterType = interfaceBase.GetGenericArguments()[0];
-                                if (typeof(Node).IsAssignableFrom(parameterType))
+                                var parameterType = interfaceBase.GetTypeInfo().GenericTypeArguments[0];
+                                if (typeof(Node).GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo()))
                                     statements.Add(
                                         LinqExpression.Invoke(variableNodeListProcessor, LinqExpression.Field(castVar, sourceField), explorerParameter));
                                 break;
@@ -145,7 +146,7 @@ namespace SiliconStudio.Shaders.Ast
                         }
                     }
 
-                    if (typeof(Node).IsAssignableFrom(propertyType))
+                    if (typeof(Node).GetTypeInfo().IsAssignableFrom(propertyType.GetTypeInfo()))
                     {
                         statements.Add(
                             LinqExpression.Assign(

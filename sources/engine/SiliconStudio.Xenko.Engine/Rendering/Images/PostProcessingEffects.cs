@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>The camera.</value>
         /// <userdoc>Specifies the camera to use for the sequence of post-effects</userdoc>
         [DataMember(5)]
-        public SceneCameraSlotIndex Camera { get; set; }
+        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
         /// <summary>
         /// Gets the depth of field effect.
@@ -213,11 +213,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             bloom = ToLoadAndUnload(bloom);
             lightStreak = ToLoadAndUnload(lightStreak);
             lensFlare = ToLoadAndUnload(lensFlare);
-            ssaa = ToLoadAndUnload(ssaa);
+            //this can be null if no SSAA is selected in the editor
+            if(ssaa != null) ssaa = ToLoadAndUnload(ssaa);
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -227,139 +228,137 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Gets the current camera state 
-            var camera = context.GetCameraFromSlot(Camera);
-            if (camera != null)
+            var camera = context.RenderContext.GetCameraFromSlot(Camera);
+            using (context.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 // Update the parameters for this post effect
-                CameraComponentRenderer.UpdateParameters(context, camera);
-            }
-
-            if (!Enabled)
-            {
-                if (input != output)
+                if (!Enabled)
                 {
-                    Scaler.SetInput(input);
-                    Scaler.SetOutput(output);
-                    Scaler.Draw(context);
+                    if (input != output)
+                    {
+                        Scaler.SetInput(input);
+                        Scaler.SetOutput(output);
+                        ((RendererBase)Scaler).Draw(context);
+                    }
+                    return;
                 }
-                return;
-            }
 
-            // If input == output, than copy the input to a temporary texture
-            if (input == output)
-            {
-                var newInput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                GraphicsDevice.Copy(input, newInput);
-                input = newInput;
-            }
+                // If input == output, than copy the input to a temporary texture
+                if (input == output)
+                {
+                    var newInput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    context.CommandList.Copy(input, newInput);
+                    input = newInput;
+                }
             
-            var currentInput = input;
+                var currentInput = input;
 
-            if (depthOfField.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
-            {
-                // DoF
-                var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                var inputDepthTexture = GetInput(1); // Depth
-                depthOfField.SetColorDepthInput(input, inputDepthTexture);
-                depthOfField.SetOutput(dofOutput);
-                depthOfField.Draw(context);
-                currentInput = dofOutput;
-            }
-
-            // Luminance pass (only if tone mapping is enabled)
-            // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
-            var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
-            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
-            {
-                const int LocalLuminanceDownScale = 3;
-
-                // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
-                var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
-                lumWidth = Math.Max(1, lumWidth / 2);
-
-                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(LocalLuminanceDownScale);
-                var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
-
-                luminanceEffect.SetInput(currentInput);
-                luminanceEffect.SetOutput(luminanceTexture);
-                luminanceEffect.Draw(context);
-
-                // Set this parameter that will be used by the tone mapping
-                colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
-            }
-
-            // Bright filter pass
-            Texture brightTexture = null;
-            if (bloom.Enabled || lightStreak.Enabled || lensFlare.Enabled)
-            {
-                brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
-
-                brightFilter.SetInput(currentInput);
-                brightFilter.SetOutput(brightTexture);
-                brightFilter.Draw(context);
-            }
-
-            // Bloom pass
-            if (bloom.Enabled)
-            {
-                bloom.SetInput(brightTexture);
-                bloom.SetOutput(currentInput);
-                bloom.Draw(context);
-            }
-
-            // Light streak pass
-            if (lightStreak.Enabled)
-            {
-                lightStreak.SetInput(brightTexture);
-                lightStreak.SetOutput(currentInput);
-                lightStreak.Draw(context);
-            }
-
-            // Lens flare pass
-            if (lensFlare.Enabled)
-            {
-                lensFlare.SetInput(brightTexture);
-                lensFlare.SetOutput(currentInput);
-                lensFlare.Draw(context);
-            }
-
-            var outputForLastEffectBeforeAntiAliasing = output;
-
-            if (ssaa != null && ssaa.Enabled)
-            {
-                outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
-            }
-
-            // When FXAA is enabled we need to detect whether the ColorTransformGroup should output the Luminance into the alpha or not
-            var fxaa = ssaa as FXAAEffect;
-            var luminanceToChannelTransform = colorTransformsGroup.PostTransforms.Get<LuminanceToChannelTransform>();
-            if (fxaa != null)
-            {
-                if (luminanceToChannelTransform == null)
+                if (depthOfField.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
                 {
-                    luminanceToChannelTransform = new LuminanceToChannelTransform { ColorChannel = ColorChannel.A };
-                    colorTransformsGroup.PostTransforms.Add(luminanceToChannelTransform);
+                    // DoF
+                    var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    var inputDepthTexture = GetInput(1); // Depth
+                    depthOfField.SetColorDepthInput(input, inputDepthTexture);
+                    depthOfField.SetOutput(dofOutput);
+                    ((RendererBase)depthOfField).Draw(context);
+                    currentInput = dofOutput;
                 }
 
-                // Only enabled when FXAA is enabled and InputLuminanceInAlpha is true
-                luminanceToChannelTransform.Enabled = fxaa.Enabled && fxaa.InputLuminanceInAlpha;
-            }
-            else if (luminanceToChannelTransform != null)
-            {
-                luminanceToChannelTransform.Enabled = false;
-            }
+                // Luminance pass (only if tone mapping is enabled)
+                // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
+                var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
+                if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
+                {
+                    const int LocalLuminanceDownScale = 3;
 
-            // Color transform group pass (tonemap, color grading)
-            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
-            lastEffect.SetInput(currentInput);
-            lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
-            lastEffect.Draw(context);
+                    // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
+                    var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
+                    lumWidth = Math.Max(1, lumWidth / 2);
 
-            if (ssaa != null && ssaa.Enabled)
-            {
-                ssaa.SetInput(outputForLastEffectBeforeAntiAliasing);
-                ssaa.SetOutput(output);
-                ssaa.Draw(context);
+                    var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(LocalLuminanceDownScale);
+                    var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
+
+                    luminanceEffect.SetInput(currentInput);
+                    luminanceEffect.SetOutput(luminanceTexture);
+                    ((RendererBase)luminanceEffect).Draw(context);
+
+                    // Set this parameter that will be used by the tone mapping
+                    colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
+                }
+
+                // Bright filter pass
+                Texture brightTexture = null;
+                if (bloom.Enabled  || lightStreak.Enabled || lensFlare.Enabled)
+                {
+                    brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
+
+                    brightFilter.SetInput(currentInput);
+                    brightFilter.SetOutput(brightTexture);
+                    ((RendererBase)brightFilter).Draw(context);
+                }
+
+                // Bloom pass
+                if (bloom.Enabled)
+                {
+                    bloom.SetInput(brightTexture);
+                    bloom.SetOutput(currentInput);
+                    ((RendererBase)bloom).Draw(context);
+                }
+
+                // Light streak pass
+                if (lightStreak.Enabled)
+                {
+                    lightStreak.SetInput(brightTexture);
+                    lightStreak.SetOutput(currentInput);
+                    ((RendererBase)lightStreak).Draw(context);
+                }
+
+                // Lens flare pass
+                if (lensFlare.Enabled)
+                {
+                    lensFlare.SetInput(brightTexture);
+                    lensFlare.SetOutput(currentInput);
+                    ((RendererBase)lensFlare).Draw(context);
+                }
+
+                var outputForLastEffectBeforeAntiAliasing = output;
+
+                if (ssaa != null && ssaa.Enabled)
+                {
+                    outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
+                }
+
+                // When FXAA is enabled we need to detect whether the ColorTransformGroup should output the Luminance into the alpha or not
+                var fxaa = ssaa as FXAAEffect;
+                var luminanceToChannelTransform = colorTransformsGroup.PostTransforms.Get<LuminanceToChannelTransform>();
+                if (fxaa != null)
+                {
+                    if (luminanceToChannelTransform == null)
+                    {
+                        luminanceToChannelTransform = new LuminanceToChannelTransform { ColorChannel = ColorChannel.A };
+                        colorTransformsGroup.PostTransforms.Add(luminanceToChannelTransform);
+                    }
+
+                    // Only enabled when FXAA is enabled and InputLuminanceInAlpha is true
+                    luminanceToChannelTransform.Enabled = fxaa.Enabled && fxaa.InputLuminanceInAlpha;
+                }
+                else if (luminanceToChannelTransform != null)
+                {
+                    luminanceToChannelTransform.Enabled = false;
+                }
+
+                // Color transform group pass (tonemap, color grading)
+                var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
+                lastEffect.SetInput(currentInput);
+                lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
+                ((RendererBase)lastEffect).Draw(context);
+
+                if (ssaa != null && ssaa.Enabled)
+                {
+                    ssaa.SetInput(outputForLastEffectBeforeAntiAliasing);
+                    ssaa.SetOutput(output);
+                    ssaa.Draw(context);
+                }
             }
         }
     }

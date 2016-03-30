@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="DataVisitorBase"/> class.
         /// </summary>
         protected DataVisitorBase()
-            : this(new TypeDescriptorFactory(new AttributeRegistry()))
+            : this(Reflection.TypeDescriptorFactory.Default)
         {
         }
 
@@ -133,31 +133,32 @@ namespace SiliconStudio.Core.Reflection
                     VisitPrimitive(obj, (PrimitiveDescriptor)descriptor);
                     break;
                 default:
-                    if (CanVisit(obj))
+                    // Note that the behaviour is slightly different if a type has a custom visitor or not.
+                    // If it has a custom visitor, it will visit the object even if the object has been already visited
+                    // otherwise it will use CanVisit() on this instance. The CanVisit() is tracking a list of 
+                    // visited objects and it will not revisit the object.
+                    IDataCustomVisitor customVisitor;
+                    if (!mapTypeToCustomVisitors.TryGetValue(objectType, out customVisitor) && CustomVisitors.Count > 0)
                     {
-                        IDataCustomVisitor customVisitor;
-                        if (!mapTypeToCustomVisitors.TryGetValue(objectType, out customVisitor) && CustomVisitors.Count > 0)
+                        for (int i = CustomVisitors.Count - 1; i >= 0; i--)
                         {
-                            for (int i = CustomVisitors.Count - 1; i >= 0; i--)
+                            var dataCustomVisitor = CustomVisitors[i];
+                            if (dataCustomVisitor.CanVisit(objectType))
                             {
-                                var dataCustomVisitor = CustomVisitors[i];
-                                if (dataCustomVisitor.CanVisit(objectType))
-                                {
-                                    customVisitor = dataCustomVisitor;
-                                    mapTypeToCustomVisitors.Add(objectType, dataCustomVisitor);
-                                    break;
-                                }
+                                customVisitor = dataCustomVisitor;
+                                mapTypeToCustomVisitors.Add(objectType, dataCustomVisitor);
+                                break;
                             }
                         }
+                    }
 
-                        if (customVisitor != null)
-                        {
-                            customVisitor.Visit(ref context);
-                        }
-                        else
-                        {
-                            VisitObject(obj, context.Descriptor, true);
-                        }
+                    if (customVisitor != null)
+                    {
+                        customVisitor.Visit(ref context);
+                    }
+                    else if (CanVisit(obj))
+                    {
+                        VisitObject(obj, context.Descriptor, true);
                     }
                     break;
             }
@@ -208,7 +209,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 var value = array.GetValue(i);
                 CurrentPath.Push(descriptor, i);
-                VisitArrayItem(array, descriptor, i, value, value == null ? null : TypeDescriptorFactory.Find(value.GetType()));
+                VisitArrayItem(array, descriptor, i, value, TypeDescriptorFactory.Find(value?.GetType() ?? descriptor.ElementType));
                 CurrentPath.Pop();
             }
         }
@@ -221,10 +222,18 @@ namespace SiliconStudio.Core.Reflection
         public virtual void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
             int i = 0;
+
+            // Make a copy in case VisitCollectionItem mutates something
+            var items = new List<object>();
             foreach (var item in collection)
             {
+                items.Add(item);
+            }
+
+            foreach (var item in items)
+            {
                 CurrentPath.Push(descriptor, i);
-                VisitCollectionItem(collection, descriptor, i, item, item == null ? null : TypeDescriptorFactory.Find(item.GetType()));
+                VisitCollectionItem(collection, descriptor, i, item, TypeDescriptorFactory.Find(item?.GetType() ?? descriptor.ElementType));
                 CurrentPath.Pop();
                 i++;
             }
@@ -237,12 +246,19 @@ namespace SiliconStudio.Core.Reflection
 
         public virtual void VisitDictionary(object dictionary, DictionaryDescriptor descriptor)
         {
-            foreach (var keyValue in descriptor.GetEnumerator(dictionary))
+            // Make a copy in case VisitCollectionItem mutates something
+            var items = new List<KeyValuePair<object, object>>();
+            foreach (var item in descriptor.GetEnumerator(dictionary))
+            {
+                items.Add(item);
+            }
+
+            foreach (var keyValue in items)
             {
                 var key = keyValue.Key;
-                var keyDescriptor = keyValue.Key == null ? null : TypeDescriptorFactory.Find(keyValue.Key.GetType());
+                var keyDescriptor = TypeDescriptorFactory.Find(keyValue.Key?.GetType() ?? descriptor.KeyType);
                 var value = keyValue.Value;
-                var valueDescriptor = keyValue.Value == null ? null : TypeDescriptorFactory.Find(keyValue.Value.GetType());
+                var valueDescriptor = TypeDescriptorFactory.Find(keyValue.Value?.GetType() ?? descriptor.ValueType);
 
                 CurrentPath.Push(descriptor, key);
                 VisitDictionaryKeyValue(dictionary, descriptor, key, keyDescriptor, value, valueDescriptor);

@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 
@@ -14,6 +16,7 @@ using SharpYaml.Serialization;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
+using IMemberDescriptor = SharpYaml.Serialization.IMemberDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -28,6 +31,7 @@ namespace SiliconStudio.Core.Yaml
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
         private static Serializer globalSerializer;
+        private static Serializer globalSerializerWithoutId;
 
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
@@ -130,9 +134,9 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">A YAML string from a stream .</param>
         /// <returns>An instance of the YAML data.</returns>
-        public static IEnumerable<T> DeserializeMultiple<T>(Stream stream)
+        public static IEnumerable<T> DeserializeMultiple<T>(Stream stream, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(generateIds);
 
             var input = new StreamReader(stream);
             var reader = new EventReader(new Parser(input));
@@ -177,9 +181,9 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">The stream to receive the YAML representation of the object.</param>
         /// <param name="instance">The instance.</param>
-        public static void Serialize(Stream stream, object instance)
+        public static void Serialize(Stream stream, object instance, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(generateIds);
             serializer.Serialize(stream, instance);
         }
 
@@ -214,21 +218,25 @@ namespace SiliconStudio.Core.Yaml
             {
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
 
-        private static Serializer GetYamlSerializer()
+        private static Serializer GetYamlSerializer(bool generateIds = true)
         {
             Serializer localSerializer;
             // Cache serializer to improve performance
             lock (Lock)
             {
-                localSerializer = CreateSerializer(ref globalSerializer);
+                if (generateIds)
+                    localSerializer = CreateSerializer(ref globalSerializer, true);
+                else
+                    localSerializer = CreateSerializer(ref globalSerializerWithoutId, false);
             }
             return localSerializer;
         }
 
-        private static Serializer CreateSerializer(ref Serializer localSerializer)
+        private static Serializer CreateSerializer(ref Serializer localSerializer, bool generateIds)
         {
             if (localSerializer == null)
             {
@@ -243,6 +251,9 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
+                if (generateIds)
+                    config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+
                 for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                 {
                     var registeredAssembly = RegisteredAssemblies[index];
@@ -250,12 +261,47 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 localSerializer = new Serializer(config);
-                localSerializer.Settings.ObjectSerializerBackend = new OverrideKeyMappingTransform(TypeDescriptorFactory.Default);
+                localSerializer.Settings.ObjectSerializerBackend = new CustomObjectSerializerBackend(TypeDescriptorFactory.Default);
 
                 // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
             }
 
             return localSerializer;
+        }
+
+        private static void PrepareMembersCallback(SharpYaml.Serialization.Descriptors.ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
+        {
+            var type = objDesc.Type;
+
+            // Early exit if we don't need to add a unique identifier to a type
+            if (!IdentifiableHelper.IsIdentifiable(type) || typeof(IIdentifiable).IsAssignableFrom(type))
+            {
+                return;
+            }
+
+            // Otherwise we can add it
+            memberDescriptors.Add(CustomDynamicMemberDescriptor);
+        }
+
+        private static readonly CustomDynamicMember CustomDynamicMemberDescriptor = new CustomDynamicMember();
+        
+        private class CustomDynamicMember : DynamicMemberDescriptorBase
+        {
+            public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid))
+            {
+                Order = -int.MaxValue;
+            }
+
+            public override object Get(object thisObject)
+            {
+                return IdentifiableHelper.GetId(thisObject);
+            }
+
+            public override void Set(object thisObject, object value)
+            {
+                IdentifiableHelper.SetId(thisObject, (Guid)value);
+            }
+            public override bool HasSet => true;
         }
 
         /// <summary>
@@ -354,6 +400,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
 
@@ -365,6 +412,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
     }

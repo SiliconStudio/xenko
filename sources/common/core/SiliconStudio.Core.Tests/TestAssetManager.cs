@@ -15,10 +15,10 @@ using SiliconStudio.Core.Storage;
 namespace SiliconStudio.Core.Tests
 {
     [TestFixture]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<A>), Profile = "Asset")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<B>), Profile = "Asset")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<C>), Profile = "Asset")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<D>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<A>), Profile = "Content")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<B>), Profile = "Content")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<C>), Profile = "Content")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<D>), Profile = "Content")]
     public class TestAssetManager
     {
         [ContentSerializer(typeof(DataContentSerializer<A>))]
@@ -74,7 +74,7 @@ namespace SiliconStudio.Core.Tests
         {
             VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
             var databaseFileProvider = new DatabaseFileProvider(AssetIndexMap.NewTool(VirtualFileSystem.ApplicationDatabaseIndexName), new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, VirtualFileSystem.ApplicationDatabaseIndexName));
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
         }
 
         [Test]
@@ -82,8 +82,8 @@ namespace SiliconStudio.Core.Tests
         {
             var a1 = new A { I = 18 };
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("test", a1);
 
@@ -105,8 +105,8 @@ namespace SiliconStudio.Core.Tests
             var b1 = new B();
             b1.A = new A { I = 18 };
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("test", b1);
 
@@ -124,8 +124,8 @@ namespace SiliconStudio.Core.Tests
             b1.A = new A { I = 18 };
             var b2 = new B { I = 13, A = b1.A };
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("b1", b1);
             assetManager1.Save("b2", b2);
@@ -144,9 +144,9 @@ namespace SiliconStudio.Core.Tests
             var b1 = new B();
             b1.A = new A { I = 18 };
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
-            var assetManager3 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
+            var assetManager3 = new ContentManager();
 
             assetManager1.Save("test", b1);
 
@@ -171,8 +171,8 @@ namespace SiliconStudio.Core.Tests
             var b1 = new B();
             b1.A = new A { I = 18 };
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("test", b1);
 
@@ -199,8 +199,8 @@ namespace SiliconStudio.Core.Tests
 
             AttachedReferenceManager.SetUrl(c1.Child, "cchild");
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("c1", c1);
             assetManager1.Save("c2", c2);
@@ -234,8 +234,8 @@ namespace SiliconStudio.Core.Tests
             var c1 = new C { I = 18 };
             c1.Child2 = new D(18);
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("c1", c1);
 
@@ -256,8 +256,8 @@ namespace SiliconStudio.Core.Tests
             c1.Child = c2;
             c2.Child = c1;
 
-            var assetManager1 = new AssetManager();
-            var assetManager2 = new AssetManager();
+            var assetManager1 = new ContentManager();
+            var assetManager2 = new ContentManager();
 
             assetManager1.Save("c1", c1);
 

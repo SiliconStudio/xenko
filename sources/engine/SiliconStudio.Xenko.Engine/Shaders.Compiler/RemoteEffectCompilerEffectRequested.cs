@@ -7,6 +7,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     [DataContract]
     public class RemoteEffectCompilerEffectRequested
     {
-        public EffectCompileRequest Request { get; set; }
+        // EffectCompileRequest serialized (so that it can be forwarded by EffectCompilerServer without being deserialized, since it might contain unknown types)
+        public byte[] Request { get; set; }
     }
 }

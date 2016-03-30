@@ -3,17 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Xenko.Assets.Debugging;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Processors;
 
@@ -27,17 +23,21 @@ namespace SiliconStudio.Xenko.Debugger.Target
         /// The assembly container, to load assembly without locking main files.
         /// </summary>
         // For now, it uses default one, but later we should probably have one per game debugger session
-        private AssemblyContainer assemblyContainer = AssemblyContainer.Default;
+        private readonly AssemblyContainer assemblyContainer = AssemblyContainer.Default;
 
-        private string projectName;
-        private Dictionary<DebugAssembly, Assembly> loadedAssemblies = new Dictionary<DebugAssembly, Assembly>();
+        private string projectName = String.Empty;
+        private readonly Dictionary<DebugAssembly, Assembly> loadedAssemblies = new Dictionary<DebugAssembly, Assembly>();
         private int currentDebugAssemblyIndex;
         private Game game;
 
-        private ManualResetEvent gameFinished = new ManualResetEvent(true);
+        private readonly ManualResetEvent gameFinished = new ManualResetEvent(true);
         private IGameDebuggerHost host;
 
-        private bool requestedExit;
+        /// <summary>
+        /// Flag if exit was requested.
+        /// </summary>
+        /// <remarks>Field is volatile to avoid compiler optimization that would prevent MainLoop from exiting.</remarks>
+        private volatile bool requestedExit;
 
         public GameDebuggerTarget()
         {
@@ -109,22 +109,20 @@ namespace SiliconStudio.Xenko.Debugger.Target
             // Unload and load assemblies in assemblyContainer, serialization, etc...
             lock (loadedAssemblies)
             {
-                var assemblyReloader = new LiveAssemblyReloader(
-                    game,
-                    assemblyContainer,
-                    assembliesToUnregister.Select(x => loadedAssemblies[x]).ToList(),
-                    assembliesToRegister.Select(x => loadedAssemblies[x]).ToList());
-
                 if (game != null)
                 {
                     lock (game.TickLock)
                     {
-                        assemblyReloader.Reload();
+                        LiveAssemblyReloader.Reload(game, assemblyContainer,
+                            assembliesToUnregister.Select(x => loadedAssemblies[x]).ToList(),
+                            assembliesToRegister.Select(x => loadedAssemblies[x]).ToList());
                     }
                 }
                 else
                 {
-                    assemblyReloader.Reload();
+                    LiveAssemblyReloader.Reload(game, assemblyContainer,
+                        assembliesToUnregister.Select(x => loadedAssemblies[x]).ToList(),
+                        assembliesToRegister.Select(x => loadedAssemblies[x]).ToList());
                 }
             }
             return true;
@@ -153,7 +151,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
                 }
 
                 if (gameType == null)
-                    throw new InvalidOperationException(string.Format("Could not find type [{0}] in project [{1}]", gameTypeName, projectName));
+                    throw new InvalidOperationException($"Could not find type [{gameTypeName}] in project [{projectName}]");
 
                 game = (Game)Activator.CreateInstance(gameType);
 

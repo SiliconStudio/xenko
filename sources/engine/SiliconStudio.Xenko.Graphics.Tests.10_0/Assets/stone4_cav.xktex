@@ -1,0 +1,16 @@
+!Texture
+Id: a3a0e6a1-2498-4a7e-a674-1c0bf1166035
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../samples/Graphics/MaterialSample/Resources/stone4_cav.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+~Base:
+    ~Id: 543338b8-37ca-4247-8e5c-1a3045591c6f
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -4,6 +4,9 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:cvt="clr-namespace:SiliconStudio.Presentation.ValueConverters"
                     xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+                    xmlns:interactivity="clr-namespace:SiliconStudio.Presentation.Interactivity"
+                    xmlns:behaviors="clr-namespace:SiliconStudio.Presentation.Behaviors"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     mc:Ignorable="d">
 
     <!--<Style TargetType="{x:Type ctrl:PropertyGrid}">
@@ -412,47 +415,83 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ctrl:FilteringComboBox">
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="IsSynchronizedWithCurrentItem" Value="False"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Sort">
-            <Setter.Value>
-                <ctrl:FilteringComboBoxSort/>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ctrl:FilteringComboBox}">
-                    <Grid>
-                        <ctrl:TextBox x:Name="PART_EditableTextBox" ValidateOnLostFocus="False" VerticalAlignment="Center" Focusable="True"
-                                      WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
-                                      Text="{Binding Text, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, UpdateSourceTrigger=PropertyChanged}"
-                                      IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False"/>
-                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
-                            <Grid>
-                                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
-                                         FocusManager.IsFocusScope="True"
-                                         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
-                                         SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
-                                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
-                                         SelectedValue="{Binding SelectedValue, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
-                                         SelectedValuePath="{Binding SelectedValuePath, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=OneWay}"
-                                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                         ItemStringFormat="{TemplateBinding ItemStringFormat}"
-                                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}" />
-                            </Grid>
-                        </Popup>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsGrouping" Value="True">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+  <Style TargetType="ctrl:FilteringComboBox">
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="IsSynchronizedWithCurrentItem" Value="False"/>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Setter Property="Sort">
+      <Setter.Value>
+        <ctrl:FilteringComboBoxSort/>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:FilteringComboBox}">
+          <Grid>
+            <ctrl:TextBox x:Name="PART_EditableTextBox" ValidateOnLostFocus="False" VerticalAlignment="Center" Focusable="True"
+                          WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
+                          Text="{Binding Text, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False" />
+            <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
+              <Grid>
+                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
+                         FocusManager.IsFocusScope="True"
+                         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
+                         SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
+                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
+                         SelectedValue="{Binding SelectedValue, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
+                         SelectedValuePath="{Binding SelectedValuePath, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=OneWay}"
+                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                         ItemStringFormat="{TemplateBinding ItemStringFormat}"
+                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}" />
+              </Grid>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsGrouping" Value="True">
+              <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- TODO: if possible, merge style and template with FilteringComboBox -->
+  <Style TargetType="{x:Type ctrl:SearchComboBox}">
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:SearchComboBox}">
+          <Grid>
+            <ctrl:TextBox x:Name="PART_EditableTextBox" VerticalAlignment="Center" Focusable="True" WatermarkContent="{TemplateBinding WatermarkContent}"
+                          ValidateOnLostFocus="False" ValidateWithEnter="False" UseTimedValidation="True"
+                          Text="{Binding SearchText, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource}"
+                          IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False" />
+            <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
+              <Grid>
+                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
+                         FocusManager.IsFocusScope="True"
+                         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}}"
+                         SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedValue="{Binding SelectedValue, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedValuePath="{Binding SelectedValuePath, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWay}"
+                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                         ItemStringFormat="{TemplateBinding ItemStringFormat}"
+                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}" />
+              </Grid>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsGrouping" Value="True">
+              <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
     <Style x:Key="DefaultLogViewerStyle" TargetType="ctrl:TextLogViewer">
         <Setter Property="Focusable" Value="False"/>
@@ -489,5 +528,44 @@
     </Style>
 
     <Style TargetType="ctrl:TextLogViewer" BasedOn="{StaticResource DefaultLogViewerStyle}"/>
-    
+
+  <Style TargetType="{x:Type ctrl:CanvasView}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:CanvasView}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <Grid x:Name="PART_Grid" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type ctrl:TrackerControl}">
+    <Setter Property="LineThickness" Value="1" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:TrackerControl}">
+          <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
+            <Line x:Name="PART_HorizontalLine" Visibility="{TemplateBinding HorizontalLineVisibility}"
+                  Stroke="{TemplateBinding LineStroke}" StrokeThickness="{TemplateBinding LineThickness}" RenderOptions.EdgeMode="Aliased" />
+            <Line x:Name="PART_VerticalLine" Visibility="{TemplateBinding VerticalLineVisibility}"
+                  Stroke="{TemplateBinding LineStroke}" StrokeThickness="{TemplateBinding LineThickness}" RenderOptions.EdgeMode="Aliased" />
+            <!--<ContentPresenter />-->
+          </Canvas>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type Rectangle}" x:Key="{x:Static behaviors:SelectionRectangleBehavior.DefaultRectangleStyleKey}">
+    <Setter Property="Fill" Value="LightBlue" />
+    <Setter Property="Opacity" Value="0.5" />
+    <Setter Property="Stroke" Value="Blue" />
+    <Setter Property="StrokeLineJoin" Value="Round" />
+    <Setter Property="StrokeThickness" Value="1" />
+  </Style>
+
 </ResourceDictionary>

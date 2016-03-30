@@ -7,76 +7,87 @@ namespace SiliconStudio.Presentation.Behaviors
 {
     /// <summary>
     /// A <see cref="Behavior{T}"/> that support deferred attachement for a FrameworkElement derived class.
-    /// In such a case, the attachement is delayed until the OnLoad event is raised.
+    /// In such a case, the attachement is delayed until the <see cref="FrameworkElement.Loaded"/> event is raised.
     /// </summary>
     /// <typeparam name="T">The type of instance to attach to.</typeparam>
     public abstract class DeferredBehaviorBase<T> : Behavior<T> where T : DependencyObject
     {
-        private bool isClean;
+        /// <summary>
+        /// Represents the <see cref="AttachOnEveryLoadedEvent"/> property.
+        /// </summary>
+        public static readonly DependencyProperty AttachOnEveryLoadedEventProperty =
+            DependencyProperty.Register(nameof(AttachOnEveryLoadedEvent), typeof(bool), typeof(DeferredBehaviorBase<T>), new PropertyMetadata(false));
 
-        protected override sealed void OnAttached()
+        private bool currentlyLoaded;
+
+        /// <summary>
+        /// Gets or sets whether <see cref="OnAttachedAndLoaded"/> should be called each time the <see cref="FrameworkElement.Loaded"/> event is raised.
+        /// </summary>
+        public bool AttachOnEveryLoadedEvent { get { return (bool)GetValue(AttachOnEveryLoadedEventProperty); } set { SetValue(AttachOnEveryLoadedEventProperty, value); } }
+
+        protected override void OnAttached()
         {
             base.OnAttached();
 
-            isClean = false;
             var element = AssociatedObject as FrameworkElement;
 
-            if (element == null)
-                OnAttachedOverride();
-            else
+            if (element != null)
             {
-                if (element.IsLoaded)
-                    OnAttachedOverride();
-                else
-                    element.Loaded += OnAssociatedObjectLoaded;
+                element.Loaded += AssociatedObjectLoaded;
+                element.Unloaded += AssociatedObjectUnloaded;
+            }
 
-                element.Unloaded += OnAssociatedObjectUnloaded;
+            if (element == null || element.IsLoaded)
+            {
+                currentlyLoaded = true;
+                OnAttachedAndLoaded();
             }
         }
 
-        protected override sealed void OnDetaching()
+        protected override void OnDetaching()
         {
             base.OnDetaching();
 
-            CleanUp();
-        }
-
-        private void OnAssociatedObjectLoaded(object sender, RoutedEventArgs e)
-        {
-            OnAttachedOverride();
-            ((FrameworkElement)sender).Loaded -= OnAssociatedObjectLoaded;
-        }
-
-        private void OnAssociatedObjectUnloaded(object sender, RoutedEventArgs e)
-        {
-            CleanUp();
-        }
-
-        private void CleanUp()
-        {
-            if (isClean)
-                return;
-
-            isClean = true;
+            if (currentlyLoaded)
+            {
+                currentlyLoaded = false;
+                OnDetachingAndUnloaded();
+            }
 
             var element = AssociatedObject as FrameworkElement;
             if (element != null)
             {
-                element.Loaded += OnAssociatedObjectLoaded;
-                element.Unloaded -= OnAssociatedObjectUnloaded;
+                element.Loaded -= AssociatedObjectLoaded;
+                element.Unloaded -= AssociatedObjectUnloaded;
             }
-
-            OnDetachingOverride();
         }
 
-        protected virtual void OnAttachedOverride()
+        protected virtual void OnAttachedAndLoaded()
         {
-
+            // Intentionally does nothing
         }
 
-        protected virtual void OnDetachingOverride()
+        protected virtual void OnDetachingAndUnloaded()
         {
+            // Intentionally does nothing
+        }
 
+        private void AssociatedObjectLoaded(object sender, RoutedEventArgs e)
+        {
+            if (!currentlyLoaded)
+            {
+                currentlyLoaded = true;
+                OnAttachedAndLoaded();
+            }
+        }
+
+        private void AssociatedObjectUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (currentlyLoaded)
+            {
+                currentlyLoaded = false;
+                OnDetachingAndUnloaded();
+            }
         }
     }
 }

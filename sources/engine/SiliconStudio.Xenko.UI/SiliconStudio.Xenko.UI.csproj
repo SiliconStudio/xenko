@@ -16,10 +16,14 @@
     <FileAlignment>512</FileAlignment>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
@@ -100,13 +104,16 @@
     <Compile Include="Renderers\IRendererManager.cs" />
     <Compile Include="Renderers\UIRenderingContext.cs" />
     <Compile Include="Renderers\RendererManager.cs" />
+    <Compile Include="ResourceDictionary.cs" />
     <Compile Include="ScrollingMode.cs" />
+    <Compile Include="Setter.cs" />
     <Compile Include="StretchDirection.cs" />
     <Compile Include="StretchType.cs" />
     <Compile Include="Controls\TextBlock.cs" />
     <Compile Include="StripDefinition.cs" />
     <Compile Include="StripDefinitionCollection.cs" />
     <Compile Include="StripType.cs" />
+    <Compile Include="Style.cs" />
     <Compile Include="Thickness.cs" />
     <Compile Include="ToggleState.cs" />
     <Compile Include="TouchAction.cs" />

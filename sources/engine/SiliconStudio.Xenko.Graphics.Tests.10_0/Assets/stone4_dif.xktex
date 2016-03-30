@@ -1,0 +1,16 @@
+!Texture
+Id: 07d38870-10a5-4be6-bb61-0e31226b9f46
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../samples/Graphics/MaterialSample/Resources/stone4_dif.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+~Base:
+    ~Id: b9ed645d-fb9b-44df-9167-a1c34250d850
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

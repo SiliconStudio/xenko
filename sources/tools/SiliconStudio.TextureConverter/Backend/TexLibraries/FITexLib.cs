@@ -175,7 +175,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             switch (request.Type)
             {
                 case RequestType.Loading:
-                    Load(image, libraryData, (LoadingRequest)request);
+                    Load(image, (LoadingRequest)request);
                     break;
 
                 case RequestType.Rescaling:
@@ -217,12 +217,11 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// Loads the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
-        /// <param name="libraryData">The library data.</param>
         /// <param name="loader">The loader.</param>
         /// <exception cref="TextureToolsException">If loading failed : mostly not supported format or path error (FileNotFound).</exception>
-        private void Load(TexImage image, FreeImageTextureLibraryData libraryData, LoadingRequest loader)
+        private void Load(TexImage image, LoadingRequest loader)
         {
-            Log.Info("Loading " + loader.FilePath + " ...");
+            Log.Verbose("Loading " + loader.FilePath + " ...");
 
             FIBITMAP temp;
             FREE_IMAGE_FORMAT fileFormat = FREE_IMAGE_FORMAT.FIF_UNKNOWN;
@@ -241,7 +240,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             // Converting the image into BGRA_8888 format
-            libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
+            var libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
             image.LibraryData[this] = libraryData;
             int alphaSize = GetAlphaDepth(fileFormat, temp);
 
@@ -296,7 +295,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             int width = rescale.ComputeWidth(image);
             int height = rescale.ComputeHeight(image);
 
-            Log.Info("Rescaling image to " + width + "x" + height + " with " + rescale.Filter + " ...");
+            Log.Verbose("Rescaling image to " + width + "x" + height + " with " + rescale.Filter + " ...");
 
             FIBITMAP[] newTab;
 
@@ -367,7 +366,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         private void SwitchChannels(TexImage image, FreeImageTextureLibraryData libraryData, SwitchingBRChannelsRequest switchC)
         {
 
-            Log.Info("Switching channels R and G ...");
+            Log.Verbose("Switching channels R and G ...");
 
             for (int i = 0; i < libraryData.Bitmaps.Length; ++i)
             {
@@ -399,7 +398,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="flip">The flip request.</param>
         private void Flip(TexImage image, FreeImageTextureLibraryData libraryData, FlippingRequest flip)
         {
-            Log.Info("Flipping image : " + flip.Flip + " ...");
+            Log.Verbose("Flipping image : " + flip.Flip + " ...");
 
             for (int i = 0; i < libraryData.Bitmaps.Length; ++i)
             {
@@ -427,7 +426,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="flipSub">The flip request.</param>
         private void FlipSub(TexImage image, FreeImageTextureLibraryData libraryData, FlippingSubRequest flipSub)
         {
-            Log.Info("Flipping image : sub-image " + flipSub.SubImageIndex + " " + flipSub.Flip + " ...");
+            Log.Verbose("Flipping image : sub-image " + flipSub.SubImageIndex + " " + flipSub.Flip + " ...");
 
             if (flipSub.SubImageIndex >= 0 && flipSub.SubImageIndex < libraryData.Bitmaps.Length)
             {
@@ -459,7 +458,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="swap">The swap request.</param>
         private void Swap(TexImage image, FreeImageTextureLibraryData libraryData, SwappingRequest swap)
         {
-            Log.Info("Swapping image : sub-image " + swap.FirstSubImageIndex + " and " + swap.SecondSubImageIndex + " ...");
+            Log.Verbose("Swapping image : sub-image " + swap.FirstSubImageIndex + " and " + swap.SecondSubImageIndex + " ...");
 
             if (swap.FirstSubImageIndex >= 0 && swap.FirstSubImageIndex < libraryData.Bitmaps.Length
                 && swap.SecondSubImageIndex >= 0 && swap.SecondSubImageIndex < libraryData.Bitmaps.Length)
@@ -528,7 +527,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                             throw new TextureToolsException("Export failure.");
                         }
                         FreeImage.FlipVertical(libraryData.Bitmaps[imageCount]);
-                        Log.Info("Exporting image to " + finalName + " ...");
+                        Log.Verbose("Exporting image to " + finalName + " ...");
                         ++imageCount;
                     }
                 }
@@ -542,7 +541,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     throw new TextureToolsException("Export failure.");
                 }
                 FreeImage.FlipVertical(libraryData.Bitmaps[0]);
-                Log.Info("Exporting image to " + request.FilePath + " ...");
+                Log.Verbose("Exporting image to " + request.FilePath + " ...");
             }
 
             image.Save(request.FilePath);
@@ -557,7 +556,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         public void CorrectGamma(TexImage image, FreeImageTextureLibraryData libraryData, GammaCorrectionRequest request)
         {
-            Log.Info("Applying a gamma correction of " + request.Gamma + " ...");
+            Log.Verbose("Applying a gamma correction of " + request.Gamma + " ...");
 
             foreach (FIBITMAP bitmap in libraryData.Bitmaps)
             {

@@ -1,16 +1,21 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
     public class Simulation : IDisposable
     {
+        private readonly PhysicsProcessor processor;
+
         private readonly BulletSharp.DiscreteDynamicsWorld discreteDynamicsWorld;
         private readonly BulletSharp.CollisionWorld collisionWorld;
 
@@ -23,13 +28,13 @@ namespace SiliconStudio.Xenko.Physics
 
         private readonly BulletSharp.DispatcherInfo dispatchInfo;
 
-        private readonly bool canCcd;
+        internal readonly bool CanCcd;
 
         public bool ContinuousCollisionDetection
         {
             get
             {
-                if (!canCcd)
+                if (!CanCcd)
                 {
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
@@ -38,7 +43,7 @@ namespace SiliconStudio.Xenko.Physics
             }
             set
             {
-                if (!canCcd)
+                if (!CanCcd)
                 {
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
@@ -59,23 +64,24 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public static OnSimulationCreationDelegate OnSimulationCreation;
 
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
-        /// <param name="flags">The flags.</param>
+        /// <param name="processor"></param>
+        /// <param name="configuration"></param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        internal Simulation(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
+        internal Simulation(PhysicsProcessor processor, PhysicsSettings configuration)
         {
-            if (flags == PhysicsEngineFlags.None)
+            this.processor = processor;
+
+            if (configuration.Flags == PhysicsEngineFlags.None)
             {
-                if (OnSimulationCreation != null)
-                {
-                    flags = OnSimulationCreation();
-                }
+                configuration.Flags = OnSimulationCreation?.Invoke() ?? configuration.Flags;              
             }
 
-            MaxSubSteps = 1;
-            FixedTimeStep = 1.0f / 60.0f;
+            MaxSubSteps = configuration.MaxSubSteps;
+            FixedTimeStep = configuration.FixedTimeStep;
 
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
@@ -98,11 +104,11 @@ namespace SiliconStudio.Xenko.Physics
             //default solver
             var solver = new BulletSharp.SequentialImpulseConstraintSolver();
 
-            if (flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
+            if (configuration.Flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
             {
                 collisionWorld = new BulletSharp.CollisionWorld(dispatcher, broadphase, collisionConfiguration);
             }
-            else if (flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
+            else if (configuration.Flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
             {
                 //mSoftRigidDynamicsWorld = new BulletSharp.SoftBody.SoftRigidDynamicsWorld(mDispatcher, mBroadphase, solver, mCollisionConf);
                 //mDiscreteDynamicsWorld = mSoftRigidDynamicsWorld;
@@ -122,308 +128,250 @@ namespace SiliconStudio.Xenko.Physics
 
                 solverInfo.SolverMode |= BulletSharp.SolverModes.CacheFriendly; //todo test if helps with performance or not
 
-                if (flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
+                if (configuration.Flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
                 {
-                    canCcd = true;
+                    CanCcd = true;
                     solverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
                     dispatchInfo.UseContinuous = true;
                 }
             }
         }
 
+        readonly List<Collision> newCollisionsCache = new List<Collision>();
+        readonly List<Collision> removedCollisionsCache = new List<Collision>();
         readonly List<ContactPoint> newContactsFastCache = new List<ContactPoint>();
-        readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
-        readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
-        readonly List<Collision> alivePairsFastCache = new List<Collision>();
-        readonly HashSet<Collision> processedPairsFastCache = new HashSet<Collision>();
-        readonly Queue<Collision> removedPairsFastCache = new Queue<Collision>();
+        readonly List<ContactPoint> updatedContactsCache = new List<ContactPoint>();
+        readonly List<ContactPoint> removedContactsCache = new List<ContactPoint>();
 
-        readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
-        readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>(); 
-
-        internal void ProcessContacts()
+        struct ContactInfo
         {
-            var contactsProfiler = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
+            public PhysicsComponent ColA;
+            public PhysicsComponent ColB;
+            public bool NewContact;
+            public ContactPoint ContactPoint;
+        }
 
-            processedPairsFastCache.Clear();
+        private readonly List<ContactInfo> frameContacts = new List<ContactInfo>();
+        readonly Dictionary<BulletSharp.ManifoldPoint, ContactPoint> manifoldToContact = new Dictionary<BulletSharp.ManifoldPoint, ContactPoint>();
+
+        private ProfilingState contactsProfilingState;
+
+        internal void RemoveContact(ContactPoint point)
+        {
+            var collision = point?.Collision;
+
+            if (collision == null || collision.Contacts.Count == 0) return;
+
+            collision.Contacts.Remove(point);
+
+            removedContactsCache.Add(point);
+
+            //if (collision.Contacts.Count > 0) return;
+
+            //collision.ColliderA.Collisions.Remove(collision);
+            //collision.ColliderB.Collisions.Remove(collision);
+
+            //removedCollisionsCache.Add(collision);
+        }
+
+        internal void CacheContacts()
+        {
+            contactsProfilingState = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
+
+            var pastFrameContacts = frameContacts.Select(x => x.ContactPoint).ToList();
+
+            frameContacts.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
             for (var i = 0; i < numManifolds; i++)
             {
                 var manifold = collisionWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                var numContacts = manifold.NumContacts;
                 var bodyA = manifold.Body0;
                 var bodyB = manifold.Body1;
 
-                var colA = (Collider)bodyA?.UserObject;
-                var colB = (Collider)bodyB?.UserObject;
+                var colA = (PhysicsComponent)bodyA?.UserObject;
+                var colB = (PhysicsComponent)bodyB?.UserObject;
 
                 if (colA == null || colB == null)
                 {
                     continue;
                 }
 
-                if (!colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid)
+                if (!colA.ProcessCollisions && !colB.ProcessCollisions)
                 {
                     continue;
                 }
-
-                //Pairs management
-                Collision pair = null;
-                var newPair = true;
-                foreach (var pair1 in colA.Collisions)
-                {
-                    if ((pair1.ColliderA != colA || pair1.ColliderB != colB) && (pair1.ColliderA != colB || pair1.ColliderB != colA)) continue;
-                    pair = pair1;
-                    newPair = false;
-                    break;
-                }
-
-                var numContacts = manifold.NumContacts;
-                if (numContacts == 0 && newPair)
-                {
-                    continue;
-                }
-
-                newContactsFastCache.Clear();
-                updatedContactsFastCache.Clear();
-                deletedContactsFastCache.Clear();
-
-                if (newPair)
-                {
-                    if (collisionsQueue.Count > 0)
-                    {
-                        pair = collisionsQueue.Dequeue();
-                    }
-                    else
-                    {
-                        pair = new Collision
-                        {
-                            Contacts = new List<ContactPoint>()
-                        };
-                    }
-
-                    pair.ColliderA = colA;
-                    pair.ColliderB = colB;
-                    pair.Contacts.Clear();
-
-                    colA.Collisions.Add(pair);
-                    colB.Collisions.Add(pair);
-                    alivePairsFastCache.Add(pair);
-                }
-                else
-                {
-                    foreach (var contact in pair.Contacts)
-                    {
-                        deletedContactsFastCache.Add(contact);
-                    }
-                }
-
-                processedPairsFastCache.Add(pair);
 
                 for (var y = 0; y < numContacts; y++)
                 {
                     var cp = manifold.GetContactPoint(y);
 
-                    ContactPoint contact = null;
-                    var newContact = true;
-                    foreach (var contact1 in pair.Contacts)
+                    if (cp.Distance > 0.0f)
                     {
-                        if (contact1.Handle.IsAllocated && cp.UserPersistentPtr != IntPtr.Zero && contact1.Handle.Target != GCHandle.FromIntPtr(cp.UserPersistentPtr).Target) continue;
-                        contact = contact1;
-                        newContact = false;
+                        continue;
+                    }
+
+                    var info = new ContactInfo
+                    {
+                        ColA = colA,
+                        ColB = colB
+                    };
+
+                    //this can be recycled by bullet so its not very correct.. need to figure if it is really new.. comparing life times might help
+                    if (!manifoldToContact.TryGetValue(cp, out info.ContactPoint))
+                    {
+                        info.ContactPoint = new ContactPoint { Collision = null };
+                        info.NewContact = true;
+                        manifoldToContact[cp] = info.ContactPoint;
+                    }
+
+                    if (info.ContactPoint.LifeTime > cp.LifeTime || cp.LifeTime == 1)
+                    {
+                        RemoveContact(info.ContactPoint);
+
+                        //this is a new contact as well
+                        info.ContactPoint.Collision = null;
+                        info.NewContact = true;
+                    }
+
+                    info.ContactPoint.LifeTime = cp.LifeTime;
+                    info.ContactPoint.Distance = cp.Distance;
+                    info.ContactPoint.Normal = cp.NormalWorldOnB;
+                    info.ContactPoint.PositionOnA = cp.PositionWorldOnA;
+                    info.ContactPoint.PositionOnB = cp.PositionWorldOnB;
+
+                    frameContacts.Add(info);
+                    pastFrameContacts.Remove(info.ContactPoint);
+                }
+            }
+
+            foreach (var contact in pastFrameContacts)
+            {
+                RemoveContact(contact);
+            }
+        }
+
+        internal void ProcessContacts()
+        {
+            foreach (var contactInfo in frameContacts)
+            {
+                var collision = contactInfo.ContactPoint.Collision;
+
+                if (collision == null)
+                {
+                    //find if a collision already existed
+                    foreach (var col in contactInfo.ColA.Collisions)
+                    {
+                        if ((col.ColliderA != contactInfo.ColA || col.ColliderB != contactInfo.ColB) && (col.ColliderA != contactInfo.ColB || col.ColliderB != contactInfo.ColA)) continue;
+                        collision = col;
                         break;
                     }
-
-                    //contactsProfilingState.Mark();
-
-                    if (newContact)
-                    {
-                        contact = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
-
-                        contact.Distance = cp.Distance;
-                        contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
-                        contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
-                        contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
-                        contact.Pair = pair;
-                        contact.Handle = GCHandle.Alloc(contact);
-
-                        cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
-
-                        pair.Contacts.Add(contact);
-                    }
-                    else
-                    {
-                        deletedContactsFastCache.Remove(contact);
-                    }
-
-                    if (newContact)
-                    {
-                        newContactsFastCache.Add(contact);
-                    }
-                    else
-                    {
-                        updatedContactsFastCache.Add(contact);
-                    }
                 }
 
-                //deliver async events
+                if(collision == null) continue;
 
-                if (newPair)
+//                //if it's still null we need to create a new collision 
+//                if (collision == null)
+//                {
+//                    //new collision
+//                    collision = new Collision
+//                    {
+//                        Contacts = new TrackingCollection<ContactPoint>(),
+//                        ColliderA = contactInfo.ColA,
+//                        ColliderB = contactInfo.ColB
+//                    };
+//
+//                    collision.Contacts.Clear();
+//
+//                    contactInfo.ColA.Collisions.Add(collision);
+//                    contactInfo.ColB.Collisions.Add(collision);
+//
+//                    newCollisionsCache.Add(collision);
+//                }
+
+                contactInfo.ContactPoint.Collision = collision;
+
+                if (contactInfo.NewContact)
                 {
-                    //are we the first pair we detect?
-                    if (colA.Collisions.Count == 1)
-                    {
-                        while (colA.FirstCollisionChannel.Balance < 0)
-                        {
-                            colA.FirstCollisionChannel.Send(pair);
-                        }
-                    }
+                    collision.Contacts.Add(contactInfo.ContactPoint);
 
-                    //are we the first pair we detect?
-                    if (colB.Collisions.Count == 1)
-                    {
-                        while (colB.FirstCollisionChannel.Balance < 0)
-                        {
-                            colB.FirstCollisionChannel.Send(pair);
-                        }
-                    }
-
-                    while (colA.NewPairChannel.Balance < 0)
-                    {
-                        colA.NewPairChannel.Send(pair);
-                    }
-
-                    while (colB.NewPairChannel.Balance < 0)
-                    {
-                        colB.NewPairChannel.Send(pair);
-                    }
+                    newContactsFastCache.Add(contactInfo.ContactPoint);
                 }
-
-                foreach (var contact in newContactsFastCache)
+                else
                 {
-                    while (contact.Pair.NewContactChannel.Balance < 0)
-                    {
-                        contact.Pair.NewContactChannel.Send(contact);
-                    }
-                }
-
-                foreach (var contact in updatedContactsFastCache)
-                {
-                    while (contact.Pair.ContactUpdateChannel.Balance < 0)
-                    {
-                        contact.Pair.ContactUpdateChannel.Send(contact);
-                    }
-                }
-
-                foreach (var contact in deletedContactsFastCache)
-                {
-                    while (contact.Pair.ContactEndedChannel.Balance < 0)
-                    {
-                        contact.Pair.ContactEndedChannel.Send(contact);
-                    }
-
-                    pair.Contacts.Remove(contact);
-
-                    contact.Handle.Free();
-                    contactsQueue.Enqueue(contact);
-                }
-
-                if (pair.Contacts.Count == 0)
-                {
-                    colA.Collisions.Remove(pair);
-                    colB.Collisions.Remove(pair);
-                    alivePairsFastCache.Remove(pair);
-                    collisionsQueue.Enqueue(pair);
-
-                    while (colA.PairEndedChannel.Balance < 0)
-                    {
-                        colA.PairEndedChannel.Send(pair);
-                    }
-
-                    while (colB.PairEndedChannel.Balance < 0)
-                    {
-                        colB.PairEndedChannel.Send(pair);
-                    }
-
-                    if (colA.Collisions.Count == 0)
-                    {
-                        while (colA.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colA.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
-
-                    if (colB.Collisions.Count == 0)
-                    {
-                        while (colB.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colB.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
+                    updatedContactsCache.Add(contactInfo.ContactPoint);
                 }
             }
+        }
 
-            //Sometimes narrowphase is skipped it seems and we might get some stuck pair!
-            foreach (var pair in alivePairsFastCache)
+        internal void SendEvents()
+        {
+            foreach (var collision in newCollisionsCache)
             {
-                if (!processedPairsFastCache.Contains(pair))
+                while (collision.ColliderA.NewPairChannel.Balance < 0)
                 {
-                    removedPairsFastCache.Enqueue(pair);
+                    collision.ColliderA.NewPairChannel.Send(collision);
+                }
+
+                while (collision.ColliderB.NewPairChannel.Balance < 0)
+                {
+                    collision.ColliderB.NewPairChannel.Send(collision);
                 }
             }
 
-            while (removedPairsFastCache.Count > 0)
+            foreach (var collision in removedCollisionsCache)
             {
-                var pair = removedPairsFastCache.Dequeue();
-
-                alivePairsFastCache.Remove(pair);
-
-                //this pair got removed!
-                foreach (var contactPoint in pair.Contacts)
+                while (collision.ColliderA.PairEndedChannel.Balance < 0)
                 {
-                    while (contactPoint.Pair.ContactEndedChannel.Balance < 0)
-                    {
-                        contactPoint.Pair.ContactEndedChannel.Send(contactPoint);
-                    }
-
-                    contactPoint.Handle.Free();
-                    contactsQueue.Enqueue(contactPoint);
+                    collision.ColliderA.PairEndedChannel.Send(collision);
                 }
 
-                var colA = pair.ColliderA;
-                var colB = pair.ColliderB;
-
-                colA.Collisions.Remove(pair);
-                colB.Collisions.Remove(pair);
-                collisionsQueue.Enqueue(pair);
-
-                while (colA.PairEndedChannel.Balance < 0)
+                while (collision.ColliderB.PairEndedChannel.Balance < 0)
                 {
-                    colA.PairEndedChannel.Send(pair);
-                }
-
-                while (colB.PairEndedChannel.Balance < 0)
-                {
-                    colB.PairEndedChannel.Send(pair);
-                }
-
-                if (colA.Collisions.Count == 0)
-                {
-                    while (colA.AllPairsEndedChannel.Balance < 0)
-                    {
-                        colA.AllPairsEndedChannel.Send(pair);
-                    }
-                }
-
-                if (colB.Collisions.Count == 0)
-                {
-                    while (colB.AllPairsEndedChannel.Balance < 0)
-                    {
-                        colB.AllPairsEndedChannel.Send(pair);
-                    }
+                    collision.ColliderB.PairEndedChannel.Send(collision);
                 }
             }
 
-            contactsProfiler.End("Contacts: {0}", alivePairsFastCache.Count);
+            foreach (var contactPoint in newContactsFastCache)
+            {
+                //todo remove should never happen
+                if (contactPoint.Collision == null) continue;
+
+                while (contactPoint.Collision.NewContactChannel.Balance < 0)
+                {
+                    contactPoint.Collision.NewContactChannel.Send(contactPoint);
+                }
+            }
+
+            foreach (var contactPoint in updatedContactsCache)
+            {
+                //todo remove should never happen
+                if (contactPoint.Collision == null) continue;
+
+                while (contactPoint.Collision.ContactUpdateChannel.Balance < 0)
+                {
+                    contactPoint.Collision.ContactUpdateChannel.Send(contactPoint);
+                }
+            }
+
+            foreach (var contactPoint in removedContactsCache)
+            {
+                //todo remove should never happen
+                if (contactPoint.Collision == null) continue;
+
+                while (contactPoint.Collision.ContactEndedChannel.Balance < 0)
+                {
+                    contactPoint.Collision.ContactEndedChannel.Send(contactPoint);
+                }
+            }
+
+            newCollisionsCache.Clear();
+            removedCollisionsCache.Clear();
+            newContactsFastCache.Clear();
+            updatedContactsCache.Clear();
+            removedContactsCache.Clear();
+
+            contactsProfilingState.End("Contacts: {0}", frameContacts.Count);
         }
 
         /// <summary>
@@ -447,163 +395,45 @@ namespace SiliconStudio.Xenko.Physics
         }
 
         /// <summary>
-        /// Creates the collider.
+        /// Enables or disables the rendering of collider shapes
         /// </summary>
-        /// <param name="shape">The shape.</param>
-        /// <returns></returns>
-        public Collider CreateCollider(ColliderShape shape)
+        public bool ColliderShapesRendering
         {
-            var collider = new Collider(shape)
+            set
             {
-                InternalCollider = new BulletSharp.CollisionObject
-                {
-                    CollisionShape = shape.InternalShape,
-                    ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f
-                }
-            };
-
-            collider.InternalCollider.UserObject = collider;
-
-            collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
-
-            if (shape.NeedsCustomCollisionCallback)
-            {
-                collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+                processor.RenderColliderShapes(value);
             }
-
-            return collider;
         }
 
-        /// <summary>
-        /// Creates the rigid body.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        /// <returns></returns>
-        public RigidBody CreateRigidBody(ColliderShape collider)
+        internal void AddCollider(PhysicsComponent component, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
-            var rb = new RigidBody(collider);
-
-            rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero)
-            {
-                UserObject = rb
-            };
-
-            rb.InternalCollider = rb.InternalRigidBody;
-
-            rb.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
-
-            if (collider.NeedsCustomCollisionCallback)
-            {
-                rb.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
-            }
-
-            if (collider.Is2D) //set different defaults for 2D shapes
-            {
-                rb.InternalRigidBody.LinearFactor = new Vector3(1.0f, 1.0f, 0.0f);
-                rb.InternalRigidBody.AngularFactor = new Vector3(0.0f, 0.0f, 1.0f);
-            }
-
-            return rb;
+            collisionWorld.AddCollisionObject(component.NativeCollisionObject, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
         }
 
-        /// <summary>
-        /// Creates the character.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        /// <param name="stepHeight">Height of the step.</param>
-        /// <returns></returns>
-        public Character CreateCharacter(ColliderShape collider, float stepHeight)
+        internal void RemoveCollider(PhysicsComponent component)
         {
-            var ch = new Character(collider)
-            {
-                InternalCollider = new BulletSharp.PairCachingGhostObject
-                {
-                    CollisionShape = collider.InternalShape
-                }
-            };
-
-            ch.InternalCollider.UserObject = ch;
-
-            ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
-
-            if (collider.NeedsCustomCollisionCallback)
-            {
-                ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
-            }
-
-            ch.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
-
-            ch.KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)ch.InternalCollider, (BulletSharp.ConvexShape)collider.InternalShape, stepHeight);
-
-            return ch;
+            collisionWorld.RemoveCollisionObject(component.NativeCollisionObject);
         }
 
-        /// <summary>
-        /// Adds the collider to the engine processing pipeline.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="mask">The mask.</param>
-        public void AddCollider(Collider collider, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
-        {
-            collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
-
-            collider.Simulation = this;
-        }
-
-        /// <summary>
-        /// Removes the collider from the engine processing pipeline.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        public void RemoveCollider(Collider collider)
-        {
-            collisionWorld.RemoveCollisionObject(collider.InternalCollider);
-
-            collider.Simulation = null;
-        }
-
-        /// <summary>
-        /// Adds the rigid body to the engine processing pipeline.
-        /// </summary>
-        /// <param name="rigidBody">The rigid body.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="mask">The mask.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddRigidBody(RigidBody rigidBody, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
+        internal void AddRigidBody(RigidbodyComponent rigidBody, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
-
-            rigidBody.Simulation = this;
         }
 
-        /// <summary>
-        /// Removes the rigid body from the engine processing pipeline.
-        /// </summary>
-        /// <param name="rigidBody">The rigid body.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void RemoveRigidBody(RigidBody rigidBody)
+        internal void RemoveRigidBody(RigidbodyComponent rigidBody)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
-
-            rigidBody.Simulation = null;
         }
 
-        /// <summary>
-        /// Adds the character to the engine processing pipeline.
-        /// </summary>
-        /// <param name="character">The character.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="mask">The mask.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddCharacter(Character character, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
+        internal void AddCharacter(CharacterComponent character, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var collider = character.InternalCollider;
+            var collider = character.NativeCollisionObject;
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
             discreteDynamicsWorld.AddCharacter(action);
@@ -611,16 +441,11 @@ namespace SiliconStudio.Xenko.Physics
             character.Simulation = this;
         }
 
-        /// <summary>
-        /// Removes the character from the engine processing pipeline.
-        /// </summary>
-        /// <param name="character">The character.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void RemoveCharacter(Character character)
+        internal void RemoveCharacter(CharacterComponent character)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var collider = character.InternalCollider;
+            var collider = character.NativeCollisionObject;
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.RemoveCollisionObject(collider);
             discreteDynamicsWorld.RemoveCharacter(action);
@@ -643,7 +468,7 @@ namespace SiliconStudio.Xenko.Physics
         /// or
         /// A Gear constraint always needs two rigidbodies to be created.
         /// </exception>
-        public static Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
+        public static Constraint CreateConstraint(ConstraintTypes type, RigidbodyComponent rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
         {
             if (rigidBodyA == null) throw new Exception("Both RigidBodies must be valid");
 
@@ -765,7 +590,7 @@ namespace SiliconStudio.Xenko.Physics
         /// or
         /// Both RigidBodies must be valid
         /// </exception>
-        public static Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
+        public static Constraint CreateConstraint(ConstraintTypes type, RigidbodyComponent rigidBodyA, RigidbodyComponent rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
         {
             if (rigidBodyA == null || rigidBodyB == null) throw new Exception("Both RigidBodies must be valid");
             //todo check if the 2 rbs are on the same engine instance!
@@ -955,7 +780,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (rcb.CollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = (Collider)rcb.CollisionObject.UserObject;
+                result.Collider = (PhysicsComponent)rcb.CollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -984,7 +809,7 @@ namespace SiliconStudio.Xenko.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
+                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1017,7 +842,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (rcb.HitCollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = (Collider)rcb.HitCollisionObject.UserObject;
+                result.Collider = (PhysicsComponent)rcb.HitCollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -1050,7 +875,7 @@ namespace SiliconStudio.Xenko.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
+                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1173,6 +998,127 @@ namespace SiliconStudio.Xenko.Physics
         {
             var handler = SimulationEnd;
             handler?.Invoke(this, e);
+        }
+
+        //todo lots of data dupes, this needs rework soon
+        readonly HashSet<Collision> skippedCollisions = new HashSet<Collision>();
+        readonly HashSet<Collision> newCollisions = new HashSet<Collision>();
+
+        internal void BeginContactTesting()
+        {
+            skippedCollisions.Clear();
+            newCollisions.Clear();
+        }
+
+        internal void EndContactTesting()
+        {
+            foreach (var collision in skippedCollisions)
+            {
+                if(newCollisions.Contains(collision)) continue;
+
+                collision.ColliderA.Collisions.Remove(collision);
+                collision.ColliderB.Collisions.Remove(collision);
+                removedCollisionsCache.Add(collision);
+
+                removedContactsCache.Add(collision.Contacts[0]);
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        unsafe struct ContactData
+        {
+            public readonly void* ColliderA;
+            public readonly void* ColliderB;
+
+            public readonly float Distance;
+
+            public readonly float NormalX;
+            public readonly float NormalY;
+            public readonly float NormalZ;
+
+            public readonly float PositionOnAx;
+            public readonly float PositionOnAy;
+            public readonly float PositionOnAz;
+
+            public readonly float PositionOnBx;
+            public readonly float PositionOnBy;
+            public readonly float PositionOnBz;
+        }
+
+        unsafe internal void ContactTest(PhysicsComponent component)
+        {
+            foreach (var collision in component.Collisions)
+            {
+                skippedCollisions.Add(collision);
+            }
+
+            IntPtr buffer;
+            int bufferSize;
+            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
+
+            var contacts = (ContactData*) buffer;
+            for (var i = 0; i < bufferSize; i++)
+            {
+                var contact = contacts[i];
+                var obj0 = BulletSharp.CollisionObject.GetManaged((IntPtr)contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged((IntPtr)contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                if (((int)component0.CanCollideWith & (int)component1.CollisionGroup) != 0 || ((int)component1.CanCollideWith & (int)component0.CollisionGroup) != 0)
+                {
+                    var skip = false;
+                    foreach (var collision in component0.Collisions)
+                    {
+                        if ((collision.ColliderA == component0 && collision.ColliderB == component1) || (collision.ColliderA == component1 && collision.ColliderB == component0))
+                        {
+                            var oldContact = collision.Contacts[0];
+                            oldContact.Distance = contact.Distance;
+                            oldContact.Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ);
+                            oldContact.PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz);
+                            oldContact.PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz);
+                            updatedContactsCache.Add(oldContact);
+
+                            skippedCollisions.Remove(collision);
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
+                    {
+                        continue;
+                    }
+
+                    var newCollision = new Collision
+                    {
+                        Contacts = new TrackingCollection<ContactPoint>(),
+                        ColliderA = component0,
+                        ColliderB = component1
+                    };
+
+                    //todo this has to change
+                    var newContact = new ContactPoint
+                    {
+                        Collision = newCollision,
+                        Distance = contact.Distance,
+                        LifeTime = 0,
+                        Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ),
+                        PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz),
+                        PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz)
+                    };
+                    newCollision.Contacts.Add(newContact);
+
+                    component0.Collisions.Add(newCollision);
+                    component1.Collisions.Add(newCollision);
+
+                    newCollisionsCache.Add(newCollision);
+
+                    newContactsFastCache.Add(newContact);
+
+                    newCollisions.Add(newCollision);
+                }
+            }
         }
     }
 }

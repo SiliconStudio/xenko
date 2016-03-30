@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 
 namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
     /// This class is holding the PropertyKey using to store <see cref="OverrideType"/> per object into the <see cref="ShadowObject"/>.
     /// </summary>
-    public static class Override
+    public static partial class Override
     {
         /// <summary>
         /// The OverrideType key.
@@ -27,10 +28,9 @@ namespace SiliconStudio.Core.Reflection
         /// </exception>
         public static OverrideType GetOverride(this object instance, IMemberDescriptor memberDescriptor)
         {
-            if (instance == null) throw new ArgumentNullException(nameof(instance));
             if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
             OverrideType overrideType;
-            return instance.TryGetDynamicProperty(memberDescriptor, OverrideKey, out overrideType) ? overrideType : OverrideType.Base;
+            return instance == null ? OverrideType.Base : instance.TryGetDynamicProperty(memberDescriptor, OverrideKey, out overrideType) ? overrideType : OverrideType.Base;
         }
 
         /// <summary>
@@ -58,16 +58,19 @@ namespace SiliconStudio.Core.Reflection
         public static void RemoveFrom(object instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
-            var shadow = ShadowObject.GetShadow(instance);
+            var shadow = ShadowObject.Get(instance);
             if (shadow == null)
             {
                 return;
             }
 
             // Remove override information from an object
-            foreach (var attributes in shadow.Members)
+            foreach (var memberKey in shadow.Keys.ToList())
             {
-                attributes.Attributes.Remove(OverrideKey);
+                if (memberKey.Item2 == OverrideKey)
+                {
+                    shadow.Remove(memberKey);
+                }
             }
         }
     }

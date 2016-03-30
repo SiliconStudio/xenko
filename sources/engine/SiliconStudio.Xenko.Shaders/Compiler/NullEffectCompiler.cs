@@ -15,13 +15,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             var url = GetStoragePathFromShaderType(type);
             ObjectId shaderSourceId;
-            AssetManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
+            ContentManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
             return shaderSourceId;
         }
 
         public override IVirtualFileProvider FileProvider { get; set; }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters = null)
         {
             throw new NotSupportedException("Shader Compilation is not allowed at run time on this platform.");
         }

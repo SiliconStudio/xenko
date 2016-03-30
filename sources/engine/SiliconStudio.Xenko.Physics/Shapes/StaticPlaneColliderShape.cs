@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
@@ -20,9 +20,11 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.StaticPlane;
             Is2D = false;
 
+            CachedScaling = Vector3.One;
+
             InternalShape = new BulletSharp.StaticPlaneShape(normal, offset)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
         }
     }

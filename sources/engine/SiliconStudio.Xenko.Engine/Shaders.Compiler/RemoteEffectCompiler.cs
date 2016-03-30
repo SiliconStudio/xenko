@@ -36,19 +36,19 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             var url = GetStoragePathFromShaderType(type);
             ObjectId shaderSourceId;
-            AssetManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
+            ContentManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
             return shaderSourceId;
         }
 
         /// <inheritdoc/>
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters = null)
         {
-            return CompileAsync(mixinTree, compilerParameters);
+            return CompileAsync(mixinTree, effectParameters);
         }
 
-        private async Task<EffectBytecodeCompilerResult> CompileAsync(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        private async Task<EffectBytecodeCompilerResult> CompileAsync(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters)
         {
-            return await remoteEffectCompilerClient.Compile(mixinTree, compilerParameters);
+            return await remoteEffectCompilerClient.Compile(mixinTree, effectParameters);
         }
     }
 }

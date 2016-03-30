@@ -9,6 +9,18 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
+    public struct SpotLightData
+    {
+        public Vector3 PositionWS;
+        private float padding0;
+        public Vector3 DirectionWS;
+        private float padding1;
+        public Vector3 AngleOffsetAndInvSquareRadius;
+        private float padding2;
+        public Color3 Color;
+        private float padding3;
+    }
+
     public class LightSpotGroupRenderer : LightGroupRendererBase
     {
         private const int StaticLightMaxCount = 8;
@@ -23,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void Initialize(RenderContext context)
         {
-            var isLowProfile = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0;
+            var isLowProfile = context.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0;
             LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
             AllocateLightMaxCount = !isLowProfile;
         }
@@ -51,20 +63,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class SpotLightShaderGroup : LightShaderGroupAndDataPool<SpotLightShaderGroupData>
         {
-            internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> DirectionsKey;
-            internal readonly ParameterKey<Vector3[]> PositionsKey;
-            internal readonly ParameterKey<Vector3[]> AngleOffsetAndInvSquareRadiusKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ValueParameterKey<int> CountKey;
+            internal readonly ValueParameterKey<SpotLightData> LightsKey;
+            internal readonly ValueParameterKey<Vector3> PositionsKey;
+            internal readonly ValueParameterKey<Vector3> AngleOffsetAndInvSquareRadiusKey;
+            internal readonly ValueParameterKey<Color3> ColorsKey;
 
             public SpotLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
             {
                 CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
-                DirectionsKey = LightSpotGroupKeys.LightDirectionsWS.ComposeWith(compositionName);
-                PositionsKey = LightSpotGroupKeys.LightPositionWS.ComposeWith(compositionName);
-                AngleOffsetAndInvSquareRadiusKey = LightSpotGroupKeys.LightAngleOffsetAndInvSquareRadius.ComposeWith(compositionName); 
-                ColorsKey = LightSpotGroupKeys.LightColor.ComposeWith(compositionName);
+                LightsKey = LightSpotGroupKeys.Lights.ComposeWith(compositionName);
             }
 
             protected override SpotLightShaderGroupData CreateData()
@@ -75,47 +84,35 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class SpotLightShaderGroupData : LightShaderGroupData
         {
-            private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Vector3[]> directionsKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
-            internal readonly ParameterKey<Vector3[]> positionsKey;
-            internal readonly ParameterKey<Vector3[]> angleOffsetAndInvSquareRadiusKey;
-            private readonly Vector3[] lightDirections;
-            private readonly Vector3[] lightPositions;
-            private readonly Vector3[] lightAngleOffsetAndInvSquareRadius;
-            private readonly Color3[] lightColors;
+            private readonly ValueParameterKey<int> countKey;
+            private readonly ValueParameterKey<SpotLightData> lightsKey;
+            private readonly SpotLightData[] lights;
 
             public SpotLightShaderGroupData(SpotLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(shadowGroupData)
             {
                 countKey = group.CountKey;
-                directionsKey = group.DirectionsKey;
-                colorsKey = group.ColorsKey;
-                positionsKey = group.PositionsKey;
-                angleOffsetAndInvSquareRadiusKey = group.AngleOffsetAndInvSquareRadiusKey;
+                lightsKey = group.LightsKey;
 
-                lightDirections = new Vector3[StaticLightMaxCount];
-                lightColors = new Color3[StaticLightMaxCount];
-                lightPositions = new Vector3[StaticLightMaxCount];
-                lightAngleOffsetAndInvSquareRadius = new Vector3[StaticLightMaxCount];
+                lights = new SpotLightData[StaticLightMaxCount];
             }
 
             protected override void AddLightInternal(LightComponent light)
             {
                 var spotLight = (LightSpot)light.Type;
-                lightDirections[Count] = light.Direction;
-                lightColors[Count] = light.Color;
-                lightPositions[Count] = light.Position;
-                lightAngleOffsetAndInvSquareRadius[Count] = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange);
+                lights[Count] = new SpotLightData
+                {
+                    PositionWS = light.Position,
+                    DirectionWS = light.Direction,
+                    AngleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange),
+                    Color = light.Color,
+                };
             }
 
             protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, lightDirections);
-                parameters.Set(colorsKey, lightColors);
-                parameters.Set(positionsKey, lightPositions);
-                parameters.Set(angleOffsetAndInvSquareRadiusKey, lightAngleOffsetAndInvSquareRadius);
+                parameters.Set(lightsKey, Count, ref lights[0]);
             }
         }
     }

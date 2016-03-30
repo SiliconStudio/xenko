@@ -103,12 +103,18 @@ namespace Irony.Parsing {
     }
 
     public TokenPreviewHint ComesBefore(params string[] others) {
-      Array.ForEach(others, term => OtherStrings.Add(term));
+      foreach (string term in others)
+      {
+        OtherStrings.Add(term);
+      }
       return this;
     }
 
     public TokenPreviewHint ComesBefore(params Terminal[] others) {
-      Array.ForEach(others, term => OtherTerminals.Add(term));
+      foreach (Terminal term in others)
+      {
+        OtherTerminals.Add(term);
+      }
       return this;
     }
 
@@ -122,7 +128,12 @@ namespace Irony.Parsing {
       // convert strings to terminals, if needed
       FirstTerminal = FirstTerminal ?? Grammar.ToTerm(FirstString);
       if (OtherTerminals.Count == 0 && OtherStrings.Count > 0)
-        Array.ForEach(OtherStrings.Select(s => Grammar.ToTerm(s)).ToArray(), term => OtherTerminals.Add(term));
+      {
+        foreach (Terminal term in OtherStrings.Select(s => Grammar.ToTerm(s)).ToArray())
+        {
+          OtherTerminals.Add(term);
+        }
+      }
     }
 
     public override bool Match(ConflictResolutionArgs args) {

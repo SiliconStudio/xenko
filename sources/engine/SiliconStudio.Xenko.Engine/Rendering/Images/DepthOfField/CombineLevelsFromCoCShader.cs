@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class CombineLevelsFromCoCShaderKeys
     {
-        public static readonly ParameterKey<float[]> CoCLevelValues = ParameterKeys.New<float[]>();
+        public static readonly ValueParameterKey<float> CoCLevelValues = ParameterKeys.NewValue<float>();
     }
 }

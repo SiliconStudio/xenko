@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}</ProjectGuid>
+    <ProjectGuid>{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Graphics.Tests.10_0</AssemblyName>
+    <AssemblyName>SiliconStudioXenkoGraphicsTests10_0</AssemblyName>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
@@ -28,7 +28,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
@@ -43,7 +43,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
@@ -56,7 +56,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Testing\</IntermediateOutputPath>
@@ -71,7 +71,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\AppStore\</IntermediateOutputPath>
@@ -85,7 +85,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
@@ -96,7 +96,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\iOS-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
@@ -184,20 +184,12 @@
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Xenko.Physics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
+      <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
+      <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="Assets\ComputeShaderTestEffect.cs">
-      <DependentUpon>ComputeShaderTestEffect.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Assets\HammersleyTest.cs">
-      <DependentUpon>HammersleyTest.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -210,125 +202,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Assets\ComputeShaderTest.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeShaderTest.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\CustomEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomEffect.xkfx</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\MyCustomColorTransformShader.cs">
-      <DependentUpon>MyCustomColorTransformShader.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Assets\CustomShader2.cs">
-      <DependentUpon>CustomShader2.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Assets\CustomShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomShader.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\CubemapSprite.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapSprite.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultiTexturesSpriteEffect.xkfx</DependentUpon>
-    </Compile>
-    <Compile Include="Compiler\MultiTexturesSpriteShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultiTexturesSpriteShader.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Compiler\SimpleEffect.cs">
-      <DependentUpon>SimpleEffect.xkfx</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="Compiler\SimpleShader.cs">
-      <DependentUpon>SimpleShader.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Compiler\ToGlslEffect.cs">
-      <DependentUpon>ToGlslEffect.xkfx</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="Compiler\ToGlslShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ToGlslShader.xksl</DependentUpon>
-    </Compile>
+    <Compile Include="NextGen\NextGenTest1.cs" />
+    <Compile Include="NextGen\TestCamera.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Regression\TestMultipleTextures.cs" />
-    <Compile Include="Regression\TestSimpleTexture.cs" />
-    <Compile Include="TestBitmapSpriteFont.cs" />
-    <Compile Include="TestDynamicSpriteFont.cs" />
-    <Compile Include="TestDynamicSpriteFontJapanese.cs" />
-    <Compile Include="TestDynamicSpriteFontVarious.cs" />
-    <Compile Include="TestExternSpriteFont.cs" />
-    <Compile Include="TestFontManager.cs" />
-    <Compile Include="TestHammersley.cs" />
+    <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
-    <Compile Include="TestImageLoad.cs" />
-    <Compile Include="TestLambertPrefilteringSHPass2.cs" />
-    <Compile Include="TestLambertPrefilteringSH.cs" />
-    <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
-    <Compile Include="TestRadiancePrefilteringGGX.cs" />
-    <Compile Include="TestScene.cs" />
-    <Compile Include="TestSprite.cs" />
-    <Compile Include="TestSpriteBatch3D.cs" />
-    <Compile Include="TestSpriteBatchResolution.cs" />
-    <Compile Include="TestSpriteBatchToTexture.cs" />
-    <Compile Include="TestSpriteFont.cs" />
-    <Compile Include="TestSpriteFontAlignment.cs" />
-    <Compile Include="TestStaticSpriteFont.cs" />
-    <Compile Include="TestCustomEffect.cs" />
-    <Compile Include="TestDrawQuad.cs" />
-    <Compile Include="TestGeometricPrimitives.cs" />
-    <Compile Include="TestGameBase.cs" />
-    <Compile Include="TestMultiTextures.cs" />
-    <Compile Include="TestSpriteBatch.cs" />
-    <Compile Include="TestEffect.cs" />
-    <Compile Include="TestImage.cs" />
-    <Compile Include="TestRenderToTexture.cs" />
-    <Compile Include="TestTexture.cs" />
-    <Compile Include="TestGraphicsApiCheck.cs" />
-    <Compile Include="TestTextureSampling.cs" />
-    <None Include="Assets\ComputeShaderTestEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\HammersleyTest.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>HammersleyTest.cs</LastGenOutput>
-    </None>
     <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
@@ -336,54 +215,6 @@
     <None Include="Assets\MultipleRenderTargetsEffectShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\ComputeShaderTest.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CustomEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\MyCustomColorTransformShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CustomShader2.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomShader2.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CustomShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomShader.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CubemapSprite.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CubemapSprite.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\MultiTexturesSpriteEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MultiTexturesSpriteEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\MultiTexturesSpriteShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MultiTexturesSpriteShader.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\SimpleEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>SimpleEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\SimpleShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>SimpleShader.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\ToGlslEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\ToGlslShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ToGlslShader.cs</LastGenOutput>
     </None>
     <None Include="SiliconStudio.Xenko.Graphics.Tests.10_0.xkpkg" />
   </ItemGroup>

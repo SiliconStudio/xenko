@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Core.Collections;
+
+using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Physics
@@ -15,9 +16,10 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.Compound;
             Is2D = false;
 
-            InternalShape = InternalCompoundShape = new BulletSharp.CompoundShape()
+            CachedScaling = Vector3.One;
+            InternalShape = InternalCompoundShape = new BulletSharp.CompoundShape
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
         }
 
@@ -44,7 +46,7 @@ namespace SiliconStudio.Xenko.Physics
             base.Dispose();
         }
 
-        private readonly FastList<ColliderShape> colliderShapes = new FastList<ColliderShape>();
+        private readonly List<ColliderShape> colliderShapes = new List<ColliderShape>();
 
         private BulletSharp.CompoundShape internalCompoundShape;
 
@@ -94,10 +96,7 @@ namespace SiliconStudio.Xenko.Physics
         /// </value>
         /// <param name="i">The i.</param>
         /// <returns></returns>
-        public ColliderShape this[int i]
-        {
-            get { return colliderShapes[i]; }
-        }
+        public ColliderShape this[int i] => colliderShapes[i];
 
         /// <summary>
         /// Gets the count.
@@ -105,11 +104,21 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The count.
         /// </value>
-        public int Count
+        public int Count => colliderShapes.Count;
+
+        public override Vector3 Scaling
         {
             get
             {
-                return colliderShapes.Count;
+                return CachedScaling;
+            }
+            set
+            {
+                CachedScaling = value;
+                foreach (var colliderShape in colliderShapes)
+                {
+                    colliderShape.Scaling = CachedScaling;
+                }
             }
         }
     }

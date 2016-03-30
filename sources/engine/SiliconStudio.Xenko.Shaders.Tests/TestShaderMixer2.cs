@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
 
         public LoggerResult ResultLogger;
 
-        public ShaderMixinParameters MixinParameters;
+        public CompilerParameters MixinParameters;
 
         [TestFixtureSetUp]
         public void Init()
@@ -26,13 +26,13 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             // Create and mount database file system
             var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
 
             Compiler = new EffectCompiler();
             Compiler.SourceDirectories.Add("shaders");
-            MixinParameters = new ShaderMixinParameters();
-            MixinParameters.Add(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
-            MixinParameters.Add(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
+            MixinParameters = new CompilerParameters();
+            MixinParameters.EffectParameters.Platform = GraphicsPlatform.Direct3D11;
+            MixinParameters.EffectParameters.Profile = GraphicsProfile.Level_11_0;
             ResultLogger = new LoggerResult();
         }
 
@@ -47,12 +47,12 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compMixin.AddComposition("color1", color1Mixin);
             compMixin.AddComposition("color2", color2Mixin);
 
-            var mixinSource = new ShaderMixinSource { Name = "testRenaming", UsedParameters = MixinParameters };
+            var mixinSource = new ShaderMixinSource { Name = "testRenaming" };
             mixinSource.Mixins.Add(new ShaderClassSource("ShadingBase"));
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var byteCode = Compiler.Compile(mixinSource, new CompilerParameters());
+            var byteCode = Compiler.Compile(mixinSource, MixinParameters.EffectParameters, MixinParameters);
             Assert.IsNotNull(byteCode);
         }
 
@@ -69,12 +69,12 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compMixin.AddComposition("color1", color1Mixin);
             compMixin.AddComposition("color2", color2Mixin);
 
-            var mixinSource = new ShaderMixinSource { Name = "TestRenaming2", UsedParameters = MixinParameters };
+            var mixinSource = new ShaderMixinSource { Name = "TestRenaming2" };
             mixinSource.Mixins.Add(new ShaderClassSource("ShadingBase"));
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var byteCode = Compiler.Compile(mixinSource, new CompilerParameters());
+            var byteCode = Compiler.Compile(mixinSource, MixinParameters.EffectParameters, MixinParameters);
             Assert.IsNotNull(byteCode);
         }
 

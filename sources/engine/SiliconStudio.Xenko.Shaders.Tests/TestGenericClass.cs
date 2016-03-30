@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             // Create and mount database file system
             var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
 
             manager = new ShaderSourceManager();
             manager.LookupDirectoryList.Add("shaders");
@@ -81,11 +81,11 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             generics[1] = "TEXCOORD0";
             generics[2] = "float4(2.0,1,1,1)";
 
-            var compilerParameters = new ShaderMixinParameters();
+            var compilerParameters = new CompilerParameters();
             compilerParameters.Set(EffectSourceCodeKeys.Enable, true);
-            compilerParameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
+            compilerParameters.EffectParameters.Profile = GraphicsProfile.Level_11_0;
 
-            var mixinSource = new ShaderMixinSource { Name = "TestShaderCompilationGenericClass", UsedParameters = compilerParameters };
+            var mixinSource = new ShaderMixinSource { Name = "TestShaderCompilationGenericClass" };
             mixinSource.Mixins.Add(new ShaderClassSource("GenericClass2", generics));
 
             var log = new CompilerResults();
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
 
-            var effectByteCode = compiler.Compile(mixinSource, new CompilerParameters());
+            var effectByteCode = compiler.Compile(mixinSource, compilerParameters.EffectParameters, compilerParameters);
         }
 
 
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+            ContentManager.GetFileProvider = () => databaseFileProvider;
 
             var test = new TestGenericClass();
             test.Run();

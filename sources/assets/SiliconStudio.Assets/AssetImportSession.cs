@@ -539,10 +539,6 @@ namespace SiliconStudio.Assets
                             {
                                 newReference = AssetReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
                             }
-                            else if (asset2Instance is ContentReference)
-                            {
-                                newReference = ContentReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
-                            }
                             else
                             {
                                 newReference = AttachedReferenceManager.CreateSerializableVersion(asset2Instance.GetType(), realItem.Id, realItem.Location);
@@ -570,8 +566,8 @@ namespace SiliconStudio.Assets
                 return;
             }
 
-            var finalAsset = result.Asset;
-            finalAsset.Base = new AssetBase(selectedMerge.Diff.Asset2);
+            var finalAsset = (Asset)result.Asset;
+            finalAsset.Base = new AssetBase((Asset)selectedMerge.Diff.Asset2);
 
             // Set the final item
             toImport.MergedItem = new AssetItem(toImport.SelectedItem.Location, finalAsset) { SourceFolder = toImport.SelectedItem.SourceFolder, SourceProject = toImport.SelectedItem.SourceProject };

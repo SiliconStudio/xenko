@@ -64,25 +64,30 @@ namespace SiliconStudio.Assets.Tests
 
     [DataContract("!TestAssetWithParts")]
     [AssetDescription(FileExtension)]
-    public class TestAssetWithParts : Asset, IAssetPartContainer
+    public class TestAssetWithParts : AssetComposite
     {
         public const string FileExtension = ".xkpart";
 
         public TestAssetWithParts()
         {
-            Parts = new List<AssetPart>();
+            Parts = new List<AssetPartTestItem>();
         }
 
         public string Name { get; set; }
 
-        public List<AssetPart> Parts { get; set; }
+        public List<AssetPartTestItem> Parts { get; set; }
 
-        public IEnumerable<AssetPart> CollectParts()
+        public override IEnumerable<AssetPart> CollectParts()
         {
-            return Parts;
+            return Parts.Select(it => new AssetPart(it.Id, it.BaseId, it.BasePartInstanceId));
         }
 
-        public bool ContainsPart(Guid id)
+        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool ContainsPart(Guid id)
         {
             return Parts.Any(t => t.Id == id);
         }
@@ -95,15 +100,57 @@ namespace SiliconStudio.Assets.Tests
             for (int i = 0; i < asset.Parts.Count; i++)
             {
                 var part = asset.Parts[i];
-                part.BaseId = part.Id;
-                part.Id = Guid.NewGuid();
-                asset.Parts[i] = part;
+                asset.Parts[i] = new AssetPartTestItem(Guid.NewGuid(), part.Id);
             }
 
             return asset;
         }
+
+        public void AddPart(TestAssetWithParts assetBaseWithParts)
+        {
+            if (assetBaseWithParts == null) throw new ArgumentNullException(nameof(assetBaseWithParts));
+
+            // The assetPartBase must be a plain child asset
+            if (assetBaseWithParts.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
+            if (assetBaseWithParts.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetBaseWithParts)}");
+
+            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
+            if (assetBaseWithParts.CollectParts().Any(it => !it.BaseId.HasValue))
+            {
+                throw new InvalidOperationException("An asset part base must contain only base assets");
+            }
+
+            AddBasePart(assetBaseWithParts.Base);
+
+            for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
+            {
+                var part = assetBaseWithParts.Parts[i];
+                Parts.Add(new AssetPartTestItem(part.Id, part.BaseId, assetBaseWithParts.Id));
+            }
+        }
     }
-    
+
+    [DataContract("AssetPartTestItem")]
+    public class AssetPartTestItem
+    {
+        public AssetPartTestItem()
+        {
+        }
+
+        public AssetPartTestItem(Guid id, Guid? baseId = null, Guid? basePartInstanceId = null)
+        {
+            Id = id;
+            BaseId = baseId;
+            BasePartInstanceId = basePartInstanceId;
+        }
+
+        public Guid Id;
+
+        public Guid? BaseId;
+
+        public Guid? BasePartInstanceId;
+    }
+
     [DataContract("!AssetImportObjectTest")]
     [AssetDescription(".xkimptest")]
     public class AssetImportObjectTest : AssetImport

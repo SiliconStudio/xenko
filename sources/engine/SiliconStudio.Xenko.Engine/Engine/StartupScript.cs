@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Engine
 {
-    public abstract class StartupScript : Script
+    public abstract class StartupScript : ScriptComponent
     {
         /// <summary>
         /// Called before the script enters it's update loop.

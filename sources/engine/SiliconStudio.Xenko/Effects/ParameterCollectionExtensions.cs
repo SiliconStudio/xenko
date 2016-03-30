@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -9,124 +12,47 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public static class ParameterCollectionExtensions
     {
-        /// <summary>
-        /// Clones the specified <see cref="ParameterCollection"/>.
-        /// </summary>
-        /// <typeparam name="T">Type of the parameter collection</typeparam>
-        /// <param name="parameterCollection">The parameter collection.</param>
-        /// <returns>A clone of the parameter collection. Values are not cloned.</returns>
-        public static T Clone<T>(this T parameterCollection) where T : ParameterCollection, new()
+        public static string ToStringPermutationsDetailed(this ParameterCollection parameterCollection)
         {
-            var newParams = new T();
-            parameterCollection.CopyTo(newParams);
-            return newParams;
-        }
+            var builder = new StringBuilder();
 
-        /// <summary>
-        /// Copies the automatic.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="parameters">The parameters.</param>
-        /// <param name="parametersTo">The parameters automatic.</param>
-        public static void CopyTo<T>(this T parameters, ParameterCollection parametersTo) where T : ParameterCollection
-        {
-            if (parametersTo == null) throw new ArgumentNullException("parametersTo");
-            foreach (var parameter in parameters)
+            var first = true;
+            foreach (var usedParam in parameterCollection.ParameterKeyInfos)
             {
-                parametersTo.SetObject(parameter.Key, parameter.Value);
-            }
-        }
+                // Ignore any non-permutation key
+                if (usedParam.Key.Type != ParameterKeyType.Permutation)
+                    continue;
 
+                var value = parameterCollection.ObjectValues[usedParam.BindingSlot];
 
-        /// <summary>
-        /// Copies the automatic.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="parameters">The parameters.</param>
-        /// <param name="parametersTo">The parameters automatic.</param>
-        public static void CopySharedTo<T>(this T parameters, ParameterCollection parametersTo) where T : ParameterCollection
-        {
-            if (parametersTo == null) throw new ArgumentNullException("parametersTo");
-            foreach (var parameter in parameters.InternalValues)
-            {
-                parameters.CopySharedTo(parameter.Key, null, parametersTo);
-            }
-        }
-
-        /// <summary>
-        /// Determines whether this instance container is the subset of another container.
-        /// </summary>
-        /// <param name="subset">The container to test as a subset of the 'against' container.</param>
-        /// <param name="against">The container superset.</param>
-        /// <returns><c>true</c> if the specified against is subset; otherwise, <c>false</c>.</returns>
-        public static bool IsSubsetOf(this ParameterCollection subset, ParameterCollection against)
-        {
-            foreach (var keyValuePair in subset.InternalValues)
-            {
-                object value = against.GetObject(keyValuePair.Key);
-
-                var innerFrom = keyValuePair.Value.Object as ParameterCollection;
-                if (innerFrom != null)
+                builder.Append("@P ");
+                if (first)
                 {
-                    var innerTo = value as ParameterCollection;
-                    if (innerTo == null)
-                    {
-                        return false;
-                    }
-
-                    if (ReferenceEquals(innerFrom, innerTo))
-                    {
-                        continue;
-                    }
-
-                    if (!innerFrom.IsSubsetOf(innerTo))
-                    {
-                        return false;
-                    }
+                    builder.Append("  - ");
+                    first = false;
                 }
+
+                if (usedParam.Key == null)
+                    builder.Append("null");
+                else
+                    builder.Append(usedParam.Key);
+                builder.Append(": ");
+                if (value == null)
+                    builder.AppendLine("null");
                 else
                 {
-                    var innerFromArray = keyValuePair.Value.Object as ParameterCollection[];
-                    if (innerFromArray != null)
+                    if (value is Array || value is IList)
                     {
-                        var innerToArray = value as ParameterCollection[];
-                        if (innerToArray == null)
-                        {
-                            return false;
-                        }
-
-                        if (innerFromArray.Length != innerToArray.Length)
-                        {
-                            return false;
-                        }
-
-                        for (int i = 0; i < innerFromArray.Length; i++)
-                        {
-                            if (ReferenceEquals(innerFromArray[i], innerToArray[i]))
-                            {
-                                continue;
-                            }
-
-                            if (innerFromArray[i] == null || innerToArray[i] == null)
-                            {
-                                return false;
-                            }
-
-                            if (!innerFromArray[i].IsSubsetOf(innerToArray[i]))
-                            {
-                                return false;
-                            }
-                        }
+                        builder.AppendLine(string.Join(", ", (IEnumerable<object>)value));
                     }
-                    else if (!Equals(keyValuePair.Value.Object, value))
+                    else
                     {
-                        return false;
+                        builder.AppendLine(value.ToString());
                     }
                 }
             }
 
-            // If we are here, then 'subset' container is included in 'against'
-            return true;
+            return builder.ToString();
         }
     }
 }

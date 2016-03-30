@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ParentKeys
     {
-        public static readonly ParameterKey<float> baseValue = ParameterKeys.New<float>(2.0f);
-        public static readonly ParameterKey<Texture> parentTexture = ParameterKeys.New<Texture>();
+        public static readonly ValueParameterKey<float> baseValue = ParameterKeys.NewValue<float>(2.0f);
+        public static readonly ObjectParameterKey<Texture> parentTexture = ParameterKeys.NewObject<Texture>();
     }
 }

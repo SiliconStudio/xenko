@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [DataContract]public partial class ComputeShaderTestParams : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> NbOfIterations = ParameterKeys.New<int>();
+        public static readonly PermutationParameterKey<int> NbOfIterations = ParameterKeys.NewPermutation<int>();
     };
     internal static partial class ShaderMixins
     {

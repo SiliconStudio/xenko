@@ -8,6 +8,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -16,13 +18,12 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
-    [Display(0, "Transform", Expand = ExpandRule.Once)]
+    [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
+    [Display("Transform", Expand = ExpandRule.Once)]
+    [ComponentOrder(0)]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
         private static readonly TransformOperation[] emptyTransformOperations = new TransformOperation[0];
-
-        public readonly static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
-            new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformComponent)value));
 
         // When false, transformation should be computed in TransformProcessor (no dependencies).
         // When true, transformation is computed later by another system.
@@ -39,15 +40,19 @@ namespace SiliconStudio.Xenko.Engine
 
         /// <summary>
         /// The world matrix.
-        /// Use <see cref="UpdateWorldMatrix"/> to ensure it is updated.
+        /// Its value is automatically recomputed at each frame from the local and the parent matrices.
+        /// One can use <see cref="UpdateWorldMatrix"/> to force the update to happen before next frame.
         /// </summary>
+        /// <remarks>The setter should not be used and is accessible only for performance purposes.</remarks>
         [DataMemberIgnore]
         public Matrix WorldMatrix = Matrix.Identity;
 
         /// <summary>
         /// The local matrix.
-        /// Use <see cref="UpdateLocalMatrix"/> to ensure it is updated.
+        /// Its value is automatically recomputed at each frame from the position, rotation and scale.
+        /// One can use <see cref="UpdateLocalMatrix"/> to force the update to happen before next frame.
         /// </summary>
+        /// <remarks>The setter should not be used and is accessible only for performance purposes.</remarks>
         [DataMemberIgnore]
         public Matrix LocalMatrix = Matrix.Identity;
 
@@ -355,20 +360,5 @@ namespace SiliconStudio.Xenko.Engine
             result.M34 = 0.0f;
             result.M44 = 1.0f;
         }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
-
-        //public IEnumerator<TransformComponent> GetEnumerator()
-        //{
-        //    return Children.GetEnumerator();
-        //}
-
-        //IEnumerator IEnumerable.GetEnumerator()
-        //{
-        //    return ((IEnumerable)Children).GetEnumerator();
-        //}
     }
 }

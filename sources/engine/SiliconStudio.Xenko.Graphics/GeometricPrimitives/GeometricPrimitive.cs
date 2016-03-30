@@ -24,6 +24,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 {
@@ -32,6 +33,11 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
     /// </summary>
     public class GeometricPrimitive<T> : ComponentBase where T : struct, IVertex
     {
+        /// <summary>
+        /// The pipeline state.
+        /// </summary>
+        public readonly MutablePipelineState PipelineState;
+
         /// <summary>
         /// The index buffer used by this geometric primitive.
         /// </summary>
@@ -50,7 +56,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         /// <summary>
         /// The input layout used by this geometric primitive (shared for all geometric primitive).
         /// </summary>
-        private readonly VertexArrayObject vertexArrayObject;
+        private readonly VertexBufferBinding VertexBufferBinding;
 
         /// <summary>
         /// True if the index buffer is a 32 bit index buffer.
@@ -66,6 +72,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         public GeometricPrimitive(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh)
         {
             GraphicsDevice = graphicsDevice;
+            PipelineState = new MutablePipelineState(graphicsDevice);
 
             var vertices = geometryMesh.Vertices;
             var indices = geometryMesh.Indices;
@@ -84,7 +91,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             }
             else
             {
-                if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
+                if (graphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_9_3)
                 {
                     throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
                 }
@@ -96,29 +103,32 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             // For now it will keep buffers for recreation.
             // TODO: A better alternative would be to store recreation parameters so that we can reuse procedural code.
             VertexBuffer = Buffer.Vertex.New(graphicsDevice, vertices).RecreateWith(vertices).DisposeBy(this);
+            VertexBufferBinding = new VertexBufferBinding(VertexBuffer, new T().GetLayout(), vertices.Length);
 
-            vertexArrayObject = VertexArrayObject.New(graphicsDevice, new IndexBufferBinding(IndexBuffer, IsIndex32Bits, indices.Length), new VertexBufferBinding(VertexBuffer, new T().GetLayout(), vertices.Length)).DisposeBy(this);
+            PipelineState.State.SetDefaults();
+            PipelineState.State.InputElements = VertexBufferBinding.Declaration.CreateInputElements();
+            PipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
         }
 
         /// <summary>
         /// Draws this <see cref="GeometricPrimitive" />.
         /// </summary>
-        public void Draw()
+        /// <param name="commandList">The command list.</param>
+        public void Draw(CommandList commandList, EffectInstance effectInstance)
         {
-            Draw(GraphicsDevice);
-        }
+            // Update pipeline state
+            PipelineState.State.RootSignature = effectInstance.RootSignature;
+            PipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
+            PipelineState.State.Output.CaptureState(commandList);
+            PipelineState.Update();
+            commandList.SetPipelineState(PipelineState.CurrentState);
 
-        /// <summary>
-        /// Draws this <see cref="GeometricPrimitive" />.
-        /// </summary>
-        /// <param name="graphicsDevice">The graphics device.</param>
-        public void Draw(GraphicsDevice graphicsDevice)
-        {
             // Setup the Vertex Buffer
-            graphicsDevice.SetVertexArrayObject(vertexArrayObject);
+            commandList.SetIndexBuffer(IndexBuffer, 0, IsIndex32Bits);
+            commandList.SetVertexBuffer(0, VertexBuffer, 0, VertexBufferBinding.Stride);
 
             // Finally Draw this mesh
-            graphicsDevice.DrawIndexed(PrimitiveType.TriangleList, IndexBuffer.ElementCount);
+            commandList.DrawIndexed(IndexBuffer.ElementCount);
         }
 
         /// <summary>

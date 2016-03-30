@@ -16,6 +16,7 @@
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="nunit.core.interfaces">
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
     </Reference>
@@ -27,21 +28,32 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestDynamicYaml.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TestMemberPath.cs" />
     <Compile Include="TestDataMemberVisitor.cs" />
     <Compile Include="TestMemberPathBase.cs" />
     <Compile Include="TestNamingHelper.cs" />
     <Compile Include="TestSettings.cs" />
+    <Compile Include="TestShadowObject.cs" />
     <Compile Include="TestTypeConverter.cs" />
     <Compile Include="TestUPath.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SharpYaml, Version=1.2.0.27065, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
+    </Reference>
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">

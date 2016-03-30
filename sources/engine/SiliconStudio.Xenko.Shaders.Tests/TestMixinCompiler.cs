@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
-            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+            var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.OpenGL } };
 
             var layers = new MaterialBlendLayers();
             layers.Add(new MaterialBlendLayer
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
 
             compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
-            compilerParameters.Set(LightingKeys.DirectLightGroups, new List<ShaderSource> { directionalLightGroup });
+            compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSourceCollection { directionalLightGroup });
             //compilerParameters.Set(LightingKeys.CastShadows, false);
             //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
-            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+            var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.Direct3D11 } };
             var results = compiler.Compile(new ShaderClassSource("TestStream"), compilerParameters);
 
             Assert.IsFalse(results.HasErrors);
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins");
 
-            var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
+            var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.Direct3D11 } };
 
             var subCompute1Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute1");
             var subCompute2Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute2");
@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var computeColorSubCompute2 = ComputeColor2Keys.Color.ComposeWith("SubCompute1");
             var computeColorSubComputes = ComputeColor2Keys.Color.ComposeWith("ColorRedirect.SubComputes[0]");
 
-            var members = cbuffer.Members.Select(member => member.Param.KeyName).ToList();
+            var members = cbuffer.Members.Select(member => member.KeyInfo.KeyName).ToList();
             Assert.IsTrue(members.Contains(computeColorSubCompute2.Name));
             Assert.IsTrue(members.Contains(computeColorSubComputes.Name));
         }
@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             using (var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath))
             {
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
-                AssetManager.GetFileProvider = () => database;
+                ContentManager.GetFileProvider = () => database;
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
                 compiler.SourceDirectories.Add("assets/shaders");
                 var compilerCache = new EffectCompilerCache(compiler);
 
-                var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
+                var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.Direct3D11 } };
 
                 left = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
                 right = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
@@ -246,7 +246,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compiler.SourceDirectories.Add("compiler");
             compiler.SourceDirectories.Add("baseShaders");
 
-            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGL };
+            var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.OpenGL } };
 
             var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters);
         }
@@ -264,7 +264,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             compiler.SourceDirectories.Add("compiler");
             compiler.SourceDirectories.Add("baseShaders");
 
-            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES };
+            var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.OpenGLES } };
 
             var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters);
         }

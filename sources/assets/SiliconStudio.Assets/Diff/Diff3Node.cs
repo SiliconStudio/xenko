@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Diff
 {
@@ -32,6 +33,8 @@ namespace SiliconStudio.Assets.Diff
         public DataVisitNode Asset2Node { get; set; }
 
         public Diff3ChangeType ChangeType { get; set; }
+
+        public OverrideType? FinalOverride { get; set; }
 
         public float Weight { get; set; }
 
@@ -64,7 +67,8 @@ namespace SiliconStudio.Assets.Diff
 
         private static bool CheckVisitChildren(Diff3Node diff3)
         {
-            return diff3.ChangeType == Diff3ChangeType.Children || diff3.ChangeType != Diff3ChangeType.None;
+            // Returns true if the node has some changes or if it has some children
+            return diff3.ChangeType != Diff3ChangeType.None;
         }
 
         private static bool CheckVisitChildrenWithWeights(Diff3Node diff3)
@@ -119,6 +123,20 @@ namespace SiliconStudio.Assets.Diff
         public List<Diff3Node> Items { get; set; }
 
         /// <summary>
+        /// Applies the override calculated by the merge for the current member.
+        /// </summary>
+        public void ApplyOverride()
+        {
+            if (!FinalOverride.HasValue)
+            {
+                return;
+            }
+
+            var member = Asset1Node as DataVisitMember;
+            member?.Parent?.Instance?.SetOverride(member.MemberDescriptor, FinalOverride.Value);
+        }
+
+        /// <summary>
         /// Replace the value for the asset1 for this data node.
         /// </summary>
         /// <param name="dataInstance">The data instance.</param>
@@ -138,21 +156,41 @@ namespace SiliconStudio.Assets.Diff
             }
             else if (node is DataVisitListItem)
             {
-                var descriptor = ((DataVisitListItem)node).Descriptor;
-                descriptor.SetValue(selector(parentNode).Instance, Index, dataInstance);
+                var listItem= (DataVisitListItem)node;
+                var descriptor = listItem.Descriptor;
+                var parentVisitNode = selector(parentNode);
+
+                var parentInstance = parentVisitNode.Instance;
+                descriptor.SetValue(parentInstance, Index, dataInstance);
+
+                // Update parent in case the member is a struct
+                var member = parentVisitNode as DataVisitMember;
+                if (member != null)
+                {
+                    member.UpdateInstance();
+                }
             }
             else if (node is DataVisitDictionaryItem)
             {
                 var dictItem = (DataVisitDictionaryItem)node;
-                var descriptor = dictItem.Descriptor;
 
+                var descriptor = dictItem.Descriptor;
+                var parentVisitNode = selector(parentNode);
+                var parentInstance = parentVisitNode.Instance;
                 if (dataInstance == null)
                 {
-                    descriptor.Remove(selector(parentNode).Instance, dictItem.Key);
+                    descriptor.Remove(parentInstance, dictItem.Key);
                 }
                 else
                 {
-                    descriptor.SetValue(selector(parentNode).Instance, dictItem.Key, dataInstance);
+                    descriptor.SetValue(parentInstance, dictItem.Key, dataInstance);
+                }
+
+                // Update parent in case the member is a struct
+                var member = parentVisitNode as DataVisitMember;
+                if (member != null)
+                {
+                    member.UpdateInstance();
                 }
             }
             else if (node is DataVisitArrayItem)

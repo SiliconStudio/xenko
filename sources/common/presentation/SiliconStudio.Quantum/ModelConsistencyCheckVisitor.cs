@@ -11,6 +11,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
+    [Obsolete("This class will be removed soon")]
     public class ModelConsistencyCheckVisitor : DataVisitorBase
     {
         private class ReferenceInfo
@@ -24,20 +25,18 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private readonly DefaultModelBuilder nodeBuilder;
-        private readonly Stack<ModelNode> contextStack = new Stack<ModelNode>();
+        private readonly DefaultNodeBuilder nodeBuilder;
+        private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
         private readonly Queue<ObjectReference> references = new Queue<ObjectReference>();
-        private readonly List<ModelNode> checkedNodes = new List<ModelNode>();
-        private ModelNode rootNode;
+        private readonly List<GraphNode> checkedNodes = new List<GraphNode>();
+        private GraphNode rootNode;
 
         public ModelConsistencyCheckVisitor(INodeBuilder nodeBuilder)
         {
-            if (nodeBuilder == null) throw new ArgumentNullException("nodeBuilder");
-            this.nodeBuilder = nodeBuilder as DefaultModelBuilder;
-            if (this.nodeBuilder == null) throw new ArgumentException(@"This argument should be a DefaultModelBuilder", "nodeBuilder");
+            if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
+            this.nodeBuilder = nodeBuilder as DefaultNodeBuilder;
+            if (this.nodeBuilder == null) throw new ArgumentException(@"This argument should be a DefaultNodeBuilder", nameof(nodeBuilder));
         }
-
-        public ICollection<Type> PrimitiveTypes { get { return nodeBuilder.PrimitiveTypes; } }
 
         public override void Reset()
         {
@@ -48,7 +47,7 @@ namespace SiliconStudio.Quantum
             base.Reset();
         }
 
-        public void Check(ModelNode node, object obj, Type type, bool checkReferences)
+        public void Check(GraphNode node, object obj, Type type, bool checkReferences)
         {
             Reset();
 
@@ -81,7 +80,7 @@ namespace SiliconStudio.Quantum
                         var reference = references.Dequeue();
                         if (!checkedNodes.Contains(reference.TargetNode))
                         {
-                            rootNode = (ModelNode)reference.TargetNode;
+                            rootNode = (GraphNode)reference.TargetNode;
                             break;
                         }
                     }
@@ -126,14 +125,13 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             bool shouldProcessReference;
-            if (!nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference))
-                return;
+            nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
 
             var node = GetContextNode();
-            ModelNode child;
+            GraphNode child;
             try
             {
-                child = (ModelNode)node.Children.Single(x => x.Name == member.Name);
+                child = (GraphNode)node.Children.Single(x => x.Name == member.Name);
             }
             catch (InvalidOperationException)
             {
@@ -188,14 +186,14 @@ namespace SiliconStudio.Quantum
         private ReferenceInfo GetReferenceInfo(Type type, object value)
         {
             // Is it a reference?
-            if ((!type.IsClass && !type.IsStruct()) || IsPrimitiveType(type))
+            if (!type.IsClass && (type.IsStruct() || IsPrimitiveType(type)))
                 return null;
 
-            ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
+            var descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || !IsPrimitiveType(valueType, false))
+            if (valueType == null || (!type.IsStruct() && !IsPrimitiveType(valueType, false)))
             {
                 var refType = Reference.GetReferenceType(value, Reference.NotInCollection);
                 if (refType == typeof(ReferenceEnumerable))
@@ -209,7 +207,7 @@ namespace SiliconStudio.Quantum
             return null;
         }
 
-        private void AddReference(IModelNode referencer, IReference reference)
+        private void AddReference(IGraphNode referencer, IReference reference)
         {
             var enumerableReference = reference as ReferenceEnumerable;
             if (enumerableReference != null)
@@ -225,7 +223,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void AddObjectReference(IModelNode referencer, ObjectReference reference)
+        private void AddObjectReference(IGraphNode referencer, ObjectReference reference)
         {
             if (reference.TargetNode == null)
                 throw new QuantumConsistencyException("A resolved reference", "An unresolved reference", referencer);
@@ -239,7 +237,7 @@ namespace SiliconStudio.Quantum
             references.Enqueue(reference);
         }
 
-        private void PushContextNode(ModelNode node)
+        private void PushContextNode(GraphNode node)
         {
             contextStack.Push(node);
         }
@@ -249,7 +247,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private ModelNode GetContextNode()
+        private GraphNode GetContextNode()
         {
             return contextStack.Peek();
         }
@@ -261,10 +259,10 @@ namespace SiliconStudio.Quantum
 
         private bool IsPrimitiveType(Type type, bool includeAdditionalPrimitiveTypes = true)
         {
-            if (type == null)
+            //if (type == null)
                 return false;
 
-            return type.IsPrimitive || type == typeof(string) || type.IsEnum || (includeAdditionalPrimitiveTypes && PrimitiveTypes.Any(x => x.IsAssignableFrom(type)));
+            //return type.IsPrimitive || type == typeof(string) || type.IsEnum || (includeAdditionalPrimitiveTypes && PrimitiveTypes.Any(x => x.IsAssignableFrom(type)));
         }
 
         private static Type GetElementValueType(ITypeDescriptor descriptor)
@@ -275,7 +273,7 @@ namespace SiliconStudio.Quantum
             {
                 return dictionaryDescriptor.ValueType;
             }
-            return collectionDescriptor != null ? collectionDescriptor.ElementType : null;
+            return collectionDescriptor?.ElementType;
         }
 
     }

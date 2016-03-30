@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
@@ -12,6 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     /// Base interface for all computer color nodes.
     /// </summary>
     [DataContract(Inherited = true)]
+    [NonIdentifiable]
     public abstract class ComputeNode : IComputeNode
     {
         /// <summary>
@@ -36,6 +38,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// Generates the shader source equivalent for this node
         /// </summary>
         /// <returns>ShaderSource.</returns>
-        public abstract ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+        public abstract ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys);
     }
 }

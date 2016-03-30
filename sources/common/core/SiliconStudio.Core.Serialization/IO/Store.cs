@@ -311,6 +311,8 @@ namespace SiliconStudio.Core.IO
             {
                 throw new IOException("Couldn't lock file.");
             }
+#elif SILICONSTUDIO_RUNTIME_CORECLR
+            // There is no implementation of FileStream.Lock on CoreCLR
 #else
             bool tryAgain;
             do
@@ -353,6 +355,8 @@ namespace SiliconStudio.Core.IO
             {
                 throw new IOException("Couldn't unlock file.");
             }
+#elif SILICONSTUDIO_RUNTIME_CORECLR
+            // There is no implementation of FileStream.Unlock on CoreCLR
 #else
             fileStream.Unlock(offset, count);
 #endif

@@ -2,13 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Binding = System.ServiceModel.Channels.Binding;
 
 namespace SiliconStudio.ExecServer
 {
@@ -23,11 +27,14 @@ namespace SiliconStudio.ExecServer
     /// </summary>
     public class ExecServerApp
     {
-        private string execServerPath;
+        private const int ExitCodeServerAlreadyInUse = 0x10;
 
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
-        private const int MaxRetryProcess = 10;
-        private const int RetryWait = 500; // in ms
+        private const int MaxRetryStartedProcess = 20;
+        private const int RetryStartedProcessWait = 100; // in ms
+
+        private const int MaxRetryCount = 60; // * 1s
+        private const int RetryWait = 1000; // in ms
 
         /// <summary>
         /// Runs the specified arguments copy.
@@ -38,7 +45,7 @@ namespace SiliconStudio.ExecServer
         {
             if (argsCopy.Length == 0)
             {
-                Console.WriteLine("Usage ExecServer.exe [/direct|/server] executablePath [executableArguments]");
+                Console.WriteLine("Usage ExecServer.exe [/direct executablePath|/server executablePath CPUindex] [executableArguments]");
                 return 0;
             }
             var args = new List<string>(argsCopy);
@@ -47,8 +54,8 @@ namespace SiliconStudio.ExecServer
             {
                 args.RemoveAt(0);
                 var executablePath = ExtractPath(args, "executable");
-                var execServerApp = new ExecServerRemote(executablePath, false, false);
-                int result = execServerApp.Run(Environment.CurrentDirectory, args.ToArray());
+                var execServerApp = new ExecServerRemote(executablePath, false, false, true);
+                int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray());
                 return result;
             }
 
@@ -56,32 +63,62 @@ namespace SiliconStudio.ExecServer
             {
                 args.RemoveAt(0);
                 var executablePath = ExtractPath(args, "executable");
-                RunServer(executablePath);
-                return 0;
+                var cpu = int.Parse(args[0]);
+                args.RemoveAt(0);
+                int result = 0;
+                try
+                {
+                    result = RunServer(executablePath, cpu);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        var pid = Process.GetCurrentProcess().Id;
+                        var logPath = GetExecServerErrorLogFilePath(executablePath, pid);
+                        File.AppendAllText(logPath, $"Unexpected error while trying to run ExecServerApp [{executablePath}]. Exception: {ex}");
+                    }
+                    catch (Exception)
+                    {
+                        // Don't try to log an error
+                    }
+                    result = 1;
+                }
+                return result;
             }
             else
             {
                 var executablePath = ExtractPath(args, "executable");
                 var workingDirectory = ExtractPath(args, "working directory");
-                execServerPath = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
-                var result = RunClient(executablePath, workingDirectory, args);
+
+                // Collect environment variables
+                var environmentVariables = new Dictionary<string, string>();
+                foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
+                    environmentVariables.Add((string)environmentVariable.Key, (string)environmentVariable.Value);
+
+                var result = RunClient(executablePath, workingDirectory, environmentVariables, args);
                 return result;
             }
+        }
+
+        private static string GetExecServerErrorLogFilePath(string executablePath, int pid)
+        {
+            return Path.Combine(Path.GetDirectoryName(executablePath), $"XenkoExecServer.pid{pid}.log");
         }
 
         /// <summary>
         /// Runs ExecServer in server mode (waiting for connection from ExecServer clients)
         /// </summary>
         /// <param name="executablePath">Path of the executable to run from this ExecServer instance</param>
-        private void RunServer(string executablePath)
+        private int RunServer(string executablePath, int serverInstanceIndex)
         {
-            var address = GetEndpointAddress(executablePath);
+            var address = GetEndpointAddress(executablePath, serverInstanceIndex);
 
             // TODO: The setting of disabling caching should be done per EXE (via config file) instead of global settings for ExecServer
             var useAppDomainCaching = Environment.GetEnvironmentVariable(DisableExecServerAppDomainCaching) != "true";
 
             // Start WCF pipe for communication with process
-            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching);
+            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching, serverInstanceIndex == 0);
             var host = new ServiceHost(execServerApp);
             host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
@@ -95,8 +132,11 @@ namespace SiliconStudio.ExecServer
             }
             catch (AddressAlreadyInUseException)
             {
+                // Uncomment the following line to see which process got a ExitCodeServerAlreadyInUse
+                // File.WriteAllText(Path.Combine(Environment.CurrentDirectory, $"test_ExecServer{Process.GetCurrentProcess().Id}.log"), $"Exit code: {ExitCodeServerAlreadyInUse}\r\n");
+
                 // Silently exit if the server is already running
-                return;
+                return ExitCodeServerAlreadyInUse;
             }
 
             Console.WriteLine("Server [{0}] is running", executablePath);
@@ -106,6 +146,8 @@ namespace SiliconStudio.ExecServer
 
             // Wait for the server to shutdown
             execServerApp.Wait();
+
+            return 0;
         }
 
         /// <summary>
@@ -116,10 +158,8 @@ namespace SiliconStudio.ExecServer
         /// <param name="workingDirectory">The working directory.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>Return status.</returns>
-        private int RunClient(string executablePath, string workingDirectory, List<string> args)
+        private int RunClient(string executablePath, string workingDirectory, Dictionary<string, string> environmentVariables, List<string> args)
         {
-            var address = GetEndpointAddress(executablePath);
-
             var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
                 MaxReceivedMessageSize = int.MaxValue,
@@ -128,88 +168,185 @@ namespace SiliconStudio.ExecServer
                 ReceiveTimeout = TimeSpan.FromHours(1),
             };
 
-            bool tryToRunServerProcess = false;
-            for (int i = 0; i < MaxRetryProcess; i++)
+            // Number of concurrent processes: use number of CPU, but no more than 8
+            int maxServerInstanceIndex = Math.Max(Environment.ProcessorCount, 8);
+
+            // All tried connections will be kept open until we're done
+            // TODO: Small optimization: as soon as service.Run() actually start (not busy), we could close all other connections
+            var clients = new ExecServerRemoteClient[maxServerInstanceIndex];
+
+            try
             {
-                var redirectLog = new RedirectLogger();
-                var client = new ExecServerRemoteClient(redirectLog, binding, new EndpointAddress(address));
-                // Console.WriteLine("{0}: ExecServer Try to connect", DateTime.Now);
-
-                var service = client.ChannelFactory.CreateChannel();
-                try
+                for (int i = 0; i < MaxRetryCount; i++)
                 {
-                    service.Check();
+                    // Try each available server
+                    for (int serverInstanceIndex = 0; serverInstanceIndex < maxServerInstanceIndex; ++serverInstanceIndex)
+                    {
+                        int numberTriesAfterRunProcess = 0;
+                        var address = GetEndpointAddress(executablePath, serverInstanceIndex);
+                        var processHandle = IntPtr.Zero;
+                        int processId = 0;
 
-                    //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
-                    try
-                    {
-                        var result = service.Run(workingDirectory, args.ToArray());
-                        //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
-                        return result;
+                    TrySameConnectionAgain:
+                        var redirectLog = new RedirectLogger();
+                        var client = clients[serverInstanceIndex] ?? new ExecServerRemoteClient(redirectLog, binding, new EndpointAddress(address));
+                        // Console.WriteLine("{0}: ExecServer Try to connect", DateTime.Now);
+
+                        var service = client.ChannelFactory.CreateChannel();
+                        try
+                        {
+                            service.Check();
+
+                            // Keep this connection
+                            clients[serverInstanceIndex] = client;
+
+                            //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
+                            try
+                            {
+                                var result = service.Run(workingDirectory, environmentVariables, args.ToArray());
+                                if (result == ExecServerRemote.BusyReturnCode)
+                                {
+                                    // Try next server
+                                    continue;
+                                }
+                                //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
+                                return result;
+                            }
+                            finally
+                            {
+                                CloseService(ref service);
+                            }
+                        }
+                        catch (EndpointNotFoundException)
+                        {
+                            CloseService(ref service);
+
+                            // Close and uncache client connection (server is not started yet)
+                            clients[serverInstanceIndex] = null;
+                            CloseClient(ref client);
+                            string finalExecServerPath;
+
+                            if (numberTriesAfterRunProcess++ == 0)
+                            {
+                                // The server is not running, we need to run it
+                                if (!RunServerProcess(executablePath, serverInstanceIndex, out processHandle, out processId, out finalExecServerPath))
+                                {
+                                    Console.WriteLine($"Cannot launch exec server for [{finalExecServerPath}]. Trying next one");
+                                    continue;
+                                }
+                            }
+
+                            if (numberTriesAfterRunProcess > MaxRetryStartedProcess)
+                            {
+                                Console.WriteLine("ERROR cannot connect to newly started proxy server for: {0} {1}", executablePath, string.Join(" ", args));
+                                continue;
+                            }
+
+                            // Wait for the process to startup before trying again
+                            Console.WriteLine("Waiting {0}ms for the proxy server to start and connect to it", RetryStartedProcessWait);
+
+                            Thread.Sleep(RetryStartedProcessWait);
+
+                            // Check that the sever we tried to launch is still running, if not we have a severe error
+                            if (processHandle != IntPtr.Zero)
+                            {
+                                int exitCode;
+                                if (GetExitCodeProcess(processHandle, out exitCode))
+                                {
+                                    if (exitCode != ExitCodeServerAlreadyInUse && exitCode != PROCESS_STILL_ACTIVE)
+                                    {
+                                        Console.WriteLine($"Unexpected error: ExecServerApp has exited with the return code: {exitCode}");
+
+                                        var logPath = GetExecServerErrorLogFilePath(executablePath, processId);
+                                        if (File.Exists(logPath))
+                                        {
+                                            Console.WriteLine(File.ReadAllText(logPath));
+                                            File.Delete(logPath);
+                                        }
+                                        return -300;
+                                    }
+                                }
+                            }
+
+                            goto TrySameConnectionAgain;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error {0}", e);
+                            return -300;
+                        }
                     }
-                    finally
-                    {
-                        CloseService(service);
-                    }
+
+                    // Wait for the process to startup before trying again
+                    Console.WriteLine("Waiting {0}ms to create a new proxy server", RetryWait);
+
+                    // Wait little bit before trying everything again
+                    Thread.Sleep(RetryWait);
                 }
-                catch (EndpointNotFoundException)
-                {
-                    CloseService(service);
 
-                    if (!tryToRunServerProcess)
-                    {
-                        // The server is not running, we need to run it
-                        RunServerProcess(executablePath);
-                        tryToRunServerProcess = true;
-                    }
-                }
-                finally
-                {
-                    try
-                    {
-                        //Console.WriteLine("Closing client");
-                        client.Close();
-                    }
-                    catch (Exception)
-                    {
-                        //Console.WriteLine("Exception while closing {0}", client);
-                    }
-                }
-
-                // Wait for 
-
-                Console.WriteLine("Waiting {0}ms for the proxy server to start and connect to it", RetryWait);
-                Thread.Sleep(RetryWait);
+                Console.WriteLine("ERROR cannot connect to proxy server for: {0} {1}", executablePath, string.Join(" ", args));
+                return 1;
             }
-
-            Console.WriteLine("ERROR cannot connect to proxy server: {0} {1}", execServerPath, string.Join(" ", args));
-            return 1;
+            finally
+            {
+                // Close all services
+                CloseClients(clients);
+            }
         }
 
         /// <summary>
         /// Closes a WCF service.
         /// </summary>
         /// <param name="service">The service.</param>
-        private static void CloseService(IExecServerRemote service)
+        private static void CloseService(ref IExecServerRemote service)
         {
-            try
+            if (service != null)
             {
-                var clientChannel = ((IClientChannel)service);
-                if (clientChannel.State == CommunicationState.Faulted)
+                try
                 {
-                    clientChannel.Abort();
-                }
-                else
-                {
-                    clientChannel.Close();
-                }
+                    var clientChannel = ((IClientChannel)service);
+                    if (clientChannel.State == CommunicationState.Faulted)
+                    {
+                        clientChannel.Abort();
+                    }
+                    else
+                    {
+                        clientChannel.Close();
+                    }
 
-                clientChannel.Dispose();
-                //Console.WriteLine("ExecServer - Close connection - Client channel state: {0}", clientChannel.State);
+                    clientChannel.Dispose();
+                    //Console.WriteLine("ExecServer - Close connection - Client channel state: {0}", clientChannel.State);
+                }
+                catch (Exception)
+                {
+                    //Console.WriteLine("Exception while closing connection {0}", ex);
+                }
+                service = null;
             }
-            catch (Exception)
+        }
+
+        private static void CloseClient(ref ExecServerRemoteClient client)
+        {
+            if (client != null)
             {
-                //Console.WriteLine("Exception while closing connection {0}", ex);
+                try
+                {
+                    //Console.WriteLine("Closing client");
+                    client.Close();
+                }
+                catch (Exception)
+                {
+                    //Console.WriteLine("Exception while closing {0}", client);
+                }
+                client = null;
+            }
+        }
+
+        private static void CloseClients(ExecServerRemoteClient[] clients)
+        {
+            for (int i = 0; i < clients.Length; ++i)
+            {
+                CloseClient(ref clients[i]);
             }
         }
 
@@ -217,16 +354,23 @@ namespace SiliconStudio.ExecServer
         /// Runs the server process when it does not exist.
         /// </summary>
         /// <param name="executablePath">The executable path.</param>
-        private void RunServerProcess(string executablePath)
+        /// <param name="serverInstanceIndex">The server instance index.</param>
+        private bool RunServerProcess(string executablePath, int serverInstanceIndex, out IntPtr processHandle, out int processId, out string finalExecServerPath)
         {
+            processHandle = IntPtr.Zero;
+            processId = 0;
             var originalExecServerAppPath = typeof(ExecServerApp).Assembly.Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
+
+            finalExecServerPath = Path.Combine(Path.GetDirectoryName(executablePath),
+                Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer" + (serverInstanceIndex > 0 ? "" + serverInstanceIndex : string.Empty) + ".exe");
+
             // Avoid locking ExecServer.exe original file, so we are using the name of the executable path and append _ExecServer.exe
             var copyExecFile = false;
-            if (File.Exists(execServerPath))
+            if (File.Exists(finalExecServerPath))
             {
-                var copyExecServerTime = File.GetLastWriteTimeUtc(execServerPath);
+                var copyExecServerTime = File.GetLastWriteTimeUtc(finalExecServerPath);
                 // If exec server has changed, we need to copy the new version to it
                 copyExecFile = originalTime != copyExecServerTime;
             }
@@ -239,35 +383,32 @@ namespace SiliconStudio.ExecServer
             {
                 try
                 {
-                    File.Copy(originalExecServerAppPath, execServerPath, true);
+                    File.Copy(originalExecServerAppPath, finalExecServerPath, true);
 
                     // Copy the .config file as well
                     var executableConfigFile = executablePath + ".config";
                     if (File.Exists(executableConfigFile))
                     {
-                        File.Copy(executableConfigFile, execServerPath + ".config", true);
+                        File.Copy(executableConfigFile, finalExecServerPath + ".config", true);
                     }
                 }
                 catch (IOException)
                 {
+                    return false;
                 }
             }
 
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
-            var arguments = string.Format("/server \"{0}\"", executablePath);
-            if (!ProcessHelper.LaunchProcess(execServerPath, arguments))
-            {
-                Console.WriteLine("Error, unable to launch process [{0}]", execServerPath);
-            }
+            // TODO: We might want the process to not inherit environment
+            var result = ProcessHelper.LaunchProcess(finalExecServerPath, $"/server \"{executablePath}\" {serverInstanceIndex}", out processHandle, out processId);
+            return result;
         }
 
-        private static string GetEndpointAddress(string executablePath)
+        private static string GetEndpointAddress(string executablePath, int serverInstanceIndex)
         {
-            var executableKey = executablePath.Replace(":", "_");
-            executableKey = executableKey.Replace("\\", "_");
-            executableKey = executableKey.Replace("/", "_");
-            var address = "net.pipe://localhost/" + executableKey;
+            var executableKey = Regex.Replace(executablePath, "[:\\/#]", "_");
+            var address = "net.pipe://localhost/" + executableKey + "_" + serverInstanceIndex;
             return address;
         }
 
@@ -304,5 +445,11 @@ namespace SiliconStudio.ExecServer
                 Console.ForegroundColor = backupColor;
             }
         }
+
+        [DllImport("kernel32", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetExitCodeProcess(IntPtr hProcess, out int lpExitCode);
+
+        private const int PROCESS_STILL_ACTIVE = 259;
     }
 }

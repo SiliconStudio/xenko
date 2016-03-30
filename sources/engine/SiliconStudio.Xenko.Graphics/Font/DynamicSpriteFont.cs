@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
     /// <summary>
     /// A dynamic font. That is a font that generate its character bitmaps at execution.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<DynamicSpriteFont>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<DynamicSpriteFont>), Profile = "Content")]
     [ContentSerializer(typeof(DynamicSpriteFontContentSerializer))]
     [DataSerializer(typeof(DynamicSpriteFontSerializer))]
     internal class DynamicSpriteFont : SpriteFont
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             return FontManager.DoesFontContains(FontName, Style, c);
         }
 
-        protected override Glyph GetGlyph(char character, ref Vector2 fontSize, bool uploadGpuResources)
+        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources)
         {
             // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
             fontSize.X = Math.Min(fontSize.X, 1024);
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
             // upload the character to the GPU font texture and create the glyph if does not exists
             if (uploadGpuResources && characterData.Bitmap != null && !characterData.IsBitmapUploaded)
-                FontCacheManager.UploadCharacterBitmap(characterData);
+                FontCacheManager.UploadCharacterBitmap(commandList, characterData);
 
             // update the character usage info
             FontCacheManager.NotifyCharacterUtilization(characterData);

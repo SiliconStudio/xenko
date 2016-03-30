@@ -161,7 +161,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <exception cref="System.InvalidOperationException">MicroThread was already started before.</exception>
         public void Start(Func<Task> microThreadFunction, ScheduleMode scheduleMode = ScheduleMode.Last)
         {
-            ScriptId = microThreadFunction.Target.GetType().Name;
+            ScriptId = microThreadFunction.Target.GetType().FullName;
 
             // TODO: Interlocked compare exchange?
             if (Interlocked.CompareExchange(ref state, (int)MicroThreadState.Starting, (int)MicroThreadState.None) != (int)MicroThreadState.None)
@@ -281,6 +281,7 @@ namespace SiliconStudio.Core.MicroThreading
                 var node = NewCallback();
                 node.SendOrPostCallback = callback;
                 node.CallbackState = callbackState;
+                Callbacks.Add(node);
 
                 if (ScheduledLinkedListNode.Index == -1)
                     Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
@@ -294,6 +295,7 @@ namespace SiliconStudio.Core.MicroThreading
             {
                 var node = NewCallback();
                 node.MicroThreadAction = callback;
+                Callbacks.Add(node);
 
                 if (ScheduledLinkedListNode.Index == -1)
                     Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
@@ -314,9 +316,7 @@ namespace SiliconStudio.Core.MicroThreading
             else
             {
                 node = new MicroThreadCallbackNode();
-            }
-
-            Callbacks.Add(node);
+            }            
 
             return node;
         }

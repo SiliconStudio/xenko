@@ -21,7 +21,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         [Visit]
         protected override Node Visit(Node node)
         {
-            node.RemoveTag(XenkoTags.ConstantBuffer);
+            // Keeping it for ShaderLinker (removed by XenkoShaderCleaner)
+            //node.RemoveTag(XenkoTags.ConstantBuffer);
             node.RemoveTag(XenkoTags.ShaderScope);
             node.RemoveTag(XenkoTags.StaticRef);
             node.RemoveTag(XenkoTags.ExternRef);

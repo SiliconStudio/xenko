@@ -77,6 +77,10 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 CheckNotDisposed();
+
+                if (isLooped == value)
+                    return;
+
                 CheckBufferNotLoaded("The looping status of the sound can not be modified after it started playing.");
                 isLooped = value;
 

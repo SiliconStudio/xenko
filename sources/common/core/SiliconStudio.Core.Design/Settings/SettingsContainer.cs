@@ -329,8 +329,8 @@ namespace SiliconStudio.Core.Settings
 
         private void ChangeCurrentProfile(SettingsProfile oldProfile, SettingsProfile newProfile)
         {
-            if (oldProfile == null) throw new ArgumentNullException("oldProfile");
-            if (newProfile == null) throw new ArgumentNullException("newProfile");
+            if (oldProfile == null) throw new ArgumentNullException(nameof(oldProfile));
+            if (newProfile == null) throw new ArgumentNullException(nameof(newProfile));
             currentProfile = newProfile;
 
             lock (SettingsLock)
@@ -343,7 +343,8 @@ namespace SiliconStudio.Core.Settings
                     newProfile.GetValue(key.Key, out newValue, true, false);
                     var oldList = oldValue as IList;
                     var newList = newValue as IList;
-
+                    var oldDictionary = oldValue as IDictionary;
+                    var newDictionary = newValue as IDictionary;
                     bool isDifferent;
                     if (oldList != null && newList != null)
                     {
@@ -351,6 +352,15 @@ namespace SiliconStudio.Core.Settings
                         for (int i = 0; i < oldList.Count && !isDifferent; ++i)
                         {
                             if (!Equals(oldList[i], newList[i]))
+                                isDifferent = true;
+                        }
+                    }
+                    else if (oldDictionary != null && newDictionary != null)
+                    {
+                        isDifferent = oldDictionary.Count != newDictionary.Count;
+                        foreach (var k in oldDictionary.Keys)
+                        {
+                            if (!newDictionary.Contains(k) || !Equals(oldDictionary[k], newDictionary[k]))
                                 isDifferent = true;
                         }
                     }

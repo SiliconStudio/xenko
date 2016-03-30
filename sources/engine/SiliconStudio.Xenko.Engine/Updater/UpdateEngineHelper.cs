@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Updater
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T PtrToObject<T>(IntPtr obj) where T : class
         {
-            object convObj; // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
 #if IL
+            object convObj; // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
             ldarg obj
             stloc convObj // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
             ldloc convObj // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)] // Needed for Xamarin AOT
         public static IntPtr Unbox<T>(object obj)
         {
 #if IL
@@ -48,7 +48,6 @@ namespace SiliconStudio.Xenko.Updater
         static int ComputeArrayFirstElementOffset()
         {
             var testArray = new int[1];
-            int result = 0;
             fixed (int* testArrayStart = testArray)
             {
                 var testArrayObjectStart = ObjectToPtr(testArray);

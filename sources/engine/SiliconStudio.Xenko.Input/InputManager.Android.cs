@@ -7,17 +7,17 @@ using System;
 using Android.Views;
 using Android.Content;
 using Android.Hardware;
-using OpenTK.Platform.Android;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    internal partial class InputManagerAndroid : InputManager<AndroidXenkoGameView>
     {
         private const int SensorDesiredUpdateDelay = (int)(1 / DesiredSensorUpdateRate * 1000f);
 
-        private AndroidGameView gameView;
         private SensorManager sensorManager;
         private Sensor androidAccelerometer;
         private Sensor androidGyroscope;
@@ -34,22 +34,20 @@ namespace SiliconStudio.Xenko.Input
         private readonly float[] rotationMatrixArray = new float[9];
         private bool androidRotationVectorEnabled;
 
-        public InputManager(IServiceRegistry registry) : base(registry)
+        public InputManagerAndroid(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
             HasMouse = false;
             HasPointer = true;
         }
 
-        public override void Initialize()
+        public override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
-            base.Initialize();
-
             var viewListener = new ViewListener(this);
-            gameView = Game.Context.Control;
-            gameView.SetOnTouchListener(viewListener);
-            gameView.SetOnKeyListener(viewListener);
-            gameView.Resize += GameViewOnResize;
+            Control = gameContext.Control;
+            Control.SetOnTouchListener(viewListener);
+            Control.SetOnKeyListener(viewListener);
+            Control.Resize += GameViewOnResize;
 
             GameViewOnResize(null, EventArgs.Empty);
 
@@ -248,8 +246,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void GameViewOnResize(object sender, EventArgs eventArgs)
         {
-            ControlWidth = gameView.Size.Width;
-            ControlHeight = gameView.Size.Height;
+            ControlWidth = Control.Size.Width;
+            ControlHeight = Control.Size.Height;
         }
 
         private bool OnTouch(MotionEvent e)
@@ -374,9 +372,9 @@ namespace SiliconStudio.Xenko.Input
 
         class ViewListener : Java.Lang.Object, View.IOnTouchListener, View.IOnKeyListener
         {
-            private readonly InputManager inputManager;
+            private readonly InputManagerAndroid inputManager;
 
-            public ViewListener(InputManager inputManager)
+            public ViewListener(InputManagerAndroid inputManager)
             {
                 this.inputManager = inputManager;
             }

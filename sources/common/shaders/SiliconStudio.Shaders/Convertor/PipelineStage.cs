@@ -7,7 +7,6 @@ namespace SiliconStudio.Shaders.Convertor
     /// <summary>
     /// Enum to specify pipeline stage.
     /// </summary>
-    [Serializable]
     public enum PipelineStage
     {
         Vertex = 0,

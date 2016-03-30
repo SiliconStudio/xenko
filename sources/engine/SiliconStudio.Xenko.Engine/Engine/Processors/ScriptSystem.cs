@@ -25,10 +25,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
-        private readonly HashSet<Script> registeredScripts = new HashSet<Script>();
-        private readonly HashSet<Script> scriptsToStart = new HashSet<Script>();
+        private readonly HashSet<ScriptComponent> registeredScripts = new HashSet<ScriptComponent>();
+        private readonly HashSet<ScriptComponent> scriptsToStart = new HashSet<ScriptComponent>();
         private readonly HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
-        private readonly List<Script> scriptsToStartCopy = new List<Script>();
+        private readonly List<ScriptComponent> scriptsToStartCopy = new List<ScriptComponent>();
         private readonly List<SyncScript> syncScriptsCopy = new List<SyncScript>();
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
         /// </summary>
         /// <param name="registry">The registry.</param>
-        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="AssetManager" />.</remarks>
+        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="ContentManager" />.</remarks>
         public ScriptSystem(IServiceRegistry registry)
             : base(registry)
         {
@@ -49,6 +49,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Scheduler = new Scheduler();
             Scheduler.ActionException += Scheduler_ActionException;
             Services.AddService(typeof(ScriptSystem), this);
+        }
+
+        protected override void Destroy()
+        {
+            Scheduler.ActionException -= Scheduler_ActionException;
+            Scheduler = null;
+
+            Services.RemoveService(typeof(ScriptSystem));
+
+            base.Destroy();
         }
 
         public override void Update(GameTime gameTime)
@@ -140,7 +150,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Add the provided script to the script system.
         /// </summary>
         /// <param name="script">The script to add</param>
-        public void Add(Script script)
+        public void Add(ScriptComponent script)
         {
             script.Initialize(Services);
             registeredScripts.Add(script);
@@ -162,7 +172,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Remove the provided script from the script system.
         /// </summary>
         /// <param name="script">The script to remove</param>
-        public void Remove(Script script)
+        public void Remove(ScriptComponent script)
         {
             // Make sure it's not registered in any pending list
             var startWasPending = scriptsToStart.Remove(script);
@@ -197,7 +207,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// </summary>
         /// <param name="oldScript">The old script</param>
         /// <param name="newScript">The new script</param>
-        public void LiveReload(Script oldScript, Script newScript)
+        public void LiveReload(ScriptComponent oldScript, ScriptComponent newScript)
         {
             // Set live reloading mode for the rest of it's lifetime
             oldScript.IsLiveReloading = true;
@@ -208,10 +218,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         private void Scheduler_ActionException(Scheduler scheduler, SchedulerEntry schedulerEntry, Exception e)
         {
-            HandleSynchronousException((Script)schedulerEntry.Token, e);
+            HandleSynchronousException((ScriptComponent)schedulerEntry.Token, e);
         }
 
-        private void HandleSynchronousException(Script script, Exception e)
+        private void HandleSynchronousException(ScriptComponent script, Exception e)
         {
             Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { e });
 
@@ -229,11 +239,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
             registeredScripts.Remove(script);
         }
 
-        class PriorityScriptComparer : IComparer<Script>
+        class PriorityScriptComparer : IComparer<ScriptComponent>
         {
             public static readonly PriorityScriptComparer Default = new PriorityScriptComparer();
 
-            public int Compare(Script x, Script y)
+            public int Compare(ScriptComponent x, ScriptComponent y)
             {
                 return x.Priority.CompareTo(y.Priority);
             }

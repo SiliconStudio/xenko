@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var assetManager = new AssetManager();
+                var assetManager = new ContentManager();
 
                 // Load source and base animations
                 var baseAnimation = assetManager.Load<AnimationClip>(AssetParameters.BaseUrl);

@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests.Regression
             await base.LoadContent();
 
             Console.WriteLine(@"Begin load.");
-            texture = Asset.Load<Texture>("small_uv");
+            texture = Content.Load<Texture>("small_uv");
             Console.WriteLine(@"End load.");
         }
 
@@ -52,9 +52,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests.Regression
 
         public void DrawTexture()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.DrawTexture(texture, GraphicsDevice.SamplerStates.PointClamp);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+            GraphicsContext.DrawTexture(texture, GraphicsDevice.SamplerStates.PointClamp);
         }
 
         /// <summary>

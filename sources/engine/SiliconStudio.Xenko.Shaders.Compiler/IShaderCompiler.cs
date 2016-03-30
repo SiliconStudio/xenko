@@ -9,10 +9,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     internal class ShaderBytecodeResult : LoggerResult
     {
         public ShaderBytecode Bytecode { get; set; }
+
+        public string DisassembleText { get; set; }
     }
 
     internal interface IShaderCompiler
     {
-        ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, ShaderMixinParameters compilerParameters, EffectReflection reflection, string sourceFilename = null);
+        ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null);
     }
 }

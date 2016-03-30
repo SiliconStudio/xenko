@@ -65,6 +65,7 @@ namespace SiliconStudio.Xenko.Rendering
                 nodeTransformations[index].Transform = nodes[index].Transform;
                 nodeTransformations[index].Flags = nodes[index].Flags;
                 nodeTransformations[index].RenderingEnabledRecursive = true;
+                UpdateLocalMatrix(ref nodeTransformations[index]);
             }
 
             nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
@@ -96,23 +97,6 @@ namespace SiliconStudio.Xenko.Rendering
             matrixCounter++;
         }
 
-        /// <summary>
-        /// Updates previously computed world matrices to TransformationKeys.World for each <see cref="RenderMesh" />.
-        /// </summary>
-        /// <param name="renderMesh">The render mesh.</param>
-        internal void UpdateRenderMesh(RenderMesh renderMesh)
-        {
-            var nodeIndex = renderMesh.Mesh.NodeIndex;
-            var enabled = nodeTransformations[nodeIndex].RenderingEnabledRecursive;
-            renderMesh.Enabled = enabled;
-            if (enabled && renderMesh.MatrixCounter != matrixCounter)
-            {
-                renderMesh.WorldMatrix = nodeTransformations[nodeIndex].WorldMatrix;
-                renderMesh.IsGeometryInverted = nodeTransformations[nodeIndex].IsScalingNegative;
-                renderMesh.MatrixCounter = matrixCounter;
-            }
-        }
-
         public void GetWorldMatrix(int index, out Matrix matrix)
         {
             matrix = nodeTransformations[index].WorldMatrix;
@@ -128,9 +112,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Compute LocalMatrix
             if ((node.Flags & ModelNodeFlags.EnableTransform) == ModelNodeFlags.EnableTransform)
             {
-                var scaling = node.Transform.Scale;
-                TransformComponent.CreateMatrixTRS(ref node.Transform.Position, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
-                node.IsScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
+                UpdateLocalMatrix(ref node);
             }
 
             var nodeTransformationsLocal = this.nodeTransformations;
@@ -156,6 +138,13 @@ namespace SiliconStudio.Xenko.Rendering
                 else
                     node.WorldMatrix = node.LocalMatrix;
             }
+        }
+
+        private static void UpdateLocalMatrix(ref ModelNodeTransformation node)
+        {
+            var scaling = node.Transform.Scale;
+            TransformComponent.CreateMatrixTRS(ref node.Transform.Position, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
+            node.IsScalingNegative = scaling.X*scaling.Y*scaling.Z < 0.0f;
         }
     }
 }

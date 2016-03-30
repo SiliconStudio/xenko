@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
 
@@ -46,8 +47,8 @@ namespace SiliconStudio.Xenko.Physics
             var inverseRotation = LocalRotation;
             inverseRotation.Invert();
 
-            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation)*Matrix.Translation(LocalOffset * Scaling);// * Matrix.Scaling(Scaling);
-            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation)*Matrix.Translation(-LocalOffset * Scaling);// * Matrix.Scaling(Scaling);
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation)*Matrix.Translation(LocalOffset * CachedScaling);
+            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation)*Matrix.Translation(-LocalOffset * CachedScaling);
 
             //if we are part of a compund we should update the transformation properly
             if (Parent == null) return;
@@ -77,6 +78,8 @@ namespace SiliconStudio.Xenko.Physics
         /// </value>
         public Matrix NegativeCenterMatrix { get; private set; }
 
+        protected Vector3 CachedScaling;
+
         /// <summary>
         /// Gets or sets the scaling.
         /// Make sure that you manually created and assigned an exclusive ColliderShape to the Collider otherwise since the engine shares shapes among many Colliders, all the colliders will be scaled.
@@ -85,17 +88,29 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The scaling.
         /// </value>
-        public Vector3 Scaling
+        public virtual Vector3 Scaling
         {
             get
             {
-                return InternalShape.LocalScaling;
+                return CachedScaling;
             }
             set
             {
-                var newScaling = value;
-                if (Is2D) newScaling.Z = 0.0f;
-                InternalShape.LocalScaling = newScaling;
+                var oldScale = CachedScaling;
+
+                CachedScaling = value;
+                if (Is2D) CachedScaling.Z = 0.0f;
+                InternalShape.LocalScaling = CachedScaling;
+
+                UpdateLocalTransformations();
+
+                //If we have a debug entity apply correct scaling to it as well
+                if (DebugEntity == null) return;
+                var invertedScale = Matrix.Scaling(oldScale);
+                invertedScale.Invert();
+                var unscaledMatrix = DebugEntity.Transform.LocalMatrix*invertedScale;
+                var newScale = Matrix.Scaling(CachedScaling);
+                DebugEntity.Transform.LocalMatrix = unscaledMatrix*newScale;
             }
         }
 
@@ -123,5 +138,7 @@ namespace SiliconStudio.Xenko.Physics
         internal bool NeedsCustomCollisionCallback;
 
         internal bool IsPartOfAsset = false;
+
+        internal Entity DebugEntity;
     }
 }

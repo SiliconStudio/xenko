@@ -70,10 +70,10 @@ namespace SiliconStudio.Core.Serialization
             Default = new SerializerSelector(false, true, "Default");
             Default.Initialize();
 
-            Asset = new SerializerSelector(false, true, "Default", "Asset");
+            Asset = new SerializerSelector(false, true, "Default", "Content");
             Asset.Initialize();
 
-            AssetWithReuse = new SerializerSelector(true, true, "Default", "Asset");
+            AssetWithReuse = new SerializerSelector(true, true, "Default", "Content");
             AssetWithReuse.Initialize();
         }
 
@@ -91,6 +91,25 @@ namespace SiliconStudio.Core.Serialization
 
         public SerializerSelector(params string[] profiles) : this(false, profiles)
         {
+        }
+
+
+        /// <summary>
+        /// Checks if this instance supports the specified serialization profile.
+        /// </summary>
+        /// <param name="profile">Name of the profile</param>
+        /// <returns><c>true</c> if this instance supports the specified serialization profile</returns>
+        public bool HasProfile(string profile)
+        {
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
+            for (int i = 0; i < profiles.Length; i++)
+            {
+                if (profile == profiles[i])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private SerializerSelector(bool reuseReferences, bool unusedPrivateCtor, params string[] profiles)

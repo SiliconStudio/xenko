@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -16,17 +17,16 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("ModelComponent")]
-    [Display(11000, "Model", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
-    [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
+    [Display("Model", Expand = ExpandRule.Once)]
+    // TODO GRAPHICS REFACTOR
+    [DefaultEntityComponentProcessor(typeof(ModelTransformProcessor))]
+    [DefaultEntityComponentRenderer(typeof(ModelRenderProcessor))]
+    [ComponentOrder(11000)]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
-        public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
-
         private Model model;
         private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
-        private readonly List<Material> materials = new List<Material>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponent"/> class.
@@ -41,7 +41,6 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="model">The model.</param>
         public ModelComponent(Model model)
         {
-            Parameters = new ParameterCollection();
             Model = model;
             IsShadowCaster = true;
             IsShadowReceiver = true;
@@ -78,10 +77,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
-        public List<Material> Materials
-        {
-            get { return materials; }
-        }
+        [Category]
+        public List<Material> Materials { get; } = new List<Material>();
 
         [DataMemberIgnore, DataMemberUpdatable]
         [DataMember]
@@ -89,13 +86,17 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                if (modelViewHierarchyDirty)
-                {
-                    ModelUpdated();
-                    modelViewHierarchyDirty = false;
-                }
-
+                CheckSkeleton();
                 return skeleton;
+            }
+        }
+
+        private void CheckSkeleton()
+        {
+            if (modelViewHierarchyDirty)
+            {
+                ModelUpdated();
+                modelViewHierarchyDirty = false;
             }
         }
 
@@ -120,13 +121,6 @@ namespace SiliconStudio.Xenko.Engine
         public bool IsShadowReceiver { get; set; }
 
         /// <summary>
-        /// Gets the parameters used to render this mesh.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
-
-        /// <summary>
         /// Gets the bounding box in world space.
         /// </summary>
         /// <value>The bounding box.</value>
@@ -139,6 +133,40 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>The bounding sphere.</value>
         [DataMemberIgnore]
         public BoundingSphere BoundingSphere;
+
+        /// <summary>
+        /// Gets the material at the specified index. If the material is not overriden by this component, it will try to get it from <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/>
+        /// </summary>
+        /// <param name="index">The index of the material</param>
+        /// <returns>The material at the specified index or null if not found</returns>
+        public Material GetMaterial(int index)
+        {
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index cannot be < 0");
+
+            Material material = null;
+            if (index < Materials.Count)
+            {
+                material = Materials[index];
+            }
+            if (material == null && Model != null && index < Model.Materials.Count)
+            {
+                material = Model.Materials[index].Material;
+            }
+            return material;
+        }
+
+        /// <summary>
+        /// Gets the number of materials (computed from <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/>)
+        /// </summary>
+        /// <returns></returns>
+        public int GetMaterialCount()
+        {
+            if (Model != null)
+            {
+                return Model.Materials.Count;
+            }
+            return 0;
+        }
 
         private void ModelUpdated()
         {
@@ -158,7 +186,7 @@ namespace SiliconStudio.Xenko.Engine
 
         internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
         {
-            if (!Enabled || Skeleton == null || model == null)
+            if (!Enabled || model == null)
                 return;
 
             // Check if scaling is negative
@@ -170,10 +198,16 @@ namespace SiliconStudio.Xenko.Engine
                     isScalingNegative = scale.X*scale.Y*scale.Z < 0.0f;
             }
 
-            // Update model view hierarchy node matrices
-            skeleton.NodeTransformations[0].LocalMatrix = worldMatrix;
-            skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
-            skeleton.UpdateMatrices();
+            // Make sure skeleton is up to date
+            CheckSkeleton();
+
+            if (skeleton != null)
+            {
+                // Update model view hierarchy node matrices
+                skeleton.NodeTransformations[0].LocalMatrix = worldMatrix;
+                skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
+                skeleton.UpdateMatrices();
+            }
 
             // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
@@ -185,7 +219,10 @@ namespace SiliconStudio.Xenko.Engine
             {
                 var meshBoundingSphere = mesh.BoundingSphere;
 
-                skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
+                if (skeleton != null)
+                    skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
+                else
+                    world = worldMatrix;
                 Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
                 BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
 
@@ -208,11 +245,6 @@ namespace SiliconStudio.Xenko.Engine
             // Update the bounds
             BoundingBox = modelBoundingBox;
             BoundingSphere = modelBoundingSphere;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

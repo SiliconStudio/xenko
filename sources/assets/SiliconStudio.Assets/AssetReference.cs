@@ -3,8 +3,8 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {
@@ -13,7 +13,6 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [Obsolete("This type of reference will be removed in a future version")]
     public abstract class AssetReference : ITypedContentReference, IEquatable<AssetReference>
     {
         private readonly UFile location;
@@ -126,29 +125,43 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Tries to parse an asset reference in the format "GUID:Location".
+        /// Tries to parse an asset reference in the format "[GUID/]GUID:Location". The first GUID is optional and is used to store the ID of the reference.
         /// </summary>
         /// <param name="assetReferenceText">The asset reference.</param>
-        /// <param name="guid">The unique identifier.</param>
+        /// <param name="referenceId">The unique identifier of this reference (may be null</param>
+        /// <param name="guid">The unique identifier of object pointed by this reference.</param>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
-        public static bool TryParse(string assetReferenceText, out Guid guid, out UFile location)
+        public static bool TryParse(string assetReferenceText, out Guid referenceId, out Guid guid, out UFile location)
         {
             if (assetReferenceText == null) throw new ArgumentNullException("assetReferenceText");
 
+            referenceId = Guid.Empty;
             guid = Guid.Empty;
             location = null;
-            int indexOf = assetReferenceText.IndexOf(':');
-            if (indexOf < 0)
+            int indexFirstSlash = assetReferenceText.IndexOf('/');
+            int indexBeforelocation = assetReferenceText.IndexOf(':');
+            if (indexBeforelocation < 0)
             {
                 return false;
             }
-            if (!Guid.TryParse(assetReferenceText.Substring(0, indexOf), out guid))
+            int startNextGuid = 0;
+            if (indexFirstSlash > 0 && indexFirstSlash < indexBeforelocation)
+            {
+                if (!Guid.TryParse(assetReferenceText.Substring(0, indexFirstSlash), out referenceId))
+                {
+                    return false;
+                }
+                startNextGuid = indexFirstSlash + 1;
+            }
+
+            if (!Guid.TryParse(assetReferenceText.Substring(startNextGuid, indexBeforelocation - startNextGuid), out guid))
             {
                 return false;
             }
-            location = new UFile(assetReferenceText.Substring(indexOf + 1));
+
+            location = new UFile(assetReferenceText.Substring(indexBeforelocation + 1));
 
             return true;
         }
@@ -168,11 +181,16 @@ namespace SiliconStudio.Assets
             assetReference = null;
             Guid guid;
             UFile location;
-            if (!TryParse(assetReferenceText, out guid, out location))
+            Guid referenceId;
+            if (!TryParse(assetReferenceText, out referenceId, out guid, out location))
             {
                 return false;
             }
             assetReference = New(referenceType, guid, location);
+            if (referenceId != Guid.Empty)
+            {
+                IdentifiableHelper.SetId(assetReference, referenceId);
+            }
             return true;
         }
     }
@@ -200,7 +218,6 @@ namespace SiliconStudio.Assets
     [DataContract("aref")]
     [DataStyle(DataStyle.Compact)]
     [DataSerializer(typeof(AssetReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    [Obsolete("This type of reference will be removed in a future version")]
     public sealed class AssetReference<T> : AssetReference where T : Asset
     {
         /// <summary>

@@ -37,7 +37,12 @@ namespace SiliconStudio.Xenko.Games
         public LaunchParameters()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if !SILICONSTUDIO_RUNTIME_CORECLR
             var args = Environment.GetCommandLineArgs();
+#else
+                // FIXME: Manu: Currently we cannot get the command line arguments in CoreCLR.
+            string[] args = new string [] { };
+#endif
 
             if (args.Length > 1)
             {

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
@@ -11,8 +11,6 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class BoxColliderShape : ColliderShape
     {
-        private static MeshDraw cachedDebugPrimitive;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BoxColliderShape"/> class.
         /// </summary>
@@ -22,9 +20,10 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.Box;
             Is2D = false;
 
+            CachedScaling = Vector3.One;
             InternalShape = new BulletSharp.BoxShape(size/2)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
 
             DebugPrimitiveMatrix = Matrix.Scaling(size * 1.01f);
@@ -32,7 +31,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cube.New(device).ToMeshDraw());
+            return GeometricPrimitive.Cube.New(device).ToMeshDraw();
         }
     }
 }

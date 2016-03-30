@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -50,6 +51,11 @@ namespace SiliconStudio.Core
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
+#elif SILICONSTUDIO_PLATFORM_LINUX
+        // We do not specifiy the .so extension as libc.so on Linux
+        // is actually not a .so files but a script. Using just libc
+        // will automatically find the corresponding .so.
+        private const string MemcpyDll = "libc";
 #elif SILICONSTUDIO_PLATFORM_IOS
         private const string MemcpyDll = ObjCRuntime.Constants.SystemLibrary;
 #else
@@ -63,7 +69,9 @@ namespace SiliconStudio.Core
         /// <param name="sizeInBytesToCopy">The count.</param>
         /// <returns></returns>
         [DllImport(MemcpyDll, EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
+#endif
         private static extern IntPtr CopyMemory(IntPtr dest, IntPtr src, ulong sizeInBytesToCopy);
 
         public static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
@@ -216,6 +224,7 @@ namespace SiliconStudio.Core
         /// <param name="source">Memory location to read from.</param>
         /// <param name="data">The data write to.</param>
         /// <returns>source pointer + sizeof(T)</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Read<T>(IntPtr source, ref T data) where T : struct
         {
             unsafe
@@ -278,6 +287,7 @@ namespace SiliconStudio.Core
         /// <param name="destination">Memory location to write to.</param>
         /// <param name="data">The data to write.</param>
         /// <returns>destination pointer + sizeof(T)</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write<T>(IntPtr destination, ref T data) where T : struct
         {
             unsafe

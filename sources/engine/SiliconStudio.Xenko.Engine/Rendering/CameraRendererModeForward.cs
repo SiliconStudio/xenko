@@ -2,10 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
-
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -14,39 +13,105 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataContract("CameraRendererModeForward")]
     [Display("Forward")]
-    public sealed class CameraRendererModeForward : CameraRendererMode
+    public class CameraRendererModeForward : CameraRenderModeBase
     {
-        private const string ForwardEffect = "XenkoForwardShadingEffect";
+        private MeshPipelinePlugin meshPipelinePlugin;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CameraRendererModeForward"/> class.
-        /// </summary>
-        public CameraRendererModeForward()
-        {
-            ModelEffect = ForwardEffect;
-        }
+        [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
+        //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
 
-        /// <inheritdoc/>
-        [DefaultValue(ForwardEffect)]
-        public override string ModelEffect { get; set; }
-
-        /// <summary>
-        /// Gets or sets the material filter used to render this scene camera.
-        /// </summary>
-        /// <value>The material filter.</value>
+        [DefaultValue(true)]
         [DataMemberIgnore]
-        public ShaderSource MaterialFilter { get; set; }
+        public bool Shadows { get; set; } = true;
 
-        protected override void DrawCore(RenderContext context)
+        //public bool GBuffer { get; set; } = false;
+
+        protected override void InitializeCore()
         {
-            // TODO: Find a better extensibility point for PixelStageSurfaceFilter
-            var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
-            if (!ReferenceEquals(currentFilter, MaterialFilter))
+            base.InitializeCore();
+
+            // Create mandatory render stages that don't exist yet
+            if (MainRenderStage == null)
+                MainRenderStage = RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (TransparentRenderStage == null)
+                TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+
+            // Setup proper sort modes
+            MainRenderStage.SortMode = new StateChangeSortMode();
+            TransparentRenderStage.SortMode = new BackToFrontSortMode();
+
+            // Create optional render stages that don't exist yet
+            //if (GBufferRenderStage == null)
+            //    GBufferRenderStage = RenderSystem.GetOrCreateRenderStage("GBuffer", "GBuffer", new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+            if (Shadows)
             {
-                context.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, MaterialFilter);
+                if (ShadowMapRenderStage == null)
+                {
+                    ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
+                }
+
+                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                meshPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<MeshPipelinePlugin>();
             }
 
-            base.DrawCore(context);
+            MainRenderView.RenderStages.Add(MainRenderStage);
+            MainRenderView.RenderStages.Add(TransparentRenderStage);
+        }
+
+        protected override void DrawCore(RenderDrawContext context)
+        {
+            var currentViewport = context.CommandList.Viewport;
+
+            // GBuffer
+            //if (GBuffer)
+            //{
+            //    context.PushRenderTargets();
+            //
+            //    var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, GBufferRenderStage.Output.RenderTargetFormat0));
+            //    context.CommandList.Clear(gbuffer, Color4.Black);
+            //    context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, gbuffer);
+            //    RenderSystem.Draw(context, mainRenderView, GBufferRenderStage);
+            //
+            //    context.PopRenderTargets();
+            //}
+
+            // Shadow maps
+            var shadowMapRenderer = meshPipelinePlugin?.ForwardLightingRenderFeature?.ShadowMapRenderer;
+            if (Shadows && shadowMapRenderer != null)
+            {
+                // Clear atlases
+                shadowMapRenderer.PrepareAtlasAsRenderTargets(context.CommandList);
+
+                context.PushRenderTargets();
+
+                // Draw all shadow views generated for the current view
+                foreach (var renderView in RenderSystem.Views)
+                {
+                    var shadowmapRenderView = renderView as ShadowMapRenderView;
+                    if (shadowmapRenderView != null && shadowmapRenderView.RenderView == MainRenderView)
+                    {
+                        var shadowMapRectangle = shadowmapRenderView.Rectangle;
+                        shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
+                        shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
+                        context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+
+                        RenderSystem.Draw(context, shadowmapRenderView, ShadowMapRenderStage);
+                    }
+                }
+
+                context.PopRenderTargets();
+
+                shadowMapRenderer.PrepareAtlasAsShaderResourceViews(context.CommandList);
+            }
+
+            // Draw [main view | main stage]
+            RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+
+            // Draw [main view | transparent stage]
+            RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
         }
     }
 }

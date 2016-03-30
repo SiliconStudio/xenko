@@ -20,7 +20,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? null : value.GetType();
+            return value?.GetType();
         }
     }
 }

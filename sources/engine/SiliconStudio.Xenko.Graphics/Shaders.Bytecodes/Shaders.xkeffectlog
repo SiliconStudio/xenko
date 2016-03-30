@@ -2,31 +2,27 @@
 !EffectCompileRequest
 EffectName: SpriteEffect
 UsedParameters:
-    CompilerParameters.DebugKey: true
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
 ---
 !EffectCompileRequest
 EffectName: SpriteBatch
 UsedParameters:
-    CompilerParameters.DebugKey: true
-    EffectSourceCode.Enable: true
-    EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     SpriteBase.ColorIsSRgb: false
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
 ---
 !EffectCompileRequest
 EffectName: SpriteBatch
 UsedParameters:
-    CompilerParameters.DebugKey: true
+    SpriteBase.ColorIsSRgb: true
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.FieldName: binaryBytecodeSRgb
-    SpriteBase.ColorIsSRgb: true
 ---
 !EffectCompileRequest
 EffectName: UIEffect
 UsedParameters:
-    CompilerParameters.DebugKey: true
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
@@ -34,17 +30,15 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: UIEffect
 UsedParameters:
-    CompilerParameters.DebugKey: true
+    SpriteBase.ColorIsSRgb: true
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
     EffectSourceCode.FieldName: binaryBytecodeSRgb
-    SpriteBase.ColorIsSRgb: true
 ---
 !EffectCompileRequest
 EffectName: BackgroundEffect
 UsedParameters:
-    CompilerParameters.DebugKey: true
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.ClassDeclaration: internal partial

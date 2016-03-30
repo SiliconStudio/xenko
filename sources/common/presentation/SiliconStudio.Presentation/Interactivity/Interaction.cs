@@ -29,8 +29,7 @@ namespace SiliconStudio.Presentation.Interactivity
         private static void OnBehaviorCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var oldValue = (BehaviorCollection)e.OldValue;
-            if (oldValue != null)
-                oldValue.Detach();
+            oldValue?.Detach();
 
             var newValue = (BehaviorCollection)e.NewValue;
             if (newValue != null)

@@ -51,16 +51,10 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 return false;
             }
 
-            // Override version with task SpecialVersion (if specified by user)
-            if (!string.IsNullOrEmpty(SpecialVersion))
-            {
-                package.Meta.Version = new PackageVersion(package.Meta.Version.Version, SpecialVersion);
-            }
-
             Log.LogMessage(MessageImportance.High, "Packaging [{0}] version [{1}]", package.Meta.Name, package.Meta.Version);
 
             // Build the package
-            PackageArchive.Build(package);
+            PackageArchive.Build(package, !string.IsNullOrEmpty(SpecialVersion) ? SpecialVersion : null);
             return true;
         }
     }

@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Audio
             : base(registry)
         {
             Enabled = true;
-            AudioEngine = new AudioEngine();
+            AudioEngine = AudioEngineFactory.NewAudioEngine();
 
             registry.AddService(typeof(AudioSystem), this);
         }

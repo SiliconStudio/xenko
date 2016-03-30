@@ -1,0 +1,16 @@
+!Texture
+Id: 4eb3a576-7008-4698-ac61-993272362567
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../samples/Graphics/MaterialSample/Resources/stone4_gls.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+~Base:
+    ~Id: d17b4d17-f763-4673-a998-b50101747754
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -20,11 +20,13 @@ namespace SiliconStudio.Xenko.UI
 
         internal UIBatch Batch { get; private set; }
 
-        internal DepthStencilState KeepStencilValueState { get; private set; }
+        internal DepthStencilStateDescription KeepStencilValueState { get; private set; }
 
-        internal DepthStencilState IncreaseStencilValueState { get; private set; }
+        internal DepthStencilStateDescription IncreaseStencilValueState { get; private set; }
 
-        internal DepthStencilState DecreaseStencilValueState { get; private set; }
+        internal DepthStencilStateDescription DecreaseStencilValueState { get; private set; }
+
+        internal ResourceDictionary DefaultResourceDictionary { get; private set; }
 
         private InputManagerBase input;
 
@@ -90,34 +92,65 @@ namespace SiliconStudio.Xenko.UI
                         StencilFunction = CompareFunction.Equal
                     },
                 };
-            KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
+            KeepStencilValueState = depthStencilDescription;
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
             depthStencilDescription.BackFace.StencilPass = StencilOperation.Increment;
-            IncreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
+            IncreaseStencilValueState = depthStencilDescription;
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Decrement;
             depthStencilDescription.BackFace.StencilPass = StencilOperation.Decrement;
-            DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
+            DecreaseStencilValueState = depthStencilDescription;
 
             // set the default design of the UI elements.
             var designsTexture = TextureExtensions.FromFileData(GraphicsDevice, DefaultDesigns.Designs);
-            Button.PressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default button pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32)});
-            Button.NotPressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default button not pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) });
-            Button.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default button overred design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) });
-            EditText.ActiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default edit active design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(105, 3, 32, 32) });
-            EditText.InactiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default edit inactive design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(139, 3, 32, 32) });
-            EditText.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default edit overred design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(173, 3, 32, 32) });
-            ToggleButton.CheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default toggle button checked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32) });
-            ToggleButton.UncheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default toggle button unchecked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) });
-            ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default toggle button indeterminate design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) });
-            Slider.TrackBackgroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default slider track background design", designsTexture) { Borders = 14 * Vector4.One, Region = new RectangleF(207, 3, 32, 32) });
-            Slider.TrackForegroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default slider track foreground design", designsTexture) { Borders = 0 * Vector4.One, Region = new RectangleF(3, 37, 32, 32) });
-            Slider.ThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default slider thumb design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(37, 37, 16, 32) });
-            Slider.MouseOverThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default slider thumb overred design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(71, 37, 16, 32) });
-            Slider.TickImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Sprite("Default slider track foreground design", designsTexture) { Region = new RectangleF(245, 3, 3, 6) });
-            Slider.TickOffsetPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(13f);
-            Slider.TrackStartingOffsetsrPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Vector2(3));
+
+            DefaultResourceDictionary = new ResourceDictionary
+            {
+                [typeof(Button)] = new Style(typeof(Button))
+                {
+                    Setters =
+                    {
+                        new Setter<Sprite>(Button.PressedImagePropertyKey, new Sprite("Default button pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32) }),
+                        new Setter<Sprite>(Button.NotPressedImagePropertyKey, new Sprite("Default button not pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) }),
+                        new Setter<Sprite>(Button.MouseOverImagePropertyKey, new Sprite("Default button overred design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) }),
+                    }
+                },
+
+                [typeof(EditText)] = new Style(typeof(EditText))
+                {
+                    Setters =
+                    {
+                        new Setter<Sprite>(EditText.ActiveImagePropertyKey, new Sprite("Default edit active design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(105, 3, 32, 32) }),
+                        new Setter<Sprite>(EditText.InactiveImagePropertyKey, new Sprite("Default edit inactive design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(139, 3, 32, 32) }),
+                        new Setter<Sprite>(EditText.MouseOverImagePropertyKey, new Sprite("Default edit overred design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(173, 3, 32, 32) }),
+                    }
+                },
+
+                [typeof(ToggleButton)] = new Style(typeof(ToggleButton))
+                {
+                    Setters =
+                    {
+                        new Setter<Sprite>(ToggleButton.CheckedImagePropertyKey, new Sprite("Default toggle button checked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32) }),
+                        new Setter<Sprite>(ToggleButton.UncheckedImagePropertyKey, new Sprite("Default toggle button unchecked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) }),
+                        new Setter<Sprite>(ToggleButton.IndeterminateImagePropertyKey, new Sprite("Default toggle button indeterminate design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) }),
+                    }
+                },
+
+                [typeof(Slider)] = new Style(typeof(Slider))
+                {
+                    Setters =
+                    {
+                        new Setter<Sprite>(Slider.TrackBackgroundImagePropertyKey, new Sprite("Default slider track background design", designsTexture) { Borders = 14 * Vector4.One, Region = new RectangleF(207, 3, 32, 32) }),
+                        new Setter<Sprite>(Slider.TrackForegroundImagePropertyKey, new Sprite("Default slider track foreground design", designsTexture) { Borders = 0 * Vector4.One, Region = new RectangleF(3, 37, 32, 32) }),
+                        new Setter<Sprite>(Slider.ThumbImagePropertyKey, new Sprite("Default slider thumb design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(37, 37, 16, 32) }),
+                        new Setter<Sprite>(Slider.MouseOverThumbImagePropertyKey, new Sprite("Default slider thumb overred design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(71, 37, 16, 32) }),
+                        new Setter<Sprite>(Slider.TickImagePropertyKey, new Sprite("Default slider track foreground design", designsTexture) { Region = new RectangleF(245, 3, 3, 6) }),
+                        new Setter<float>(Slider.TickOffsetPropertyKey, 13f),
+                        new Setter<Vector2>(Slider.TrackStartingOffsetsrPropertyKey, new Vector2(3)),
+                    }
+                },
+            };
         }
 
         /// <summary>

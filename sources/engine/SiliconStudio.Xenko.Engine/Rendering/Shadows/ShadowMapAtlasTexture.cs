@@ -12,13 +12,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// An atlas of shadow maps.
     /// </summary>
-    public class ShadowMapAtlasTexture : GuillotinePacker
+    public class ShadowMapAtlasTexture
     {
+        private readonly GuillotinePacker packer = new GuillotinePacker();
+
+        private bool clearNeeded;
+
         public ShadowMapAtlasTexture(Texture texture, int textureId)
         {
-            if (texture == null) throw new ArgumentNullException("texture");
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
             Texture = texture;
-            Clear(Texture.Width, Texture.Height);
+            packer.Clear(Texture.Width, Texture.Height);
             Width = texture.Width;
             Height = texture.Height;
 
@@ -38,21 +42,42 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public readonly RenderFrame RenderFrame;
 
-        private bool IsRenderTargetCleared;
-
-        public override void Clear()
+        public void Clear()
         {
-            base.Clear();
-            IsRenderTargetCleared = false;
+            packer.Clear();
         }
 
-        public void ClearRenderTarget(RenderContext context)
+        public bool Insert(int width, int height, ref Rectangle bestRectangle)
         {
-            if (!IsRenderTargetCleared)
+            return packer.Insert(width, height, ref bestRectangle);
+        }
+
+        public bool TryInsert(int width, int height, int count, GuillotinePacker.InsertRectangleCallback inserted)
+        {
+            return packer.TryInsert(width, height, count, inserted);
+        }
+
+        public void MarkClearNeeded()
+        {
+            clearNeeded = true;
+        }
+
+        public void PrepareAsRenderTarget(CommandList commandList)
+        {
+            // Switch to render target
+            commandList.ResourceBarrierTransition(Texture, GraphicsResourceState.DepthWrite);
+
+            if (clearNeeded)
             {
-                context.GraphicsDevice.Clear(Texture, DepthStencilClearOptions.DepthBuffer);
-                IsRenderTargetCleared = true;
+                // TODO GRAPHICS REFACTOR
+                commandList.Clear(Texture, DepthStencilClearOptions.DepthBuffer);
+                clearNeeded = false;
             }
+        }
+
+        public void PrepareAsShaderResourceView(CommandList commandList)
+        {
+            commandList.ResourceBarrierTransition(Texture, GraphicsResourceState.PixelShaderResource);
         }
     }
 }

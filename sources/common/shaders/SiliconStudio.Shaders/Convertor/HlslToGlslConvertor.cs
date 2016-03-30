@@ -223,12 +223,9 @@ namespace SiliconStudio.Shaders.Convertor
         public bool ViewFrustumRemap { get; set; }
 
         /// <summary>
-        /// Gets or sets a variable name that will be checked to know if render target needs to be flipped. Null means nothing happens.
+        /// Gets or sets a value indicating wether Y projection will be inverted at end of vertex shader.
         /// </summary>
-        /// <value>
-        /// The name of the variable to check if render target needs to be flipped.
-        /// </value>
-        public string FlipRenderTargetFlag { get; set; }
+        public bool FlipRenderTarget { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is point sprite shader.
@@ -444,7 +441,7 @@ namespace SiliconStudio.Shaders.Convertor
 
             // Look for global uniforms used as global temp variable
             globalUniformVisitor = new GlobalUniformVisitor(shader);
-            globalUniformVisitor.Run((MethodDefinition)entryPoint);
+            globalUniformVisitor.Run(entryPoint);
 
             var writer = new HlslWriter();
             writer.Visit(shader);
@@ -697,7 +694,7 @@ namespace SiliconStudio.Shaders.Convertor
             TypeBase newFieldType;
             int semanticIndex = 0;
             var semantic = ResolveSemantic(inputSemantic, type, false, "tmptmp", out newFieldType, out semanticIndex, inputSemantic.Span);
-            if (semantic.Name.Text.StartsWith("gl_fragdata", StringComparison.InvariantCultureIgnoreCase) && (newFieldType != type || type is ArrayType))
+            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(semantic.Name.Text, "gl_fragdata", CompareOptions.IgnoreCase) && (newFieldType != type || type is ArrayType))
             {
                 return true;
                 //// Generate only fragdata when whe basetype is completly changing
@@ -1879,6 +1876,15 @@ namespace SiliconStudio.Shaders.Convertor
             {
                 var swizzles = HlslSemanticAnalysis.MatrixSwizzleDecode(expression);
 
+                // When NoSwapForBinaryMatrixOperation, we need to transpose accessor
+                if (NoSwapForBinaryMatrixOperation)
+                {
+                    for (int i = 0; i < swizzles.Count; ++i)
+                    {
+                        swizzles[i] = new MatrixType.Indexer(swizzles[i].Column, swizzles[i].Row);
+                    }
+                }
+
                 if (swizzles.Count == 1)
                     return new IndexerExpression(new IndexerExpression(expression.Target, new LiteralExpression(swizzles[0].Row)), new LiteralExpression(swizzles[0].Column));
 
@@ -2422,7 +2428,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     TextureFunctionsCompatibilityProfile = TextureFunctionsCompatibilityProfile
                 };
-            samplerMappingVisitor.Run((MethodDefinition)entryPoint);
+            samplerMappingVisitor.Run(entryPoint);
 
             // Use the strip visitor in order to remove unused functions/declaration 
             // from the entrypoint
@@ -3692,9 +3698,9 @@ namespace SiliconStudio.Shaders.Convertor
 
             string variableName = glSemantic == null ? varName : glSemantic.Name.Text;
 
-            bool addGlslGlobalVariable = string.Compare(variableName, "gl_Position", StringComparison.InvariantCultureIgnoreCase) == 0 && defaultType != type;
+            bool addGlslGlobalVariable = CultureInfo.InvariantCulture.CompareInfo.Compare(variableName, "gl_Position", CompareOptions.IgnoreCase) == 0 && defaultType != type;
 
-            if (variableName.StartsWith("gl_fragdata", StringComparison.InvariantCultureIgnoreCase) && isPixelShaderOutputFragDataMuliType)
+            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(variableName, "gl_fragdata", CompareOptions.IgnoreCase) && isPixelShaderOutputFragDataMuliType)
             {
                 // IF varName is null, this is a semantic from a returned function, so use a generic out_gl_fragdata name
                 // otherwise, use the original variable name.
@@ -3875,7 +3881,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         private void RemapCoordinates(StatementList list)
         {
-            if (pipelineStage == PipelineStage.Vertex && entryPoint is MethodDefinition)
+            if (pipelineStage == PipelineStage.Vertex && (entryPoint != null))
             {
                 if (ViewFrustumRemap)
                 {
@@ -3895,16 +3901,16 @@ namespace SiliconStudio.Shaders.Convertor
                                 )));
                 }
 
-                if (FlipRenderTargetFlag != null)
+                if (FlipRenderTarget)
                 {
+                    // Add gl_Position.y = -gl_Position.y
                     list.Add(
                         new ExpressionStatement(
                             new AssignmentExpression(
                                 AssignmentOperator.Default,
                                 new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"),
-                                new BinaryExpression(
-                                    BinaryOperator.Multiply,
-                                    new VariableReferenceExpression(FlipRenderTargetFlag),
+                                new UnaryExpression(
+                                    UnaryOperator.Minus,
                                     new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"))
                                 )));
                 }
@@ -4262,7 +4268,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        newInitializers.Add(initializers[rowCount * rowIndex + columnIndex]);
+                        newInitializers.Add(initializers[columnCount * rowIndex + columnIndex]);
                     }
                 }
             }

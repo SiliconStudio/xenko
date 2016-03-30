@@ -6,7 +6,7 @@ using System.Linq;
 namespace SiliconStudio.Core.Serialization.Assets
 {
     /// <summary>
-    /// A class representing stats computed for an instance of <see cref="AssetManager"/> at a given time. This class
+    /// A class representing stats computed for an instance of <see cref="ContentManager"/> at a given time. This class
     /// is intended to be used for debug purpose only.
     /// </summary>
     public class AssetManagerStats
@@ -46,8 +46,8 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetManagerStats"/> class.
         /// </summary>
-        /// <param name="assetReferences">The collection of <see cref="AssetManager.AssetReference"/> representing the currently loaded assets.</param>
-        internal AssetManagerStats(IEnumerable<AssetManager.AssetReference> assetReferences)
+        /// <param name="assetReferences">The collection of <see cref="ContentManager.AssetReference"/> representing the currently loaded assets.</param>
+        internal AssetManagerStats(IEnumerable<ContentManager.AssetReference> assetReferences)
         {
             LoadedAssets = new List<LoadedAsset>(assetReferences.Select(x => new LoadedAsset(x.Url, x.PublicReferenceCount, x.PrivateReferenceCount)));
         }

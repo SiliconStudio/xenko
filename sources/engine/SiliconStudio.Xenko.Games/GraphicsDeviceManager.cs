@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
@@ -150,6 +151,7 @@ namespace SiliconStudio.Xenko.Games
         {
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             game.Window.OrientationChanged += Window_OrientationChanged;
+            game.Window.FullscreenToggle += WindowOnFullscreenToggle;
         }
 
         #endregion
@@ -244,11 +246,10 @@ namespace SiliconStudio.Xenko.Games
 
             set
             {
-                if (isFullScreen != value)
-                {
-                    isFullScreen = value;
-                    deviceSettingsChanged = true;
-                }
+                if (isFullScreen == value) return;
+
+                isFullScreen = value;
+                deviceSettingsChanged = true;
             }
         }
 
@@ -470,15 +471,16 @@ namespace SiliconStudio.Xenko.Games
 
             GraphicsDevice.Begin();
 
-            // Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
-            // An application should not rely on previous state (last frame...etc.) after BeginDraw.
-            GraphicsDevice.ClearState();
-
-            // By default, we setup the render target to the back buffer, and the viewport as well.
-            if (GraphicsDevice.BackBuffer != null)
-            {
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            }
+            // TODO GRAPHICS REFACTOR
+            //// Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
+            //// An application should not rely on previous state (last frame...etc.) after BeginDraw.
+            //GraphicsDevice.ClearState();
+            //
+            //// By default, we setup the render target to the back buffer, and the viewport as well.
+            //if (GraphicsDevice.BackBuffer != null)
+            //{
+            //    GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            //}
 
             beginDrawOk = true;
             return beginDrawOk;
@@ -537,6 +539,11 @@ namespace SiliconStudio.Xenko.Games
                         GraphicsDevice.End();
                     }
                 }
+                else
+                {
+                    beginDrawOk = false;
+                    GraphicsDevice.End();
+                }
             }
         }
 
@@ -594,7 +601,12 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsDevice.Presenter = null;
                 }
 
+                //GraphicsDevice.DeviceResetting -= GraphicsDevice_DeviceResetting;
+                //GraphicsDevice.DeviceReset -= GraphicsDevice_DeviceReset;
+                //GraphicsDevice.DeviceLost -= GraphicsDevice_DeviceLost;
+
                 GraphicsDevice.Dispose();
+                GraphicsDevice.Disposing -= GraphicsDevice_Disposing;
                 GraphicsDevice = null;
             }
 
@@ -609,7 +621,7 @@ namespace SiliconStudio.Xenko.Games
         protected virtual bool CanResetDevice(GraphicsDeviceInformation newDeviceInfo)
         {
             // By default, a reset is compatible when we stay under the same graphics profile.
-            return GraphicsDevice.Features.Profile == newDeviceInfo.GraphicsProfile;
+            return GraphicsDevice.Features.RequestedProfile == newDeviceInfo.GraphicsProfile;
         }
 
         /// <summary>
@@ -929,6 +941,11 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
+        private void WindowOnFullscreenToggle(object sender, EventArgs eventArgs)
+        {
+            IsFullScreen = !IsFullScreen;
+            ApplyChanges();
+        }
 
         private void CreateDevice(GraphicsDeviceInformation newInfo)
         {
@@ -953,6 +970,8 @@ namespace SiliconStudio.Xenko.Games
             if (deviceRecreate)
                 OnDeviceReset(this, EventArgs.Empty);
 
+
+            // Use the shader profile returned by the GraphicsDeviceInformation otherwise use the one coming from the GameSettings
             GraphicsDevice.ShaderProfile = ShaderProfile;
 
             // TODO HANDLE Device Resetting/Reset/Lost

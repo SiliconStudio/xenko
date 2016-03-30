@@ -24,15 +24,25 @@ namespace SiliconStudio.Core.Storage
     /// A builder for <see cref="ObjectId"/> using Murmurshash3 128 bits
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+#if ASSEMBLY_PROCESSOR
+    internal unsafe struct ObjectIdBuilder
+#else
     public unsafe struct ObjectIdBuilder
+#endif
     {
+        // ***************************************************************
+        // NOTE: This file is shared with the AssemblyProcessor.
+        // If this file is modified, the AssemblyProcessor has to be
+        // recompiled separately. See build\Xenko-AssemblyProcessor.sln
+        // ***************************************************************
+
         private readonly uint seed;
         const uint C1 = 0x239b961b;
         const uint C2 = 0xab0e9789;
         const uint C3 = 0x38b34ae5;
         const uint C4 = 0xa1e38b93;
 
-        internal ObjectIdBuilder(uint seed = 0)
+        public ObjectIdBuilder(uint seed = 0)
         {
             this.seed = seed;
 
@@ -204,6 +214,14 @@ namespace SiliconStudio.Core.Storage
                 Write(bufferStart + offset, count);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(string str)
+        {
+            fixed (char* strPtr = str)
+                Write((byte*)strPtr, str.Length * sizeof(char));
+        }
+
 
 #if !ASSEMBLY_PROCESSOR
         /// <summary>

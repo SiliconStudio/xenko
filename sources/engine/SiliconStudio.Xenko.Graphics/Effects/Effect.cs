@@ -7,8 +7,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
@@ -16,24 +16,13 @@ namespace SiliconStudio.Xenko.Graphics
 {
     [ContentSerializer(typeof(DataContentSerializer<Effect>))]
     [DataSerializer(typeof(EffectSerializer))]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Content")]
     public class Effect : ComponentBase
     {
         private GraphicsDevice graphicsDeviceDefault;
-        private EffectProgram program;
-        private EffectParameterUpdaterDefinition updaterDefinition;
-        private EffectParameterResourceBinding[] resourceBindings;
-        private ParameterCollection defaultParameters;
         private EffectReflection reflection;
-        private EffectInputSignature inputSignature;
 
         private EffectBytecode bytecode;
-
-        private EffectStateBindings effectStateBindings;
-
-        public static readonly ParameterKey<RasterizerState> RasterizerStateKey = ParameterKeys.New<RasterizerState>();
-        public static readonly ParameterKey<DepthStencilState> DepthStencilStateKey = ParameterKeys.New<DepthStencilState>();
-        public static readonly ParameterKey<BlendState> BlendStateKey = ParameterKeys.New<BlendState>();
 
         internal Effect()
         {
@@ -50,36 +39,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// or
         /// bytecode
         /// </exception>
-        public Effect(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
+        public Effect(GraphicsDevice device, EffectBytecode bytecode)
         {
-            InitializeFrom(device, bytecode, usedParameters);
+            InitializeFrom(device, bytecode);
         }
 
-        internal void InitializeFrom(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
+        internal void InitializeFrom(GraphicsDevice device, EffectBytecode bytecode)
         {
             if (device == null) throw new ArgumentNullException("device");
             if (bytecode == null) throw new ArgumentNullException("bytecode");
 
             this.graphicsDeviceDefault = device;
             this.bytecode = bytecode;
-            Initialize(usedParameters);
-        }
-
-        /// <summary>
-        /// Gets the input signature of this effect.
-        /// </summary>
-        /// <value>The input signature.</value>
-        public EffectInputSignature InputSignature
-        {
-            get
-            {
-                return inputSignature;
-            }
-        }
-
-        public ParameterCollection DefaultParameters
-        {
-            get { return defaultParameters; }
+            Initialize();
         }
 
         /// <summary>
@@ -94,88 +66,51 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void UnbindResources()
-        {
-            UnbindResources(graphicsDeviceDefault);
-        }
-
-        internal EffectParameterResourceBinding GetParameterFastUpdater<T>(ParameterKey<T> value)
-        {
-            for (int i = 0; i < resourceBindings.Length; i++)
-            {
-                if (resourceBindings[i].Description.Param.Key == value)
-                {
-                    return resourceBindings[i];
-                }
-            }
-
-            throw new ArgumentException("Parameter resource binding not found.", "value");
-        }
-
-        public void Apply(GraphicsDevice graphicsDevice, EffectParameterCollectionGroup parameterCollectionGroup, bool applyEffectStates)
-        {
-            PrepareApply(graphicsDevice);
-            var stageStatus = graphicsDevice.StageStatus;
-
-            stageStatus.UpdateParameters(graphicsDevice, parameterCollectionGroup, updaterDefinition);
-            stageStatus.Apply(graphicsDevice, resourceBindings, parameterCollectionGroup, ref effectStateBindings, applyEffectStates);
-        }
-
-        public void UnbindResources(GraphicsDevice graphicsDevice)
-        {
-            var stageStatus = graphicsDevice.StageStatus;
-            stageStatus.UnbindResources(graphicsDevice, resourceBindings);
-        }
+        internal bool SourceChanged { get; set; }
 
         public bool HasParameter(ParameterKey parameterKey)
         {
-            return defaultParameters.ContainsKey(parameterKey);
-        }
-
-        private void PrepareApply(GraphicsDevice graphicsDevice)
-        {
-            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
-
-            program.Apply(graphicsDevice);
-            graphicsDevice.CurrentEffect = this;
-            graphicsDevice.ApplyPlatformSpecificParams(this);
-        }
-
-        private void Initialize(ParameterCollection usedParameters)
-        {
-            program = EffectProgram.New(graphicsDeviceDefault, bytecode);
-            reflection = program.Reflection;
-
-            // prepare resource bindings used internally
-            resourceBindings = new EffectParameterResourceBinding[reflection.ResourceBindings.Count];
-            for (int i = 0; i < resourceBindings.Length; i++)
+            // Check resources
+            for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
-                resourceBindings[i].Description = reflection.ResourceBindings[i];
+                var key = reflection.ResourceBindings[i].KeyInfo.Key;
+                if (key == parameterKey)
+                    return true;
             }
-            defaultParameters = new ParameterCollection();
-            inputSignature = program.InputSignature;
-            LoadDefaultParameters();
-        }
 
-        private void LoadDefaultParameters()
-        {
-            var shaderParameters = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            var constantBufferKeys = new Dictionary<string, ParameterKey<ParameterConstantBuffer>>();
-
-            // Create parameter bindings
-            for (int i = 0; i < resourceBindings.Length; i++)
+            // Check cbuffer
+            foreach (var constantBuffer in reflection.ConstantBuffers)
             {
-                // Update binding key
-                var key = UpdateResourceBindingKey(ref resourceBindings[i].Description);
+                var constantBufferMembers = constantBuffer.Members;
 
-                // ConstantBuffers are handled by next loop
-                if (resourceBindings[i].Description.Param.Class != EffectParameterClass.ConstantBuffer)
+                for (int i = 0; i < constantBufferMembers.Length; ++i)
                 {
-                    shaderParameters.RegisterParameter(key, false);
+                    var key = constantBufferMembers[i].KeyInfo.Key;
+                    if (key == parameterKey)
+                        return true;
                 }
             }
 
-            // Create constant buffers from descriptions (previously generated from shader reflection)
+            return false;
+        }
+
+        private void Initialize()
+        {
+            reflection = bytecode.Reflection;
+
+            PrepareReflection(reflection);
+            LoadDefaultParameters();
+        }
+
+        private static void PrepareReflection(EffectReflection reflection)
+        {
+            // prepare resource bindings used internally
+            for (int i = 0; i < reflection.ResourceBindings.Count; i++)
+            {
+                var resourceBinding = reflection.ResourceBindings[i];
+                UpdateResourceBindingKey(ref resourceBinding);
+                reflection.ResourceBindings[i] = resourceBinding;
+            }
             foreach (var constantBuffer in reflection.ConstantBuffers)
             {
                 var constantBufferMembers = constantBuffer.Members;
@@ -183,57 +118,67 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int i = 0; i < constantBufferMembers.Length; ++i)
                 {
                     // Update binding key
-                    var key = UpdateValueBindingKey(ref constantBufferMembers[i]);
-
-                    // Register ParameterKey with this effect and store its index for direct access during rendering
-                    shaderParameters.RegisterParameter(key, false);
+                    UpdateValueBindingKey(ref constantBufferMembers[i]);
                 }
-
-                // Handle ConstantBuffer. Share the same key ParameterConstantBuffer with all the stages
-                var parameterConstantBuffer = new ParameterConstantBuffer(graphicsDeviceDefault, constantBuffer.Name, constantBuffer);
-                var constantBufferKey = ParameterKeys.New(parameterConstantBuffer, constantBuffer.Name);
-                shaderParameters.RegisterParameter(constantBufferKey, false);
-
-                for (int i = 0; i < resourceBindings.Length; i++)
-                {
-                    if (resourceBindings[i].Description.Param.Class == EffectParameterClass.ConstantBuffer && resourceBindings[i].Description.Param.Key.Name == constantBuffer.Name)
-                    {
-                        resourceBindings[i].Description.Param.Key = constantBufferKey;
-                    }
-                }
-
-                // Update constant buffer mapping (to avoid name clashes)
-                constantBufferKeys[constantBuffer.Name] = constantBufferKey;
             }
 
-            UpdateKeyIndices();
-
-            // Once we have finished binding, we can fully prepare them
-            graphicsDeviceDefault.StageStatus.PrepareBindings(resourceBindings);
+            UpdateConstantBufferHashes(reflection);
         }
 
-        private ParameterKey UpdateResourceBindingKey(ref EffectParameterResourceData binding)
+        private void LoadDefaultParameters()
         {
-            var keyName = binding.Param.KeyName;
-
-            switch (binding.Param.Class)
+            // Create parameter bindings
+            for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
-                case EffectParameterClass.Sampler:
-                    var newSamplerKey = (ParameterKey<SamplerState>)FindOrCreateResourceKey<SamplerState>(keyName);
-                    binding.Param.Key = newSamplerKey;
-                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == keyName);
+                // Update binding key
+                var key = reflection.ResourceBindings[i].KeyInfo.Key;
+
+                if (reflection.ResourceBindings[i].Class == EffectParameterClass.Sampler)
+                {
+                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == reflection.ResourceBindings[i].KeyInfo.KeyName);
                     if (samplerBinding != null)
                     {
-                        samplerBinding.Key = newSamplerKey;
+                        samplerBinding.Key = key;
                         var samplerDescription = samplerBinding.Description;
-                        defaultParameters.Set(newSamplerKey, SamplerState.New(graphicsDeviceDefault, samplerDescription));
+                        // TODO GRAPHICS REFACTOR
+                        //defaultParameters.Set((ObjectParameterKey<SamplerState>)key, SamplerState.New(graphicsDeviceDefault, samplerDescription));
                     }
+                }
+            }
+
+            // Create constant buffers from descriptions (previously generated from shader reflection)
+            foreach (var constantBuffer in reflection.ConstantBuffers)
+            {
+                // TODO GRAPHICS REFACTOR (check if necessary)
+                // Handle ConstantBuffer. Share the same key ParameterConstantBuffer with all the stages
+                //var parameterConstantBuffer = new ParameterConstantBuffer(graphicsDeviceDefault, constantBuffer.Name, constantBuffer);
+                //var constantBufferKey = ParameterKeys.New<Buffer>(constantBuffer.Name);
+                //shaderParameters.RegisterParameter(constantBufferKey, false);
+
+                //for (int i = 0; i < resourceBindings.Length; i++)
+                //{
+                //    if (resourceBindings[i].Description.Param.Class == EffectParameterClass.ConstantBuffer && resourceBindings[i].Description.Param.Key.Name == constantBuffer.Name)
+                //    {
+                //        resourceBindings[i].Description.Param.Key = constantBufferKey;
+                //    }
+                //}
+            }
+        }
+
+        private static void UpdateResourceBindingKey(ref EffectResourceBindingDescription binding)
+        {
+            var keyName = binding.KeyInfo.KeyName;
+
+            switch (binding.Class)
+            {
+                case EffectParameterClass.Sampler:
+                    binding.KeyInfo.Key = FindOrCreateResourceKey<SamplerState>(keyName);
                     break;
                 case EffectParameterClass.ConstantBuffer:
                 case EffectParameterClass.TextureBuffer:
                 case EffectParameterClass.ShaderResourceView:
                 case EffectParameterClass.UnorderedAccessView:
-                    switch (binding.Param.Type)
+                    switch (binding.Type)
                     {
                         case EffectParameterType.Buffer:
                         case EffectParameterType.ConstantBuffer:
@@ -245,7 +190,7 @@ namespace SiliconStudio.Xenko.Graphics
                         case EffectParameterType.RWBuffer:
                         case EffectParameterType.RWStructuredBuffer:
                         case EffectParameterType.RWByteAddressBuffer:
-                            binding.Param.Key = FindOrCreateResourceKey<Buffer>(keyName);
+                            binding.KeyInfo.Key = FindOrCreateResourceKey<Buffer>(keyName);
                             break;
                         case EffectParameterType.Texture:
                         case EffectParameterType.Texture1D:
@@ -262,68 +207,66 @@ namespace SiliconStudio.Xenko.Graphics
                         case EffectParameterType.TextureCubeArray:
                         case EffectParameterType.RWTexture3D:
                         case EffectParameterType.Texture3D:
-                            binding.Param.Key = FindOrCreateResourceKey<Texture>(keyName);
+                            binding.KeyInfo.Key = FindOrCreateResourceKey<Texture>(keyName);
                             break;
                     }
                     break;
             }
 
-            if (binding.Param.Key == null)
+            if (binding.KeyInfo.Key == null)
             {
-                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
+                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.KeyInfo.KeyName, binding.Class, binding.Type));
             }
-
-            return binding.Param.Key;
         }
 
-        private ParameterKey UpdateValueBindingKey(ref EffectParameterValueData binding)
+        private static void UpdateValueBindingKey(ref EffectValueDescription binding)
         {
-            switch (binding.Param.Class)
+            switch (binding.Type.Class)
             {
                 case EffectParameterClass.Scalar:
-                    switch (binding.Param.Type)
+                    switch (binding.Type.Type)
                     {
                         case EffectParameterType.Bool:
-                            binding.Param.Key = FindOrCreateValueKey<bool>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<bool>(binding);
                             break;
                         case EffectParameterType.Int:
-                            binding.Param.Key = FindOrCreateValueKey<int>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<int>(binding);
                             break;
                         case EffectParameterType.UInt:
-                            binding.Param.Key = FindOrCreateValueKey<uint>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<uint>(binding);
                             break;
                         case EffectParameterType.Float:
-                            binding.Param.Key = FindOrCreateValueKey<float>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<float>(binding);
                             break;
                     }
                     break;
                 case EffectParameterClass.Color:
                     {
-                        var componentCount = binding.RowCount != 1 ? binding.RowCount : binding.ColumnCount;
-                        switch (binding.Param.Type)
+                        var componentCount = binding.Type.RowCount != 1 ? binding.Type.RowCount : binding.Type.ColumnCount;
+                        switch (binding.Type.Type)
                         {
                             case EffectParameterType.Float:
-                                binding.Param.Key = componentCount == 4
+                                binding.KeyInfo.Key = componentCount == 4
                                                         ? FindOrCreateValueKey<Color4>(binding)
-                                                        : (componentCount == 3 ? (ParameterKey)FindOrCreateValueKey<Color3>(binding) : null);
+                                                        : (componentCount == 3 ? FindOrCreateValueKey<Color3>(binding) : null);
                                 break;
                         }
                     }
                     break;
                 case EffectParameterClass.Vector:
                     {
-                        var componentCount = binding.RowCount != 1 ? binding.RowCount : binding.ColumnCount;
-                        switch (binding.Param.Type)
+                        var componentCount = binding.Type.RowCount != 1 ? binding.Type.RowCount : binding.Type.ColumnCount;
+                        switch (binding.Type.Type)
                         {
                             case EffectParameterType.Bool:
                             case EffectParameterType.Int:
-                                binding.Param.Key = componentCount == 4 ? (ParameterKey)FindOrCreateValueKey<Int4>(binding) : (componentCount == 3 ? FindOrCreateValueKey<Int3>(binding) : null);
+                                binding.KeyInfo.Key = componentCount == 4 ? (ParameterKey)FindOrCreateValueKey<Int4>(binding) : (componentCount == 3 ? FindOrCreateValueKey<Int3>(binding) : null);
                                 break;
                             case EffectParameterType.UInt:
-                                binding.Param.Key = componentCount == 4 ? FindOrCreateValueKey<UInt4>(binding) : null;
+                                binding.KeyInfo.Key = componentCount == 4 ? FindOrCreateValueKey<UInt4>(binding) : null;
                                 break;
                             case EffectParameterType.Float:
-                                binding.Param.Key = componentCount == 4
+                                binding.KeyInfo.Key = componentCount == 4
                                                         ? FindOrCreateValueKey<Vector4>(binding)
                                                         : (componentCount == 3 ? (ParameterKey)FindOrCreateValueKey<Vector3>(binding) : (componentCount == 2 ? FindOrCreateValueKey<Vector2>(binding) : null));
                                 break;
@@ -332,124 +275,74 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case EffectParameterClass.MatrixRows:
                 case EffectParameterClass.MatrixColumns:
-                    binding.Param.Key = FindOrCreateValueKey<Matrix>(binding);
+                    binding.KeyInfo.Key = FindOrCreateValueKey<Matrix>(binding);
                     break;
                 case EffectParameterClass.Struct:
-                    binding.Param.Key = ParameterKeys.FindByName(binding.Param.KeyName);
+                    binding.KeyInfo.Key = ParameterKeys.FindByName(binding.KeyInfo.KeyName);
                     break;
             }
 
-            if (binding.Param.Key == null)
+            if (binding.KeyInfo.Key == null)
             {
-                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
+                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.KeyInfo.KeyName, binding.Type.Class, binding.Type.Type));
             }
 
-            if (binding.Count > 1)
-            {
-                // Unspecified array length: guess from shader and set default parameter with array matching shader size
-                binding.Param.Key = binding.Param.Key.CloneLength(binding.Count);
-            }
-
-            return binding.Param.Key;
         }
 
-        private ParameterKey FindOrCreateResourceKey<T>(string name)
+        private static ParameterKey FindOrCreateResourceKey<T>(string name)
         {
-            return ParameterKeys.FindByName(name) ?? ParameterKeys.New<T>(name);
+            return ParameterKeys.FindByName(name) ?? ParameterKeys.NewObject<T>(default(T), name);
         }
 
-        private ParameterKey FindOrCreateValueKey<T>(EffectParameterValueData binding) where T : struct
+        private static ParameterKey FindOrCreateValueKey<T>(EffectValueDescription binding) where T : struct
         {
-            var name = binding.Param.KeyName;
-            return ParameterKeys.FindByName(name) ?? (binding.Count > 1 ? (ParameterKey)ParameterKeys.New<T[]>(name) : ParameterKeys.New<T>(name));
+            var name = binding.KeyInfo.KeyName;
+            return ParameterKeys.FindByName(name) ?? ParameterKeys.NewValue<T>(default(T), name);
         }
 
-        private void UpdateKeyIndices()
+        private static void UpdateConstantBufferHashes(EffectReflection reflection)
         {
-            // TODO: For now, rebuild indices after processing
-            // This code is ugly (esp. constant buffer one), it needs to be done directly within processing (as soon as new system is adopted)
-            var keys = new HashSet<ParameterKey>();
-
-            var allParameterDependencies = new Dictionary<ParameterKey, ParameterDependency>();
-            var parameterDependencies = new HashSet<ParameterDependency>();
-
-            // Always add graphics states
-            keys.Add(RasterizerStateKey);
-            keys.Add(DepthStencilStateKey);
-            keys.Add(BlendStateKey);
-
-            // Handle dynamic values
-            foreach (var dynamicValue in defaultParameters.DynamicValues)
-            {
-                allParameterDependencies[dynamicValue.Target] = new ParameterDependency { Destination = dynamicValue.Target, Dynamic = dynamicValue, Sources = dynamicValue.Dependencies };
-            }
-
-            // effectPass.DefaultParameters.Keys contains shader requested keys.
-            // Compute dependencies and add them in "keys".
-            foreach (var key in defaultParameters.Keys)
-            {
-                UpdateRequiredKeys(keys, allParameterDependencies, key, parameterDependencies);
-            }
-
-            // Make sure every key (in "keys") is set in DefaultParameters to have a valid fallback
-            foreach (var key in keys)
-            {
-                defaultParameters.RegisterParameter(key, false);
-            }
-
-            updaterDefinition = new EffectParameterUpdaterDefinition(keys, parameterDependencies);
-
-            // Cache internal values by specified index in EffectPass parameters (since they will be used by a given EffectPass.ParameterUpdater)
-            var keyMapping = updaterDefinition.SortedKeys.Select((x, i) => new { x, i }).ToDictionary(k => k.x, k => k.i);
-            defaultParameters.SetKeyMapping(keyMapping);
-
-            for (int i = 0; i < resourceBindings.Length; ++i)
-            {
-                resourceBindings[i].Description.Param.KeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, resourceBindings[i].Description.Param.Key);
-            }
-
             // Update Constant buffers description
-            foreach (var internalValue in defaultParameters.InternalValues)
+            foreach (var constantBuffer in reflection.ConstantBuffers)
             {
-                var cb = internalValue.Value.Object as ParameterConstantBuffer;
-                if (cb != null)
-                {
-                    for (int i = 0; i < cb.ConstantBufferDesc.Members.Length; ++i)
-                    {
-                        var member = cb.ConstantBufferDesc.Members[i];
-                        member.Param.KeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, member.Param.Key);
-                        cb.ConstantBufferDesc.Members[i] = member;
-                    }
-                }
-            }
+                // We will generate a unique hash that depends on cbuffer layout (to easily detect if they differ when binding a new effect)
+                // TODO: currently done at runtime, but it should better be done at compile time
+                var hashBuilder = new ObjectIdBuilder();
+                hashBuilder.Write(constantBuffer.Name);
+                hashBuilder.Write(constantBuffer.Size);
 
-            // Update effect state bindings
-            effectStateBindings.RasterizerStateKeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, RasterizerStateKey);
-            effectStateBindings.DepthStencilStateKeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, DepthStencilStateKey);
-            effectStateBindings.BlendStateKeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, BlendStateKey);
+                for (int i = 0; i < constantBuffer.Members.Length; ++i)
+                {
+                    var member = constantBuffer.Members[i];
+                    constantBuffer.Members[i] = member;
+
+                    hashBuilder.Write(member.KeyInfo.Key.Name);
+                    hashBuilder.Write(member.Offset);
+                    hashBuilder.Write(member.Size);
+
+                    HashType(hashBuilder, member.Type);
+                }
+
+                // Update the hash
+                constantBuffer.Hash = hashBuilder.ComputeHash();
+            }
         }
 
-        private void UpdateRequiredKeys(HashSet<ParameterKey> requiredKeys, Dictionary<ParameterKey, ParameterDependency> allDependencies, ParameterKey key, HashSet<ParameterDependency> requiredDependencies)
+        private static void HashType(ObjectIdBuilder hashBuilder, EffectTypeDescription type)
         {
-            if (requiredKeys.Add(key))
+            hashBuilder.Write(type.RowCount);
+            hashBuilder.Write(type.ColumnCount);
+            hashBuilder.Write(type.Elements);
+            if (type.Name != null)
+                hashBuilder.Write(type.Name);
+
+            if (type.Members != null)
             {
-                ParameterDependency dependency;
-                if (allDependencies.TryGetValue(key, out dependency))
+                foreach (var member in type.Members)
                 {
-                    requiredDependencies.Add(dependency);
-                    foreach (var source in dependency.Sources)
-                    {
-                        // Add Dependencies (if not already overriden)
-                        // This is done only at this level because top-level keys dependencies are supposed to be present.
-                        var sourceMetadata = source.Metadatas.OfType<ParameterKeyValueMetadata>().FirstOrDefault();
-                        if (sourceMetadata != null
-                            && sourceMetadata.DefaultDynamicValue != null
-                            && !allDependencies.ContainsKey(source))
-                        {
-                            allDependencies[source] = new ParameterDependency { Destination = source, Dynamic = sourceMetadata.DefaultDynamicValue, Sources = sourceMetadata.DefaultDynamicValue.Dependencies };
-                        }
-                        UpdateRequiredKeys(requiredKeys, allDependencies, source, requiredDependencies);
-                    }
+                    hashBuilder.Write(member.Name);
+                    hashBuilder.Write(member.Offset);
+                    HashType(hashBuilder, member.Type);
                 }
             }
         }

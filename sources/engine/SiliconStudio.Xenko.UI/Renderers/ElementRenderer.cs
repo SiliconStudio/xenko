@@ -43,17 +43,17 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// <summary>
         /// A depth stencil state that keep the stencil value in any cases.
         /// </summary>
-        public DepthStencilState KeepStencilValueState { get { return UI.KeepStencilValueState; } }
+        public DepthStencilStateDescription KeepStencilValueState { get { return UI.KeepStencilValueState; } }
 
         /// <summary>
         /// A depth stencil state that increase the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilState IncreaseStencilValueState { get { return UI.IncreaseStencilValueState; } }
+        public DepthStencilStateDescription IncreaseStencilValueState { get { return UI.IncreaseStencilValueState; } }
 
         /// <summary>
         /// A depth stencil state that decrease the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilState DecreaseStencilValueState { get { return UI.DecreaseStencilValueState; } }
+        public DepthStencilStateDescription DecreaseStencilValueState { get { return UI.DecreaseStencilValueState; } }
 
         /// <summary>
         /// Create an instance of an UI element renderer.

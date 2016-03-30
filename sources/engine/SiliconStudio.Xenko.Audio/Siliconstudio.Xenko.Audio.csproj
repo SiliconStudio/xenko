@@ -15,11 +15,15 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup Condition="$(SiliconStudioAudio) == '' AND ('$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10')">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
@@ -33,6 +37,16 @@
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.MediaFoundation.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL')) OR '$(SiliconStudioAudio)' == 'SDL'">
+      <ItemGroup>
+        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -43,6 +57,7 @@
     <Compile Include="AudioEngine.Android.cs" />
     <Compile Include="AudioEngine.cs" />
     <Compile Include="AudioEngine.iOS.cs" />
+    <Compile Include="AudioEngine.SDL.cs" />
     <Compile Include="AudioEngine.Windows.Desktop.cs" />
     <Compile Include="AudioEngine.Windows.Runtime.cs" />
     <Compile Include="AudioEngineState.cs" />
@@ -50,11 +65,13 @@
     <Compile Include="AudioListener.cs" />
     <Compile Include="AudioDataEncoding.cs" />
     <Compile Include="AudioVoice.iOS.cs" />
+    <Compile Include="AudioEngineFactory.cs" />
     <Compile Include="ConversionExtensions.Android.cs" />
     <Compile Include="ConversionExtensions.Windows.cs" />
     <Compile Include="DynamicSoundEffectInstance.Android.cs" />
     <Compile Include="DynamicSoundEffectInstance.cs" />
     <Compile Include="DynamicSoundEffectInstance.iOS.cs" />
+    <Compile Include="DynamicSoundEffectInstance.SDL.cs" />
     <Compile Include="IPositionableSound.cs" />
     <Compile Include="IPlayableSound.cs" />
     <Compile Include="IRecorder.cs" />
@@ -64,16 +81,23 @@
     <Compile Include="RecorderState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SoundBase.cs" />
+    <Compile Include="SoundBase.Generic.cs" />
     <Compile Include="SoundBase.Windows.cs" />
     <Compile Include="SoundEffect.cs" />
     <Compile Include="SoundEffect.iOS.cs" />
     <Compile Include="SoundEffect.Android.cs" />
+    <Compile Include="SoundEffect.SDL.cs" />
     <Compile Include="SoundEffectInstance.Android.cs" />
     <Compile Include="SoundEffectInstance.cs" />
     <Compile Include="SoundEffectInstance.iOS.cs" />
+    <Compile Include="SoundEffectInstance.SDL.cs" />
     <Compile Include="SoundEffectSerializer.cs" />
     <Compile Include="SoundInstanceBase.cs" />
     <Compile Include="SoundMusic.cs" />
+    <Compile Include="SoundMusicAction.cs" />
+    <Compile Include="SoundMusicActionRequest.cs" />
+    <Compile Include="SoundMusicEvent.cs" />
+    <Compile Include="SoundMusicEventNotification.cs" />
     <Compile Include="SoundMusicSerializer.cs" />
     <Compile Include="SoundPlayState.cs" />
     <Compile Include="AudioEngine.Windows.cs" />

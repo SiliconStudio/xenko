@@ -56,20 +56,21 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             HarmonicOrder = 3;
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var inputTexture = RadianceMap;
             if (inputTexture == null)
                 return;
             
-            // Gets and checks the input texture
-            if (inputTexture.Dimension != TextureDimension.TextureCube)
-                throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringSH' effect.");
 
             const int FirstPassBlockSize = 4;
             const int FirstPassSumsCount = FirstPassBlockSize * FirstPassBlockSize;
 
             var faceCount = inputTexture.Dimension == TextureDimension.TextureCube ? 6 : 1;
+            if (faceCount == 1)
+            {
+                throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringSH' effect.");
+            }
             var inputSize = new Int2(inputTexture.Width, inputTexture.Height); // (Note: for cube maps width = height)
             var coefficientsCount = harmonicalOrder * harmonicalOrder;
 
@@ -84,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
-            firstPassEffect.Draw(context);
+            ((RendererBase)firstPassEffect).Draw(context);
 
             // Recursively applies the pass2 (sums the coefficients together) as long as needed. Swap input/output buffer at each iteration.
             var secondPassInputBuffer = partialSumBuffer;
@@ -120,7 +121,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
-                secondPassEffect.Draw(context);
+                ((RendererBase)secondPassEffect).Draw(context);
 
                 // swap second pass input/output buffers.
                 var swapTemp = secondPassOutputBuffer;
@@ -134,8 +135,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             // Get the data out of the final buffer
             var sizeResult = coefficientsCount * sumsToPerfomRemaining * PixelFormat.R32G32B32A32_Float.SizeInBytes();
             var stagedBuffer = NewScopedBuffer(new BufferDescription(sizeResult, BufferFlags.None, GraphicsResourceUsage.Staging));
-            GraphicsDevice.CopyRegion(secondPassInputBuffer, 0, new ResourceRegion(0, 0, 0, sizeResult, 1, 1), stagedBuffer, 0);
-            var finalsValues =  stagedBuffer.GetData<Vector4>();    
+            context.CommandList.CopyRegion(secondPassInputBuffer, 0, new ResourceRegion(0, 0, 0, sizeResult, 1, 1), stagedBuffer, 0);
+            var finalsValues =  stagedBuffer.GetData<Vector4>(context.CommandList);    
             
             // performs last possible additions, normalize the result and store it in the SH
             for (var c = 0; c < coefficientsCount; c++)

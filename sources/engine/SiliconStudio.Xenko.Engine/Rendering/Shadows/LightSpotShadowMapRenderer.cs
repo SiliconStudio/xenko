@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -38,8 +39,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             return new LightSpotShadowMapGroupShaderData(compositionKey, shadowType, maxLightCount);
         }
-
-        public override void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+        
+        public override void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
         {
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var shadow = (LightStandardShadowMap)lightShadowMap.Shadow;
@@ -77,10 +78,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
-            var graphicsDevice = context.GraphicsDevice;
-
-            graphicsDevice.PushState();
-
             // Update the shadow camera
             shadowCamera.ViewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
             // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
@@ -112,16 +109,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Calculate View Proj matrix from World space to Cascade space
             Matrix.Multiply(ref shadowCamera.ViewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV);
 
-            // Render to the atlas
-            lightShadowMap.Atlas.RenderFrame.Activate(context);
-            graphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+            shaderData.ViewMatrix = shadowCamera.ViewMatrix;
+            shaderData.ProjectionMatrix = shadowCamera.ProjectionMatrix;
+        }
 
-            // Render the scene for this cascade
-            shadowMapRenderer.RenderCasters(context, lightShadowMap.LightComponent.CullingMask);
-                //// Copy texture coords with border
-                //cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
-         
-            graphicsDevice.PopState();
+        public override void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
+        {
+            if (cascadeIndex > 0)
+                throw new ArgumentException("Spot lights do not use multiple shadow cascades", nameof(cascadeIndex));
+
+            var shaderData = (LightSpotShadowMapShaderData)shadowMapTexture.ShaderData;
+            view = shaderData.ViewMatrix;
+            projection = shaderData.ProjectionMatrix;
         }
 
         private class LightSpotShadowMapShaderData : ILightShadowMapShaderData
@@ -133,6 +132,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public float OffsetScale;
 
             public Matrix WorldToShadowCascadeUV;
+
+            public Matrix ViewMatrix;
+
+            public Matrix ProjectionMatrix;
         }
 
         private class LightSpotShadowMapGroupShaderData : ILightShadowMapShaderGroupData
@@ -155,17 +158,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private readonly ShaderMixinSource shadowShader;
 
-            private readonly ParameterKey<Texture> shadowMapTextureKey;
+            private readonly ObjectParameterKey<Texture> shadowMapTextureKey;
 
-            private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
+            private readonly ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
 
-            private readonly ParameterKey<float[]> depthBiasesKey;
+            private readonly ValueParameterKey<float> depthBiasesKey;
 
-            private readonly ParameterKey<float[]> offsetScalesKey;
+            private readonly ValueParameterKey<float> offsetScalesKey;
 
-            private readonly ParameterKey<Vector2> shadowMapTextureSizeKey;
+            private readonly ValueParameterKey<Vector2> shadowMapTextureSizeKey;
 
-            private readonly ParameterKey<Vector2> shadowMapTextureTexelSizeKey;
+            private readonly ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LightSpotShadowMapGroupShaderData" /> class.

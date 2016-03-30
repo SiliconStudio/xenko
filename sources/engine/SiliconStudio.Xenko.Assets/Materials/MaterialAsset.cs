@@ -44,7 +44,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
-            Parameters = new ParameterCollection();
         }
 
         protected override int InternalBuildOrder
@@ -82,14 +81,8 @@ namespace SiliconStudio.Xenko.Assets.Materials
         [NotNull]
         [Category]
         [MemberCollection(CanReorderItems = true)]
+        [NotNullItems]
         public MaterialBlendLayers Layers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; set; }
 
         public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
         {
@@ -149,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
 
         public class RemoveParametersUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 asset.Parameters = DynamicYamlEmpty.Default;
             }

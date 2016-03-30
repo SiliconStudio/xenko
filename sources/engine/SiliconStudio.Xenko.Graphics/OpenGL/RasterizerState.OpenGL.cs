@@ -10,54 +10,124 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial class RasterizerState
+    struct RasterizerBoundState
     {
+        public bool ScissorTestEnable;
+
+        public bool DepthClamp;
+
+        public bool NeedCulling;
+        public CullFaceMode CullMode;
+        public int DepthBias;
+        public float SlopeScaleDepthBias;
+        public FrontFaceDirection FrontFaceDirection;
+
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private PolygonMode polygonMode;
+        public PolygonMode PolygonMode;
+#endif
+    }
+
+    class RasterizerState
+    {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+        private const EnableCap DepthClamp = (EnableCap)0x864F;
+#else
+        private const EnableCap DepthClamp = (EnableCap)ArbDepthClamp.DepthClamp;
 #endif
 
-        private RasterizerState(GraphicsDevice device, RasterizerStateDescription rasterizerStateDescription) : base(device)
+        RasterizerBoundState State;
+
+        internal RasterizerState(RasterizerStateDescription rasterizerStateDescription)
         {
-            Description = rasterizerStateDescription;
+            State.ScissorTestEnable = rasterizerStateDescription.ScissorTestEnable;
+
+            State.DepthClamp = !rasterizerStateDescription.DepthClipEnable;
+
+            State.NeedCulling = rasterizerStateDescription.CullMode != CullMode.None;
+            State.CullMode = GetCullMode(rasterizerStateDescription.CullMode);
+
+            State.FrontFaceDirection =
+                rasterizerStateDescription.FrontFaceCounterClockwise
+                ? FrontFaceDirection.Cw
+                : FrontFaceDirection.Ccw;
+
+            State.DepthBias = rasterizerStateDescription.DepthBias;
+            State.SlopeScaleDepthBias = rasterizerStateDescription.SlopeScaleDepthBias;
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            polygonMode = Description.FillMode == FillMode.Solid ? PolygonMode.Fill : PolygonMode.Line;
+            State.PolygonMode = rasterizerStateDescription.FillMode == FillMode.Solid ? PolygonMode.Fill : PolygonMode.Line;
 #endif
-            
+
             // TODO: DepthBiasClamp and various other properties are not fully supported yet
-            if (Description.DepthBiasClamp != 0.0f) throw new NotSupportedException();
+            if (rasterizerStateDescription.DepthBiasClamp != 0.0f) throw new NotSupportedException();
         }
 
-        /// <inheritdoc/>
-        protected internal override bool OnRecreate()
-        {
-            base.OnRecreate();
-            return true;
-        }
-
-        public void Apply()
+        public void Apply(CommandList commandList)
         {
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
-#endif
-            GL.PolygonOffset(Description.DepthBias, Description.SlopeScaleDepthBias);
-            
-            if (Description.CullMode == CullMode.None)
-                GL.Disable(EnableCap.CullFace);
-            else
+            if (commandList.RasterizerBoundState.PolygonMode != State.PolygonMode)
             {
-                GL.Enable(EnableCap.CullFace);
-                GL.CullFace(GetCullMode(Description.CullMode));
+                commandList.RasterizerBoundState.PolygonMode = State.PolygonMode;
+                GL.PolygonMode(MaterialFace.FrontAndBack, State.PolygonMode);
+            }
+#endif
+
+            if (commandList.RasterizerBoundState.DepthBias != State.DepthBias || commandList.RasterizerBoundState.SlopeScaleDepthBias != State.SlopeScaleDepthBias)
+            {
+                commandList.RasterizerBoundState.DepthBias = State.DepthBias;
+                commandList.RasterizerBoundState.SlopeScaleDepthBias = State.SlopeScaleDepthBias;
+                GL.PolygonOffset(State.DepthBias, State.SlopeScaleDepthBias);
             }
 
+            if (commandList.RasterizerBoundState.FrontFaceDirection != State.FrontFaceDirection)
+            {
+                commandList.RasterizerBoundState.FrontFaceDirection = State.FrontFaceDirection;
+                GL.FrontFace(State.FrontFaceDirection);
+            }
 
-            if (Description.ScissorTestEnable)
-                GL.Enable(EnableCap.ScissorTest);
-            else
-                GL.Disable(EnableCap.ScissorTest);
+            if (commandList.GraphicsDevice.HasDepthClamp)
+            {
+                if (commandList.RasterizerBoundState.DepthClamp != State.DepthClamp)
+                {
+                    commandList.RasterizerBoundState.DepthClamp = State.DepthClamp;
+                    if (State.DepthClamp)
+                        GL.Enable(DepthClamp);
+                    else
+                        GL.Disable(DepthClamp);
+                }
+            }
+
+            if (commandList.RasterizerBoundState.NeedCulling != State.NeedCulling)
+            {
+                commandList.RasterizerBoundState.NeedCulling = State.NeedCulling;
+                if (State.NeedCulling)
+                {
+                    GL.Enable(EnableCap.CullFace);
+                }
+                else
+                {
+                    GL.Disable(EnableCap.CullFace);
+                }
+            }
+
+            if (commandList.RasterizerBoundState.CullMode != State.CullMode)
+            {
+                commandList.RasterizerBoundState.CullMode = State.CullMode;
+                GL.CullFace(State.CullMode);
+            }
+
+            if (commandList.RasterizerBoundState.ScissorTestEnable != State.ScissorTestEnable)
+            {
+                commandList.RasterizerBoundState.ScissorTestEnable = State.ScissorTestEnable;
+
+                if (State.ScissorTestEnable)
+                    GL.Enable(EnableCap.ScissorTest);
+                else
+                    GL.Disable(EnableCap.ScissorTest);
+            }
         }
 
-        public static CullFaceMode GetCullMode(CullMode cullMode)
+        private static CullFaceMode GetCullMode(CullMode cullMode)
         {
             switch (cullMode)
             {
@@ -65,11 +135,10 @@ namespace SiliconStudio.Xenko.Graphics
                     return CullFaceMode.Front;
                 case CullMode.Back:
                     return CullFaceMode.Back;
-                case CullMode.None:
                 default:
-                    return CullFaceMode.FrontAndBack;
+                    return CullFaceMode.Back; // not used if CullMode.None
             }
         }
     }
 } 
-#endif 
+#endif

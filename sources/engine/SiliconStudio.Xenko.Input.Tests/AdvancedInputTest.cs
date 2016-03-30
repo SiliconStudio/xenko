@@ -92,17 +92,17 @@ namespace SiliconStudio.Xenko.Input.Tests
         protected override Task LoadContent()
         {
             // Load the fonts
-            spriteFont11 = Asset.Load<SpriteFont>("Arial");
+            spriteFont11 = Content.Load<SpriteFont>("Arial");
 
             // load the round texture 
-            roundTexture = Asset.Load<Texture>("round");
+            roundTexture = Content.Load<Texture>("round");
 
             // create the SpriteBatch used to render them
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // initialize parameters
             textHeight = spriteFont11.MeasureString(KeyboardSessionString).Y;
-            screenSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            screenSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
             roundTextureSize = new Vector2(roundTexture.Width, roundTexture.Height);
 
             // activate the gesture recognitions
@@ -123,11 +123,11 @@ namespace SiliconStudio.Xenko.Input.Tests
             base.Draw(gameTime);
 
             // clear the screen
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.White);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.White);
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsContext);
 
             // render the keyboard key states
             spriteBatch.DrawString(spriteFont11, KeyboardSessionString, textLeftTopCorner, fontColor);

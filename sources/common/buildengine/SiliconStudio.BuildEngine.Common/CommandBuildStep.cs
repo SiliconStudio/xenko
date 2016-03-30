@@ -154,7 +154,22 @@ namespace SiliconStudio.BuildEngine
 
                         executeContext.Logger.Debug("Command {0} scheduled...", Command.ToString());
 
-                        status = await StartCommand(executeContext, commandResultEntries, builderContext);
+                        // Register the cancel callback
+                        var cancellationTokenSource = executeContext.CancellationTokenSource;
+                        cancellationTokenSource.Token.Register(x => ((Command)x).Cancel(), Command);
+
+                        Command.CancellationToken = cancellationTokenSource.Token;
+
+                        try
+                        {
+                            status = await StartCommand(executeContext, commandResultEntries, builderContext);
+                        }
+                        finally
+                        {
+                            // Restore cancellation token (to avoid memory leak due to previous CancellationToken.Register
+                            Command.CancellationToken = CancellationToken.None;
+                        }
+
                         executeContext.NotifyCommandBuildStepFinished(this, commandHash);
                     }
                 }
@@ -296,12 +311,6 @@ namespace SiliconStudio.BuildEngine
         {
             var logger = executeContext.Logger;
 
-            // Register the cancel callback
-            var cancellationTokenSource = executeContext.CancellationTokenSource;
-            cancellationTokenSource.Token.Register(x => ((Command)x).Cancel(), Command);
-
-            Command.CancellationToken = cancellationTokenSource.Token;
-
             //await Scheduler.Yield();
 
             ResultStatus status;
@@ -434,7 +443,7 @@ namespace SiliconStudio.BuildEngine
                         // Merge results from prerequisites
                         // TODO: This will prevent us from overwriting this asset with different content as it will result in a write conflict
                         // At some point we _might_ want to get rid of WaitBuildStep/ListBuildStep system and write a fully stateless input/output-based system; probably need further discussions
-                        var assetIndexMap = AssetManager.FileProvider.AssetIndexMap;
+                        var assetIndexMap = ContentManager.FileProvider.AssetIndexMap;
                         foreach (var prerequisiteStep in PrerequisiteSteps)
                         {
                             foreach (var output in prerequisiteStep.OutputObjectIds)

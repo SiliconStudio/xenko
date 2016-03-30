@@ -9,40 +9,36 @@ using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
-using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Debugging;
+using SiliconStudio.Xenko.Debugger.Target;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
 
-namespace SiliconStudio.Xenko.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger
 {
-    public class LiveAssemblyReloader : AssemblyReloader
+    public static class LiveAssemblyReloader
     {
-        private readonly AssemblyContainer assemblyContainer;
-        private readonly List<Assembly> assembliesToUnregister;
-        private readonly List<Assembly> assembliesToRegister;
-        private readonly Game game;
-
-        public LiveAssemblyReloader(Game game, AssemblyContainer assemblyContainer, List<Assembly> assembliesToUnregister, List<Assembly> assembliesToRegister)
+        public static void Reload(Game game, AssemblyContainer assemblyContainer, List<Assembly> assembliesToUnregister, List<Assembly> assembliesToRegister)
         {
+            List<Entity> entities = new List<Entity>();
+
             if (game != null)
-                this.entities.AddRange(game.SceneSystem.SceneInstance);
-            this.game = game;
-            this.assemblyContainer = assemblyContainer;
-            this.assembliesToUnregister = assembliesToUnregister;
-            this.assembliesToRegister = assembliesToRegister;
-        }
+                entities.AddRange(game.SceneSystem.SceneInstance);
 
-        public void Reload()
-        {
             CloneReferenceSerializer.References = new List<object>();
 
             var loadedAssembliesSet = new HashSet<Assembly>(assembliesToUnregister);
-            var reloadedScripts = CollectReloadedScriptEntries(loadedAssembliesSet);
+            var reloadedComponents = new List<ReloadedComponentEntryLive>();
+            var componentsToReload = AssemblyReloader.CollectComponentsToReload(entities, loadedAssembliesSet);
+            foreach (var componentToReload in componentsToReload)
+            {
+                var parsingEvents = SerializeComponent(componentToReload.Component);
+                // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
+                // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
+                reloadedComponents.Add(new ReloadedComponentEntryLive(componentToReload, parsingEvents));
+            }
 
             foreach (var assembly in assembliesToUnregister)
             {
@@ -67,19 +63,19 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
 
             // First pass of deserialization: recreate the scripts
-            foreach (ReloadedScriptEntryLive reloadedScript in reloadedScripts)
+            foreach (ReloadedComponentEntryLive reloadedScript in reloadedComponents)
             {
                 // Try to create object
-                var objectStart = reloadedScript.YamlEvents.OfType<SharpYaml.Events.MappingStart>().FirstOrDefault();
+                var objectStart = reloadedScript.YamlEvents.OfType<MappingStart>().FirstOrDefault();
                 if (objectStart != null)
                 {
                     // Get type info
                     var objectStartTag = objectStart.Tag;
                     bool alias;
-                    var scriptType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
-                    if (scriptType != null)
+                    var componentType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
+                    if (componentType != null)
                     {
-                        reloadedScript.NewScript = (Script)Activator.CreateInstance(scriptType);
+                        reloadedScript.NewComponent = (EntityComponent)Activator.CreateInstance(componentType);
                     }
                 }
             }
@@ -88,89 +84,93 @@ namespace SiliconStudio.Xenko.Debugger.Target
             // As a result, any script references processed by Yaml serializer will point to updated objects (script reference cycle will work!)
             for (int index = 0; index < CloneReferenceSerializer.References.Count; index++)
             {
-                var script = CloneReferenceSerializer.References[index] as Script;
-                if (script != null)
+                var component = CloneReferenceSerializer.References[index] as EntityComponent;
+                if (component != null)
                 {
-                    var reloadedScript = reloadedScripts.Cast<ReloadedScriptEntryLive>().FirstOrDefault(x => x.OriginalScript == script);
-                    if (reloadedScript != null)
+                    var reloadedComponent = reloadedComponents.FirstOrDefault(x => x.OriginalComponent == component);
+                    if (reloadedComponent != null)
                     {
-                        CloneReferenceSerializer.References[index] = reloadedScript.NewScript;
+                        CloneReferenceSerializer.References[index] = reloadedComponent.NewComponent;
                     }
                 }
             }
 
             // Third pass: deserialize
-            RestoreReloadedScriptEntries(reloadedScripts);
+            reloadedComponents.ForEach(x => ReplaceComponent(game, x));
 
             CloneReferenceSerializer.References = null;
         }
 
-        protected override ReloadedScriptEntry CreateReloadedScriptEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, Script script)
+        private static EntityComponent DeserializeComponent(ReloadedComponentEntryLive reloadedComponent)
         {
-            return new ReloadedScriptEntryLive(entity, index, parsingEvents, script);
+            var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
+            var components = new EntityComponentCollection();
+
+            // Use the newly created component during second pass for proper cycle deserialization
+            var newComponent = reloadedComponent.NewComponent;
+            if (newComponent != null)
+                components.Add(newComponent);
+
+            // Try to create component first
+            YamlSerializer.Deserialize(eventReader, components, typeof(EntityComponentCollection));
+            var component = components.Count == 1 ? components[0] : null;
+            return component;
         }
 
-        protected override Script DeserializeScript(ReloadedScriptEntry reloadedScript)
+        private static List<ParsingEvent> SerializeComponent(EntityComponent component)
         {
-            var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
-            var scriptCollection = new ScriptCollection();
-
-            // Use the newly created script during second pass for proper cycle deserialization
-            var newScript = ((ReloadedScriptEntryLive)reloadedScript).NewScript;
-            if (newScript != null)
-                scriptCollection.Add(newScript);
-
-            // Try to create script first
-            YamlSerializer.Deserialize(eventReader, scriptCollection, typeof(ScriptCollection));
-            var script = scriptCollection.Count == 1 ? scriptCollection[0] : null;
-            return script;
-        }
-
-        protected override List<ParsingEvent> SerializeScript(Script script)
-        {
-            // Wrap script in a ScriptCollection to properly handle errors
-            var scriptCollection = new ScriptCollection { script };
+            // Wrap component in a EntityComponentCollection to properly handle errors
+            var components = new Entity { component }.Components;
 
             // Serialize with Yaml layer
             var parsingEvents = new List<ParsingEvent>();
-            // We also want to serialize live scripting variables
-            var serializerContextSettings = new SerializerContextSettings { MemberMask = DataMemberAttribute.DefaultMask | Script.LiveScriptingMask };
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), scriptCollection, typeof(ScriptCollection), serializerContextSettings);
+            // We also want to serialize live component variables
+            var serializerContextSettings = new SerializerContextSettings { MemberMask = DataMemberAttribute.DefaultMask | ScriptComponent.LiveScriptingMask };
+            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection), serializerContextSettings);
             return parsingEvents;
         }
 
-        protected override void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)
+        private static void ReplaceComponent(Game game, ReloadedComponentEntryLive reloadedComponent)
         {
-            // Create new script instance
-            var newScript = DeserializeScript(reloadedScript);
+            // Create new component instance
+            var newComponent = DeserializeComponent(reloadedComponent);
 
-            // Dispose and unregister old script (and their MicroThread, if any)
-            var oldScript = scriptComponent.Scripts[reloadedScript.ScriptIndex];
+            // Dispose and unregister old component (and their MicroThread, if any)
+            var oldComponent = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
 
             // Flag scripts as being live reloaded
-            if (game != null)
+            if (game != null && oldComponent is ScriptComponent)
             {
-                game.Script.LiveReload(oldScript, newScript);
+                game.Script.LiveReload((ScriptComponent)oldComponent, (ScriptComponent)newComponent);
             }
 
-            // Replace with new script
-            // TODO: Remove script before serializing it, so cancellation code can run
-            scriptComponent.Scripts[reloadedScript.ScriptIndex] = newScript;
+            // Replace with new component
+            // TODO: Remove component before serializing it, so cancellation code can run
+            reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex] = newComponent;
 
-            oldScript.Dispose();
+            // TODO: Dispose or Cancel on script?
+            (oldComponent as ScriptComponent)?.Cancel();
         }
 
-        protected class ReloadedScriptEntryLive : ReloadedScriptEntry
+        private class ReloadedComponentEntryLive
         {
-            // Original scripts
-            public readonly Script OriginalScript;
-            public Script NewScript;
+            private readonly ComponentToReload componentToReload;
 
-            public ReloadedScriptEntryLive(Entity entity, int scriptIndex, List<ParsingEvent> yamlEvents, Script originalScript)
-                : base(entity, scriptIndex, yamlEvents)
+            public ReloadedComponentEntryLive(ComponentToReload componentToReload, List<ParsingEvent> parsingEvents)
             {
-                OriginalScript = originalScript;
+                this.componentToReload = componentToReload;
+                YamlEvents = parsingEvents;
             }
+
+            public Entity Entity => componentToReload.Entity;
+
+            public int ComponentIndex => componentToReload.Index;
+
+            public readonly List<ParsingEvent> YamlEvents;
+
+            public EntityComponent OriginalComponent => componentToReload.Component;
+
+            public EntityComponent NewComponent { get; set; }
         }
     }
 }

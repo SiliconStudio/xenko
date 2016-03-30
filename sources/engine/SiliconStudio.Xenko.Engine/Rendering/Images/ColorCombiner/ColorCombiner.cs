@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </remarks>
     public class ColorCombiner : ImageEffectShader
     {
-        internal static readonly ParameterKey<int> FactorCount = ParameterKeys.New(0);
+        internal static readonly PermutationParameterKey<int> FactorCount = ParameterKeys.NewPermutation(0);
 
         private readonly float[] factors;
 
@@ -59,10 +59,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
-            Parameters.Set(FactorCount, InputCount);
+            int value = InputCount;
+            Parameters.Set(FactorCount, value);
             Parameters.Set(ColorCombinerShaderKeys.Factors, factors);
             Parameters.Set(ColorCombinerShaderKeys.ModulateRGB, ModulateRGB);
         }

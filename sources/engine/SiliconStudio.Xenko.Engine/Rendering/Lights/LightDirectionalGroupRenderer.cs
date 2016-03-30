@@ -13,6 +13,14 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
+    public struct DirectionalLightData
+    {
+        public Vector3 DirectionWS;
+        private float padding0;
+        public Color3 Color;
+        private float padding1;
+    }
+
     public class LightDirectionalGroupRenderer : LightGroupRendererBase
     {
         private const int StaticLightMaxCount = 8;
@@ -27,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void Initialize(RenderContext context)
         {
-            var isLowProfile = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0;
+            var isLowProfile = context.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0;
             LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
             AllocateLightMaxCount = !isLowProfile;
         }
@@ -55,16 +63,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class DirectionalLightShaderGroup : LightShaderGroupAndDataPool<DirectionalLightShaderGroupData>
         {
-            internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> DirectionsKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ValueParameterKey<int> CountKey;
+            internal readonly ValueParameterKey<DirectionalLightData> LightsKey;
 
             public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
             {
                 CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
-                DirectionsKey = LightDirectionalGroupKeys.LightDirectionsWS.ComposeWith(compositionName);
-                ColorsKey = LightDirectionalGroupKeys.LightColor.ComposeWith(compositionName);
+                LightsKey = LightDirectionalGroupKeys.Lights.ComposeWith(compositionName);
             }
 
             protected override DirectionalLightShaderGroupData CreateData()
@@ -75,34 +81,33 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class DirectionalLightShaderGroupData : LightShaderGroupData
         {
-            private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Vector3[]> directionsKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
-            private readonly Vector3[] lightDirections;
-            private readonly Color3[] lightColors;
+            private readonly ValueParameterKey<int> countKey;
+            private readonly ValueParameterKey<DirectionalLightData> lightsKey;
+            private readonly ValueParameterKey<Color3> colorsKey;
+            private readonly DirectionalLightData[] lights;
 
             public DirectionalLightShaderGroupData(DirectionalLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(shadowGroupData)
             {
                 countKey = group.CountKey;
-                directionsKey = group.DirectionsKey;
-                colorsKey = group.ColorsKey;
+                lightsKey = group.LightsKey;
 
-                lightDirections = new Vector3[StaticLightMaxCount];
-                lightColors = new Color3[StaticLightMaxCount];
+                lights = new DirectionalLightData[StaticLightMaxCount];
             }
 
             protected override void AddLightInternal(LightComponent light)
             {
-                lightDirections[Count] = light.Direction;
-                lightColors[Count] = light.Color;
+                lights[Count] = new DirectionalLightData
+                {
+                    DirectionWS = light.Direction,
+                    Color = light.Color,
+                };
             }
 
             protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, lightDirections);
-                parameters.Set(colorsKey, lightColors);
+                parameters.Set(lightsKey, Count, ref lights[0]);
             }
         }
     }

@@ -16,7 +16,6 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 using SiliconStudio.Xenko.Rendering.Data;
 using SiliconStudio.Xenko.Rendering.Materials;
-
 namespace SiliconStudio.Xenko.Rendering
 {
     internal static partial class ShaderMixins
@@ -83,6 +82,11 @@ namespace SiliconStudio.Xenko.Rendering
                             context.PopComposition();
                         }
                     }
+                }
+                if (context.ChildEffectName == "ShadowMapCaster")
+                {
+                    context.Mixin(mixin, "ShadowMapCaster");
+                    return;
                 }
             }
 

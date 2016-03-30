@@ -3,7 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Microsoft.Build.Framework.XamlTypes;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
 {
@@ -11,7 +16,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset
+    public abstract class Asset : IIdentifiable
     {
         private Guid id;
 
@@ -80,17 +85,28 @@ namespace SiliconStudio.Assets
         /// Gets or sets the base.
         /// </summary>
         /// <value>The base.</value>
-        [DataMember("~Base"), DefaultValue(null)]
+        [DataMember(BaseProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         public AssetBase Base { get; set; }
+
+        /// <summary>
+        /// The YAML serialized name of the <see cref="Base"/> property.
+        /// </summary>
+        public const string BaseProperty = "~" + nameof(Base);
 
         /// <summary>
         /// Gets or sets the base for part assets.
         /// </summary>
         /// <value>The part assets.</value>
-        [DataMember("~BaseParts"), DefaultValue(null)]
+        [DataMember(BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
+        [NotNullItems]
         public List<AssetBase> BaseParts { get; set; }
+
+        /// <summary>
+        /// The YAML serialized name of the <see cref="BaseParts"/> property.
+        /// </summary>
+        public const string BasePartsProperty = "~" + nameof(BaseParts);
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -110,6 +126,7 @@ namespace SiliconStudio.Assets
         /// </value>
         [DataMember(-900)]
         [Display(Browsable = false)]
+        [NotNullItems]
         public TagCollection Tags { get; private set; }
 
         /// <summary>
@@ -121,12 +138,8 @@ namespace SiliconStudio.Assets
         {
             if (location == null) throw new ArgumentNullException(nameof(location));
 
-            // Clone this asset
+            // Clone this asset to make the base
             var assetBase = (Asset)AssetCloner.Clone(this);
-
-            // Remove the base
-            assetBase.Base = null;
-            assetBase.BaseParts = null;
 
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
             var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
@@ -140,6 +153,25 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Merge an asset with its base, and new base and parts into this instance.
+        /// </summary>
+        /// <param name="baseAsset">A copy of the base asset. Can be null if no base asset for newAsset</param>
+        /// <param name="newBase">A copy of the next base asset. Can be null if no base asset for newAsset.</param>
+        /// <param name="newBaseParts">A copy of the new base parts</param>
+        /// <param name="debugLocation">The location of the asset being merged, used only for debug/log purpose</param>
+        /// <returns>The result of the merge</returns>
+        /// <remarks>The this instance is not used by this method.</remarks>
+        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
+        {
+            var diff = new AssetDiff(baseAsset, this, newBase)
+            {
+                UseOverrideMode = true
+            };
+
+            return AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+        }
+
+        /// <summary>
         /// Sets the defaults values for this instance
         /// </summary>
         public virtual void SetDefaults()
@@ -148,7 +180,7 @@ namespace SiliconStudio.Assets
 
         public override string ToString()
         {
-            return Id.ToString();
+            return $"{GetType().Name}: {Id}";
         }
     }
 }

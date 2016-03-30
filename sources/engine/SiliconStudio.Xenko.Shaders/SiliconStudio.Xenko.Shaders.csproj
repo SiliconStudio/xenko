@@ -16,10 +16,14 @@
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -27,9 +31,12 @@
     <Compile Include="Compiler\CompilerResults.cs" />
     <Compile Include="Compiler\CompilerParameters.cs" />
     <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
+    <Compile Include="Compiler\EffectCompilerParameters.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />
     <Compile Include="Compiler\EffectPriorityScheduler.cs" />
     <Compile Include="Compiler\TaskOrResult.cs" />
+    <Compile Include="EffectTypeMemberDescription.cs" />
+    <Compile Include="EffectTypeDescription.cs" />
     <Compile Include="EffectSamplerStateBinding.cs" />
     <Compile Include="EffectSourceCodeKeys.cs" />
     <Compile Include="HashSourceCollection.cs" />
@@ -40,7 +47,7 @@
     <Compile Include="IShaderMixinBuilderExtended.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="ParameterKeyHashSerializer.cs" />
-    <Compile Include="ShaderConstantBufferDescription.cs" />
+    <Compile Include="EffectConstantBufferDescription.cs" />
     <Compile Include="ShaderLevelBytecode.cs" />
     <Compile Include="ShaderMixinDiscardException.cs" />
     <Compile Include="ShaderMixinGeneratorSource.cs" />
@@ -50,9 +57,9 @@
     <Compile Include="IShaderMixinBuilder.cs" />
     <Compile Include="ConstantBufferType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EffectParameterData.cs" />
-    <Compile Include="EffectParameterResourceData.cs" />
-    <Compile Include="EffectParameterValueData.cs" />
+    <Compile Include="EffectParameterKeyInfo.cs" />
+    <Compile Include="EffectResourceBindingDescription.cs" />
+    <Compile Include="EffectValueDescription.cs" />
     <Compile Include="EffectReflection.cs" />
     <Compile Include="ShaderBytecode.cs" />
     <Compile Include="ShaderClassSource.cs" />
@@ -64,6 +71,7 @@
     <Compile Include="ShaderMixinParameters.cs" />
     <Compile Include="EffectParameterType.cs" />
     <Compile Include="ShaderSource.cs" />
+    <Compile Include="ShaderSourceCollection.cs" />
     <Compile Include="ShaderStage.cs" />
     <Compile Include="ShaderStreamOutputDeclarationEntry.cs" />
   </ItemGroup>

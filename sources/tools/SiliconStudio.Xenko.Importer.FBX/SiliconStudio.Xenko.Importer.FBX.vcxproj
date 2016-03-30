@@ -239,6 +239,6 @@
   </ImportGroup>
   <Target Name="EnsureFbxSdkInstalled" BeforeTargets="PrepareForBuild">
     <Message Condition="'$(FbxSdkDir)' != ''" Importance="Normal" Text="Found FBX SDK 2016.1.1 at $(FbxSdkDir)" />
-    <Error Condition="'$(FbxSdkDir)' == ''" Text="FBX SDK 2016.1.1 was not found. Please download and install it from http://www.autodesk.com/fbx and reload this solution." />
+    <Error Condition="'$(FbxSdkDir)' == ''" Text="FBX SDK 2016.1.1 was not found. Please download and install it from http://usa.autodesk.com/adsk/servlet/pc/item?id=24735038&amp;siteID=123112 and reload this solution." />
   </Target>
 </Project>

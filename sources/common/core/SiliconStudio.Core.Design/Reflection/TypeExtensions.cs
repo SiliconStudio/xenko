@@ -4,11 +4,31 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.Reflection
 {
     public static class TypeExtensions
     {
+        public static Color4 GetUniqueColor(this Type type)
+        {
+            var hash = type.GetUniqueHash();
+            var hue = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type)?.CustomHue ?? hash % 360;
+            return new ColorHSV(hue, 0.75f + (hash % 101) / 400f, 0.5f + (hash % 151) / 300f, 1).ToColor();
+        }
+
+        public static float GetUniqueHue(this Type type)
+        {
+            return TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type)?.CustomHue ?? type.GetUniqueHash() % 360;
+        }
+
+        public static int GetUniqueHash(this Type type)
+        {
+            var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
+            var hash = displayAttribute?.Name.GetHashCode() ?? type.Name.GetHashCode();
+            return hash >> 16 ^ hash;
+        }
+
         public static bool HasInterface(this Type type, Type lookInterfaceType)
         {
             return type.GetInterface(lookInterfaceType) != null;
@@ -17,9 +37,9 @@ namespace SiliconStudio.Core.Reflection
         public static Type GetInterface(this Type type, Type lookInterfaceType)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             if (lookInterfaceType == null)
-                throw new ArgumentNullException("lookInterfaceType");
+                throw new ArgumentNullException(nameof(lookInterfaceType));
 
             var typeinfo = lookInterfaceType.GetTypeInfo();
             if (typeinfo .IsGenericTypeDefinition)
@@ -191,12 +211,12 @@ namespace SiliconStudio.Core.Reflection
         /// Gets the display name of the given type. The display name is the name of the type, or, if the <see cref="DisplayAttribute"/> is
         /// applied on the type, value of the <see cref="DisplayAttribute.Name"/> property.
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="type">The type for which to get the display name.</param>
+        /// <returns>A string representing the display name of the type.</returns>
         public static string GetDisplayName(this Type type)
         {
             var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
-            return displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name) ? displayAttribute.Name : type.Name;
+            return !string.IsNullOrEmpty(displayAttribute?.Name) ? displayAttribute.Name : type.Name;
         }
 
         /// <summary>
@@ -235,7 +255,7 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Cast an object to a specified numeric type.
+        /// Casts an object to a specified numeric type.
         /// </summary>
         /// <param name="obj">Any object</param>
         /// <param name="type">Numric type</param>
@@ -276,14 +296,14 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Cast boxed numeric value to double
+        /// Casts boxed numeric value to double
         /// </summary>
         /// <param name="obj">boxed numeric value</param>
         /// <returns>Numeric value in double. Double.Nan if obj is not a numeric value.</returns>
         internal static double CastToDouble(object obj)
         {
             var result = double.NaN;
-            var type = obj != null ? obj.GetType() : null;
+            var type = obj?.GetType();
             if (type == typeof(sbyte))
                 result = (sbyte)obj;
             if (type == typeof(byte))

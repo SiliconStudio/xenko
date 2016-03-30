@@ -1,0 +1,17 @@
+!Texture
+Id: f8dfa4d7-d5e7-4f36-9e7c-2c9d3de0e154
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../data/tests/SmallPngInterpolated.png
+ColorKeyEnabled: true
+ColorKeyColor: {R: 51, G: 255, B: 0, A: 255}
+~Base:
+    ~Id: 25c27865-892f-48e8-aded-164ccfb82b09
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

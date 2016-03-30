@@ -9,10 +9,9 @@
 
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
-
-    <!-- Defines target for Asset compiler TODO: this is hardcoded -->
-    <XenkoProjectBuildProfile>Windows_OGL</XenkoProjectBuildProfile>
-    
-    <SiliconStudioPlatformForceMono>true</SiliconStudioPlatformForceMono>
+    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">SDL;OPENTK</SiliconStudioUI>
+    <!-- Comment the line below and uncomment this to have the audio implementation target SDL
+    <SiliconStudioAudio>SDL</SiliconStudioAudio>
+    -->
   </PropertyGroup>
 </Project>

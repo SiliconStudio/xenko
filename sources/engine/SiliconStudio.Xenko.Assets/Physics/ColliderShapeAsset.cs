@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.Physics
@@ -45,6 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
         /// </userdoc>
         [DataMember(10)]
         [Category]
+        [NotNullItems]
         public List<IAssetColliderShapeDesc> ColliderShapes { get; set; }
 
         private class ColliderShapeFactory : IObjectFactory
@@ -57,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         private class UpgraderShapeDescriptions : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 if (asset.ColliderShapes == null)
                     return;
@@ -103,7 +105,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         private class Box2DRemovalUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 if (asset.ColliderShapes == null)
                     return;

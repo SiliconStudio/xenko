@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     internal class XenkoShaderMixer
     {
-        private readonly static string FlipRendertargetVariableName = "XenkoFlipRendertarget";
-        
         #region Public members
 
         /// <summary>
@@ -483,8 +481,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 index = (int)(indexerExpression.Index as LiteralExpression).Value;
             }
 
-            if (result is Variable && (result as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern) && !((result as Variable).Type is ArrayType))
-                mixin = CompositionsPerVariable[result as Variable][index];
+            if (result != null && result.Qualifiers.Contains(XenkoStorageQualifier.Extern) && !(result.Type is ArrayType))
+                mixin = CompositionsPerVariable[result][index];
 
             return result;
         }
@@ -559,8 +557,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     result = FindVariable(target, ref mixin);
 
                 var index = (int)(indexerExpression.Index as LiteralExpression).Value;
-                if (result is Variable && (result as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern))
-                    mixin = CompositionsPerVariable[result as Variable][index];
+                if (result != null && result.Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                    mixin = CompositionsPerVariable[result][index];
             }
         }
 
@@ -1065,9 +1063,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             foreach (var variable in references.VariablesReferences)
             {
-                if (variable.Key.Name.Text == FlipRendertargetVariableName) // DO NOT RENAME THIS SPECIFIC VARIABLE
-                    continue;
-
                 foreach (var varRef in variable.Value)
                 {
                     if (varRef.Expression is MemberReferenceExpression)
@@ -1297,21 +1292,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 bool used;
                 if (variablesUsages.TryGetValue(variable, out used))
                 {
-                    if (!used && variable.Name.Text != FlipRendertargetVariableName)
+                    if (!used)
                         MixedShader.Members.Remove(variable);
-                }
-            }
-
-            foreach (var constantBuffer in MixedShader.Members.OfType<ConstantBuffer>())
-            {
-                foreach (var variable in constantBuffer.Members.OfType<Variable>().ToList())
-                {
-                    bool used;
-                    if (variablesUsages.TryGetValue(variable, out used))
-                    {
-                        if (!used && variable.Name.Text != FlipRendertargetVariableName)
-                            constantBuffer.Members.Remove(variable);
-                    }
                 }
             }
         }
@@ -1343,12 +1325,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             MergeReferenceVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
             var usefulVars = mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(KeepVariableInCBuffer);
             var varList = usefulVars.Where(x => x.ContainsTag(XenkoTags.ConstantBuffer)).ToList();
-            var groupedVarList = varList.GroupBy(x => x.GetTag(XenkoTags.ConstantBuffer) as string).Select(x => x.ToList()).ToList();
+            var groupedVarList = varList.GroupBy(x =>
+            {
+                var constantBuffer = x.GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer;
+                return (constantBuffer != null) ? constantBuffer.Name.Text : null;
+            }).Select(x => x.ToList()).ToList();
 
             foreach (var group in groupedVarList)
             {
-                var cbufferName = group.FirstOrDefault().GetTag(XenkoTags.ConstantBuffer) as string;
-                var cbuffer = new ConstantBuffer { Type = SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType.Constant, Name = cbufferName };
+                var originalCbuffer = (ConstantBuffer)group.First().GetTag(XenkoTags.ConstantBuffer);
+                var cbuffer = new ConstantBuffer { Type = originalCbuffer.Type, Name = originalCbuffer.Name.Text };
                 cbuffer.Members.AddRange(group);
 
                 MixedShader.Members.Add(cbuffer);
@@ -1389,15 +1375,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                         var newMixinName = (sameSemVar.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName;
 
                         // Check if declared in the same constant buffer
-                        var cbufferName = variable.ContainsTag(XenkoTags.ConstantBuffer) ? variable.GetTag(XenkoTags.ConstantBuffer) as string : null;
-                        var newcbufferName = sameSemVar.ContainsTag(XenkoTags.ConstantBuffer) ? sameSemVar.GetTag(XenkoTags.ConstantBuffer) as string : null;
-                        if (cbufferName != null ^ newcbufferName != null)
+                        var cbuffer = variable.ContainsTag(XenkoTags.ConstantBuffer) ? variable.GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer : null;
+                        var newcbuffer = sameSemVar.ContainsTag(XenkoTags.ConstantBuffer) ? sameSemVar.GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer : null;
+                        if (cbuffer != null ^ newcbuffer != null)
+                            variable.SetTag(XenkoTags.ConstantBuffer, cbuffer ?? newcbuffer);
+                        else if (cbuffer != null && cbuffer != newcbuffer)
                         {
-                            variable.SetTag(XenkoTags.ConstantBuffer, cbufferName ?? newcbufferName);
-                        }
-                        else if (cbufferName != null && cbufferName != newcbufferName)
-                        {
-                            log.Error(XenkoMessageCode.ErrorSemanticCbufferConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, cbufferName, newcbufferName);
+                            log.Error(XenkoMessageCode.ErrorSemanticCbufferConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, cbuffer, newcbuffer);
                         }
 
                         // Check if declared as the same type

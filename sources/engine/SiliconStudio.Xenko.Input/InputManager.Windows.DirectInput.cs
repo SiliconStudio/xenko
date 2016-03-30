@@ -1,10 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF) && !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
@@ -12,12 +13,20 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public partial class InputManagerBase
     {
+        [DllImport(Core.NativeLibrary.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool IsXInputDevice(ref Guid guid);
+
+        static InputManagerBase()
+        {
+            Core.NativeLibrary.PreloadLibrary(Core.NativeLibrary.LibraryName);
+        }
+
         /// <summary>
         /// Internal GamePad factory handling DirectInput gamepads.
         /// </summary>
-        private class DirectInputGamePadFactory : GamePadFactory
+        internal class DirectInputGamePadFactory : GamePadFactory
         {
             private readonly DirectInput directInput;
 
@@ -28,7 +37,9 @@ namespace SiliconStudio.Xenko.Input
 
             public override IEnumerable<GamePadKey> GetConnectedPads()
             {
-                return directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AllDevices).Select(deviceInstance => new GamePadKey(deviceInstance.InstanceGuid, this));
+                return directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AllDevices).
+                    Where(x => !IsXInputDevice(ref x.ProductGuid)).
+                    Select(deviceInstance => new GamePadKey(deviceInstance.InstanceGuid, this));
             }
 
             public override GamePad GetGamePad(Guid guid)

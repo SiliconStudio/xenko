@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
     [YamlSerializerFactory]
     public class CloneReferenceSerializer : ObjectSerializer
     {
-        // TODO: We might want to share some of the recursive logic with EntitySerializer?
+        // TODO: We might want to share some of the recursive logic with PrefabAssetSerializer?
         // However, ThreadStatic would still need to be separated...
         [ThreadStatic]
         private static int recursionLevel;
@@ -40,8 +40,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         {
             // Also handles Entity, EntityComponent and Script
             return ContentReferenceSerializer.IsReferenceType(type)
-                || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type)
-                || typeof(Script).IsAssignableFrom(type);
+                   || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
 
         /// <inheritdoc/>

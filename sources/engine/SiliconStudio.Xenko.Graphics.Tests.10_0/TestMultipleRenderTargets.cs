@@ -63,16 +63,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     UseCustomViewMatrix = true,
                     ViewMatrix = Matrix.LookAtRH(new Vector3(2,1,2), new Vector3(), Vector3.UnitY),
                 },
-                new TransformComponent
-                {
-                    Position = new Vector3(2,1,2)
-                }
             };
+            mainCamera.Transform.Position = new Vector3(2, 1, 2);
 
             CreatePipeline();
 
             var primitive = GeometricPrimitive.Teapot.New(GraphicsDevice);
-            var material = Asset.Load<Material>("BasicMaterial");
+            var material = Content.Load<Material>("BasicMaterial");
 
             teapot = new Entity
             {
@@ -88,7 +85,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         }
                     }
                 },
-                new TransformComponent()
             };
 
             var ambientLight = new Entity("Ambient Light") { new LightComponent { Type = new LightAmbient(), Intensity = 1f } };
@@ -127,12 +123,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     GraphicsCompositor = new SceneGraphicsCompositorLayers
                     {
                         Cameras = { mainCamera.Get<CameraComponent>() },
+                        ModelEffect = "MultipleRenderTargetsEffect",
                         Master =
                         {
                             Renderers =
                             {
                                 new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                                new SceneCameraRenderer { Mode = new CameraRendererModeForward { ModelEffect = "MultipleRenderTargetsEffect" }, Output = multipleRenderFrames}, 
+                                new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames}, 
                                 new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
                                 new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
                             }
@@ -144,9 +141,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
         }
 
-        private void DisplayGBuffer(RenderContext context, RenderFrame frame)
+        private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)
         {
-            GraphicsDevice.DrawTexture(textures[renderTargetToDisplayIndex]);
+            GraphicsContext.DrawTexture(textures[renderTargetToDisplayIndex]);
         }
 
         private async Task GameScript1()

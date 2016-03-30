@@ -1,5 +1,10 @@
-using System.Collections.Generic;
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Threading.Tasks;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -12,10 +17,10 @@ namespace SiliconStudio.Xenko.Physics
             ContactEndedChannel = new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender };
         }
 
-        public Collider ColliderA;
-        public Collider ColliderB;
+        public PhysicsComponent ColliderA;
+        public PhysicsComponent ColliderB;
 
-        public List<ContactPoint> Contacts;
+        public TrackingCollection<ContactPoint> Contacts;
 
         internal Channel<ContactPoint> NewContactChannel;
 
@@ -36,6 +41,16 @@ namespace SiliconStudio.Xenko.Physics
         public ChannelMicroThreadAwaiter<ContactPoint> ContactEnded()
         {
             return ContactEndedChannel.Receive();
+        }
+
+        public async Task Ended()
+        {
+            Collision endCollision;
+            do
+            {
+                endCollision = await ColliderA.CollisionEnded();
+            }
+            while (endCollision != this);
         }
     }
 }

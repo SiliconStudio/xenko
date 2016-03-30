@@ -3,114 +3,75 @@
 
 using System.Collections.Generic;
 using System.Reflection;
-using SharpYaml;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
-using SiliconStudio.Assets.Serializers;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Serializers;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Debugging
 {
     /// <summary>
-    /// Helper to reload game assemblies at runtime. It will update currently running scripts.
+    /// This class contains information about each component that must be reloaded when the game assemblies are being reloaded.
     /// </summary>
-    public abstract class AssemblyReloader
+    public class ComponentToReload
     {
-        protected ILogger log;
-        protected readonly List<Entity> entities = new List<Entity>();
-
-        protected virtual void RestoreReloadedScriptEntries(List<ReloadedScriptEntry> reloadedScripts)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComponentToReload"/> class.
+        /// </summary>
+        /// <param name="entity">The entity containing the component to reload.</param>
+        /// <param name="component">The component to reload.</param>
+        /// <param name="index">The index of the component to reload in the collection of components of the entity.</param>
+        public ComponentToReload(Entity entity, EntityComponent component, int index)
         {
-            foreach (var reloadedScript in reloadedScripts)
-            {
-                var scriptComponent = reloadedScript.Entity.Components.Get(ScriptComponent.Key);
-                if (scriptComponent == null) // Should not happpen
-                    continue;
-
-                ReplaceScript(scriptComponent, reloadedScript);
-            }
+            Entity = entity;
+            Component = component;
+            Index = index;
         }
 
-        protected virtual List<ReloadedScriptEntry> CollectReloadedScriptEntries(HashSet<Assembly> loadedAssembliesSet)
-        {
-            var reloadedScripts = new List<ReloadedScriptEntry>();
+        public Entity Entity { get; }
 
-            // Find scripts that will need reloading
+        public EntityComponent Component { get; }
+
+        public int Index { get; }
+
+        public override string ToString()
+        {
+            return $"{Entity} [{Index}] {Component}";
+        }
+    }
+
+    /// <summary>
+    /// Helper class to reload game assemblies at runtime.
+    /// </summary>
+    public static class AssemblyReloader
+    {
+        /// <summary>
+        /// Collects all the components to reload from a collection of entities.
+        /// </summary>
+        /// <param name="entities">The entities to process.</param>
+        /// <param name="loadedAssembliesSet">The collection of assemblies containing component types thatshould be reloaded.</param>
+        /// <returns>A collection of <see cref="ComponentToReload"/>.</returns>
+        public static List<ComponentToReload> CollectComponentsToReload(IEnumerable<Entity> entities, HashSet<Assembly> loadedAssembliesSet)
+        {
+            var result = new List<ComponentToReload>();
+
+            // Find components that will need reloading
             foreach (var entity in entities)
             {
-                var scriptComponent = entity.Components.Get(ScriptComponent.Key);
-                if (scriptComponent == null)
-                    continue;
-
-                for (int index = 0; index < scriptComponent.Scripts.Count; index++)
+                for (int index = 0; index < entity.Components.Count; index++)
                 {
-                    var script = scriptComponent.Scripts[index];
-                    if (script == null)
+                    var component = entity.Components[index];
+
+                    var componentType = component.GetType();
+
+                    // We force both scripts that were just unloaded and UnloadableComponent (from previous failure) to try to reload
+                    if (!loadedAssembliesSet.Contains(componentType.Assembly) && componentType != typeof(UnloadableComponent))
                         continue;
-
-                    var scriptType = script.GetType();
-
-                    // We force both scripts that were just unloaded and UnloadableScript (from previous failure) to try to reload
-                    if (!loadedAssembliesSet.Contains(scriptType.Assembly) && scriptType != typeof(UnloadableScript))
-                        continue;
-
-                    var parsingEvents = SerializeScript(script);
 
                     // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
                     // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
-
-                    reloadedScripts.Add(CreateReloadedScriptEntry(entity, index, parsingEvents, script));
+                    result.Add(new ComponentToReload(entity, component, index));
                 }
             }
-            return reloadedScripts;
-        }
-
-        protected virtual Script DeserializeScript(ReloadedScriptEntry reloadedScript)
-        {
-            var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
-            var scriptCollection = (ScriptCollection)YamlSerializer.Deserialize(eventReader, null, typeof(ScriptCollection), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
-            var script = scriptCollection.Count == 1 ? scriptCollection[0] : null;
-            return script;
-        }
-
-        protected virtual List<ParsingEvent> SerializeScript(Script script)
-        {
-            // Wrap script in a ScriptCollection to properly handle errors
-            var scriptCollection = new ScriptCollection { script };
-
-            // Serialize with Yaml layer
-            var parsingEvents = new List<ParsingEvent>();
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), scriptCollection, typeof(ScriptCollection));
-            return parsingEvents;
-        }
-
-        protected virtual ReloadedScriptEntry CreateReloadedScriptEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, Script script)
-        {
-            return new ReloadedScriptEntry(entity, index, parsingEvents);
-        }
-
-        protected virtual void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)
-        {
-            // TODO: Let PropertyGrid know that we updated the script
-            scriptComponent.Scripts[reloadedScript.ScriptIndex] = DeserializeScript(reloadedScript);
-        }
-
-        protected class ReloadedScriptEntry
-        {
-            public readonly Entity Entity;
-            public readonly int ScriptIndex;
-            public readonly List<ParsingEvent> YamlEvents;
-
-            public ReloadedScriptEntry(Entity entity, int scriptIndex, List<ParsingEvent> yamlEvents)
-            {
-                Entity = entity;
-                ScriptIndex = scriptIndex;
-                YamlEvents = yamlEvents;
-            }
+            return result;
         }
     }
 }

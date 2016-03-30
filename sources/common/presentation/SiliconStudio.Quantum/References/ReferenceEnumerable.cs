@@ -37,27 +37,38 @@ namespace SiliconStudio.Quantum.References
         public object ObjectValue { get; private set; }
 
         /// <inheritdoc/>
-        public Type Type { get; private set; }
+        public Type Type { get; }
 
         /// <inheritdoc/>
-        public object Index { get; private set; }
+        public object Index { get; }
 
         /// <inheritdoc/>
         public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
 
         /// <inheritdoc/>
-        public ReferenceEnumerable AsEnumerable { get { return this; } }
+        public ReferenceEnumerable AsEnumerable => this;
 
         /// <summary>
         /// Gets whether this reference enumerates a dictionary collection.
         /// </summary>
-        public bool IsDictionary { get { return ObjectValue is IDictionary || ObjectValue.GetType().HasInterface(typeof(IDictionary<,>)); } }
+        public bool IsDictionary => ObjectValue is IDictionary || ObjectValue.GetType().HasInterface(typeof(IDictionary<,>));
 
         /// <inheritdoc/>
-        public int Count { get { return references.Count; } }
+        public int Count => references.Count;
+
+        /// <summary>
+        /// Gets the indices of each reference in this instance.
+        /// </summary>
+        public IReadOnlyCollection<object> Indices => indices;
 
         /// <inheritdoc/>
         public ObjectReference this[object index] { get { return references.Single(x => Equals(x.Index, index)); } }
+
+        /// <inheritdoc/>
+        public bool HasIndex(object index)
+        {
+            return indices.Any(x => x.Equals(index));
+        }
 
         /// <inheritdoc/>
         public void Clear()
@@ -78,7 +89,7 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public void Refresh(object newObjectValue)
         {
-            if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", "newObjectValue");
+            if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
 

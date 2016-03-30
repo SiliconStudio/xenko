@@ -53,8 +53,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightShadowMapTexture
     {
-        public delegate void ApplyShadowMapParametersDelegate(LightShadowMapTexture shadowMapTexture, ParameterCollection parameters);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LightShadowMapTexture" /> struct.
         /// </summary>
@@ -149,9 +147,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         // they are indirectly in `GetRectangle' and `SetRectangle' through pointer
         // arithmetics.
         private Rectangle Rectangle0;
+#pragma warning disable 169
         private Rectangle Rectangle1;
         private Rectangle Rectangle2;
         private Rectangle Rectangle3;
+#pragma warning restore 169
 
     }
 }

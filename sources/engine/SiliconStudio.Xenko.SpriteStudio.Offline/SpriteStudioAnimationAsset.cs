@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Animations;
-using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {

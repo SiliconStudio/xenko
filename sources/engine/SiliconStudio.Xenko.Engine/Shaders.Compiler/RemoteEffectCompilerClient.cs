@@ -1,7 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Shaders.Compiler.Internals;
 
@@ -26,9 +28,20 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             Task.Run(async () =>
             {
+                // Silently fails if connection already failed previously
+                var socketMessageLayerTask = GetOrCreateConnection();
+                if (socketMessageLayerTask.IsFaulted)
+                    return;
+
                 // Send any effect request remotely (should fail if not connected)
-                var socketMessageLayer = await GetOrCreateConnection();
-                await socketMessageLayer.Send(new RemoteEffectCompilerEffectRequested { Request = effectCompileRequest });
+                var socketMessageLayer = await socketMessageLayerTask;
+
+                var memoryStream = new MemoryStream();
+                var binaryWriter = new BinarySerializationWriter(memoryStream);
+                binaryWriter.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                binaryWriter.SerializeExtended(effectCompileRequest, ArchiveMode.Serialize, null);
+
+                await socketMessageLayer.Send(new RemoteEffectCompilerEffectRequested { Request = memoryStream.ToArray() });
             });
         }
 
@@ -50,7 +63,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             return socketMessageLayer;
         }
 
-        public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters)
         {
             // Make sure we are connected
             // TODO: Handle reconnections, etc...
@@ -59,7 +72,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             var shaderCompilerAnswer = (RemoteEffectCompilerEffectAnswer)await socketMessageLayer.SendReceiveAsync(new RemoteEffectCompilerEffectRequest
             {
                 MixinTree = mixinTree,
-                UsedParameters = mixinTree.UsedParameters,
+                EffectParameters = effectParameters,
             });
 
             // TODO: Get LoggerResult as well

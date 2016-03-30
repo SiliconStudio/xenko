@@ -39,6 +39,9 @@ namespace SiliconStudio.Assets
 
         public static AssetItem FindAssetFromAttachedReference(this PackageSession session, object obj)
         {
+            if (obj == null)
+                return null;
+
             var reference = AttachedReferenceManager.GetAttachedReference(obj);
             return reference != null ? (FindAsset(session, reference.Id) ?? FindAsset(session, reference.Url)) : null;
         }
@@ -70,7 +73,8 @@ namespace SiliconStudio.Assets
             }
 
             // Calculate dependencies
-            var dependencies = session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            // Search only for references
+            var dependencies = session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             var assetItemRootCloned = dependencies.Item.Clone();
 
             // Store the fullpath to the sourcefolder, this avoid us to clone hierarchy of packages

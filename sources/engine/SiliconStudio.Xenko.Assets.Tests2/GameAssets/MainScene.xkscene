@@ -1,0 +1,38 @@
+!SceneAsset
+Id: fb543f7c-e6a7-4bbc-9a75-47ae5db41968
+SerializedVersion: {Xenko: 1.6.0-beta}
+Tags: []
+Hierarchy:
+    ~Id: 4d287fbd-8d62-4441-9381-2796b7bfe730
+    RootEntities:
+        - e5efbd73-0061-4be4-901f-f27c9ba8e7bf
+    Entities:
+        -   Entity:
+                Id: e5efbd73-0061-4be4-901f-f27c9ba8e7bf
+                Name: Entity
+                Components:
+                    - !TransformComponent
+                        ~Id: b89208f5-3941-4191-be39-e16e90aa6f06
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+            Design: {}
+SceneSettings:
+    ~Id: 0d6d7e22-304a-4b04-bb1b-818e45c6b42c
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 7def5b17-0bee-483d-bcb3-9a1d95bf05e7
+        Cameras: []
+        Layers: []
+        Master:
+            ~Id: 4454cb43-18a3-49dd-8bdd-1fbd526290d5
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers: []
+    EditorSettings:
+        ~Id: 1dd6baef-2b02-4d20-b10a-4df14cea4199
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 6797d1ee-4f74-4150-a8ef-6760e51a45df
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
