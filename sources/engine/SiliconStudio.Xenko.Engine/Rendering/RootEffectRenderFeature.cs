@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 foreach (var member in resourceGroupLayout.ConstantBufferReflection.Members)
                 {
-                    if (member.Param.KeyName == variable)
+                    if (member.KeyInfo.KeyName == variable)
                     {
                         resourceGroupLayout.ConstantBufferOffsets[index] = member.Offset;
                         return;
