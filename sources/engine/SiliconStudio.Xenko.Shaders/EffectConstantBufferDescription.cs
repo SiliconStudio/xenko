@@ -10,8 +10,8 @@ namespace SiliconStudio.Xenko.Shaders
     /// Description of a constant buffer.
     /// </summary>
     [DataContract]
-    [DebuggerDisplay("[{Stage}] cbuffer {Name} : {Size} bytes")]
-    public class ShaderConstantBufferDescription
+    [DebuggerDisplay("cbuffer {Name} : {Size} bytes")]
+    public class EffectConstantBufferDescription
     {
         /// <summary>
         /// The name of this constant buffer.
@@ -29,14 +29,9 @@ namespace SiliconStudio.Xenko.Shaders
         public ConstantBufferType Type;
 
         /// <summary>
-        /// The stage from where this constant buffer is used.
-        /// </summary>
-        public ShaderStage Stage;
-
-        /// <summary>
         /// The members of this constant buffer.
         /// </summary>
-        public EffectParameterValueData[] Members;
+        public EffectValueDescription[] Members;
 
         [DataMemberIgnore]
         public ObjectId Hash;
@@ -45,9 +40,9 @@ namespace SiliconStudio.Xenko.Shaders
         /// Clone the current instance of the constant buffer description.
         /// </summary>
         /// <returns>A clone copy of the description</returns>
-        public ShaderConstantBufferDescription Clone()
+        public EffectConstantBufferDescription Clone()
         {
-            return (ShaderConstantBufferDescription)MemberwiseClone();
+            return (EffectConstantBufferDescription)MemberwiseClone();
         }
     }
 }
