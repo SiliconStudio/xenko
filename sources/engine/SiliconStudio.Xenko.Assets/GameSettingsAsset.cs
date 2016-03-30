@@ -22,6 +22,7 @@ using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets
 { 
@@ -35,9 +36,10 @@ namespace SiliconStudio.Xenko.Assets
     [Display(80, "Game Settings")]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
     public class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "1.6.0-beta";
+        private const string CurrentVersion = "1.6.1-alpha01";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
@@ -285,6 +287,48 @@ namespace SiliconStudio.Xenko.Assets
             }
         }
 
+        internal class UpgradeNewGameSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var addRendering = true;
+                var addEditor = true;
+                var addPhysics = true;
+                var addTexture = true;
+                foreach (DynamicYamlMapping mapping in asset.Defaults)
+                {
+                    if (mapping.Node.Tag == "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics") addRendering = false;
+                    if (mapping.Node.Tag == "!SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets") addEditor = false;
+                    if (mapping.Node.Tag == "!SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets") addTexture = false;
+                    if (mapping.Node.Tag == "!SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics") addPhysics = false;
+                }
+
+                if (addRendering)
+                {
+                    dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics" });
+                    asset.Defaults.Add(setting);
+                }
+
+                if (addEditor)
+                {
+                    dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets" });
+                    asset.Defaults.Add(setting);
+                }
+
+                if (addPhysics)
+                {
+                    dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics" });
+                    asset.Defaults.Add(setting);
+                }
+
+                if (addTexture)
+                {
+                    dynamic setting = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets" });
+                    asset.Defaults.Add(setting);
+                }
+            }
+        }
+
         public static GameSettingsAsset New()
         {
             var asset = new GameSettingsAsset();
@@ -299,6 +343,12 @@ namespace SiliconStudio.Xenko.Assets
             asset.PlatformFilters.Add("^Mali\\-4");
             asset.PlatformFilters.Add("^Mali\\-T6");
             asset.PlatformFilters.Add("^Mali\\-T7");
+
+            asset.Get<RenderingSettings>();
+            asset.Get<EditorSettings>();
+            asset.Get<TextureSettings>();
+            asset.Get<PhysicsSettings>();
+
             return asset;
         }
     }

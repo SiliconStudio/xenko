@@ -19,8 +19,8 @@ namespace SiliconStudio.Xenko.Graphics
                 var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
                 bool hasBindings = false;
                 foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
-                    .Where(x => x.Param.ResourceGroup == effectDescriptorSetSlot || (effectDescriptorSetSlot == defaultSetSlot && (x.Param.ResourceGroup == null || x.Param.ResourceGroup == "Globals")))
-                    .GroupBy(x => new { Key = x.Param.Key, Class = x.Param.Class, SlotCount = x.SlotCount })
+                    .Where(x => x.ResourceGroup == effectDescriptorSetSlot || (effectDescriptorSetSlot == defaultSetSlot && (x.ResourceGroup == null || x.ResourceGroup == "Globals")))
+                    .GroupBy(x => new { Key = x.KeyInfo.Key, Class = x.Class, SlotCount = x.SlotCount })
                     .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1)) // Note: Putting cbuffer first for now
                 {
                     SamplerState samplerState = null;

@@ -315,8 +315,7 @@ namespace SiliconStudio.Core.Collections
         /// <exception cref="System.ArgumentNullException">key is null.</exception>
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            if (item.Key == null ||
-                item.Key == null)
+            if (item.Key == null)
                 throw new ArgumentException();
 
             bool removed = false;

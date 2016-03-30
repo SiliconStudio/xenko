@@ -18,11 +18,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 {
     internal class ShaderCompiler : IShaderCompiler
     {
-        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
+        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isDebug = compilerParameters.EffectParameters.Debug;
-            var optimLevel = compilerParameters.EffectParameters.OptimizationLevel;
-            var profile = compilerParameters.EffectParameters.Profile;
+            var isDebug = effectParameters.Debug;
+            var optimLevel = effectParameters.OptimizationLevel;
+            var profile = effectParameters.Profile;
             
             var shaderModel = ShaderStageToString(stage) + "_" + ShaderProfileFromGraphicsProfile(profile);
 
@@ -103,9 +103,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 var constantBufferRawDesc = constantBufferRaw.Description;
                 var linkBuffer = effectReflection.ConstantBuffers.First(buffer => buffer.Name == constantBufferRawDesc.Name);
 
-                // TODO: Flags/bitfield?
-                linkBuffer.Stage = shaderBytecode.Stage;
-
                 ValidateConstantBufferReflection(constantBufferRaw, ref constantBufferRawDesc, linkBuffer, log);
             }
 
@@ -118,10 +115,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 string resourceGroup = null;
                 foreach (var linkResource in effectReflection.ResourceBindings)
                 {
-                    if (linkResource.Param.RawName == boundResourceDesc.Name && linkResource.Stage == ShaderStage.None)
+                    if (linkResource.RawName == boundResourceDesc.Name && linkResource.Stage == ShaderStage.None)
                     {
-                        linkKeyName = linkResource.Param.KeyName;
-                        resourceGroup = linkResource.Param.ResourceGroup;
+                        linkKeyName = linkResource.KeyInfo.KeyName;
+                        resourceGroup = linkResource.ResourceGroup;
                         break;
                     }
 
@@ -136,14 +133,14 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 
                     var binding = GetResourceBinding(boundResourceDesc, linkKeyName, log);
                     binding.Stage = shaderBytecode.Stage;
-                    binding.Param.ResourceGroup = resourceGroup;
+                    binding.ResourceGroup = resourceGroup;
 
                     effectReflection.ResourceBindings.Add(binding);
                 }
             }
         }
 
-        private EffectParameterResourceData GetResourceBinding(SharpDX.D3DCompiler.InputBindingDescription bindingDescriptionRaw, string name, LoggerResult log)
+        private EffectResourceBindingDescription GetResourceBinding(SharpDX.D3DCompiler.InputBindingDescription bindingDescriptionRaw, string name, LoggerResult log)
         {
             var paramClass = EffectParameterClass.Object;
             var paramType = EffectParameterType.Void;
@@ -252,15 +249,15 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                     break;
             }
 
-            var binding = new EffectParameterResourceData()
+            var binding = new EffectResourceBindingDescription()
                 {
-                    Param =
+                    KeyInfo =
                         {
                             KeyName = name,
-                            RawName = bindingDescriptionRaw.Name,
-                            Class = paramClass,
-                            Type = paramType
                         },
+                    RawName = bindingDescriptionRaw.Name,
+                    Class = paramClass,
+                    Type = paramType,
                     SlotStart = bindingDescriptionRaw.BindPoint,
                     SlotCount = bindingDescriptionRaw.BindCount,
                 };
@@ -268,7 +265,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             return binding;
         }
 
-        private void UpdateConstantBufferReflection(ShaderConstantBufferDescription reflectionConstantBuffer)
+        private void UpdateConstantBufferReflection(EffectConstantBufferDescription reflectionConstantBuffer)
         {
             // Used to compute constant buffer size and member offsets (std140 rule)
             int constantBufferOffset = 0;
@@ -279,9 +276,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 var member = reflectionConstantBuffer.Members[index];
 
                 // Properly compute size and offset according to DX rules
-                var memberSize = ComputeMemberSize(ref member, ref constantBufferOffset);
+                var memberSize = ComputeMemberSize(ref member.Type, ref constantBufferOffset);
 
-                // Align offset and store it as member offset
+                // Store size/offset info
                 member.Offset = constantBufferOffset;
                 member.Size = memberSize;
 
@@ -295,7 +292,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             reflectionConstantBuffer.Size = (constantBufferOffset + 15) / 16 * 16;
         }
 
-        private void ValidateConstantBufferReflection(ConstantBuffer constantBufferRaw, ref ConstantBufferDescription constantBufferRawDesc, ShaderConstantBufferDescription constantBuffer, LoggerResult log)
+        private void ValidateConstantBufferReflection(ConstantBuffer constantBufferRaw, ref ConstantBufferDescription constantBufferRawDesc, EffectConstantBufferDescription constantBuffer, LoggerResult log)
         {
             switch (constantBufferRawDesc.Type)
             {
@@ -328,32 +325,32 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 
                 var binding = constantBuffer.Members[i];
                 // Retrieve Link Member
-                if (binding.Param.RawName != variableDescription.Name)
+                if (binding.RawName != variableDescription.Name)
                 {
                     log.Error("Variable [{0}] in constant buffer [{1}] has no link", variableDescription.Name, constantBuffer.Name);
                 }
                 else
                 {
-                    var parameter = new EffectParameterValueData()
+                    var parameter = new EffectValueDescription()
                     {
-                        Param =
-                    {
-                        Class = (EffectParameterClass)variableTypeDescription.Class,
-                        Type = ConvertVariableValueType(variableTypeDescription.Type, log),
+                        Type =
+                        {
+                            Class = (EffectParameterClass)variableTypeDescription.Class,
+                            Type = ConvertVariableValueType(variableTypeDescription.Type, log),
+                            Elements = variableTypeDescription.ElementCount,
+                            RowCount = (byte)variableTypeDescription.RowCount,
+                            ColumnCount = (byte)variableTypeDescription.ColumnCount,
+                        },
                         RawName = variableDescription.Name,
-                    },
                         Offset = variableDescription.StartOffset,
                         Size = variableDescription.Size,
-                        Count = variableTypeDescription.ElementCount,
-                        RowCount = (byte)variableTypeDescription.RowCount,
-                        ColumnCount = (byte)variableTypeDescription.ColumnCount,
                     };
 
                     if (parameter.Offset != binding.Offset
                         || parameter.Size != binding.Size
-                        || parameter.Count != binding.Count
-                        || parameter.RowCount != binding.RowCount
-                        || parameter.ColumnCount != binding.ColumnCount)
+                        || parameter.Type.Elements != binding.Type.Elements
+                        || ((parameter.Type.Class != EffectParameterClass.Struct) && // Ignore columns/rows if it's a struct (sometimes it contains weird data)
+                               (parameter.Type.RowCount != binding.Type.RowCount || parameter.Type.ColumnCount != binding.Type.ColumnCount)))
                     {
                         log.Error("Variable [{0}] in constant buffer [{1}] binding doesn't match what was expected", variableDescription.Name, constantBuffer.Name);
                     }
@@ -365,14 +362,33 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             }
         }
 
-        private static int ComputeMemberSize(ref EffectParameterValueData member, ref int constantBufferOffset)
+        private static int ComputeMemberSize(ref EffectTypeDescription memberType, ref int constantBufferOffset)
         {
-            var elementSize = ComputeTypeSize(member.Param.Type);
+            var elementSize = ComputeTypeSize(memberType.Type);
             int size;
             int alignment = 4;
 
-            switch (member.Param.Class)
+            switch (memberType.Class)
             {
+                case EffectParameterClass.Struct:
+                    {
+                        // Fill members
+                        size = 0;
+                        for (int index = 0; index < memberType.Members.Length; index++)
+                        {
+                            // Properly compute size and offset according to DX rules
+                            var memberSize = ComputeMemberSize(ref memberType.Members[index].Type, ref size);
+
+                            // Align offset and store it as member offset
+                            memberType.Members[index].Offset = size;
+
+                            // Adjust offset for next item
+                            size += memberSize;
+                        }
+
+                        alignment = size;
+                        break;
+                    }
                 case EffectParameterClass.Scalar:
                     {
                         size = elementSize;
@@ -381,28 +397,31 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                 case EffectParameterClass.Color:
                 case EffectParameterClass.Vector:
                     {
-                        size = elementSize * member.ColumnCount;
+                        size = elementSize * memberType.ColumnCount;
                         break;
                     }
                 case EffectParameterClass.MatrixColumns:
                     {
-                        size = elementSize * (4 * (member.ColumnCount - 1) + member.RowCount);
+                        size = elementSize * (4 * (memberType.ColumnCount - 1) + memberType.RowCount);
                         break;
                     }
                 case EffectParameterClass.MatrixRows:
                     {
-                        size = elementSize * (4 * (member.RowCount - 1) + member.ColumnCount);
+                        size = elementSize * (4 * (memberType.RowCount - 1) + memberType.ColumnCount);
                         break;
                     }
                 default:
                     throw new NotImplementedException();
             }
 
+            // Update element size
+            memberType.ElementSize = size;
+
             // Array
-            if (member.Count > 0)
+            if (memberType.Elements > 0)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
-                size += roundedSize * (member.Count - 1);
+                size += roundedSize * (memberType.Elements - 1);
                 alignment = 16;
             }
 
@@ -427,6 +446,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                     return 4;
                 case EffectParameterType.Double:
                     return 8;
+                case EffectParameterType.Void:
+                    return 0;
                 default:
                     throw new NotImplementedException();
             }

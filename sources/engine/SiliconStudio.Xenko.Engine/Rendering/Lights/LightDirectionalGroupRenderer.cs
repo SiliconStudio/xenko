@@ -13,6 +13,14 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
+    public struct DirectionalLightData
+    {
+        public Vector3 DirectionWS;
+        private float padding0;
+        public Color3 Color;
+        private float padding1;
+    }
+
     public class LightDirectionalGroupRenderer : LightGroupRendererBase
     {
         private const int StaticLightMaxCount = 8;
@@ -56,15 +64,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class DirectionalLightShaderGroup : LightShaderGroupAndDataPool<DirectionalLightShaderGroupData>
         {
             internal readonly ValueParameterKey<int> CountKey;
-            internal readonly ValueParameterKey<Vector3> DirectionsKey;
-            internal readonly ValueParameterKey<Color3> ColorsKey;
+            internal readonly ValueParameterKey<DirectionalLightData> LightsKey;
 
             public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
             {
                 CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
-                DirectionsKey = LightDirectionalGroupKeys.LightDirectionsWS.ComposeWith(compositionName);
-                ColorsKey = LightDirectionalGroupKeys.LightColor.ComposeWith(compositionName);
+                LightsKey = LightDirectionalGroupKeys.Lights.ComposeWith(compositionName);
             }
 
             protected override DirectionalLightShaderGroupData CreateData()
@@ -76,33 +82,32 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class DirectionalLightShaderGroupData : LightShaderGroupData
         {
             private readonly ValueParameterKey<int> countKey;
-            private readonly ValueParameterKey<Vector3> directionsKey;
+            private readonly ValueParameterKey<DirectionalLightData> lightsKey;
             private readonly ValueParameterKey<Color3> colorsKey;
-            private readonly Vector3[] lightDirections;
-            private readonly Color3[] lightColors;
+            private readonly DirectionalLightData[] lights;
 
             public DirectionalLightShaderGroupData(DirectionalLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(shadowGroupData)
             {
                 countKey = group.CountKey;
-                directionsKey = group.DirectionsKey;
-                colorsKey = group.ColorsKey;
+                lightsKey = group.LightsKey;
 
-                lightDirections = new Vector3[StaticLightMaxCount];
-                lightColors = new Color3[StaticLightMaxCount];
+                lights = new DirectionalLightData[StaticLightMaxCount];
             }
 
             protected override void AddLightInternal(LightComponent light)
             {
-                lightDirections[Count] = light.Direction;
-                lightColors[Count] = light.Color;
+                lights[Count] = new DirectionalLightData
+                {
+                    DirectionWS = light.Direction,
+                    Color = light.Color,
+                };
             }
 
             protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, Count, ref lightDirections[0]);
-                parameters.Set(colorsKey, Count, ref lightColors[0]);
+                parameters.Set(lightsKey, Count, ref lights[0]);
             }
         }
     }

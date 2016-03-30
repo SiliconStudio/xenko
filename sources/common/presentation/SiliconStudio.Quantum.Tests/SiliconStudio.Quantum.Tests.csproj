@@ -30,14 +30,11 @@
   <ItemGroup>
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Obsolete\ObsoleteTestConstruction.cs" />
     <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
     <Compile Include="Obsolete\ObsoleteTestLists.cs" />
-    <Compile Include="Obsolete\ObsoleteTestMultipleReferencer.cs" />
     <Compile Include="TestPrimitiveMembers.cs" />
     <Compile Include="TestReferences.cs" />
-    <Compile Include="Obsolete\ObsoleteTestStructs.cs" />
-    <Compile Include="Obsolete\ObsoleteTestUpdate.cs" />
+    <Compile Include="TestStructs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">

@@ -65,16 +65,22 @@ namespace SiliconStudio.Core
         public int? Order { get; }
 
         /// <summary>
-        /// Gets a value that is used for display in the UI.
+        /// Gets a string that is used for display in the UI.
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; }
 
         /// <summary>
-        /// Gets a value that is used to group fields in the UI.
+        /// Gets a string that is used to group fields in the UI.
         /// </summary>
         /// <value>The category.</value>
         public string Category { get; }
+
+        /// <summary>
+        /// Gets the hue of a color that is used in the UI.
+        /// </summary>
+        /// <remarks>If not null, this value must be in the range [0, 360].</remarks>
+        public float? CustomHue { get; set; }
 
         /// <summary>
         /// Gets or sets whether to expand the control representing the associated object in the UI.

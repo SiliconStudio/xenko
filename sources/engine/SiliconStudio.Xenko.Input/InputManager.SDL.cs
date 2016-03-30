@@ -282,7 +282,7 @@ namespace SiliconStudio.Xenko.Input
             map [SDL.SDL_Keycode.SDLK_RETURN2] = Keys.Return;
             map [SDL.SDL_Keycode.SDLK_PAUSE] = Keys.Pause;
             map [SDL.SDL_Keycode.SDLK_CAPSLOCK] = Keys.Capital;
-            map [SDL.SDL_Keycode.SDLK_CAPSLOCK] = Keys.CapsLock;
+//            map [SDL.SDL_Keycode.SDLK_CAPSLOCK] = Keys.CapsLock;
 //            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.HangulMode;
 //            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.KanaMode;
 //            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.JunjaMode;
