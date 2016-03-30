@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public static partial class LightDirectionalGroupKeys
     {
-        public static readonly ValueParameterKey<Vector3> LightDirectionsWS = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Color3> LightColor = ParameterKeys.NewValue<Color3>();
+        public static readonly ValueParameterKey<DirectionalLightData> Lights = ParameterKeys.NewValue<DirectionalLightData>();
     }
 }

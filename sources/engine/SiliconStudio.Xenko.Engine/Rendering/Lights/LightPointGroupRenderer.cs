@@ -9,6 +9,14 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
+    public struct PointLightData
+    {
+        public Vector3 PositionWS;
+        public float InvSquareRadius;
+        public Color3 Color;
+        private float padding0;
+    }
+
     public class LightPointGroupRenderer : LightGroupRendererBase
     {
         private const int StaticLightMaxCount = 8;
@@ -53,17 +61,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class SpotLightShaderGroup : LightShaderGroupAndDataPool<SpotLightShaderGroupData>
         {
             internal readonly ValueParameterKey<int> CountKey;
-            internal readonly ValueParameterKey<Vector3> PositionsKey;
-            internal readonly ValueParameterKey<float> InvSquareRadiusKey;
-            internal readonly ValueParameterKey<Color3> ColorsKey;
+            internal readonly ValueParameterKey<PointLightData> LightsKey;
 
             public SpotLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
             {
                 CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
-                PositionsKey = LightPointGroupKeys.LightPositionWS.ComposeWith(compositionName);
-                InvSquareRadiusKey = LightPointGroupKeys.LightInvSquareRadius.ComposeWith(compositionName); 
-                ColorsKey = LightPointGroupKeys.LightColor.ComposeWith(compositionName);
+                LightsKey = LightPointGroupKeys.Lights.ComposeWith(compositionName);
             }
 
             protected override SpotLightShaderGroupData CreateData()
@@ -75,43 +79,33 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class SpotLightShaderGroupData : LightShaderGroupData
         {
             private readonly ValueParameterKey<int> countKey;
-            private readonly ValueParameterKey<Color3> colorsKey;
-            private readonly ValueParameterKey<Vector3> positionsKey;
-            private readonly ValueParameterKey<float> invSquareRadiusKey;
-            private readonly Vector3[] lightDirections;
-            private readonly Vector3[] lightPositions;
-            private readonly float[] invSquareRadius;
-            private readonly Color3[] lightColors;
+            private readonly ValueParameterKey<PointLightData> lightsKey;
+            private readonly PointLightData[] lights;
 
             public SpotLightShaderGroupData(SpotLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(shadowGroupData)
             {
                 countKey = group.CountKey;
-                colorsKey = group.ColorsKey;
-                positionsKey = group.PositionsKey;
-                invSquareRadiusKey = group.InvSquareRadiusKey;
+                lightsKey = group.LightsKey;
 
-                lightDirections = new Vector3[StaticLightMaxCount];
-                lightColors = new Color3[StaticLightMaxCount];
-                lightPositions = new Vector3[StaticLightMaxCount];
-                invSquareRadius = new float[StaticLightMaxCount];
+                lights = new PointLightData[StaticLightMaxCount];
             }
 
             protected override void AddLightInternal(LightComponent light)
             {
                 var pointLight = (LightPoint)light.Type;
-                lightDirections[Count] = light.Direction;
-                lightColors[Count] = light.Color;
-                lightPositions[Count] = light.Position;
-                invSquareRadius[Count] = pointLight.InvSquareRadius;
+                lights[Count] = new PointLightData
+                {
+                    PositionWS = light.Position,
+                    InvSquareRadius = pointLight.InvSquareRadius,
+                    Color = light.Color,
+                };
             }
 
             protected override void ApplyParametersInternal(ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
-                parameters.Set(colorsKey, Count, ref lightColors[0]);
-                parameters.Set(positionsKey, Count, ref lightPositions[0]);
-                parameters.Set(invSquareRadiusKey, Count, ref invSquareRadius[0]);
+                parameters.Set(lightsKey, Count, ref lights[0]);
             }
         }
     }
