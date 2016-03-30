@@ -951,7 +951,7 @@ namespace SiliconStudio.Xenko.Games
         {
             newInfo.PresentationParameters.IsFullScreen = isFullScreen;
             newInfo.PresentationParameters.PresentationInterval = SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate;
-            newInfo.DeviceCreationFlags = DeviceCreationFlags;
+            newInfo.DeviceCreationFlags = DeviceCreationFlags;        
 
             // this.ValidateGraphicsDeviceInformation(newInfo);
 
@@ -1021,7 +1021,8 @@ namespace SiliconStudio.Xenko.Games
                     var graphicsDeviceInformation = FindBestDevice(forceCreate);
 
                     OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
-                    
+
+                    isFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
                     game.Window.BeginScreenDeviceChange(graphicsDeviceInformation.PresentationParameters.IsFullScreen);
                     isBeginScreenDeviceChange = true;
                     bool needToCreateNewDevice = true;
