@@ -72,5 +72,10 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public static readonly ParticleFieldDescription<uint> Order           = new ParticleFieldDescription<uint>("Order", 0);
 
+        /// <summary>
+        /// Provides control flags for particles which have collision enabled
+        /// </summary>
+        public static readonly ParticleFieldDescription<uint> CollisionControl = new ParticleFieldDescription<uint>("CollisionControl", 0);
+
     }
 }

@@ -148,6 +148,11 @@ namespace SiliconStudio.Xenko.Particles
         private ParticleSystem cachedParentSystem = null;
 
         /// <summary>
+        /// Cached parent particle system, used for notifications
+        /// </summary>
+        internal ParticleSystem CahcedParticleSystem => cachedParentSystem;
+        
+        /// <summary>
         /// Default constructor. Initializes the pool and all collections contained in the <see cref="ParticleEmitter"/>
         /// </summary>
         public ParticleEmitter()
@@ -813,7 +818,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Add a particle field required by some dependent module. If the module already exists in the pool, only its reference counter is increased.
         /// </summary>
         /// <param name="description"></param>
-        private void AddRequiredField(ParticleFieldDescription description)
+        internal void AddRequiredField(ParticleFieldDescription description)
         {
             int fieldReferences;
             if (requiredFields.TryGetValue(description, out fieldReferences))
@@ -837,7 +842,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Remove a particle field no longer required by a dependent module. It only gets removed from the pool if it reaches 0 reference counters.
         /// </summary>
         /// <param name="description"></param>
-        private void RemoveRequiredField(ParticleFieldDescription description)
+        internal void RemoveRequiredField(ParticleFieldDescription description)
         {
             int fieldReferences;
             if (requiredFields.TryGetValue(description, out fieldReferences))

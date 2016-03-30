@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
             RequiredFields.Add(ParticleFields.Life);
+            RequiredFields.Add(ParticleFields.CollisionControl);
 
             DisplayParticlePosition = true;
             DisplayParticleRotation = true;
@@ -96,12 +97,13 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// <inheritdoc/>
         public override unsafe void Update(float dt, ParticlePool pool)
         {
-            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
+            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity) || !pool.FieldExists(ParticleFields.CollisionControl))
                 return;
 
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
             var lifeField = pool.GetField(ParticleFields.Life);
+            var controlField = pool.GetField(ParticleFields.CollisionControl);
 
             foreach (var particle in pool)
             {
@@ -110,6 +112,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
                 var particlePos = (*((Vector3*)particle[posField]));
                 var particleVel = (*((Vector3*)particle[velField]));
+
+                uint collisionControlFlag = 0;
 
                 var isInside = false;
                 if (FieldShape != null)
@@ -123,6 +127,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 {
                     if (IsHollow)
                         surfaceNormal *= -1;
+
+                    collisionControlFlag |= 0x0001;
 
                     // The particle is on the wrong side of the collision shape and must collide
                     (*((Vector3*)particle[posField])) = surfacePoint;
@@ -147,6 +153,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
                         (*((float*)particle[lifeField])) = MathUtil.ZeroTolerance;
                     }
                 }
+
+                (*((uint*)particle[controlField])) = collisionControlFlag;
             }
         }
 
