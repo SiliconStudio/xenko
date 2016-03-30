@@ -302,8 +302,8 @@ namespace SiliconStudio.Core.Yaml
                 var scalar = keyValue.Key as YamlScalarNode;
                 if (scalar?.Value != null)
                 {
-                    var isPostFixNew = scalar.Value.EndsWith(Override.PostFixNew);
-                    var isPostFixSealed = scalar.Value.EndsWith(Override.PostFixSealed);
+                    var isPostFixNew = scalar.Value.EndsWith(Override.PostFixNewText);
+                    var isPostFixSealed = scalar.Value.EndsWith(Override.PostFixSealedText);
                     if (isPostFixNew || isPostFixSealed)
                     {
                         var name = scalar.Value;
