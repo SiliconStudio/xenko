@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var computeColorSubCompute2 = ComputeColor2Keys.Color.ComposeWith("SubCompute1");
             var computeColorSubComputes = ComputeColor2Keys.Color.ComposeWith("ColorRedirect.SubComputes[0]");
 
-            var members = cbuffer.Members.Select(member => member.Param.KeyName).ToList();
+            var members = cbuffer.Members.Select(member => member.KeyInfo.KeyName).ToList();
             Assert.IsTrue(members.Contains(computeColorSubCompute2.Name));
             Assert.IsTrue(members.Contains(computeColorSubComputes.Name));
         }

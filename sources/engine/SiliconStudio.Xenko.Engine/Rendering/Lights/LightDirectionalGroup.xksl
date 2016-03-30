@@ -7,11 +7,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroup, NormalStream
     {
+        struct DirectionalLightData
+        {
+            float3 DirectionWS;
+            [Color]
+            float3 Color;
+        };
+
         cbuffer PerLighting
         {
-            float3 LightDirectionsWS[TMaxLightCount];
-            [Color]
-            float3 LightColor[TMaxLightCount];
+            DirectionalLightData Lights[TMaxLightCount];
         }
 
         override int GetMaxLightCount()
@@ -24,9 +29,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         override void PrepareDirectLightCore(int lightIndex)
         {
-            streams.lightColor = LightColor[lightIndex];
+            streams.lightColor = Lights[lightIndex].Color;
             // TODO: Add support for disk based Directional light
-            streams.lightDirectionWS = -LightDirectionsWS[lightIndex];
+            streams.lightDirectionWS = -Lights[lightIndex].DirectionWS;
         }
     };
 }

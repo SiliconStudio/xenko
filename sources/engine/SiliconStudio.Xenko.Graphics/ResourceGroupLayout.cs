@@ -9,10 +9,10 @@ namespace SiliconStudio.Xenko.Graphics
     public struct ResourceGroupDescription
     {
         public readonly DescriptorSetLayoutBuilder DescriptorSetLayout;
-        public readonly ShaderConstantBufferDescription ConstantBufferReflection;
+        public readonly EffectConstantBufferDescription ConstantBufferReflection;
         public readonly ObjectId Hash;
 
-        public ResourceGroupDescription(DescriptorSetLayoutBuilder descriptorSetLayout, ShaderConstantBufferDescription constantBufferReflection) : this()
+        public ResourceGroupDescription(DescriptorSetLayoutBuilder descriptorSetLayout, EffectConstantBufferDescription constantBufferReflection) : this()
         {
             DescriptorSetLayout = descriptorSetLayout;
             ConstantBufferReflection = constantBufferReflection;
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public DescriptorSetLayout DescriptorSetLayout;
         public int ConstantBufferSize;
-        public ShaderConstantBufferDescription ConstantBufferReflection;
+        public EffectConstantBufferDescription ConstantBufferReflection;
         public ObjectId Hash;
         public ObjectId ConstantBufferHash;
 

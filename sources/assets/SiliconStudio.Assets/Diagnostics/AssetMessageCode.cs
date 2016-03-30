@@ -147,5 +147,11 @@ namespace SiliconStudio.Assets.Diagnostics
         /// A default scene was not found in the package.
         /// </summary>
         DefaultSceneNotFound,
+
+        /// <summary>
+        /// Occurs when a asset templating instance is duplicated.
+        /// </summary>
+        InvalidBasePartInstance,
+
     }
 }

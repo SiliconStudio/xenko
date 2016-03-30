@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Check resources
             for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
-                var key = reflection.ResourceBindings[i].Param.Key;
+                var key = reflection.ResourceBindings[i].KeyInfo.Key;
                 if (key == parameterKey)
                     return true;
             }
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 for (int i = 0; i < constantBufferMembers.Length; ++i)
                 {
-                    var key = constantBufferMembers[i].Param.Key;
+                    var key = constantBufferMembers[i].KeyInfo.Key;
                     if (key == parameterKey)
                         return true;
                 }
@@ -129,11 +129,11 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
                 // Update binding key
-                var key = reflection.ResourceBindings[i].Param.Key;
+                var key = reflection.ResourceBindings[i].KeyInfo.Key;
 
-                if (reflection.ResourceBindings[i].Param.Class == EffectParameterClass.Sampler)
+                if (reflection.ResourceBindings[i].Class == EffectParameterClass.Sampler)
                 {
-                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == reflection.ResourceBindings[i].Param.KeyName);
+                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == reflection.ResourceBindings[i].KeyInfo.KeyName);
                     if (samplerBinding != null)
                     {
                         samplerBinding.Key = key;
@@ -163,20 +163,20 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private static void UpdateResourceBindingKey(ref EffectParameterResourceData binding)
+        private static void UpdateResourceBindingKey(ref EffectResourceBindingDescription binding)
         {
-            var keyName = binding.Param.KeyName;
+            var keyName = binding.KeyInfo.KeyName;
 
-            switch (binding.Param.Class)
+            switch (binding.Class)
             {
                 case EffectParameterClass.Sampler:
-                    binding.Param.Key = FindOrCreateResourceKey<SamplerState>(keyName);
+                    binding.KeyInfo.Key = FindOrCreateResourceKey<SamplerState>(keyName);
                     break;
                 case EffectParameterClass.ConstantBuffer:
                 case EffectParameterClass.TextureBuffer:
                 case EffectParameterClass.ShaderResourceView:
                 case EffectParameterClass.UnorderedAccessView:
-                    switch (binding.Param.Type)
+                    switch (binding.Type)
                     {
                         case EffectParameterType.Buffer:
                         case EffectParameterType.ConstantBuffer:
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Graphics
                         case EffectParameterType.RWBuffer:
                         case EffectParameterType.RWStructuredBuffer:
                         case EffectParameterType.RWByteAddressBuffer:
-                            binding.Param.Key = FindOrCreateResourceKey<Buffer>(keyName);
+                            binding.KeyInfo.Key = FindOrCreateResourceKey<Buffer>(keyName);
                             break;
                         case EffectParameterType.Texture:
                         case EffectParameterType.Texture1D:
@@ -205,66 +205,66 @@ namespace SiliconStudio.Xenko.Graphics
                         case EffectParameterType.TextureCubeArray:
                         case EffectParameterType.RWTexture3D:
                         case EffectParameterType.Texture3D:
-                            binding.Param.Key = FindOrCreateResourceKey<Texture>(keyName);
+                            binding.KeyInfo.Key = FindOrCreateResourceKey<Texture>(keyName);
                             break;
                     }
                     break;
             }
 
-            if (binding.Param.Key == null)
+            if (binding.KeyInfo.Key == null)
             {
-                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
+                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.KeyInfo.KeyName, binding.Class, binding.Type));
             }
         }
 
-        private static void UpdateValueBindingKey(ref EffectParameterValueData binding)
+        private static void UpdateValueBindingKey(ref EffectValueDescription binding)
         {
-            switch (binding.Param.Class)
+            switch (binding.Type.Class)
             {
                 case EffectParameterClass.Scalar:
-                    switch (binding.Param.Type)
+                    switch (binding.Type.Type)
                     {
                         case EffectParameterType.Bool:
-                            binding.Param.Key = FindOrCreateValueKey<bool>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<bool>(binding);
                             break;
                         case EffectParameterType.Int:
-                            binding.Param.Key = FindOrCreateValueKey<int>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<int>(binding);
                             break;
                         case EffectParameterType.UInt:
-                            binding.Param.Key = FindOrCreateValueKey<uint>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<uint>(binding);
                             break;
                         case EffectParameterType.Float:
-                            binding.Param.Key = FindOrCreateValueKey<float>(binding);
+                            binding.KeyInfo.Key = FindOrCreateValueKey<float>(binding);
                             break;
                     }
                     break;
                 case EffectParameterClass.Color:
                     {
-                        var componentCount = binding.RowCount != 1 ? binding.RowCount : binding.ColumnCount;
-                        switch (binding.Param.Type)
+                        var componentCount = binding.Type.RowCount != 1 ? binding.Type.RowCount : binding.Type.ColumnCount;
+                        switch (binding.Type.Type)
                         {
                             case EffectParameterType.Float:
-                                binding.Param.Key = componentCount == 4
+                                binding.KeyInfo.Key = componentCount == 4
                                                         ? FindOrCreateValueKey<Color4>(binding)
-                                                        : (componentCount == 3 ? (ParameterKey)FindOrCreateValueKey<Color3>(binding) : null);
+                                                        : (componentCount == 3 ? FindOrCreateValueKey<Color3>(binding) : null);
                                 break;
                         }
                     }
                     break;
                 case EffectParameterClass.Vector:
                     {
-                        var componentCount = binding.RowCount != 1 ? binding.RowCount : binding.ColumnCount;
-                        switch (binding.Param.Type)
+                        var componentCount = binding.Type.RowCount != 1 ? binding.Type.RowCount : binding.Type.ColumnCount;
+                        switch (binding.Type.Type)
                         {
                             case EffectParameterType.Bool:
                             case EffectParameterType.Int:
-                                binding.Param.Key = componentCount == 4 ? (ParameterKey)FindOrCreateValueKey<Int4>(binding) : (componentCount == 3 ? FindOrCreateValueKey<Int3>(binding) : null);
+                                binding.KeyInfo.Key = componentCount == 4 ? (ParameterKey)FindOrCreateValueKey<Int4>(binding) : (componentCount == 3 ? FindOrCreateValueKey<Int3>(binding) : null);
                                 break;
                             case EffectParameterType.UInt:
-                                binding.Param.Key = componentCount == 4 ? FindOrCreateValueKey<UInt4>(binding) : null;
+                                binding.KeyInfo.Key = componentCount == 4 ? FindOrCreateValueKey<UInt4>(binding) : null;
                                 break;
                             case EffectParameterType.Float:
-                                binding.Param.Key = componentCount == 4
+                                binding.KeyInfo.Key = componentCount == 4
                                                         ? FindOrCreateValueKey<Vector4>(binding)
                                                         : (componentCount == 3 ? (ParameterKey)FindOrCreateValueKey<Vector3>(binding) : (componentCount == 2 ? FindOrCreateValueKey<Vector2>(binding) : null));
                                 break;
@@ -273,16 +273,16 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case EffectParameterClass.MatrixRows:
                 case EffectParameterClass.MatrixColumns:
-                    binding.Param.Key = FindOrCreateValueKey<Matrix>(binding);
+                    binding.KeyInfo.Key = FindOrCreateValueKey<Matrix>(binding);
                     break;
                 case EffectParameterClass.Struct:
-                    binding.Param.Key = ParameterKeys.FindByName(binding.Param.KeyName);
+                    binding.KeyInfo.Key = ParameterKeys.FindByName(binding.KeyInfo.KeyName);
                     break;
             }
 
-            if (binding.Param.Key == null)
+            if (binding.KeyInfo.Key == null)
             {
-                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
+                throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.KeyInfo.KeyName, binding.Type.Class, binding.Type.Type));
             }
 
         }
@@ -292,9 +292,9 @@ namespace SiliconStudio.Xenko.Graphics
             return ParameterKeys.FindByName(name) ?? ParameterKeys.NewObject<T>(default(T), name);
         }
 
-        private static ParameterKey FindOrCreateValueKey<T>(EffectParameterValueData binding) where T : struct
+        private static ParameterKey FindOrCreateValueKey<T>(EffectValueDescription binding) where T : struct
         {
-            var name = binding.Param.KeyName;
+            var name = binding.KeyInfo.KeyName;
             return ParameterKeys.FindByName(name) ?? ParameterKeys.NewValue<T>(default(T), name);
         }
 
@@ -314,18 +314,34 @@ namespace SiliconStudio.Xenko.Graphics
                     var member = constantBuffer.Members[i];
                     constantBuffer.Members[i] = member;
 
-                    hashBuilder.Write(member.Param.Key.Name);
-                    hashBuilder.Write(member.SourceOffset);
-                    hashBuilder.Write(member.SourceOffset);
+                    hashBuilder.Write(member.KeyInfo.Key.Name);
                     hashBuilder.Write(member.Offset);
-                    hashBuilder.Write(member.Count);
                     hashBuilder.Write(member.Size);
-                    hashBuilder.Write(member.RowCount);
-                    hashBuilder.Write(member.ColumnCount);
+
+                    HashType(hashBuilder, member.Type);
                 }
 
                 // Update the hash
                 constantBuffer.Hash = hashBuilder.ComputeHash();
+            }
+        }
+
+        private static void HashType(ObjectIdBuilder hashBuilder, EffectTypeDescription type)
+        {
+            hashBuilder.Write(type.RowCount);
+            hashBuilder.Write(type.ColumnCount);
+            hashBuilder.Write(type.Elements);
+            if (type.Name != null)
+                hashBuilder.Write(type.Name);
+
+            if (type.Members != null)
+            {
+                foreach (var member in type.Members)
+                {
+                    hashBuilder.Write(member.Name);
+                    hashBuilder.Write(member.Offset);
+                    HashType(hashBuilder, member.Type);
+                }
             }
         }
     }
