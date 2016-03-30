@@ -24,6 +24,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using SharpVulkan;
 
@@ -251,6 +252,22 @@ namespace SiliconStudio.Xenko.Graphics
 
             CreateSurface();
 
+            // Queue
+            // TODO VULKAN: Queue family is needed when creating the Device, so here we can just do a sanity check?
+            var queueNodeIndex = GraphicsDevice.Adapter.PhysicalDevice.QueueFamilyProperties.
+                Where((properties, index) => (properties.QueueFlags & QueueFlags.Graphics) != 0 && GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceSupport((uint)index, surface)).
+                Select((properties, index) => index).First();
+
+            // Surface format
+            var backBufferFormat = VulkanConvertExtensions.ConvertPixelFormat(Description.BackBufferFormat);
+
+            var surfaceFormats = GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceFormats(surface);
+            if ((surfaceFormats.Length != 1 || surfaceFormats[0].Format != Format.Undefined) &&
+                !surfaceFormats.Any(x => x.Format == backBufferFormat))
+            {
+                backBufferFormat = surfaceFormats[0].Format;
+            }
+
             // Create swapchain
             SurfaceCapabilities surfaceCapabilities;
             GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceCapabilities(surface, out surfaceCapabilities);
@@ -291,12 +308,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             swapChainPresentMode = PresentMode.Fifo;
-
-            // Native format
-            Format backBufferFormat;
-            int pixelSize;
-            bool compressed;
-            VulkanConvertExtensions.ConvertPixelFormat(Description.BackBufferFormat, out backBufferFormat, out pixelSize, out compressed);
 
             // Create swapchain
             var swapchainCreateInfo = new SwapchainCreateInfo
