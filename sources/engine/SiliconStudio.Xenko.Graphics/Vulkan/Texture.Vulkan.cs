@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Graphics
                             Format = NativeFormat,
                             Flags = ImageCreateFlags.None,
                             Tiling = ImageTiling.Optimal,
-                            InitialLayout = dataBoxes == null ? NativeLayout : ImageLayout.Preinitialized
+                            InitialLayout = ImageLayout.Undefined // dataBoxes == null ? ImageLayout.Undefined : ImageLayout.Preinitialized // TODO VULKAN: Use ImageLayout.Preinitialized
                         };
 
                         switch (Dimension)
@@ -261,34 +261,39 @@ namespace SiliconStudio.Xenko.Graphics
             if (NativeLayout == ImageLayout.ShaderReadOnlyOptimal)
                 NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
 
-            var imageMemoryBarrier = new ImageMemoryBarrier
+            if (NativeImage != SharpVulkan.Image.Null)
             {
-                StructureType = StructureType.ImageMemoryBarrier,
-                OldLayout = ImageLayout.Undefined,
-                NewLayout = NativeLayout,
-                Image = NativeImage,
-                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                SourceAccessMask = AccessFlags.None,
-                DestinationAccessMask = NativeAccessMask
-            };
+                var imageMemoryBarrier = new ImageMemoryBarrier
+                {
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    OldLayout = ImageLayout.Undefined,
+                    NewLayout = NativeLayout,
+                    Image = NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)ArraySize, 0, (uint)MipLevels),
+                    SourceAccessMask = AccessFlags.None,
+                    DestinationAccessMask = NativeAccessMask
+                };
 
-            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-            commandBuffer.Reset(CommandBufferResetFlags.None);
-            var beginInfo = new CommandBufferBeginInfo
-            {
-                StructureType = StructureType.CommandBufferBeginInfo,
-            };
-            commandBuffer.Begin(ref beginInfo);
-            commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
-            commandBuffer.End();
+                var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
+                var beginInfo = new CommandBufferBeginInfo
+                {
+                    StructureType = StructureType.CommandBufferBeginInfo,
+                };
 
-            var submitInfo = new SubmitInfo
-            {
-                StructureType = StructureType.SubmitInfo,
-                CommandBufferCount = 1,
-                CommandBuffers = new IntPtr(&commandBuffer),
-            };
-            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+                commandBuffer.Begin(ref beginInfo);
+                commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
+                commandBuffer.End();
+
+                var submitInfo = new SubmitInfo
+                {
+                    StructureType = StructureType.SubmitInfo,
+                    CommandBufferCount = 1,
+                    CommandBuffers = new IntPtr(&commandBuffer),
+                };
+                GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+                GraphicsDevice.NativeCommandQueue.WaitIdle();
+                commandBuffer.Reset(CommandBufferResetFlags.None);
+            }
 
             if (!isNotOwningResources && Usage != GraphicsResourceUsage.Staging)
             {
@@ -456,13 +461,17 @@ namespace SiliconStudio.Xenko.Graphics
             bool compressed;
             VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeViewFormat, out pixelSize, out compressed);
 
+            var imageAspect = IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color;
+            if (HasStencil)
+                imageAspect |= ImageAspectFlags.Stencil;
+
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
                 Format = nativeViewFormat,
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)arrayCount, (uint)mipIndex, (uint)mipCount)
+                SubresourceRange = new ImageSubresourceRange(imageAspect, (uint)arrayOrDepthSlice, (uint)arrayCount, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)
