@@ -307,8 +307,6 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            swapChainPresentMode = PresentMode.Fifo;
-
             // Create swapchain
             var swapchainCreateInfo = new SwapchainCreateInfo
             {
