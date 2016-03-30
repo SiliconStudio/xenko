@@ -15,19 +15,24 @@ namespace SiliconStudio.Core.Yaml
     /// </summary>
     public class DynamicYamlMapping : DynamicYamlObject, IDynamicYamlNode, IEnumerable
     {
-        internal YamlMappingNode node { get; set; }
+        private readonly YamlMappingNode node;
 
-        private Dictionary<string, string> nodeMapping;
+        /// <summary>
+        /// A mapping used between a property name (e.g: MyProperty) and the property name as serialized
+        /// in YAML taking into account overrides (e.g: MyProperty! or MyProperty* or MyProperty*!)
+        /// </summary>
+        /// <remarls>
+        /// NOTE that both <see cref="keyMapping"/> and <see cref="overrides"/> and node.Children
+        /// are kept synchronized.
+        /// </remarls>
+        private Dictionary<string, string> keyMapping;
 
+        /// <summary>
+        /// A mapping between a property name (e.g: MyProperty) and the current Override type
+        /// </summary>
         private Dictionary<string, OverrideType> overrides;
 
-        public YamlMappingNode Node
-        {
-            get
-            {
-                return node;
-            }
-        }
+        public YamlMappingNode Node => node;
 
         YamlNode IDynamicYamlNode.Node => Node;
 
@@ -35,21 +40,6 @@ namespace SiliconStudio.Core.Yaml
         {
             this.node = node;
             ParseOverrides();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return node.Children.Select(x => new KeyValuePair<dynamic, dynamic>(ConvertToDynamic(x.Key), ConvertToDynamic(x.Value))).ToArray().GetEnumerator();
-        }
-
-
-        private YamlNode ConvertFromDynamicForKey(object value)
-        {
-            if (value is string)
-            {
-                value = GetRealPropertyName((string)value);
-            }
-            return ConvertFromDynamic(value);
         }
 
         public void AddChild(object key, object value)
@@ -89,7 +79,16 @@ namespace SiliconStudio.Core.Yaml
             var yamlKey = ConvertFromDynamicForKey(key);
             var keyPosition = node.Children.IndexOf(yamlKey);
             if (keyPosition != -1)
+            {
                 node.Children.RemoveAt(keyPosition);
+
+                // Removes any override information
+                if (keyMapping != null && key is string)
+                {
+                    keyMapping.Remove((string)key);
+                    overrides.Remove((string)key);
+                }
+            }
         }
 
         public int IndexOf(object key)
@@ -153,26 +152,47 @@ namespace SiliconStudio.Core.Yaml
             return true;
         }
 
-        public void SetOverride(string member, OverrideType type)
+        /// <summary>
+        /// Gets the override for the specified member.
+        /// </summary>
+        /// <param name="key">The member name to get the override</param>
+        /// <returns>The type of override (if no override, return <see cref="OverrideType.Base"/></returns>
+        public OverrideType GetOverride(string key)
         {
-            if (member == null) throw new ArgumentNullException(nameof(member));
+            if (overrides == null)
+            {
+                return OverrideType.Base;
+            }
+
+            OverrideType type;
+            return overrides.TryGetValue(key, out type) ? type : OverrideType.Base;
+        }
+
+        /// <summary>
+        /// Sets the override type for the specified member.
+        /// </summary>
+        /// <param name="key">The member name to setup an override</param>
+        /// <param name="type">Type of the override</param>
+        public void SetOverride(string key, OverrideType type)
+        {
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             YamlNode previousMemberKey = null;
             YamlNode previousMemberValue = null;
 
-            if (nodeMapping == null)
+            if (keyMapping == null)
             {
-                nodeMapping = new Dictionary<string, string>();
+                keyMapping = new Dictionary<string, string>();
             }
             else
             {
                 string previousMemberName;
-                if (nodeMapping.TryGetValue(member, out previousMemberName))
+                if (keyMapping.TryGetValue(key, out previousMemberName))
                 {
                     previousMemberKey = new YamlScalarNode(previousMemberName);
                     node.Children.TryGetValue(previousMemberKey, out previousMemberValue);
                 }
-                nodeMapping.Remove(member);
+                keyMapping.Remove(key);
             }
 
             if (overrides == null)
@@ -181,16 +201,16 @@ namespace SiliconStudio.Core.Yaml
             }
             else
             {
-                overrides.Remove(member);
+                overrides.Remove(key);
             }
 
-            string newMemberName = member;
-            if (type != OverrideType.Base)
-            {
-                newMemberName = $"{member}{type.ToText()}";
-            }
-            nodeMapping[member] = newMemberName;
-            overrides[member] = type;
+            // New member name
+            var newMemberName = type == OverrideType.Base
+                ? key
+                : $"{key}{type.ToText()}";
+            
+            keyMapping[key] = newMemberName;
+            overrides[key] = type;
 
             // Remap the original YAML node with the override type
             if (previousMemberKey != null)
@@ -201,18 +221,49 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
-        public OverrideType GetOverride(string key)
+        /// <summary>
+        /// Removes an override information from the specified member.
+        /// </summary>
+        /// <param name="key">The member name</param>
+        public void RemoveOverride(string key)
         {
             if (overrides == null)
             {
-                return OverrideType.Base;
+                return;
             }
-            OverrideType type;
-            if (overrides.TryGetValue(key, out type))
+
+            // If we have an override we need to remove the override text from the name
+            if (overrides.Remove(key))
             {
-                return type;
+                var propertyName = GetRealPropertyName(key);
+
+                var previousKey = new YamlScalarNode(GetRealPropertyName(propertyName));
+                int index = node.Children.IndexOf(previousKey);
+                var previousMemberValue = node.Children[index].Value;
+                node.Children.RemoveAt(index);
+                node.Children.Insert(index, new YamlScalarNode(key), previousMemberValue);
+
+                keyMapping[key] = key;
             }
-            return OverrideType.Base;
+        }
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return node.Children.Select(x => new KeyValuePair<dynamic, dynamic>(ConvertToDynamic(x.Key), ConvertToDynamic(x.Value))).ToArray().GetEnumerator();
+        }
+
+        /// <summary>
+        /// Helper method to gets the real member key for the specified key (taking into account overrides)
+        /// </summary>
+        /// <param name="key">The member name</param>
+        /// <returns>A member YamlNode</returns>
+        private YamlNode ConvertFromDynamicForKey(object key)
+        {
+            if (key is string)
+            {
+                key = GetRealPropertyName((string)key);
+            }
+            return ConvertFromDynamic(key);
         }
 
         private object GetValue(YamlNode key)
@@ -227,13 +278,13 @@ namespace SiliconStudio.Core.Yaml
 
         private string GetRealPropertyName(string name)
         {
-            if (nodeMapping == null)
+            if (keyMapping == null)
             {
                 return name;
             }
 
             string realPropertyName;
-            if (nodeMapping.TryGetValue(name, out realPropertyName))
+            if (keyMapping.TryGetValue(name, out realPropertyName))
             {
                 return realPropertyName;
             }
@@ -269,12 +320,12 @@ namespace SiliconStudio.Core.Yaml
                         {
                             name = name.Substring(0, name.Length - 1);
                         }
-                        if (nodeMapping == null)
+                        if (keyMapping == null)
                         {
-                            nodeMapping = new Dictionary<string, string>();
+                            keyMapping = new Dictionary<string, string>();
                         }
 
-                        nodeMapping[name] = scalar.Value;
+                        keyMapping[name] = scalar.Value;
 
                         if (overrides == null)
                         {
@@ -285,6 +336,5 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
         }
-
     }
 }

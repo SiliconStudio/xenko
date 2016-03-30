@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Text;
-using SharpYaml.Serialization;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 
@@ -89,49 +88,31 @@ namespace SiliconStudio.Assets
             return result;
         }
 
-        public class YamlAsset : IDisposable
+        public class YamlAsset : DynamicYaml, IDisposable
         {
-            private PackageLoadingAssetFile packageLoadingAssetFile;
-            private YamlStream yamlStream;
-            private DynamicYamlMapping dynamicRootNode;
+            private readonly PackageLoadingAssetFile packageLoadingAssetFile;
 
-            public YamlAsset(PackageLoadingAssetFile packageLoadingAssetFile)
+            public YamlAsset(PackageLoadingAssetFile packageLoadingAssetFile) : base(GetSafeStream(packageLoadingAssetFile))
             {
                 this.packageLoadingAssetFile = packageLoadingAssetFile;
-
-                // transform the stream into string.
-                string assetAsString;
-                using (var assetStream = packageLoadingAssetFile.OpenStream())
-                using (var assetStreamReader = new StreamReader(assetStream, Encoding.UTF8))
-                {
-                    assetAsString = assetStreamReader.ReadToEnd();
-                }
-
-                // Load the asset as a YamlNode object
-                var input = new StringReader(assetAsString);
-                yamlStream = new YamlStream();
-                yamlStream.Load(input);
             }
 
             public PackageLoadingAssetFile Asset => packageLoadingAssetFile;
 
-            public YamlMappingNode RootNode => (YamlMappingNode)yamlStream.Documents[0].RootNode;
-
-            public dynamic DynamicRootNode => dynamicRootNode ?? (dynamicRootNode = new DynamicYamlMapping(RootNode));
-
             public void Dispose()
             {
-                var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
-
                 // Save asset back to AssetContent
                 using (var memoryStream = new MemoryStream())
                 {
-                    using (var streamWriter = new StreamWriter(memoryStream))
-                    {
-                        yamlStream.Save(streamWriter, true, preferredIndent);
-                    }
+                    WriteTo(memoryStream);
                     packageLoadingAssetFile.AssetContent = memoryStream.ToArray();
                 }
+            }
+
+            private static Stream GetSafeStream(PackageLoadingAssetFile packageLoadingAssetFile)
+            {
+                if (packageLoadingAssetFile == null) throw new ArgumentNullException(nameof(packageLoadingAssetFile));
+                return packageLoadingAssetFile.OpenStream();
             }
         }
     }
