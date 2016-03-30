@@ -47,7 +47,8 @@ namespace SiliconStudio.Shaders.Ast
             if (list != null)
             {
                 var nodeProcessor = nodeProcessorContext.NodeProcessor;
-                for (int i = 0; i < list.Count;)
+                int i = 0;
+                while (i < list.Count)
                 {
                     var previousValue = (Node)list[i];
                     var temp = nodeProcessor(previousValue, ref nodeProcessorContext);

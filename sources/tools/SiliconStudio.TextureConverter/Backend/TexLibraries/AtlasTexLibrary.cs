@@ -419,8 +419,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             int i = left;
             int j = right;
-            double pivotValue = ((left + right) / 2);
-            int x = list[(int)pivotValue].DataSize;
+            int pivotValue = ((left + right) / 2);
+            int x = list[pivotValue].DataSize;
             TexImage w;
             while (i <= j)
             {

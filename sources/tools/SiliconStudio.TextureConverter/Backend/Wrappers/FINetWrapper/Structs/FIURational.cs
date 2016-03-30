@@ -49,7 +49,7 @@ namespace FreeImageAPI
 	/// when creating a new instance by using a better algorithm than FreeImage does.
 	/// <para/>
 	/// The structure implements the following operators:
-	/// +, ++, --, ==, != , >, >==, &lt;, &lt;== and ~ (which switches nominator and denomiator).
+	/// +, -, ++, --, ==, != , >, >==, &lt;, &lt;== and ~ (which switches nominator and denomiator).
 	/// <para/>
 	/// The structure can be converted into all .NET standard types either implicit or
 	/// explicit.
@@ -110,7 +110,7 @@ namespace FreeImageAPI
 		}
 
 		/// <summary>
-		///Initializes a new instance based on the specified parameters.
+		/// Initializes a new instance based on the specified parameters.
 		/// </summary>
 		/// <param name="value">The value to convert into a fraction.</param>
 		/// <exception cref="OverflowException">
@@ -699,10 +699,10 @@ namespace FreeImageAPI
 		}
 
 		/// <summary>
-		/// Converts the value of a <see cref="FIURational"/> structure to an <see cref="UInt32"/> structure.
+		/// Converts the value of a <see cref="FIURational"/> structure to an <see cref="UInt64"/> structure.
 		/// </summary>
 		/// <param name="value">A <see cref="FIURational"/> structure.</param>
-		/// <returns>A new instance of <see cref="UInt32"/> initialized to <paramref name="value"/>.</returns>
+		/// <returns>A new instance of <see cref="UInt64"/> initialized to <paramref name="value"/>.</returns>
 		public static explicit operator ulong(FIURational value)
 		{
 			return (ulong)(double)value;
@@ -996,11 +996,9 @@ namespace FreeImageAPI
 		/// and <paramref name="other"/>.</returns>
 		public int CompareTo(FIURational other)
 		{
-			FIURational difference = this - other;
-			difference.Normalize();
-			if (difference.numerator > 0) return 1;
-			if (difference.numerator < 0) return -1;
-			else return 0;
+			if (this > other) return 1;
+			if (this == other) return 0;
+			return -1;
 		}
 
 		#endregion
