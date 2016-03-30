@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         private class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class RenameCapsuleHeight : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class RenameDiameters : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Diameter != null)
@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class Standardization : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var proceduralType = asset.Type;
 
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class CapsuleRadiusDefaultChange : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
                 // However since this upgrader can be reapplied, it is not a problem
