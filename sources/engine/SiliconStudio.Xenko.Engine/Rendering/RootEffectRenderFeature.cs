@@ -324,7 +324,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.Effect = null;
                         renderEffect.State = RenderEffectState.Skip;
                     }
-                    else if (renderEffect.EffectValidator.EndEffectValidation())
+                    else if (renderEffect.EffectValidator.EndEffectValidation() && (renderEffect.Effect == null || !renderEffect.Effect.SourceChanged))
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);
                     

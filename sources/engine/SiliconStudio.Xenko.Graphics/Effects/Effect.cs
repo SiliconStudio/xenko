@@ -66,6 +66,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        internal bool SourceChanged { get; set; }
+
         public bool HasParameter(ParameterKey parameterKey)
         {
             // Check resources
