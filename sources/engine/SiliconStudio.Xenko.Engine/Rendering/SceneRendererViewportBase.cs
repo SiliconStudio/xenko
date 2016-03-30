@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets the actual viewport size (only valid after <see cre=f"ActivateOutput"/>).
         /// </summary>
         [DataMemberIgnore]
-        public Viewport ComputedViewport { get; private set; }
+        public Viewport ComputedViewport { get; protected set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the viewport is in fixed pixels instead of percentage.

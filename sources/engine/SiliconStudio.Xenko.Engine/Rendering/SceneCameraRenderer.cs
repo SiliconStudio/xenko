@@ -9,6 +9,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -89,12 +90,19 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Collect(RenderContext context)
         {
+            base.Collect(context);
+
+            // Early exit if some properties are null
+            if (Mode == null)
+            {
+                return;
+            }
+
             // Gets the current camera state from the slot
             var camera = context.GetCameraFromSlot(Camera);
 
-            //override the viewport if we require custom aspect ratio
-            //...
-            if (camera.UseCustomAspectRatio)
+            //re-compute the viewport if we require custom aspect ratio
+            if (camera.UseCustomAspectRatio && camera.AddLetterboxPillarbox)
             {
                 var output = GetOutput(context);
                 var currentAr =  output.Width / (float)output.Height;
@@ -103,31 +111,21 @@ namespace SiliconStudio.Xenko.Rendering
                 var arDiff = currentAr - requiredAr;
                 if (Math.Abs(arDiff) > 0.01f)
                 {
-                    IsViewportInPercentage = false;
-
                     // Pillarbox 
                     if (arDiff > 0.0f)
                     {
                         var newWidth = (float)Math.Max(1.0f, Math.Round(output.Height * requiredAr));
                         var adjX = (float)Math.Round(0.5f * (output.Width - newWidth));
-                        Viewport = new RectangleF(adjX, 0.0f, newWidth, output.Height);         
+                        ComputedViewport = new Viewport((int)adjX, 0, (int)newWidth, output.Height);
                     }
                     // Letterbox
                     else
                     {
                         var newHeight = (float)Math.Max(1.0f, Math.Round(output.Width / requiredAr));
                         var adjY = (float)Math.Round(0.5f * (output.Height - newHeight));
-                        Viewport = new RectangleF(0.0f, adjY, output.Width, newHeight);
+                        ComputedViewport = new Viewport(0, (int)adjY, output.Width, (int)newHeight);
                     }
                 }
-            }
-
-            base.Collect(context);
-
-            // Early exit if some properties are null
-            if (Mode == null)
-            {
-                return;
             }
 
             // Draw this camera.

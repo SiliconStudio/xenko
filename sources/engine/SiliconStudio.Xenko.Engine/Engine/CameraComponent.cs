@@ -120,10 +120,10 @@ namespace SiliconStudio.Xenko.Engine
         public bool UseCustomAspectRatio { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to use a custom <see cref="AspectRatio"/>. Default is <c>false</c>, meaning that the aspect ratio is calculated from the ratio of the current viewport when rendering.
+        /// Gets or sets a value wether to edit the Viewport to add letterboxes or pillarboxes
         /// </summary>
         /// <value>The use custom aspect ratio.</value>
-        /// <userdoc>If checked, use the value contained in 'Aspect Ratio' to calculate the projection matrices. Otherwise, automatically adjust the aspect ratio to the ratio of the render target.</userdoc>
+        /// <userdoc>If checked and Custom Aspect Ratio is checked as well, the viewport will be modified to fit, and letterboxes/pillarboxes might be added.</userdoc>
         [DataMember(36)]
         [DefaultValue(false)]
         [Display("Add Letterbox/Pillarbox")]
@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 // Calculates the aspect ratio
                 var aspectRatio = AspectRatio;
-                if (screenAspectRatio.HasValue)
+                if (screenAspectRatio.HasValue && ((UseCustomAspectRatio && AddLetterboxPillarbox) || !UseCustomAspectRatio))
                 {
                     aspectRatio = screenAspectRatio.Value;
                 }
