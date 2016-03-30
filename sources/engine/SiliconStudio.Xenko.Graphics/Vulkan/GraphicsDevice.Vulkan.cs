@@ -214,6 +214,19 @@ namespace SiliconStudio.Xenko.Graphics
                 QueuePriorities = new IntPtr(&queuePriorities)
             };
 
+            var enabledLayerNames = new[]
+            {
+                Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_threading"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_param_checker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_device_limits"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_object_tracker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_image"),
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_draw_state"), // descriptor pool
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"),
+            };
+
             var enabledExtensionNames = new[]
             {
                 Marshal.StringToHGlobalAnsi("VK_KHR_swapchain"),
@@ -221,6 +234,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             try
             {
+                fixed (void* enabledLayerNamesPointer = &enabledLayerNames[0])
                 fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
                 {
                     var deviceCreateInfo = new DeviceCreateInfo
@@ -228,6 +242,8 @@ namespace SiliconStudio.Xenko.Graphics
                         StructureType = StructureType.DeviceCreateInfo,
                         QueueCreateInfoCount = 1,
                         QueueCreateInfos = new IntPtr(&queueCreateInfo),
+                        EnabledLayerCount = (uint)enabledLayerNames.Length,
+                        EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
                     };
@@ -240,6 +256,11 @@ namespace SiliconStudio.Xenko.Graphics
                 foreach (var enabledExtensionName in enabledExtensionNames)
                 {
                     Marshal.FreeHGlobal(enabledExtensionName);
+                }
+
+                foreach (var enabledLayerName in enabledLayerNames)
+                {
+                    Marshal.FreeHGlobal(enabledLayerName);
                 }
             }
 
@@ -448,51 +469,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             //    var fenceCopy = fences[(int)fenceValue];
             //    //NativeDevice.WaitForFences(1, &fenceCopy, true, -1);
-            //}
-        }
-
-        /// <summary>
-        /// Allocate descriptor handles. For now a simple bump alloc, but at some point we will have to make a real allocator with free
-        /// </summary>
-        internal class DescriptorAllocator
-        {
-            //private const int DescriptorPerHeap = 256;
-
-            //private GraphicsDevice device;
-            //private DescriptorHeapType descriptorHeapType;
-            //private DescriptorHeap currentHeap;
-            //private CpuDescriptorHandle currentHandle;
-            //private int remainingHandles;
-            //private readonly int descriptorSize;
-
-            //public DescriptorAllocator(GraphicsDevice device, DescriptorHeapType descriptorHeapType)
-            //{
-            //    this.device = device;
-            //    this.descriptorHeapType = descriptorHeapType;
-            //    this.descriptorSize = device.NativeDevice.GetDescriptorHandleIncrementSize(descriptorHeapType);
-            //}
-
-            //public CpuDescriptorHandle Allocate(int count)
-            //{
-            //    if (currentHeap == null || remainingHandles < count)
-            //    {
-            //        currentHeap = device.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            //        {
-            //            Flags = DescriptorHeapFlags.None,
-            //            Type = descriptorHeapType,
-            //            DescriptorCount = DescriptorPerHeap,
-            //            NodeMask = 1,
-            //        });
-            //        remainingHandles = DescriptorPerHeap;
-            //        currentHandle = currentHeap.CPUDescriptorHandleForHeapStart;
-            //    }
-
-            //    var result = currentHandle;
-
-            //    currentHandle.Ptr += descriptorSize;
-            //    remainingHandles -= count;
-
-            //    return result;
             //}
         }
     }
