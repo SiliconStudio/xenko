@@ -49,14 +49,14 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <param name="shaderSource">the hlsl shader</param>
         /// <param name="entryPoint">the entrypoint function name</param>
         /// <param name="stage">the shader pipeline stage</param>
-        /// <param name="compilerParameters"></param>
+        /// <param name="effectParameters"></param>
         /// <param name="reflection">the reflection gathered from the hlsl analysis</param>
         /// <param name="sourceFilename">the name of the source file</param>
         /// <returns></returns>
-        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
+        public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isOpenGLES = compilerParameters.EffectParameters.Platform == GraphicsPlatform.OpenGLES;
-            var isOpenGLES3 = compilerParameters.EffectParameters.Profile >= GraphicsProfile.Level_10_0;
+            var isOpenGLES = effectParameters.Platform == GraphicsPlatform.OpenGLES;
+            var isOpenGLES3 = effectParameters.Profile >= GraphicsProfile.Level_10_0;
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 
@@ -191,8 +191,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             var member = reflectionConstantBuffer.Members[index];
 
                             // Properly compute size and offset according to std140 rules
-                            var memberSize = ComputeMemberSize(ref member, ref constantBufferOffset);
+                            var memberSize = ComputeMemberSize(ref member.Type, ref constantBufferOffset);
 
+                            // Store size/offset info
                             member.Offset = constantBufferOffset;
                             member.Size = memberSize;
 
@@ -203,11 +204,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                         }
 
                         reflectionConstantBuffer.Size = constantBufferOffset;
-                        reflectionConstantBuffer.Stage = stage; // Should we store a flag/bitfield?
                     }
 
                     // Find binding
-                    var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == constantBuffer.Name);
+                    var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.RawName == constantBuffer.Name);
                     if (resourceBindingIndex != -1)
                         MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
                 }
@@ -222,8 +222,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                         || variable.Type.Name.Text.Contains("samplerCube"))
                     {
                         // TODO: Make more robust
-                        var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Param.RawName));
-                        var samplerBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().EndsWith(x.Param.RawName));
+                        var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.RawName));
+                        var samplerBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().EndsWith(x.RawName));
 
                         if (textureBindingIndex != -1)
                             MarkResourceBindingAsUsed(reflection, textureBindingIndex, stage);
@@ -233,7 +233,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     }
                     else
                     {
-                        var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.Param.RawName == variable.Name);
+                        var resourceBindingIndex = reflection.ResourceBindings.IndexOf(x => x.RawName == variable.Name);
                         if (resourceBindingIndex != -1)
                             MarkResourceBindingAsUsed(reflection, resourceBindingIndex, stage);
                     }
@@ -341,14 +341,33 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
-        private static int ComputeMemberSize(ref EffectParameterValueData member, ref int constantBufferOffset)
+        private static int ComputeMemberSize(ref EffectTypeDescription memberType, ref int constantBufferOffset)
         {
-            var elementSize = ComputeTypeSize(member.Param.Type);
+            var elementSize = ComputeTypeSize(memberType.Type);
             int size;
             int alignment;
 
-            switch (member.Param.Class)
+            switch (memberType.Class)
             {
+                case EffectParameterClass.Struct:
+                    {
+                        // Fill members
+                        size = 0;
+                        for (int index = 0; index < memberType.Members.Length; index++)
+                        {
+                            // Properly compute size and offset according to DX rules
+                            var memberSize = ComputeMemberSize(ref memberType.Members[index].Type, ref size);
+
+                            // Align offset and store it as member offset
+                            memberType.Members[index].Offset = size;
+
+                            // Adjust offset for next item
+                            size += memberSize;
+                        }
+
+                        alignment = size;
+                        break;
+                    }
                 case EffectParameterClass.Scalar:
                     {
                         size = elementSize;
@@ -358,19 +377,19 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 case EffectParameterClass.Color:
                 case EffectParameterClass.Vector:
                     {
-                        size = elementSize * member.ColumnCount;
-                        alignment = (member.ColumnCount == 3 ? 4 : member.ColumnCount) * elementSize; // vec3 uses alignment of vec4
+                        size = elementSize * memberType.ColumnCount;
+                        alignment = (memberType.ColumnCount == 3 ? 4 : memberType.ColumnCount) * elementSize; // vec3 uses alignment of vec4
                         break;
                     }
                 case EffectParameterClass.MatrixColumns:
                     {
-                        size = elementSize * 4 * member.ColumnCount;
+                        size = elementSize * 4 * memberType.ColumnCount;
                         alignment = size;
                         break;
                     }
                 case EffectParameterClass.MatrixRows:
                     {
-                        size = elementSize * 4 * member.RowCount;
+                        size = elementSize * 4 * memberType.RowCount;
                         alignment = size;
                         break;
                     }
@@ -378,12 +397,15 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     throw new NotImplementedException();
             }
 
+            // Update element size
+            memberType.ElementSize = size;
+
             // Array
-            if (member.Count > 0)
+            if (memberType.Elements > 0)
             {
                 var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
-                size = roundedSize * member.Count;
-                alignment = roundedSize * member.Count;
+                size = roundedSize * memberType.Elements;
+                alignment = roundedSize * memberType.Elements;
             }
 
             // Alignment is maxed up to vec4
@@ -407,6 +429,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     return 4;
                 case EffectParameterType.Double:
                     return 8;
+                case EffectParameterType.Void:
+                    return 0;
                 default:
                     throw new NotImplementedException();
             }

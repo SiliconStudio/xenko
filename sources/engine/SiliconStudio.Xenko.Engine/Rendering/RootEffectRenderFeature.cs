@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 foreach (var member in resourceGroupLayout.ConstantBufferReflection.Members)
                 {
-                    if (member.Param.KeyName == variable)
+                    if (member.KeyInfo.KeyName == variable)
                     {
                         resourceGroupLayout.ConstantBufferOffsets[index] = member.Offset;
                         return;
@@ -324,7 +324,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.Effect = null;
                         renderEffect.State = RenderEffectState.Skip;
                     }
-                    else if (renderEffect.EffectValidator.EndEffectValidation())
+                    else if (renderEffect.EffectValidator.EndEffectValidation() && (renderEffect.Effect == null || !renderEffect.Effect.SourceChanged))
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);
                     

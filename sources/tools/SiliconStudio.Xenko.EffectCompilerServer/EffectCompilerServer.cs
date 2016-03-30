@@ -20,11 +20,11 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
     /// </summary>
     public class EffectCompilerServer : RouterServiceServer
     {
-        private Dictionary<Guid, SocketMessageLayer> gameStudioPerPackageId = new Dictionary<Guid, SocketMessageLayer>();
+        private readonly Dictionary<Guid, SocketMessageLayer> gameStudioPerPackageId = new Dictionary<Guid, SocketMessageLayer>();
 
-        public EffectCompilerServer() : base(string.Format("/service/{0}/SiliconStudio.Xenko.EffectCompilerServer.exe", XenkoVersion.CurrentAsText))
+        public EffectCompilerServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.EffectCompilerServer.exe")
         {
-            // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?a
+            // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?
         }
 
         /// <inheritdoc/>
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
 
             if (mode == "gamestudio")
             {
-                Console.WriteLine("GameStudio mode started!");
+                Console.WriteLine(@"GameStudio mode started!");
 
                 if (!packageId.HasValue)
                     return;
@@ -65,10 +65,7 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
                 // Create an effect compiler per connection
                 var effectCompiler = new EffectCompiler();
 
-                Console.WriteLine("Client connected");
-
-                // TODO: Properly close the file, and choose where to copy/move it?
-                var recordedEffectCompile = new EffectLogStore(new MemoryStream());
+                Console.WriteLine(@"Client connected");
 
                 // TODO: This should come from an "init" packet
                 effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
@@ -79,9 +76,9 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
                 VirtualFileSystem.RegisterProvider(networkVFS);
                 effectCompiler.FileProvider = networkVFS;
 
-                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequest>((packet) => ShaderCompilerRequestHandler(socketMessageLayer, recordedEffectCompile, effectCompiler, packet));
+                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequest>(packet => ShaderCompilerRequestHandler(socketMessageLayer, effectCompiler, packet));
 
-                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequested>((packet) =>
+                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequested>(packet =>
                 {
                     if (!packageId.HasValue)
                         return;
@@ -101,25 +98,19 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             Task.Run(() => socketMessageLayer.MessageLoop());
         }
 
-        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, RemoteEffectCompilerEffectRequest remoteEffectCompilerEffectRequest)
+        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectCompiler effectCompiler, RemoteEffectCompilerEffectRequest remoteEffectCompilerEffectRequest)
         {
             // Yield so that this socket can continue its message loop to answer to shader file request
             // TODO: maybe not necessary anymore with RouterServiceServer?
             await Task.Yield();
 
-            Console.WriteLine("Compiling shader");
-
-            // Copy back effect parameters since they are not serialized (should we?)
-            remoteEffectCompilerEffectRequest.CompilerParameters.EffectParameters = remoteEffectCompilerEffectRequest.EffectParameters;
+            Console.WriteLine($"Compiling shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
 
             // A shader has been requested, compile it (asynchronously)!
-            var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.CompilerParameters).AwaitResult();
+            var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
 
-            // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(remoteEffectCompilerEffectRequest.MixinTree.Name, remoteEffectCompilerEffectRequest.CompilerParameters)] = true;
-            
             // Send compiled shader
-            socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
         }
     }
 }

@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns>True if the effect was recompiled, false otherwise.</returns>
         public bool UpdateEffect(GraphicsDevice graphicsDevice)
         {
-            if (permutationCounter != Parameters.PermutationCounter)
+            if (permutationCounter != Parameters.PermutationCounter || (effect != null && effect.SourceChanged))
             {
                 permutationCounter = Parameters.PermutationCounter;
 
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering
                     return false;
 
                 // Update reflection and rearrange buffers/resources
-                var layoutNames = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
+                var layoutNames = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.ResourceGroup ?? "Globals").Distinct().ToList();
                 descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layoutNames, "Globals");
 
                 RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);

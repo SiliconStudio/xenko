@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <remarks>
         /// If EffectBytecode is changed, this number must be changed manually.
         /// </remarks>
-        public const uint MagicHeader = 0xEFFEC001;
+        public const uint MagicHeader = 0xEFFEC002;
 
         /// <summary>
         /// The reflection from the bytecode.

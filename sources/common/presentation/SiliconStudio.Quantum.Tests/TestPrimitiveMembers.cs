@@ -60,20 +60,18 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(IntMember.Member), node.Children.First().Name);
-            Assert.AreEqual(false, node.Children.First().Content.IsReference);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            Helper.TestObjectContentNode(containerNode, obj, 1);
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
 
             // Update from object
             obj.Member = 6;
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
 
             // Update from Quantum
-            node.Children.First().Content.Update(7);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            containerNode.Children.First().Content.Update(7);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
         }
 
         [Test]
@@ -83,20 +81,18 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(IntMember.Member), node.Children.First().Name);
-            Assert.AreEqual(false, node.Children.First().Content.IsReference);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            Helper.TestObjectContentNode(containerNode, obj, 1);
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
 
             // Update from object
             obj.Member = "bbb";
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
 
             // Update from Quantum
-            node.Children.First().Content.Update("ccc");
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            containerNode.Children.First().Content.Update("ccc");
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
         }
 
         [Test]
@@ -106,20 +102,18 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(IntMember.Member), node.Children.First().Name);
-            Assert.AreEqual(false, node.Children.First().Content.IsReference);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            Helper.TestObjectContentNode(containerNode, obj, 1);
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(GuidMember.Member), false);
 
             // Update from object
             obj.Member = Guid.NewGuid();
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
 
             // Update from Quantum
-            node.Children.First().Content.Update(Guid.NewGuid());
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            containerNode.Children.First().Content.Update(Guid.NewGuid());
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
         }
 
         [Test]
@@ -129,20 +123,18 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(IntMember.Member), node.Children.First().Name);
-            Assert.AreEqual(false, node.Children.First().Content.IsReference);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            Helper.TestObjectContentNode(containerNode, obj, 1);
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
 
             // Update from object
             obj.Member = TestEnum.Value2;
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
 
             // Update from Quantum
-            node.Children.First().Content.Update(TestEnum.Value3);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            containerNode.Children.First().Content.Update(TestEnum.Value3);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
         }
 
         [Test]
@@ -153,20 +145,18 @@ namespace SiliconStudio.Quantum.Tests
             container.NodeBuilder.RegisterPrimitiveType(typeof(PrimitiveClass));
 
             // Construction
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(RegisteredPrimitiveClassMember.Member), node.Children.First().Name);
-            Assert.AreEqual(false, node.Children.First().Content.IsReference);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            Helper.TestObjectContentNode(containerNode, obj, 1);
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
 
             // Update from object
             obj.Member = new PrimitiveClass { Value = 2 };
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
 
             // Update from Quantum
-            node.Children.First().Content.Update(new PrimitiveClass { Value = 3 });
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            containerNode.Children.First().Content.Update(new PrimitiveClass { Value = 3 });
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
         }
 
         [Test]
@@ -177,20 +167,18 @@ namespace SiliconStudio.Quantum.Tests
             container.NodeBuilder.RegisterPrimitiveType(typeof(PrimitiveStruct));
 
             // Construction
-            var node = (GraphNode)container.GetOrCreateNode(obj);
-            Assert.AreEqual(obj, node.Content.Value);
-            Assert.AreEqual(1, node.Children.Count);
-            Assert.AreEqual(nameof(RegisteredPrimitiveStructMember.Member), node.Children.First().Name);
-            Assert.AreEqual(false, node.Children.First().Content.IsReference);
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            Helper.TestObjectContentNode(containerNode, obj, 1);
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveStructMember.Member), false);
 
             // Update from object
             obj.Member = new PrimitiveStruct { Value = 2 };
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
 
             // Update from Quantum
-            node.Children.Last().Content.Update(new PrimitiveStruct { Value = 3 });
-            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            containerNode.Children.Last().Content.Update(new PrimitiveStruct { Value = 3 });
+            Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
         }
     }
 }
