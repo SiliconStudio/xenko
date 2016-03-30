@@ -33,7 +33,11 @@ namespace SiliconStudio.Xenko.Debugger.Target
         private readonly ManualResetEvent gameFinished = new ManualResetEvent(true);
         private IGameDebuggerHost host;
 
-        private bool requestedExit;
+        /// <summary>
+        /// Flag if exit was requested.
+        /// </summary>
+        /// <remarks>Field is volatile to avoid compiler optimization that would prevent MainLoop from exiting.</remarks>
+        private volatile bool requestedExit;
 
         public GameDebuggerTarget()
         {

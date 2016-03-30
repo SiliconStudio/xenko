@@ -141,9 +141,9 @@ namespace SiliconStudio.Shaders.Ast
             ChildrenList.Clear();
             foreach (var parameter in Parameters)
             {
-                if (parameter is Node)
+                if (parameter != null)
                 {
-                    ChildrenList.Add((Node)parameter);
+                    ChildrenList.Add(parameter);
                 }
             }
 
