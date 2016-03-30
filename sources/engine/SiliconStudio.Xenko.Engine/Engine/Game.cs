@@ -243,8 +243,10 @@ namespace SiliconStudio.Xenko.Engine
                     {
                         deviceManager.PreferredGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
                     }
+
                     if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
                     if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
+
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                 }
@@ -262,9 +264,39 @@ namespace SiliconStudio.Xenko.Engine
                 if (renderingSettings != null)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+
                     deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
-                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+
+                    if (renderingSettings.AdaptBackBufferToScreen)
+                    {
+                        var currentAr = Window.ClientBounds.Width/(float)Window.ClientBounds.Height;
+                        var requiredAr = renderingSettings.DefaultBackBufferWidth/(float)renderingSettings.DefaultBackBufferHeight;
+                        var arDiff = currentAr - requiredAr;
+                        if (Math.Abs(arDiff) > 0.01f)
+                        {
+                            // Pillarbox 
+                            if (arDiff > 0.0f)
+                            {
+                                //if our device size is bigger use the one we proposed as default, if not use device one.
+                                //var newHeight = Window.ClientBounds.Height > renderingSettings.DefaultBackBufferHeight ? renderingSettings.DefaultBackBufferHeight : Window.ClientBounds.Height;
+                                var newWidth = (float)Math.Max(1.0f, Math.Round(Window.ClientBounds.Height*requiredAr));
+                                deviceManager.PreferredBackBufferWidth = (int)newWidth;
+                                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                            }
+                            // Letterbox
+                            else
+                            {
+                                var newHeight = (float)Math.Max(1.0f, Math.Round(Window.ClientBounds.Width/requiredAr));
+                                deviceManager.PreferredBackBufferHeight = (int)newHeight;
+                                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                        deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                    }
                 }
             }
 

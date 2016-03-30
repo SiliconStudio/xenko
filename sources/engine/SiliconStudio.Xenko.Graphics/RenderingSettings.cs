@@ -86,6 +86,15 @@ namespace SiliconStudio.Xenko.Graphics
         public int DefaultBackBufferHeight = 720;
 
         /// <summary>
+        /// Gets or sets a value that if true will make sure that the aspect ratio of DefaultBackBufferWidth and DefaultBackBufferHeight is kept.
+        /// </summary>
+        /// <userdoc>
+        /// If true will make sure that the aspect ratio of Default Back Buffer Width and Default Back Buffer Height is kept.
+        /// </userdoc>
+        [DataMember(15)]
+        public bool AdaptBackBufferToScreen = false;
+
+        /// <summary>
         /// Gets or sets the default graphics profile.
         /// </summary>
         /// <userdoc>The graphics feature level this game require.</userdoc>
