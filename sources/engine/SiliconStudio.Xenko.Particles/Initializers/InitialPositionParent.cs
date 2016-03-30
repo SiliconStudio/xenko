@@ -101,6 +101,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
+
+        // TODO Parent control flag -> used for random or controlled spawning
         
         /// <summary>
         /// The seed offset used to match or separate random values

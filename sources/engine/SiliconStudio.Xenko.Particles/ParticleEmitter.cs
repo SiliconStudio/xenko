@@ -614,7 +614,7 @@ namespace SiliconStudio.Xenko.Particles
             else
             {
                 var posIdentity = new Vector3(0, 0, 0);
-                var rotIdentity = new Quaternion(0, 0, 0, 1);
+                var rotIdentity = Quaternion.Identity;
 
                 // Update sub-systems
                 initialDefaultFields.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
@@ -900,7 +900,7 @@ namespace SiliconStudio.Xenko.Particles
             // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
             // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix
             var posIdentity = new Vector3(0, 0, 0);
-            var rotIdentity = new Quaternion(0, 0, 0, 1);
+            var rotIdentity = Quaternion.Identity;
             var scaleIdentity = 1f;
             if (simulationSpace == EmitterSimulationSpace.Local)
             {

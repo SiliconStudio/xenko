@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Particles
 
         [DataMember(3)]
         [Display("Rotation offset")]
-        public Quaternion Rotation { get; set; } = new Quaternion(0, 0, 0, 1);
+        public Quaternion Rotation { get; set; } = Quaternion.Identity;
 
         [DataMember(4)]
         [Display("Scale inheritance")]
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
 
         [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
+        public Quaternion WorldRotation { get; private set; } = Quaternion.Identity;
 
         [DataMemberIgnore]
         public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);

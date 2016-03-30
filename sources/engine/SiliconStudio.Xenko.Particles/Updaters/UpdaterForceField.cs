@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             if (!DebugDraw)
                 return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
 
-            rotation = new Quaternion(0, 0, 0, 1);
+            rotation = Quaternion.Identity;
             scale = new Vector3(1, 1, 1);
             translation = new Vector3(0, 0, 0);
 

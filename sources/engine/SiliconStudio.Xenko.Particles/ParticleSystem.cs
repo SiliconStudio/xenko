@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Rotation of the ParticleSystem, expressed as a quaternion rotation. Usually inherited directly from the ParticleSystemComponent or can be directly set.
         /// </userdoc>
         [DataMemberIgnore]
-        public Quaternion Rotation = new Quaternion(0, 0, 0, 1);
+        public Quaternion Rotation = Quaternion.Identity;
 
         /// <summary>
         /// Scale of the ParticleSystem. Only uniform scale is supported. Usually inherited directly from the ParticleSystemComponent or can be directly set.

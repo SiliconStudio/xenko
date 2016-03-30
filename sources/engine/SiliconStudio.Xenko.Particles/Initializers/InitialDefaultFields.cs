@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMemberIgnore]
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
         [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
+        public Quaternion WorldRotation { get; private set; } = Quaternion.Identity;
         [DataMemberIgnore]
         public float WorldScale { get; private set; } = 1f;
 
