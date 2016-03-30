@@ -14,12 +14,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
     public sealed class SpawnerFromParent : ParticleSpawner
     {
         /// <summary>
-        /// Order of the particle, which can be based on spawn order or something else
-        /// </summary>
-        public static readonly ParticleFieldDescription<uint> ChildrenFlags = new ParticleFieldDescription<uint>("ChildrenFlags0001", 0);   // TODO User should be able to set this
-
-
-        /// <summary>
         /// Referenced parent emitter
         /// </summary>
         [DataMemberIgnore]
@@ -92,7 +86,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
                 Parent = emitter.CahcedParticleSystem?.GetEmitterByName(ParentName);
                 if (Parent != null)
-                    Parent.AddRequiredField(ChildrenFlags);
+                    Parent.AddRequiredField(ParticleFields.ChildrenFlags[0]);
 
                 isParentNameDirty = false;
             }
@@ -108,7 +102,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             var parentParticlesCount = parentPool.LivingParticles;
             if (parentParticlesCount == 0) return;
 
-            var childrenFlagsFieldParent = parentPool.GetField(ChildrenFlags);
+            var childrenFlagsFieldParent = parentPool.GetField(ParticleFields.ChildrenFlags[0]);
             if (!childrenFlagsFieldParent.IsValid()) return;
 
             var collisionControlFieldParent = parentPool.GetField(ParticleFields.CollisionControl);
@@ -146,7 +140,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 //            base.InvalidateRelations();
 
             if (Parent != null)
-                Parent.RemoveRequiredField(ChildrenFlags);
+                Parent.RemoveRequiredField(ParticleFields.ChildrenFlags[0]);
             
             Parent = null;
             isParentNameDirty = true;

@@ -53,7 +53,12 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             if (isParentNameDirty)
             {
+                InvalidateRelations();
+
                 Parent = parentSystem?.GetEmitterByName(ParentName);
+                if (Parent != null)
+                    Parent.AddRequiredField(ParticleFields.ChildrenFlags[0]);
+
                 isParentNameDirty = false;
             }
         }
@@ -62,6 +67,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         public override void InvalidateRelations()
         {
             base.InvalidateRelations();
+
+            if (Parent != null)
+                Parent.RemoveRequiredField(ParticleFields.ChildrenFlags[0]);
 
             Parent = null;
             isParentNameDirty = true;

@@ -114,6 +114,22 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                     i = (i + 1) % maxCapacity;
                 }
             }
+
+            // ChildrenFlags fields
+            for (int j = 0; j < ParticleFields.ChildrenFlags.Length; j++)
+            {
+                var flagField = pool.GetField(ParticleFields.ChildrenFlags[j]);
+                if (flagField.IsValid())
+                {
+                    for (var i = startIdx; i != endIdx;)
+                    {
+                        var particle = pool.FromIndex(i);
+                        (*((uint*)particle[flagField])) = 0;
+                        i = (i + 1) % maxCapacity;
+                    }
+                }
+
+            }
         }
 
         [DataMemberIgnore]

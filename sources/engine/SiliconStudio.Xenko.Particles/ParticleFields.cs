@@ -77,5 +77,16 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public static readonly ParticleFieldDescription<uint> CollisionControl = new ParticleFieldDescription<uint>("CollisionControl", 0);
 
+
+        /// <summary>
+        /// ChildrenFlags is used to store meta-data for the dependent particles
+        /// </summary>
+        public static readonly ParticleFieldDescription<uint>[] ChildrenFlags = new ParticleFieldDescription<uint>[]
+        {
+            new ParticleFieldDescription<uint>("ChildrenFlags00", 0),
+            new ParticleFieldDescription<uint>("ChildrenFlags01", 0),
+            new ParticleFieldDescription<uint>("ChildrenFlags02", 0),
+            new ParticleFieldDescription<uint>("ChildrenFlags03", 0),
+        };
     }
 }

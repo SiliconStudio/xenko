@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -40,6 +41,10 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
                 return;
 
+            var childrenFlagsFieldParent = parentPool.GetField(ParticleFields.ChildrenFlags[0]);
+
+            var colFlagsFieldParent = parentPool.GetField(ParticleFields.CollisionControl);
+
             var posField = pool.GetField(ParticleFields.Position);
             var rndField = pool.GetField(ParticleFields.RandomSeed);
 
@@ -60,6 +65,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             if (parentParticlesCount == 0)
                 leftCorner += WorldPosition;
 
+            var sequentialParentIndex = 0;
+            var sequentialParentParticles = 0;
+            var parentIndex = 0;
 
             var i = startIdx;
             while (i != endIdx)
@@ -75,11 +83,43 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
                 if (parentParticlesCount > 0)
                 {
-                    var parentIndex = (int) (parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
+                    var parentParticlePosition = new Vector3(0, 0, 0);
 
-                    var parentParticle = parentPool.FromIndex(parentIndex);
+                    // It changes here
+                    if (childrenFlagsFieldParent.IsValid())
+                    {
+                        while (sequentialParentParticles == 0)
+                        {
+                            if (sequentialParentIndex >= parentParticlesCount)
+                                return; // Early out - or should we continue; ?
 
-                    var parentParticlePosition = (*((Vector3*)parentParticle[posFieldParent]));
+                            parentIndex = sequentialParentIndex;
+                            var tempParentParticle = parentPool.FromIndex(parentIndex);
+                            sequentialParentIndex++;
+
+                            var childrenFlag = (*((uint*)tempParentParticle[childrenFlagsFieldParent]));
+
+                            sequentialParentParticles = (int) (childrenFlag & 0xFFFF);
+
+
+                            // TEST
+                            var collisionFlag = (*((uint*)tempParentParticle[colFlagsFieldParent]));
+                            sequentialParentParticles *= (collisionFlag > 0) ? 1 : 0;
+                        }
+
+                        sequentialParentParticles--;
+
+                        var parentParticle = parentPool.FromIndex(parentIndex);
+                        parentParticlePosition = (*((Vector3*)parentParticle[posFieldParent]));
+                    }
+                    else
+                    {
+                        parentIndex = (int)(parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
+                        var parentParticle = parentPool.FromIndex(parentIndex);
+
+                        parentParticlePosition = (*((Vector3*)parentParticle[posFieldParent]));
+                    }
+
 
                     // Convert from Local -> World space if needed
                     if (Parent.SimulationSpace == EmitterSimulationSpace.Local)
