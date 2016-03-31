@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters = null)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters)
         {
             var log = new LoggerResult();
 
@@ -293,10 +293,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     builder.AppendLine("***************************");
                     foreach (var cBuffer in bytecode.Reflection.ConstantBuffers)
                     {
-                        builder.AppendFormat("cbuffer {0} [Stage: {1}, Size: {2}]", cBuffer.Name, cBuffer.Stage, cBuffer.Size).AppendLine();
+                        builder.AppendFormat("cbuffer {0} [Size: {1}]", cBuffer.Name, cBuffer.Size).AppendLine();
                         foreach (var parameter in cBuffer.Members)
                         {
-                            builder.AppendFormat("@C    {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
+                            builder.AppendFormat("@C    {0} => {1}", parameter.RawName, parameter.KeyInfo.KeyName).AppendLine();
                         }
                     }
                     builder.AppendLine("***************************");
@@ -308,8 +308,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     builder.AppendLine("***************************");
                     foreach (var resource in bytecode.Reflection.ResourceBindings)
                     {
-                        var parameter = resource.Param;
-                        builder.AppendFormat("@R    {0} => {1} [Stage: {2}, Slot: ({3}-{4})]", parameter.RawName, parameter.KeyName, resource.Stage, resource.SlotStart, resource.SlotStart + resource.SlotCount - 1).AppendLine();
+                        builder.AppendFormat("@R    {0} => {1} [Stage: {2}, Slot: ({3}-{4})]", resource.RawName, resource.KeyInfo.KeyName, resource.Stage, resource.SlotStart, resource.SlotStart + resource.SlotCount - 1).AppendLine();
                     }
                     builder.AppendLine("***************************");
                 }
@@ -378,28 +377,37 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             {
                 if (resourceBinding.Stage != ShaderStage.None)
                 {
-                    if (!hasLightingGroup && resourceBinding.Param.ResourceGroup == "PerLighting")
+                    if (!hasLightingGroup && resourceBinding.ResourceGroup == "PerLighting")
                         hasLightingGroup = true;
-                    else if (!hasMaterialGroup && resourceBinding.Param.ResourceGroup == "PerMaterial")
+                    else if (!hasMaterialGroup && resourceBinding.ResourceGroup == "PerMaterial")
                         hasMaterialGroup = true;
                 }
             }
 
-            for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
-            {
-                var cbuffer = reflection.ConstantBuffers[i];
-                if (cbuffer.Stage == ShaderStage.None && !(hasMaterialGroup && cbuffer.Name == "PerMaterial") && !(hasLightingGroup && cbuffer.Name == "PerLighting"))
-                {
-                    reflection.ConstantBuffers.RemoveAt(i);
-                }
-            }
+            var usedConstantBuffers = new HashSet<string>();
 
             for (int i = reflection.ResourceBindings.Count - 1; i >= 0; i--)
             {
                 var resourceBinding = reflection.ResourceBindings[i];
-                if (resourceBinding.Stage == ShaderStage.None && !(hasMaterialGroup && resourceBinding.Param.ResourceGroup == "PerMaterial") && !(hasLightingGroup && resourceBinding.Param.ResourceGroup == "PerLighting"))
+                if (resourceBinding.Stage == ShaderStage.None && !(hasMaterialGroup && resourceBinding.ResourceGroup == "PerMaterial") && !(hasLightingGroup && resourceBinding.ResourceGroup == "PerLighting"))
                 {
                     reflection.ResourceBindings.RemoveAt(i);
+                }
+                else if (resourceBinding.Class == EffectParameterClass.ConstantBuffer
+                    || resourceBinding.Class == EffectParameterClass.TextureBuffer)
+                {
+                    // Mark associated cbuffer/tbuffer as used
+                    usedConstantBuffers.Add(resourceBinding.KeyInfo.KeyName);
+                }
+            }
+
+            // Remove unused cbuffer
+            for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
+            {
+                var cbuffer = reflection.ConstantBuffers[i];
+                if (!usedConstantBuffers.Contains(cbuffer.Name))
+                {
+                    reflection.ConstantBuffers.RemoveAt(i);
                 }
             }
         }

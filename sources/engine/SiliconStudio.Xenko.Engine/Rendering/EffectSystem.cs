@@ -323,7 +323,9 @@ namespace SiliconStudio.Xenko.Rendering
 
                                 // Dispose previous effect
                                 var effect = cachedEffects[bytecode];
+                                //todo should be reference counted instead of disposed
                                 effect.Dispose();
+                                effect.SourceChanged = true;
 
                                 // Remove effect from cache
                                 cachedEffects.Remove(bytecode);

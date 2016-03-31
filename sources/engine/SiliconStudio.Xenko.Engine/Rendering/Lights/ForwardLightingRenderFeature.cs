@@ -825,7 +825,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public int ResourceCount;
 
-            public ShaderConstantBufferDescription ConstantBufferReflection;
+            public EffectConstantBufferDescription ConstantBufferReflection;
 
             private LightParametersPermutationEntry CreateParameterCollectionEntry()
             {

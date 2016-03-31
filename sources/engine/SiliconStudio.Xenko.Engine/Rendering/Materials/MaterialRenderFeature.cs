@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // PerMaterial
             public ResourceGroup Resources = new ResourceGroup();
             public int ResourceCount;
-            public ShaderConstantBufferDescription ConstantBufferReflection;
+            public EffectConstantBufferDescription ConstantBufferReflection;
         }
 
         /// <summary>

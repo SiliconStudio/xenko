@@ -23,14 +23,60 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
         }
 
-        public override void Draw(RenderContext gameTime)
+        private void CheckEmitters(RenderParticleSystem renderParticleSystem)
         {
+            if (renderParticleSystem == null)
+                return;
+
+            var emitters = renderParticleSystem.ParticleSystemComponent.ParticleSystem.Emitters;
+            var emitterCount = emitters.Count;
+
+            if (emitterCount == (renderParticleSystem.Emitters?.Length ?? 0))
+                return;
+
+            // Remove old emitters
+            if (renderParticleSystem.Emitters != null)
+            {
+                foreach (var renderEmitter in renderParticleSystem.Emitters)
+                {
+                    VisibilityGroup.RenderObjects.Remove(renderEmitter);
+                }
+            }
+
+            renderParticleSystem.Emitters = null;
+
+            // Add new emitters
+            var renderEmitters = new RenderParticleEmitter[emitterCount];
+            for (int index = 0; index < emitterCount; index++)
+            {
+                var renderEmitter = new RenderParticleEmitter
+                {
+                    ParticleEmitter = emitters[index],
+                    RenderParticleSystem = renderParticleSystem,
+                };
+
+                renderEmitters[index] = renderEmitter;
+                VisibilityGroup.RenderObjects.Add(renderEmitter);
+            }
+
+            renderParticleSystem.Emitters = renderEmitters;
+        }
+
+        public override void Draw(RenderContext context)
+        {
+            base.Draw(context);
+
             foreach (var componentData in ComponentDatas)
             {
+                var renderSystem = componentData.Value;
+
+                CheckEmitters(renderSystem);
+
+
                 // Update render objects
-                foreach (var emitter in componentData.Value.Emitters)
+                foreach (var emitter in renderSystem.Emitters)
                 {
-                    if ((emitter.Enabled = componentData.Value.ParticleSystemComponent.Enabled) == true)
+                    if ((emitter.Enabled = renderSystem.ParticleSystemComponent.Enabled) == true)
                     {
                         var aabb = emitter.RenderParticleSystem.ParticleSystemComponent.ParticleSystem.GetAABB();
                         emitter.BoundingBox = new BoundingBoxExt(aabb.Minimum, aabb.Maximum);

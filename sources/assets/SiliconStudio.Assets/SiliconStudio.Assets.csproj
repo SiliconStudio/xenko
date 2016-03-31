@@ -136,6 +136,7 @@
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />
+    <Compile Include="OverrideUpgraderHint.cs" />
     <Compile Include="Package.Constants.cs" />
     <Compile Include="PackageLoadedAssembly.cs" />
     <Compile Include="PackageDependency.cs" />
