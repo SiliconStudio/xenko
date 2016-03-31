@@ -41,7 +41,7 @@ namespace SiliconStudio.AssemblyProcessor
         public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, TextWriter log)
         {
             this.assembly = assembly;
-            this.assemblySerializerFactoryClassName = assembly.Name.Name.Replace(" ", string.Empty).Replace(".", string.Empty) + "SerializerFactory";
+            this.assemblySerializerFactoryClassName = Utilities.BuildValidClassName(assembly.Name.Name) + "SerializerFactory";
 
             // Register referenced assemblies serializer factory, so that we can call them recursively
             foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
