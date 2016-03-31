@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceMetalness"));
                 mixin.AddComposition("metalnessMap", computeColorSource);
                 context.UseStream(MaterialShaderStage.Pixel, "matSpecular");
-                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+                context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
             }
         }
     }

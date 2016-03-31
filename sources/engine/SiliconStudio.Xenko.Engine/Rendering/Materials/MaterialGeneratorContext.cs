@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 currentLayerContext = currentLayerContext.Parent;
             }
         }
-        public void AddSurfaceShader(MaterialShaderStage stage, ShaderSource shaderSource)
+        public void AddShaderSource(MaterialShaderStage stage, ShaderSource shaderSource)
         {
             if (shaderSource == null) throw new ArgumentNullException(nameof(shaderSource));
             currentLayerContext.GetContextPerStage(stage).ShaderSources.Add(shaderSource);
@@ -165,12 +165,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             return currentLayerContext.GetContextPerStage(stage).ShaderSources.Count > 0;
         }
 
-        public ShaderSource GenerateSurfaceShader(MaterialShaderStage stage)
+        public ShaderSource ComputeShaderSource(MaterialShaderStage stage)
         {
             return currentLayerContext.ComputeShaderSource(stage);
         }
 
-        public ShaderSource GenerateStreamInitializer(MaterialShaderStage stage)
+        public ShaderSource GenerateStreamInitializers(MaterialShaderStage stage)
         {
             return currentLayerContext.GenerateStreamInitializers(stage);
         }
