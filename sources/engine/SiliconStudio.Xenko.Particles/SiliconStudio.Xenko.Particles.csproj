@@ -108,6 +108,8 @@
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
     <Compile Include="Spawners\ParentControlFlag.cs" />
     <Compile Include="Spawners\ParticleChildrenAttribute.cs" />
+    <Compile Include="Spawners\ParticleSpawnTrigger.cs" />
+    <Compile Include="Spawners\ParticleSpawnTriggerCollision.cs" />
     <Compile Include="Spawners\SpawnerFromParent.cs" />
     <Compile Include="Updaters\ParticleCollisionAttribute.cs" />
     <Compile Include="Updaters\UpdaterColorOverTime.cs" />

@@ -110,6 +110,9 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             carryOver = 0f;
         }
 
+        [DataMember(45)]
+        public ParticleSpawnTrigger ParticleSpawnTrigger { get; set; }
+
         /// <summary>
         /// The amount of particles this spawner will emit when the event is triggered
         /// </summary>
@@ -163,7 +166,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             if (!spawnControlGroup.IsValid())
                 return;
 
-            var collisionControlFieldParent = parentPool.GetField(ParticleFields.CollisionControl);
+            ParticleSpawnTrigger?.PrepareFromPool(parentPool);
 
             var randomSeedFieldParent = parentPool.GetField(ParticleFields.RandomSeed);
 
@@ -171,18 +174,9 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
             foreach (var parentParticle in parentPool)
             {
-                var parentEventTriggered = false;
-                ParticleChildrenAttribute childrenAttribute = ParticleChildrenAttribute.Empty;
-
-                // Trigger event by parent's surface collision
-                if (collisionControlFieldParent.IsValid())
-                {
-                    var collisionAttribute = (*((ParticleCollisionAttribute*)parentParticle[collisionControlFieldParent]));
-                    parentEventTriggered |= collisionAttribute.HasColided;
-                }
-
-
                 uint particlesToEmit = 0;
+
+                var parentEventTriggered = ParticleSpawnTrigger?.HasTriggered(parentParticle) ?? false;
                 if (parentEventTriggered)
                 {
                     var particlesToEmitFloat = SpawnCount.X;
@@ -198,9 +192,11 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                     carryOver += (particlesToEmitFloat - particlesToEmit);
                 }
 
+
+                ParticleChildrenAttribute childrenAttribute = ParticleChildrenAttribute.Empty;
+
                 childrenAttribute.ParticlesToEmit = particlesToEmit;
                 totalParticlesToEmit += (int)particlesToEmit;
-
 
                 (*((ParticleChildrenAttribute*)parentParticle[spawnControlGroup])) = childrenAttribute;
             }
