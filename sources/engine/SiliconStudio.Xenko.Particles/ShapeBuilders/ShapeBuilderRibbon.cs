@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var Pt1 = positions[0];
                 var Pt2 = positions[sections];
 
-                var O1 = Vector3.Circumcenter(ref Pt0, ref Pt1, ref Pt2);
+                var O1 = Circumcenter(ref Pt0, ref Pt1, ref Pt2);
                 var R1 = (O1 - Pt1).Length();
 
                 var s1 = sizes[0];
@@ -262,7 +262,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 {
                     var Pt3 = (index + sections * 2 < lastParticle) ? positions[index + sections * 2] : Pt2;
                     var s3  = (index + sections * 2 < lastParticle) ? sizes[index + sections * 2] : 0f;
-                    var O2 = Vector3.Circumcenter(ref Pt1, ref Pt2, ref Pt3);
+                    var O2 = Circumcenter(ref Pt1, ref Pt2, ref Pt3);
                     var R2 = (O2 - Pt2).Length();
 
                     if (index + sections * 2 >= lastParticle)
@@ -370,9 +370,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 if (sections > 1)
                 {
-                    if (sections > 5)
+                    if (SmoothingPolicy == SmoothingPolicy.Best)
                         ExpandVertices_Circular();
-                    else
+                    else // if (SmoothingPolicy == SmoothingPolicy.Fast)
                         ExpandVertices_CatmullRom();
                 }
 

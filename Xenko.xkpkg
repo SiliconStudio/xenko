@@ -20,7 +20,7 @@ Profiles:
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
         - Path: sources/engine/SiliconStudio.Xenko.Particles/Shaders
 TemplateFolders:
-    - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates
+    - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core
       Group: Core
       Exclude: "**/*.cs;**/*.xaml"
       Files:
