@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             context.Parameters = material.Parameters;
             context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
-            context.PushLayer();
+            context.PushLayer(null);
             materialDescriptor.Visit(context);
             context.PopLayer();
             context.PopMaterial();
