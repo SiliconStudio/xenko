@@ -6,7 +6,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Presentation.Templates;
 using SiliconStudio.Xenko.Graphics;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace SiliconStudio.Xenko.SamplesBootstrapper
@@ -26,7 +25,7 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
 
             var logger = new LoggerResult();
 
-            var parameters = new TemplateGeneratorParameters { Session = session.Session };
+            var parameters = new SessionTemplateGeneratorParameters { Session = session.Session };
 
             var outputPath = UPath.Combine(new UDirectory(xenkoDir), new UDirectory("samplesGenerated"));
             outputPath = UPath.Combine(outputPath, new UDirectory(args[0]));
@@ -38,7 +37,11 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
             parameters.OutputDirectory = outputPath;
             parameters.Logger = logger;
 
-            generator.Generate(parameters);
+            if (!generator.PrepareForRun(parameters))
+                logger.Error("PrepareForRun returned false for the TemplateSampleGenerator");
+
+            if (!generator.Run(parameters))
+                logger.Error("Run returned false for the TemplateSampleGenerator");
 
             var updaterTemplate = xenkoTemplates.First(x => x.FullPath.ToString().EndsWith("UpdatePlatforms.xktpl"));
             parameters.Description = updaterTemplate;
@@ -48,17 +51,18 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
             var gameSettingsAsset = session.Session.Packages.Last().GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
 
-            var updateParams = new GameTemplateParameters
-            {
-                Common = parameters,
-                ForcePlatformRegeneration = true,
-                GraphicsProfile = renderingSettings.DefaultGraphicsProfile,
-                IsHDR = false,
-                Orientation = (DisplayOrientation) renderingSettings.DisplayOrientation,
-                Platforms = AssetRegistry.SupportedPlatforms.ToList()
-            };
+            var updateParams = new PackageTemplateGeneratorParameters();
 
-            updater.Generate(updateParams);
+            UpdatePlatformsTemplateGenerator.SetForcePlatformRegeneration(updateParams, true);
+            UpdatePlatformsTemplateGenerator.SetOrientation(updateParams, (DisplayOrientation)renderingSettings.DisplayOrientation);
+            UpdatePlatformsTemplateGenerator.SetPlatforms(updateParams, AssetRegistry.SupportedPlatforms.ToList());
+            UpdatePlatformsTemplateGenerator.SetDontAskForPlatforms(updateParams, true);
+            
+            if (!updater.PrepareForRun(updateParams))
+                logger.Error("PrepareForRun returned false for the UpdatePlatformsTemplateGenerator");
+
+            if (!updater.Run(updateParams))
+                logger.Error("Run returned false for the UpdatePlatformsTemplateGenerator");
 
             Console.WriteLine(logger.ToText());
 
