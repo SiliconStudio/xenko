@@ -22,6 +22,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets the name of the class.
         /// </summary>
         /// <value>The name of the class.</value>
+        [DataMember(10)]
         public string ClassName { get; set; }
 
         /// <summary>
@@ -29,9 +30,11 @@ namespace SiliconStudio.Xenko.Shaders
         /// </summary>
         /// <value>The generic parameters.</value>
         [DefaultValue(null), DataStyle(DataStyle.Compact)]
+        [DataMember(20)]
         public string[] GenericArguments { get; set; }
 
         [DefaultValue(null)]
+        [DataMember(30)]
         public Dictionary<string, string> GenericParametersArguments { get; set; }
 
         /// <summary>
