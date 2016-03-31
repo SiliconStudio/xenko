@@ -190,10 +190,8 @@ namespace SiliconStudio.Xenko.Assets
                     }
 
                     // Create asset
-                    var gameSettingsAsset = new GameSettingsAsset
-                    {
-                        DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location)
-                    };
+                    var gameSettingsAsset = GameSettingsFactory.Create();
+                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location);
 
                     var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
                     renderingSettings.DisplayOrientation = (RequiredDisplayOrientation) Get(packageSharedProfile.Properties, DisplayOrientation);

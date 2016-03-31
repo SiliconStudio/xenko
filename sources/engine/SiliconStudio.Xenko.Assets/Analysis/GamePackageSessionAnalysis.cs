@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                 {
                     log.Error(package, null, AssetMessageCode.AssetNotFound, GameSettingsAsset.GameSettingsLocation);
 
-                    var gameSettingsAsset = new GameSettingsAsset();
+                    var gameSettingsAsset = GameSettingsFactory.Create();
 
                     gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location);
 
