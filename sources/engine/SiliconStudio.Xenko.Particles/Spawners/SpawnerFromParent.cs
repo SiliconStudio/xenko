@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.Updaters;
 
 namespace SiliconStudio.Xenko.Particles.Spawners
@@ -27,7 +28,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private bool isParentNameDirty = true;
 
-        [DataMember(12)]
+        [DataMember(30)]
         [Display("Parent emitter")]
         public string ParentName
         {
@@ -43,7 +44,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <summary>
         /// Some initializers require fine control between parent and child emitters. Use the control group to assign such meta-fields.
         /// </summary>
-        [DataMember(13)]
+        [DataMember(40)]
         [Display("Spawn Control Group")]
         public ParentControlFlag ParentControlFlag
         {
@@ -98,26 +99,26 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         private float carryOver;
 
         [DataMemberIgnore]
-        private float spawnCount;
+        private Vector2 spawnCount;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public SpawnerFromParent()
         {
-            spawnCount = 100f;
-            carryOver = 0;
+            spawnCount = new Vector2(2, 5);
+            carryOver = 0f;
         }
 
         /// <summary>
-        /// The amount of particles this spawner will emit over one second, every second
+        /// The amount of particles this spawner will emit when the event is triggered
         /// </summary>
         /// <userdoc>
-        /// The amount of particles this spawner will emit over one second, every second
+        /// The amount of particles this spawner will emit when the event is triggered
         /// </userdoc>
-        [DataMember(40)]
-        [Display("Particles/second")]
-        public float SpawnCount
+        [DataMember(50)]
+        [Display("Particles/trigger")]
+        public Vector2 SpawnCount
         {
             get { return spawnCount; }
             set
@@ -130,7 +131,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <inheritdoc />
         public override int GetMaxParticlesPerSecond()
         {
-            return (int)Math.Ceiling(SpawnCount);
+            return (int)Math.Ceiling(Math.Max(SpawnCount.X, SpawnCount.Y));
         }
 
         /// <inheritdoc />
@@ -164,6 +165,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
             var collisionControlFieldParent = parentPool.GetField(ParticleFields.CollisionControl);
 
+            var randomSeedFieldParent = parentPool.GetField(ParticleFields.RandomSeed);
+
             int totalParticlesToEmit = 0;
 
             foreach (var parentParticle in parentPool)
@@ -182,8 +185,17 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                 uint particlesToEmit = 0;
                 if (parentEventTriggered)
                 {
-                    // TODO Not-hardcoded
-                    particlesToEmit = 5;
+                    var particlesToEmitFloat = SpawnCount.X;
+
+                    if (randomSeedFieldParent.IsValid())
+                    {
+                        var randSeed = parentParticle.Get(randomSeedFieldParent);
+
+                        particlesToEmitFloat = (SpawnCount.X + (SpawnCount.Y - SpawnCount.X) * randSeed.GetFloat(0));
+                    }
+
+                    particlesToEmit = (uint) Math.Floor(particlesToEmitFloat + carryOver);
+                    carryOver += (particlesToEmitFloat - particlesToEmit);
                 }
 
                 childrenAttribute.ParticlesToEmit = particlesToEmit;
