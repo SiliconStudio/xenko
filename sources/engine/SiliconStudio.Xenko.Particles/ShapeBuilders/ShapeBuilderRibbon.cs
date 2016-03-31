@@ -370,9 +370,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 if (sections > 1)
                 {
-                    if (sections > 5)
+                    if (SmoothingPolicy == SmoothingPolicy.Best)
                         ExpandVertices_Circular();
-                    else
+                    else // if (SmoothingPolicy == SmoothingPolicy.Fast)
                         ExpandVertices_CatmullRom();
                 }
 
