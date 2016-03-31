@@ -251,6 +251,12 @@ namespace SiliconStudio.Xenko.Games
         public bool IsFixedTimeStep { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this instance should force exactly one update step per one draw step
+        /// </summary>
+        /// <value><c>true</c> if this instance forces one update step per one draw step; otherwise, <c>false</c>.</value>
+        internal protected bool ForceOneUpdatePerDraw { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether draw can happen as fast as possible, even when <see cref="IsFixedTimeStep"/> is set.
         /// </summary>
         /// <value><c>true</c> if this instance allows desychronized drawing; otherwise, <c>false</c>.</value>
@@ -560,8 +566,15 @@ namespace SiliconStudio.Xenko.Games
                     accumulatedElapsedGameTime += elapsedAdjustedTime;
 
                     // Calculate the number of update to issue
-                    updateCount = (int)(accumulatedElapsedGameTime.Ticks/TargetElapsedTime.Ticks);
-
+                    if (ForceOneUpdatePerDraw)
+                    {
+                        updateCount = 1;
+                    }
+                    else
+                    {
+                        updateCount = (int)(accumulatedElapsedGameTime.Ticks / TargetElapsedTime.Ticks);
+                    }
+                    
                     if (IsDrawDesynchronized)
                     {
                         drawLag = accumulatedElapsedGameTime.Ticks%TargetElapsedTime.Ticks;
@@ -601,6 +614,7 @@ namespace SiliconStudio.Xenko.Games
                 bool beginDrawSuccessful = false;
                 try
                 {
+                    
                     beginDrawSuccessful = BeginDraw();
 
                     // Reset the time of the next frame

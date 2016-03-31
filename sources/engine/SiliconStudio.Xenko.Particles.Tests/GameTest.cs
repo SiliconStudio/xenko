@@ -52,7 +52,9 @@ namespace SiliconStudio.Xenko.Particles.Tests
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1, };
             
             IsFixedTimeStep = true;
-           // This still doesn't work IsDrawDesynchronized = false; // Double negation!
+            ForceOneUpdatePerDraw = true;
+            IsDrawDesynchronized = false;
+            // This still doesn't work IsDrawDesynchronized = false; // Double negation!
             TargetElapsedTime = TimeSpan.FromTicks(10000000 / 60); // target elapsed time is by default 60Hz
         }
 
