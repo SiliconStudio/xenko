@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.Spawners;
@@ -132,8 +131,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-
-        // TODO Parent control flag -> used for random or controlled spawning
         
         /// <summary>
         /// The seed offset used to match or separate random values
