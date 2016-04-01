@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
     /// <see cref="ParticleSpawnTriggerCollision"/> triggers when the parent particle collides with a surface
     /// </summary>
     [DataContract("ParticleSpawnTriggerCollision")]
+    [Display("On Hit")]
     public class ParticleSpawnTriggerCollision : ParticleSpawnTrigger<ParticleCollisionAttribute>
     {
         public override void PrepareFromPool(ParticlePool pool)
