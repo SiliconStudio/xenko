@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var Pt1 = positions[0];
                 var Pt2 = positions[sections];
 
-                var O1 = Vector3.Circumcenter(ref Pt0, ref Pt1, ref Pt2);
+                var O1 = Circumcenter(ref Pt0, ref Pt1, ref Pt2);
                 var R1 = (O1 - Pt1).Length();
 
                 var d1 = directions[0];
@@ -260,7 +260,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 {
                     var Pt3 = (index + sections * 2 < lastParticle) ? positions[index + sections * 2] : Pt2;
                     var d3 = (index + sections * 2 < lastParticle) ? directions[index + sections * 2] : new Vector3(0f, 0f, 0f);
-                    var O2 = Vector3.Circumcenter(ref Pt1, ref Pt2, ref Pt3);
+                    var O2 = Circumcenter(ref Pt1, ref Pt2, ref Pt3);
                     var R2 = (O2 - Pt2).Length();
 
                     if (index + sections * 2 >= lastParticle)

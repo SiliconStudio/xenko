@@ -10,6 +10,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     public interface IMaterialShadingModelFeature : IMaterialFeature, IEquatable<IMaterialShadingModelFeature>
     {
+        /// <summary>
+        /// A boolean indicating whether this material depends on the lighting.
+        /// </summary>
         bool IsLightDependent { get; }
     }
 }

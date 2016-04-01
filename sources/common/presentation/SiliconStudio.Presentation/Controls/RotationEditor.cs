@@ -41,6 +41,11 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float Z { get { return (float)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
 
+        public override void ResetValue()
+        {
+            Value = Quaternion.Identity;
+        }
+
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Quaternion value)
         {
