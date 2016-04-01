@@ -41,7 +41,7 @@ Example of use:
   <!--
   Package Launcher
   -->
-  <Target Name="PackageLauncher">
+  <Target Name="PackageLauncher" DependsOnTargets="LauncherPrerequisitesInstaller">
     <ItemGroup>
       <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.Launcher*.nupkg"/>
     </ItemGroup>
@@ -88,7 +88,15 @@ Example of use:
     <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\prerequisites.aip"'/>
     <Copy SourceFiles="$(XenkoRoot)sources\install\Prerequisites\install-prerequisites.exe" DestinationFolder="$(XenkoRoot)Bin\Prerequisites"/>
   </Target>
-  
+
+  <!--
+  Package Installer: launcher-prerequisites.exe
+  -->
+  <Target Name="LauncherPrerequisitesInstaller">
+    <Delete Files="$(XenkoRoot)Bin\Prerequisites\launcher-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\launcher-prerequisites.aip"'/>
+  </Target>
+
   <!--
   Perform a full build: Build, Package and PackageInstaller
   -->
