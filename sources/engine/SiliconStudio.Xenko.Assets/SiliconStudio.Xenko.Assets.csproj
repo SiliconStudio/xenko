@@ -89,6 +89,8 @@
       <HintPath>..\..\..\build\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="VHACDSharp">
       <HintPath>..\..\..\deps\VHACD\VHACDSharp.dll</HintPath>
     </Reference>
