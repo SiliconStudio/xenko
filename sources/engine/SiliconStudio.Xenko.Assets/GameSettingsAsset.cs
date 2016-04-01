@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(2000)]
         [NotNullItems]
-        [MemberCollectionAttribute(ReadOnly = true)]
+        [MemberCollection(ReadOnly = true)]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
 
         [DataMember(3000)]
