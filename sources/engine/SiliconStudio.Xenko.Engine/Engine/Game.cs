@@ -269,27 +269,35 @@ namespace SiliconStudio.Xenko.Engine
 
                     if (renderingSettings.AdaptBackBufferToScreen)
                     {
-                        var currentAr = Window.ClientBounds.Width/(float)Window.ClientBounds.Height;
-                        var requiredAr = renderingSettings.DefaultBackBufferWidth/(float)renderingSettings.DefaultBackBufferHeight;
-                        var arDiff = currentAr - requiredAr;
-                        if (Math.Abs(arDiff) > 0.01f)
+                        var deviceAr = Window.ClientBounds.Width/(float)Window.ClientBounds.Height;
+
+                        if (renderingSettings.DefaultBackBufferHeight > renderingSettings.DefaultBackBufferWidth)
                         {
-                            // Pillarbox 
-                            if (arDiff > 0.0f)
+                            //if our device height is actually smaller then requested we use the device one
+                            if (renderingSettings.DefaultBackBufferHeight > Window.ClientBounds.Height)
                             {
-                                //if our device size is bigger use the one we proposed as default, if not use device one.
-                                //var newHeight = Window.ClientBounds.Height > renderingSettings.DefaultBackBufferHeight ? renderingSettings.DefaultBackBufferHeight : Window.ClientBounds.Height;
-                                var newWidth = (float)Math.Max(1.0f, Math.Round(Window.ClientBounds.Height*requiredAr));
-                                deviceManager.PreferredBackBufferWidth = (int)newWidth;
-                                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Window.ClientBounds.Height;
                             }
-                            // Letterbox
                             else
                             {
-                                var newHeight = (float)Math.Max(1.0f, Math.Round(Window.ClientBounds.Width/requiredAr));
-                                deviceManager.PreferredBackBufferHeight = (int)newHeight;
+                                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                            }
+
+                            deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
+                        }
+                        else
+                        {
+                            //if our device height is actually smaller then requested we use the device one
+                            if (renderingSettings.DefaultBackBufferWidth > Window.ClientBounds.Width)
+                            {
+                                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Window.ClientBounds.Width;
+                            }
+                            else
+                            {
                                 deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
                             }
+
+                            deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
                         }
                     }
                     else
