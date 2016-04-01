@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                         parentParticleOrder = (*((uint*)parentParticle[orderFieldParent]));
                     }
 
-                    particleOrder = (particleOrder & 0x0000FFFF) | ((parentParticleOrder << 16) & 0xFFFF0000);
+                    particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
                 }
 
                 (*((uint*)particle[orderField])) = particleOrder;
