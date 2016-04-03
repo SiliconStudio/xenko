@@ -226,8 +226,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                             continue;
 
+                        var renderModel = renderMesh.RenderModel;
+                        var modelComponent = renderModel.ModelComponent;
+                        var isShadowReceiver = renderMesh.IsShadowReceiver && modelComponent.IsShadowReceiver;
+
                         // TODO GRAPHICS REFACTOR: Shader permutations can be collected per-object. Only parameter permutations need to be per-view-object.
-                        var renderObjectInfo = PrepareRenderMeshForRendering(renderViewData, renderMesh, renderEffect, effectSlotCount);
+                        var renderObjectInfo = PreparePermutationEntryForRendering(renderViewData, isShadowReceiver, ref modelComponent.BoundingBox, modelComponent.Entity.Group, effectSlotCount);
+                        renderObjectInfo.ApplyEffectPermutations(renderEffect);
                         renderViewObjectInfoData[renderPerViewNodeReference] = renderObjectInfo;
 
                         if (renderObjectInfo == null)
@@ -467,15 +472,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private LightParametersPermutationEntry PrepareRenderMeshForRendering(RenderViewLightData renderViewData, RenderMesh renderMesh, RenderEffect renderEffect, int effectSlot)
+        private LightParametersPermutationEntry PreparePermutationEntryForRendering(RenderViewLightData renderViewData, bool isShadowReceiver, ref BoundingBox boundingBox, EntityGroup group, int effectSlot)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
-
-            var renderModel = renderMesh.RenderModel;
-            var modelComponent = renderModel.ModelComponent;
-            var group = modelComponent.Entity.Group;
-            var boundingBox = modelComponent.BoundingBox;
 
             directLightsPerMesh.Clear();
             directLightShaderGroupEntryKeys.Clear();
@@ -485,7 +485,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Create different parameter collections depending on shadows
             // TODO GRAPHICS REFACTOR can we use the same parameter collection for shadowed/non-shadowed?
-            var isShadowReceiver = renderMesh.IsShadowReceiver && modelComponent.IsShadowReceiver;
             parametersKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
             shaderKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
             shaderKeyIdBuilder.Write((uint)effectSlot);
@@ -606,7 +605,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             LightShaderPermutationEntry newLightShaderPermutationEntry;
             if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
             {
-                newLightShaderPermutationEntry = CreateShaderPermutationEntry(renderEffect);
+                newLightShaderPermutationEntry = CreateShaderPermutationEntry();
                 shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
             }
 
@@ -618,14 +617,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
             }
 
-            newShaderEntryParameters.ApplyEffectPermutations(renderEffect);
-
             return newShaderEntryParameters;
         }
 
-        private LightShaderPermutationEntry CreateShaderPermutationEntry(RenderEffect renderEffect)
+        private LightShaderPermutationEntry CreateShaderPermutationEntry()
         {
-            var shaderEntry = new LightShaderPermutationEntry(renderEffect);
+            var shaderEntry = new LightShaderPermutationEntry();
 
             // Direct Lights (with or without shadows)
             for (int i = 0; i < directLightShaderGroupEntryKeys.Count; i++)
@@ -782,9 +779,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightShaderPermutationEntry
         {
-            public LightShaderPermutationEntry(RenderEffect renderEffect)
+            public LightShaderPermutationEntry()
             {
-                RenderEffect = renderEffect;
                 ParameterCollectionEntryPool = new PoolListStruct<LightParametersPermutationEntry>(1, CreateParameterCollectionEntry);
 
                 DirectLightGroups = new List<LightShaderGroup>();
