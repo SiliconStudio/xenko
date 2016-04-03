@@ -528,6 +528,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 else
                 {
                     ILightShadowMapRenderer currentShadowRenderer = null;
+                    bool hasDirectLight = false;
 
                     for (int i = 0; i < lightMaxCount; i++)
                     {
@@ -549,8 +550,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                             newShadowRenderer = (ILightShadowMapRenderer)shadowTexture.Renderer;
                         }
 
-                        if (i == 0)
+                        if (!hasDirectLight)
                         {
+                            hasDirectLight = true;
                             currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType);
                             currentShadowRenderer = newShadowRenderer;
                         }
@@ -580,7 +582,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         directLightsPerMesh.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, light, shadowTexture));
                     }
 
-                    if (directLightsPerMesh.Count > 0)
+                    if (hasDirectLight)
                     {
                         unsafe
                         {
