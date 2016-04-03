@@ -231,7 +231,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         var isShadowReceiver = renderMesh.IsShadowReceiver && modelComponent.IsShadowReceiver;
 
                         // TODO GRAPHICS REFACTOR: Shader permutations can be collected per-object. Only parameter permutations need to be per-view-object.
-                        var renderObjectInfo = PreparePermutationEntryForRendering(renderViewData, isShadowReceiver, ref modelComponent.BoundingBox, modelComponent.Entity.Group, effectSlotCount);
+                        var renderObjectInfo = PreparePermutationEntryForRendering(renderViewData, isShadowReceiver, ref modelComponent.BoundingBox, modelComponent.Entity.Group, i);
                         renderObjectInfo.ApplyEffectPermutations(renderEffect);
                         renderViewObjectInfoData[renderPerViewNodeReference] = renderObjectInfo;
 
