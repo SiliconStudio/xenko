@@ -103,8 +103,7 @@ namespace SiliconStudio.ActionStack
             var items = new[] { item };
             if (UndoRedoInProgress)
             {
-                OnActionItemsDiscarded(new DiscardedActionItemsEventArgs<IActionItem>(ActionItemDiscardType.UndoRedoInProgress, items));
-                return;
+                throw new InvalidOperationException("Cannot add an action item when undoing/redoing.");
             }
 
             InternalAddRange(items);
