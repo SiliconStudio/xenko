@@ -31,12 +31,15 @@
     <Compile Include="Components\StateControl.cs" />
     <Compile Include="DebugDraw\DebugDrawShape.cs" />
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
+    <Compile Include="Initializers\InitialColorParent.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitialDefaultFields.cs" />
     <Compile Include="Initializers\InitialDirectionSeed.cs" />
     <Compile Include="Initializers\InitialOrderParent.cs" />
     <Compile Include="Initializers\InitialPositionParent.cs" />
+    <Compile Include="Initializers\InitialSizeParent.cs" />
     <Compile Include="Initializers\InitialSpawnOrder.cs" />
+    <Compile Include="Initializers\InitialVelocityParent.cs" />
     <Compile Include="Initializers\ParticleChildInitializer.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />

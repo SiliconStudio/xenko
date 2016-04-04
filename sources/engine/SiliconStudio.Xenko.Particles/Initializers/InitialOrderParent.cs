@@ -32,6 +32,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             var parentPool = Parent?.Pool;
             var parentParticlesCount = parentPool?.LivingParticles ?? 0;
             var orderFieldParent = parentPool?.GetField(ParticleFields.Order) ?? ParticleFieldAccessor<uint>.Invalid();
+            var childOrderFieldParent = parentPool?.GetField(ParticleFields.ChildOrder) ?? ParticleFieldAccessor<uint>.Invalid();
             if (!orderFieldParent.IsValid())
             {
                 parentParticlesCount = 0;
@@ -82,6 +83,18 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
                         var parentParticle = parentPool.FromIndex(parentIndex);
                         parentParticleOrder = (*((uint*)parentParticle[orderFieldParent]));
+
+                        if (childOrderFieldParent.IsValid())
+                        {
+                            particleOrder = (*((uint*)parentParticle[childOrderFieldParent]));
+                            (*((uint*)parentParticle[childOrderFieldParent])) = (particleOrder + 1);
+
+                            particleOrder = (particleOrder & 0x0000FFFF) | ((parentParticleOrder << 16) & 0xFFFF0000);
+                        }
+                        else
+                        {
+                            particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
+                        }
                     }
                     else
                     {
@@ -91,9 +104,19 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
                         var parentParticle = parentPool.FromIndex(parentIndex);
                         parentParticleOrder = (*((uint*)parentParticle[orderFieldParent]));
-                    }
 
-                    particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
+                        if (childOrderFieldParent.IsValid())
+                        {
+                            particleOrder = (*((uint*)parentParticle[childOrderFieldParent]));
+                            (*((uint*)parentParticle[childOrderFieldParent])) = (particleOrder + 1);
+
+                            particleOrder = (particleOrder & 0x0000FFFF) | ((parentParticleOrder << 16) & 0xFFFF0000);
+                        }
+                        else
+                        {
+                            particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
+                        }
+                    }
                 }
 
                 (*((uint*)particle[orderField])) = particleOrder;
@@ -101,5 +124,19 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
+
+
+        /// <inheritdoc />
+        protected override void RemoveControlGroup()
+        {
+            Parent?.RemoveRequiredField(ParticleFields.ChildOrder);
+        }
+
+        /// <inheritdoc />
+        protected override void AddControlGroup()
+        {
+            Parent?.AddRequiredField(ParticleFields.ChildOrder);
+        }
+
     }
 }

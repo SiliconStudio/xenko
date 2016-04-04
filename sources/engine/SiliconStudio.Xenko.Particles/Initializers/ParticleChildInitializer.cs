@@ -74,7 +74,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             if (isParentNameDirty)
             {
+                RemoveControlGroup();
+
                 Parent = parentSystem?.GetEmitterByName(ParentName);
+
+                AddControlGroup();
 
                 isParentNameDirty = false;
             }
@@ -85,8 +89,28 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         {
             base.InvalidateRelations();
 
+            RemoveControlGroup();
+
             Parent = null;
             isParentNameDirty = true;
+        }
+
+
+        /// <summary>
+        /// Removes the old required control group field from the parent emitter's pool
+        /// </summary>
+        protected virtual void RemoveControlGroup()
+        {
+            // TODO Remove required fields from the parent
+        }
+
+
+        /// <summary>
+        /// Adds the required control group field to the parent emitter's pool
+        /// </summary>
+        protected virtual void AddControlGroup()
+        {
+            // TODO Add required fields to the parent
         }
     }
 }

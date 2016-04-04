@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             spawnOrder = 0;
 
             RequiredFields.Add(ParticleFields.Order);
+            //RequiredFields.Add(ParticleFields.ChildOrder);
         }
 
         /// <inheritdoc />
@@ -33,14 +34,17 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 return;
 
             var orderField = pool.GetField(ParticleFields.Order);
+            var childOrderField = pool.GetField(ParticleFields.ChildOrder);
 
             var i = startIdx;
             while (i != endIdx)
             {
                 var particle = pool.FromIndex(i);
 
-
                 (*((uint*)particle[orderField])) = spawnOrder++; // Will loop every so often, but the loop condition should be unreachable for normal games
+
+                if (childOrderField.IsValid())
+                    (*((uint*)particle[childOrderField])) = 0;
 
                 i = (i + 1) % maxCapacity;
             }

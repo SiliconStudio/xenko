@@ -75,6 +75,11 @@ namespace SiliconStudio.Xenko.Particles
         public static readonly ParticleFieldDescription<uint> Order           = new ParticleFieldDescription<uint>("Order", 0);
 
         /// <summary>
+        /// Order of the particle's children, which is based on their spawn order
+        /// </summary>
+        public static readonly ParticleFieldDescription<uint> ChildOrder = new ParticleFieldDescription<uint>("ChildOrder", 0);
+
+        /// <summary>
         /// Provides control flags for particles which have collision enabled
         /// </summary>
         public static readonly ParticleFieldDescription<ParticleCollisionAttribute> CollisionControl = new ParticleFieldDescription<ParticleCollisionAttribute>("CollisionControl", ParticleCollisionAttribute.Empty);
