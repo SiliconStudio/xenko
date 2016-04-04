@@ -2,14 +2,15 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialSurfaceBlendShading : MaterialSurfaceArray, MaterialPixelShadingStream
+    class MaterialSurfaceShadingBlend : MaterialSurfaceArray, MaterialPixelShadingStream
     {
         override void Compute()
         {
             var backupShadingColor = streams.shadingColor;
+			var blending = streams.matBlend;
             streams.shadingColor = 0;
             base.Compute();
-            streams.shadingColor = lerp(backupShadingColor, streams.shadingColor, streams.matBlend);
+            streams.shadingColor = lerp(backupShadingColor, streams.shadingColor, blending);
         }
     };
 }

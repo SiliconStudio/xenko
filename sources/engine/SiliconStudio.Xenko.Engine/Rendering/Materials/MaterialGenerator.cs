@@ -31,18 +31,18 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             context.Parameters = material.Parameters;
             context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
-            context.PushLayer();
+            context.PushLayer(null);
             materialDescriptor.Visit(context);
             context.PopLayer();
             context.PopMaterial();
 
-            material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Vertex));
-            material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Domain));
-            material.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Pixel));
+            material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Vertex));
+            material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Domain));
+            material.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Pixel));
 
-            material.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Vertex));
-            material.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Domain));
-            material.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Pixel));
+            material.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Vertex));
+            material.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Domain));
+            material.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Pixel));
 
             return result;
         }

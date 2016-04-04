@@ -30,6 +30,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets or sets the name of the xkfx effect linked to this node.
         /// </summary>
         /// <value>The name of the xkfx effect.</value>
+        [DataMember(0)]
         [DefaultValue(null)]
         public string Name { get; set; }
 
@@ -47,19 +48,22 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets or sets the mixins.
         /// </summary>
         /// <value>The mixins.</value>
+        [DataMember(10)]
         public List<ShaderClassSource> Mixins { get; set; }
-
-        /// <summary>
-        /// Gets or sets the macros.
-        /// </summary>
-        /// <value>The macros.</value>
-        public List<ShaderMacro> Macros { get; set; }
 
         /// <summary>
         /// Gets or sets the compositions.
         /// </summary>
         /// <value>The compositions.</value>
+        [DataMember(20)]
         public Core.Collections.SortedList<string, ShaderSource> Compositions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the macros.
+        /// </summary>
+        /// <value>The macros.</value>
+        [DataMember(30)]
+        public List<ShaderMacro> Macros { get; set; }
 
         /// <summary>
         /// Adds a composition to this mixin.

@@ -3,39 +3,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Assets;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    // TODO REWRITE AND COMMENT THIS CLASS
+    /// <summary>
+    /// Main entry point class for generating shaders from a <see cref="MaterialDescriptor"/>
+    /// </summary>
     public class MaterialGeneratorContext : ShaderGeneratorContext
     {
-        private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
-        private int shadingModelCount;
-
-        private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> inputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
-
         public delegate void MaterialGeneratorCallback(MaterialShaderStage stage, MaterialGeneratorContext context);
+
+        private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
+
+        private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> finalInputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
+
         private readonly Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>> finalCallbacks = new Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>>();
 
-        private readonly Material material;
+        private readonly Stack<IMaterialDescriptor> materialStack = new Stack<IMaterialDescriptor>();
 
+        private MaterialBlendLayerContext currentLayerContext;
 
-        private Stack<IMaterialDescriptor> materialStack = new Stack<IMaterialDescriptor>();
-
+        /// <summary>
+        /// Initializes a new instance of <see cref="MaterialGeneratorContext"/>.
+        /// </summary>
+        /// <param name="material"></param>
         public MaterialGeneratorContext(Material material = null)
         {
-            this.material = material ?? new Material();
-            Parameters = this.material.Parameters;
+            this.Material = material ?? new Material();
+            Parameters = this.Material.Parameters;
 
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
             {
@@ -47,26 +45,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             GetAssetFriendlyName = asset => ((Material)asset).Descriptor != null ? ((Material)asset).Descriptor.MaterialId.ToString() : string.Empty;
         }
 
-        public Dictionary<MaterialShaderStage, HashSet<string>> Streams
-        {
-            get
-            {
-                return Current.Streams;
-            }
-        }
-
-        public Material Material
-        {
-            get
-            {
-                return material;
-            }
-        }
-
-        private MaterialBlendLayerNode Current { get; set; }
-
-        private MaterialShadingModelCollection CurrentShadingModel { get; set; }
-
+        /// <summary>
+        /// Gets the compiled Material
+        /// </summary>
+        public Material Material { get; }
 
         public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback)
         {
@@ -79,26 +61,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 return;
 
             var typeT = typeof(T);
-            inputStreamModifiers[new KeyValuePair<MaterialShaderStage, Type>(stage, typeT)] = shaderSource;
+            finalInputStreamModifiers[new KeyValuePair<MaterialShaderStage, Type>(stage, typeT)] = shaderSource;
         }
 
         public ShaderSource GetStreamFinalModifier<T>(MaterialShaderStage stage)
         {
             ShaderSource shaderSource = null;
-            inputStreamModifiers.TryGetValue(new KeyValuePair<MaterialShaderStage, Type>(stage, typeof(T)), out shaderSource);
+            finalInputStreamModifiers.TryGetValue(new KeyValuePair<MaterialShaderStage, Type>(stage, typeof(T)), out shaderSource);
             return shaderSource;
-        }
-
-
-
-        public void PushLayer()
-        {
-            var newLayer = new MaterialBlendLayerNode(this, Current);
-            if (Current != null)
-            {
-                Current.Children.Add(newLayer);
-            }
-            Current = newLayer;
         }
 
         /// <summary>
@@ -110,7 +80,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <exception cref="System.ArgumentNullException">materialDescriptor</exception>
         public bool PushMaterial(IMaterialDescriptor materialDescriptor, string materialName)
         {
-            if (materialDescriptor == null) throw new ArgumentNullException("materialDescriptor");
+            if (materialDescriptor == null) throw new ArgumentNullException(nameof(materialDescriptor));
             bool hasErrors = false;
             foreach (var previousMaterial in materialStack)
             {
@@ -138,144 +108,77 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             return materialStack.Pop();
         }
 
+        /// <summary>
+        /// Pushes a new layer with the specified blend map.
+        /// </summary>
+        /// <param name="blendMap">The blend map used by this layer.</param>
+        public void PushLayer(IComputeScalar blendMap)
+        {
+            // We require a blend layer expect for the top level one.
+            if (currentLayerContext != null && blendMap == null)
+            {
+                throw new ArgumentNullException(nameof(blendMap), "Blendmap parameter cannot be null for a child layer");
+            }
+
+            var newLayer = new MaterialBlendLayerContext(this, currentLayerContext, blendMap);
+            if (currentLayerContext != null)
+            {
+                currentLayerContext.Children.Add(newLayer);
+            }
+            currentLayerContext = newLayer;
+        }
+
+        /// <summary>
+        /// Pops the current layer.
+        /// </summary>
         public void PopLayer()
         {
-            // If current shading model is not set, 
-            if (CurrentShadingModel == null && Current.ShadingModels.Count > 0)
+            if (currentLayerContext == null)
             {
-                CurrentShadingModel = Current.ShadingModels;
+                throw new InvalidOperationException("Cannot PopLayer when no balancing PushLayer was called");
             }
 
-            var sameShadingModel = Current.ShadingModels.Equals(CurrentShadingModel);
-            if (!sameShadingModel)
+            // If we are poping the last layer, so we can process all layers
+            if (currentLayerContext.Parent == null)
             {
-                shadingModelCount++;
+                ProcessLayer(currentLayerContext, true);
             }
-            
-            var shouldBlendShadingModels = CurrentShadingModel != null && (!sameShadingModel || Current.Parent == null); // current shading model different from next shading model
-
-            // --------------------------------------------------------------------
-            // Copy the shading surfaces and the stream initializer to the parent.
-            // --------------------------------------------------------------------
-            if (Current.Parent != null)
+            else
             {
-                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
-                {
-                    // the Initializers
-                    Current.Parent.StreamInitializers[stage].AddRange(Current.StreamInitializers[stage]);
-
-                    // skip pixel shader if shading model need to be blended
-                    if (stage == MaterialShaderStage.Pixel && shouldBlendShadingModels)
-                        continue;
-
-                    // the surface shaders
-                    Current.Parent.SurfaceShaders[stage].AddRange(Current.SurfaceShaders[stage]);
-                }
-            }
-
-            // -------------------------------------------------
-            // Blend shading models between layers if necessary
-            // -------------------------------------------------
-            if (shouldBlendShadingModels)
-            {
-                var shadingSources = CurrentShadingModel.Generate(this);
-
-                // If we are in a multi-shading-blending, only blend shading models after 1st shading model
-                if (shadingModelCount > 1)
-                {
-                    var shaderBlendingSource = new ShaderMixinSource();
-                    shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceBlendShading"));
-
-                    foreach (var shaderSource in shadingSources)
-                    {
-                        shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
-                    }
-
-                    shadingSources = new List<ShaderSource>() { shaderBlendingSource };
-                }
-
-                var currentOrParentLayer = Current.Parent ?? Current;
-                foreach (var shaderSource in shadingSources)
-                {
-                    currentOrParentLayer.SurfaceShaders[MaterialShaderStage.Pixel].Add(shaderSource);
-                }
-            }
-
-            // In case of the root material, add all stream modifiers just at the end and call final callbacks
-            if (Current.Parent == null)
-            {
-                foreach (var modifierKey in inputStreamModifiers.Keys)
-                {
-                    Current.SurfaceShaders[modifierKey.Key].Add(inputStreamModifiers[modifierKey]);
-                }
-
-                // Clear final callback
-                foreach (var callbackKeyPair in finalCallbacks)
-                {
-                    var stage = callbackKeyPair.Key;
-                    var callbacks = callbackKeyPair.Value;
-                    foreach (var callback in callbacks)
-                    {
-                        callback(stage, this);
-                    }
-                    callbacks.Clear();
-                }
-            }
-
-            // ----------------------------------------------
-            // Pop to Parent and set Current
-            // ----------------------------------------------
-            if (Current.Parent != null && !sameShadingModel)
-            {
-                CurrentShadingModel = Current.ShadingModels;
-            }
-
-            if (Current.Parent != null)
-            {
-                Current = Current.Parent;
+                currentLayerContext = currentLayerContext.Parent;
             }
         }
-
-        public void ResetSurfaceShaders(MaterialShaderStage stage)
+        public void AddShaderSource(MaterialShaderStage stage, ShaderSource shaderSource)
         {
-            Current.GetSurfaceShaders(stage).Clear();
+            if (shaderSource == null) throw new ArgumentNullException(nameof(shaderSource));
+            currentLayerContext.GetContextPerStage(stage).ShaderSources.Add(shaderSource);
         }
-
-        public void AddSurfaceShader(MaterialShaderStage stage, ShaderSource shaderSource)
-        {
-            if (shaderSource == null) throw new ArgumentNullException("shaderSource");
-            Current.GetSurfaceShaders(stage).Add(shaderSource);
-        }
-
-        // TODO: move this method to an extension method
 
         public void Visit(IMaterialFeature feature)
         {
-            if (feature != null)
-            {
-                feature.Visit(this);
-            }
+            // If feature is null, no-op
+            feature?.Visit(this);
         }
 
-        public bool HasSurfaceShaders(MaterialShaderStage stage)
+        public bool HasShaderSources(MaterialShaderStage stage)
         {
-            return Current.GetSurfaceShaders(stage).Count > 0;
+            return currentLayerContext.GetContextPerStage(stage).ShaderSources.Count > 0;
         }
 
-        public ShaderSource GenerateSurfaceShader(MaterialShaderStage stage)
+        public ShaderSource ComputeShaderSource(MaterialShaderStage stage)
         {
-            return Current.GenerateSurfaceShader(stage);
+            return currentLayerContext.ComputeShaderSource(stage);
         }
 
-        public ShaderSource GenerateStreamInitializer(MaterialShaderStage stage)
+        public ShaderSource GenerateStreamInitializers(MaterialShaderStage stage)
         {
-            return Current.GenerateStreamInilizer(stage);
+            return currentLayerContext.GenerateStreamInitializers(stage);
         }
 
         public void UseStream(MaterialShaderStage stage, string stream)
         {
-            if (stream == null) throw new ArgumentNullException("stream");
-            Current.Streams[stage].Add(stream);
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            currentLayerContext.GetContextPerStage(stage).Streams.Add(stream);
         }
 
         public ShaderSource GetStreamBlendShaderSource(string stream)
@@ -287,24 +190,24 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public void UseStreamWithCustomBlend(MaterialShaderStage stage, string stream, ShaderSource blendStream)
         {
-            if (stream == null) throw new ArgumentNullException("stream");
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
             UseStream(stage, stream);
             registeredStreamBlend[stream] = blendStream;
         }
 
         public void AddStreamInitializer(MaterialShaderStage stage, string streamInitilizerSource)
         {
-            Current.StreamInitializers[stage].Add(streamInitilizerSource);
+            currentLayerContext.GetContextPerStage(stage).StreamInitializers.Add(streamInitilizerSource);
         }
 
         public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
-            Current.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
+            currentLayerContext.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
 
         public void SetStream(MaterialShaderStage stage, string stream, MaterialStreamType streamType, ShaderSource shaderSource)
         {
-            Current.SetStream(stage, stream, streamType, shaderSource);
+            currentLayerContext.SetStream(stage, stream, streamType, shaderSource);
         }
 
         public void SetStream(string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
@@ -314,262 +217,240 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public void AddShading<T>(T shadingModel, ShaderSource shaderSource) where T : class, IMaterialShadingModelFeature
         {
-            Current.ShadingModels.Add(shadingModel, shaderSource);
+            currentLayerContext.ShadingModels.Add(shadingModel, shaderSource);
         }
 
-        private class MaterialBlendLayerNode
+        private void ProcessLayer(MaterialBlendLayerContext layer, bool isLastChild)
         {
-            private readonly MaterialGeneratorContext context;
-
-            private readonly MaterialBlendLayerNode parentNode;
-
-            public MaterialBlendLayerNode(MaterialGeneratorContext context, MaterialBlendLayerNode parentNode)
+            // Check if we have at least one shading model for this layer
+            if (layer.ShadingModels.Count > 0)
             {
-                this.context = context;
-                this.parentNode = parentNode;
-
-                Children = new List<MaterialBlendLayerNode>();
-                ShadingModels = new MaterialShadingModelCollection();
-
-                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
-                {
-                    SurfaceShaders[stage] = new List<ShaderSource>();
-                    StreamInitializers[stage] = new List<string>();
-                    Streams[stage] = new HashSet<string>();
-                }
+                layer.ShadingModelCount++;
             }
 
-            public MaterialGeneratorContext Context
+            // Process layers from the deepest level to lowest
+            for (int i = 0; i < layer.Children.Count; i++)
             {
-                get
-                {
-                    return context;
-                }
+                var child = layer.Children[i];
+                ProcessLayer(child, i + 1 == layer.Children.Count);
             }
 
-            public MaterialBlendLayerNode Parent
+            if (layer.Parent != null)
             {
-                get
-                {
-                    return parentNode;
-                }
+                ProcessIntermediateLayer(layer, isLastChild);
             }
-
-            public readonly Dictionary<MaterialShaderStage, List<ShaderSource>> SurfaceShaders = new Dictionary<MaterialShaderStage, List<ShaderSource>>();
-            public readonly Dictionary<MaterialShaderStage, List<string>> StreamInitializers = new Dictionary<MaterialShaderStage, List<string>>();
-            public readonly Dictionary<MaterialShaderStage, HashSet<string>> Streams = new Dictionary<MaterialShaderStage, HashSet<string>>();
-
-            public List<MaterialBlendLayerNode> Children { get; private set; }
-
-            public MaterialShadingModelCollection ShadingModels { get; set; }
-
-            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue)
+            else
             {
-                if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
-                if (computeNode == null)
-                {
-                    return;
-                }
-
-                var streamType = MaterialStreamType.Float;
-                if (defaultValueKey.PropertyType == typeof(Vector4) || defaultValueKey.PropertyType == typeof(Color4))
-                {
-                    streamType = MaterialStreamType.Float4;
-                }
-                else if (defaultValueKey.PropertyType == typeof(Vector3) || defaultValueKey.PropertyType == typeof(Color3))
-                {
-                    streamType = MaterialStreamType.Float3;
-                }
-                else if (defaultValueKey.PropertyType == typeof(Vector2) || defaultValueKey.PropertyType == typeof(Half2))
-                {
-                    streamType = MaterialStreamType.Float2;
-                }
-                else if (defaultValueKey.PropertyType == typeof(float))
-                {
-                    streamType = MaterialStreamType.Float;
-                }
-                else
-                {
-                    throw new NotSupportedException("ParameterKey type [{0}] is not supported by SetStream".ToFormat(defaultValueKey.PropertyType));
-                }
-
-                var classSource = computeNode.GenerateShaderSource(context, new MaterialComputeColorKeys(defaultTexturingKey, defaultValueKey, defaultTextureValue));
-                SetStream(stage, stream, streamType, classSource);
-            }
-
-            public void SetStream(MaterialShaderStage stage, string stream, MaterialStreamType streamType, ShaderSource classSource)
-            {
-                // Blend stream isnot part of the stream used
-                if (stream != MaterialBlendLayer.BlendStream)
-                {
-                    Streams[stage].Add(stream);
-                }
-
-                string channel;
-                switch (streamType)
-                {
-                    case MaterialStreamType.Float:
-                        channel = "r";
-                        break;
-                    case MaterialStreamType.Float2:
-                        channel = "rg";
-                        break;
-                    case MaterialStreamType.Float3:
-                        channel = "rgb";
-                        break;
-                    case MaterialStreamType.Float4:
-                        channel = "rgba";
-                        break;
-                    default:
-                        throw new NotSupportedException("StreamType [{0}] is not supported".ToFormat(streamType));
-                }
-
-                var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceSetStreamFromComputeColor", stream, channel));
-                mixin.AddComposition("computeColorSource", classSource);
-
-                GetSurfaceShaders(stage).Add(mixin);
-            }
-
-            public List<ShaderSource> GetSurfaceShaders(MaterialShaderStage stage)
-            {
-                return SurfaceShaders[stage];
-            }
-
-            public ShaderSource GenerateStreamInilizer(MaterialShaderStage stage)
-            {
-                // Early exit if nothing to do
-                if (StreamInitializers[stage].Count == 0 && SurfaceShaders[stage].Count == 0 && stage != MaterialShaderStage.Pixel)
-                {
-                    return null;
-                }
-
-                var mixin = new ShaderMixinSource();
-
-                // the basic streams contained by every materials
-                mixin.Mixins.Add(new ShaderClassSource("MaterialStream"));
-
-                // the streams coming from the material layers
-                foreach (var streamInitializer in StreamInitializers[stage])
-                {
-                    mixin.Mixins.Add(streamInitializer);
-                }
-                StreamInitializers[stage].Clear();
-
-                // the streams specific to a stage
-                if(stage == MaterialShaderStage.Pixel)
-                    mixin.Mixins.Add("MaterialPixelShadingStream");
-
-                return mixin;
-            }
-
-            public ShaderSource GenerateSurfaceShader(MaterialShaderStage stage)
-            {
-                var surfaceShaders = GetSurfaceShaders(stage);
-
-                if (surfaceShaders.Count == 0)
-                {
-                    return null;
-                }
-
-                ShaderSource result;
-                // If there is only a single op, don't generate a mixin
-                if (surfaceShaders.Count == 1)
-                {
-                    result = surfaceShaders[0];
-                }
-                else
-                {
-                    var mixin = new ShaderMixinSource();
-                    result = mixin;
-                    mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceArray"));
-
-                    // Squash all operations into MaterialLayerArray
-                    foreach (var operation in surfaceShaders)
-                    {
-                        mixin.AddCompositionToArray("layers", operation);
-                    }
-                }
-
-                surfaceShaders.Clear();
-                Streams[stage].Clear();
-                return result;
+                ProcessRootLayer(layer);
             }
         }
 
-        private sealed class MaterialShadingModelCollection : Dictionary<Type, KeyValuePair<IMaterialShadingModelFeature, ShaderSource>>
+        private void ProcessIntermediateLayer(MaterialBlendLayerContext layer, bool isLastChild)
         {
-            public void Add<T>(T shadingModel, ShaderSource shaderSource) where T : class, IMaterialShadingModelFeature
-            {
-                if (shadingModel == null)
-                {
-                    return;
-                }
+            var parent = layer.Parent;
+            var hasParentShadingModel = parent.ShadingModelCount > 0;
 
-                this[shadingModel.GetType()] = new KeyValuePair<IMaterialShadingModelFeature, ShaderSource>(shadingModel, shaderSource);
+            // If current shading model is not set, 
+            if (!hasParentShadingModel && layer.ShadingModelCount > 0)
+            {
+                layer.ShadingModels.CopyTo(parent.ShadingModels);
+                hasParentShadingModel = true;
+                parent.ShadingModelCount++;
             }
 
-            public bool Equals(MaterialShadingModelCollection node)
+            var sameShadingModel = hasParentShadingModel && layer.ShadingModels.Equals(parent.ShadingModels);
+            if (sameShadingModel)
             {
-                if (node == null || ReferenceEquals(node, this))
-                {
-                    return true;
-                }
-
-                if (Count != node.Count)
-                {
-                    return false;
-                }
-                if (Count == 0 || node.Count == 0)
-                {
-                    return true;
-                }
-
-                foreach (var shadingModelKeyPair in this)
-                {
-                    KeyValuePair<IMaterialShadingModelFeature, ShaderSource> shadingModelAgainst;
-                    if (!node.TryGetValue(shadingModelKeyPair.Key, out shadingModelAgainst))
-                    {
-                        return false;
-                    }
-                    if (!shadingModelKeyPair.Value.Key.Equals(shadingModelAgainst.Key))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                // If shading model is not changing, we generate the BlendStream shaders
+                BlendStreams(layer);
+            }
+            else
+            {
+                parent.ShadingModelCount++;
             }
 
-            public IEnumerable<ShaderSource> Generate(MaterialGeneratorContext context)
-            {
-                // Generate MaterialLayer Shading that is light dependent
-                ShaderMixinSource mixinSource = null;
-                foreach (var shadingModelKeyPair in Values)
-                {
-                    var shadingModel = shadingModelKeyPair.Key;
-                    if (shadingModel.IsLightDependent)
-                    {
-                        context.Material.IsLightDependent = true;
+            var parentPixelLayerContext = parent.GetContextPerStage(MaterialShaderStage.Pixel);
+            var pendingPixelLayerContext = parent.PendingPixelLayerContext;
 
-                        if (mixinSource == null)
+            // Copy streams to parent
+            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+            {
+                var stageContext = layer.GetContextPerStage(stage);
+                var parentStageContext = parent.GetContextPerStage(stage);
+
+                // the Initializers
+                parentStageContext.StreamInitializers.AddRange(stageContext.StreamInitializers);
+
+                // skip pixel shader if shading model need to be blended
+                if (stage == MaterialShaderStage.Pixel)
+                {
+                    if (!sameShadingModel)
+                    {
+                        continue;
+                    }
+                    // If same shading model, use temporarely the ParentPixelLayerContext
+                    parentStageContext = pendingPixelLayerContext;
+                }
+
+                // Add shaders except Pixels if we have a different ShadingModel
+                parentStageContext.ShaderSources.AddRange(stageContext.ShaderSources);
+            }
+
+            var forceBlendingShadingModel = isLastChild && (parent.ShadingModelCount > 1 || !sameShadingModel);
+            if (!sameShadingModel || forceBlendingShadingModel)
+            {
+                if (forceBlendingShadingModel && parent.BlendMapForShadingModel == null)
+                {
+                    if (!sameShadingModel)
+                    {
+                        foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
                         {
-                            mixinSource = new ShaderMixinSource();
-                            mixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceLightingAndShading"));
+                            parentPixelLayerContext.ShaderSources.Add(shaderSource);
                         }
-                        mixinSource.AddCompositionToArray("surfaces", shadingModelKeyPair.Value);
+                        pendingPixelLayerContext.Reset();
+
+                        foreach (var shaderSource in parent.ShadingModels.Generate(this))
+                        {
+                            parentPixelLayerContext.ShaderSources.Add(shaderSource);
+                        }
+                        parent.ShadingModels.Clear();
+                        layer.ShadingModels.CopyTo(parent.ShadingModels);
                     }
-                }
-                if (mixinSource != null)
-                {
-                    yield return mixinSource;
+
+                    parent.BlendMapForShadingModel = layer.BlendMap;
+                    var currentPixelLayerContext = layer.GetContextPerStage(MaterialShaderStage.Pixel);
+                    pendingPixelLayerContext.ShaderSources.AddRange(currentPixelLayerContext.ShaderSources);
                 }
 
-                // Generate shading light independent
-                foreach (var shadingSource in Values.Where(keyPair => !keyPair.Key.IsLightDependent).Select(keyPair => keyPair.Value))
+                // Do we need to blend shading model?
+                if (parent.BlendMapForShadingModel != null)
                 {
-                    yield return shadingSource;
+                    var shaderBlendingSource = new ShaderMixinSource();
+                    shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingBlend"));
+
+                    parent.SetStreamBlend(MaterialShaderStage.Pixel, parent.BlendMapForShadingModel);
+
+                    // Add shader source already setup for the parent
+                    foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
+                    {
+                        shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
+                    }
+
+                    // Add shader source generated for blending this layer
+                    foreach (var shaderSource in parent.ShadingModels.Generate(this))
+                    {
+                        shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
+                    }
+                    parent.ShadingModels.Clear();
+
+                    parentPixelLayerContext.ShaderSources.Add(shaderBlendingSource);
+
+                    pendingPixelLayerContext.Reset();
+                    parent.BlendMapForShadingModel = null;
                 }
+                else
+                {
+                    foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
+                    {
+                        parentPixelLayerContext.ShaderSources.Add(shaderSource);
+                    }
+                    pendingPixelLayerContext.Reset();
+
+                    foreach (var shaderSource in parent.ShadingModels.Generate(this))
+                    {
+                        parentPixelLayerContext.ShaderSources.Add(shaderSource);
+                    }
+                    parent.ShadingModels.Clear();
+                    parent.BlendMapForShadingModel = layer.BlendMap;
+
+                    // Copy the shading model of this layer to the parent
+                    layer.ShadingModels.CopyTo(parent.ShadingModels);
+                }
+
+                // If the shading model is different, the current attributes of the layer are not part of this blending
+                // So they will contribute to the next blending
+                if (!sameShadingModel && !forceBlendingShadingModel)
+                {
+                    var currentPixelLayerContext = layer.GetContextPerStage(MaterialShaderStage.Pixel);
+                    pendingPixelLayerContext.ShaderSources.AddRange(currentPixelLayerContext.ShaderSources);
+                }
+            }
+        }
+
+        private void ProcessRootLayer(MaterialBlendLayerContext layer)
+        {
+            // Make sure that any pending source are actually copied to the current Pixel ShaderSources
+            var currentPixelLayerContext = layer.GetContextPerStage(MaterialShaderStage.Pixel);
+            if (layer.PendingPixelLayerContext.ShaderSources.Count > 0)
+            {
+                currentPixelLayerContext.ShaderSources.AddRange(layer.PendingPixelLayerContext.ShaderSources);
+                layer.PendingPixelLayerContext.Reset();
+            }
+
+            // Need to merge top level layer last
+            if (layer.ShadingModels.Count > 0)
+            {
+                // Add shading
+                foreach (var shaderSource in layer.ShadingModels.Generate(this))
+                {
+                    currentPixelLayerContext.ShaderSources.Add(shaderSource);
+                }
+            }
+
+            foreach (var modifierKey in finalInputStreamModifiers.Keys)
+            {
+                currentLayerContext.GetContextPerStage(modifierKey.Key).ShaderSources.Add(finalInputStreamModifiers[modifierKey]);
+            }
+
+            // Clear final callback
+            foreach (var callbackKeyPair in finalCallbacks)
+            {
+                var stage = callbackKeyPair.Key;
+                var callbacks = callbackKeyPair.Value;
+                foreach (var callback in callbacks)
+                {
+                    callback(stage, this);
+                }
+                callbacks.Clear();
+            }
+        }
+
+        private void BlendStreams(MaterialBlendLayerContext layer)
+        {
+            // Generate Vertex and Pixel surface shaders
+            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+            {
+                // If we don't have any stream set, we have nothing to blend
+                var stageContext = layer.GetContextPerStage(stage);
+                if (stageContext.Streams.Count == 0)
+                {
+                    continue;
+                }
+
+                // Blend setup for this layer
+                layer.SetStreamBlend(stage, layer.BlendMap);
+
+                // Generate a dynamic shader name
+                // Create a mixin
+                var shaderMixinSource = new ShaderMixinSource();
+                shaderMixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceStreamsBlend"));
+
+                // Add all streams that we need to blend
+                foreach (var stream in stageContext.Streams)
+                {
+                    shaderMixinSource.AddCompositionToArray("blends", GetStreamBlendShaderSource(stream));
+                }
+                stageContext.Streams.Clear();
+
+                // Squash all ShaderSources to a single shader source
+                var materialBlendLayerMixin = stageContext.ComputeShaderSource();
+                stageContext.ShaderSources.Clear();
+
+                // Add the shader to the mixin
+                shaderMixinSource.AddComposition("layer", materialBlendLayerMixin);
+
+                // Squash the shader sources
+                stageContext.ShaderSources.Add(shaderMixinSource);
             }
         }
     }
