@@ -343,7 +343,7 @@ namespace SiliconStudio.Presentation.ViewModel
                 {
                     var propertyInfo = GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
                     var postEditValue = propertyInfo.GetValue(this);
-                    if (!Equals(preEditValue, postEditValue))
+                    if (!ActionStack.UndoRedoInProgress && !Equals(preEditValue, postEditValue))
                     {
                         var actionItem = CreatePropertyChangeActionItem(displayName, propertyName, preEditValue);
                         ActionStack.Add(actionItem);
