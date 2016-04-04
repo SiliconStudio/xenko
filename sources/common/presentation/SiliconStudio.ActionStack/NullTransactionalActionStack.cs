@@ -52,12 +52,6 @@ namespace SiliconStudio.ActionStack
         public event EventHandler ActionItemsCleared { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<EventArgs> TransactionStarted { add { } remove { } }
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded { add { } remove { } }
-
-        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled { add { } remove { } }
 
         /// <inheritdoc/>
@@ -85,12 +79,6 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public IDisposable BeginCancelTransaction()
-        {
-            return new NullDisposable();
-        }
-
-        /// <inheritdoc/>
         public IDisposable BeginDiscardTransaction()
         {
             return new NullDisposable();
@@ -108,11 +96,6 @@ namespace SiliconStudio.ActionStack
 
         /// <inheritdoc/>
         public void EndTransaction(string displayName, AggregateActionItemDelegate aggregateActionItems, bool reverseOrderOnUndo = true)
-        {
-        }
-
-        /// <inheritdoc/>
-        public void CancelTransaction()
         {
         }
 

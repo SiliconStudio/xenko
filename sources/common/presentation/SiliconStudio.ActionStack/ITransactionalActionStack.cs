@@ -23,16 +23,6 @@ namespace SiliconStudio.ActionStack
         bool TransactionInProgress { get; }
 
         /// <summary>
-        /// Raised when a transaction is started.
-        /// </summary>
-        event EventHandler<EventArgs> TransactionStarted;
-
-        /// <summary>
-        /// Raised when a transaction has ended.
-        /// </summary>
-        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
-
-        /// <summary>
         /// Raised when a transaction is cancelled.
         /// </summary>
         event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
@@ -61,15 +51,6 @@ namespace SiliconStudio.ActionStack
         /// <seealso cref="BeginTransaction"/>
         /// <seealso cref="EndTransaction(string, bool)"/>
         IDisposable BeginEndTransaction(Func<string> getName);
-
-        /// <summary>
-        /// Creates a BeginTransaction-CancelTransaction transaction subscription.
-        /// Use it with a using statement to ensure balanced state integrity.
-        /// </summary>
-        /// <returns>Returns a cancel transaction subscription.</returns>
-        /// <seealso cref="BeginTransaction"/>
-        /// <seealso cref="CancelTransaction"/>
-        IDisposable BeginCancelTransaction();
 
         /// <summary>
         /// Creates a BeginTransaction-DiscardTransaction transaction subscription.
@@ -106,12 +87,6 @@ namespace SiliconStudio.ActionStack
         /// as it would be if <see cref="DiscardTransaction"/> was called instead.
         /// </remarks>
         void EndTransaction(string displayName, AggregateActionItemDelegate aggregateActionItems, bool reverseOrderOnUndo = true);
-
-        /// <summary>
-        /// Cancels a transaction started with <see cref="BeginTransaction"/>. Every action from the cancelled transaction will be undone.
-        /// </summary>
-        /// <remarks>This method will undo every action item of the transaction and then discard them.</remarks>
-        void CancelTransaction();
 
         /// <summary>
         /// Discard a transaction started with <see cref="BeginTransaction"/>.

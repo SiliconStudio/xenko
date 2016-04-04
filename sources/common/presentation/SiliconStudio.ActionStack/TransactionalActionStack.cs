@@ -46,12 +46,6 @@ namespace SiliconStudio.ActionStack
         public bool TransactionInProgress => TransactionStack.Count > 0;
 
         /// <inheritdoc/>
-        public event EventHandler<EventArgs> TransactionStarted;
-
-        /// <inheritdoc/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
-
-        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
 
         /// <inheritdoc/>
@@ -85,13 +79,6 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public IDisposable BeginCancelTransaction()
-        {
-            BeginTransaction();
-            return new AnonymousDisposable(CancelTransaction);
-        }
-
-        /// <inheritdoc/>
         public IDisposable BeginDiscardTransaction()
         {
             BeginTransaction();
@@ -103,7 +90,6 @@ namespace SiliconStudio.ActionStack
         {
             var currentTransaction = new List<IActionItem>();
             TransactionStack.Push(currentTransaction);
-            TransactionStarted?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc/>
@@ -122,24 +108,11 @@ namespace SiliconStudio.ActionStack
             {
                 var result = aggregateActionItems(currentTransaction, reverseOrderOnUndo);
                 Add(result);
-                TransactionEnded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(result));
             }
             else
             {
                 TransactionDiscarded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(new IActionItem[0]));
             }
-        }
-
-        /// <inheritdoc/>
-        public virtual void CancelTransaction()
-        {
-            if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.CannotEndNoTransactionInProgress);
-            var currentTransaction = TransactionStack.Pop();
-            foreach (IActionItem item in currentTransaction.Reverse<IActionItem>())
-            {
-                item.Undo();
-            }
-            TransactionCancelled?.Invoke(this, new ActionItemsEventArgs<IActionItem>(currentTransaction.ToArray()));
         }
 
         /// <inheritdoc/>
