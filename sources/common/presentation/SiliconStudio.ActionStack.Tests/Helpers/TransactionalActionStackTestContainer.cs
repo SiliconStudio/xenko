@@ -7,12 +7,12 @@ namespace SiliconStudio.ActionStack.Tests.Helpers
     class TransactionalActionStackTestContainer : ActionStackTestContainer
     {
         public TransactionalActionStackTestContainer(int capacity)
-            : base(new TransactionalActionStack(capacity))
+            : base(new LegacyTransactionalActionStack(capacity))
         {
             RegisterEvents();
         }
 
-        public new TransactionalActionStack Stack => (TransactionalActionStack)base.Stack;
+        public new LegacyTransactionalActionStack Stack => (LegacyTransactionalActionStack)base.Stack;
 
         public List<Tuple<object, EventArgs>> TransactionStarted = new List<Tuple<object, EventArgs>>();
         public List<Tuple<object, ActionItemsEventArgs<IActionItem>>> TransactionEnded = new List<Tuple<object, ActionItemsEventArgs<IActionItem>>>();

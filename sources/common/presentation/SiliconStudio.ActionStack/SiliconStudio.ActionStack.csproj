@@ -23,6 +23,7 @@
     <Compile Include="DirtiableManager.cs" />
     <Compile Include="DirtinessUpdatedEventArgs.cs" />
     <Compile Include="IDirtiable.cs" />
+    <Compile Include="LegacyTransactionalActionStack.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
