@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SiliconStudio.Presentation.Tests.Transactions.Helpers;
 using SiliconStudio.Presentation.Transactions;
 // ReSharper disable AccessToModifiedClosure - we use this on purpose for event testing in this file
 
@@ -250,8 +249,8 @@ namespace SiliconStudio.Presentation.Tests.Transactions
                     expectedRaiseCount = 1;
                 }
             }
-            Assert.AreEqual(1, expectedRaiseCount);
-            Assert.AreEqual(1, raiseCount);
+            Assert.AreEqual(2, expectedRaiseCount);
+            Assert.AreEqual(2, raiseCount);
             Assert.AreEqual(5, stack.Capacity);
         }
 
@@ -266,7 +265,7 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             {
                 Assert.AreEqual(expectedRaiseCount, ++raiseCount);
                 Assert.AreEqual(DiscardReason.StackPurged, e.Reason);
-                Assert.AreEqual(3, e.Transactions.Count);
+                Assert.AreEqual(5, e.Transactions.Count);
                 for (int i = 0; i < 5; ++i)
                 {
                     Assert.NotNull(e.Transactions[i]);

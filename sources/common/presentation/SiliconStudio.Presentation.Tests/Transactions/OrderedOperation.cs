@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace SiliconStudio.Presentation.Tests.Transactions.Helpers
+namespace SiliconStudio.Presentation.Tests.Transactions
 {
     internal class OrderedOperation : SimpleOperation
     {

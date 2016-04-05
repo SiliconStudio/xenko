@@ -27,8 +27,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Transactions\Helpers\OrderedOperation.cs" />
-    <Compile Include="Transactions\Helpers\SimpleOperation.cs" />
+    <Compile Include="Transactions\OrderedOperation.cs" />
+    <Compile Include="Transactions\SimpleOperation.cs" />
     <Compile Include="Transactions\TestTransactionEvent.cs" />
     <Compile Include="Transactions\TestTransactionStack.cs" />
     <Compile Include="Transactions\TestTransaction.cs" />

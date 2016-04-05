@@ -1,7 +1,7 @@
 ﻿using System;
 using SiliconStudio.Presentation.Transactions;
 
-namespace SiliconStudio.Presentation.Tests.Transactions.Helpers
+namespace SiliconStudio.Presentation.Tests.Transactions
 {
     internal class SimpleOperation : Operation
     {

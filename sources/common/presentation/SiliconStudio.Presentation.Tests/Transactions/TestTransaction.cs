@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using SiliconStudio.Presentation.Tests.Transactions.Helpers;
 using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Tests.Transactions
