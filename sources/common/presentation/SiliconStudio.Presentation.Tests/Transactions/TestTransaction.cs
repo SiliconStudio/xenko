@@ -157,17 +157,17 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             }
         }
 
+        [Test]
         public void TestClear()
         {
             var stack = TransactionStackFactory.Create(5);
-            var counter = new OrderedOperation.Counter();
-            OrderedOperation[] operations = new OrderedOperation[4];
-            using (stack.CreateTransaction())
+            var operations = new SimpleOperation[4];
+            for (var i = 0; i < operations.Length; ++i)
             {
-                for (int i = 0; i < operations.Length; ++i)
+                using (stack.CreateTransaction())
                 {
-                    var operation = new OrderedOperation(counter, 0, operations.Length - i - 1);
-                    stack.PushOperation(operation);
+                    operations[i] = new SimpleOperation();
+                    stack.PushOperation(operations[i]);
                 }
             }
             stack.Clear();
@@ -176,6 +176,88 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             Assert.AreEqual(5, stack.Capacity);
             Assert.AreEqual(true, stack.IsEmpty);
             Assert.AreEqual(false, stack.IsFull);
+            foreach (var operation in operations)
+            {
+                Assert.AreEqual(true, operation.IsFrozen);
+            }
+        }
+
+        [Test]
+        public void TestDiscardStackFull()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var operations = new SimpleOperation[6];
+            for (var i = 0; i < operations.Length; ++i)
+            {
+                using (stack.CreateTransaction())
+                {
+                    operations[i] = new SimpleOperation();
+                    stack.PushOperation(operations[i]);
+                }
+            }
+
+            Assert.AreEqual(true, operations[0].IsFrozen);
+            for (var i = 1; i < operations.Length; ++i)
+            {
+                Assert.AreEqual(false, operations[i].IsFrozen);
+                Assert.AreEqual(operations[i], ((TransactionStack)stack).Transactions[i - 1].Operations[0]);
+            }
+        }
+
+        [Test]
+        public void TestDiscardMultipleStackFull()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var operations = new SimpleOperation[8];
+            for (var i = 0; i < operations.Length; ++i)
+            {
+                using (stack.CreateTransaction())
+                {
+                    operations[i] = new SimpleOperation();
+                    stack.PushOperation(operations[i]);
+                }
+            }
+
+            for (int i = 0; i < 3; ++i)
+            {
+                Assert.AreEqual(true, operations[0].IsFrozen);
+            }
+            for (var i = 3; i < operations.Length; ++i)
+            {
+                Assert.AreEqual(false, operations[i].IsFrozen);
+                Assert.AreEqual(operations[i], ((TransactionStack)stack).Transactions[i - 3].Operations[0]);
+            }
+        }
+
+        [Test]
+        public void TestDiscardOnePurged()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var operations = new SimpleOperation[6];
+            for (var i = 0; i < operations.Length - 1; ++i)
+            {
+                using (stack.CreateTransaction())
+                {
+                    operations[i] = new SimpleOperation();
+                    stack.PushOperation(operations[i]);
+                }
+            }
+            stack.Rollback();
+            using (stack.CreateTransaction())
+            {
+                operations[5] = new SimpleOperation();
+                stack.PushOperation(operations[5]);
+            }
+
+            for (var i = 0; i < 4; ++i)
+            {
+                Assert.AreEqual(false, operations[i].IsFrozen);
+                Assert.AreEqual(operations[i], ((TransactionStack)stack).Transactions[i].Operations[0]);
+            }
+            // operations[4] is the discarded transaction
+            Assert.AreEqual(true, operations[4].IsFrozen);
+            Assert.AreEqual(false, operations[5].IsFrozen);
+            Assert.AreEqual(operations[5], ((TransactionStack)stack).Transactions[4].Operations[0]);
         }
     }
 }

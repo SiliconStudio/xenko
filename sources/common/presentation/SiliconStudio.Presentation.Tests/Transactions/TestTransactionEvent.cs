@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SiliconStudio.Presentation.Tests.Transactions.Helpers;
 using SiliconStudio.Presentation.Transactions;
+// ReSharper disable AccessToModifiedClosure - we use this on purpose for event testing in this file
 
 namespace SiliconStudio.Presentation.Tests.Transactions
 {
@@ -13,11 +14,9 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             var stack = TransactionStackFactory.Create(5);
             var raiseCount = 0;
             var expectedRaiseCount = 0;
-            // ReSharper disable once AccessToModifiedClosure - this is what I want to achieve
             stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
             for (var j = 0; j < 8; ++j)
             {
-                ++expectedRaiseCount;
                 using (stack.CreateTransaction())
                 {
                     for (var i = 0; i < 5; ++i)
@@ -25,6 +24,7 @@ namespace SiliconStudio.Presentation.Tests.Transactions
                         var operation = new SimpleOperation();
                         stack.PushOperation(operation);
                     }
+                    ++expectedRaiseCount;
                 }
             }
             Assert.AreEqual(8, expectedRaiseCount);
@@ -37,7 +37,6 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             var stack = TransactionStackFactory.Create(5);
             var raiseCount = 0;
             var expectedRaiseCount = 0;
-            // ReSharper disable once AccessToModifiedClosure - this is what I want to achieve
             stack.Cleared += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
             for (var j = 0; j < 8; ++j)
             {
@@ -62,7 +61,6 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             var stack = TransactionStackFactory.Create(5);
             var raiseCount = 0;
             var expectedRaiseCount = 0;
-            // ReSharper disable once AccessToModifiedClosure - this is what I want to achieve
             stack.TransactionRollbacked += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
             for (var j = 0; j < stack.Capacity + 3; ++j)
             {
@@ -91,7 +89,6 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             var stack = TransactionStackFactory.Create(5);
             var raiseCount = 0;
             var expectedRaiseCount = 0;
-            // ReSharper disable once AccessToModifiedClosure - this is what I want to achieve
             stack.TransactionRollforwarded += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
             for (var j = 0; j < stack.Capacity + 3; ++j)
             {
@@ -118,6 +115,195 @@ namespace SiliconStudio.Presentation.Tests.Transactions
             Assert.AreEqual(5, stack.Capacity);
         }
 
-        // TODO: tests for TransactionDiscarded (discard one, discard many, etc.)
+        [Test]
+        public void TestTransactionDiscardStackFull()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var raiseCount = 0;
+            var expectedRaiseCount = 0;
+            var transactions = new ITransaction[5];
+            stack.TransactionDiscarded += (sender, e) =>
+            {
+                Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+                Assert.AreEqual(DiscardReason.StackFull, e.Reason);
+                Assert.AreEqual(1, e.Transactions.Count);
+                Assert.NotNull(e.Transactions[0]);
+                Assert.AreEqual(transactions[0], e.Transactions[0]);
+                Assert.AreEqual(true, ((Operation)e.Transactions[0]).IsFrozen);
+                ++expectedRaiseCount;
+            };
+            for (var j = 0; j < stack.Capacity; ++j)
+            {
+                using (var transaction = stack.CreateTransaction())
+                {
+                    for (var i = 0; i < 3; ++i)
+                    {
+                        var operation = new SimpleOperation();
+                        stack.PushOperation(operation);
+                    }
+                    transactions[j] = transaction;
+                }
+            }
+            stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+            using (stack.CreateTransaction())
+            {
+                for (var i = 0; i < 3; ++i)
+                {
+                    var operation = new SimpleOperation();
+                    stack.PushOperation(operation);
+                }
+                expectedRaiseCount = 1;
+            }
+            Assert.AreEqual(2, expectedRaiseCount);
+            Assert.AreEqual(2, raiseCount);
+        }
+
+        [Test]
+        public void TestTransactionDiscardPurgeLast()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var raiseCount = 0;
+            var expectedRaiseCount = 0;
+            var transactions = new ITransaction[5];
+            stack.TransactionDiscarded += (sender, e) =>
+            {
+                Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+                Assert.AreEqual(DiscardReason.StackPurged, e.Reason);
+                Assert.AreEqual(1, e.Transactions.Count);
+                Assert.NotNull(e.Transactions[0]);
+                Assert.AreEqual(transactions[4], e.Transactions[0]);
+                Assert.AreEqual(true, ((Operation)e.Transactions[0]).IsFrozen);
+                ++expectedRaiseCount;
+            };
+            for (var j = 0; j < stack.Capacity; ++j)
+            {
+                using (var transaction = stack.CreateTransaction())
+                {
+                    for (var i = 0; i < 3; ++i)
+                    {
+                        var operation = new SimpleOperation();
+                        stack.PushOperation(operation);
+                    }
+                    transactions[j] = transaction;
+                }
+            }
+            stack.Rollback();
+            stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+            using (stack.CreateTransaction())
+            {
+                for (var i = 0; i < 3; ++i)
+                {
+                    var operation = new SimpleOperation();
+                    stack.PushOperation(operation);
+                    expectedRaiseCount = 1;
+                }
+            }
+            Assert.AreEqual(2, expectedRaiseCount);
+            Assert.AreEqual(2, raiseCount);
+            Assert.AreEqual(5, stack.Capacity);
+        }
+
+        [Test]
+        public void TestTransactionDiscardPurgeMultiple()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var raiseCount = 0;
+            var expectedRaiseCount = 0;
+            var transactions = new ITransaction[5];
+            stack.TransactionDiscarded += (sender, e) =>
+            {
+                Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+                Assert.AreEqual(DiscardReason.StackPurged, e.Reason);
+                Assert.AreEqual(3, e.Transactions.Count);
+                for (int i = 0; i < 3; ++i)
+                {
+                    Assert.NotNull(e.Transactions[i]);
+                    Assert.AreEqual(true, ((Operation)e.Transactions[i]).IsFrozen);
+                }
+                Assert.AreEqual(transactions[2], e.Transactions[0]);
+                Assert.AreEqual(transactions[3], e.Transactions[1]);
+                Assert.AreEqual(transactions[4], e.Transactions[2]);
+                ++expectedRaiseCount;
+            };
+            for (var j = 0; j < stack.Capacity; ++j)
+            {
+                using (var transaction = stack.CreateTransaction())
+                {
+                    for (var i = 0; i < 3; ++i)
+                    {
+                        var operation = new SimpleOperation();
+                        stack.PushOperation(operation);
+                    }
+                    transactions[j] = transaction;
+                }
+            }
+            stack.Rollback();
+            stack.Rollback();
+            stack.Rollback();
+            stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+            using (stack.CreateTransaction())
+            {
+                for (var i = 0; i < 3; ++i)
+                {
+                    var operation = new SimpleOperation();
+                    stack.PushOperation(operation);
+                    expectedRaiseCount = 1;
+                }
+            }
+            Assert.AreEqual(1, expectedRaiseCount);
+            Assert.AreEqual(1, raiseCount);
+            Assert.AreEqual(5, stack.Capacity);
+        }
+
+        [Test]
+        public void TestTransactionDiscardPurgeAll()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var raiseCount = 0;
+            var expectedRaiseCount = 0;
+            var transactions = new ITransaction[5];
+            stack.TransactionDiscarded += (sender, e) =>
+            {
+                Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+                Assert.AreEqual(DiscardReason.StackPurged, e.Reason);
+                Assert.AreEqual(3, e.Transactions.Count);
+                for (int i = 0; i < 5; ++i)
+                {
+                    Assert.NotNull(e.Transactions[i]);
+                    Assert.AreEqual(transactions[i], e.Transactions[i]);
+                    Assert.AreEqual(true, ((Operation)e.Transactions[i]).IsFrozen);
+                }
+                ++expectedRaiseCount;
+            };
+            for (var j = 0; j < stack.Capacity; ++j)
+            {
+                using (var transaction = stack.CreateTransaction())
+                {
+                    for (var i = 0; i < 3; ++i)
+                    {
+                        var operation = new SimpleOperation();
+                        stack.PushOperation(operation);
+                    }
+                    transactions[j] = transaction;
+                }
+            }
+            for (var j = 0; j < stack.Capacity; ++j)
+            {
+                stack.Rollback();
+            }
+            stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+            using (stack.CreateTransaction())
+            {
+                for (var i = 0; i < 3; ++i)
+                {
+                    var operation = new SimpleOperation();
+                    stack.PushOperation(operation);
+                    expectedRaiseCount = 1;
+                }
+            }
+            Assert.AreEqual(2, expectedRaiseCount);
+            Assert.AreEqual(2, raiseCount);
+            Assert.AreEqual(5, stack.Capacity);
+        }
     }
 }
