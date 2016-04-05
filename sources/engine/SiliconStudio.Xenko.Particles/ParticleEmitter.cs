@@ -138,8 +138,11 @@ namespace SiliconStudio.Xenko.Particles
         internal readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
 
         /// <summary>
-        /// Optional name for the emitter
+        /// Optional name for the emitter, so that it can be referenced from other emitters
         /// </summary>
+        /// <userdoc>
+        /// Optional name for the emitter, so that it can be referenced from other emitters
+        /// </userdoc>
         private string emitterName;
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Cached parent particle system, used for notifications
         /// </summary>
-        internal ParticleSystem CahcedParticleSystem => cachedParentSystem;
+        internal ParticleSystem CachedParticleSystem => cachedParentSystem;
         
         /// <summary>
         /// Default constructor. Initializes the pool and all collections contained in the <see cref="ParticleEmitter"/>

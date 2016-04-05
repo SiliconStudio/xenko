@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Particles.Spawners;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     /// <summary>
-    /// The <see cref="InitialVelocityParent"/> is an initializer which sets the particle's initial velocity at the time of spawning
+    /// The <see cref="InitialVelocityParent"/> is an initializer which sets the particle's velocity based on a followed (parent) particle's velocity
     /// </summary>
     [DataContract("InitialVelocityParent")]
     [Display("Velocity from parent")]
@@ -27,105 +27,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             DisplayParticleScaleUniform = true;
         }
 
-        /// <inheritdoc />
-        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
-        {
-            var parentPool = Parent?.Pool;
-            var parentParticlesCount = parentPool?.LivingParticles ?? 0;
-            var velFieldParent = parentPool?.GetField(ParticleFields.Velocity) ?? ParticleFieldAccessor<Vector3>.Invalid();
-            if (!velFieldParent.IsValid())
-            {
-                parentParticlesCount = 0;
-            }
-
-            if (!pool.FieldExists(ParticleFields.Velocity) || !pool.FieldExists(ParticleFields.RandomSeed))
-                return;
-
-            var spawnControlField = GetSpawnControlField();
-
-            var velField = pool.GetField(ParticleFields.Velocity);
-            var rndField = pool.GetField(ParticleFields.RandomSeed);
-
-            var leftCorner = VelocityMin * WorldScale;
-            var xAxis = new Vector3(VelocityMax.X * WorldScale.X - leftCorner.X, 0, 0);
-            var yAxis = new Vector3(0, VelocityMax.Y * WorldScale.Y - leftCorner.Y, 0);
-            var zAxis = new Vector3(0, 0, VelocityMax.Z * WorldScale.Z - leftCorner.Z);
-
-            if (!WorldRotation.IsIdentity)
-            {
-                WorldRotation.Rotate(ref leftCorner);
-                WorldRotation.Rotate(ref xAxis);
-                WorldRotation.Rotate(ref yAxis);
-                WorldRotation.Rotate(ref zAxis);
-            }
-
-            var sequentialParentIndex = 0;
-            var sequentialParentParticles = 0;
-            var parentIndex = 0;
-
-            var i = startIdx;
-            while (i != endIdx)
-            {
-                var particle = pool.FromIndex(i);
-                var randSeed = particle.Get(rndField);
-
-                var particleRandVel = leftCorner;
-
-                particleRandVel += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
-                particleRandVel += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
-                particleRandVel += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
-
-                if (parentParticlesCount > 0)
-                {
-                    var parentParticleVelocity = new Vector3(0, 0, 0);
-
-                    // It changes here
-                    if (spawnControlField.IsValid())
-                    {
-                        while (sequentialParentParticles == 0)
-                        {
-                            if (sequentialParentIndex >= parentParticlesCount)
-                                return; // Early out - or should we continue; ?
-
-                            parentIndex = sequentialParentIndex;
-                            var tempParentParticle = parentPool.FromIndex(parentIndex);
-                            sequentialParentIndex++;
-
-                            var childrenAttribute = (*((ParticleChildrenAttribute*)tempParentParticle[spawnControlField]));
-
-                            sequentialParentParticles = (int)childrenAttribute.ParticlesToEmit;
-                        }
-
-                        sequentialParentParticles--;
-
-                        var parentParticle = parentPool.FromIndex(parentIndex);
-                        parentParticleVelocity = (*((Vector3*)parentParticle[velFieldParent]));
-                    }
-                    else
-                    {
-                        parentIndex = (int)(parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
-                        var parentParticle = parentPool.FromIndex(parentIndex);
-
-                        parentParticleVelocity = (*((Vector3*)parentParticle[velFieldParent]));
-                    }
-
-
-                    // Convert from Local -> World space if needed
-                    if (Parent.SimulationSpace == EmitterSimulationSpace.Local)
-                    {
-                        WorldRotation.Rotate(ref parentParticleVelocity);
-                        parentParticleVelocity *= WorldScale.X;
-                    }
-
-                    particleRandVel += parentParticleVelocity * ParentVelocityFactor;
-                }
-
-
-                (*((Vector3*)particle[velField])) = particleRandVel;
-
-                i = (i + 1) % maxCapacity;
-            }
-        }
 
         /// <summary>
         /// The seed offset used to match or separate random values
@@ -166,6 +67,112 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(40)]
         [Display("Velocity max")]
         public Vector3 VelocityMax { get; set; } = new Vector3(1, 1, 1);
+
+
+        /// <inheritdoc />
+        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
+        {
+            if (!pool.FieldExists(ParticleFields.Velocity) || !pool.FieldExists(ParticleFields.RandomSeed))
+                return;
+
+            // Collect the total number of living particles in the parent pool which have a Velocity field
+            var parentPool = Parent?.Pool;
+            var parentParticlesCount = parentPool?.LivingParticles ?? 0;
+            var velFieldParent = parentPool?.GetField(ParticleFields.Velocity) ?? ParticleFieldAccessor<Vector3>.Invalid();
+            if (!velFieldParent.IsValid())
+            {
+                parentParticlesCount = 0;
+            }
+
+            var spawnControlField = GetSpawnControlField();
+
+            var velField = pool.GetField(ParticleFields.Velocity);
+            var rndField = pool.GetField(ParticleFields.RandomSeed);
+
+            var leftCorner = VelocityMin * WorldScale;
+            var xAxis = new Vector3(VelocityMax.X * WorldScale.X - leftCorner.X, 0, 0);
+            var yAxis = new Vector3(0, VelocityMax.Y * WorldScale.Y - leftCorner.Y, 0);
+            var zAxis = new Vector3(0, 0, VelocityMax.Z * WorldScale.Z - leftCorner.Z);
+
+            if (!WorldRotation.IsIdentity)
+            {
+                WorldRotation.Rotate(ref leftCorner);
+                WorldRotation.Rotate(ref xAxis);
+                WorldRotation.Rotate(ref yAxis);
+                WorldRotation.Rotate(ref zAxis);
+            }
+
+            var sequentialParentIndex = 0;
+            var sequentialParentParticles = 0;
+            var parentIndex = 0;
+
+            var i = startIdx;
+            while (i != endIdx)
+            {
+                var particle = pool.FromIndex(i);
+                var randSeed = particle.Get(rndField);
+
+                var particleRandVel = leftCorner;
+
+                particleRandVel += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
+                particleRandVel += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
+                particleRandVel += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
+
+                if (parentParticlesCount > 0)
+                {
+                    var parentParticleVelocity = new Vector3(0, 0, 0);
+
+                    // Spawn is fixed - parent particles have spawned a very specific number of children each
+                    if (spawnControlField.IsValid())
+                    {
+                        while (sequentialParentParticles == 0)
+                        {
+                            // Early out - no more fixed number children. Rest of the particles (if any) are skipped intentionally
+                            if (sequentialParentIndex >= parentParticlesCount)
+                                return;
+
+                            parentIndex = sequentialParentIndex;
+                            var tempParentParticle = parentPool.FromIndex(parentIndex);
+                            sequentialParentIndex++;
+
+                            var childrenAttribute = (*((ParticleChildrenAttribute*)tempParentParticle[spawnControlField]));
+
+                            sequentialParentParticles = (int)childrenAttribute.ParticlesToEmit;
+                        }
+
+                        sequentialParentParticles--;
+
+                        var parentParticle = parentPool.FromIndex(parentIndex);
+                        parentParticleVelocity = (*((Vector3*)parentParticle[velFieldParent]));
+                    }
+
+                    // Spawn is not fixed - pick a parent at random
+                    else
+                    {
+                        parentIndex = (int)(parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
+                        var parentParticle = parentPool.FromIndex(parentIndex);
+
+                        parentParticleVelocity = (*((Vector3*)parentParticle[velFieldParent]));
+                    }
+
+
+                    // Convert from Local -> World space if needed
+                    if (Parent.SimulationSpace == EmitterSimulationSpace.Local)
+                    {
+                        WorldRotation.Rotate(ref parentParticleVelocity);
+                        parentParticleVelocity *= WorldScale.X;
+                    }
+
+                    particleRandVel += parentParticleVelocity * ParentVelocityFactor;
+                }
+
+
+                (*((Vector3*)particle[velField])) = particleRandVel;
+
+                i = (i + 1) % maxCapacity;
+            }
+        }
+        
 
     }
 }

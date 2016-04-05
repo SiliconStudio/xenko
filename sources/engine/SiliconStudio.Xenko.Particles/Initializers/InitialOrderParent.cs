@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Particles.Spawners;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     /// <summary>
-    /// The <see cref="InitialOrderParent"/> is an initializer which sets the particle's initial position at the time of spawning
+    /// The <see cref="InitialOrderParent"/> is an initializer which sets the particle's spawn order based on a followed (parent) particle's order
     /// </summary>
     [DataContract("InitialOrderParent")]
     [Display("Order from parent")]
@@ -29,6 +29,10 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
+            if (!pool.FieldExists(ParticleFields.Order))
+                return;
+
+            // Collect the total number of living particles in the parent pool which have a Order field
             var parentPool = Parent?.Pool;
             var parentParticlesCount = parentPool?.LivingParticles ?? 0;
             var orderFieldParent = parentPool?.GetField(ParticleFields.Order) ?? ParticleFieldAccessor<uint>.Invalid();
@@ -37,9 +41,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             {
                 parentParticlesCount = 0;
             }
-
-            if (!pool.FieldExists(ParticleFields.Order))
-                return;
 
             var spawnControlField = GetSpawnControlField();
 
@@ -62,13 +63,14 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 {
                     uint parentParticleOrder = 0;
 
-                    // It changes here
+                    // Spawn is fixed - parent particles have spawned a very specific number of children each
                     if (spawnControlField.IsValid())
                     {
                         while (sequentialParentParticles == 0)
                         {
+                            // Early out - no more fixed number children. Rest of the particles (if any) are skipped intentionally
                             if (sequentialParentIndex >= parentParticlesCount)
-                                return; // Early out - or should we continue; ?
+                                return;
 
                             parentIndex = sequentialParentIndex;
                             var tempParentParticle = parentPool.FromIndex(parentIndex);
@@ -96,6 +98,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                             particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
                         }
                     }
+
+                    // Spawn is not fixed - pick a parent at random
                     else
                     {
                         var randSeed = particle.Get(randomField);
@@ -124,7 +128,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-
 
         /// <inheritdoc />
         protected override void RemoveControlGroup()

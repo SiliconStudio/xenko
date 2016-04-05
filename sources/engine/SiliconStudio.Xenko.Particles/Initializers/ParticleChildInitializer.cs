@@ -18,13 +18,24 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMemberIgnore]
         protected ParticleEmitter Parent;
 
+        /// <summary>
+        /// Referenced parent emitter's name
+        /// </summary>
+        [DataMemberIgnore]
         private string parentName;
 
         /// <summary>
         /// <c>true</c> is the parent's name has changed or the particle system has been invalidated
         /// </summary>
+        [DataMemberIgnore]
         private bool isParentNameDirty = true;
 
+        /// <summary>
+        /// Name by which to reference a followed (parent) emitter
+        /// </summary>
+        /// <userdoc>
+        /// Name by which to reference a followed (parent) emitter
+        /// </userdoc>
         [DataMember(11)]
         [Display("Parent emitter")]
         public string ParentName
@@ -95,22 +106,20 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             isParentNameDirty = true;
         }
 
-
         /// <summary>
         /// Removes the old required control group field from the parent emitter's pool
         /// </summary>
         protected virtual void RemoveControlGroup()
         {
-            // TODO Remove required fields from the parent
+            // Override this method to remove required fields from the parent
         }
-
 
         /// <summary>
         /// Adds the required control group field to the parent emitter's pool
         /// </summary>
         protected virtual void AddControlGroup()
         {
-            // TODO Add required fields to the parent
+            // Override this method to add required fields to the parent
         }
     }
 }

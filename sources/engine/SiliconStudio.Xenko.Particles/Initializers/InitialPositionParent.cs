@@ -27,9 +27,45 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             DisplayParticleScaleUniform = true;
         }
 
+
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
+        [DataMember(20)]
+        [Display("Random Seed")]
+        public uint SeedOffset { get; set; } = 0;
+
+        /// <summary>
+        /// The left bottom back corner of the box
+        /// </summary>
+        /// <userdoc>
+        /// The left bottom back corner of the box
+        /// </userdoc>
+        [DataMember(30)]
+        [Display("Position min")]
+        public Vector3 PositionMin { get; set; } = new Vector3(-1, 1, -1);
+
+        /// <summary>
+        /// The right upper front corner of the box
+        /// </summary>
+        /// <userdoc>
+        /// The right upper front corner of the box
+        /// </userdoc>
+        [DataMember(40)]
+        [Display("Position max")]
+        public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
+
+
         /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
+            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
+                return;
+
+            // Collect the total number of living particles in the parent pool which have a Position field
             var parentPool = Parent?.Pool;
             var parentParticlesCount = parentPool?.LivingParticles ?? 0;
             var posFieldParent = parentPool?.GetField(ParticleFields.Position) ?? ParticleFieldAccessor<Vector3>.Invalid();
@@ -38,9 +74,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 parentParticlesCount = 0;
             }
             
-            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
-                return;
-
             var spawnControlField = GetSpawnControlField();
 
             var posField = pool.GetField(ParticleFields.Position);
@@ -83,13 +116,14 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 {
                     var parentParticlePosition = new Vector3(0, 0, 0);
 
-                    // It changes here
+                    // Spawn is fixed - parent particles have spawned a very specific number of children each
                     if (spawnControlField.IsValid())
                     {
                         while (sequentialParentParticles == 0)
                         {
+                            // Early out - no more fixed number children. Rest of the particles (if any) are skipped intentionally
                             if (sequentialParentIndex >= parentParticlesCount)
-                                return; // Early out - or should we continue; ?
+                                return;
 
                             parentIndex = sequentialParentIndex;
                             var tempParentParticle = parentPool.FromIndex(parentIndex);
@@ -105,6 +139,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                         var parentParticle = parentPool.FromIndex(parentIndex);
                         parentParticlePosition = (*((Vector3*)parentParticle[posFieldParent]));
                     }
+
+                    // Spawn is not fixed - pick a parent at random
                     else
                     {
                         parentIndex = (int)(parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
@@ -132,35 +168,5 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
         
-        /// <summary>
-        /// The seed offset used to match or separate random values
-        /// </summary>
-        /// <userdoc>
-        /// The seed offset used to match or separate random values
-        /// </userdoc>
-        [DataMember(20)]
-        [Display("Random Seed")]
-        public uint SeedOffset { get; set; } = 0;
-
-        /// <summary>
-        /// The left bottom back corner of the box
-        /// </summary>
-        /// <userdoc>
-        /// The left bottom back corner of the box
-        /// </userdoc>
-        [DataMember(30)]
-        [Display("Position min")]
-        public Vector3 PositionMin { get; set; } = new Vector3(-1, 1, -1);
-
-        /// <summary>
-        /// The right upper front corner of the box
-        /// </summary>
-        /// <userdoc>
-        /// The right upper front corner of the box
-        /// </userdoc>
-        [DataMember(40)]
-        [Display("Position max")]
-        public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
-
     }
 }

@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Particles.Spawners;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     /// <summary>
-    /// The <see cref="InitialSizeParent"/> is an initializer which sets the particle's initial size at the time of spawning
+    /// The <see cref="InitialSizeParent"/> is an initializer which sets the particle's size based on a followed (parent) particle's size
     /// </summary>
     [DataContract("InitialSizeParent")]
     [Display("Size from parent")]
@@ -23,13 +23,37 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             RequiredFields.Add(ParticleFields.RandomSeed);
 
             // DisplayPosition = true; // Always inherit the position and don't allow to opt out
-            DisplayParticleRotation = true;
             DisplayParticleScaleUniform = true;
         }
+
+
+        /// <summary>
+        /// The seed offset used to match or separate random values
+        /// </summary>
+        /// <userdoc>
+        /// The seed offset used to match or separate random values
+        /// </userdoc>
+        [DataMember(20)]
+        [Display("Random Seed")]
+        public uint SeedOffset { get; set; } = 0;
+
+        /// <summary>
+        /// Minimum and maximum values for the size field
+        /// </summary>
+        /// <userdoc>
+        /// Minimum and maximum values for the size field
+        /// </userdoc>
+        [DataMember(30)]
+        [Display("Random size")]
+        public Vector2 RandomSize { get; set; } = new Vector2(0.5f, 1);
+
 
         /// <inheritdoc />
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
+            if (!pool.FieldExists(ParticleFields.Size) || !pool.FieldExists(ParticleFields.RandomSeed))
+                return;
+
             var parentPool = Parent?.Pool;
             var parentParticlesCount = parentPool?.LivingParticles ?? 0;
             var sizeFieldParent = parentPool?.GetField(ParticleFields.Size) ?? ParticleFieldAccessor<float>.Invalid();
@@ -37,9 +61,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             {
                 parentParticlesCount = 0;
             }
-
-            if (!pool.FieldExists(ParticleFields.Size) || !pool.FieldExists(ParticleFields.RandomSeed))
-                return;
 
             var spawnControlField = GetSpawnControlField();
 
@@ -65,13 +86,14 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 {
                     var parentParticleSize = 1f;
 
-                    // It changes here
+                    // Spawn is fixed - parent particles have spawned a very specific number of children each
                     if (spawnControlField.IsValid())
                     {
                         while (sequentialParentParticles == 0)
                         {
+                            // Early out - no more fixed number children. Rest of the particles (if any) are skipped intentionally
                             if (sequentialParentIndex >= parentParticlesCount)
-                                return; // Early out - or should we continue; ?
+                                return;
 
                             parentIndex = sequentialParentIndex;
                             var tempParentParticle = parentPool.FromIndex(parentIndex);
@@ -87,6 +109,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                         var parentParticle = parentPool.FromIndex(parentIndex);
                         parentParticleSize = (*((float*)parentParticle[sizeFieldParent]));
                     }
+
+                    // Spawn is not fixed - pick a parent at random
                     else
                     {
                         parentIndex = (int)(parentParticlesCount * randSeed.GetFloat(RandomOffset.Offset1A + ParentSeedOffset));
@@ -112,25 +136,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
-        /// <summary>
-        /// The seed offset used to match or separate random values
-        /// </summary>
-        /// <userdoc>
-        /// The seed offset used to match or separate random values
-        /// </userdoc>
-        [DataMember(20)]
-        [Display("Random Seed")]
-        public uint SeedOffset { get; set; } = 0;
-
-        /// <summary>
-        /// Minimum and maximum values for the size field
-        /// </summary>
-        /// <userdoc>
-        /// Minimum and maximum values for the size field
-        /// </userdoc>
-        [DataMember(30)]
-        [Display("Random size")]
-        public Vector2 RandomSize { get; set; } = new Vector2(0.5f, 1);
 
     }
 }

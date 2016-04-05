@@ -4,23 +4,35 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Particles.Updaters;
 
 namespace SiliconStudio.Xenko.Particles.Spawners
 {
     /// <summary>
-    /// A particle spawner which continuously spawns particles. Number of particles to be spawned is given in seconds.
+    /// A particle spawner which continuously spawns particles based on a condition set in a followed (parent) emitter
     /// </summary>
+    /// <userdoc>
+    /// A particle spawner which continuously spawns particles based on a condition set in a followed (parent) emitter
+    /// </userdoc>
     [DataContract("SpawnerFromParent")]
     [Display("From parent")]
     public sealed class SpawnerFromParent : ParticleSpawner
     {
+        /// <summary>
+        /// Some initializers require fine control between parent and child emitters. Use the control group to assign such meta-fields.
+        /// </summary>
+        [DataMemberIgnore]
+        private ParentControlFlag parentControlFlag = ParentControlFlag.Group00;
+
         /// <summary>
         /// Referenced parent emitter
         /// </summary>
         [DataMemberIgnore]
         protected ParticleEmitter Parent;
 
+        /// <summary>
+        /// Referenced parent emitter's name
+        /// </summary>
+        [DataMemberIgnore]
         private string parentName;
 
         /// <summary>
@@ -28,6 +40,24 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private bool isParentNameDirty = true;
 
+        /// <summary>
+        /// Carry over value is used for the fractional part when number of spawned particles this frame is not an integer
+        /// </summary>
+        [DataMemberIgnore]
+        private float carryOver;
+
+        /// <summary>
+        /// Minimum and maximum number of particles to spawn every time the condition is met
+        /// </summary>
+        [DataMemberIgnore]
+        private Vector2 spawnCount;
+
+        /// <summary>
+        /// Name by which to reference a followed (parent) emitter
+        /// </summary>
+        /// <userdoc>
+        /// Name by which to reference a followed (parent) emitter
+        /// </userdoc>
         [DataMember(30)]
         [Display("Parent emitter")]
         public string ParentName
@@ -39,7 +69,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                 isParentNameDirty = true;
             }
         }
-
 
         /// <summary>
         /// Some initializers require fine control between parent and child emitters. Use the control group to assign such meta-fields.
@@ -56,7 +85,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                 AddControlGroup();
             }
         }
-        private ParentControlFlag parentControlFlag = ParentControlFlag.Group00;
 
         /// <summary>
         /// Removes the old required control group field from the parent emitter's pool
@@ -95,21 +123,9 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             return Parent?.Pool?.GetField(ParticleFields.ChildrenFlags[groupIndex]) ?? ParticleFieldAccessor<ParticleChildrenAttribute>.Invalid();
         }
 
-        [DataMemberIgnore]
-        private float carryOver;
-
-        [DataMemberIgnore]
-        private Vector2 spawnCount;
-
         /// <summary>
-        /// Default constructor
+        /// <see cref="ParticleSpawnTrigger"/> provides a class which checks if the spawning condition has triggered
         /// </summary>
-        public SpawnerFromParent()
-        {
-            spawnCount = new Vector2(2, 5);
-            carryOver = 0f;
-        }
-
         [DataMember(45)]
         public ParticleSpawnTrigger ParticleSpawnTrigger { get; set; }
 
@@ -131,6 +147,15 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             }
         }
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public SpawnerFromParent()
+        {
+            spawnCount = new Vector2(2, 5);
+            carryOver = 0f;
+        }
+
         /// <inheritdoc />
         public override int GetMaxParticlesPerSecond()
         {
@@ -144,7 +169,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 RemoveControlGroup();
 
-                Parent = emitter.CahcedParticleSystem?.GetEmitterByName(ParentName);
+                Parent = emitter.CachedParticleSystem?.GetEmitterByName(ParentName);
 
                 AddControlGroup();
 
