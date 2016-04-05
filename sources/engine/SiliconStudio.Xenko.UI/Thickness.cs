@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.UI
                     case 5: return Back;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Vector2 run from 0 to 1, inclusive.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Indices for Vector2 run from 0 to 1, inclusive.");
             }
         }
     }

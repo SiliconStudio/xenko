@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                         RaiseEvent(new RoutedEventArgs(UncheckedEvent));
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("value");
+                        throw new ArgumentOutOfRangeException(nameof(value));
                 }
             }
         }

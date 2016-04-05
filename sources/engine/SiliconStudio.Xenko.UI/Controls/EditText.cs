@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         private static void CheckStrictlyPositive(ref int value)
         {
             if (value < 1)
-                throw new ArgumentOutOfRangeException("value");
+                throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         private static void InvalidateFont(object propertyOwner, PropertyKey<SpriteFont> propertyKey, SpriteFont propertyOldValue)
@@ -215,7 +215,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         public EditText(IServiceRegistry services)
         {
             if (services == null)
-                throw new ArgumentNullException("services");
+                throw new ArgumentNullException(nameof(services));
 
             game = services.GetService(typeof(IGame)) as GameBase;
             if(game == null)
@@ -304,7 +304,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets a value indicating if the text should be hided when displayed.
         /// </summary>
-        protected bool ShouldHideText { get { return (inputType & InputTypeFlags.Password) != 0; } }
+        protected bool ShouldHideText => (inputType & InputTypeFlags.Password) != 0;
 
         /// <summary>
         /// Gets or sets the padding inside a control.
@@ -452,8 +452,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the value indicating if the blinking caret is currently visible or not.
         /// </summary>
-        public bool IsCaretVisible { get { return IsSelectionActive && !caretHided; } }
-        
+        public bool IsCaretVisible => IsSelectionActive && !caretHided;
+
         /// <summary>
         /// Reset the caret blinking to initial state (visible).
         /// </summary>
@@ -528,10 +528,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the total number of lines in the text box.
         /// </summary>
-        public int LineCount
-        {
-            get { return GetLineCountImpl(); }
-        }
+        public int LineCount => GetLineCountImpl();
 
         /// <summary>
         /// Gets or sets the alignment of the text to display.
@@ -570,7 +567,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             set
             {
                 if(value == null)
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
 
                 var stringBfr = Text.Substring(0, SelectionStart);
                 var stringAft = Text.Substring(SelectionStart + SelectionLength);
@@ -631,7 +628,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
 
                 SetTextInternal(value, true);
 
@@ -681,10 +678,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The actual text to show into the edit text.
         /// </summary>
-        public string TextToDisplay
-        {
-            get { return textToDisplay; }
-        }
+        public string TextToDisplay => textToDisplay;
 
         /// <summary>
         /// Appends a string to the contents of a text control.
@@ -693,7 +687,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         public void AppendText(string textData)
         {
             if (textData == null) 
-                throw new ArgumentNullException("textData");
+                throw new ArgumentNullException(nameof(textData));
 
             Text += textData;
         }

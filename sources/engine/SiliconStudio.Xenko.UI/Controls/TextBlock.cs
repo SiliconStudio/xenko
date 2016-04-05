@@ -7,7 +7,6 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -55,10 +54,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Returns the text to display during the draw call.
         /// </summary>
-        public virtual string TextToDisplay
-        {
-            get { return WrapText? wrappedText: Text; }
-        }
+        public virtual string TextToDisplay => WrapText? wrappedText: Text;
 
         /// <summary>
         /// Gets or sets the font of the text block
@@ -101,10 +97,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (textSize.HasValue)
                     return textSize.Value;
 
-                if (Font != null)
-                    return Font.Size;
-
-                return 0;
+                return Font?.Size ?? 0;
             }
             set
             {
@@ -133,7 +126,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="DynamicSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the text block should generate <see cref="Graphics.Font.DynamicSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>

@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         private static void ValidateScrollingSpeedCallback(ref float value)
         {
             if (value < 0)
-                throw new ArgumentOutOfRangeException("value");
+                throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         private static void RepeatTextInvalidationCallback(object propertyOwner, PropertyKey<bool> propertyKey, bool propertyOldValue)
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <param name="text">The text to append</param>
         public void AppendText(string text)
         {
-            if (text == null) throw new ArgumentNullException("text");
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             textHasBeenAppended = true;
             Text += text;
@@ -139,11 +139,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             AccumulatedWidth = 0;
         }
 
-        public override string TextToDisplay
-        {
-            get { return textToDisplay; }
-        }
-        
+        public override string TextToDisplay => textToDisplay;
+
         /// <summary>
         /// Calculate the width of the text to display in virtual pixels size.
         /// </summary>

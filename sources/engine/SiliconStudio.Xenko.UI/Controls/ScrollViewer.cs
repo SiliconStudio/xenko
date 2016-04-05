@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("ScrollViewer - Name={Name}")]
     public class ScrollViewer : ContentControl
     {
-        private readonly static Dictionary<ScrollingMode, int[]> scrollModeToDirectionIndices = new Dictionary<ScrollingMode,int[]>
+        private readonly static Dictionary<ScrollingMode, int[]> ScrollModeToDirectionIndices = new Dictionary<ScrollingMode,int[]>
             {
                 { ScrollingMode.None, new int[0] },
                 { ScrollingMode.Horizontal, new[] { 0 }},
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 { ScrollingMode.InDepthHorizontal, new[] { 2, 0 }},
             };
 
-        private static readonly HashSet<ScrollingMode>[] orientationToSupportedScrollingModes =
+        private static readonly HashSet<ScrollingMode>[] OrientationToSupportedScrollingModes =
             {
                 new HashSet<ScrollingMode> { ScrollingMode.Horizontal, ScrollingMode.HorizontalVertical, ScrollingMode.InDepthHorizontal},
                 new HashSet<ScrollingMode> { ScrollingMode.HorizontalVertical, ScrollingMode.Vertical, ScrollingMode.VerticalInDepth},
@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// If <see cref="UIElement.IsArrangeValid"/> is <value>false</value>, <see cref="ScrollPosition"/> contains the position of the scrolling 
         /// before the action that actually invalidated the layout.</para>
         /// </remarks>
-        public Vector3 ScrollPosition { get { return -ScrollOffsets; } }
+        public Vector3 ScrollPosition => -ScrollOffsets;
 
         private static void ValidateDecelarationProperty(ref float value)
         {
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <returns><value>true</value> if the scroll viewer can scroll in the provided direction, or else <value>false</value></returns>
         public bool CanScroll(Orientation direction)
         {
-            return orientationToSupportedScrollingModes[(int)direction].Contains(ScrollMode);
+            return OrientationToSupportedScrollingModes[(int)direction].Contains(ScrollMode);
         }
 
         private class ScrollBarSorter : Comparer<UIElement>
@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void SetScrollBarsColor(ref Color color)
         {
-            foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+            foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 scrollBars[index].BarColor = color;
         }
 
@@ -295,10 +295,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the scrolling translation that occurred during the last frame
         /// </summary>
-        protected Vector3 LastFrameTranslation 
-        {
-            get { return lastFrameTranslation; }
-        }
+        protected Vector3 LastFrameTranslation => lastFrameTranslation;
 
         /// <summary>
         /// The viewer allowed scrolling mode.
@@ -413,7 +410,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
 
             // decrease the scrolling speed used for next frame
-            foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+            foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 CurrentScrollingSpeed[index] = Math.Sign(CurrentScrollingSpeed[index]) * Math.Max(0, Math.Abs(CurrentScrollingSpeed[index]) - elapsedSeconds * Deceleration);
 
             // update the scrolling position
@@ -508,7 +505,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (ContentAsScrollInfo != null)
             {
                 var correctedScrollPosition = Vector3.Zero;
-                foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+                foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                     correctedScrollPosition[index] = scrollAbsolutePosition[index];
 
                 // reset content scroll position to the beginning of the document and then scroll of the absolute position
@@ -557,12 +554,11 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return;
 
             var correctedScrollTranslation = Vector3.Zero;
-            foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+            foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 correctedScrollTranslation[index] = scrollTranslation[index];
 
             // ask the content to internally scroll
-            if (ContentAsScrollInfo != null)
-                ContentAsScrollInfo.ScrollOf(correctedScrollTranslation);
+            ContentAsScrollInfo?.ScrollOf(correctedScrollTranslation);
 
             if (IsArrangeValid) // the children size informations are still valid -> perform scrolling right away
             {
@@ -585,7 +581,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             var childRenderSizeWithPadding = CalculateSizeWithoutThickness(ref childRenderSizeWithMargins, ref padding);
 
             // update scroll viewer scroll offsets
-            foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+            foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
             {
                 // reset scroll offsets if scrolling is delegated to content
                 if (ContentAsScrollInfo != null && ContentAsScrollInfo.CanScroll((Orientation)index))
@@ -635,7 +631,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 var childAvailableSizeWithMargins = CalculateSizeWithoutThickness(ref availableSizeWithoutMargins, ref padding);
 
                 // if the content is not scrollable perform space virtualization from the scroll viewer side.
-                foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+                foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 {
                     if (ContentAsScrollInfo != null && ContentAsScrollInfo.CanScroll((Orientation)index))
                         continue;
@@ -663,7 +659,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 // calculate the final size given to the child (scroll view virtual size)
                 var childSizeWithoutPadding = CalculateSizeWithoutThickness(ref finalSizeWithoutMargins, ref padding);
-                foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+                foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 {
                     if (ContentAsScrollInfo == null || !ContentAsScrollInfo.CanScroll((Orientation)index))
                         childSizeWithoutPadding[index] = Math.Max(VisualContent.DesiredSizeWithMargins[index], childSizeWithoutPadding[index]);
@@ -706,7 +702,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 scrollBar.Arrange(Vector3.Zero, false);
 
             // set the size of the bar we want to show
-            foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+            foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
             {
                 var sizeChildren = (ContentAsScrollInfo != null) ? 
                     ContentAsScrollInfo.Extent[index] : 
@@ -751,7 +747,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             // set the world matrices of the scroll bars
             if (shouldUpdateScrollBars && VisualContent != null)
             {
-                foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+                foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 {
                     var scrollBar = scrollBars[index];
                     var barPosition = RenderSize / 2 - scrollBar.RenderSize;
@@ -812,7 +808,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             // accumulate all the touch moves of the frame
             var translation = args.WorldTranslation;
-            foreach (var index in scrollModeToDirectionIndices[ScrollMode])
+            foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
                 lastFrameTranslation[index] -= translation[index];
 
             accumulatedTranslation += lastFrameTranslation;

@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets the <see cref="UIElementCollection"/> of child elements of this Panel.
         /// </summary>
-        public UIElementCollection Children { get; private set; }
+        public UIElementCollection Children { get; }
 
         /// <summary>
         /// Invalidation callback that sort panel children back after a modification of a child ZIndex.
@@ -82,10 +82,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             var uiElement = (UIElement)element;
             var parentAsPanel = uiElement.VisualParent as Panel;
 
-            if(parentAsPanel == null)
-                return;
-
-            parentAsPanel.VisualChildrenCollection.Sort(PanelChildrenSorter);
+            parentAsPanel?.VisualChildrenCollection.Sort(PanelChildrenSorter);
         }
 
         /// <summary>
