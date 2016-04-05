@@ -34,6 +34,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dirtiables\DirtiableManager.cs" />
+    <Compile Include="Dirtiables\DirtiableSnapshot.cs" />
+    <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
     <Compile Include="Transactions\IAsyncTransaction.cs" />
     <Compile Include="Transactions\IOperation.cs" />

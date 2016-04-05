@@ -27,6 +27,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dirtiables\SimpleDirtiable.cs" />
+    <Compile Include="Dirtiables\SimpleDirtiableActionItem.cs" />
+    <Compile Include="Dirtiables\TestDirtiable.cs" />
     <Compile Include="Transactions\OrderedOperation.cs" />
     <Compile Include="Transactions\SimpleOperation.cs" />
     <Compile Include="Transactions\TestTransactionEvent.cs" />
