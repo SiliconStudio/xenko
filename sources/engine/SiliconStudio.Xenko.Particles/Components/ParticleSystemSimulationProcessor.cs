@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Components
 {
@@ -99,11 +100,11 @@ namespace SiliconStudio.Xenko.Particles.Components
         }
 
         /// <inheritdoc />
-        public override void Update(GameTime time)
+        public override void Draw(RenderContext context)
         {
-            base.Update(time);
+            base.Draw(context);
 
-            float deltaTime = (float) time.Elapsed.TotalSeconds;
+            float deltaTime = (float) context.Time.Elapsed.TotalSeconds;
 
             ParticleSystems.Clear();
             foreach (var particleSystemStateKeyPair in ComponentDatas)
@@ -111,7 +112,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 if (particleSystemStateKeyPair.Value.ParticleSystemComponent.Enabled)
                 {
                     // Exposed variables
-                   
+
                     if (!particleSystemStateKeyPair.Value.ParticleSystemComponent.ParticleSystem.Enabled)
                         continue;
 
