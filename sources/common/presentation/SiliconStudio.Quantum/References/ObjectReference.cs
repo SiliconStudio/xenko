@@ -108,12 +108,16 @@ namespace SiliconStudio.Quantum.References
             IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(ObjectValue, nodeFactory);
             if (targetNode != null)
             {
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                    throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
-                if (TargetNode != null || TargetGuid != Guid.Empty)
-                    throw new InvalidOperationException("TargetNode has already been set.");
+                // TODO: Disabled this exception which is triggered when a circular reference is made. This will be properly fixed when we'll get rid of the ShouldProcessReference mechanism.
+                //if (TargetNode != null || TargetGuid != Guid.Empty)
+                //    throw new InvalidOperationException("TargetNode has already been set.");
+
                 if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");
+
                 TargetNode = targetNode;
                 TargetGuid = targetNode.Guid;
             }

@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Application.Current.FindResource(value);
+            return Application.Current.TryFindResource(value);
         }
     }
 }
