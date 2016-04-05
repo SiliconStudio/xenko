@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>The stack panel scroll position is expressed element index units.
         /// For example: 0 represents the first element, 1 represents the second element, 1.33 represents a third of the second element, etc...</remarks>
-        public float ScrollPosition { get { return scrollPosition; } }
+        public float ScrollPosition => scrollPosition;
 
         private bool itemVirtualizationEnabled;
 
@@ -332,9 +332,9 @@ namespace SiliconStudio.Xenko.UI.Panels
             return direction == Orientation;
         }
 
-        public Vector3 Extent { get { return extent; } }
+        public Vector3 Extent => extent;
 
-        public Vector3 Offset { get { return offset; } }
+        public Vector3 Offset => offset;
 
         public Vector3 Viewport { get; private set; }
 
@@ -789,9 +789,6 @@ namespace SiliconStudio.Xenko.UI.Panels
             return child.RenderSize[dimension] + child.Margin[dimension] + child.Margin[dimension + 3];
         }
 
-        protected internal override FastCollection<UIElement> HitableChildren
-        {
-            get { return visibleChildren; }
-        }
+        protected internal override FastCollection<UIElement> HitableChildren => visibleChildren;
     }
 }

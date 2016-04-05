@@ -54,15 +54,14 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if(value < 0)
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 if(value < MinimumSize)
                     throw new InvalidOperationException("The provided maximum value is smaller than the current minimum value");
 
                 maximumSize = value;
 
-                if (DefinitionChanged != null)
-                    DefinitionChanged(this, EventArgs.Empty);
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -77,15 +76,14 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 
                 if (value > MaximumSize)
                     throw new InvalidOperationException("The provided minimum value is bigger than the current maximum value");
 
                 minimumSize = value;
 
-                if (DefinitionChanged != null)
-                    DefinitionChanged(this, EventArgs.Empty);
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -101,10 +99,8 @@ namespace SiliconStudio.Xenko.UI
                     return;
 
                 type = value;
-
-                var handler = DefinitionChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
+                
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -119,13 +115,11 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 sizeValue = value;
-
-                var handler = DefinitionChanged;
-                if (handler!= null)
-                    handler(this, EventArgs.Empty);
+                
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

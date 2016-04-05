@@ -478,7 +478,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     character = '/';
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("key");
+                    throw new ArgumentOutOfRangeException(nameof(key));
             }
 
             return true;

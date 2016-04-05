@@ -22,38 +22,32 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// </summary>
         public IAssetManager Asset { get; private set; }
 
-        private IGraphicsDeviceService GraphicsDeviceService { get; set; }
+        private IGraphicsDeviceService GraphicsDeviceService { get; }
 
         /// <summary>
         /// A reference to the game graphic device.
         /// </summary>
-        public GraphicsDevice GraphicsDevice 
-        { 
-            get
-            {
-                return GraphicsDeviceService == null? null: GraphicsDeviceService.GraphicsDevice;
-            }
-        }
+        public GraphicsDevice GraphicsDevice => GraphicsDeviceService?.GraphicsDevice;
 
         /// <summary>
         /// Gets a reference to the UI image drawer.
         /// </summary>
-        public UIBatch Batch { get { return UI.Batch; } }
+        public UIBatch Batch => UI.Batch;
 
         /// <summary>
         /// A depth stencil state that keep the stencil value in any cases.
         /// </summary>
-        public DepthStencilStateDescription KeepStencilValueState { get { return UI.KeepStencilValueState; } }
+        public DepthStencilStateDescription KeepStencilValueState => UI.KeepStencilValueState;
 
         /// <summary>
         /// A depth stencil state that increase the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilStateDescription IncreaseStencilValueState { get { return UI.IncreaseStencilValueState; } }
+        public DepthStencilStateDescription IncreaseStencilValueState => UI.IncreaseStencilValueState;
 
         /// <summary>
         /// A depth stencil state that decrease the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilStateDescription DecreaseStencilValueState { get { return UI.DecreaseStencilValueState; } }
+        public DepthStencilStateDescription DecreaseStencilValueState => UI.DecreaseStencilValueState;
 
         /// <summary>
         /// Create an instance of an UI element renderer.

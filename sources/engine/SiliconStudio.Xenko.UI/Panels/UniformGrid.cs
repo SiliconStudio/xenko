@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static void GridSizeValidator(ref int value)
         {
             if (value < 1)
-                throw new ArgumentOutOfRangeException("value");
+                throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>

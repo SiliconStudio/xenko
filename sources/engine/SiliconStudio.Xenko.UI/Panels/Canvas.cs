@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the useAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
         /// </summary>
-        private readonly static PropertyKey<bool> useAbsolutionPositionPropertyKey = new PropertyKey<bool>("useAbsolutionPositionKey", typeof(Canvas), DefaultValueMetadata.Static(false));
+        private readonly static PropertyKey<bool> UseAbsolutionPositionPropertyKey = new PropertyKey<bool>("useAbsolutionPositionKey", typeof(Canvas), DefaultValueMetadata.Static(false));
 
         /// <summary>
         /// The key to the PinOrigin dependency property. The PinOrigin indicate which point of the <see cref="UIElement"/> should be pinned to the canvas. 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static void OnRelativePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
-            element.DependencyProperties.Set(useAbsolutionPositionPropertyKey, false);
+            element.DependencyProperties.Set(UseAbsolutionPositionPropertyKey, false);
 
             InvalidateCanvasMeasure(propertyOwner, propertyKey, propertyOldValue);
         }
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static void OnAbsolutePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
-            element.DependencyProperties.Set(useAbsolutionPositionPropertyKey, true);
+            element.DependencyProperties.Set(UseAbsolutionPositionPropertyKey, true);
 
             InvalidateCanvasMeasure(propertyOwner, propertyKey, propertyOldValue);
         }
@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                 var childExtremityCorner = Vector3.Zero;
                 var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
                 var childRelativeSize = child.DependencyProperties.Get(RelativeSizePropertyKey);
-                var childUseAbsolutionPosition = child.DependencyProperties.Get(useAbsolutionPositionPropertyKey);
+                var childUseAbsolutionPosition = child.DependencyProperties.Get(UseAbsolutionPositionPropertyKey);
                 var childAbsolutePosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
                 var childRelativePosition = child.DependencyProperties.Get(RelativePositionPropertyKey);
                 for (var i = 0; i < 3; i++)
@@ -193,7 +193,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         {
             var relativePosition = child.DependencyProperties.Get(RelativePositionPropertyKey);
             var absolutePosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
-            var useAbsolutionPosition = child.DependencyProperties.Get(useAbsolutionPositionPropertyKey);
+            var useAbsolutionPosition = child.DependencyProperties.Get(UseAbsolutionPositionPropertyKey);
 
             for (var dim = 0; dim < 3; ++dim)
             {

@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                     elementRenderer = defaultFactory.TryCreateRenderer(element);
 
                 if (elementRenderer == null)
-                    throw new InvalidOperationException(string.Format("No renderer found for element {0}", element));
+                    throw new InvalidOperationException($"No renderer found for element {element}");
 
                 // cache the renderer for future uses.
                 elementIdToRenderer[element.ID] = elementRenderer;
@@ -61,8 +61,8 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
         public void RegisterRendererFactory(Type uiElementType, IElementRendererFactory factory)
         {
-            if (uiElementType == null) throw new ArgumentNullException("uiElementType");
-            if (factory == null) throw new ArgumentNullException("factory");
+            if (uiElementType == null) throw new ArgumentNullException(nameof(uiElementType));
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
 
             if(!typeof(UIElement).GetTypeInfo().IsAssignableFrom(uiElementType.GetTypeInfo()))
                 throw new InvalidOperationException(uiElementType + " is not a descendant of UIElement.");
@@ -72,8 +72,8 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
         public void RegisterRenderer(UIElement element, ElementRenderer renderer)
         {
-            if (element == null) throw new ArgumentNullException("element");
-            if (renderer == null) throw new ArgumentNullException("renderer");
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (renderer == null) throw new ArgumentNullException(nameof(renderer));
 
             elementIdToRenderer[element.ID] = renderer;
         }
