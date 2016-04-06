@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Presentation.Dirtiables;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -31,9 +31,6 @@ namespace SiliconStudio.Presentation.ViewModel
         public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
 
         /// <inheritdoc/>
-        public event EventHandler<DirtinessUpdatedEventArgs> DirtinessUpdated;
-
-        /// <inheritdoc/>
         public virtual void Dispose()
         {
             // intentionally do nothing
@@ -46,9 +43,7 @@ namespace SiliconStudio.Presentation.ViewModel
         
         void IDirtiable.UpdateDirtiness(bool value)
         {
-            var previousValue = IsDirty;
             IsDirty = value;
-            DirtinessUpdated?.Invoke(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
         }
     }
 }

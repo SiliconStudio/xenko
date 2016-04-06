@@ -26,12 +26,9 @@
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\ChangeValueCommand.cs" />
     <Compile Include="Commands\MoveItemCommand.cs" />
-    <Compile Include="Commands\NodeCommandActionItem.cs" />
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
-    <Compile Include="Commands\SimpleNodeCommandActionItem.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
-    <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
     <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
@@ -80,11 +77,6 @@
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
-      <Project>{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}</Project>
-      <Name>SiliconStudio.ActionStack</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -34,7 +34,7 @@ namespace SiliconStudio.Presentation.Transactions
         public bool RollInProgress { get; private set; }
 
         /// <inheritdoc/>
-        public int Capacity { get; }
+        public int Capacity { get; private set; }
 
         /// <inheritdoc/>
         public bool IsEmpty => Transactions.Count == 0;
@@ -207,6 +207,19 @@ namespace SiliconStudio.Presentation.Transactions
                 lastTransaction.Interface.Rollforward();
                 RollInProgress = false;
                 TransactionRollforwarded?.Invoke(this, new TransactionEventArgs(lastTransaction));
+            }
+        }
+
+        public void Resize(int newCapacity)
+        {
+            if (newCapacity < Capacity)
+            {
+                // TODO: this is minor but we should support that (potential discard, properly trigger events, etc.)
+                throw new NotSupportedException("Resizing transaction stack to a smaller size is not supported yet.");
+            }
+            lock (lockObject)
+            {
+                Capacity = newCapacity;
             }
         }
 

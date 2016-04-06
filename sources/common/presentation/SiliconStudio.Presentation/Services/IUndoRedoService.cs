@@ -4,22 +4,6 @@ using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Services
 {
-    /// <summary>
-    /// Interface for transactions of the <see cref="IUndoRedoService"/>.
-    /// </summary>
-    public interface IUndoRedoTransaction : IDisposable
-    {
-        /// <summary>
-        /// Gets or sets the name of this transaction.
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        /// Gets whether this transaction is completed.
-        /// </summary>
-        bool IsCompleted { get; }
-    }
-
     public interface IUndoRedoService
     {
         int Capacity { get; }
@@ -27,6 +11,8 @@ namespace SiliconStudio.Presentation.Services
         bool CanUndo { get; }
 
         bool CanRedo { get; }
+
+        bool UndoRedoInProgress { get; }
 
         /// <summary>
         /// Retrieves the collection of transactions registered to this service.
@@ -63,5 +49,7 @@ namespace SiliconStudio.Presentation.Services
         void Redo();
 
         void NotifySave();
+
+        void Resize(int newCapacity);
     }
 }

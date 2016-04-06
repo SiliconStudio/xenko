@@ -34,9 +34,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
     <Compile Include="Dirtiables\DirtiableSnapshot.cs" />
+    <Compile Include="Dirtiables\DirtyingOperation.cs" />
+    <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
+    <Compile Include="Dirtiables\IDirtyingOperation.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
     <Compile Include="Services\UndoRedoService.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
@@ -164,6 +168,8 @@
     <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
+    <Compile Include="ViewModel\CollectionChangeOperation.cs" />
+    <Compile Include="ViewModel\PropertyChangeOperation.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />

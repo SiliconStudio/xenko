@@ -29,11 +29,13 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override async Task Invoke(object parameter)
         {
-            ActionStack?.BeginTransaction();
-            commands.First().NodeCommand.StartCombinedInvoke();
-            await Task.WhenAll(commands.Select(x => x.Invoke(parameter)));
-            commands.First().NodeCommand.EndCombinedInvoke();
-            ActionStack?.EndTransaction($"Executed {Name}");
+            using (var transaction = ActionService.CreateTransaction())
+            {
+                commands.First().NodeCommand.StartCombinedInvoke();
+                await Task.WhenAll(commands.Select(x => x.Invoke(parameter)));
+                commands.First().NodeCommand.EndCombinedInvoke();
+                ActionService.SetName(transaction, ActionName);
+            }
         }
     }
 }

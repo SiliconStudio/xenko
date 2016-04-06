@@ -112,5 +112,11 @@ namespace SiliconStudio.Presentation.Transactions
         /// Rollforwards the first inactive transaction of the stack.
         /// </summary>
         void Rollforward();
+
+        /// <summary>
+        /// Resizes the transaction stack.
+        /// </summary>
+        /// <param name="newCapacity">The new capacity of the stack.</param>
+        void Resize(int newCapacity);
     }
 }

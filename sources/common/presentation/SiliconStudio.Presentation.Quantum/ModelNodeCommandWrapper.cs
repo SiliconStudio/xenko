@@ -28,16 +28,19 @@ namespace SiliconStudio.Presentation.Quantum
         
         public INodeCommand NodeCommand { get; }
 
-        public override async Task Invoke(object parameter)
+        public override Task Invoke(object parameter)
         {
-            ActionStack?.BeginTransaction();
-            object index;
-            var modelNode = NodePath.GetSourceNode(out index);
-            if (modelNode == null)
-                throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
+            using (var transaction = ActionService.CreateTransaction())
+            {
+                object index;
+                var modelNode = NodePath.GetSourceNode(out index);
+                if (modelNode == null)
+                    throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            NodeCommand.Execute(modelNode.Content, index, parameter);
-            ActionStack?.EndTransaction($"Execute {Name}");
+                NodeCommand.Execute(modelNode.Content, index, parameter);
+                ActionService.SetName(transaction, ActionName);
+            }
+            return Task.FromResult(0);
         }
     }
 }
