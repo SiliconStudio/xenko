@@ -288,8 +288,6 @@
     <Compile Include="ValueConverters\UPathToString.cs" />
     <Compile Include="ValueConverters\ValueConverterBase.cs" />
     <Compile Include="ValueConverters\XOrMultiConverter.cs" />
-    <Compile Include="ViewModel\ActionStack\ActionStackViewModel.cs" />
-    <Compile Include="ViewModel\ActionStack\ActionItemViewModel.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />

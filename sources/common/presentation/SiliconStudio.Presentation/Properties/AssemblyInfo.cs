@@ -56,4 +56,3 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.ValueConverters")]
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.View")]
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.ViewModel")]
-[assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.ViewModel.ActionStack")]
