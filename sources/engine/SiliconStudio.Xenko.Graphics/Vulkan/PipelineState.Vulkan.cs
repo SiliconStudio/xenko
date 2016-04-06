@@ -20,8 +20,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
         internal int[] ResourceGroupMapping;
-        internal int[] SrvBindCounts;
-        internal int[] SamplerBindCounts;
 
         // State exposed by the CommandList
         private static readonly DynamicState[] dynamicStates =
@@ -279,6 +277,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             GraphicsDevice.NativeDevice.DestroyRenderPass(NativeRenderPass);
             GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
+            GraphicsDevice.NativeDevice.DestroyPipelineLayout(NativeLayout);
 
             foreach (var nativeDescriptorSetLayout in nativeDescriptorSetLayouts)
             {

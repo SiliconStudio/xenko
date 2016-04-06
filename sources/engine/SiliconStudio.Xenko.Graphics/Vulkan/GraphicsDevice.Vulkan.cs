@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using SharpVulkan;
@@ -13,6 +14,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Diagnostics;
+using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -46,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int SamplerHandleIncrementSize;
 
         private long lastCompletedFence;
-        private FastList<Fence> fences = new FastList<Fence>(); 
+        private FastList<Fence> fences = new FastList<Fence>();
         private AutoResetEvent fenceEvent = new AutoResetEvent(false);
         internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
 
@@ -121,10 +123,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The native device.</value>
         internal Device NativeDevice
         {
-            get
-            {
-                return nativeDevice;
-            }
+            get { return nativeDevice; }
         }
 
         /// <summary>
@@ -221,9 +220,9 @@ namespace SiliconStudio.Xenko.Graphics
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_device_limits"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_object_tracker"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_image"),
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_draw_state"), // descriptor pool
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_draw_state"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
                 //Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"),
             };
 
@@ -316,7 +315,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // TODO D3D12 recycle old ones (using fences to know when GPU is done with them)
                 // TODO D3D12 ResourceStates.CopySource not working?
                 nativeUploadBufferSize = Math.Max(4 * 1024 * 1024, size);
-                
+
                 var bufferCreateInfo = new BufferCreateInfo
                 {
                     StructureType = StructureType.BufferCreateInfo,
@@ -405,8 +404,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void ReleaseDevice()
         {
-            // TODO VULKAN: Proper cleanup
+            nativeDevice.WaitIdle();
 
+            ReleaseTemporaryResources();
+            nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
             nativeDevice.Destroy();
         }
 

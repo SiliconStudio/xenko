@@ -743,6 +743,12 @@ namespace SiliconStudio.Xenko.Games
                     }
                 }
 
+                if (GraphicsDevice != null)
+                {
+                    GraphicsContext.CommandList.Dispose();
+                    GraphicsContext.ResourceGroupAllocator.Dispose();
+                }
+
                 var disposableGraphicsManager = graphicsDeviceManager as IDisposable;
                 if (disposableGraphicsManager != null)
                 {

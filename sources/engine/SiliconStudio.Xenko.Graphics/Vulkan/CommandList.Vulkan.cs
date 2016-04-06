@@ -73,11 +73,18 @@ namespace SiliconStudio.Xenko.Graphics
             Reset();
         }
 
-        public void Reset()
+        public unsafe void Reset()
         {
             CleanupRenderPass();
+            boundDescriptorSets.Clear();
 
             GraphicsDevice.ReleaseTemporaryResources();
+
+            foreach (var framebuffer in framebuffers)
+            {
+                GraphicsDevice.NativeDevice.DestroyFramebuffer(framebuffer);
+            }
+            framebuffers.Clear();
 
             //ResetSrvHeap();
             //ResetSamplerHeap();
@@ -109,6 +116,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Submit
             GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
+
+
+            // TODO VULKAN
+            GraphicsDevice.NativeCommandQueue.WaitIdle();
+            NativeCommandBuffer.Reset(CommandBufferResetFlags.None);
         }
 
         private void ClearStateImpl()
@@ -207,6 +219,10 @@ namespace SiliconStudio.Xenko.Graphics
             var scissor = new Rect2D(0, 0, (uint)Viewport.Width, (uint)Viewport.Height);
             NativeCommandBuffer.SetScissor(0, 1, &scissor);
 
+            NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, 0);
+
+            NativeCommandBuffer.SetBlendConstants(0);
+
             // Lazily set the render pass and frame buffer
             EnsureRenderPass();
 
@@ -228,8 +244,6 @@ namespace SiliconStudio.Xenko.Graphics
         public void SetPipelineState(PipelineState pipelineState)
         {
             NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, pipelineState.NativePipeline);
-
-            // The renderpass that will be started (lazily) by draw calls
             activePipeline = pipelineState;
         }
 
@@ -291,7 +305,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     StructureType = StructureType.ImageMemoryBarrier,
                     Image = texture.NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)texture.ArraySize, 0, (uint)texture.MipLevels),
+                    SubresourceRange = new ImageSubresourceRange(texture.NativeImageAspect, 0, (uint)texture.ArraySize, 0, (uint)texture.MipLevels),
                     OldLayout = oldLayout,
                     NewLayout = texture.NativeLayout,
                     SourceAccessMask = oldAccessMask,
@@ -589,7 +603,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public unsafe void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
-            return;
+            var memoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                Image = depthStencilBuffer.NativeImage,
+                SubresourceRange = new ImageSubresourceRange(depthStencilBuffer.NativeImageAspect, 0, (uint)depthStencilBuffer.ArraySize, 0, (uint)depthStencilBuffer.MipLevels),
+                OldLayout = depthStencilBuffer.NativeLayout,
+                NewLayout = ImageLayout.TransferDestinationOptimal,
+                SourceAccessMask = depthStencilBuffer.NativeAccessMask,
+                DestinationAccessMask = AccessFlags.TransferWrite,
+            };
+            NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
             var clearRange = new ImageSubresourceRange
             {
@@ -607,6 +631,18 @@ namespace SiliconStudio.Xenko.Graphics
 
             var clearValue = new ClearDepthStencilValue { Depth = depth, Stencil = stencil };
             NativeCommandBuffer.ClearDepthStencilImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, clearValue, 1, &clearRange);
+
+            memoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                Image = depthStencilBuffer.NativeImage,
+                SubresourceRange = new ImageSubresourceRange(depthStencilBuffer.NativeImageAspect, 0, (uint)depthStencilBuffer.ArraySize, 0, (uint)depthStencilBuffer.MipLevels),
+                OldLayout = ImageLayout.TransferDestinationOptimal,
+                NewLayout = depthStencilBuffer.NativeLayout,
+                SourceAccessMask = AccessFlags.TransferWrite,
+                DestinationAccessMask = depthStencilBuffer.NativeAccessMask,
+            };
+            NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
         }
 
         /// <summary>
@@ -878,7 +914,7 @@ namespace SiliconStudio.Xenko.Graphics
             var buffer = unmapped.Resource as Buffer;
             if (buffer != null)
             {
-                // TODO VULKAN: Synchronize host acccess to upload buffer?
+                CleanupRenderPass();
 
                 var memoryBarrier = new BufferMemoryBarrier
                 {
@@ -921,7 +957,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void EnsureRenderPass()
         {
+            if (activePipeline == null)
+                return;
+
             var pipelineRenderPass = activePipeline.NativeRenderPass;
+
             if (!framebufferDirty && activeRenderPass == pipelineRenderPass)
                 return;
 
@@ -935,7 +975,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Release old frame buffer
             if (activeFramebuffer != Framebuffer.Null)
             {
-                GraphicsDevice.NativeDevice.DestroyFramebuffer(activeFramebuffer);
+                throw new NotImplementedException();
+                //GraphicsDevice.NativeDevice.DestroyFramebuffer(activeFramebuffer);
                 activeFramebuffer = Framebuffer.Null;
             }           
             
@@ -957,6 +998,7 @@ namespace SiliconStudio.Xenko.Graphics
                         Layers = 1, // TODO VULKAN: Use correct view depth/array size
                     };
                     activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
+                    framebuffers.Add(activeFramebuffer);
                 }
                 framebufferDirty = false;
 
@@ -974,6 +1016,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        private List<Framebuffer> framebuffers = new List<Framebuffer>(); 
+
         private unsafe void CleanupRenderPass()
         {
             if (activeRenderPass != RenderPass.Null)
@@ -984,7 +1028,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (activeFramebuffer != Framebuffer.Null)
             {
-                GraphicsDevice.NativeDevice.DestroyFramebuffer(activeFramebuffer);
+                //GraphicsDevice.NativeDevice.DestroyFramebuffer(activeFramebuffer);
                 activeFramebuffer = Framebuffer.Null;
 
                 framebufferDirty = true;

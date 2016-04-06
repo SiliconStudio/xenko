@@ -125,5 +125,16 @@ namespace SiliconStudio.Xenko.Graphics
                 currentDescriptorPool = descriptorPools[currentDescriptorPoolIndex];
             }
         }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            foreach (var descriptorPool in descriptorPools)
+            {
+                descriptorPool.Dispose();
+            }
+            descriptorPools.Clear();
+        }
     }
 }
