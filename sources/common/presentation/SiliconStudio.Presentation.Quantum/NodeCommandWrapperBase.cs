@@ -46,7 +46,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
-            Invoke(parameter).Forget();
+            Invoke(parameter);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="parameter">The command parameter.</param>
         /// <returns>A task that completes when the command has finished.</returns>
-        public abstract Task Invoke(object parameter);
+        public abstract void Invoke(object parameter);
 
         /// <inheritdoc/>
         public override string ToString()

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -28,7 +27,7 @@ namespace SiliconStudio.Presentation.Quantum
         
         public INodeCommand NodeCommand { get; }
 
-        public override Task Invoke(object parameter)
+        public override void Invoke(object parameter)
         {
             using (var transaction = ActionService.CreateTransaction())
             {
@@ -40,7 +39,6 @@ namespace SiliconStudio.Presentation.Quantum
                 NodeCommand.Execute(modelNode.Content, index, parameter);
                 ActionService.SetName(transaction, ActionName);
             }
-            return Task.FromResult(0);
         }
     }
 }
