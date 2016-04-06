@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns>
         /// The resulting glsl AST tree.
         /// </returns>
-        public global::SiliconStudio.Shaders.Ast.Shader Convert(string hlslSourcecode, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, EffectReflection reflection, LoggerResult log)
+        public global::SiliconStudio.Shaders.Ast.Shader Convert(string hlslSourcecode, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, EffectReflection reflection, IDictionary<int, string> inputAttributeNames, LoggerResult log)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     return null;
                 }
 
-                return Convert(result, hlslEntryPoint, stage, inputHlslFilepath, reflection, log);
+                return Convert(result, hlslEntryPoint, stage, inputHlslFilepath, reflection, inputAttributeNames, log);
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns>
         /// The resulting glsl AST tree.
         /// </returns>
-        private global::SiliconStudio.Shaders.Ast.Shader Convert(ParsingResult result, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, EffectReflection reflection, LoggerResult log)
+        private global::SiliconStudio.Shaders.Ast.Shader Convert(ParsingResult result, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, EffectReflection reflection, IDictionary<int, string> inputAttributeNames, LoggerResult log)
         {
             try
             {
@@ -139,15 +139,16 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     TextureFunctionsCompatibilityProfile = isOpenGLES && !isOpenGLES3,
                     NoSwapForBinaryMatrixOperation = true,
                     UseBindingLayout = false,
-                    UseLocationLayout = false,
+                    UseLocationLayout = isVulkan,
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
-                    ViewFrustumRemap = true,
-                    FlipRenderTarget = !isVulkan,
+                    ViewFrustumRemap = !isVulkan,
+                    FlipRenderTarget = true,
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3,
                     KeepSamplers = isVulkan,
                     CombinedSamplers = reflection.SamplerStates.Select(sampler => sampler.KeyName).ToList(),
+                    InputAttributeNames = inputAttributeNames
                 };
                 convertor.Run(result);
 

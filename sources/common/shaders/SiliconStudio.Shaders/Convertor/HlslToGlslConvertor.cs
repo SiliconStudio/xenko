@@ -272,6 +272,8 @@ namespace SiliconStudio.Shaders.Convertor
         /// </value>
         public bool UseLocationLayout { get; set; }
 
+        public IDictionary<int, string> InputAttributeNames { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether texture name will be [texture] or [texture]_[sampler] for DX10 texture objects conversion.
         /// </summary>
@@ -424,9 +426,6 @@ namespace SiliconStudio.Shaders.Convertor
         /// <param name="parserResultIn">The parser result.</param>
         public void Run(ParsingResult parserResultIn)
         {
-            if (CombinedSamplers.Any())
-                Debugger.Launch();
-
             parserResult = parserResultIn;
             shader = parserResultIn.Shader;
 
@@ -2500,9 +2499,6 @@ namespace SiliconStudio.Shaders.Convertor
                         {
                             variable.InitialValue = null;
                         }
-
-                        if (UseBindingLayout)
-                            AddExplicitLayout(variable);
                     }
                     else
                     {
@@ -3157,6 +3153,9 @@ namespace SiliconStudio.Shaders.Convertor
                     else
                     {
                         variableTag.Location = location;
+
+                        if (isInput && (pipelineStage == PipelineStage.Vertex || pipelineStage == PipelineStage.Geometry))
+                            InputAttributeNames[location] = semantic.Name.Text;
                     }
 
                     location++;
@@ -3796,6 +3795,9 @@ namespace SiliconStudio.Shaders.Convertor
                                 if (int.TryParse(variableLayoutRule.Location, out locationIndex))
                                 {
                                     layoutTag.Location = locationIndex;
+
+                                    if (InputAttributeNames != null)
+                                        InputAttributeNames[locationIndex] = alias;
                                 }
                                 else
                                 {
@@ -3804,7 +3806,7 @@ namespace SiliconStudio.Shaders.Convertor
                             }
 
                             // Use output or input name
-                            layoutTag.Name = variable.Qualifiers.Contains(Ast.ParameterQualifier.Out) ? variableLayoutRule.NameOutput : variableLayoutRule.Name;
+                            layoutTag.Name = variable.Qualifiers.Contains(Ast.ParameterQualifier.Out) ? variableLayoutRule.NameOutput : variableLayoutRule.Name;                           
                         }
                     }
                     else if (constantBuffer != null)

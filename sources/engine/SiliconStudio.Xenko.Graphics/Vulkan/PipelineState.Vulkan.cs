@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Shaders;
 using Encoding = System.Text.Encoding;
 
@@ -17,7 +19,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal PipelineLayout NativeLayout;
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
-        internal PrimitiveTopology PrimitiveTopology;
         internal int[] ResourceGroupMapping;
         internal int[] SrvBindCounts;
         internal int[] SamplerBindCounts;
@@ -41,10 +42,11 @@ namespace SiliconStudio.Xenko.Graphics
             CreatePipelineLayout(pipelineStateDescription);
 
             // Create shader stages
-            var stages = CreateShaderStages(pipelineStateDescription);
-
+            Dictionary<int, string> inputAttributeNames;
+            var stages = CreateShaderStages(pipelineStateDescription, out inputAttributeNames);
 
             var inputAttributes = new VertexInputAttributeDescription[pipelineStateDescription.InputElements.Length];
+            int inputAttributeCount = 0;
             var inputBindings = new VertexInputBindingDescription[inputAttributes.Length];
             int inputBindingCount = 0;
 
@@ -63,13 +65,17 @@ namespace SiliconStudio.Xenko.Graphics
                 bool isCompressed;
                 VulkanConvertExtensions.ConvertPixelFormat(inputElement.Format, out format, out size, out isCompressed);
 
-                inputAttributes[inputElementIndex] = new VertexInputAttributeDescription
+                var location = inputAttributeNames.FirstOrDefault(x => x.Value == inputElement.SemanticName && inputElement.SemanticIndex == 0 || x.Value == inputElement.SemanticName + inputElement.SemanticIndex);
+                if (location.Value != null)
                 {
-                    Format = format,
-                    Offset = (uint)inputElement.AlignedByteOffset,
-                    Binding = (uint)inputElement.InputSlot,
-                    Location = (uint)inputElementIndex
-                };
+                    inputAttributes[inputAttributeCount++] = new VertexInputAttributeDescription
+                    {
+                        Format = format,
+                        Offset = (uint)inputElement.AlignedByteOffset,
+                        Binding = (uint)inputElement.InputSlot,
+                        Location = (uint)location.Key
+                    };
+                }
 
                 inputBindings[slotIndex].Binding = (uint)slotIndex;
                 inputBindings[slotIndex].InputRate = inputElement.InputSlotClass == InputClassification.Vertex ? VertexInputRate.Vertex : VertexInputRate.Instance;
@@ -121,6 +127,9 @@ namespace SiliconStudio.Xenko.Graphics
                     renderTargetBlendState++;
             }
 
+            var entryPointName = System.Text.Encoding.UTF8.GetBytes("main\0");
+
+            fixed (byte* entryPointNamePointer = &entryPointName[0])
             fixed (PipelineShaderStageCreateInfo* stagesPointer = &stages[0])
             fixed (VertexInputAttributeDescription* inputAttributesPointer = &inputAttributes[0])
             fixed (VertexInputBindingDescription* inputBindingsPointer = &inputBindings[0])
@@ -130,7 +139,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var vertexInputState = new PipelineVertexInputStateCreateInfo
                 {
                     StructureType = StructureType.PipelineVertexInputStateCreateInfo,
-                    VertexAttributeDescriptionCount = (uint)inputAttributes.Length,
+                    VertexAttributeDescriptionCount = (uint)inputAttributeCount,
                     VertexAttributeDescriptions = new IntPtr(inputAttributesPointer),
                     VertexBindingDescriptionCount = (uint)inputBindingCount,
                     VertexBindingDescriptions = new IntPtr(inputBindingsPointer),
@@ -264,6 +273,11 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.NativeDevice.DestroyRenderPass(NativeRenderPass);
             GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
 
+            foreach (var nativeDescriptorSetLayout in nativeDescriptorSetLayouts)
+            {
+                GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(nativeDescriptorSetLayout);
+            }
+
             base.OnDestroyed();
         }
 
@@ -274,23 +288,22 @@ namespace SiliconStudio.Xenko.Graphics
             var layouts = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts;
             ResourceGroupMapping = new int[layouts.Count];
 
-            // Create temporary descriptor set layouts
-
-            var nativeLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
+            // TODO VULKAN: Should we make DescriptorSetLayouts part of RootSignature?
+            nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
             for (int i = 0; i < layouts.Count; i++)
             {
                 DescriptorSetLayout.BindingInfo[] bindingInfos;
-                nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout, out bindingInfos);
+                nativeDescriptorSetLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout, out bindingInfos);
             }
 
-            //var nativeLayouts = new SharpVulkan.DescriptorSetLayout[resourceGroups.Count];
+            //var nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[resourceGroups.Count];
             //for (int i = 0; i < resourceGroups.Count; i++)
             //{
             //    var layoutIndex = resourceGroups[i] == null ? 0 : layouts.FindIndex(x => x.Name == resourceGroups[i]);
             //    if (layoutIndex != -1)
             //    {
             //        DescriptorSetLayout.BindingInfo[] bindingInfos;
-            //        nativeLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[layoutIndex].Layout, out bindingInfos);
+            //        nativeDescriptorSetLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[layoutIndex].Layout, out bindingInfos);
 
             //        ResourceGroupMapping[layoutIndex] = i;
             //    }
@@ -301,44 +314,56 @@ namespace SiliconStudio.Xenko.Graphics
             //            StructureType = StructureType.DescriptorSetLayoutCreateInfo,
             //            BindingCount = 0,
             //        };
-            //        nativeLayouts[i] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref emptyLayout);
+            //        nativeDescriptorSetLayouts[i] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref emptyLayout);
             //    }
             //}
 
             // Create pipeline layout
-            fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeLayouts[0])
+            if (nativeDescriptorSetLayouts.Length > 0)
             {
-                var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
+                fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeDescriptorSetLayouts[0])
                 {
-                    StructureType = StructureType.PipelineLayoutCreateInfo,
-                    SetLayoutCount = (uint)nativeLayouts.Length,
-                    SetLayouts = new IntPtr(nativeDescriptorSetLayoutsPointer),
-                };
-                NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
+                    var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
+                    {
+                        StructureType = StructureType.PipelineLayoutCreateInfo,
+                        SetLayoutCount = (uint)nativeDescriptorSetLayouts.Length,
+                        SetLayouts = new IntPtr(nativeDescriptorSetLayoutsPointer),
+                    };
+                    NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
+                }
             }
+            else
             {
+                var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo { StructureType = StructureType.PipelineLayoutCreateInfo };
+                NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
             }
         }
 
-        private unsafe PipelineShaderStageCreateInfo[] CreateShaderStages(PipelineStateDescription pipelineStateDescription)
+        private unsafe PipelineShaderStageCreateInfo[] CreateShaderStages(PipelineStateDescription pipelineStateDescription, out Dictionary<int, string> inputAttributeNames)
         {
             var stages = pipelineStateDescription.EffectBytecode.Stages;
             var nativeStages = new PipelineShaderStageCreateInfo[stages.Length];
+
+            inputAttributeNames = null;
 
             // GLSL converter always outputs entry point main()
             var entryPoint = Encoding.UTF8.GetBytes("main\0");
 
             for (int i = 0; i < stages.Length; i++)
             {
+                var shaderBytecode = BinarySerialization.Read<ShaderInputBytecode>(stages[i].Data);
+                if (stages[i].Stage == ShaderStage.Vertex)
+                    inputAttributeNames = shaderBytecode.InputAttributeNames;
+
                 fixed (byte* entryPointPointer = &entryPoint[0])
-                fixed (byte* codePointer = &stages[i].Data[0])
+                fixed (byte* codePointer = &shaderBytecode.Data[0])
                 {
                     // Create shader module
                     var moduleCreateInfo = new ShaderModuleCreateInfo
                     {
                         StructureType = StructureType.ShaderModuleCreateInfo,
                         Code = new IntPtr(codePointer),
-                        CodeSize = stages[i].Data.Length
+                        CodeSize = shaderBytecode.Data.Length
                     };
 
                     // Create stage

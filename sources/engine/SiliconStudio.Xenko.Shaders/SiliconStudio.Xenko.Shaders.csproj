@@ -46,6 +46,7 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="ParameterKeyHashSerializer.cs" />
     <Compile Include="ShaderConstantBufferDescription.cs" />
+    <Compile Include="ShaderInputBytecode.cs" />
     <Compile Include="ShaderLevelBytecode.cs" />
     <Compile Include="ShaderMixinDiscardException.cs" />
     <Compile Include="ShaderMixinGeneratorSource.cs" />

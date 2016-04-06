@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -62,8 +63,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
+            var inputAttributeNames = new Dictionary<int, string>();
 
-            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, isVulkan, shaderBytecodeResult, reflection, sourceFilename);
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, isVulkan, shaderBytecodeResult, reflection, inputAttributeNames, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
@@ -80,7 +82,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, false, shaderBytecodeResult, reflection, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, false, shaderBytecodeResult, reflection, null, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -129,13 +131,22 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                 if (!File.Exists(outputFileName))
                 {
-                    Debugger.Launch();
                     shaderBytecodeResult.Error("Failed to generate SPIR-V from GLSL");
                     return shaderBytecodeResult;
                 }
 
                 // Read compiled shader
-                rawData = File.ReadAllBytes(outputFileName);
+                var shaderBytecodes = new ShaderInputBytecode
+                {
+                    InputAttributeNames = inputAttributeNames,
+                    Data = File.ReadAllBytes(outputFileName),
+                };
+
+                using (var stream = new MemoryStream())
+                {
+                    BinarySerialization.Write(stream, shaderBytecodes);
+                    rawData = stream.ToArray();
+                }
 
                 // Cleanup temp files
                 File.Delete(inputFileName);
@@ -156,7 +167,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, bool isVulkan, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, bool isVulkan, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, IDictionary<int, string> inputAttributeNames, string sourceFilename = null)
         {
             if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
@@ -203,7 +214,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 // Convert from HLSL to GLSL
                 // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
                 var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3, isVulkan);
-                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, reflection, shaderBytecodeResult);
+                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, reflection, inputAttributeNames, shaderBytecodeResult);
 
                 if (glslShader == null || shaderBytecodeResult.HasErrors)
                     return null;
@@ -294,9 +305,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                         }
                     }
                 }
-
-                //if (stage == ShaderStage.Pixel)
-                //    Debugger.Launch();
 
                 // Defines the ordering of resource groups in Vulkan. This is mirrored in the PipelineState
                 var resourceGroups = reflection.ResourceBindings.Select(x => x.Param.ResourceGroup).Distinct().ToList();
@@ -405,9 +413,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel && renderTargetCount > 0)
             {
                 // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
+                var colorTargetLayout = isVulkan ? "layout (location = 0) " : string.Empty;
+
                 glslShaderCode
                     .AppendLine("#define gl_FragData _glesFragData")
-                    .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
+                    .AppendLine(colorTargetLayout + "out vec4 gl_FragData[" + renderTargetCount + "];")
                     .AppendLine();
             }
 
