@@ -127,6 +127,13 @@ namespace SiliconStudio.Xenko.Graphics
                     renderTargetBlendState++;
             }
 
+            var viewportState = new PipelineViewportStateCreateInfo
+            {
+                StructureType = StructureType.PipelineViewportStateCreateInfo,
+                ScissorCount = 1,
+                ViewportCount = 1,
+            };
+
             var entryPointName = System.Text.Encoding.UTF8.GetBytes("main\0");
 
             fixed (byte* entryPointNamePointer = &entryPointName[0])
@@ -173,7 +180,7 @@ namespace SiliconStudio.Xenko.Graphics
                     DepthStencilState = new IntPtr(&depthStencilState),
                     ColorBlendState = new IntPtr(&colorBlendState),
                     DynamicState = new IntPtr(&dynamicState),
-                    ViewportState = IntPtr.Zero, // Dynamic
+                    ViewportState = new IntPtr(&viewportState),
                     RenderPass = NativeRenderPass,
                     Subpass = 0,
                 };
