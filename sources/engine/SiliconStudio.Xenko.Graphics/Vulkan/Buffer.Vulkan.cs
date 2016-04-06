@@ -91,7 +91,8 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = BufferCreateFlags.None,
             };
 
-            if (bufferDescription.Usage != GraphicsResourceUsage.Immutable)
+            // We always fill using transfer
+            //if (bufferDescription.Usage != GraphicsResourceUsage.Immutable)
                 createInfo.Usage |= BufferUsageFlags.TransferDestination;
 
             if ((ViewFlags & BufferFlags.VertexBuffer) != 0)
@@ -117,19 +118,19 @@ namespace SiliconStudio.Xenko.Graphics
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
             AllocateMemory(dataPointer, isStaging || dataPointer != IntPtr.Zero ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal);
 
+            // Begin copy command buffer
+            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            commandBuffer.Begin(ref beginInfo);
+
+            // Copy to upload buffer
             if (dataPointer != IntPtr.Zero)
-            {
-                // Copy to upload buffer
+            { 
                 SharpVulkan.Buffer uploadResource;
                 int uploadOffset;
                 var uploadMemory = GraphicsDevice.AllocateUploadBuffer(bufferDescription.SizeInBytes, out uploadResource, out uploadOffset);
 
                 Utilities.CopyMemory(uploadMemory, dataPointer, bufferDescription.SizeInBytes);
-
-                // Begin copy command buffer
-                var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-                var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
-                commandBuffer.Begin(ref beginInfo);
 
                 // Copy
                 var bufferCopy = new BufferCopy
@@ -139,30 +140,35 @@ namespace SiliconStudio.Xenko.Graphics
                     Size = (uint)bufferDescription.SizeInBytes
                 };
                 commandBuffer.CopyBuffer(uploadResource, NativeBuffer, 1, &bufferCopy);
-
-                // Barrier
-                var bufferMemoryBarrier = new BufferMemoryBarrier
-                {
-                    StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = NativeBuffer,
-                    SourceAccessMask = AccessFlags.TransferWrite,
-                    DestinationAccessMask = NativeAccessMask
-                };
-                commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 0, null);
-
-                // Close and submit
-                commandBuffer.End();
-
-                var submitInfo = new SubmitInfo
-                {
-                    StructureType = StructureType.SubmitInfo,
-                    CommandBufferCount = 1,
-                    CommandBuffers = new IntPtr(&commandBuffer),
-                };
-                GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
-                GraphicsDevice.NativeCommandQueue.WaitIdle();
-                commandBuffer.Reset(CommandBufferResetFlags.None);
             }
+            else
+            {
+                // TODO VULKAN: Should not be needed
+                commandBuffer.FillBuffer(NativeBuffer, 0, (uint)bufferDescription.SizeInBytes, 0);
+            }
+            
+            // Barrier
+            var bufferMemoryBarrier = new BufferMemoryBarrier
+            {
+                StructureType = StructureType.BufferMemoryBarrier,
+                Buffer = NativeBuffer,
+                SourceAccessMask = AccessFlags.TransferWrite,
+                DestinationAccessMask = NativeAccessMask
+            };
+            commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 0, null);
+
+            // Close and submit
+            commandBuffer.End();
+
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = 1,
+                CommandBuffers = new IntPtr(&commandBuffer),
+            };
+            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+            GraphicsDevice.NativeCommandQueue.WaitIdle();
+            commandBuffer.Reset(CommandBufferResetFlags.None);
 
             // Staging resource don't have any views
             if (!isStaging)
@@ -241,7 +247,7 @@ namespace SiliconStudio.Xenko.Graphics
                 viewFormat = PixelFormat.R32_Typeless;
             }
 
-            if ((ViewFlags & (BufferFlags.ConstantBuffer | BufferFlags.ShaderResource | BufferFlags.UnorderedAccess)) != 0)
+            if ((ViewFlags & (BufferFlags.ShaderResource | BufferFlags.UnorderedAccess)) != 0)
             {
                 NativeBufferView = GetShaderResourceView(viewFormat);
             }

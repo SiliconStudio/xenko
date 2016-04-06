@@ -749,19 +749,32 @@ namespace SiliconStudio.Xenko.Graphics
                 if (texture.Dimension != TextureDimension.Texture2D)
                     throw new NotImplementedException();
 
+                var subresource = new ImageSubresource { AspectMask = ImageAspectFlags.Color, ArrayLayer = 0, MipLevel = 0 };
+                SubresourceLayout subResourceLayout;
+                GraphicsDevice.NativeDevice.GetImageSubresourceLayout(texture.NativeImage, subresource, out subResourceLayout);
+                
                 var width = region.Right - region.Left;
                 var height = region.Bottom - region.Top;
 
                 var mipSlice = subResourceIndex % texture.MipLevels;
                 var arraySlice = subResourceIndex / texture.MipLevels;
 
+                // BufferImageCopy.BufferOffset needs to be a multiple of 4
                 SharpVulkan.Buffer uploadResource;
                 int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch, out uploadResource, out uploadOffset);
+                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch + 4, out uploadResource, out uploadOffset);
+                var alignment = (4 - uploadOffset % 4);
 
-                Utilities.CopyMemory(uploadMemory + uploadOffset, databox.DataPointer, databox.SlicePitch);
-                //NativeCommandBuffer.UpdateBuffer(uploadResource, (ulong)uploadOffset, (ulong)databox.SlicePitch, (uint*)databox.DataPointer);
-                
+                Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, databox.SlicePitch);
+
+                var bufferMemoryBarrier = new BufferMemoryBarrier
+                {
+                    StructureType = StructureType.BufferMemoryBarrier,
+                    Buffer = uploadResource,
+                    SourceAccessMask = AccessFlags.HostWrite | AccessFlags.TransferWrite | AccessFlags.TransferRead,
+                    DestinationAccessMask = AccessFlags.TransferRead,
+                };
+
                 var memoryBarrier = new ImageMemoryBarrier
                 {
                     StructureType = StructureType.ImageMemoryBarrier,
@@ -772,18 +785,18 @@ namespace SiliconStudio.Xenko.Graphics
                     SourceAccessMask = texture.NativeAccessMask,
                     DestinationAccessMask = AccessFlags.TransferWrite,
                 };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &memoryBarrier);
 
                 // TODO VULKAN: Handle depth-stencil (NOTE: only supported on graphics queue)
-                // TODO VULKAN: Check on non-zero, slices
+                // TODO VULKAN: Check on non-zero slices
                 var bufferCopy = new BufferImageCopy
                 {
-                    BufferOffset = (ulong)uploadOffset,
+                    BufferOffset = (ulong)(uploadOffset + alignment),
                     ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
-                    BufferImageHeight = (uint)databox.SlicePitch,
                     BufferRowLength = (uint)databox.RowPitch,
-                    ImageExtent = new Extent3D((uint)(region.Right - region.Left), (uint)(region.Bottom - region.Top), (uint)(region.Back - region.Front)),
-                    ImageOffset = new Offset3D(region.Left, region.Top, region.Front)
+                    BufferImageHeight = (uint)databox.SlicePitch,
+                    ImageOffset = new Offset3D(region.Left, region.Top, region.Front),
+                    ImageExtent = new Extent3D((uint)(region.Right - region.Left), (uint)(region.Bottom - region.Top), (uint)(region.Back - region.Front))
                 };
                 NativeCommandBuffer.CopyBufferToImage(uploadResource, texture.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &bufferCopy);
 
@@ -797,7 +810,7 @@ namespace SiliconStudio.Xenko.Graphics
                     SourceAccessMask = AccessFlags.TransferWrite,
                     DestinationAccessMask = texture.NativeAccessMask,
                 };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
             }
             else
             {
@@ -836,17 +849,23 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            SharpVulkan.Buffer uploadResource;
-            int uploadOffset;
-            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
-
-            return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
+            if (mapMode == MapMode.WriteDiscard || mapMode == MapMode.WriteNoOverwrite)
             {
-                UploadResource = uploadResource,
-                UploadOffset = uploadOffset,
-            };
-        }
+                SharpVulkan.Buffer uploadResource;
+                int uploadOffset;
+                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
 
+                return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
+                {
+                    UploadResource = uploadResource,
+                    UploadOffset = uploadOffset,
+                };
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         // TODO GRAPHICS REFACTOR what should we do with this?
         public unsafe void UnmapSubresource(MappedResource unmapped)

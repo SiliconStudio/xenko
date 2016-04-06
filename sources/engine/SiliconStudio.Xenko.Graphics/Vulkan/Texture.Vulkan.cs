@@ -25,6 +25,7 @@ using System;
 using System.Linq;
 using SharpVulkan;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -46,6 +47,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal ImageLayout NativeLayout;
         internal AccessFlags NativeAccessMask;
+        internal ImageAspectFlags NativeImageAspect;
 
         public void Recreate(DataBox[] dataBoxes = null)
         {
@@ -143,14 +145,11 @@ namespace SiliconStudio.Xenko.Graphics
                             createInfo.Usage |= ImageUsageFlags.DepthStencilAttachment;
 
                         if (IsShaderResource)
-                            createInfo.Usage |= ImageUsageFlags.Sampled;
+                            createInfo.Usage |= ImageUsageFlags.Sampled; // TODO VULKAN: Input attachments
 
-                        if (Usage == GraphicsResourceUsage.Default || Usage == GraphicsResourceUsage.Staging)
-                            createInfo.Usage |= ImageUsageFlags.TransferSource | ImageUsageFlags.TransferDestination;
-
-                        if (Usage == GraphicsResourceUsage.Immutable)
-                            createInfo.Usage |= ImageUsageFlags.TransferSource;
-
+                        // TODO VULKAN: Can we restrict more based on GraphicsResourceUsage? 
+                        createInfo.Usage |= ImageUsageFlags.TransferSource | ImageUsageFlags.TransferDestination;
+                        
                         // TODO VULKAN: Simulate staging textures?
                         var memoryProperties = MemoryPropertyFlags.DeviceLocal;
                         if (Usage == GraphicsResourceUsage.Dynamic || Usage == GraphicsResourceUsage.Staging)
@@ -261,27 +260,55 @@ namespace SiliconStudio.Xenko.Graphics
             if (NativeLayout == ImageLayout.ShaderReadOnlyOptimal)
                 NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
 
-            if (NativeImage != SharpVulkan.Image.Null)
+            if (!isNotOwningResources && Usage != GraphicsResourceUsage.Staging)
             {
-                var imageMemoryBarrier = new ImageMemoryBarrier
-                {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    OldLayout = ImageLayout.Undefined,
-                    NewLayout = NativeLayout,
-                    Image = NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                    SourceAccessMask = AccessFlags.None,
-                    DestinationAccessMask = NativeAccessMask
-                };
+                NativeImageView = GetImageView(ViewType, ArraySlice, MipLevel);
+                NativeColorAttachmentView = GetColorAttachmentView(ViewType, ArraySlice, MipLevel);
+                NativeDepthStencilView = GetDepthStencilView(out HasStencil);
+            }
 
+            NativeImageAspect = IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color;
+            if (HasStencil)
+                NativeImageAspect |= ImageAspectFlags.Stencil;
+
+            if (NativeImage != SharpVulkan.Image.Null && ParentTexture == null)
+            {
                 var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
                 var beginInfo = new CommandBufferBeginInfo
                 {
                     StructureType = StructureType.CommandBufferBeginInfo,
                 };
-
                 commandBuffer.Begin(ref beginInfo);
-                commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
+
+                if (dataBoxes != null)
+                {
+                    var initialBarrier = new ImageMemoryBarrier
+                    {
+                        StructureType = StructureType.ImageMemoryBarrier,
+                        OldLayout = ImageLayout.Undefined,
+                        NewLayout = ImageLayout.TransferDestinationOptimal,
+                        Image = NativeImage,
+                        SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
+                        SourceAccessMask = AccessFlags.None,
+                        DestinationAccessMask = AccessFlags.TransferWrite
+                    };
+                    commandBuffer.PipelineBarrier(PipelineStageFlags.None, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 0, null, 1, &initialBarrier);
+                }
+
+                // Transition to default layout
+                var imageMemoryBarrier = new ImageMemoryBarrier
+                {
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    OldLayout = dataBoxes == null ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal,
+                    NewLayout = NativeLayout,
+                    Image = NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
+                    SourceAccessMask = dataBoxes == null ? AccessFlags.None : AccessFlags.TransferWrite,
+                    DestinationAccessMask = NativeAccessMask
+                };
+                commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
+
+                // Close and submit
                 commandBuffer.End();
 
                 var submitInfo = new SubmitInfo
@@ -293,13 +320,6 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
                 commandBuffer.Reset(CommandBufferResetFlags.None);
-            }
-
-            if (!isNotOwningResources && Usage != GraphicsResourceUsage.Staging)
-            {
-                NativeImageView = GetImageView(ViewType, ArraySlice, MipLevel);
-                NativeColorAttachmentView = GetColorAttachmentView(ViewType, ArraySlice, MipLevel);
-                NativeDepthStencilView = GetDepthStencilView(out HasStencil);
             }
 
             //if (ParentTexture != null)
@@ -461,17 +481,13 @@ namespace SiliconStudio.Xenko.Graphics
             bool compressed;
             VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeViewFormat, out pixelSize, out compressed);
 
-            var imageAspect = IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color;
-            if (HasStencil)
-                imageAspect |= ImageAspectFlags.Stencil;
-
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
                 Format = nativeViewFormat,
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange(imageAspect, (uint)arrayOrDepthSlice, (uint)arrayCount, (uint)mipIndex, (uint)mipCount)
+                SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)arrayCount, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)
