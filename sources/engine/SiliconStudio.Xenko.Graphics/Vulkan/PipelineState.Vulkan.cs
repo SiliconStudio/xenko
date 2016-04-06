@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class PipelineState
     {
+        private SharpVulkan.DescriptorSetLayout[] nativeDescriptorSetLayouts;
+
         internal PipelineLayout NativeLayout;
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
@@ -314,11 +316,7 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
             }
-
-            // Cleanup temporary layouts
-            foreach (var nativeLayout in nativeLayouts)
             {
-                GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(nativeLayout);
             }
         }
 

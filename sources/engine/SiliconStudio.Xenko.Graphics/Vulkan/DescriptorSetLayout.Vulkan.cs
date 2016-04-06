@@ -2,10 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using SharpVulkan;
 using SiliconStudio.Xenko.Shaders;
-
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+using SharpVulkan;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var bindings = new DescriptorSetLayoutBinding[builder.Entries.Count];
             bindingInfos = new BindingInfo[builder.Entries.Count];
-
+            
             int offset = 0;
             for (int i = 0; i < builder.Entries.Count; i++)
             {

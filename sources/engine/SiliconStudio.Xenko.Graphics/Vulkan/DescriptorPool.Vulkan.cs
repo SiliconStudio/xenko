@@ -43,11 +43,12 @@ namespace SiliconStudio.Xenko.Graphics
                 var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
                 {
                     StructureType = StructureType.DescriptorPoolCreateInfo,
-                    //Flags = DescriptorPoolCreateFlags.FreeDescriptorSet // We are resetting the pool
+                    Flags = DescriptorPoolCreateFlags.FreeDescriptorSet, // We are resetting the pool
                     PoolSizeCount = (uint)Count,
                     PoolSizes = new IntPtr(poolSizesPointer),
                     MaxSets = 16384, // TODO VULKAN API: Expose
                 };
+
                 NativeDescriptorPool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
             }
         }

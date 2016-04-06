@@ -209,6 +209,15 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Lazily set the render pass and frame buffer
             EnsureRenderPass();
+
+            // Bind descriptor sets
+            if (boundDescriptorSets.Count != 0)
+            {
+                fixed (SharpVulkan.DescriptorSet* descriptorSetsPointer = &boundDescriptorSets.Items[0])
+                {
+                    NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, (uint)boundDescriptorSets.Count, descriptorSetsPointer, 0, null);
+                }
+            }
         }
 
         public void SetStencilReference(int stencilReference)
@@ -317,11 +326,6 @@ namespace SiliconStudio.Xenko.Graphics
             //    var descriptorSetIndex = activePipeline.ResourceGroupMapping[i];
             //    boundDescriptorSets.Add(descriptorSets[descriptorSetIndex].NativeDescriptorSet);
             //}
-
-            fixed (SharpVulkan.DescriptorSet* descriptorSetsPointer = &boundDescriptorSets.Items[0])
-            {
-                NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, (uint)descriptorSets.Length, descriptorSetsPointer, 0, null);
-            }
 
             //RestartWithNewHeap:
             //    NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);

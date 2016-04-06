@@ -43,6 +43,14 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 SetShaderResourceView(slot, srv);
             }
+            else
+            {
+                var sampler = value as SamplerState;
+                if (sampler != null)
+                {
+                    SetSamplerState(slot, sampler);
+                }
+            }
         }
 
         /// <summary>
@@ -82,10 +90,22 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="slot">The slot.</param>
         /// <param name="samplerState">The sampler state.</param>
-        public void SetSamplerState(int slot, SamplerState samplerState)
+        public unsafe void SetSamplerState(int slot, SamplerState samplerState)
         {
-            // TODO D3D12
-            throw new NotImplementedException();
+            var imageInfo = new DescriptorImageInfo { Sampler = samplerState.NativeSampler };
+
+            var write = new WriteDescriptorSet
+            {
+                StructureType = StructureType.WriteDescriptorSet,
+                DescriptorCount = 1,
+                DestinationSet = NativeDescriptorSet,
+                DestinationBinding = (uint)slot, // TODO VULKAN: ?
+                DestinationArrayElement = 0,
+                DescriptorType = DescriptorType.Sampler,
+                ImageInfo = new IntPtr(&imageInfo),
+            };
+
+            GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
         }
 
         /// <summary>
