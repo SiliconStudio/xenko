@@ -42,7 +42,7 @@ namespace SiliconStudio.Presentation.Transactions
         }
 
         /// <inheritdoc/>
-        public void Complete()
+        public IReadOnlyTransaction Complete()
         {
             if (isCompleted)
                 throw new TransactionException("This transaction has already been completed.");
@@ -55,6 +55,7 @@ namespace SiliconStudio.Presentation.Transactions
             // Don't keep reference to synchronization context after completion
             synchronizationContext = null;
             isCompleted = true;
+            return this;
         }
 
         /// <summary>

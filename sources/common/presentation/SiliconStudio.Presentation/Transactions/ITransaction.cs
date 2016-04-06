@@ -17,7 +17,8 @@ namespace SiliconStudio.Presentation.Transactions
         /// <summary>
         /// Completes the transaction by closing it and adding it to the transaction stack.
         /// </summary>
+        /// <returns>A read-only version of the completed transaction.</returns>
         /// <remarks>This method is invoked by the <see cref="IDisposable.Dispose"/> method.</remarks>
-        void Complete();
+        IReadOnlyTransaction Complete();
     }
 }
