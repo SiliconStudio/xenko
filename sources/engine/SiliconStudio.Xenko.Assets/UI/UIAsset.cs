@@ -1,8 +1,12 @@
-﻿using System;
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.UI;
+
 namespace SiliconStudio.Xenko.Assets.UI
 {
     /// <summary>
@@ -27,6 +31,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// </summary>
         /// <userdoc>The root UI element.</userdoc>
         [DataMember(10)]
+        [Display("Root Element")]
         public object RootElement { get; set; } // FIXME UIElement is not serializable
         //public UIElement RootElement { get; set; }
 
