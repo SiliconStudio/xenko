@@ -238,7 +238,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Format = VulkanConvertExtensions.ConvertPixelFormat(pipelineStateDescription.Output.DepthStencilFormat),
                     Samples = SampleCountFlags.Sample1,
                     LoadOperation = AttachmentLoadOperation.Load, // TODO VULKAN: Only if depth read enabled?
-                    StoreOperation = AttachmentStoreOperation.DontCare,
+                    StoreOperation = AttachmentStoreOperation.Store, // TODO VULKAN: Only if depth write enabled?
                     StencilLoadOperation = AttachmentLoadOperation.DontCare, // TODO VULKAN: Handle stencil
                     StencilStoreOperation = AttachmentStoreOperation.DontCare,
                     InitialLayout = ImageLayout.DepthStencilAttachmentOptimal,
