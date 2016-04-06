@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using SharpVulkan;
+using ImageLayout = SharpVulkan.ImageLayout;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -169,6 +170,7 @@ namespace SiliconStudio.Xenko.Graphics
                 };
 
                 // Present
+                GraphicsDevice.NativeCommandQueue.WaitIdle();
                 GraphicsDevice.NativeCommandQueue.Present(ref presentInfo);
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
 
@@ -382,10 +384,8 @@ namespace SiliconStudio.Xenko.Graphics
                 MultiSampleLevel = MSAALevel.None,
                 Usage = GraphicsResourceUsage.Default
             };
-
             backbuffer = new Texture(GraphicsDevice).InitializeWithoutResources(backBufferDescription);
 
-            // Create image views
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
@@ -393,16 +393,55 @@ namespace SiliconStudio.Xenko.Graphics
                 Format = backbuffer.NativeFormat,
             };
 
+            // We initialize swapchain images to PresentSource, since we swap them out while in this layout.
+            backbuffer.NativeAccessMask = AccessFlags.MemoryRead;
+            backbuffer.NativeLayout = ImageLayout.PresentSource;
+
+            var imageMemoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                OldLayout = ImageLayout.Undefined,
+                NewLayout = ImageLayout.PresentSource,
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, 1, 0, 1),
+                SourceAccessMask = AccessFlags.None,
+                DestinationAccessMask = AccessFlags.MemoryRead
+            };
+
+            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            commandBuffer.Begin(ref beginInfo);
+
             var buffers = GraphicsDevice.NativeDevice.GetSwapchainImages(swapChain);
             swapchainImages = new SwapChainImageInfo[buffers.Length];
             for (int i = 0; i < buffers.Length; i++)
             {
+                // Create image views
                 swapchainImages[i].NativeImage = createInfo.Image = buffers[i];
                 swapchainImages[i].NativeColorAttachmentView = GraphicsDevice.NativeDevice.CreateImageView(ref createInfo);
+
+                // Transition to default layout
+                imageMemoryBarrier.Image = buffers[i];
+                commandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
             }
 
+            // Close and submit
+            commandBuffer.End();
+
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = 1,
+                CommandBuffers = new IntPtr(&commandBuffer),
+            };
+            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+            GraphicsDevice.NativeCommandQueue.WaitIdle();
+            commandBuffer.Reset(CommandBufferResetFlags.None);
+
+            // Get next image
+            currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, Semaphore.Null, Fence.Null);
+            
             // Apply the first swap chain image to the texture
-            backbuffer.SetNativeHandles(swapchainImages[0].NativeImage, swapchainImages[0].NativeColorAttachmentView);
+            backbuffer.SetNativeHandles(swapchainImages[currentBufferIndex].NativeImage, swapchainImages[currentBufferIndex].NativeColorAttachmentView);
         }
     }
 }

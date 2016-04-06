@@ -263,6 +263,7 @@ namespace SiliconStudio.Xenko.Graphics
                         texture.NativeAccessMask = AccessFlags.ColorAttachmentWrite;
                         break;
                     case GraphicsResourceState.Present:
+                        CleanupRenderPass(); // TODO VULKAN: Find a better place for this. Renderpass must be ended before the layout transition.
                         texture.NativeLayout = ImageLayout.PresentSource;
                         texture.NativeAccessMask = AccessFlags.MemoryRead;
                         break;
