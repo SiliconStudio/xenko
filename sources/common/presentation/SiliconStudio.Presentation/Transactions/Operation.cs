@@ -1,3 +1,5 @@
+using System;
+
 namespace SiliconStudio.Presentation.Transactions
 {
     /// <summary>
@@ -13,6 +15,11 @@ namespace SiliconStudio.Presentation.Transactions
     public abstract class Operation : IOperation
     {
         private bool inProgress;
+
+        /// <summary>
+        /// Gets an unique identifier for the transaction.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets whether this operation has been frozen.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Presentation.Transactions
 {
@@ -7,6 +8,11 @@ namespace SiliconStudio.Presentation.Transactions
     /// </summary>
     public interface IReadOnlyTransaction
     {
+        /// <summary>
+        /// Gets an unique identifier for the transaction.
+        /// </summary>
+        Guid Id { get; }
+
         /// <summary>
         /// Gets the operations executed during the transaction.
         /// </summary>

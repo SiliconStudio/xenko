@@ -64,24 +64,6 @@ namespace SiliconStudio.Presentation.Transactions
         public event EventHandler<EventArgs> Cleared;
 
         /// <inheritdoc/>
-        public void Clear()
-        {
-            lock (lockObject)
-            {
-                if (RollInProgress)
-                    throw new TransactionException("Unable to clear. A rollback or rollforward operation is in progress.");
-
-                foreach (var transaction in transactions)
-                {
-                    transaction.Interface.Freeze();
-                }
-                transactions.Clear();
-                currentPosition = 0;
-                Cleared?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        /// <inheritdoc/>
         public ITransaction CreateTransaction()
         {
             lock (lockObject)
@@ -112,6 +94,30 @@ namespace SiliconStudio.Presentation.Transactions
                 var transaction = transactionsInProgress.Peek();
                 transaction.PushOperation(operation);
             }
+        }
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            lock (lockObject)
+            {
+                if (RollInProgress)
+                    throw new TransactionException("Unable to clear. A rollback or rollforward operation is in progress.");
+
+                foreach (var transaction in transactions)
+                {
+                    transaction.Interface.Freeze();
+                }
+                transactions.Clear();
+                currentPosition = 0;
+                Cleared?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions()
+        {
+            return transactions;
         }
 
         /// <inheritdoc/>

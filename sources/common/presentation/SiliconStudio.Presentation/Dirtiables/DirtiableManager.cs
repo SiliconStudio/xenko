@@ -63,6 +63,33 @@ namespace SiliconStudio.Presentation.Dirtiables
             return snapshot;
         }
 
+        /// <summary>
+        /// Gets all dirtying operations contained in the given operation, including the operation itself if it is dirtying.
+        /// </summary>
+        /// <param name="operation">The operation in which to look for dirtyable operation.</param>
+        /// <returns>A sequence of <see cref="IDirtyingOperation"/> contained in the given operation, including the operation itself if it is dirtying.</returns>
+        public static IEnumerable<IDirtyingOperation> GetDirtyingOperations(Operation operation)
+        {
+            var queue = new Queue<Operation>();
+            queue.Enqueue(operation);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                var dirtyingOperation = current as IDirtyingOperation;
+                if (dirtyingOperation != null)
+                    yield return dirtyingOperation;
+                var transaction = operation as IReadOnlyTransaction;
+                if (transaction != null)
+                {
+                    foreach (var innerOperation in transaction.Operations)
+                    {
+                        queue.Enqueue(innerOperation);
+                    }
+                }
+            }
+        }
+
         private void UpdateDirtiables(HashSet<IDirtiable> dirtiables)
         {
             Dictionary<IDirtiable, bool> dirtiablesToUpdate = new Dictionary<IDirtiable, bool>();
@@ -163,28 +190,6 @@ namespace SiliconStudio.Presentation.Dirtiables
             List<IDirtyingOperation> dirtyingOperations;
             operationsMap.TryGetValue(dirtiable, out dirtyingOperations);
             return dirtyingOperations;
-        }
-
-        private static IEnumerable<IDirtyingOperation> GetDirtyingOperations(Operation operation)
-        {
-            var queue = new Queue<Operation>();
-            queue.Enqueue(operation);
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                var dirtyingOperation = current as IDirtyingOperation;
-                if (dirtyingOperation != null)
-                    yield return dirtyingOperation;
-                var transaction = operation as IReadOnlyTransaction;
-                if (transaction != null)
-                {
-                    foreach (var innerOperation in transaction.Operations)
-                    {
-                        queue.Enqueue(innerOperation);
-                    }
-                }
-            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Presentation.Transactions
 {
@@ -71,11 +72,6 @@ namespace SiliconStudio.Presentation.Transactions
         event EventHandler<EventArgs> Cleared;
 
         /// <summary>
-        /// Clears the transaction stack.
-        /// </summary>
-        void Clear();
-
-        /// <summary>
         /// Creates a new transaction. If a transaction is already in progress, this transaction will be nested into the latest
         /// created transaction.
         /// </summary>
@@ -89,6 +85,17 @@ namespace SiliconStudio.Presentation.Transactions
         /// </summary>
         /// <returns>An asynchronous transaction that must be completed in order to add the transaction to the stack or start another asynchronous transaction.</returns>
         IAsyncTransaction CreateAsyncTransaction();
+
+        /// <summary>
+        /// Clears the transaction stack.
+        /// </summary>
+        void Clear();
+
+        /// <summary>
+        /// Retrieves the collection of transactions registered to this stack.
+        /// </summary>
+        /// <returns>A collection of transactions registered into this stack.</returns>
+        IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions();
 
         /// <summary>
         /// Pushes an operation to the current transaction.

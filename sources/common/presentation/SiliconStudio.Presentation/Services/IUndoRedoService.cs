@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Services
@@ -27,6 +28,12 @@ namespace SiliconStudio.Presentation.Services
 
         bool CanRedo { get; }
 
+        /// <summary>
+        /// Retrieves the collection of transactions registered to this service.
+        /// </summary>
+        /// <returns>A collection of transactions registered into this service.</returns>
+        IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions();
+
         event EventHandler<TransactionEventArgs> Done;
 
         event EventHandler<TransactionEventArgs> Undone;
@@ -37,12 +44,24 @@ namespace SiliconStudio.Presentation.Services
 
         event EventHandler<EventArgs> Cleared;
 
-        UndoRedoTransaction CreateTransaction();
+        ITransaction CreateTransaction();
+
+        void SetName(Operation operation, string name);
+
+        void SetName(ITransaction transaction, string name);
+
+        string GetName(Operation operation);
+
+        string GetName(ITransaction transaction);
+
+        string GetName(IReadOnlyTransaction transaction);
 
         void PushOperation(Operation operation);
 
         void Undo();
 
         void Redo();
+
+        void NotifySave();
     }
 }

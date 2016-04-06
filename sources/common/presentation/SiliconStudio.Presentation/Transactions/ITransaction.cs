@@ -10,6 +10,11 @@ namespace SiliconStudio.Presentation.Transactions
     public interface ITransaction : IDisposable
     {
         /// <summary>
+        /// Gets an unique identifier for the transaction.
+        /// </summary>
+        Guid Id { get; }
+
+        /// <summary>
         /// Gets whether this transaction is empty.
         /// </summary>
         bool IsEmpty { get; }
