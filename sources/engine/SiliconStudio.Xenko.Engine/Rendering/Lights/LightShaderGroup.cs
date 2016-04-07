@@ -83,10 +83,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             Count++;
         }
 
-        public void ApplyParameters(ParameterCollection parameters)
+        public void ApplyParameters(RenderDrawContext context, ParameterCollection parameters)
         {
-            ApplyParametersInternal(parameters);
-            ShadowGroup?.ApplyParameters(parameters);
+            ApplyParametersInternal(context, parameters);
+            ShadowGroup?.ApplyParameters(context, parameters);
         }
 
         public virtual void ApplyEffectPermutations(RenderEffect renderEffect)
@@ -95,6 +95,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         protected abstract void AddLightInternal(LightComponent light);
 
-        protected abstract void ApplyParametersInternal(ParameterCollection parameters);
+        protected abstract void ApplyParametersInternal(RenderDrawContext context, ParameterCollection parameters);
     }
 }

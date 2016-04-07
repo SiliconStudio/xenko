@@ -314,12 +314,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Set values
             foreach (var lightGroup in lightParameterEntry.DirectLightGroupDatas)
             {
-                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(context, parameters);
             }
 
             foreach (var lightGroup in lightParameterEntry.EnvironmentLightDatas)
             {
-                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(context, parameters);
             }
 
             context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightParameterEntry.Resources);
