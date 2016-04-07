@@ -70,7 +70,6 @@
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
-    <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Drawing\IDrawingContext.cs" />
     <Compile Include="Drawing\IDrawingView.cs" />
     <Compile Include="Drawing\CanvasRenderer.cs" />
@@ -331,11 +330,6 @@
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
-      <Project>{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}</Project>
-      <Name>SiliconStudio.ActionStack</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
