@@ -120,6 +120,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // TODO VULKAN
             GraphicsDevice.NativeCommandQueue.WaitIdle();
+
             NativeCommandBuffer.Reset(CommandBufferResetFlags.None);
         }
 
@@ -293,6 +294,10 @@ namespace SiliconStudio.Xenko.Graphics
                     case GraphicsResourceState.DepthWrite:
                         texture.NativeLayout = ImageLayout.DepthStencilAttachmentOptimal;
                         texture.NativeAccessMask = AccessFlags.DepthStencilAttachmentWrite;
+                        break;
+                    case GraphicsResourceState.PixelShaderResource:
+                        texture.NativeLayout = ImageLayout.ShaderReadOnlyOptimal;
+                        texture.NativeAccessMask = AccessFlags.ShaderRead;
                         break;
                     default:
                         throw new NotImplementedException();
@@ -717,6 +722,8 @@ namespace SiliconStudio.Xenko.Graphics
             var texture = resource as Texture;
             if (texture != null)
             {
+                CleanupRenderPass();
+
                 if (texture.Dimension != TextureDimension.Texture2D)
                     throw new NotImplementedException();
 
@@ -724,9 +731,6 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceLayout subResourceLayout;
                 GraphicsDevice.NativeDevice.GetImageSubresourceLayout(texture.NativeImage, subresource, out subResourceLayout);
                 
-                var width = region.Right - region.Left;
-                var height = region.Bottom - region.Top;
-
                 var mipSlice = subResourceIndex % texture.MipLevels;
                 var arraySlice = subResourceIndex / texture.MipLevels;
 
@@ -734,7 +738,7 @@ namespace SiliconStudio.Xenko.Graphics
                 SharpVulkan.Buffer uploadResource;
                 int uploadOffset;
                 var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch + 4, out uploadResource, out uploadOffset);
-                var alignment = (4 - uploadOffset % 4);
+                var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
 
                 Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, databox.SlicePitch);
 
@@ -742,7 +746,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     StructureType = StructureType.BufferMemoryBarrier,
                     Buffer = uploadResource,
-                    SourceAccessMask = AccessFlags.HostWrite | AccessFlags.TransferWrite | AccessFlags.TransferRead,
+                    SourceAccessMask = AccessFlags.HostWrite,
                     DestinationAccessMask = AccessFlags.TransferRead,
                 };
 
@@ -760,12 +764,13 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // TODO VULKAN: Handle depth-stencil (NOTE: only supported on graphics queue)
                 // TODO VULKAN: Check on non-zero slices
+                // TODO VULKAN: Handle non-packed pitches
                 var bufferCopy = new BufferImageCopy
                 {
                     BufferOffset = (ulong)(uploadOffset + alignment),
                     ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
-                    BufferRowLength = (uint)databox.RowPitch,
-                    BufferImageHeight = (uint)databox.SlicePitch,
+                    BufferRowLength = 0, //(uint)databox.RowPitch / ...,
+                    BufferImageHeight = 0, //(uint)databox.SlicePitch / ...,
                     ImageOffset = new Offset3D(region.Left, region.Top, region.Front),
                     ImageExtent = new Extent3D((uint)(region.Right - region.Left), (uint)(region.Bottom - region.Top), (uint)(region.Back - region.Front))
                 };

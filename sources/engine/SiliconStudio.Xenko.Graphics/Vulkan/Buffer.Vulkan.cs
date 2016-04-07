@@ -119,34 +119,54 @@ namespace SiliconStudio.Xenko.Graphics
             AllocateMemory(dataPointer, isStaging || dataPointer != IntPtr.Zero ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal);
 
             // Begin copy command buffer
-            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            //var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
+            var commandBufferAllocateInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                CommandPool = GraphicsDevice.NativeCopyCommandPool,
+                CommandBufferCount = 1,
+                Level = CommandBufferLevel.Primary
+            };
+            CommandBuffer commandBuffer;
+            GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
             commandBuffer.Begin(ref beginInfo);
 
             // Copy to upload buffer
             if (dataPointer != IntPtr.Zero)
-            { 
+            {
+                var sizeInBytes = bufferDescription.SizeInBytes;
                 SharpVulkan.Buffer uploadResource;
                 int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(bufferDescription.SizeInBytes, out uploadResource, out uploadOffset);
+                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(sizeInBytes, out uploadResource, out uploadOffset);
 
-                Utilities.CopyMemory(uploadMemory, dataPointer, bufferDescription.SizeInBytes);
+                Utilities.CopyMemory(uploadMemory, dataPointer, sizeInBytes);
+
+                // Barrier
+                var bufferMemoryBarrier2 = new BufferMemoryBarrier
+                {
+                    StructureType = StructureType.BufferMemoryBarrier,
+                    Buffer = uploadResource,
+                    SourceAccessMask = AccessFlags.HostWrite,
+                    DestinationAccessMask = AccessFlags.TransferRead
+                };
+                commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier2, 0, null);
 
                 // Copy
                 var bufferCopy = new BufferCopy
                 {
-                    DestinationOffset = (uint)uploadOffset,
-                    SourceOffset = 0,
-                    Size = (uint)bufferDescription.SizeInBytes
+                    SourceOffset = (uint)uploadOffset,
+                    DestinationOffset = 0,
+                    Size = (uint)sizeInBytes
                 };
                 commandBuffer.CopyBuffer(uploadResource, NativeBuffer, 1, &bufferCopy);
             }
             else
             {
-                // TODO VULKAN: Should not be needed
+                // TODO VULKAN: Not be needed when synced correctly
                 commandBuffer.FillBuffer(NativeBuffer, 0, (uint)bufferDescription.SizeInBytes, 0);
             }
-            
+
             // Barrier
             var bufferMemoryBarrier = new BufferMemoryBarrier
             {
@@ -166,9 +186,11 @@ namespace SiliconStudio.Xenko.Graphics
                 CommandBufferCount = 1,
                 CommandBuffers = new IntPtr(&commandBuffer),
             };
+
             GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
             GraphicsDevice.NativeCommandQueue.WaitIdle();
-            commandBuffer.Reset(CommandBufferResetFlags.None);
+            //commandBuffer.Reset(CommandBufferResetFlags.None);
+            GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
 
             // Staging resource don't have any views
             if (!isStaging)
@@ -234,6 +256,8 @@ namespace SiliconStudio.Xenko.Graphics
             //    // TODO D3D12 release uploadResource (using a fence to know when copy is done)
             //}
         }
+
+        private static int test = 0;
 
         /// <summary>
         /// Initializes the views.

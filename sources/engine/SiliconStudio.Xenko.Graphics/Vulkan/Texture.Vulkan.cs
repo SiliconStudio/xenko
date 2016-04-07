@@ -282,6 +282,24 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (dataBoxes != null)
                 {
+                    int totalSize = dataBoxes.Length * 4;
+                    for (int i = 0; i < dataBoxes.Length; i++)
+                    {
+                        totalSize += dataBoxes[i].SlicePitch;
+                    }
+
+                    SharpVulkan.Buffer uploadResource;
+                    int uploadOffset;
+                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer(totalSize, out uploadResource, out uploadOffset);
+
+                    var bufferMemoryBarrier = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = uploadResource,
+                        SourceAccessMask = AccessFlags.HostWrite,
+                        DestinationAccessMask = AccessFlags.TransferRead,
+                    };
+
                     var initialBarrier = new ImageMemoryBarrier
                     {
                         StructureType = StructureType.ImageMemoryBarrier,
@@ -292,7 +310,46 @@ namespace SiliconStudio.Xenko.Graphics
                         SourceAccessMask = AccessFlags.None,
                         DestinationAccessMask = AccessFlags.TransferWrite
                     };
-                    commandBuffer.PipelineBarrier(PipelineStageFlags.None, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 0, null, 1, &initialBarrier);
+                    commandBuffer.PipelineBarrier(PipelineStageFlags.None, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &initialBarrier);
+
+                    var copies = new BufferImageCopy[dataBoxes.Length];
+                    for (int i = 0; i < copies.Length; i++)
+                    {
+                        var slicePitch = dataBoxes[i].SlicePitch;
+
+                        int arraySlice = i / MipLevels;
+                        int mipSlice = i % MipLevels;
+                        var mipMapDescription = GetMipMapDescription(mipSlice);
+
+                        SubresourceLayout layout;
+                        GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource { AspectMask = NativeImageAspect, ArrayLayer = (uint)arraySlice, MipLevel = (uint)mipSlice}, out layout);
+
+                        var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
+                        uploadMemory += alignment;
+                        uploadOffset += alignment;
+
+                        Utilities.CopyMemory(uploadMemory, dataBoxes[i].DataPointer, slicePitch);
+
+                        // TODO VULKAN: Check if pitches are valid
+                        copies[i] = new BufferImageCopy
+                        {
+                            BufferOffset = (ulong)uploadOffset,
+                            ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
+                            BufferRowLength = (uint)(dataBoxes[i].RowPitch / pixelSize),
+                            BufferImageHeight = (uint)(dataBoxes[i].SlicePitch / dataBoxes[i].SlicePitch),
+                            ImageOffset = new Offset3D(0, 0, arraySlice),
+                            ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
+                        };
+
+                        uploadMemory += slicePitch;
+                        uploadOffset += slicePitch;
+                    }
+
+                    fixed (BufferImageCopy* copiesPointer = &copies[0])
+                    {
+                        //if (totalSize < 16000000)
+                            commandBuffer.CopyBufferToImage(uploadResource, NativeImage, ImageLayout.TransferDestinationOptimal, (uint)copies.Length, copiesPointer);
+                    }
                 }
 
                 // Transition to default layout
@@ -317,6 +374,7 @@ namespace SiliconStudio.Xenko.Graphics
                     CommandBufferCount = 1,
                     CommandBuffers = new IntPtr(&commandBuffer),
                 };
+
                 GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
                 commandBuffer.Reset(CommandBufferResetFlags.None);
@@ -395,6 +453,8 @@ namespace SiliconStudio.Xenko.Graphics
             //NativeRenderTargetView = GetRenderTargetView(ViewType, ArraySlice, MipLevel);
             //NativeDepthStencilView = GetDepthStencilView(out HasStencil);
         }
+
+        private static int test = 0;
 
         protected unsafe override void DestroyImpl()
         {
