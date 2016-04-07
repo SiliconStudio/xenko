@@ -35,7 +35,10 @@ namespace SiliconStudio.Presentation.Services
 
         public event EventHandler<EventArgs> Cleared { add { stack.Cleared += value; } remove { stack.Cleared -= value; } }
 
-        public ITransaction CreateTransaction() => stack.CreateTransaction();
+        public ITransaction CreateTransaction()
+        {
+            return UndoRedoInProgress ? new DummyTransaction() : stack.CreateTransaction();
+        }
 
         public IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions() => stack.RetrieveAllTransactions();
 
