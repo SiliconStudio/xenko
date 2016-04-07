@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Dirtiables;
 using SiliconStudio.Presentation.Services;
@@ -18,7 +19,7 @@ namespace SiliconStudio.Presentation.ViewModel
     {
         private readonly Dictionary<string, object> preEditValues = new Dictionary<string, object>();
         private readonly HashSet<string> uncancellableChanges = new HashSet<string>();
-
+        private readonly List<string> suspendedCollections = new List<string>();
         /// <summary>
         /// Initializes a new instance of the <see cref="EditableViewModel"/> class.
         /// </summary>
@@ -41,6 +42,12 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             collection.CollectionChanged += (sender, e) => CollectionChanged(sender, e, name);
+        }
+
+        protected IDisposable SuspendNotificationForCollectionChange(string name)
+        {
+            suspendedCollections.Add(name);
+            return new AnonymousDisposable(() => suspendedCollections.Remove(name));
         }
 
         protected bool SetValueUncancellable<T>(ref T field, T value, [CallerMemberName]string propertyName = null)
@@ -241,10 +248,13 @@ namespace SiliconStudio.Presentation.ViewModel
                 if (toIListMethod != null)
                     list = (IList)toIListMethod.Invoke(sender, new object[0]);
             }
-            using (ActionService.CreateTransaction())
+            if (!suspendedCollections.Contains(collectionName))
             {
-                var operation = CreateCollectionChangeActionItem(displayName, list, e);
-                ActionService.PushOperation(operation);
+                using (ActionService.CreateTransaction())
+                {
+                    var operation = CreateCollectionChangeActionItem(displayName, list, e);
+                    ActionService.PushOperation(operation);
+                }
             }
         }
     }
