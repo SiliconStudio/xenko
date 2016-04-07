@@ -119,8 +119,7 @@ namespace SiliconStudio.Xenko.UI
             typeof(UIElement));
 
         #endregion
-
-        private static uint uiElementCount;
+        
         private Visibility visibility = Visibility.Visible;
         private float opacity = 1.0f;
         private bool isEnabled = true;
@@ -178,7 +177,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         protected UIElement()
         {
-            ID = ++uiElementCount;
+            Id = Guid.NewGuid();
             DependencyProperties = new PropertyContainer(this);
             VisualChildrenCollection = new UIElementCollection();
             DrawLayerNumber = 1; // one layer for BackgroundColor/Clipping
@@ -192,7 +191,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// A unique ID defining the UI element.
         /// </summary>
-        public uint ID { get; private set; }
+        public Guid Id { get; private set; }
 
         /// <summary>
         /// List of the dependency properties attached to the object.

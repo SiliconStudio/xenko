@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         private readonly Dictionary<Type, IElementRendererFactory> typesToUserFactories = new Dictionary<Type, IElementRendererFactory>();
 
         // Note: use Id instead of element instance in order to avoid to keep dead UIelement alive.
-        private readonly Dictionary<uint, ElementRenderer> elementIdToRenderer = new Dictionary<uint, ElementRenderer>();
+        private readonly Dictionary<Guid, ElementRenderer> elementIdToRenderer = new Dictionary<Guid, ElementRenderer>();
 
         /// <summary> 
         /// Create a new instance of <see cref="RendererManager"/> with provided DefaultFactory
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         public ElementRenderer GetRenderer(UIElement element)
         {
             ElementRenderer elementRenderer;
-            elementIdToRenderer.TryGetValue(element.ID, out elementRenderer);
+            elementIdToRenderer.TryGetValue(element.Id, out elementRenderer);
             if (elementRenderer == null)
             {
                 // try to get the renderer from the user registered class factory
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                     throw new InvalidOperationException($"No renderer found for element {element}");
 
                 // cache the renderer for future uses.
-                elementIdToRenderer[element.ID] = elementRenderer;
+                elementIdToRenderer[element.Id] = elementRenderer;
             }
 
             return elementRenderer;
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             if (element == null) throw new ArgumentNullException(nameof(element));
             if (renderer == null) throw new ArgumentNullException(nameof(renderer));
 
-            elementIdToRenderer[element.ID] = renderer;
+            elementIdToRenderer[element.Id] = renderer;
         }
 
         public void Dispose()
