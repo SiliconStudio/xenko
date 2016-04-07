@@ -79,7 +79,7 @@ namespace SiliconStudio.Presentation.Dirtiables
                 var dirtyingOperation = current as IDirtyingOperation;
                 if (dirtyingOperation != null)
                     yield return dirtyingOperation;
-                var transaction = operation as IReadOnlyTransaction;
+                var transaction = current as IReadOnlyTransaction;
                 if (transaction != null)
                 {
                     foreach (var innerOperation in transaction.Operations)
