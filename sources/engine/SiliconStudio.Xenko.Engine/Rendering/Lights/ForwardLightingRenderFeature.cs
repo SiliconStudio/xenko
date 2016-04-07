@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
@@ -246,7 +246,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
@@ -272,7 +272,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private unsafe bool PrepareLightParameterEntry(RenderThreadContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
+        private unsafe bool PrepareLightParameterEntry(RenderDrawContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
         {
             var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
 

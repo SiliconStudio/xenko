@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderThreadContext context)
+        public override unsafe void Prepare(RenderDrawContext context)
         {
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 

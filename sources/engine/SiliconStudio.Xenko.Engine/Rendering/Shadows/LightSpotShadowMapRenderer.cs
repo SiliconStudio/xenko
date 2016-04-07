@@ -237,7 +237,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
             }
 
-            public void ApplyParameters(ParameterCollection parameters)
+            public void ApplyParameters(RenderDrawContext context, ParameterCollection parameters)
             {
                 parameters.Set(shadowMapTextureKey, shadowMapTexture);
                 parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
