@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a slider element.
     /// </summary>
+    [DataContract]
     public class Slider : UIElement
     {
         private float value;

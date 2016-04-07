@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents the grid where all the rows and columns have an uniform size.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("UniformGrid - Name={Name}")]
     public class UniformGrid : GridBase
     {

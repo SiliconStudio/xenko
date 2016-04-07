@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a control with a single piece of content of any type.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ContentControl - Name={Name}")]
     public abstract class ContentControl : Control
     {

@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents the base primitive for all the grid-like controls
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("GridBase - Name={Name}")]
     public abstract class GridBase : Panel
     {

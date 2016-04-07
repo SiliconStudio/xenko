@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a control that displays an image.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ImageElement - Name={Name}")]
     public class ImageElement : UIElement
     {

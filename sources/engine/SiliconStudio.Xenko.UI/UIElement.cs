@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.UI
     /// <summary>
     /// Provides a base class for all the User Interface elements in Xenko applications.
     /// </summary>
+    [DataContract(Inherited = true)]
     [DebuggerDisplay("UIElement: {Name}")]
     public abstract class UIElement : IUIElementUpdate
     {

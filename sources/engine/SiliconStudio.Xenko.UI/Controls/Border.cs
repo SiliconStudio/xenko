@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -7,6 +9,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A border element adds an uniform color border around its content.
     /// </summary>
+    [DataContract]
     public class Border : ContentControl
     {
         internal Color BorderColorInternal = Color.Black;

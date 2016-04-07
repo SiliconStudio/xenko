@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Provides a base class for all Panel elements. Use Panel elements to position and arrange child objects Xenko applications.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("Panel - Name={Name}")]
     public abstract class Panel : UIElement, IScrollAnchorInfo
     {
@@ -69,7 +70,8 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets the <see cref="UIElementCollection"/> of child elements of this Panel.
         /// </summary>
-        public UIElementCollection Children { get; private set; }
+        [DataMember]
+        public UIElementCollection Children { get; }
 
         /// <summary>
         /// Invalidation callback that sort panel children back after a modification of a child ZIndex.
@@ -82,10 +84,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             var uiElement = (UIElement)element;
             var parentAsPanel = uiElement.VisualParent as Panel;
 
-            if(parentAsPanel == null)
-                return;
-
-            parentAsPanel.VisualChildrenCollection.Sort(PanelChildrenSorter);
+            parentAsPanel?.VisualChildrenCollection.Sort(PanelChildrenSorter);
         }
 
         /// <summary>
@@ -198,6 +197,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return new Vector2(-validPosition, maxPosition - validPosition);
         }
 
+        [DataMemberIgnore]
         public ScrollViewer ScrollOwner { get; set; }
     }
 }

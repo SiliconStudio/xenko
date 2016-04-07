@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A class aiming at presenting another <see cref="UIElement"/>.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ContentPresenter - Name={Name}")]
     public class ContentPresenter : UIElement
     {

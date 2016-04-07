@@ -8,6 +8,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A <see cref="ContentControl"/> decorating its <see cref="ContentControl.Content"/> with a background image.
     /// </summary>
+    [DataContract]
     public class ContentDecorator : ContentControl
     {
         /// <summary>

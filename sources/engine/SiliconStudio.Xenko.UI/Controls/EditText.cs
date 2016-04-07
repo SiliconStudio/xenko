@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represent an edit text where the user can enter text.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("EditText - Name={Name}")]
     public partial class EditText : Control
     {

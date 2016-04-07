@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a Windows button control, which reacts to the Click event.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("Button - Name={Name}")]
     public class Button : ButtonBase
     {

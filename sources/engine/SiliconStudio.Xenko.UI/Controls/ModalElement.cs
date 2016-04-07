@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a modal element that puts an overlay upon the underneath elements and freeze their input.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ModalElement - Name={Name}")]
     public class ModalElement : ButtonBase
     {
