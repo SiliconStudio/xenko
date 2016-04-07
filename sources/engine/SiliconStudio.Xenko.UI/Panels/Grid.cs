@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents a grid control with adjustable columns, rows and layers.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("Grid - Name={Name}")]
     public class Grid : GridBase
     {
@@ -682,7 +683,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             }
         }
 
-        private float SumStripCurrentSize(StripDefinitionCollection definitions)
+        private static float SumStripCurrentSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
             foreach (var def in definitions) // do not use linq to avoid allocations
@@ -691,7 +692,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return sum;
         }
         
-        private float SumStripCurrentSize(List<StripDefinition> definitions)
+        private static float SumStripCurrentSize(List<StripDefinition> definitions)
         {
             var sum = 0f;
             foreach (var def in definitions) // do not use linq to avoid allocations
@@ -700,7 +701,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return sum;
         }
 
-        private float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
+        private static float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
             foreach (var def in definitions) // do not use linq to avoid allocations
@@ -710,7 +711,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return sum;
         }
 
-        private float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
+        private static float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
         {
             var sum = 0f;
             foreach (var def in definitions) // do not use linq to avoid allocations
@@ -719,7 +720,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return sum;
         }
 
-        private void GetDistanceToSurroundingAnchors(List<float> stripPosition, float position, out Vector2 distances)
+        private static void GetDistanceToSurroundingAnchors(List<float> stripPosition, float position, out Vector2 distances)
         {
             if (stripPosition.Count < 2)
             {

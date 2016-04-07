@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents the grid where all the rows and columns have an uniform size.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("UniformGrid - Name={Name}")]
     public class UniformGrid : GridBase
     {
@@ -50,6 +51,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Gets or sets the number of Columns that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        [DataMemberIgnore]
         public int Columns
         {
             get { return DependencyProperties.Get(ColumnsPropertyKey); }
@@ -60,6 +62,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Gets or sets the number of Rows that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        [DataMemberIgnore]
         public int Rows
         {
             get { return DependencyProperties.Get(RowsPropertyKey); }
@@ -70,6 +73,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Gets or sets the number of Layers that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        [DataMemberIgnore]
         public int Layers
         {
             get { return DependencyProperties.Get(LayersPropertyKey); }

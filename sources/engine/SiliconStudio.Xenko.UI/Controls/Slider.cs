@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a slider element.
     /// </summary>
+    [DataContract]
     public class Slider : UIElement
     {
         private float value;
@@ -137,6 +138,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track background.
         /// </summary>
+        [DataMemberIgnore]
         public Sprite TrackBackgroundImage
         {
             get { return DependencyProperties.Get(TrackBackgroundImagePropertyKey); }
@@ -146,6 +148,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track foreground.
         /// </summary>
+        [DataMemberIgnore]
         public Sprite TrackForegroundImage
         {
             get { return DependencyProperties.Get(TrackForegroundImagePropertyKey); }
@@ -155,6 +158,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button).
         /// </summary>
+        [DataMemberIgnore]
         public Sprite ThumbImage
         {
             get { return DependencyProperties.Get(ThumbImagePropertyKey); }
@@ -164,15 +168,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
         /// </summary>
+        [DataMemberIgnore]
         public Sprite MouseOverThumbImage
         {
             get { return DependencyProperties.Get(MouseOverThumbImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverThumbImagePropertyKey, value); }
         }
-        
+
         /// <summary>
         /// Gets or sets the image to display as tick.
         /// </summary>
+        [DataMemberIgnore]
         public Sprite TickImage
         {
             get { return DependencyProperties.Get(TickImagePropertyKey); }
@@ -182,6 +188,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the smallest possible value of the slider.
         /// </summary>
+        [DataMemberIgnore]
         public float Minimum
         {
             get { return DependencyProperties.Get(MinimumPropertyKey); }
@@ -191,6 +198,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the greatest possible value of the slider.
         /// </summary>
+        [DataMemberIgnore]
         public float Maximum
         {
             get { return DependencyProperties.Get(MaximumPropertyKey); }
@@ -200,6 +208,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the step of a <see cref="Value"/> change.
         /// </summary>
+        [DataMemberIgnore]
         public float Step
         {
             get { return DependencyProperties.Get(StepPropertyKey); }
@@ -210,6 +219,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the current value of the slider.
         /// </summary>
         /// <remarks>value is truncated between <see cref="Minimum"/> and <see cref="Maximum"/></remarks>
+        [DataMember]
         public float Value
         {
             get { return value; }
@@ -230,6 +240,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the frequency of the ticks on the slider track.
         /// </summary>
         /// <remarks>Provided value is truncated to be greater or equal the 1</remarks>
+        [DataMemberIgnore]
         public float TickFrequency
         {
             get { return DependencyProperties.Get(TickFrequencyPropertyKey); }
@@ -239,6 +250,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).
         /// </summary>
+        [DataMemberIgnore]
         public float TickOffset
         {
             get { return DependencyProperties.Get(TickOffsetPropertyKey); }
@@ -248,6 +260,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the left/right offsets specifying where the track region starts. 
         /// </summary>
+        [DataMemberIgnore]
         public Vector2 TrackStartingOffsets
         {
             get { return DependencyProperties.Get(TrackStartingOffsetsrPropertyKey); }
@@ -257,16 +270,19 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the value indicating if the default direction of the slider should reversed or not.
         /// </summary>
+        [DataMember]
         public bool IsDirectionReversed { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating if the ticks should be displayed or not.
         /// </summary>
+        [DataMember]
         public bool AreTicksDisplayed { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating if the slider <see cref="Value"/> should be snapped to the ticks or not.
         /// </summary>
+        [DataMember]
         public bool ShouldSnapToTicks
         {
             get { return shouldSnapToTicks; }
@@ -280,6 +296,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the orientation of the slider.
         /// </summary>
+        [DataMember]
         public Orientation Orientation
         {
             get { return orientation; }

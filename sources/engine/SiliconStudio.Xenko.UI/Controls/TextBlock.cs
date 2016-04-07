@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -13,6 +14,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Provides a lightweight control for displaying small amounts of text.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("TextBlock - Name={Name}")]
     public class TextBlock : UIElement
     {
@@ -59,6 +61,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the font of the text block
         /// </summary>
+        [DataMemberIgnore]
         public SpriteFont Font
         {
             get { return DependencyProperties.Get(FontPropertyKey); }
@@ -68,6 +71,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the text of the text block
         /// </summary>
+        [DataMember]
         public string Text
         {
             get { return text; }
@@ -81,6 +85,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the text of the text block
         /// </summary>
+        [DataMemberIgnore]
         public Color TextColor
         {
             get { return DependencyProperties.Get(TextColorPropertyKey); }
@@ -90,6 +95,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
+        [DataMember]
         public float TextSize
         {
             get
@@ -111,6 +117,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> 
         /// should automatically return to the beginning of the line when it is too big for the line width.
         /// </summary>
+        [DataMember]
         public bool WrapText
         {
             get { return wrapText; }
@@ -130,6 +137,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
+        [DataMember]
         public bool SynchronousCharacterGeneration
         {
             get { return synchronousCharacterGeneration; }
@@ -148,6 +156,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the alignment of the text to display.
         /// </summary>
+        [DataMember]
         public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
@@ -155,6 +164,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>When <value>true</value>, the element's text is never snapped. 
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
+        [DataMember]
         public bool DoNotSnapText { get; set; }
 
         /// <summary>

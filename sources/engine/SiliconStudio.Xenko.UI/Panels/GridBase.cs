@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents the base primitive for all the grid-like controls
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("GridBase - Name={Name}")]
     public abstract class GridBase : Panel
     {
@@ -55,8 +56,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             var element = (UIElement)propertyowner;
             var parentGridBase = element.Parent as GridBase;
 
-            if(parentGridBase != null)
-                parentGridBase.InvalidateMeasure();
+            parentGridBase?.InvalidateMeasure();
         }
 
         private static void SpanValidator(ref int value)

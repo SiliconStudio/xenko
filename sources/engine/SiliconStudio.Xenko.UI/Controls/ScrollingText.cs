@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A text viewer that scrolls automatically the text from right to left.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ScrollingText - Name={Name}")]
     public class ScrollingText : TextBlock
     {
@@ -67,6 +68,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the scrolling speed of the text. The unit is in virtual pixels.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided speed must be positive or null.</exception>
+        [DataMemberIgnore]
         public float ScrollingSpeed
         {
             get { return DependencyProperties.Get(ScrollingSpeedPropertyKey); }
@@ -76,6 +78,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.
         /// </summary>
+        [DataMemberIgnore]
         public uint DesiredCharacterNumber
         {
             get { return DependencyProperties.Get(DesiredCharacterNumberPropertyKey); }
@@ -85,6 +88,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the a value indicating if the text message must be repeated (wrapped) or not.
         /// </summary>
+        [DataMemberIgnore]
         public bool RepeatText
         {
             get { return DependencyProperties.Get(RepeatTextPropertyKey); }

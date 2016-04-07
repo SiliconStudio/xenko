@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represent a UI toggle button. A toggle but can have two or three states depending on the <see cref="IsThreeState"/> property.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ToggleButton - Name={Name}")]
     public class ToggleButton : ButtonBase
     {
@@ -58,6 +59,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when checked
         /// </summary>
+        [DataMemberIgnore]
         public Sprite CheckedImage
         {
             get { return DependencyProperties.Get(CheckedImagePropertyKey); }
@@ -67,6 +69,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when indeterminate
         /// </summary>
+        [DataMemberIgnore]
         public Sprite IndeterminateImage
         {
             get { return DependencyProperties.Get(IndeterminateImagePropertyKey); }
@@ -76,6 +79,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when unchecked
         /// </summary>
+        [DataMemberIgnore]
         public Sprite UncheckedImage
         {
             get { return DependencyProperties.Get(UncheckedImagePropertyKey); }
@@ -86,6 +90,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the state of the <see cref="ToggleButton"/>
         /// </summary>
         /// <remarks>Setting the state of the toggle button to <see cref="ToggleState.Indeterminate"/> sets <see cref="IsThreeState"/> to true.</remarks>
+        [DataMember]
         public ToggleState State
         {
             get { return state; } 
@@ -118,6 +123,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Determines whether the control supports two or three states.
         /// </summary>
         /// <remarks>Setting <see cref="IsThreeState"/> to false changes the <see cref="State"/> of the toggle button if currently set to <see cref="ToggleState.Indeterminate"/></remarks>
+        [DataMember]
         public bool IsThreeState
         {
             get { return isThreeState; }

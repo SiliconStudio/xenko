@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents the base primitive for all the button-like controls
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ButtonBase - Name={Name}")]
     public abstract class ButtonBase : ContentControl
     {
@@ -35,6 +36,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets when the Click event occurs.
         /// </summary>
+        [DataMemberIgnore]
         public ClickMode ClickMode
         {
             get { return DependencyProperties.Get(ClickModePropertyKey); }
@@ -44,6 +46,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets a value that indicates whether the button is currently down.
         /// </summary>
+        [DataMemberIgnore]
         public virtual bool IsPressed { get; protected set; }
 
         /// <summary>

@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a modal element that puts an overlay upon the underneath elements and freeze their input.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("ModalElement - Name={Name}")]
     public class ModalElement : ButtonBase
     {
@@ -51,6 +52,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The color of the overlay drawn upon underneath elements.
         /// </summary>
+        [DataMember]
         public Color OverlayColor
         {
             get { return OverlayColorInternal; }
@@ -60,6 +62,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Determine if the control should block the input of underneath elements or not.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsModal
         {
             get { return DependencyProperties.Get(IsModalPropertyKey); }

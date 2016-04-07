@@ -18,108 +18,76 @@ namespace SiliconStudio.Xenko.UI
     /// <summary>
     /// Provides a base class for all the User Interface elements in Xenko applications.
     /// </summary>
+    [DataContract(Inherited = true)]
     [DebuggerDisplay("UIElement: {Name}")]
     public abstract class UIElement : IUIElementUpdate
     {
-        #region Dependency Properties
-
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
-        public readonly static PropertyKey<float> DefaultWidthPropertyKey = new PropertyKey<float>("DefaultWidthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+        public readonly static PropertyKey<float> DefaultWidthPropertyKey =
+            new PropertyKey<float>("DefaultWidthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
-        public readonly static PropertyKey<float> DefaultHeightPropertyKey = new PropertyKey<float>("DefaultHeightKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+        public readonly static PropertyKey<float> DefaultHeightPropertyKey =
+            new PropertyKey<float>("DefaultHeightKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
-        public readonly static PropertyKey<float> DefaultDepthPropertyKey = new PropertyKey<float>("DefaultDepthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+        public readonly static PropertyKey<float> DefaultDepthPropertyKey =
+            new PropertyKey<float>("DefaultDepthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the name dependency property.
         /// </summary>
-        public readonly static PropertyKey<string> NamePropertyKey = new PropertyKey<string>("NameKey", typeof(UIElement), DefaultValueMetadata.Static<string>(null), ObjectInvalidationMetadata.New<string>(NameInvalidationCallback));
-        /// <summary>
-        /// The key to the parent dependency property.
-        /// </summary>
-        private readonly static PropertyKey<UIElement> ParentPropertyKey = new PropertyKey<UIElement>("ParentKey", typeof(UIElement), DefaultValueMetadata.Static<UIElement>(null));
-        /// <summary>
-        /// The key to the VisualParent dependency property.
-        /// </summary>
-        private readonly static PropertyKey<UIElement> VisualParentPropertyKey = new PropertyKey<UIElement>("ParentKey", typeof(UIElement), DefaultValueMetadata.Static<UIElement>(null));
+        public readonly static PropertyKey<string> NamePropertyKey =
+            new PropertyKey<string>("NameKey", typeof(UIElement), DefaultValueMetadata.Static<string>(null), ObjectInvalidationMetadata.New<string>(NameInvalidationCallback));
         /// <summary>
         /// The key to the Background color dependency property.
         /// </summary>
-        private readonly static PropertyKey<Color> BackgroundColorPropertyKey = new PropertyKey<Color>("backgroundColorKey", typeof(Color), DefaultValueMetadata.Static(new Color(0, 0, 0, 0)));
+        private readonly static PropertyKey<Color> BackgroundColorPropertyKey =
+            new PropertyKey<Color>("BackgroundColorKey", typeof(Color), DefaultValueMetadata.Static(new Color(0, 0, 0, 0)));
+        
+        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));
 
-        private static void DefaultSizeInvalidation(object propertyOwner, PropertyKey<float> propertyKey, float propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
+        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchMoveEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchMove", RoutingStrategy.Tunnel, typeof(UIElement));
 
-        #endregion
+        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchUpEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchUp", RoutingStrategy.Tunnel, typeof(UIElement));
 
-        #region Routed Events
+        private static readonly RoutedEvent<TouchEventArgs> TouchDownEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchDown", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchDown",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchEnterEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchEnter", RoutingStrategy.Direct, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchMoveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchMove",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchLeaveEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchLeave", RoutingStrategy.Direct, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchUpEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchUp",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchMoveEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchMove", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> TouchDownEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchDown",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchUpEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchUp", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> TouchEnterEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchEnter",
-            RoutingStrategy.Direct,
-            typeof(UIElement));
+        private static readonly RoutedEvent<KeyEventArgs> KeyPressedEvent =
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyPressed", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> TouchLeaveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchLeave",
-            RoutingStrategy.Direct,
-            typeof(UIElement));
+        private static readonly RoutedEvent<KeyEventArgs> KeyDownEvent =
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyDown", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> TouchMoveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchMove",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<KeyEventArgs> KeyReleasedEvent =
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyReleased", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> TouchUpEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchUp",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly Queue<List<RoutedEventHandlerInfo>> RoutedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
+        
+        internal bool HierarchyDisablePicking;
+        internal Vector3 RenderSizeInternal;
+        internal Matrix WorldMatrixInternal;
+        internal protected Thickness MarginInternal = Thickness.UniformCuboid(0f);
 
-        private static readonly RoutedEvent<KeyEventArgs> KeyPressedEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyPressed",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<KeyEventArgs> KeyDownEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyDown",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<KeyEventArgs> KeyReleasedEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyReleased",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        #endregion
-
-        private static uint uiElementCount;
         private Visibility visibility = Visibility.Visible;
         private float opacity = 1.0f;
         private bool isEnabled = true;
@@ -142,19 +110,12 @@ namespace SiliconStudio.Xenko.UI
         private Style style;
         private ResourceDictionary resourceDictionary;
 
-        internal bool HierarchyDisablePicking;
-        internal Vector3 RenderSizeInternal;
-        internal Matrix WorldMatrixInternal;
-        internal protected Thickness MarginInternal = Thickness.UniformCuboid(0f);
-
         protected bool ArrangeChanged;
         protected bool LocalMatrixChanged;
 
         private Vector3 previousProvidedMeasureSize = new Vector3(-1,-1,-1);
         private Vector3 previousProvidedArrangeSize = new Vector3(-1,-1,-1);
         private bool previousIsParentCollapsed;
-
-        private static readonly Queue<List<RoutedEventHandlerInfo>> RoutedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
 
         static UIElement()
         {
@@ -173,11 +134,11 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Create an instance of a UIElement
+        /// Creates a new instance of <see cref="UIElement"/>.
         /// </summary>
         protected UIElement()
         {
-            ID = ++uiElementCount;
+            Id = Guid.NewGuid();
             DependencyProperties = new PropertyContainer(this);
             VisualChildrenCollection = new UIElementCollection();
             DrawLayerNumber = 1; // one layer for BackgroundColor/Clipping
@@ -191,44 +152,53 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// A unique ID defining the UI element.
         /// </summary>
-        public uint ID { get; private set; }
+        [DataMember]
+        [Display(Browsable = false)]
+        public Guid Id { get; private set; }
 
         /// <summary>
         /// List of the dependency properties attached to the object.
         /// </summary>
+        [DataMember]
         public PropertyContainer DependencyProperties;
 
         /// <summary>
         /// Gets the size that this element computed during the measure pass of the layout process.
         /// </summary>
         /// <remarks>This value does not contain possible <see cref="Margin"/></remarks>
+        [DataMemberIgnore]
         public Vector3 DesiredSize { get; private set; }
 
         /// <summary>
         /// Gets the size that this element computed during the measure pass of the layout process.
         /// </summary>
         /// <remarks>This value contains possible <see cref="Margin"/></remarks>
+        [DataMemberIgnore]
         public Vector3 DesiredSizeWithMargins { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the computed size and position of child elements in this element's layout are valid.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsArrangeValid { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the current size returned by layout measure is valid.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsMeasureValid { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="UIElement"/> is currently touched by the user.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsTouched { get; internal set; }
 
         /// <summary>
         /// The world matrix of the UIElement.
         /// The origin of the element is the center of the object's bounding box defined by <see cref="RenderSize"/>.
         /// </summary>
+        [DataMemberIgnore]
         public Matrix WorldMatrix
         {
             get { return WorldMatrixInternal; }
@@ -250,6 +220,7 @@ namespace SiliconStudio.Xenko.UI
         /// This value has to be modified by the user when he redefines the default element renderer,
         /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
         /// </summary>
+        [DataMember]
         public int DrawLayerNumber { get; set; }
 
         internal bool ForceNextMeasure = true;
@@ -341,8 +312,15 @@ namespace SiliconStudio.Xenko.UI
         /// The visual children of this element. 
         /// </summary>
         /// <remarks>If the class is inherited it is the responsibility of the descendant class to correctly update this collection</remarks>
+        [DataMemberIgnore]
         internal protected UIElementCollection VisualChildrenCollection { get; }
-        
+
+        private static void DefaultSizeInvalidation(object propertyOwner, PropertyKey<float> propertyKey, float propertyOldValue)
+        {
+            var element = (UIElement)propertyOwner;
+            element.InvalidateMeasure();
+        }
+
         /// <summary>
         /// Invalidates the arrange state (layout) for the element. 
         /// </summary>
@@ -431,16 +409,19 @@ namespace SiliconStudio.Xenko.UI
         /// Indicate if the UIElement can be hit by the user. 
         /// If this property is true, the UI system performs hit test on the UIElement.
         /// </summary>
+        [DataMember]
         public bool CanBeHitByUser { get; set; }
 
         /// <summary>
         /// This property can be set to <value>true</value> to disable all touch events on the element's children.
         /// </summary>
+        [DataMember]
         public bool PreventChildrenFromBeingHit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
         /// </summary>
+        [DataMember]
         public virtual bool IsEnabled
         {
             get { return isEnabled; }
@@ -471,6 +452,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI). This is a dependency property.
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
+        [DataMember]
         public float Opacity
         {
             get { return opacity; }
@@ -480,6 +462,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the user interface (UI) visibility of this element. This is a dependency property.
         /// </summary>
+        [DataMember]
         public Visibility Visibility
         {
             get { return visibility; }
@@ -498,6 +481,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>Only elements that can be clicked by user can have the <cref>MouseOverState.MouseOverElement</cref> value. 
         /// That is element that have <see cref="CanBeHitByUser"/> set to <value>true</value></remarks>
+        [DataMemberIgnore]
         public MouseOverState MouseOverState
         {
             get { return mouseOverState; }
@@ -517,6 +501,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the default height of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        [DataMemberIgnore]
         public float DefaultHeight
         {
             get { return DependencyProperties.Get(DefaultHeightPropertyKey); }
@@ -527,6 +512,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the default width of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        [DataMemberIgnore]
         public float DefaultWidth
         {
             get { return DependencyProperties.Get(DefaultWidthPropertyKey); }
@@ -537,6 +523,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the default width of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        [DataMemberIgnore]
         public float DefaultDepth
         {
             get { return DependencyProperties.Get(DefaultDepthPropertyKey); }
@@ -550,9 +537,10 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user suggested height of this element. This is a dependency property.
+        /// Gets or sets the user suggested height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
+        [DataMember]
         public float Height
         {
             get { return height; }
@@ -567,9 +555,10 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user suggested width of this element. This is a dependency property.
+        /// Gets or sets the user suggested width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
+        [DataMember]
         public float Width
         {
             get { return width; }
@@ -587,6 +576,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the user suggested width of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        [DataMember]
         public float Depth
         {
             get { return depth; }
@@ -603,6 +593,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the size of the element. Same as setting separately <see cref="Width"/>, <see cref="Height"/>, and <see cref="Depth"/>
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 Size
         {
             get { return new Vector3(Width, Height, Depth); }
@@ -636,6 +627,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the minimum width of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        [DataMember]
         public float MinimumWidth
         {
             get { return minimumWidth; }
@@ -652,6 +644,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the minimum height of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        [DataMember]
         public float MinimumHeight
         {
             get { return minimumHeight; }
@@ -668,6 +661,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the minimum height of this element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        [DataMember]
         public float MinimumDepth
         {
             get { return minimumDepth; }
@@ -685,12 +679,14 @@ namespace SiliconStudio.Xenko.UI
         /// to fit into the size of the containing element. This is a dependency property.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        [DataMember]
         public bool ClipToBounds { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum width of this element. This is a dependency property.
+        /// Gets or sets the maximum width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        [DataMember]
         public float MaximumWidth
         {
             get { return maximumWidth; }
@@ -704,9 +700,10 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the maximum height of this element. This is a dependency property.
+        /// Gets or sets the maximum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        [DataMember]
         public float MaximumHeight
         {
             get { return maximumHeight; }
@@ -720,9 +717,10 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the maximum height of this element. This is a dependency property.
+        /// Gets or sets the maximum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        [DataMember]
         public float MaximumDepth
         {
             get { return maximumDepth; }
@@ -736,8 +734,9 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the vertical alignment of this element. This is a dependency property.
+        /// Gets or sets the vertical alignment of this element.
         /// </summary>
+        [DataMember]
         public HorizontalAlignment HorizontalAlignment
         {
             get { return horizontalAlignment; }
@@ -749,8 +748,9 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the vertical alignment of this element. This is a dependency property.
+        /// Gets or sets the vertical alignment of this element.
         /// </summary>
+        [DataMember]
         public VerticalAlignment VerticalAlignment
         {
             get { return verticalAlignment; }
@@ -762,8 +762,9 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the depth alignment of this element. This is a dependency property.
+        /// Gets or sets the depth alignment of this element.
         /// </summary>
+        [DataMember]
         public DepthAlignment DepthAlignment
         {
             get { return depthAlignment; }
@@ -777,6 +778,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the name of this element. This is a dependency property.
         /// </summary>
+        [DataMemberIgnore]
         public string Name
         {
             get { return DependencyProperties.Get(NamePropertyKey); }
@@ -786,25 +788,20 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets the logical parent of this element. This is a dependency property.
         /// </summary>
-        public UIElement Parent
-        {
-            get { return DependencyProperties.Get(ParentPropertyKey); }
-            protected set { DependencyProperties.Set(ParentPropertyKey, value); }
-        }
+        [DataMemberIgnore]
+        public UIElement Parent { get; protected set; }
 
         /// <summary>
         /// Gets the visual parent of this element. This is a dependency property.
         /// </summary>
-        public UIElement VisualParent
-        {
-            get { return DependencyProperties.Get(VisualParentPropertyKey); }
-            protected set { DependencyProperties.Set(VisualParentPropertyKey, value); }
-        }
+        [DataMemberIgnore]
+        public UIElement VisualParent { get; protected set; }
 
         /// <summary>
         /// Get a enumerable to the visual children of the <see cref="UIElement"/>.
         /// </summary>
         /// <remarks>Inherited classes are in charge of overriding this method to return their children.</remarks>
+        [DataMemberIgnore]
         public IEnumerable<UIElement> VisualChildren => VisualChildrenCollection;
 
         /// <summary>
@@ -813,8 +810,9 @@ namespace SiliconStudio.Xenko.UI
         protected internal virtual FastCollection<UIElement> HitableChildren => VisualChildrenCollection;
 
         /// <summary>
-        /// Gets or sets the margins of this element. This is a dependency property.
+        /// Gets or sets the margins of this element.
         /// </summary>
+        [DataMember]
         public Thickness Margin
         {
             get { return MarginInternal; }
@@ -826,9 +824,11 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the LocalMatrix of this element. This is a dependency property.
+        /// Gets or sets the LocalMatrix of this element.
         /// </summary>
         /// <remarks>The local transform is not taken is account during the layering. The transformation is purely for rendering effects.</remarks>
+        [DataMember]
+        [Display(Browsable = false)]
         public Matrix LocalMatrix
         {
             get { return localMatrix; }
@@ -842,11 +842,13 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The opacity used to render element. 
         /// </summary>
+        [DataMemberIgnore]
         public float RenderOpacity { get; private set; }
 
         /// <summary>
         /// Gets (or sets, but see Remarks) the final render size of this element.
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 RenderSize
         {
             get { return RenderSizeInternal; }
@@ -856,8 +858,9 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The rendering offsets caused by the UIElement margins and alignments.
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 RenderOffsets { get; private set; }
-        
+
         /// <summary>
         /// Gets the rendered width of this element.
         /// </summary>
@@ -876,6 +879,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The background color of the element.
         /// </summary>
+        [DataMemberIgnore]
         public Color BackgroundColor
         {
             get { return DependencyProperties.Get(BackgroundColorPropertyKey); }
@@ -1203,8 +1207,6 @@ namespace SiliconStudio.Xenko.UI
 
             return intersects;
         }
-        
-        #region Implementation of the IUIElementUpdate interface
 
         void IUIElementUpdate.Update(GameTime time)
         {
@@ -1252,8 +1254,6 @@ namespace SiliconStudio.Xenko.UI
 
             MaxChildrenDepthBias = currentElementDepthBias;
         }
-
-        #endregion
 
         /// <summary>
         /// Method called by <see cref="IUIElementUpdate.Update"/>.
@@ -1480,8 +1480,6 @@ namespace SiliconStudio.Xenko.UI
 
         private readonly Dictionary<RoutedEvent, List<RoutedEventHandlerInfo>> eventsToHandlers = new Dictionary<RoutedEvent, List<RoutedEventHandlerInfo>>();
 
-        #region Events
-
         /// <summary>
         /// Occurs when the value of the <see cref="MouseOverState"/> property changed.
         /// </summary>
@@ -1602,10 +1600,6 @@ namespace SiliconStudio.Xenko.UI
             remove { RemoveHandler(KeyReleasedEvent, value); }
         }
 
-        #endregion
-
-        #region Internal Event Raiser
-
         internal void RaiseTouchDownEvent(TouchEventArgs touchArgs)
         {
             touchArgs.RoutedEvent = PreviewTouchDownEvent;
@@ -1662,10 +1656,6 @@ namespace SiliconStudio.Xenko.UI
             keyEventArgs.RoutedEvent = KeyReleasedEvent;
             RaiseEvent(keyEventArgs);
         }
-
-        #endregion
-
-        #region Class Event Handlers
 
         private static void PreviewTouchDownClassHandler(object sender, TouchEventArgs args)
         {
@@ -1846,7 +1836,5 @@ namespace SiliconStudio.Xenko.UI
         internal virtual void OnKeyReleased(KeyEventArgs args)
         {
         }
-
-        #endregion
     }
 }

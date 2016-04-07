@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a Windows button control, which reacts to the Click event.
     /// </summary>
+    [DataContract]
     [DebuggerDisplay("Button - Name={Name}")]
     public class Button : ButtonBase
     {
@@ -47,10 +48,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         protected virtual void OnAspectImageInvalidated()
         {
         }
-        
+
         /// <summary>
         /// Gets or sets the image that the button displays when pressed
         /// </summary>
+        [DataMemberIgnore]
         public Sprite PressedImage
         {
             get { return DependencyProperties.Get(PressedImagePropertyKey); }
@@ -60,6 +62,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when not pressed
         /// </summary>
+        [DataMemberIgnore]
         public Sprite NotPressedImage
         {
             get { return DependencyProperties.Get(NotPressedImagePropertyKey); }
@@ -69,6 +72,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
+        [DataMemberIgnore]
         public Sprite MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
