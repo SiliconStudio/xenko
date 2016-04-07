@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// An exception triggered when an invalid operation related to a transaction stack occurs. 

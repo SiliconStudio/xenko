@@ -1,4 +1,4 @@
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// A static factory to create <see cref="ITransactionStack"/> instances.

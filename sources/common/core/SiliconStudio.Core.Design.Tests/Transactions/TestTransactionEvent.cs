@@ -1,8 +1,9 @@
 using NUnit.Framework;
-using SiliconStudio.Presentation.Transactions;
+using SiliconStudio.Core.Transactions;
+
 // ReSharper disable AccessToModifiedClosure - we use this on purpose for event testing in this file
 
-namespace SiliconStudio.Presentation.Tests.Transactions
+namespace SiliconStudio.Core.Design.Tests.Transactions
 {
     [TestFixture]
     public class TestTransactionEvent

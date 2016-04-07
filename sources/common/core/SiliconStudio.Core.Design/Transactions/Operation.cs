@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// A base class for operations that are executed during a transaction.

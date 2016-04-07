@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
-using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Tests.Dirtiables
 {

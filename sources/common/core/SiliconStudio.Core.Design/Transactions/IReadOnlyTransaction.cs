@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// An completed interface that cannot be modified anymore, but can be rollbacked or rollforwarded.

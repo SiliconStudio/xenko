@@ -1,4 +1,4 @@
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// An internal interface to interact with <see cref="Operation"/> instances from a <see cref="TransactionStack"/>.

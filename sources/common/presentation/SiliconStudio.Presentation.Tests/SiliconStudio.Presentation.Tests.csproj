@@ -30,11 +30,6 @@
     <Compile Include="Dirtiables\SimpleDirtiable.cs" />
     <Compile Include="Dirtiables\SimpleDirtiableActionItem.cs" />
     <Compile Include="Dirtiables\TestDirtiable.cs" />
-    <Compile Include="Transactions\OrderedOperation.cs" />
-    <Compile Include="Transactions\SimpleOperation.cs" />
-    <Compile Include="Transactions\TestTransactionEvent.cs" />
-    <Compile Include="Transactions\TestTransactionStack.cs" />
-    <Compile Include="Transactions\TestTransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCore.cs" />
     <Compile Include="TestDispatcher.cs" />

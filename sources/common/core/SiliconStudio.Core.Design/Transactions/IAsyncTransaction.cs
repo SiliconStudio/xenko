@@ -1,4 +1,4 @@
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// An interface representing an asynchronous transaction. An asynchronous transaction is a transaction that can be completed asynchronously. It

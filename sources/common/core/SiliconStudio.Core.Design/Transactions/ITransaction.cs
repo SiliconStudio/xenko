@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// An interface representing a transaction currently in progress. The transaction must be

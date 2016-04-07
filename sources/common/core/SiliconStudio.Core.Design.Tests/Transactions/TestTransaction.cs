@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using SiliconStudio.Presentation.Transactions;
+using SiliconStudio.Core.Transactions;
 
-namespace SiliconStudio.Presentation.Tests.Transactions
+namespace SiliconStudio.Core.Design.Tests.Transactions
 {
     [TestFixture]
     public class TestTransaction

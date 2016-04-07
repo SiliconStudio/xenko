@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// An interface representing a transaction stack.

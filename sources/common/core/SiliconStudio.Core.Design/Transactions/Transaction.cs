@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// This class is the internal implementation of transaction.

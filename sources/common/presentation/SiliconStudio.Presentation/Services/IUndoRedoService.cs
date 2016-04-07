@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiliconStudio.Presentation.Transactions;
+using SiliconStudio.Core.Transactions;
 
 namespace SiliconStudio.Presentation.Services
 {

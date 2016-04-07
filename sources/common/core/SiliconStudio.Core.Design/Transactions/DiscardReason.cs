@@ -1,4 +1,4 @@
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// A enum listing the possible reasons for transactions to be discarded from an <see cref="ITransactionStack"/>.

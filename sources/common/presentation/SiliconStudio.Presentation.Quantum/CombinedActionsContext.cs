@@ -1,6 +1,6 @@
 using System;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Services;
-using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Quantum
 {

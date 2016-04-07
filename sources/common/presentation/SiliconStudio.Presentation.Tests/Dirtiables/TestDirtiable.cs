@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using SiliconStudio.Presentation.Dirtiables;
-using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Tests.Dirtiables
 {

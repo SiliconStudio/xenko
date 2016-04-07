@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// Arguments of events triggered by <see cref="ITransactionStack"/> instances that discard one or multiple transactions.

@@ -9,9 +9,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
 using SiliconStudio.Presentation.Services;
-using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.ViewModel
 {

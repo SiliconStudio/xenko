@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiliconStudio.Presentation.Transactions
+namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
     /// Arguments of events triggered by <see cref="ITransactionStack"/> instances that affect a single transaction.

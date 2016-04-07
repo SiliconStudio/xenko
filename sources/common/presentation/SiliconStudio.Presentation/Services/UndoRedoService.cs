@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
-using SiliconStudio.Presentation.Transactions;
 
 namespace SiliconStudio.Presentation.Services
 {
