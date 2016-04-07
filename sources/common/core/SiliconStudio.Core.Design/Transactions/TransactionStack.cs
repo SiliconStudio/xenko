@@ -132,45 +132,52 @@ namespace SiliconStudio.Core.Transactions
                     throw new TransactionException("The transaction being completed is not that last created transaction.");
 
                 // Ignore the transaction if it is empty
-                if (!transaction.IsEmpty)
+                if (transaction.IsEmpty)
+                    return;
+
+                // If we're not the last transaction, consider this transaction as an operation of its parent transaction
+                if (transactionsInProgress.Count > 0)
                 {
-                    // Remove transactions that will be overwritten by this one
-                    if (currentPosition < transactions.Count)
-                    {
-                        PurgeFromIndex(currentPosition);
-                    }
+                    PushOperation(transaction);
+                    return;
+                }
 
-                    if (currentPosition == Capacity)
-                    {
-                        // If the stack has a capacity of 0, immediately freeze the new transaction.
-                        var oldestTransaction = Capacity > 0 ? transactions[0] : transaction;
-                        oldestTransaction.Interface.Freeze();
+                // Remove transactions that will be overwritten by this one
+                if (currentPosition < transactions.Count)
+                {
+                    PurgeFromIndex(currentPosition);
+                }
 
-                        for (var i = 1; i < transactions.Count; ++i)
-                        {
-                            transactions[i - 1] = transactions[i];
-                        }
-                        if (Capacity > 0)
-                        {
-                            transactions[--currentPosition] = null;
-                        }
-                        TransactionDiscarded?.Invoke(this, new TransactionsDiscardedEventArgs(oldestTransaction, DiscardReason.StackFull));
+                if (currentPosition == Capacity)
+                {
+                    // If the stack has a capacity of 0, immediately freeze the new transaction.
+                    var oldestTransaction = Capacity > 0 ? transactions[0] : transaction;
+                    oldestTransaction.Interface.Freeze();
+
+                    for (var i = 1; i < transactions.Count; ++i)
+                    {
+                        transactions[i - 1] = transactions[i];
                     }
                     if (Capacity > 0)
                     {
-                        if (currentPosition == transactions.Count)
-                        {
-                            transactions.Add(transaction);
-                        }
-                        else
-                        {
-                            transactions[currentPosition] = transaction;
-                        }
-                        ++currentPosition;
+                        transactions[--currentPosition] = null;
                     }
-
-                    TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
+                    TransactionDiscarded?.Invoke(this, new TransactionsDiscardedEventArgs(oldestTransaction, DiscardReason.StackFull));
                 }
+                if (Capacity > 0)
+                {
+                    if (currentPosition == transactions.Count)
+                    {
+                        transactions.Add(transaction);
+                    }
+                    else
+                    {
+                        transactions[currentPosition] = transaction;
+                    }
+                    ++currentPosition;
+                }
+
+                TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
             }
         }
 
@@ -183,6 +190,8 @@ namespace SiliconStudio.Core.Transactions
                     throw new TransactionException("Unable to rollback. This method cannot be invoked when CanRollback is false.");
                 if (RollInProgress)
                     throw new TransactionException("Unable to rollback. A rollback or rollforward operation is already in progress.");
+                if (transactionsInProgress.Count > 0)
+                    throw new TransactionException("Unable to rollback. A transaction is in progress.");
 
                 var lastTransaction = transactions[--currentPosition];
                 RollInProgress = true;
@@ -201,6 +210,8 @@ namespace SiliconStudio.Core.Transactions
                     throw new TransactionException("Unable to rollforward. This method cannot be invoked when CanRollforward is false.");
                 if (RollInProgress)
                     throw new TransactionException("Unable to rollforward. A rollback or rollforward operation is already in progress.");
+                if (transactionsInProgress.Count > 0)
+                    throw new TransactionException("Unable to rollback. A transaction is in progress.");
 
                 var lastTransaction = transactions[currentPosition++];
                 RollInProgress = true;
