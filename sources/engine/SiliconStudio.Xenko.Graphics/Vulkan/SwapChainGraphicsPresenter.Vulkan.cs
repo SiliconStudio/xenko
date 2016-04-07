@@ -250,7 +250,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe Swapchain CreateSwapChain()
         {
-            Description.BackBufferFormat = PixelFormat.B8G8R8A8_UNorm;
+            Description.BackBufferFormat = PixelFormat.B8G8R8A8_UNorm_SRgb;
 
             CreateSurface();
 
@@ -294,18 +294,22 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Find present mode
             var presentModes = GraphicsDevice.Adapter.PhysicalDevice.GetSurfacePresentModes(surface);
-            var swapChainPresentMode = PresentMode.Fifo;
+            var swapChainPresentMode = PresentMode.Fifo; // Always supported
             foreach (var presentMode in presentModes)
             {
-                if (presentMode == PresentMode.Mailbox)
+                // TODO VULKAN: Handle PresentInterval.Two
+                if (Description.PresentationInterval == PresentInterval.Immediate)
                 {
-                    swapChainPresentMode = PresentMode.Mailbox;
-                    break;
-                }
-
-                if (swapChainPresentMode != PresentMode.Mailbox && presentMode == PresentMode.Immediate)
-                {
-                    swapChainPresentMode = PresentMode.Immediate;
+                    // Prefer mailbox to immediate
+                    if (presentMode == PresentMode.Immediate)
+                    {
+                        swapChainPresentMode = PresentMode.Immediate;
+                    }
+                    else if (presentMode == PresentMode.Mailbox)
+                    {
+                        swapChainPresentMode = PresentMode.Mailbox;
+                        break;
+                    }
                 }
             }
 
