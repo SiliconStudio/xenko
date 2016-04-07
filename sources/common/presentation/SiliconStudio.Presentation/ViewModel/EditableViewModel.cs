@@ -78,7 +78,7 @@ namespace SiliconStudio.Presentation.ViewModel
             }
             try
             {
-                var result = SetValue(ref field, value, updateAction, propertyNames);
+                var result = SetValue(ref field, value, updateAction, false, propertyNames);
                 return result;
             }
             finally
@@ -133,7 +133,7 @@ namespace SiliconStudio.Presentation.ViewModel
             }
             try
             {
-                var result = SetValue(hasChangedFunction, updateAction, propertyNames);
+                var result = SetValue(hasChangedFunction, updateAction, false, propertyNames);
                 return result;
             }
             finally
@@ -153,37 +153,13 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         protected override bool SetValue<T>(ref T field, T value, Action updateAction, params string[] propertyNames)
         {
-            if (propertyNames.Length == 0)
-                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
-
-            if (EqualityComparer<T>.Default.Equals(field, value) == false)
-            {
-                using (var transaction = ActionService.CreateTransaction())
-                {
-                    var concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
-                    ActionService.SetName(transaction, $"Update property {concatPropertyName}");
-                    return base.SetValue(ref field, value, updateAction, propertyNames);
-                }
-            }
-            return false;
+            return SetValue(ref field, value, updateAction, true, propertyNames);
         }
 
         /// <inheritdoc/>
         protected override bool SetValue(Func<bool> hasChangedFunction, Action updateAction, params string[] propertyNames)
         {
-            if (propertyNames.Length == 0)
-                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
-
-            if (hasChangedFunction == null || hasChangedFunction())
-            {
-                using (var transaction = ActionService.CreateTransaction())
-                {
-                    var concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
-                    ActionService.SetName(transaction, $"Update property {concatPropertyName}");
-                    return base.SetValue(hasChangedFunction, updateAction, propertyNames);
-                }
-            }
-            return false;
+            return SetValue(hasChangedFunction, updateAction, true, propertyNames);
         }
 
         /// <inheritdoc/>
@@ -231,11 +207,73 @@ namespace SiliconStudio.Presentation.ViewModel
             return operation;
         }
 
-        protected virtual Operation CreateCollectionChangeActionItem(string displayName, IList list, NotifyCollectionChangedEventArgs args)
+        protected virtual Operation CreateCollectionChangeOperation(string displayName, IList list, NotifyCollectionChangedEventArgs args)
         {
             var operation = new CollectionChangeOperation(list, args, Dirtiables);
             ActionService.SetName(operation, displayName);
             return operation;
+        }
+
+        private bool SetValue<T>(ref T field, T value, Action updateAction, bool createTransaction, params string[] propertyNames)
+        {
+            if (propertyNames.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
+
+            if (EqualityComparer<T>.Default.Equals(field, value) == false)
+            {
+                ITransaction transaction = null;
+                if (!ActionService.UndoRedoInProgress && createTransaction)
+                {
+                    transaction = ActionService.CreateTransaction();
+                    var concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
+                    ActionService.SetName(transaction, $"Update property {concatPropertyName}");
+                }
+                try
+                {
+                    return base.SetValue(ref field, value, updateAction, propertyNames);
+                }
+                finally
+                {
+                    if (!ActionService.UndoRedoInProgress && createTransaction)
+                    {
+                        if (transaction == null)
+                            throw new InvalidOperationException("A transaction failed to be created.");
+                        transaction.Complete();
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool SetValue(Func<bool> hasChangedFunction, Action updateAction, bool createTransaction, params string[] propertyNames)
+        {
+            if (propertyNames.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
+
+            if (hasChangedFunction == null || hasChangedFunction())
+            {
+                ITransaction transaction = null;
+                if (!ActionService.UndoRedoInProgress && createTransaction)
+                {
+                    transaction = ActionService.CreateTransaction();
+                    var concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
+                    ActionService.SetName(transaction, $"Update property {concatPropertyName}");
+                }
+                try
+                {
+                    return base.SetValue(hasChangedFunction, updateAction, propertyNames);
+                }
+                finally
+                {
+                    if (!ActionService.UndoRedoInProgress && createTransaction)
+                    {
+                        if (transaction == null)
+                            throw new InvalidOperationException("A transaction failed to be created.");
+                        transaction.Complete();
+                    }
+                }
+            }
+            return false;
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e, string collectionName)
@@ -248,11 +286,11 @@ namespace SiliconStudio.Presentation.ViewModel
                 if (toIListMethod != null)
                     list = (IList)toIListMethod.Invoke(sender, new object[0]);
             }
-            if (!suspendedCollections.Contains(collectionName))
+            if (!ActionService.UndoRedoInProgress && !suspendedCollections.Contains(collectionName))
             {
                 using (ActionService.CreateTransaction())
                 {
-                    var operation = CreateCollectionChangeActionItem(displayName, list, e);
+                    var operation = CreateCollectionChangeOperation(displayName, list, e);
                     ActionService.PushOperation(operation);
                 }
             }
