@@ -56,8 +56,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             var element = (UIElement)propertyowner;
             var parentGridBase = element.Parent as GridBase;
 
-            if(parentGridBase != null)
-                parentGridBase.InvalidateMeasure();
+            parentGridBase?.InvalidateMeasure();
         }
 
         private static void SpanValidator(ref int value)

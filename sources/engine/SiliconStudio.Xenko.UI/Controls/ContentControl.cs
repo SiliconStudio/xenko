@@ -51,11 +51,12 @@ namespace SiliconStudio.Xenko.UI.Controls
                 contentPresenter = value;
             }
         }
-        
+
         /// <summary>
         /// Gets or sets the content of a ContentControl.
         /// </summary>
         /// <exception cref="InvalidOperationException">The value passed has already a parent.</exception>
+        [DataMember]
         public virtual UIElement Content
         {
             get { return content; }
@@ -84,6 +85,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the visual content of the ContentControl.
         /// </summary>
+        [DataMemberIgnore]
         public UIElement VisualContent
         {
             get { return visualContent; }

@@ -15,10 +15,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// The key to the NotPressedImage dependency property.
         /// </summary>
         public static readonly PropertyKey<Sprite> BackgroundImagePropertyKey = new PropertyKey<Sprite>("BackgroundImageKey", typeof(ContentDecorator), DefaultValueMetadata.Static<Sprite>(null));
-        
+
         /// <summary>
         /// Gets or sets the image that the button displays when pressed
         /// </summary>
+        [DataMemberIgnore]
         public Sprite BackgroundImage
         {
             get { return DependencyProperties.Get(BackgroundImagePropertyKey); }

@@ -8,7 +8,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -56,65 +55,74 @@ namespace SiliconStudio.Xenko.UI.Controls
             Password,
         }
 
-        #region Dependency Properties
-
         /// <summary>
         /// The key to the IsReadOnly dependency property.
         /// </summary>
-        public readonly static PropertyKey<bool> IsReadOnlyPropertyKey = new PropertyKey<bool>("IsReadOnlyKey", typeof(EditText), DefaultValueMetadata.Static(false), ObjectInvalidationMetadata.New<bool>(InvalidateIsReadOnly));
+        public readonly static PropertyKey<bool> IsReadOnlyPropertyKey =
+            new PropertyKey<bool>("IsReadOnlyKey", typeof(EditText), DefaultValueMetadata.Static(false), ObjectInvalidationMetadata.New<bool>(InvalidateIsReadOnly));
 
         /// <summary>
         /// The key to the Font dependency property.
         /// </summary>
-        public readonly static PropertyKey<SpriteFont> FontPropertyKey = new PropertyKey<SpriteFont>("FontKey", typeof(EditText), DefaultValueMetadata.Static<SpriteFont>(null), ObjectInvalidationMetadata.New<SpriteFont>(InvalidateFont));
+        public readonly static PropertyKey<SpriteFont> FontPropertyKey =
+            new PropertyKey<SpriteFont>("FontKey", typeof(EditText), DefaultValueMetadata.Static<SpriteFont>(null), ObjectInvalidationMetadata.New<SpriteFont>(InvalidateFont));
 
         /// <summary>
         /// The key to the TextColor dependency property.
         /// </summary>
-        public readonly static PropertyKey<Color> TextColorPropertyKey = new PropertyKey<Color>("TextColorKey", typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
+        public readonly static PropertyKey<Color> TextColorPropertyKey =
+            new PropertyKey<Color>("TextColorKey", typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
 
         /// <summary>
         /// The key to the SelectionColor dependency property.
         /// </summary>
-        public readonly static PropertyKey<Color> SelectionColorPropertyKey = new PropertyKey<Color>("SelectionColorKey", typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0x623574FF)));
+        public readonly static PropertyKey<Color> SelectionColorPropertyKey =
+            new PropertyKey<Color>("SelectionColorKey", typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0x623574FF)));
 
         /// <summary>
         /// The key to the SelectionColor dependency property.
         /// </summary>
-        public readonly static PropertyKey<Color> CaretColorPropertyKey = new PropertyKey<Color>("CaretColorKey", typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
+        public readonly static PropertyKey<Color> CaretColorPropertyKey =
+            new PropertyKey<Color>("CaretColorKey", typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> MaxLengthPropertyKey = new PropertyKey<int>("MaxLengthKey", typeof(EditText),
+        public readonly static PropertyKey<int> MaxLengthPropertyKey =
+            new PropertyKey<int>("MaxLengthKey", typeof(EditText),
             DefaultValueMetadata.Static(int.MaxValue), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMaxLength));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> MaxLinesPropertyKey = new PropertyKey<int>("MaxLinesKey", typeof(EditText),
+        public readonly static PropertyKey<int> MaxLinesPropertyKey =
+            new PropertyKey<int>("MaxLinesKey", typeof(EditText),
             DefaultValueMetadata.Static(int.MaxValue), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMaxLines));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> MinLinesPropertyKey = new PropertyKey<int>("MinLinesKey", typeof(EditText),
+        public readonly static PropertyKey<int> MinLinesPropertyKey =
+            new PropertyKey<int>("MinLinesKey", typeof(EditText),
             DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMinLines));
 
         /// <summary>
         /// The key to the ActiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> ActiveImagePropertyKey = new PropertyKey<Sprite>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> ActiveImagePropertyKey =
+            new PropertyKey<Sprite>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the InactiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> InactiveImagePropertyKey = new PropertyKey<Sprite>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> InactiveImagePropertyKey =
+            new PropertyKey<Sprite>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey =
+            new PropertyKey<Sprite>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         private static void CheckStrictlyPositive(ref int value)
         {
@@ -127,8 +135,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             var element = (UIElement)propertyOwner;
             element.InvalidateMeasure();
         }
-
-
+        
         private static void InvalidateIsReadOnly(object propertyOwner, PropertyKey<bool> propertykey, bool propertyoldvalue)
         {
             var editText = (EditText)propertyOwner;
@@ -198,8 +205,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             InvalidateMeasure();
         }
 
-        #endregion
-
         static EditText()
         {
             EventManager.RegisterClassHandler(typeof(EditText), TextChangedEvent, TextChangedClassHandler);
@@ -242,6 +247,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets a value that indicates whether the text box has focus and selected text.
         /// </summary>
+        [DataMember]
         public bool IsSelectionActive
         {
             get { return isSelectionActive; }
@@ -281,12 +287,13 @@ namespace SiliconStudio.Xenko.UI.Controls
                 base.IsEnabled = value;
             }
         }
-        
+
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="DynamicSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the text block should generate <see cref="Graphics.Font.DynamicSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
+        [DataMember]
         public bool SynchronousCharacterGeneration
         {
             get { return synchronousCharacterGeneration; }
@@ -310,6 +317,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the padding inside a control.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsReadOnly
         {
             get { return DependencyProperties.Get(IsReadOnlyPropertyKey); }
@@ -319,6 +327,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the font of the text block
         /// </summary>
+        [DataMemberIgnore]
         public SpriteFont Font
         {
             get { return DependencyProperties.Get(FontPropertyKey); }
@@ -328,6 +337,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the color of the text
         /// </summary>
+        [DataMemberIgnore]
         public Color TextColor
         {
             get { return DependencyProperties.Get(TextColorPropertyKey); }
@@ -337,6 +347,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the color of the selection
         /// </summary>
+        [DataMemberIgnore]
         public Color SelectionColor
         {
             get { return DependencyProperties.Get(SelectionColorPropertyKey); }
@@ -346,6 +357,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the color of the selection
         /// </summary>
+        [DataMemberIgnore]
         public Color CaretColor
         {
             get { return DependencyProperties.Get(CaretColorPropertyKey); }
@@ -356,6 +368,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the maximum number of characters that can be manually entered into the text box.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        [DataMemberIgnore]
         public int MaxLength
         {
             get { return DependencyProperties.Get(MaxLengthPropertyKey); }
@@ -366,6 +379,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the maximum number of visible lines.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        [DataMemberIgnore]
         public int MaxLines
         {
             get { return DependencyProperties.Get(MaxLinesPropertyKey); }
@@ -376,6 +390,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the minimum number of visible lines.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        [DataMemberIgnore]
         public int MinLines
         {
             get { return DependencyProperties.Get(MinLinesPropertyKey); }
@@ -385,6 +400,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is active
         /// </summary>
+        [DataMemberIgnore]
         public Sprite ActiveImage
         {
             get { return DependencyProperties.Get(ActiveImagePropertyKey); }
@@ -394,6 +410,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is inactive
         /// </summary>
+        [DataMemberIgnore]
         public Sprite InactiveImage
         {
             get { return DependencyProperties.Get(InactiveImagePropertyKey); }
@@ -403,6 +420,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
+        [DataMemberIgnore]
         public Sprite MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
@@ -414,11 +432,13 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>When <value>true</value>, the element's text is never snapped. 
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
+        [DataMember]
         public bool DoNotSnapText { get; set; }
 
         /// <summary>
         /// Gets or sets the caret position in the <see cref="EditText"/>'s text.
         /// </summary>
+        [DataMemberIgnore]
         public int CaretPosition
         {
             get
@@ -434,16 +454,18 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the width of the edit text's cursor (in virtual pixels).
         /// </summary>
         /// <remarks>The value is trunked between [0, infinity-1]</remarks>
+        [DataMember]
         public float CaretWidth
         {
             get { return caretWith; }
             set { caretWith = Math.Max(0, Math.Min(float.MaxValue, value));}
         }
-        
+
         /// <summary>
         /// Gets or sets the caret blinking frequency.
         /// </summary>
         /// <remarks>The value is trunked between [0, infinity-1]</remarks>
+        [DataMember]
         public float CaretFrequency
         {
             get { return caretFrequency; }
@@ -487,6 +509,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the edit text input type by setting a combination of <see cref="InputTypeFlags"/>.
         /// </summary>
+        [DataMember]
         public InputTypeFlags InputType
         {
             get { return inputType; }
@@ -506,6 +529,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
+        [DataMember]
         public float TextSize
         {
             get
@@ -534,6 +558,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the alignment of the text to display.
         /// </summary>
+        [DataMember]
         public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
@@ -562,6 +587,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the content of the current selection in the text box.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided string value is null</exception>
+        [DataMemberIgnore]
         public string SelectedText
         {
             get { return Text.Substring(SelectionStart, SelectionLength); }
@@ -584,6 +610,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets a value indicating the number of characters in the current selection in the text box.
         /// </summary>
         /// <remarks>If the provided length of the selection is too big, the selection is extended until the end of the current text</remarks>
+        [DataMemberIgnore]
         public int SelectionLength
         {
             get
@@ -602,6 +629,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets a character index for the beginning of the current selection.
         /// </summary>
         /// <remarks>If the provided selection start index is too big, the caret is placed at the end of the current text</remarks>
+        [DataMemberIgnore]
         public int SelectionStart
         {
             get
@@ -620,6 +648,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the text contents of the text box.
         /// </summary>
         /// <remarks>Setting explicitly the text sets the cursor at the end of the new text.</remarks>
+        [DataMember]
         public string Text
         {
             get
@@ -797,8 +826,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             return returnSize;
         }
 
-        #region Events
-        
         /// <summary>
         /// Occurs when the text selection has changed.
         /// </summary>
@@ -849,7 +876,5 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             OnTouchMoveImpl(args);
         }
-
-        #endregion
     }
 }

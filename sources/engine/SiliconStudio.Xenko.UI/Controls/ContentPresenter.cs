@@ -45,6 +45,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets content of the presenter.
         /// </summary>
+        [DataMemberIgnore]
         public UIElement Content
         {
             get { return DependencyProperties.Get(ContentPropertyKey); }

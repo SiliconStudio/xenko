@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the padding inside a control.
         /// </summary>
+        [DataMember]
         public Thickness BorderThickness
         {
             get { return borderThickness; }
@@ -31,6 +32,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the color of the borders.
         /// </summary>
+        [DataMember]
         public Color BorderColor
         {
             get { return BorderColorInternal; }

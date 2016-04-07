@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The color of the bar.
         /// </summary>
+        [DataMember]
         public Color BarColor
         {
             get { return BarColorInternal; }

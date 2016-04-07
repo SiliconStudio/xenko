@@ -22,6 +22,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle.
         /// </summary>
+        [DataMember]
         public StretchType StretchType
         {
             get { return stretchType; }
@@ -34,6 +35,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets a value that indicates how the image is scaled.
         /// </summary>
+        [DataMember]
         public StretchDirection StretchDirection
         {
             get { return stretchDirection; }
@@ -47,6 +49,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the <see cref="Sprite"/> for the image.
         /// </summary>
+        [DataMember]
         public Sprite Source
         {
             get { return source;} 
@@ -73,6 +76,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or set the color used to tint the image. Default value is white.
         /// </summary>
         /// <remarks>The initial image color is multiplied by this color.</remarks>
+        [DataMember]
         public Color Color { get; set; } = Color.White;
 
         private void InvalidateMeasure(object sender, EventArgs eventArgs)

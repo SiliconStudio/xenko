@@ -80,6 +80,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Gets or sets the value indicating if the <see cref="StackPanel"/> children must be virtualized or not.
         /// When children virtualization is activated, hided children's measurement, arrangement and draw are avoided.
         /// </summary>
+        [DataMember]
         public bool ItemVirtualizationEnabled
         {
             get { return itemVirtualizationEnabled; }
@@ -122,7 +123,6 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         private struct ScrollRequest
         {
-            
             public float ScrollValue;
             public ScrollRequestType Type;
         }
@@ -162,6 +162,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets or sets a value that indicates the orientation by which child elements are stacked.
         /// </summary>
+        [DataMemberIgnore]
         public Orientation Orientation
         {
             get { return DependencyProperties.Get(OrientationPropertyKey); }

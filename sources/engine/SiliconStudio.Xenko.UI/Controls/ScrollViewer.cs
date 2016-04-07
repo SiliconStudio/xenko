@@ -90,11 +90,13 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the value indicating if the element should snap its scrolling to anchors.
         /// </summary>
         /// <remarks>Snapping will work only if <see cref="Content"/> implements interface <see cref="IScrollAnchorInfo"/></remarks>
+        [DataMember]
         public bool SnapToAnchors { get; set; }
 
         /// <summary>
         /// Gets or sets the threshold distance over which a touch move starts scrolling.
         /// </summary>
+        [DataMember]
         public float ScrollStartThreshold { get; set; }
 
         private Vector3 lastFrameTranslation;
@@ -301,6 +303,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The viewer allowed scrolling mode.
         /// </summary>
+        [DataMemberIgnore]
         public ScrollingMode ScrollMode
         {
             get { return DependencyProperties.Get(ScrollModePropertyKey); }
@@ -310,6 +313,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The automatic deceleration of the scroll after the user remove its finger from the screen. The unit is in virtual pixels.
         /// </summary>
+        [DataMemberIgnore]
         public float Deceleration
         {
             get { return DependencyProperties.Get(DecelerationPropertyKey); }
@@ -319,6 +323,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling behavior on touches. True to allow the user to scroll by touching, false to forbid it.
         /// </summary>
+        [DataMemberIgnore]
         public bool TouchScrollingEnabled
         {
             get { return DependencyProperties.Get(TouchScrollingEnabledPropertyKey); }
@@ -328,6 +333,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling behavior on touches. True to allow the user to scroll by touching, false to forbid it.
         /// </summary>
+        [DataMemberIgnore]
         public Color ScrollBarColor
         {
             get { return DependencyProperties.Get(ScrollBarColorPropertyKey); }
@@ -337,6 +343,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling bar thickness in virtual pixels.
         /// </summary>
+        [DataMemberIgnore]
         public float ScrollBarThickness
         {
             get { return DependencyProperties.Get(ScrollBarThicknessPropertyKey); }
