@@ -168,9 +168,9 @@ namespace SiliconStudio.Presentation.Transactions
                         }
                         ++currentPosition;
                     }
-                }
 
-                TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
+                    TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
+                }
             }
         }
 

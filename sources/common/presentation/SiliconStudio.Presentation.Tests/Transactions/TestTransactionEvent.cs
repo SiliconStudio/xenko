@@ -31,6 +31,30 @@ namespace SiliconStudio.Presentation.Tests.Transactions
         }
 
         [Test]
+        public void TestEmptyTransactionCompleted()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            var raiseCount = 0;
+            var expectedRaiseCount = 0;
+            stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
+            using (stack.CreateTransaction())
+            {
+                // Empty transaction
+            }
+            Assert.AreEqual(0, expectedRaiseCount);
+            Assert.AreEqual(0, raiseCount);
+            using (stack.CreateTransaction())
+            {
+                using (stack.CreateTransaction())
+                {
+                    // Empty transaction
+                }
+            }
+            Assert.AreEqual(0, expectedRaiseCount);
+            Assert.AreEqual(0, raiseCount);
+        }
+
+        [Test]
         public void TestTransactionCleared()
         {
             var stack = TransactionStackFactory.Create(5);

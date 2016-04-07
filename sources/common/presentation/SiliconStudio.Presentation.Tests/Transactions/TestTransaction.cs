@@ -21,6 +21,24 @@ namespace SiliconStudio.Presentation.Tests.Transactions
         }
 
         [Test]
+        public void TestEmptyNestedTransaction()
+        {
+            var stack = TransactionStackFactory.Create(5);
+            using (stack.CreateTransaction())
+            {
+                using (stack.CreateTransaction())
+                {
+                    // Empty transaction
+                }
+            }
+
+            Assert.AreEqual(true, stack.IsEmpty);
+            Assert.AreEqual(false, stack.CanRollback);
+            Assert.AreEqual(false, stack.CanRollforward);
+            Assert.Throws<TransactionException>(() => stack.Rollback());
+        }
+
+        [Test]
         public void TestSingleOperationTransaction()
         {
             var stack = TransactionStackFactory.Create(5);
