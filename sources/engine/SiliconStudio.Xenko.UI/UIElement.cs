@@ -43,16 +43,6 @@ namespace SiliconStudio.Xenko.UI
         public readonly static PropertyKey<string> NamePropertyKey =
             new PropertyKey<string>("NameKey", typeof(UIElement), DefaultValueMetadata.Static<string>(null), ObjectInvalidationMetadata.New<string>(NameInvalidationCallback));
         /// <summary>
-        /// The key to the parent dependency property.
-        /// </summary>
-        private readonly static PropertyKey<UIElement> ParentPropertyKey =
-            new PropertyKey<UIElement>("ParentKey", typeof(UIElement), DefaultValueMetadata.Static<UIElement>(null));
-        /// <summary>
-        /// The key to the VisualParent dependency property.
-        /// </summary>
-        private readonly static PropertyKey<UIElement> VisualParentPropertyKey =
-            new PropertyKey<UIElement>("VisualParentKey", typeof(UIElement), DefaultValueMetadata.Static<UIElement>(null));
-        /// <summary>
         /// The key to the Background color dependency property.
         /// </summary>
         private readonly static PropertyKey<Color> BackgroundColorPropertyKey =
@@ -97,7 +87,7 @@ namespace SiliconStudio.Xenko.UI
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
         internal protected Thickness MarginInternal = Thickness.UniformCuboid(0f);
-        
+
         private Visibility visibility = Visibility.Visible;
         private float opacity = 1.0f;
         private bool isEnabled = true;
@@ -169,7 +159,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// List of the dependency properties attached to the object.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
         public PropertyContainer DependencyProperties;
 
         /// <summary>
@@ -799,21 +789,13 @@ namespace SiliconStudio.Xenko.UI
         /// Gets the logical parent of this element. This is a dependency property.
         /// </summary>
         [DataMemberIgnore]
-        public UIElement Parent
-        {
-            get { return DependencyProperties.Get(ParentPropertyKey); }
-            protected set { DependencyProperties.Set(ParentPropertyKey, value); }
-        }
+        public UIElement Parent { get; protected set; }
 
         /// <summary>
         /// Gets the visual parent of this element. This is a dependency property.
         /// </summary>
         [DataMemberIgnore]
-        public UIElement VisualParent
-        {
-            get { return DependencyProperties.Get(VisualParentPropertyKey); }
-            protected set { DependencyProperties.Set(VisualParentPropertyKey, value); }
-        }
+        public UIElement VisualParent { get; protected set; }
 
         /// <summary>
         /// Get a enumerable to the visual children of the <see cref="UIElement"/>.
