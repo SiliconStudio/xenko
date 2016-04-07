@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
         private IObservableNode rootNode;
         private ObservableViewModel parent;
 
-        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update '{node.Name}'";
+        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
         public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
 

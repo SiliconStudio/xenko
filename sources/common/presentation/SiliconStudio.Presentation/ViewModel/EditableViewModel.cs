@@ -201,7 +201,7 @@ namespace SiliconStudio.Presentation.ViewModel
 
             foreach (string propertyName in propertyNames.Where(x => x != "IsDirty" && !uncancellableChanges.Contains(x)))
             {
-                string displayName = $"Updated '{propertyName}'";
+                string displayName = $"Update property '{propertyName}'";
                 object preEditValue;
                 if (preEditValues.TryGetValue(propertyName, out preEditValue) && !uncancellableChanges.Contains(propertyName))
                 {
@@ -233,7 +233,7 @@ namespace SiliconStudio.Presentation.ViewModel
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e, string collectionName)
         {
-            string displayName = $"Updated collection '{collectionName}' ({e.Action})";
+            string displayName = $"Update collection '{collectionName}' ({e.Action})";
             var list = sender as IList;
             if (list == null)
             {
