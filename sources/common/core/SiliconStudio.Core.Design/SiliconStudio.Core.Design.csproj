@@ -94,6 +94,7 @@
     <Compile Include="Settings\NamespaceDoc.cs" />
     <Compile Include="Settings\SettingsDictionary.cs" />
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Settings\SettingsEntryChangeValueOperation.cs" />
     <Compile Include="Settings\SettingsProfileSerializer.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
     <Compile Include="Transactions\IAsyncTransaction.cs" />
@@ -167,11 +168,6 @@
     <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\presentation\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
-      <Project>{e9c3adc8-3f13-4673-aaa8-a0e97419db5b}</Project>
-      <Name>SiliconStudio.ActionStack</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
