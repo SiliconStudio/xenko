@@ -20,8 +20,10 @@ namespace SiliconStudio.Xenko.Graphics
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
         internal int[] ResourceGroupMapping;
+        internal int ResourceGroupCount;
 
         // State exposed by the CommandList
+
         private static readonly DynamicState[] dynamicStates =
         {
             DynamicState.Viewport,
@@ -293,36 +295,37 @@ namespace SiliconStudio.Xenko.Graphics
 
             var layouts = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts;
             ResourceGroupMapping = new int[layouts.Count];
+            ResourceGroupCount = resourceGroups.Count;
 
             // TODO VULKAN: Should we make DescriptorSetLayouts part of RootSignature?
-            nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
-            for (int i = 0; i < layouts.Count; i++)
-            {
-                DescriptorSetLayout.BindingInfo[] bindingInfos;
-                nativeDescriptorSetLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout, out bindingInfos);
-            }
-
-            //var nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[resourceGroups.Count];
-            //for (int i = 0; i < resourceGroups.Count; i++)
+            //nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[layouts.Count];
+            //for (int i = 0; i < layouts.Count; i++)
             //{
-            //    var layoutIndex = resourceGroups[i] == null ? 0 : layouts.FindIndex(x => x.Name == resourceGroups[i]);
-            //    if (layoutIndex != -1)
-            //    {
-            //        DescriptorSetLayout.BindingInfo[] bindingInfos;
-            //        nativeDescriptorSetLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[layoutIndex].Layout, out bindingInfos);
-
-            //        ResourceGroupMapping[layoutIndex] = i;
-            //    }
-            //    else
-            //    {
-            //        var emptyLayout = new DescriptorSetLayoutCreateInfo
-            //        {
-            //            StructureType = StructureType.DescriptorSetLayoutCreateInfo,
-            //            BindingCount = 0,
-            //        };
-            //        nativeDescriptorSetLayouts[i] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref emptyLayout);
-            //    }
+            //    DescriptorSetLayout.BindingInfo[] bindingInfos;
+            //    nativeDescriptorSetLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[i].Layout, out bindingInfos);
             //}
+
+            var nativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[resourceGroups.Count];
+            for (int i = 0; i < resourceGroups.Count; i++)
+            {
+                var layoutIndex = resourceGroups[i] == null ? 0 : layouts.FindIndex(x => x.Name == resourceGroups[i]);
+                if (layoutIndex != -1)
+                {
+                    DescriptorSetLayout.BindingInfo[] bindingInfos;
+                    nativeDescriptorSetLayouts[i] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layouts[layoutIndex].Layout, out bindingInfos);
+
+                    ResourceGroupMapping[layoutIndex] = i;
+                }
+                else
+                {
+                    var emptyLayout = new DescriptorSetLayoutCreateInfo
+                    {
+                        StructureType = StructureType.DescriptorSetLayoutCreateInfo,
+                        BindingCount = 0,
+                    };
+                    nativeDescriptorSetLayouts[i] = GraphicsDevice.NativeDevice.CreateDescriptorSetLayout(ref emptyLayout);
+                }
+            }
 
             // Create pipeline layout
             if (nativeDescriptorSetLayouts.Length > 0)

@@ -231,7 +231,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 fixed (SharpVulkan.DescriptorSet* descriptorSetsPointer = &boundDescriptorSets.Items[0])
                 {
-                    NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, (uint)boundDescriptorSets.Count, descriptorSetsPointer, 0, null);
+                    NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, (uint)activePipeline.ResourceGroupCount, descriptorSetsPointer, 0, null);
                 }
             }
         }
@@ -326,93 +326,24 @@ namespace SiliconStudio.Xenko.Graphics
 
         public unsafe void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
+            if (index != 0)
+                throw new NotImplementedException();
+
             // TODO VULKAN: Do this late, so SetPipelineState and SetDescriptorSets can be unordered?
 
+
             boundDescriptorSets.Clear();
-            for (int i = 0; i < descriptorSets.Length; ++i)
+            for (int i = 0; i < activePipeline.ResourceGroupCount; i++)
             {
-                boundDescriptorSets.Add(descriptorSets[i].NativeDescriptorSet);
+                // TODO VULKAN: Use empty descriptor set
+                boundDescriptorSets.Add(descriptorSets[0].NativeDescriptorSet);
             }
 
-            //boundDescriptorSets.Clear();
-            //for (int i = 0; i < descriptorSets.Length; ++i)
-            //{
-            //    var descriptorSetIndex = activePipeline.ResourceGroupMapping[i];
-            //    boundDescriptorSets.Add(descriptorSets[descriptorSetIndex].NativeDescriptorSet);
-            //}
-
-            //RestartWithNewHeap:
-            //    NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
-            //    var descriptorTableIndex = 0;
-            //    for (int i = 0; i < descriptorSets.Length; ++i)
-            //    {
-            //        // Find what is already mapped
-            //        var descriptorSet = descriptorSets[i];
-
-            //        if ((IntPtr)descriptorSet.SrvStart.Ptr != IntPtr.Zero)
-            //        {
-            //            GpuDescriptorHandle gpuSrvStart;
-
-            //            // Check if we need to copy them to shader visible descriptor heap
-            //            if (!srvMapping.TryGetValue(descriptorSet.SrvStart.Ptr, out gpuSrvStart))
-            //            {
-            //                var srvCount = descriptorSet.Description.SrvCount;
-
-            //                // Make sure heap is big enough
-            //                if (srvHeapOffset + srvCount > SrvHeapSize)
-            //                {
-            //                    ResetSrvHeap();
-            //                    goto RestartWithNewHeap;
-            //                }
-
-            //                // Copy
-            //                NativeDevice.CopyDescriptorsSimple(srvCount, srvHeap.CPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize, descriptorSet.SrvStart, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
-
-            //                // Store mapping
-            //                srvMapping.Add(descriptorSet.SrvStart.Ptr, gpuSrvStart = srvHeap.GPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize);
-
-            //                // Bump
-            //                srvHeapOffset += srvCount;
-            //            }
-
-            //            // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-            //            var srvBindCount = boundPipelineState.SrvBindCounts[i];
-            //            for (int j = 0; j < srvBindCount; ++j)
-            //                NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
-            //        }
-
-            //        if ((IntPtr)descriptorSet.SamplerStart.Ptr != IntPtr.Zero)
-            //        {
-            //            GpuDescriptorHandle gpuSamplerStart;
-
-            //            // Check if we need to copy them to shader visible descriptor heap
-            //            if (!samplerMapping.TryGetValue(descriptorSet.SamplerStart.Ptr, out gpuSamplerStart))
-            //            {
-            //                var samplerCount = descriptorSet.Description.SamplerCount;
-
-            //                // Make sure heap is big enough
-            //                if (samplerHeapOffset + samplerCount > SamplerHeapSize)
-            //                {
-            //                    ResetSamplerHeap();
-            //                    goto RestartWithNewHeap;
-            //                }
-
-            //                // Copy
-            //                NativeDevice.CopyDescriptorsSimple(samplerCount, samplerHeap.CPUDescriptorHandleForHeapStart + samplerHeapOffset * GraphicsDevice.SamplerHandleIncrementSize, descriptorSet.SamplerStart, DescriptorHeapType.Sampler);
-
-            //                // Store mapping
-            //                samplerMapping.Add(descriptorSet.SamplerStart.Ptr, gpuSamplerStart = samplerHeap.GPUDescriptorHandleForHeapStart + samplerHeapOffset * GraphicsDevice.SamplerHandleIncrementSize);
-
-            //                // Bump
-            //                samplerHeapOffset += samplerCount;
-            //            }
-
-            //            // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-            //            var samplerBindCount = boundPipelineState.SamplerBindCounts[i];
-            //            for (int j = 0; j < samplerBindCount; ++j)
-            //                NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
-            //        }
-            //    }
+            for (int i = 0; i < descriptorSets.Length; i++)
+            {
+                var descriptorSetIndex = activePipeline.ResourceGroupMapping[i];
+                boundDescriptorSets[descriptorSetIndex] = descriptorSets[i].NativeDescriptorSet;
+            }
         }
 
         private void ResetSrvHeap()
