@@ -4,8 +4,10 @@
 using System;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
@@ -17,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [ObjectFactory(typeof(UIFactory))]
     [Display("UI")]
-    public class UIAsset : Asset
+    public sealed class UIAsset : Asset
     {
         private const string CurrentVersion = "1.7.0-alpha01";
 
@@ -26,14 +28,24 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// </summary>
         public const string FileExtension = ".xkui";
 
+        public UIAsset()
+        {
+            SetDefaults();
+        }
+
         /// <summary>
         /// Gets or sets the root UI element.
         /// </summary>
         /// <userdoc>The root UI element.</userdoc>
         [DataMember(10)]
+        [NotNull]
         [Display("Root Element")]
-        public object RootElement { get; set; } // FIXME UIElement is not serializable
-        //public UIElement RootElement { get; set; }
+        public UIElement RootElement { get; set; }
+
+        public override void SetDefaults()
+        {
+            RootElement = new Grid();
+        }
 
         private class UIFactory : IObjectFactory
         {
