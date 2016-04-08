@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
@@ -40,13 +41,14 @@ namespace SiliconStudio.Quantum.Commands
                 return false;
 
             var elementType = collectionDescriptor.ElementType;
-            return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType == typeof(string));
+            return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any() || elementType == typeof(string));
         }
 
         public override void Execute(IContent content, object index, object parameter)
         {
             var value = content.Retrieve();
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
+
             object itemToAdd = null;
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
             if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())

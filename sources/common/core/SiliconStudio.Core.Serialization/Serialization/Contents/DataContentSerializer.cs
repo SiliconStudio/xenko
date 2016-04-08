@@ -1,10 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SiliconStudio.Core.Serialization.Contents
 {
@@ -21,10 +18,9 @@ namespace SiliconStudio.Core.Serialization.Contents
             {
                 var dataSerializerType = DataSerializerFactory.GetSerializer("Default", typeof(T)).SerializerType;
                 if (dataSerializerType == null)
-                    throw new InvalidOperationException(string.Format("Could not find a serializer for type {0}", typeof(T)));
+                    throw new InvalidOperationException($"Could not find a serializer for type {typeof(T)}");
                 dataSerializer = (DataSerializer<T>)Activator.CreateInstance(dataSerializerType);
-                if (dataSerializer is IDataSerializerInitializer)
-                    ((IDataSerializerInitializer)dataSerializer).Initialize(stream.Context.SerializerSelector);
+                (dataSerializer as IDataSerializerInitializer)?.Initialize(stream.Context.SerializerSelector);
             }
 
             // Serialize object
@@ -38,7 +34,7 @@ namespace SiliconStudio.Core.Serialization.Contents
     /// <typeparam name="T">The type to serialize.</typeparam>
     public class DataContentSerializer<T> : ContentSerializerBase<T>
     {
-        private DataContentSerializerHelper<T> dataSerializerHelper = new DataContentSerializerHelper<T>();
+        private readonly DataContentSerializerHelper<T> dataSerializerHelper = new DataContentSerializerHelper<T>();
 
         public override void Serialize(ContentSerializerContext context, SerializationStream stream, T obj)
         {
