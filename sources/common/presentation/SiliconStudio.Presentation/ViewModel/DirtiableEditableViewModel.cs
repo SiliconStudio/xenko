@@ -18,7 +18,6 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtiableEditableViewModel"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> and an <see cref="SiliconStudio.ActionStack.ITransactionalActionStack"/> to use for this view model.</param>
         protected DirtiableEditableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
