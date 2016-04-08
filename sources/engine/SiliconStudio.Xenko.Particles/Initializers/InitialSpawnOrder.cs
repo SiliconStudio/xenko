@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             spawnOrder = 0;
 
             RequiredFields.Add(ParticleFields.Order);
-            //RequiredFields.Add(ParticleFields.ChildOrder);
         }
 
         /// <inheritdoc />
