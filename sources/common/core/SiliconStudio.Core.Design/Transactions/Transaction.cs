@@ -78,6 +78,10 @@ namespace SiliconStudio.Core.Transactions
             if (synchronizationContext != SynchronizationContext.Current)
                 throw new TransactionException("An operation is being pushed in a different synchronization context.");
 
+            var transaction = operation as Transaction;
+            if (transaction != null && transaction.synchronizationContext != synchronizationContext)
+                throw new TransactionException("An operation is being pushed in a different synchronization context.");
+
             operations.Add(operation);
         }
 
