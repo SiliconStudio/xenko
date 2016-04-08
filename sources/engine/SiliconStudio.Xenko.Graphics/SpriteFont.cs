@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -22,6 +23,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [DataContract]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteFont>), Profile = "Content")]
+    [ContentSerializer(typeof(DataContentSerializer<SpriteFont>))]
     public class SpriteFont : ComponentBase
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("SpriteFont");
@@ -41,6 +43,32 @@ namespace SiliconStudio.Xenko.Graphics
                                                                     new Vector2(0, 1),
                                                                     new Vector2(1, 1)
                                                                 };
+
+        [DataMember(0)]
+        internal float BaseOffsetY;
+
+        [DataMember(1)]
+        internal float DefaultLineSpacing;
+
+        [DataMember(2)]
+        internal Dictionary<int, float> KerningMap;
+
+        /// <summary>
+        /// The swizzle mode to use when drawing the sprite font.
+        /// </summary>
+        protected SwizzleMode Swizzle;
+
+        private FontSystem fontSystem;
+        private readonly GlyphAction<InternalDrawCommand> internalDrawGlyphAction;
+        private readonly GlyphAction<InternalUIDrawCommand> internalUIDrawGlyphAction;
+        private readonly GlyphAction<Vector2> measureStringGlyphAction;
+
+        protected SpriteFont()
+        {
+            internalDrawGlyphAction = InternalDrawGlyph;
+            internalUIDrawGlyphAction = InternalUIDrawGlyph;
+            measureStringGlyphAction = MeasureStringGlyph;
+        }
 
         /// <summary>
         /// Gets the textures containing the font character data.
@@ -85,25 +113,6 @@ namespace SiliconStudio.Xenko.Graphics
         [DataMemberIgnore]
         public bool IsDynamic { get; protected set; }
 
-        [DataMember(0)]
-        internal float BaseOffsetY;
-
-        [DataMember(1)]
-        internal float DefaultLineSpacing;
-
-        [DataMember(2)]
-        internal Dictionary<int, float> KerningMap;
-
-        private FontSystem fontSystem;
-        private GlyphAction<InternalDrawCommand> internalDrawGlyphAction;
-        private GlyphAction<InternalUIDrawCommand> internalUIDrawGlyphAction;
-        private GlyphAction<Vector2> measureStringGlyphAction;
-
-        /// <summary>
-        /// The swizzle mode to use when drawing the sprite font.
-        /// </summary>
-        protected SwizzleMode Swizzle;
-
         /// <summary>
         /// The <see cref="SiliconStudio.Xenko.Graphics.Font.FontSystem"/> that is managing this sprite font.
         /// </summary>
@@ -117,22 +126,13 @@ namespace SiliconStudio.Xenko.Graphics
                     return;
 
                 // unregister itself from the previous font system
-                if (fontSystem != null)
-                    fontSystem.AllocatedSpriteFonts.Remove(this);
+                fontSystem?.AllocatedSpriteFonts.Remove(this);
 
                 fontSystem = value;
 
                 // register itself to the new managing font system
-                if(fontSystem != null)
-                    fontSystem.AllocatedSpriteFonts.Add(this);
+                fontSystem?.AllocatedSpriteFonts.Add(this);
             }
-        }
-        
-        internal SpriteFont()
-        {
-            internalDrawGlyphAction = InternalDrawGlyph;
-            internalUIDrawGlyphAction = InternalUIDrawGlyph;
-            measureStringGlyphAction = MeasureStringGlyph;
         }
 
         protected override void Destroy()
@@ -412,7 +412,7 @@ namespace SiliconStudio.Xenko.Graphics
         public Vector2 MeasureString(string text, ref Vector2 fontSize, int length)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
 
             var proxy = new StringProxy(text, length);
             return MeasureString(ref proxy, ref fontSize);
@@ -428,7 +428,7 @@ namespace SiliconStudio.Xenko.Graphics
         public Vector2 MeasureString(StringBuilder text, ref Vector2 fontSize, int length)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
 
             var proxy = new StringProxy(text, length);
             return MeasureString(ref proxy, ref fontSize);
@@ -479,7 +479,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private delegate void GlyphAction<T>(ref T parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx);
 
-        private int FindCariageReturn(ref StringProxy text, int startIndex)
+        private static int FindCariageReturn(ref StringProxy text, int startIndex)
         {
             var index = startIndex;
 
@@ -536,7 +536,7 @@ namespace SiliconStudio.Xenko.Graphics
             var y = startY;
             for (var i = forStart; i < forEnd; i++)
             {
-                char character = text[i];					
+                var character = text[i];					
 
                 switch (character)
                 {
@@ -562,13 +562,13 @@ namespace SiliconStudio.Xenko.Graphics
 
                         key |= character;
 
-                        float dx = glyph.Offset.X;
+                        var dx = glyph.Offset.X;
 
                         float kerningOffset;
                         if (KerningMap != null && KerningMap.TryGetValue(key, out kerningOffset))
                             dx += kerningOffset;
 
-                        float nextX = x + glyph.XAdvance + GetExtraSpacing(fontSize.X);
+                        var nextX = x + glyph.XAdvance + GetExtraSpacing(fontSize.X);
                         action(ref parameters, ref fontSize, ref glyph, x + dx, y, nextX);
                         x = nextX;
                         break;
@@ -582,8 +582,8 @@ namespace SiliconStudio.Xenko.Graphics
         [StructLayout(LayoutKind.Sequential)]
         internal struct StringProxy
         {
-            private string textString;
-            private StringBuilder textBuilder;
+            private readonly string textString;
+            private readonly StringBuilder textBuilder;
             public readonly int Length;
 
             public StringProxy(string text)
@@ -614,19 +614,9 @@ namespace SiliconStudio.Xenko.Graphics
                 Length = Math.Max(0, Math.Min(length, text.Length));
             }
 
-            public bool IsNull { get { return textString == null && textBuilder == null; } }
+            public bool IsNull => textString == null && textBuilder == null;
 
-            public char this[int index]
-            {
-                get
-                {
-                    if (textString != null)
-                    {
-                        return textString[index];
-                    }
-                    return textBuilder[index];
-                }
-            }
+            public char this[int index] => textString?[index] ?? textBuilder[index];
         }
 
         /// <summary>
