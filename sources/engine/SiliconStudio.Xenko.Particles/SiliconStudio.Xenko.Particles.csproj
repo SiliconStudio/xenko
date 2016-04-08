@@ -34,6 +34,7 @@
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitialDefaultFields.cs" />
     <Compile Include="Initializers\InitialDirectionSeed.cs" />
+    <Compile Include="Initializers\InitialPositionArc.cs" />
     <Compile Include="Initializers\InitialSpawnOrder.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Spawners\SpawnerBurst.cs" />
     <Compile Include="Updaters\UpdaterColorOverTime.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterRotationOverTime.cs" />
