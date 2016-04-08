@@ -291,7 +291,6 @@ namespace SiliconStudio.Xenko.Graphics
                         texture.NativeAccessMask = AccessFlags.ColorAttachmentWrite;
                         break;
                     case GraphicsResourceState.Present:
-                        CleanupRenderPass(); // TODO VULKAN: Find a better place for this. Renderpass must be ended before the layout transition.
                         texture.NativeLayout = ImageLayout.PresentSource;
                         texture.NativeAccessMask = AccessFlags.MemoryRead;
                         break;
@@ -309,6 +308,9 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (oldLayout == texture.NativeLayout && oldAccessMask == texture.NativeAccessMask)
                     return;
+
+                // End render pass, so barrier effects all commands in the buffer
+                CleanupRenderPass();
 
                 var memoryBarrier = new ImageMemoryBarrier
                 {
