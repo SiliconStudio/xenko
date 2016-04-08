@@ -20,7 +20,7 @@ namespace SiliconStudio.Presentation.Tests.Dirtiables
 
         public bool IsDone { get; private set; } = true;
 
-        public IReadOnlyCollection<IDirtiable> Dirtiables { get; }
+        public IReadOnlyList<IDirtiable> Dirtiables { get; }
 
         public Action OnUndo { get; set; }
 

@@ -42,6 +42,7 @@
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
     <Compile Include="Services\DummyTransaction.cs" />
+    <Compile Include="Services\IMergeableOperation.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
     <Compile Include="Services\UndoRedoService.cs" />
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />

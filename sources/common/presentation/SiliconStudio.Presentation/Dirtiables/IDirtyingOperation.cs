@@ -12,6 +12,6 @@ namespace SiliconStudio.Presentation.Dirtiables
         /// <summary>
         /// Gets the dirtiable objects associated to this operation, or <c>null</c> if no dirtiable is associated.
         /// </summary>
-        IReadOnlyCollection<IDirtiable> Dirtiables { get; }
+        IReadOnlyList<IDirtiable> Dirtiables { get; }
     }
 }

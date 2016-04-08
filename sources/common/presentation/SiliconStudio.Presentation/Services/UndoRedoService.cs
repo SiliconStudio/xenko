@@ -37,7 +37,30 @@ namespace SiliconStudio.Presentation.Services
 
         public ITransaction CreateTransaction()
         {
-            return UndoRedoInProgress ? new DummyTransaction() : stack.CreateTransaction();
+            var transaction = UndoRedoInProgress ? new DummyTransaction() : stack.CreateTransaction();
+            transaction.BeforeComplete += TryMergeOperations;
+            return transaction;
+        }
+
+        private static void TryMergeOperations(object sender, EventArgs e)
+        {
+            var transaction = (ITransaction)sender;
+            int i = 0, j = 1;
+            while (j < transaction.Operations.Count)
+            {
+                var operationA = transaction.Operations[i] as IMergeableOperation;
+                var operationB = transaction.Operations[j] as IMergeableOperation;
+                if (operationA != null && operationB != null && operationB.CanMerge(operationA))
+                {
+                    operationA.Merge(transaction.Operations[j]);
+                    transaction.Operations.RemoveAt(j);
+                }
+                else
+                {
+                    ++i;
+                    ++j;
+                }
+            }
         }
 
         public IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions() => stack.RetrieveAllTransactions();

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
-    public class PropertyChangeOperation : DirtyingOperation
-        {
+    public class PropertyChangeOperation : DirtyingOperation, IMergeableOperation
+    {
         private readonly bool nonPublic;
         private object container;
         private object previousValue;
@@ -32,6 +34,28 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Gets the name of the property affected by the change.
         /// </summary>
         public string PropertyName { get; }
+
+        /// <inheritdoc/>
+        public virtual bool CanMerge(IMergeableOperation otherOperation)
+        {
+            var operation = otherOperation as PropertyChangeOperation;
+            if (operation == null)
+                return false;
+
+            if (operation.container != container)
+                return false;
+
+            if (operation.HasSameDirtiables(operation))
+                return false;
+
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public virtual void Merge(Operation otherOperation)
+        {
+            // Nothing to do: we keep our current previousValue and we do not store the newValue.
+        }
 
         /// <inheritdoc/>
         protected override void FreezeContent()
