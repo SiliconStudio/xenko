@@ -52,14 +52,12 @@ namespace SiliconStudio.Xenko.Graphics
             return new SamplerState(description);
         }
 
-        protected unsafe override void Destroy()
+        protected override void Destroy()
         {
             lock (GraphicsDevice.CachedSamplerStates)
             {
                 GraphicsDevice.CachedSamplerStates.Remove(Description);
             }
-
-            GraphicsDevice.NativeDevice.DestroySampler(NativeSampler);
 
             base.Destroy();
         }
