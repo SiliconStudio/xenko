@@ -347,7 +347,12 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < descriptorSets.Length; i++)
             {
                 var descriptorSetIndex = activePipeline.ResourceGroupMapping[i];
-                boundDescriptorSets[descriptorSetIndex] = descriptorSets[i].NativeDescriptorSet;
+
+                // Is the descriptor set index used in the pipeline layout?
+                if (descriptorSetIndex >= 0)
+                {
+                    boundDescriptorSets[descriptorSetIndex] = descriptorSets[i].NativeDescriptorSet;
+                }
             }
         }
 

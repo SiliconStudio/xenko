@@ -324,7 +324,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             }
 
                             var resourceGroup = reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup;
-                            var layoutBindingIndex = reflection.ResourceBindings.Where(x => x.Param.ResourceGroup == reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup).IndexOf(x => x.Param.RawName == constantBuffer.Name);
+
+                            // Mirrored in EffectDescriptorReflection
+                            var layoutBindingIndex = 0;
+
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
                         }
@@ -343,7 +346,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             }
 
                             var resourceGroup = reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup;
-                            var layoutBindingIndex = reflection.ResourceBindings.Where(x => x.Param.ResourceGroup == reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup).IndexOf(x => x.Param.RawName == variable.Name);
+
+                            // Mirrored in EffectDescriptorReflection
+                            var layoutBindingIndex = reflection.ResourceBindings
+                                .Where(x => x.Param.ResourceGroup == reflection.ResourceBindings[resourceBindingIndex].Param.ResourceGroup)
+                                .OrderBy(x => x.Param.Class == EffectParameterClass.ConstantBuffer ? 0 : 1) // Note: Putting cbuffer first for now
+                                .IndexOf(x => x.Param.RawName == variable.Name);
+
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
                         }

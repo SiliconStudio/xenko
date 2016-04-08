@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics
                 StructureType = StructureType.WriteDescriptorSet,
                 DescriptorCount = 1,
                 DestinationSet = NativeDescriptorSet,
-                DestinationBinding = (uint)slot, // TODO VULKAN: ?
+                DestinationBinding = (uint)slot,
                 DestinationArrayElement = 0,
             };
 
@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Graphics
                 StructureType = StructureType.WriteDescriptorSet,
                 DescriptorCount = 1,
                 DestinationSet = NativeDescriptorSet,
-                DestinationBinding = (uint)slot, // TODO VULKAN: ?
+                DestinationBinding = (uint)slot,
                 DestinationArrayElement = 0,
                 DescriptorType = DescriptorType.Sampler,
                 ImageInfo = new IntPtr(&imageInfo),
@@ -117,7 +117,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public unsafe void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
-            // TODO VULKAN: Alignment needed, like D3D12?
             var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = (ulong)size };
 
             var write = new WriteDescriptorSet
@@ -125,7 +124,7 @@ namespace SiliconStudio.Xenko.Graphics
                 StructureType = StructureType.WriteDescriptorSet,
                 DescriptorCount = 1,
                 DestinationSet = NativeDescriptorSet,
-                DestinationBinding = (uint)slot, // TODO VULKAN: ?
+                DestinationBinding = (uint)slot,
                 DestinationArrayElement = 0,
                 DescriptorType = DescriptorType.UniformBuffer,
                 BufferInfo = new IntPtr(&bufferInfo)
