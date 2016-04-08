@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SharpVulkan;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Shaders;
 using Encoding = System.Text.Encoding;
@@ -137,26 +137,22 @@ namespace SiliconStudio.Xenko.Graphics
             var entryPointName = System.Text.Encoding.UTF8.GetBytes("main\0");
 
             fixed (byte* entryPointNamePointer = &entryPointName[0])
-            fixed (PipelineShaderStageCreateInfo* stagesPointer = &stages[0])
-            fixed (VertexInputAttributeDescription* inputAttributesPointer = &inputAttributes[0])
-            fixed (VertexInputBindingDescription* inputBindingsPointer = &inputBindings[0])
-            fixed (PipelineColorBlendAttachmentState* attachmentsPointer = &colorBlendAttachments[0])
             fixed (DynamicState* dynamicStatesPointer = &dynamicStates[0])
             {
                 var vertexInputState = new PipelineVertexInputStateCreateInfo
                 {
                     StructureType = StructureType.PipelineVertexInputStateCreateInfo,
                     VertexAttributeDescriptionCount = (uint)inputAttributeCount,
-                    VertexAttributeDescriptions = new IntPtr(inputAttributesPointer),
+                    VertexAttributeDescriptions = inputAttributes.Length > 0 ? new IntPtr(Interop.Fixed(inputAttributes)) : IntPtr.Zero,
                     VertexBindingDescriptionCount = (uint)inputBindingCount,
-                    VertexBindingDescriptions = new IntPtr(inputBindingsPointer),
+                    VertexBindingDescriptions = inputBindings.Length > 0 ? new IntPtr(Interop.Fixed(inputBindings)) : IntPtr.Zero,
                 };
 
                 var colorBlendState = new PipelineColorBlendStateCreateInfo
                 {
                     StructureType = StructureType.PipelineColorBlendStateCreateInfo,
                     AttachmentCount = (uint)renderTargetCount,
-                    Attachments = new IntPtr(attachmentsPointer)
+                    Attachments = colorBlendAttachments.Length > 0 ? new IntPtr(Interop.Fixed(colorBlendAttachments)) : IntPtr.Zero,
                 };
 
                 var dynamicState = new PipelineDynamicStateCreateInfo
@@ -171,7 +167,7 @@ namespace SiliconStudio.Xenko.Graphics
                     StructureType = StructureType.GraphicsPipelineCreateInfo,
                     Layout = NativeLayout,
                     StageCount = (uint)stages.Length,
-                    Stages = new IntPtr(stagesPointer),
+                    Stages = stages.Length > 0 ? new IntPtr(Interop.Fixed(stages)) : IntPtr.Zero,
                     //TessellationState = new IntPtr(&tessellationState),
                     VertexInputState = new IntPtr(&vertexInputState),
                     InputAssemblyState = new IntPtr(&inputAssemblyState),
@@ -252,27 +248,23 @@ namespace SiliconStudio.Xenko.Graphics
                 Layout = ImageLayout.DepthStencilAttachmentOptimal,
             };
 
-            fixed (AttachmentDescription* attachmentsPointer = &attachments[0])
-            fixed (AttachmentReference* colorAttachmentReferencesPointer = &colorAttachmentReferences[0])
+            var subpass = new SubpassDescription
             {
-                var subpass = new SubpassDescription
-                {
-                    PipelineBindPoint = PipelineBindPoint.Graphics,
-                    ColorAttachmentCount = (uint)renderTargetCount,
-                    ColorAttachments = new IntPtr(colorAttachmentReferencesPointer),
-                    DepthStencilAttachment = new IntPtr(&depthAttachmentReference)
-                };
+                PipelineBindPoint = PipelineBindPoint.Graphics,
+                ColorAttachmentCount = (uint)renderTargetCount,
+                ColorAttachments = colorAttachmentReferences.Length > 0 ? new IntPtr(Interop.Fixed(colorAttachmentReferences)) : IntPtr.Zero,
+                DepthStencilAttachment = new IntPtr(&depthAttachmentReference)
+            };
 
-                var renderPassCreateInfo = new RenderPassCreateInfo
-                {
-                    StructureType = StructureType.RenderPassCreateInfo,
-                    AttachmentCount = (uint)attachmentCount,
-                    Attachments = new IntPtr(attachmentsPointer),
-                    SubpassCount = 1,
-                    Subpasses = new IntPtr(&subpass)
-                };
-                NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
-            }
+            var renderPassCreateInfo = new RenderPassCreateInfo
+            {
+                StructureType = StructureType.RenderPassCreateInfo,
+                AttachmentCount = (uint)attachmentCount,
+                Attachments = attachments.Length > 0 ? new IntPtr(Interop.Fixed(attachments)) : IntPtr.Zero,
+                SubpassCount = 1,
+                Subpasses = new IntPtr(&subpass)
+            };
+            NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
         }
 
         protected internal unsafe override void OnDestroyed()
@@ -328,24 +320,13 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Create pipeline layout
-            if (nativeDescriptorSetLayouts.Length > 0)
+            var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
             {
-                fixed (SharpVulkan.DescriptorSetLayout* nativeDescriptorSetLayoutsPointer = &nativeDescriptorSetLayouts[0])
-                {
-                    var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
-                    {
-                        StructureType = StructureType.PipelineLayoutCreateInfo,
-                        SetLayoutCount = (uint)nativeDescriptorSetLayouts.Length,
-                        SetLayouts = new IntPtr(nativeDescriptorSetLayoutsPointer),
-                    };
-                    NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
-                }
-            }
-            else
-            {
-                var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo { StructureType = StructureType.PipelineLayoutCreateInfo };
-                NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
-            }
+                StructureType = StructureType.PipelineLayoutCreateInfo,
+                SetLayoutCount = (uint)nativeDescriptorSetLayouts.Length,
+                SetLayouts = nativeDescriptorSetLayouts.Length > 0 ? new IntPtr(Interop.Fixed(nativeDescriptorSetLayouts)) : IntPtr.Zero,
+            };
+            NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
         }
 
         private unsafe PipelineShaderStageCreateInfo[] CreateShaderStages(PipelineStateDescription pipelineStateDescription, out Dictionary<int, string> inputAttributeNames)
