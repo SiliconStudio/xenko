@@ -244,8 +244,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, pipelineState.NativePipeline);
+            if (pipelineState == activePipeline)
+                return;
+
             activePipeline = pipelineState;
+
+            NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, pipelineState.NativePipeline);
         }
 
         public unsafe void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
