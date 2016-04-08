@@ -214,6 +214,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             compressed = false;
 
+            // TODO VULKAN: Complete supported formats
             switch (inputFormat)
             {
                 //case PixelFormat.A8_UNorm:
@@ -224,6 +225,19 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.R8UNorm;
                     pixelSize = 1;
                     break;
+                case PixelFormat.R8_SNorm:
+                    format = Format.R8SNorm;
+                    pixelSize = 1;
+                    break;
+                case PixelFormat.R8_UInt:
+                    format = Format.R8UInt;
+                    pixelSize = 1;
+                    break;
+                case PixelFormat.R8_SInt:
+                    format = Format.R8SInt;
+                    pixelSize = 1;
+                    break;
+
                 case PixelFormat.R8G8B8A8_UNorm:
                     format = Format.R8G8B8A8UNorm;
                     pixelSize = 4;
@@ -240,18 +254,30 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.B8G8R8A8SRgb;
                     pixelSize = 4;
                     break;
+
                 case PixelFormat.R16_Float:
                     format = Format.R16SFloat;
                     pixelSize = 2;
                     break;
+
                 case PixelFormat.R16G16_Float:
                     format = Format.R16G16SFloat;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R16G16_SNorm:
+                    format = Format.R16G16SNorm;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R16G16_UNorm:
+                    format = Format.R16G16UNorm;
+                    pixelSize = 4;
+                    break;
+
                 case PixelFormat.R16G16B16A16_Float:
                     format = Format.R16G16B16A16SFloat;
                     pixelSize = 8;
                     break;
+
                 case PixelFormat.R32_UInt:
                     format = Format.R32UInt;
                     pixelSize = 4;
@@ -260,18 +286,22 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.R32SFloat;
                     pixelSize = 4;
                     break;
+
                 case PixelFormat.R32G32_Float:
                     format = Format.R32G32SFloat;
                     pixelSize = 8;
                     break;
+
                 case PixelFormat.R32G32B32_Float:
                     format = Format.R32G32B32SFloat;
                     pixelSize = 12;
                     break;
+
                 case PixelFormat.R32G32B32A32_Float:
                     format = Format.R32G32B32A32SFloat;
                     pixelSize = 16;
                     break;
+
                 case PixelFormat.D16_UNorm:
                     format = Format.R16UNorm;
                     pixelSize = 2;
@@ -285,6 +315,7 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.D32SFloat;
                     pixelSize = 4;
                     break;
+
                 case PixelFormat.ETC1:
                 case PixelFormat.ETC2_RGB: // ETC1 upper compatible
                     format = Format.Etc2R8G8B8UNormBlock;
@@ -321,6 +352,7 @@ namespace SiliconStudio.Xenko.Graphics
                     compressed = true;
                     pixelSize = 2; // 8bpp
                     break;
+
                 case PixelFormat.BC1_UNorm:
                     format = Format.Bc1RgbaUNormBlock;
                     //format = Format.RAD_TEXTURE_FORMAT_DXT1_RGBA;
