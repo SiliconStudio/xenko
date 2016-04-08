@@ -105,6 +105,8 @@ namespace SiliconStudio.Assets
 
         public string RepositoryPath { get; }
 
+        public string TargetFile => Path.Combine(RootDirectory, DefaultTargets);
+
         public ILogger Logger
         {
             get
@@ -310,7 +312,7 @@ namespace SiliconStudio.Assets
                 warningTask.SetParameter("Text", $"Package {package.Id} with version [$({packageVarSaved})] not found. Use version $({packageVar}) instead");
             }
 
-            var targetFile = Path.Combine(RootDirectory, DefaultTargets);
+            var targetFile = TargetFile;
             if (File.Exists(targetFile))
             {
                 File.Delete(targetFile);
