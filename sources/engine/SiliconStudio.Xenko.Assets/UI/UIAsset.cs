@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -34,6 +35,13 @@ namespace SiliconStudio.Xenko.Assets.UI
         }
 
         /// <summary>
+        /// Gets or sets the fonts used by the UI.
+        /// </summary>
+        /// <userdoc>The fonts used by the UI.</userdoc>
+        [DataMember(30)]
+        public List<Graphics.SpriteFont> Fonts { get; set; } = new List<Graphics.SpriteFont>();
+
+        /// <summary>
         /// Gets or sets the root UI element.
         /// </summary>
         /// <userdoc>The root UI element.</userdoc>
@@ -41,6 +49,13 @@ namespace SiliconStudio.Xenko.Assets.UI
         [NotNull]
         [Display("Root Element")]
         public UIElement RootElement { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sprites used by the UI.
+        /// </summary>
+        /// <userdoc>The sprites used by the UI.</userdoc>
+        [DataMember(20)]
+        public Graphics.SpriteSheet Sprites { get; set; }
 
         public override void SetDefaults()
         {
