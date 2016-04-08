@@ -152,6 +152,7 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
+    <Compile Include="ValueConverters\EmptyStringToBool.cs" />
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
     <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
