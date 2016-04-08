@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -27,7 +28,13 @@ namespace SiliconStudio.Core.Transactions
         public bool IsEmpty => operations.Count == 0;
 
         /// <inheritdoc/>
+        IList<Operation> ITransaction.Operations => operations;
+
+        /// <inheritdoc/>
         public IReadOnlyList<Operation> Operations => operations;
+
+        /// <inheritdoc/>
+        public event EventHandler<EventArgs> BeforeComplete;
 
         /// <summary>
         /// Disposes the transaction by completing it and registering it to the transaction stack.
@@ -42,7 +49,7 @@ namespace SiliconStudio.Core.Transactions
         }
 
         /// <inheritdoc/>
-        public IReadOnlyTransaction Complete()
+        public void Complete()
         {
             if (isCompleted)
                 throw new TransactionException("This transaction has already been completed.");
@@ -50,12 +57,15 @@ namespace SiliconStudio.Core.Transactions
             if (synchronizationContext != SynchronizationContext.Current)
                 throw new TransactionException("This transaction is being completed in a different synchronization context.");
 
+            BeforeComplete?.Invoke(this, EventArgs.Empty);
+            // Clear the reference since we're not supposed to exist as an ITransaction anymore, we're now disposed and turning to an IReadOnlyTransaction
+            BeforeComplete = null;
+
             transactionStack.CompleteTransaction(this);
 
             // Don't keep reference to synchronization context after completion
             synchronizationContext = null;
             isCompleted = true;
-            return this;
         }
 
         /// <summary>
@@ -65,6 +75,9 @@ namespace SiliconStudio.Core.Transactions
         /// <remarks>This method should be invoked by <seealso cref="TransactionStack"/> only.</remarks>
         internal void PushOperation(Operation operation)
         {
+            if (synchronizationContext != SynchronizationContext.Current)
+                throw new TransactionException("An operation is being pushed in a different synchronization context.");
+
             operations.Add(operation);
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace SiliconStudio.Core.Transactions
@@ -20,10 +21,19 @@ namespace SiliconStudio.Core.Transactions
         bool IsEmpty { get; }
 
         /// <summary>
+        /// Gets the operations currently contained in the transaction.
+        /// </summary>
+        IList<Operation> Operations { get; }
+
+        /// <summary>
+        /// Raised just before the transaction is completed.
+        /// </summary>
+        event EventHandler<EventArgs> BeforeComplete;
+
+        /// <summary>
         /// Completes the transaction by closing it and adding it to the transaction stack.
         /// </summary>
-        /// <returns>A read-only version of the completed transaction.</returns>
         /// <remarks>This method is invoked by the <see cref="IDisposable.Dispose"/> method.</remarks>
-        IReadOnlyTransaction Complete();
+        void Complete();
     }
 }

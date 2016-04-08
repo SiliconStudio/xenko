@@ -16,6 +16,10 @@ namespace SiliconStudio.Presentation.Services
 
         public IReadOnlyList<Operation> Operations { get; } = new Operation[0];
 
+        IList<Operation> ITransaction.Operations { get; } = new Operation[0];
+
+        public event EventHandler<EventArgs> BeforeComplete;
+
         public bool IsEmpty => true;
 
         public void Dispose()
@@ -26,13 +30,12 @@ namespace SiliconStudio.Presentation.Services
             Complete();
         }
 
-        public IReadOnlyTransaction Complete()
+        public void Complete()
         {
             if (isCompleted)
                 throw new TransactionException("This transaction has already been completed.");
 
             isCompleted = true;
-            return this;
         }
     }
 }

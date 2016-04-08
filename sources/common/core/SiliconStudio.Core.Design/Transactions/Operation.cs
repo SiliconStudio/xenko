@@ -22,6 +22,11 @@ namespace SiliconStudio.Core.Transactions
         public Guid Id { get; } = Guid.NewGuid();
 
         /// <summary>
+        /// Gets whether this operation has any effect. If this property returns false, the operation will be discarded.
+        /// </summary>
+        public virtual bool HasEffect => true;
+
+        /// <summary>
         /// Gets whether this operation has been frozen.
         /// </summary>
         /// <remarks>An operation is frozen after it has been discarded of the transaction stack.</remarks>
@@ -49,6 +54,11 @@ namespace SiliconStudio.Core.Transactions
         protected virtual void FreezeContent()
         {
             // Do nothing by default
+        }
+
+        protected virtual bool MergeInto(Operation otherOperation)
+        {
+            return false;
         }
 
         /// <inheritdoc/>

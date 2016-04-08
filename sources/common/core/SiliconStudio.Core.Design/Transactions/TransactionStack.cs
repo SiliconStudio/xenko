@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SiliconStudio.Core.Transactions
 {
@@ -91,6 +92,9 @@ namespace SiliconStudio.Core.Transactions
                 if (transactionsInProgress.Count == 0)
                     throw new TransactionException("There is not transaction in progress in the transaction stack.");
 
+                if (!operation.HasEffect)
+                    return;
+
                 var transaction = transactionsInProgress.Peek();
                 transaction.PushOperation(operation);
             }
@@ -135,10 +139,15 @@ namespace SiliconStudio.Core.Transactions
                 if (transaction.IsEmpty)
                     return;
 
+                // If this transaction has no effect, discard it.
+                if (transaction.Operations.All(x => !x.HasEffect))
+                    return;
+
                 // If we're not the last transaction, consider this transaction as an operation of its parent transaction
                 if (transactionsInProgress.Count > 0)
                 {
-                    PushOperation(transaction);
+                    // Avoid useless nested transaction if we have a single operation inside.
+                    PushOperation(transaction.Operations.Count == 1 ? transaction.Operations.Single() : transaction);
                     return;
                 }
 
