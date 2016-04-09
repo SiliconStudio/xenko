@@ -275,6 +275,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Design.Tests", "..\sources\common\core\SiliconStudio.Core.Design.Tests\SiliconStudio.Core.Design.Tests.csproj", "{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.LauncherApp", "..\sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.csproj", "{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C} = {52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VisualStudio.Commands", "..\sources\tools\SiliconStudio.Xenko.VisualStudio.Commands\SiliconStudio.Xenko.VisualStudio.Commands.csproj", "{E136B568-3E3F-498F-A8B4-2877B7768560}"
 EndProject
