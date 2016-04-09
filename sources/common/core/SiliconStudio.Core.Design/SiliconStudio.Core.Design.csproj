@@ -12,7 +12,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <TargetFrameworkVersion>$(TargetFrameworkVersionToolLow)</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <Choose>
