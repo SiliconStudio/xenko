@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 WorldRotation.Rotate(ref zAxis);
             }
 
-            var targetCornerAdd = Target?.Position - WorldPosition ?? new Vector3(0, 0, 0);
+            var targetCornerAdd = Target?.WorldMatrix.TranslationVector - WorldPosition ?? new Vector3(0, 0, 0);
 
             var totalCountLessOne = (FixedLength > 0) ? (FixedLength - 1) : (startIdx < endIdx) ? (endIdx - startIdx - 1) : (endIdx - startIdx + maxCapacity - 1);
             var stepF = (totalCountLessOne > 1) ? (1f/totalCountLessOne) : 1f;
