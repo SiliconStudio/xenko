@@ -10,7 +10,6 @@ using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;

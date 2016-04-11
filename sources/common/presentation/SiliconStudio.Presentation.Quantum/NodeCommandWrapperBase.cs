@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 
@@ -17,12 +16,17 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Initializes a new instance of the <see cref="NodeCommandWrapperBase"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IActionStack"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="IUndoRedoService"/> to use for this view model.</param>
         protected NodeCommandWrapperBase(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
+
+        /// <summary>
+        /// The name of the action executed by this command.
+        /// </summary>
+        public virtual string ActionName => $"Execute {Name}";
 
         /// <summary>
         /// The name of this command.
@@ -37,12 +41,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the action stack.
         /// </summary>
-        protected ITransactionalActionStack ActionStack => serviceProvider.Get<ITransactionalActionStack>();
+        protected IUndoRedoService ActionService => serviceProvider.Get<IUndoRedoService>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
-            Invoke(parameter).Forget();
+            Invoke(parameter);
         }
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="parameter">The command parameter.</param>
         /// <returns>A task that completes when the command has finished.</returns>
-        public abstract Task Invoke(object parameter);
+        public abstract void Invoke(object parameter);
 
         /// <inheritdoc/>
         public override string ToString()

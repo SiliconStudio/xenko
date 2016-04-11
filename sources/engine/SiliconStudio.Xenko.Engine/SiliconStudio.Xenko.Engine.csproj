@@ -236,7 +236,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Materials\MaterialBlendLayerContext.cs" />
+    <Compile Include="Rendering\Materials\MaterialBlendLayerPerStageContext.cs" />
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialShadingModelCollection.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderProcessor.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
@@ -1904,8 +1907,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceBlendShading.cs">
-      <DependentUpon>MaterialSurfaceBlendShading.xksl</DependentUpon>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceShadingBlend.cs">
+      <DependentUpon>MaterialSurfaceShadingBlend.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -3329,9 +3332,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceArray.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Materials\Shaders\MaterialSurfaceBlendShading.xksl">
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceShadingBlend.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceBlendShading.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceShadingBlend.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceEmissiveShading.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

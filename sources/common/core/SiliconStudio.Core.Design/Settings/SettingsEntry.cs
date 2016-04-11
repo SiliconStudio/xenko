@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SharpYaml.Events;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Settings
@@ -67,8 +65,10 @@ namespace SiliconStudio.Core.Settings
             bool changed = !Equals(oldValue, newValue);
             if (changed && ShouldNotify && !Profile.IsDiscarding)
             {
-                var actionItem = new PropertyChangedActionItem("Changed value", "Value", this, oldValue, Enumerable.Empty<IDirtiable>(), true);
-                Profile.ActionStack.Add(actionItem);
+                using (Profile.TransactionStack.CreateTransaction())
+                {
+                    Profile.TransactionStack.PushOperation(new SettingsEntryChangeValueOperation(this, oldValue));
+                }
                 Profile.NotifyEntryChanged(Name);
             }
             value = newValue;
