@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMemberIgnore]
         public float WorldScale { get; private set; } = 1f;
 
-        public void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
+        public void SetParentTRS(ref Vector3 translation, ref Quaternion rotation, float scale)
         {
             WorldScale = scale;
 

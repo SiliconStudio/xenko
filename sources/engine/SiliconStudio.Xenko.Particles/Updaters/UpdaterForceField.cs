@@ -163,9 +163,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
         }
 
         /// <inheritdoc />
-        public override void SetParentTrs(ParticleTransform transform, ParticleSystem parent)
+        public override void SetParentTRS(ParticleTransform transform, ParticleSystem parent)
         {
-            base.SetParentTrs(transform, parent);
+            base.SetParentTRS(transform, parent);
             parentScale = (InheritScale) ? transform.WorldScale.X : 1f;
         }
 

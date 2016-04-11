@@ -79,9 +79,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         } 
 
         /// <inheritdoc />
-        public override void SetParentTrs(ParticleTransform transform, ParticleSystem parentSystem)
+        public override void SetParentTRS(ParticleTransform transform, ParticleSystem parentSystem)
         {
-            base.SetParentTrs(transform, parentSystem);
+            base.SetParentTRS(transform, parentSystem);
 
             if (isParentNameDirty)
             {

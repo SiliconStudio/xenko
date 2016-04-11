@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="transform"><see cref="ParticleSystem"/>'s transform (from the Transform component) or identity if local space is used</param>
         /// <param name="parent">The parent <see cref="ParticleSystem"/></param>
-        public virtual void SetParentTrs(ParticleTransform transform, ParticleSystem parent)
+        public virtual void SetParentTRS(ParticleTransform transform, ParticleSystem parent)
         {
             SetParentTransform(transform);
         }

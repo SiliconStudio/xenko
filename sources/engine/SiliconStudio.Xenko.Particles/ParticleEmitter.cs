@@ -607,16 +607,16 @@ namespace SiliconStudio.Xenko.Particles
             if (simulationSpace == EmitterSimulationSpace.World)
             {
                 // Update sub-systems
-                initialDefaultFields.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                initialDefaultFields.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTrs(drawTransform, parentSystem);
+                    initializer.SetParentTRS(drawTransform, parentSystem);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTrs(drawTransform, parentSystem);
+                    updater.SetParentTRS(drawTransform, parentSystem);
                 }
             }
             else
@@ -625,16 +625,16 @@ namespace SiliconStudio.Xenko.Particles
                 var rotIdentity = Quaternion.Identity;
 
                 // Update sub-systems
-                initialDefaultFields.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
+                initialDefaultFields.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTrs(identityTransform, parentSystem);
+                    initializer.SetParentTRS(identityTransform, parentSystem);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTrs(identityTransform, parentSystem);
+                    updater.SetParentTRS(identityTransform, parentSystem);
                 }
             }
         }
