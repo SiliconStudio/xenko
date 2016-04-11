@@ -1,10 +1,8 @@
 ﻿using SiliconStudio.Assets;
-using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Presentation.Templates;
-using SiliconStudio.Xenko.Graphics;
 using System;
 using System.Linq;
 
@@ -26,6 +24,8 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
             var logger = new LoggerResult();
 
             var parameters = new SessionTemplateGeneratorParameters { Session = session.Session };
+            TemplateSampleGenerator.SetDontAskForPlatforms(parameters, true);
+            TemplateSampleGenerator.SetPlatforms(parameters, AssetRegistry.SupportedPlatforms.ToList());
 
             var outputPath = UPath.Combine(new UDirectory(xenkoDir), new UDirectory("samplesGenerated"));
             outputPath = UPath.Combine(outputPath, new UDirectory(args[0]));
@@ -45,24 +45,6 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
 
             var updaterTemplate = xenkoTemplates.First(x => x.FullPath.ToString().EndsWith("UpdatePlatforms.xktpl"));
             parameters.Description = updaterTemplate;
-
-            var updater = UpdatePlatformsTemplateGenerator.Default;
-
-            var gameSettingsAsset = session.Session.Packages.Last().GetGameSettingsAsset();
-            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
-
-            var updateParams = new PackageTemplateGeneratorParameters();
-
-            UpdatePlatformsTemplateGenerator.SetForcePlatformRegeneration(updateParams, true);
-            UpdatePlatformsTemplateGenerator.SetOrientation(updateParams, (DisplayOrientation)renderingSettings.DisplayOrientation);
-            UpdatePlatformsTemplateGenerator.SetPlatforms(updateParams, AssetRegistry.SupportedPlatforms.ToList());
-            UpdatePlatformsTemplateGenerator.SetDontAskForPlatforms(updateParams, true);
-            
-            if (!updater.PrepareForRun(updateParams))
-                logger.Error("PrepareForRun returned false for the UpdatePlatformsTemplateGenerator");
-
-            if (!updater.Run(updateParams))
-                logger.Error("Run returned false for the UpdatePlatformsTemplateGenerator");
 
             Console.WriteLine(logger.ToText());
 
