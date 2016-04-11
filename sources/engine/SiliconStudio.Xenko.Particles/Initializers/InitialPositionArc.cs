@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 WorldRotation.Rotate(ref zAxis);
             }
 
-            var targetCornerAdd = Target?.WorldMatrix.TranslationVector - WorldPosition ?? new Vector3(0, 0, 0);
+            var targetCornerAdd = Target?.WorldMatrix.TranslationVector - WorldPosition ?? FallbackTarget;
 
             var totalCountLessOne = (FixedLength > 0) ? (FixedLength - 1) : (startIdx < endIdx) ? (endIdx - startIdx - 1) : (endIdx - startIdx + maxCapacity - 1);
             var stepF = (totalCountLessOne > 1) ? (1f/totalCountLessOne) : 1f;
@@ -100,6 +100,16 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(10)]
         [Display("Target")]
         public TransformComponent Target;
+
+        /// <summary>
+        /// In case the <see cref="Target"/> is null, the <see cref="FallbackTarget"/> offset will be used
+        /// </summary>
+        /// <userdoc>
+        /// In case the Target is null, the FallbackTarget offset will be used
+        /// </userdoc>
+        [DataMember(12)]
+        [Display("Fallback Target")]
+        public Vector3 FallbackTarget = new Vector3(0, 0, -1);
 
         /// <summary>
         /// The height of the arc in the center, which is also subject to scale and rotation if inherited
