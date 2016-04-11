@@ -201,7 +201,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (renderTargetViews != null)
             {
                 renderTargetCount = renderTargetViews.Length;
-                for (int i = 0; i < renderTargetViews.Length; i++)
+                for (var i = 0; i < renderTargetViews.Length; i++)
                 {
                     renderTargets[i] = renderTargetViews[i];
                 }
@@ -214,20 +214,20 @@ namespace SiliconStudio.Xenko.Graphics
             SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
-        private void CommonSetRenderTargetsAndViewport(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
+        private void CommonSetRenderTargetsAndViewport(Texture depthStencilView, int currentRenderTargetCount, Texture[] renderTargetViews)
         {
             if (depthStencilView != null)
             {
                 SetViewport(new Viewport(0, 0, depthStencilView.ViewWidth, depthStencilView.ViewHeight));
             }
-            else if (renderTargetCount > 0)
+            else if (currentRenderTargetCount > 0)
             {
                 // Setup the viewport from the rendertarget view
                 var rtv = renderTargetViews[0];
                 SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
 
-            SetRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
+            SetRenderTargetsImpl(depthStencilView, currentRenderTargetCount, renderTargetViews);
         }
     }
 }
