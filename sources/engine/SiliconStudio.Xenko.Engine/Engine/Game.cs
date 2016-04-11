@@ -253,59 +253,63 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        protected override void Initialize()
+        private void ConfirmRenderingSettings()
         {
-            base.Initialize();
+            var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+            if (renderingSettings == null) return;
 
-            //now we probably are capable of detecting the gpu so we try again settings
-            if (AutoLoadDefaultSettings)
+            var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+
+            deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+
+            if (renderingSettings.AdaptBackBufferToScreen)
             {
-                var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
-                if (renderingSettings != null)
+                var deviceAr = Window.ClientBounds.Width / (float)Window.ClientBounds.Height;
+
+                if (renderingSettings.DefaultBackBufferHeight > renderingSettings.DefaultBackBufferWidth)
                 {
-                    var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-
-                    deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
-
-                    if (renderingSettings.AdaptBackBufferToScreen)
+                    //if our device height is actually smaller then requested we use the device one
+                    if (renderingSettings.DefaultBackBufferHeight > Window.ClientBounds.Height)
                     {
-                        var deviceAr = Window.ClientBounds.Width/(float)Window.ClientBounds.Height;
+                        deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Window.ClientBounds.Height;
+                    }
+                    else
+                    {
+                        deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                    }
 
-                        if (renderingSettings.DefaultBackBufferHeight > renderingSettings.DefaultBackBufferWidth)
-                        {
-                            //if our device height is actually smaller then requested we use the device one
-                            if (renderingSettings.DefaultBackBufferHeight > Window.ClientBounds.Height)
-                            {
-                                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Window.ClientBounds.Height;
-                            }
-                            else
-                            {
-                                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
-                            }
-
-                            deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
-                        }
-                        else
-                        {
-                            //if our device height is actually smaller then requested we use the device one
-                            if (renderingSettings.DefaultBackBufferWidth > Window.ClientBounds.Width)
-                            {
-                                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Window.ClientBounds.Width;
-                            }
-                            else
-                            {
-                                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                            }
-
-                            deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
-                        }
+                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
+                }
+                else
+                {
+                    //if our device width is actually smaller then requested we use the device one
+                    if (renderingSettings.DefaultBackBufferWidth > Window.ClientBounds.Width)
+                    {
+                        deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Window.ClientBounds.Width;
                     }
                     else
                     {
                         deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                        deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
                     }
+
+                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
                 }
+            }
+            else
+            {
+                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+            }
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            //now we probably are capable of detecting the gpu/cpu/etc so we confirm rendering settings
+            if (AutoLoadDefaultSettings)
+            {
+                ConfirmRenderingSettings();
             }
 
             // ---------------------------------------------------------
