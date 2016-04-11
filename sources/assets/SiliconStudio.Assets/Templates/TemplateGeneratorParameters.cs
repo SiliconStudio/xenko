@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -147,14 +148,43 @@ namespace SiliconStudio.Assets.Templates
             ValidateParameters();
         }
 
+        /// <summary>
+        /// Gets the tag corresponding to the given property key.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the property key.</typeparam>
+        /// <param name="key">The property key for which to retrieve the value.</param>
+        /// <returns>The value of the tag corresponding to the given property key.</returns>
+        /// <exception cref="KeyNotFoundException">Tag not found in template generator parameters.</exception>
         public T GetTag<T>(PropertyKey<T> key)
         {
             T result;
             if (!Tags.TryGetValue(key, out result))
             {
-                throw new InvalidOperationException($"Expected tag {key} in template generator parameters");
+                throw new KeyNotFoundException("Tag not found in template generator parameters");
             }
             return result;
+        }
+
+        /// <summary>
+        /// Gets the tag corresponding to the given property key if available.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the property key.</typeparam>
+        /// <param name="key">The property key for which to retrieve the value.</param>
+        /// <returns>The value of the tag corresponding to the given property key if available, the default value of the property key otherwise.</returns>
+        public T TryGetTag<T>(PropertyKey<T> key)
+        {
+            return Tags.Get(key);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool HasTag<T>(PropertyKey<T> key)
+        {
+            return Tags.ContainsKey(key);
         }
 
         public void SetTag<T>(PropertyKey<T> key, T value)
