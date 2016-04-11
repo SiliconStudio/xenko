@@ -21,6 +21,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CombinedActionsContext.cs" />
     <Compile Include="CombinedNodeCommandWrapper.cs" />
     <Compile Include="CombinedObservableNode.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
@@ -56,11 +57,6 @@
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
-      <Project>{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}</Project>
-      <Name>SiliconStudio.ActionStack</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Presentation\SiliconStudio.Presentation.csproj">
