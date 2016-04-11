@@ -67,8 +67,8 @@ namespace SiliconStudio.Core.Transactions
             // Clear the reference since we're not supposed to exist as an ITransaction anymore, we're now disposed and turning to an IReadOnlyTransaction
             BeforeComplete = null;
 
+            TryMergeOperations();
             transactionStack.CompleteTransaction(this);
-
             // Don't keep reference to synchronization context after completion
             synchronizationContext = null;
             isCompleted = true;
@@ -116,6 +116,26 @@ namespace SiliconStudio.Core.Transactions
             foreach (var operation in operations)
             {
                 operation.Interface.Freeze();
+            }
+        }
+
+        private void TryMergeOperations()
+        {
+            int i = 0, j = 1;
+            while (j < operations.Count)
+            {
+                var operationA = operations[i] as IMergeableOperation;
+                var operationB = operations[j] as IMergeableOperation;
+                if (operationA != null && operationB != null && operationB.CanMerge(operationA))
+                {
+                    operationA.Merge(operations[j]);
+                    operations.RemoveAt(j);
+                }
+                else
+                {
+                    ++i;
+                    ++j;
+                }
             }
         }
     }

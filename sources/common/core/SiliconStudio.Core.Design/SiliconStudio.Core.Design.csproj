@@ -98,6 +98,7 @@
     <Compile Include="Settings\SettingsProfileSerializer.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
     <Compile Include="Transactions\IAsyncTransaction.cs" />
+    <Compile Include="Transactions\IMergeableOperation.cs" />
     <Compile Include="Transactions\IOperation.cs" />
     <Compile Include="Transactions\IReadOnlyTransaction.cs" />
     <Compile Include="Transactions\ITransaction.cs" />

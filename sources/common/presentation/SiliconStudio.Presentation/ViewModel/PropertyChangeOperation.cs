@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
-using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
