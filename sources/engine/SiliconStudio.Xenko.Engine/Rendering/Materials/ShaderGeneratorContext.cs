@@ -4,18 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-namespace SiliconStudio.Xenko.Assets
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Base class for generating shader class source with associated parameters.

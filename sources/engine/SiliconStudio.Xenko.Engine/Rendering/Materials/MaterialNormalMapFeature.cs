@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias));
                 mixin.AddComposition("normalMap", computeColorSource);
-                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+                context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
             }
         }
 

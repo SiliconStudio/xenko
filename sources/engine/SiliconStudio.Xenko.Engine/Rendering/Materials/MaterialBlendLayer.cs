@@ -103,17 +103,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             try
             {
                 // TODO: Because we are not fully supporting Streams declaration in shaders, we have to workaround this limitation by using a dynamic shader (inline)
-                // TODO: Handle MaterialOverrides
                 // Push a layer for the sub-material
                 context.PushOverrides(Overrides);
-                context.PushLayer();
+                context.PushLayer(BlendMap);
 
                 // Generate the material shaders into the current context
                 material.Visit(context);
-
-                // Generate Vertex and Pixel surface shaders
-                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
-                    Generate(stage, context);
             }
             finally
             {
@@ -122,36 +117,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 context.PopOverrides();
                 context.PopMaterial();
             }
-        }
-
-        private void Generate(MaterialShaderStage stage, MaterialGeneratorContext context)
-        {
-            if (!context.HasSurfaceShaders(stage))
-            {
-                return;
-            }
-
-            // Blend setup for this layer
-            context.SetStream(stage, BlendStream, BlendMap, MaterialKeys.BlendMap, MaterialKeys.BlendValue);
-
-            // Generate a dynamic shader name
-            // Create a mixin
-            var shaderMixinSource = new ShaderMixinSource();
-            shaderMixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceStreamsBlend"));
-
-            // Add all streams
-            foreach (var stream in context.Streams[stage])
-            {
-                shaderMixinSource.AddCompositionToArray("blends", context.GetStreamBlendShaderSource(stream));
-            }
-
-            var materialBlendLayerMixin = context.GenerateSurfaceShader(stage);
-
-            // Add the shader to the mixin
-            shaderMixinSource.AddComposition("layer", materialBlendLayerMixin);
-
-            context.ResetSurfaceShaders(stage);
-            context.AddSurfaceShader(stage, shaderMixinSource);
         }
     }
 }
