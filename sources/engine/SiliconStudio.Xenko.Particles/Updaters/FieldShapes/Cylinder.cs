@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         public override DebugDrawShape GetDebugDrawShape(out Vector3 pos, out Quaternion rot, out Vector3 scl)
         {
             pos = new Vector3(0, 0, 0);
-            rot = new Quaternion(0, 0, 0, 1);
+            rot = Quaternion.Identity;
             scl = new Vector3(radius * 2, halfHeight * 2, radius * 2);
             return DebugDrawShape.Cylinder;
         }
