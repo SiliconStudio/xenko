@@ -1355,7 +1355,8 @@ namespace SiliconStudio.Assets
             {
                 var assetImportBase = (AssetImport)AssetCloner.Clone(assetImport);
                 assetImportBase.SetAsRootImport();
-                assetImportBase.SetDefaults();
+                // We removed SetDefaults, but I guess we can remove this whole method?
+                //assetImportBase.SetDefaults();
 
                 // Setup default importer
                 if (!String.IsNullOrEmpty(assetImport.Source.GetFileExtension()))
