@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
     /// <summary>
     /// Create a package.
     /// </summary>
-    public class PackageUnitTestGenerator : TemplateGeneratorBase
+    public class PackageUnitTestGenerator : TemplateGeneratorBase<SessionTemplateGeneratorParameters>
     {
         public static readonly PackageUnitTestGenerator Default = new PackageUnitTestGenerator();
 
@@ -23,15 +23,15 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             return templateDescription.Id == TemplateId;
         }
 
-        public override Func<bool> PrepareForRun(TemplateGeneratorParameters parameters)
+        public override bool PrepareForRun(SessionTemplateGeneratorParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
 
-            return () => Generate(parameters);
+            return true;
         }
 
-        public bool Generate(TemplateGeneratorParameters parameters)
+        public sealed override bool Run(SessionTemplateGeneratorParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
@@ -47,9 +47,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             // Setup the path to save it
             package.FullPath = UPath.Combine(outputDirectory, new UFile(name + Package.PackageFileExtension));
-
-            // Set the package
-            parameters.Package = package;
 
             // Add it to the current session
             var session = parameters.Session;

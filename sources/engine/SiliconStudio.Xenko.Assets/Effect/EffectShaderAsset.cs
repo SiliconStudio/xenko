@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Shaders.Parser;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;

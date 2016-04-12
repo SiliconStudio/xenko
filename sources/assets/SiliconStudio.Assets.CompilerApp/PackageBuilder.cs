@@ -112,7 +112,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 if (gameSettingsAsset == null)
                 {
                     builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
-                    gameSettingsAsset = new GameSettingsAsset();
+                    gameSettingsAsset = GameSettingsFactory.Create();
                 }
 
                 // Create context

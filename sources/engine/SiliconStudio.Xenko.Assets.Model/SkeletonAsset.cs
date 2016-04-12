@@ -5,14 +5,12 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
-    //[ObjectFactory(typeof(SkeletonFactory))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
     public class SkeletonAsset : AssetImportTracked
     {
@@ -22,21 +20,13 @@ namespace SiliconStudio.Xenko.Assets.Model
         public const string FileExtension = ".xkskel";
 
         /// <summary>
-        /// Create an instance of <see cref="SkeletonAsset"/> with default values.
-        /// </summary>
-        public SkeletonAsset()
-        {
-            ScaleImport = 1.0f;
-        }
-
-        /// <summary>
         /// Gets or sets the scale import.
         /// </summary>
         /// <value>The scale import.</value>
         /// <userdoc>The scale applied when importing a model.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
-        public float ScaleImport { get; set; }
+        public float ScaleImport { get; set; } = 1.0f;
 
         /// <summary>
         /// List that stores if a node should be preserved
@@ -50,10 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(20), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
 
-        protected override int InternalBuildOrder
-        {
-            get { return -200; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
-        }
+        protected override int InternalBuildOrder => -200; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).
@@ -123,12 +110,6 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             foreach (var node in Nodes)
                 node.Preserve = !node.Preserve;
-        }
-
-        public override void SetDefaults()
-        {
-            if (Nodes != null)
-                Nodes.Clear();
         }
     }
 }
