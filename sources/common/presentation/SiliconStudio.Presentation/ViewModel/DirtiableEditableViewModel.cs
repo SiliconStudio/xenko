@@ -33,10 +33,29 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         public event EventHandler<DirtinessUpdatedEventArgs> DirtinessUpdated;
 
+        /// <summary>
+        /// Gets whether this view model has been disposed.
+        /// </summary>
+        protected bool IsDisposed { get; private set; }
+
         /// <inheritdoc/>
-        public virtual void Dispose()
+        public void Dispose()
         {
-            // intentionally do nothing
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Protected implementation of the Dispose pattern.
+        /// </summary>
+        /// <remarks>
+        /// Derived class should override this method, implement specific cleanup and then call the base implementation.
+        /// See https://msdn.microsoft.com/en-us/library/fs2xkftw(v=vs.110).aspx
+        /// </remarks>
+        /// <param name="disposing">True if called from the <see cref="Dispose"/> method, False if called from a Finalize (destructor) method.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            IsDisposed = true;
         }
 
         protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)
