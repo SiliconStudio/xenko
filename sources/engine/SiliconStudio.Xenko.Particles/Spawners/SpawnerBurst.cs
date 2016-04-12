@@ -17,7 +17,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         [DataMemberIgnore]
         private bool hasBursted;
 
-        // TODO Vector2
         [DataMemberIgnore]
         private int spawnCount;
 
@@ -27,15 +26,14 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             hasBursted = false;
         }
 
-
         /// <summary>
-        /// The amount of particles this spawner will emit over one second, every second
+        /// The amount of particles this spawner will emit in one burst when it activates
         /// </summary>
         /// <userdoc>
-        /// The amount of particles this spawner will emit over one second, every second
+        /// The amount of particles this spawner will emit in one burst when it activates
         /// </userdoc>
         [DataMember(40)]
-        [Display("Particles/second")]
+        [Display("Particles/burst")]
         public int SpawnCount
         {
             get { return spawnCount; }

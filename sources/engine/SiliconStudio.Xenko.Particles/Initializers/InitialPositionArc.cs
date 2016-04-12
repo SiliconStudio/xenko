@@ -25,70 +25,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             // DisplayPosition = true; // Always inherit the position and don't allow to opt out
             DisplayParticleRotation = true;
-            DisplayParticleScaleUniform = true;
-        }
-
-        /// <inheritdoc />
-        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
-        {
-            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
-                return;
-
-            var posField = pool.GetField(ParticleFields.Position);
-            var rndField = pool.GetField(ParticleFields.RandomSeed);
-
-            var arcOffset = new Vector3(0, ArcHeight, 0);
-            if (!WorldRotation.IsIdentity)
-            {
-                WorldRotation.Rotate(ref arcOffset);
-            }
-
-            var leftCorner = PositionMin * WorldScale;
-            var xAxis = new Vector3(PositionMax.X * WorldScale.X - leftCorner.X, 0, 0);
-            var yAxis = new Vector3(0, PositionMax.Y * WorldScale.Y - leftCorner.Y, 0);
-            var zAxis = new Vector3(0, 0, PositionMax.Z * WorldScale.Z - leftCorner.Z);
-
-            if (!WorldRotation.IsIdentity)
-            {
-                WorldRotation.Rotate(ref leftCorner);
-                WorldRotation.Rotate(ref xAxis);
-                WorldRotation.Rotate(ref yAxis);
-                WorldRotation.Rotate(ref zAxis);
-            }
-
-            var targetCornerAdd = Target?.WorldMatrix.TranslationVector - WorldPosition ?? FallbackTarget;
-
-            var totalCountLessOne = (FixedLength > 0) ? (FixedLength - 1) : (startIdx < endIdx) ? (endIdx - startIdx - 1) : (endIdx - startIdx + maxCapacity - 1);
-            var stepF = (totalCountLessOne > 1) ? (1f/totalCountLessOne) : 1f;
-            var step = -stepF;
-
-            var i = startIdx;
-            while (i != endIdx)
-            {
-                var particle = pool.FromIndex(i);
-                var randSeed = particle.Get(rndField);
-
-                if (Sequential)
-                {
-                    step += stepF;
-                    if (FixedLength > 0) step = (i % FixedLength) * stepF;
-                }
-                else
-                {
-                    step = randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
-                }
-
-                var positionOffsetFactor = (float)Math.Sin(step * Math.PI);
-                var particleRandPos = leftCorner * positionOffsetFactor + targetCornerAdd * step + arcOffset * positionOffsetFactor + WorldPosition;
-
-                particleRandPos += xAxis * positionOffsetFactor * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
-                particleRandPos += yAxis * positionOffsetFactor * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
-                particleRandPos += zAxis * positionOffsetFactor * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
-
-                (*((Vector3*)particle[posField])) = particleRandPos;
-
-                i = (i + 1) % maxCapacity;
-            }
         }
 
         /// <summary>
@@ -167,5 +103,68 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(50)]
         [Display("Random Seed")]
         public uint SeedOffset { get; set; } = 0;
+
+        /// <inheritdoc />
+        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
+        {
+            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
+                return;
+
+            var posField = pool.GetField(ParticleFields.Position);
+            var rndField = pool.GetField(ParticleFields.RandomSeed);
+
+            var arcOffset = new Vector3(0, ArcHeight, 0);
+            if (!WorldRotation.IsIdentity)
+            {
+                WorldRotation.Rotate(ref arcOffset);
+            }
+
+            var leftCorner = PositionMin * WorldScale;
+            var xAxis = new Vector3(PositionMax.X * WorldScale.X - leftCorner.X, 0, 0);
+            var yAxis = new Vector3(0, PositionMax.Y * WorldScale.Y - leftCorner.Y, 0);
+            var zAxis = new Vector3(0, 0, PositionMax.Z * WorldScale.Z - leftCorner.Z);
+
+            if (!WorldRotation.IsIdentity)
+            {
+                WorldRotation.Rotate(ref leftCorner);
+                WorldRotation.Rotate(ref xAxis);
+                WorldRotation.Rotate(ref yAxis);
+                WorldRotation.Rotate(ref zAxis);
+            }
+
+            var targetCornerAdd = Target?.WorldMatrix.TranslationVector - WorldPosition ?? FallbackTarget;
+
+            var totalCountLessOne = (FixedLength > 0) ? (FixedLength - 1) : (startIdx < endIdx) ? (endIdx - startIdx - 1) : (endIdx - startIdx + maxCapacity - 1);
+            var stepF = (totalCountLessOne > 1) ? (1f / totalCountLessOne) : 1f;
+            var step = -stepF;
+
+            var i = startIdx;
+            while (i != endIdx)
+            {
+                var particle = pool.FromIndex(i);
+                var randSeed = particle.Get(rndField);
+
+                if (Sequential)
+                {
+                    step += stepF;
+                    if (FixedLength > 0) step = (i % FixedLength) * stepF;
+                }
+                else
+                {
+                    step = randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
+                }
+
+                var positionOffsetFactor = (float)Math.Sin(step * Math.PI);
+                var particleRandPos = leftCorner * positionOffsetFactor + targetCornerAdd * step + arcOffset * positionOffsetFactor + WorldPosition;
+
+                particleRandPos += xAxis * positionOffsetFactor * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
+                particleRandPos += yAxis * positionOffsetFactor * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
+                particleRandPos += zAxis * positionOffsetFactor * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
+
+                (*((Vector3*)particle[posField])) = particleRandPos;
+
+                i = (i + 1) % maxCapacity;
+            }
+        }
     }
 }
