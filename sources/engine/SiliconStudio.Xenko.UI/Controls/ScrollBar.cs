@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a scroll bar. 
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(ScrollBar))]
     [DebuggerDisplay("ScrollBar - Name={Name}")]
     public class ScrollBar : UIElement
     {

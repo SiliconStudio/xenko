@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Provides a lightweight control for displaying small amounts of text.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(TextBlock))]
     [DebuggerDisplay("TextBlock - Name={Name}")]
     public class TextBlock : UIElement
     {

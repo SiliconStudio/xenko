@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.UI
     /// <summary>
     /// Describes the thickness of a frame around a cuboid. Six float values describe the Left, Top, Right, Bottom, Front, and Back sides of the cuboid, respectively.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(Thickness))]
     [DataStyle(DataStyle.Compact)]
     [DebuggerDisplay("Left:{Left}, Top:{Top}, Back:{Back}, Right:{Right}, Bottom:{Bottom}, Front:{Front}")]
     public struct Thickness

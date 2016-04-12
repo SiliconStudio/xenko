@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represent a UI toggle button. A toggle but can have two or three states depending on the <see cref="IsThreeState"/> property.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(ToggleButton))]
     [DebuggerDisplay("ToggleButton - Name={Name}")]
     public class ToggleButton : ButtonBase
     {

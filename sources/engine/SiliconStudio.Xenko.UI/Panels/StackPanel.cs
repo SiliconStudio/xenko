@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Arranges child elements into a single line that can be oriented horizontally or vertically.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(StackPanel))]
     [DebuggerDisplay("StackPanel - Name={Name}")]
     public class StackPanel : Panel, IScrollInfo
     {

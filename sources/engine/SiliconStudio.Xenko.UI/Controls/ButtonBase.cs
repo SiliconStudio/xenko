@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents the base primitive for all the button-like controls
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(ButtonBase))]
     [DebuggerDisplay("ButtonBase - Name={Name}")]
     public abstract class ButtonBase : ContentControl
     {

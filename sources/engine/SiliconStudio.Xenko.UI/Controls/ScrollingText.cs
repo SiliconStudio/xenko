@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A text viewer that scrolls automatically the text from right to left.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(ScrollingText))]
     [DebuggerDisplay("ScrollingText - Name={Name}")]
     public class ScrollingText : TextBlock
     {

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents the base class for user interface (UI) controls. 
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(Control))]
     [DebuggerDisplay("Control - Name={Name}")]
     public abstract class Control : UIElement
     {

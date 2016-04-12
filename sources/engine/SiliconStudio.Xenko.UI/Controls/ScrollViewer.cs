@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// A scroll viewer element has an infinite virtual size defined by its <see cref="ScrollingMode"/>.
     /// The user can move in that virtual size by touching and panning on the screen.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(ScrollViewer))]
     [DebuggerDisplay("ScrollViewer - Name={Name}")]
     public class ScrollViewer : ContentControl
     {
