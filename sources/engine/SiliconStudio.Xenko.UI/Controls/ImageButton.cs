@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A <see cref="Button"/> whose <see cref="ContentControl.Content"/> are the <see cref="Button.PressedImage"/> and <see cref="Button.NotPressedImage"/>.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(ImageButton))]
     [DebuggerDisplay("ImageButton - Name={Name}")]
     public class ImageButton : Button
     {

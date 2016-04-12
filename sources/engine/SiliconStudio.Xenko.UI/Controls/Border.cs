@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A border element adds an uniform color border around its content.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(Border))]
     public class Border : ContentControl
     {
         internal Color BorderColorInternal = Color.Black;

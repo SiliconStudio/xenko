@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents a grid control with adjustable columns, rows and layers.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(Grid))]
     [DebuggerDisplay("Grid - Name={Name}")]
     public class Grid : GridBase
     {

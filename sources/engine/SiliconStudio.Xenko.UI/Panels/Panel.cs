@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Provides a base class for all Panel elements. Use Panel elements to position and arrange child objects Xenko applications.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(Panel))]
     [DebuggerDisplay("Panel - Name={Name}")]
     public abstract class Panel : UIElement, IScrollAnchorInfo
     {

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary> 
     /// Defines an area within which you can position and size child elements with respect to in the Canvas area size.
     /// </summary>
-    [DataContract]
+    [DataContract(nameof(Canvas))]
     [DebuggerDisplay("Canvas - Name={Name}")]
     public class Canvas : Panel
     {

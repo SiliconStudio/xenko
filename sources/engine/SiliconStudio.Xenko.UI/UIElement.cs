@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI
     /// </summary>
     [DataContract(Inherited = true)]
     [DebuggerDisplay("UIElement: {Name}")]
-    public abstract class UIElement : IUIElementUpdate
+    public abstract class UIElement : IUIElementUpdate, IIdentifiable
     {
         /// <summary>
         /// The key to the height dependency property.
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         [DataMember]
         [Display(Browsable = false)]
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// List of the dependency properties attached to the object.
