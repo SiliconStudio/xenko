@@ -33,9 +33,6 @@ namespace SiliconStudio.Core.Transactions
         /// <inheritdoc/>
         public IReadOnlyList<Operation> Operations => operations;
 
-        /// <inheritdoc/>
-        public event EventHandler<EventArgs> BeforeComplete;
-
         /// <summary>
         /// Disposes the transaction by completing it and registering it to the transaction stack.
         /// </summary>
@@ -62,10 +59,6 @@ namespace SiliconStudio.Core.Transactions
 
             if (synchronizationContext != SynchronizationContext.Current)
                 throw new TransactionException("This transaction is being completed in a different synchronization context.");
-
-            BeforeComplete?.Invoke(this, EventArgs.Empty);
-            // Clear the reference since we're not supposed to exist as an ITransaction anymore, we're now disposed and turning to an IReadOnlyTransaction
-            BeforeComplete = null;
 
             TryMergeOperations();
             transactionStack.CompleteTransaction(this);
@@ -126,7 +119,7 @@ namespace SiliconStudio.Core.Transactions
             {
                 var operationA = operations[i] as IMergeableOperation;
                 var operationB = operations[j] as IMergeableOperation;
-                if (operationA != null && operationB != null && operationB.CanMerge(operationA))
+                if (operationA != null && operationB != null && operationA.CanMerge(operationB))
                 {
                     operationA.Merge(operations[j]);
                     operations.RemoveAt(j);
