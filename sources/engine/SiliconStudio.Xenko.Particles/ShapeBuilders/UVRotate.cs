@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders.Tools
         /// If <c>True</c>, the texture coordinates will be rotated clockwise by the specified angle prior to texture sampling.
         /// </userdoc>
         [Display("Clockwise")]
-        public UVClockwiseRotation UvClockwise { get { return uvClockwise; } set { uvClockwise = value; ApplyChanges(); } }
+        public UVClockwiseRotation UVClockwise { get { return uvClockwise; } set { uvClockwise = value; ApplyChanges(); } }
 
         /// <summary>
         /// Precalculate the flags required for sampling and swapping texture coordinates

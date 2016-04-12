@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
+using SiliconStudio.Xenko.Particles.Updaters;
 using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
 
 namespace SiliconStudio.Xenko.Particles.Modules
@@ -26,6 +27,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
             RequiredFields.Add(ParticleFields.Life);
+            RequiredFields.Add(ParticleFields.CollisionControl);
 
             DisplayParticlePosition = true;
             DisplayParticleRotation = true;
@@ -96,12 +98,13 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// <inheritdoc/>
         public override unsafe void Update(float dt, ParticlePool pool)
         {
-            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
+            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity) || !pool.FieldExists(ParticleFields.CollisionControl))
                 return;
 
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
             var lifeField = pool.GetField(ParticleFields.Life);
+            var controlField = pool.GetField(ParticleFields.CollisionControl);
 
             foreach (var particle in pool)
             {
@@ -110,6 +113,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
                 var particlePos = (*((Vector3*)particle[posField]));
                 var particleVel = (*((Vector3*)particle[velField]));
+
+                var collisionAttribute = (*((ParticleCollisionAttribute*)particle[controlField]));
+
+                collisionAttribute.HasColided = false;  // Reset the HasColided flag for this frame
 
                 var isInside = false;
                 if (FieldShape != null)
@@ -138,7 +145,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
                     (*((Vector3*)particle[velField])) = particleVel;
 
 
-                    // TODO Maybe set some collision flags if other calculations depend on them
+                    // Set some collision flags if other calculations depend on them
+                    collisionAttribute.HasColided = true;
 
                     // Possibly kill the particle
                     if (KillParticles)
@@ -147,6 +155,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
                         (*((float*)particle[lifeField])) = MathUtil.ZeroTolerance;
                     }
                 }
+
+                (*((ParticleCollisionAttribute*)particle[controlField])) = collisionAttribute;
             }
         }
 
@@ -166,7 +176,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             if (!DebugDraw)
                 return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
 
-            rotation = new Quaternion(0, 0, 0, 1);
+            rotation = Quaternion.Identity;
             scale = new Vector3(1, 1, 1);
             translation = new Vector3(0, 0, 0);
 

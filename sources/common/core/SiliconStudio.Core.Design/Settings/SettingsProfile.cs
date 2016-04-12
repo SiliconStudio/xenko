@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Transactions;
 
 namespace SiliconStudio.Core.Settings
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core.Settings
     [NonIdentifiable]
     public class SettingsProfile : IDisposable
     {
-        internal ActionStack.ActionStack ActionStack = new ActionStack.ActionStack(-1);
+        internal ITransactionStack TransactionStack = TransactionStackFactory.Create(int.MaxValue);
         internal bool Saving;
         private readonly SortedList<UFile, SettingsEntry> settings = new SortedList<UFile, SettingsEntry>();
         private readonly HashSet<UFile> modifiedSettings = new HashSet<UFile>();
@@ -157,7 +158,7 @@ namespace SiliconStudio.Core.Settings
             }
             lock (SettingsContainer.SettingsLock)
             {
-                ActionStack.Clear();
+                TransactionStack.Clear();
                 modifiedSettings.Clear();
             }
         }
@@ -167,11 +168,11 @@ namespace SiliconStudio.Core.Settings
             IsDiscarding = true;
             lock (SettingsContainer.SettingsLock)
             {
-                while (ActionStack.CanUndo)
+                while (TransactionStack.CanRollback)
                 {
-                    ActionStack.Undo();
+                    TransactionStack.Rollback();
                 }
-                ActionStack.Clear();
+                TransactionStack.Clear();
                 modifiedSettings.Clear();
             }
             IsDiscarding = false;

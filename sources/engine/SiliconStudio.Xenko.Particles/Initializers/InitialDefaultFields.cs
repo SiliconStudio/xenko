@@ -114,16 +114,32 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                     i = (i + 1) % maxCapacity;
                 }
             }
+
+            // ChildrenFlags fields
+            for (int j = 0; j < ParticleFields.ChildrenFlags.Length; j++)
+            {
+                var flagField = pool.GetField(ParticleFields.ChildrenFlags[j]);
+                if (flagField.IsValid())
+                {
+                    for (var i = startIdx; i != endIdx;)
+                    {
+                        var particle = pool.FromIndex(i);
+                        (*((uint*)particle[flagField])) = 0;
+                        i = (i + 1) % maxCapacity;
+                    }
+                }
+
+            }
         }
 
         [DataMemberIgnore]
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
         [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
+        public Quaternion WorldRotation { get; private set; } = Quaternion.Identity;
         [DataMemberIgnore]
         public float WorldScale { get; private set; } = 1f;
 
-        public void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
+        public void SetParentTRS(ref Vector3 translation, ref Quaternion rotation, float scale)
         {
             WorldScale = scale;
 

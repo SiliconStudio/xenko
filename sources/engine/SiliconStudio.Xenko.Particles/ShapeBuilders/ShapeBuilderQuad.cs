@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
             var trsIdentity = (spaceScale == 1f);
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
-            trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
+            trsIdentity = trsIdentity && (spaceRotation.Equals(Quaternion.Identity));
 
 
             var renderedParticles = 0;
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <returns>Quaternion rotation of the quad particle, assuming flat horizontal square at neutral rotation</returns>
         protected unsafe Quaternion GetParticleRotation(Particle particle, ParticleFieldAccessor<Quaternion> rotationField, ParticleFieldAccessor<float> lifeField)
         {
-            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : new Quaternion(0, 0, 0, 1);
+            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : Quaternion.Identity;
 
             if (SamplerRotation == null)
                 return particleRotation;
