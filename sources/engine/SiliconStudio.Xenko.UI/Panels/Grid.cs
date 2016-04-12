@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     modifiedElement.DefinitionChanged -= OnStripDefinitionChanged;
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
             }
             InvalidateMeasure();
         }
@@ -686,6 +686,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static float SumStripCurrentSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.ActualSize;
 
@@ -695,6 +696,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static float SumStripCurrentSize(List<StripDefinition> definitions)
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.ActualSize;
 
@@ -704,6 +706,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 if (def.Type != StripType.Star)
                     sum += def.ActualSize;
@@ -714,6 +717,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.SizeValue;
 

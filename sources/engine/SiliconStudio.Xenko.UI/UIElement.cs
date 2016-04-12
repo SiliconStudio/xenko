@@ -1131,16 +1131,6 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Provides an accessor that simplifies access to the NameScope registration method.
-        /// </summary>
-        /// <param name="name">Name to use for the specified name-object mapping.</param>
-        /// <param name="scopedElement">Object for the mapping.</param>
-        protected void RegisterName(string name, UIElement scopedElement)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Set the parent to a child.
         /// </summary>
         /// <param name="child">The child to which set the parent.</param>

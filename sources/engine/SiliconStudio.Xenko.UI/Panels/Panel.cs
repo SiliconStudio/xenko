@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     OnLogicalChildRemoved(modifiedElement, elementIndex);
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
             }
             InvalidateMeasure();
         }
