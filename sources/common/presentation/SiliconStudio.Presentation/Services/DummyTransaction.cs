@@ -18,8 +18,6 @@ namespace SiliconStudio.Presentation.Services
 
         IList<Operation> ITransaction.Operations { get; } = new Operation[0];
 
-        public event EventHandler<EventArgs> BeforeComplete;
-
         public bool IsEmpty => true;
 
         public void Dispose()
