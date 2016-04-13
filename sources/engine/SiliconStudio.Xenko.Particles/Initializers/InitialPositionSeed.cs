@@ -16,6 +16,12 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     [Display("Position")]
     public class InitialPositionSeed : ParticleInitializer
     {
+        [DataMemberIgnore]
+        private bool hasBegun = false;
+
+        [DataMemberIgnore]
+        private Vector3 oldPosition;
+
         /// <summary>
         /// Default constructor which also registers the fields required by this updater
         /// </summary>
@@ -53,22 +59,57 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
             leftCorner += WorldPosition;
 
-
             var i = startIdx;
-            while (i != endIdx)
+
+            if (Interpolate)
             {
-                var particle = pool.FromIndex(i);
-                var randSeed = particle.Get(rndField);
+                // Interpolate positions between the old and the new one
 
-                var particleRandPos = leftCorner;
+                var positionDistance = (hasBegun) ? oldPosition - WorldPosition : new Vector3(0, 0, 0);
+                oldPosition = WorldPosition;
+                hasBegun = true;
 
-                particleRandPos += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
-                particleRandPos += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
-                particleRandPos += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
+                var totalCountLessOne = (startIdx < endIdx) ? (endIdx - startIdx - 1) : (endIdx - startIdx + maxCapacity - 1);
+                var stepF = (totalCountLessOne > 1) ? (1f/totalCountLessOne) : 1f;
+                var step = 0f;
 
-                (*((Vector3*)particle[posField])) = particleRandPos;
+                while (i != endIdx)
+                {
+                    var particle = pool.FromIndex(i);
+                    var randSeed = particle.Get(rndField);
 
-                i = (i + 1) % maxCapacity;
+                    var particleRandPos = leftCorner;
+
+                    particleRandPos += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
+                    particleRandPos += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
+                    particleRandPos += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
+
+                    particleRandPos += positionDistance * step;
+                    step += stepF;
+
+                    (*((Vector3*)particle[posField])) = particleRandPos;
+
+                    i = (i + 1) % maxCapacity;
+                }
+            }
+            else
+            {
+                // Do not interpolate position
+                while (i != endIdx)
+                {
+                    var particle = pool.FromIndex(i);
+                    var randSeed = particle.Get(rndField);
+
+                    var particleRandPos = leftCorner;
+
+                    particleRandPos += xAxis*randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
+                    particleRandPos += yAxis*randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
+                    particleRandPos += zAxis*randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
+
+                    (*((Vector3*)particle[posField])) = particleRandPos;
+
+                    i = (i + 1)%maxCapacity;
+                }
             }
         }
 
@@ -101,6 +142,16 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(40)]
         [Display("Position max")]
         public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
+
+        /// <summary>
+        /// If set to <c>true</c> it will interpolate the particles between the old and the new position, rather than using only the new one
+        /// </summary>
+        /// <userdoc>
+        /// If set to <c>true</c> it will interpolate the particles between the old and the new position, rather than using only the new one
+        /// </userdoc>
+        [DataMember(50)]
+        [Display("Interpolate")]
+        public bool Interpolate;
 
         /// <summary>
         /// Should this Particle Module's bounds be displayed as a debug draw
