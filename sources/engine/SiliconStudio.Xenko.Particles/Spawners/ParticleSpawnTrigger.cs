@@ -14,7 +14,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <param name="pool"></param>
         public abstract void PrepareFromPool(ParticlePool pool);
 
-        public abstract bool HasTriggered(Particle parentParticle);
+        /// <summary>
+        /// For positive values, shows if the condition was met and how much is the magnitude
+        /// </summary>
+        /// <param name="parentParticle">Parent particle which attributes are used for testing</param>
+        /// <returns></returns>
+        public abstract float HasTriggered(Particle parentParticle);
     }
 
     /// <inheritdoc/>

@@ -41,12 +41,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         private bool isParentNameDirty = true;
 
         /// <summary>
-        /// Carry over value is used for the fractional part when number of spawned particles this frame is not an integer
-        /// </summary>
-        [DataMemberIgnore]
-        private float carryOver;
-
-        /// <summary>
         /// Minimum and maximum number of particles to spawn every time the condition is met
         /// </summary>
         [DataMemberIgnore]
@@ -153,7 +147,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         public SpawnerFromParent()
         {
             spawnCount = new Vector2(2, 5);
-            carryOver = 0f;
         }
 
         /// <inheritdoc />
@@ -201,8 +194,11 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 uint particlesToEmit = 0;
 
-                var parentEventTriggered = ParticleSpawnTrigger?.HasTriggered(parentParticle) ?? false;
-                if (parentEventTriggered)
+                ParticleChildrenAttribute childrenAttribute = (*((ParticleChildrenAttribute*)parentParticle[spawnControlGroup]));
+                var carryOver = childrenAttribute.CarryOver;
+
+                var parentEventTriggered = ParticleSpawnTrigger?.HasTriggered(parentParticle) ?? 0f;
+                if (parentEventTriggered > 0)
                 {
                     var particlesToEmitFloat = SpawnCount.X;
 
@@ -213,13 +209,13 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                         particlesToEmitFloat = (SpawnCount.X + (SpawnCount.Y - SpawnCount.X) * randSeed.GetFloat(0));
                     }
 
+                    particlesToEmitFloat *= parentEventTriggered;
+
                     particlesToEmit = (uint) Math.Floor(particlesToEmitFloat + carryOver);
                     carryOver += (particlesToEmitFloat - particlesToEmit);
                 }
 
-
-                ParticleChildrenAttribute childrenAttribute = ParticleChildrenAttribute.Empty;
-
+                childrenAttribute.CarryOver = carryOver;
                 childrenAttribute.ParticlesToEmit = particlesToEmit;
                 totalParticlesToEmit += (int)particlesToEmit;
 

@@ -24,13 +24,13 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             FieldAccessor = pool.GetField(ParticleFields.CollisionControl);
         }
 
-        public unsafe override bool HasTriggered(Particle parentParticle)
+        public unsafe override float HasTriggered(Particle parentParticle)
         {
             if (!FieldAccessor.IsValid())
-                return false;
+                return 0f;
 
             var collisionAttribute = (*((ParticleCollisionAttribute*)parentParticle[FieldAccessor]));
-            return collisionAttribute.HasColided;
+            return (collisionAttribute.HasColided) ? 1f : 0f;
         }
     }
 }

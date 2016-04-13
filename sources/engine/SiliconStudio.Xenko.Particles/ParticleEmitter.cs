@@ -169,6 +169,9 @@ namespace SiliconStudio.Xenko.Particles
             AddRequiredField(ParticleFields.RandomSeed);
             AddRequiredField(ParticleFields.Position);
 
+            // TODO: Temporary - remove me
+            AddRequiredField(ParticleFields.OldPosition);
+
             initialDefaultFields = new InitialDefaultFields();
 
             Initializers = new FastTrackingCollection<ParticleInitializer>();
@@ -703,11 +706,22 @@ namespace SiliconStudio.Xenko.Particles
                 }
             }
 
+            // Hardcoded position and old position updates
+            // If we have to preserve the particle's old position, do it before updating the position for the first time
+            if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.OldPosition))
+            {
+                var posField = pool.GetField(ParticleFields.Position);
+                var oldField = pool.GetField(ParticleFields.OldPosition);
+
+                foreach (var particle in pool)
+                {
+                    (*((Vector3*)particle[oldField])) = (*((Vector3*)particle[posField]));
+                }
+            }
+
             // Hardcoded position and velocity update
             if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
             {
-                // should this be a separate module?
-                // Position and velocity update only
                 var posField = pool.GetField(ParticleFields.Position);
                 var velField = pool.GetField(ParticleFields.Velocity);
 
