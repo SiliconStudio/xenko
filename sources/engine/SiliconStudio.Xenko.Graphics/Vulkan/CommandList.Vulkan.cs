@@ -640,10 +640,10 @@ namespace SiliconStudio.Xenko.Graphics
             };
 
             if ((options & DepthStencilClearOptions.DepthBuffer) != 0)
-                clearRange.AspectMask |= ImageAspectFlags.Depth;
+                clearRange.AspectMask |= ImageAspectFlags.Depth & depthStencilBuffer.NativeImageAspect;
 
             if ((options & DepthStencilClearOptions.Stencil) != 0)
-                clearRange.AspectMask |= ImageAspectFlags.Stencil;
+                clearRange.AspectMask |= ImageAspectFlags.Stencil & depthStencilBuffer.NativeImageAspect;
 
             var clearValue = new ClearDepthStencilValue { Depth = depth, Stencil = stencil };
             NativeCommandBuffer.ClearDepthStencilImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, clearValue, 1, &clearRange);
