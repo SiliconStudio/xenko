@@ -16,6 +16,7 @@
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
+    <Compile Include="DefaultFactories.cs" />
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="IModelAsset.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
