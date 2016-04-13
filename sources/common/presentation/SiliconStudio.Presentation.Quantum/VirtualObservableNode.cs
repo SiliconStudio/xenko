@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -18,7 +19,7 @@ namespace SiliconStudio.Presentation.Quantum
             typeof(VirtualObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected VirtualObservableNode(ObservableViewModel owner, string name, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter)
+        protected VirtualObservableNode(ObservableViewModel owner, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
             : base(owner, name, index)
         {
             if (getter == null) throw new ArgumentNullException(nameof(getter));
@@ -102,7 +103,7 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class VirtualObservableNode<T> : VirtualObservableNode
     {
-        public VirtualObservableNode(ObservableViewModel owner, string name, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter)
+        public VirtualObservableNode(ObservableViewModel owner, string name, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter)
             : base(owner, name, isPrimitive, order, index, getter, setter)
         {
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });

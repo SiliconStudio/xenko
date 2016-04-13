@@ -39,10 +39,10 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null;
         }
 
-        public override void Execute(IContent content, object index, object parameter)
+        public override void Execute(IContent content, Index index, object parameter)
         {
             var item = content.Retrieve(index);
-            content.Remove(index, item);
+            content.Remove(item, index);
         }
     }
 }

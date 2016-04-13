@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Quantum
             typeof(CombinedObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, Index index)
             : base(ownerViewModel, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
@@ -135,7 +135,7 @@ namespace SiliconStudio.Presentation.Quantum
             CheckDynamicMemberConsistency();
         }
 
-        internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, object index)
+        internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index)
         {
             var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
             return node;
@@ -253,7 +253,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 var contentType = children.Value.First().Type;
                 var name = $"Item {currentIndex}";
-                CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, currentIndex);
+                CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, new Index(currentIndex));
                 AddChild(child);
                 child.Initialize();
                 child.DisplayName = name;
@@ -418,7 +418,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private bool refreshQueued;
 
-        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, Index index)
             : base(ownerViewModel, name, combinedNodes, index)
         {
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });

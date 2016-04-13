@@ -8,24 +8,24 @@ namespace SiliconStudio.Quantum.Contents
     public class BoxedContent : ObjectContent
     {
         private IContent boxedStructureOwner;
-        private object boxedStructureOwnerIndex;
+        private Index boxedStructureOwnerIndex;
 
         public BoxedContent(object value, ITypeDescriptor descriptor, bool isPrimitive)
             : base(value, descriptor, isPrimitive, null)
         {
         }
 
-        public override void Update(object newValue, object index = null)
+        public override void Update(object newValue, Index index)
         {
             var oldValue = Retrieve(index);
             NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, Value);
-            if (index != null)
+            if (!index.IsEmpty)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
                 var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
                 if (collectionDescriptor != null)
                 {
-                    collectionDescriptor.SetValue(Value, (int)index, newValue);
+                    collectionDescriptor.SetValue(Value, index.Int, newValue);
                 }
                 else if (dictionaryDescriptor != null)
                 {
@@ -42,7 +42,7 @@ namespace SiliconStudio.Quantum.Contents
             NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, Value);
         }
 
-        internal void SetOwnerContent(IContent ownerContent, object index)
+        internal void SetOwnerContent(IContent ownerContent, Index index)
         {
             boxedStructureOwner = ownerContent;
             boxedStructureOwnerIndex = index;

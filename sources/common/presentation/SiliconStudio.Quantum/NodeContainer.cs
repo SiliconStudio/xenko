@@ -214,7 +214,7 @@ namespace SiliconStudio.Quantum
                 if (node.Content.IsReference)
                 {
                     node.Content.Reference.Refresh(node.Content.Value);
-                    UpdateOrCreateReferenceTarget(node.Content.Reference, node);
+                    UpdateOrCreateReferenceTarget(node.Content.Reference, node, Index.Empty);
                 }
                 else
                 {
@@ -222,13 +222,13 @@ namespace SiliconStudio.Quantum
                     foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
                     {
                         child.Content.Reference.Refresh(child.Content.Value);
-                        UpdateOrCreateReferenceTarget(child.Content.Reference, child);
+                        UpdateOrCreateReferenceTarget(child.Content.Reference, child, Index.Empty);
                     }
                 }
             }
         }
 
-        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, object index = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, Index index)
         {
             if (reference == null) throw new ArgumentNullException(nameof(reference));
             if (node == null) throw new ArgumentNullException(nameof(node));
