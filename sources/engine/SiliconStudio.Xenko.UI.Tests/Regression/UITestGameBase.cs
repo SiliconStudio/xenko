@@ -117,23 +117,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             object existingStyle;
 
             // Set dependency properties test values.
-            UI.DefaultResourceDictionary.TryGetValue(typeof(TextBlock), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(TextBlock)] = new Style(typeof(TextBlock), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<Color>(TextBlock.TextColorPropertyKey, Color.LightGray),
-                }
-            };
-
-            UI.DefaultResourceDictionary.TryGetValue(typeof(ScrollingText), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(ScrollingText)] = new Style(typeof(ScrollingText), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<Color>(TextBlock.TextColorPropertyKey, Color.LightGray),
-                }
-            };
 
             var buttonPressedTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonPressed);
             var buttonNotPressedTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonNotPressed);
