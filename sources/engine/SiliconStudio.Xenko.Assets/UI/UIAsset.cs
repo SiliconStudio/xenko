@@ -38,14 +38,14 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// Gets or sets the fonts used by the UI.
         /// </summary>
         /// <userdoc>The fonts used by the UI.</userdoc>
-        [DataMember(30)]
+        [DataMember(10)]
         public List<Graphics.SpriteFont> Fonts { get; set; } = new List<Graphics.SpriteFont>();
 
         /// <summary>
         /// Gets or sets the root UI element.
         /// </summary>
         /// <userdoc>The root UI element.</userdoc>
-        [DataMember(10)]
+        [DataMember(100)]
         [NotNull]
         [Display("Root Element")]
         public UIElement RootElement { get; set; }
