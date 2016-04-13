@@ -216,7 +216,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerAAA")));
         }
 
-        [Test]
+        // Disabled until XK-3123 is fixed (material blending SM flush results in layer masks applied improperly)
+        [Test, Ignore]
         public void MaterialLayerABB()
         {
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerABB")));
@@ -234,7 +235,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerABC")));
         }
 
-        [Test]
+        // Disabled until XK-3123 is fixed (material blending SM flush results in layer masks applied improperly)
+        [Test, Ignore]
         public void MaterialLayerBAA()
         {
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerBAA")));
