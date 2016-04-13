@@ -241,7 +241,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                 if (configuration.Name != activeConfiguration.Name)
                     continue;
 
-                if (!configuration.PlatformName.StartsWith(projectPlatform))
+                if ((projectPlatform == null) || !configuration.PlatformName.StartsWith(projectPlatform))
                     continue;
 
                 foreach (SolutionContext context in configuration.SolutionContexts)

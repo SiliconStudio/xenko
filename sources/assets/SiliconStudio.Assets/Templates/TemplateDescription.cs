@@ -104,7 +104,7 @@ namespace SiliconStudio.Assets.Templates
         /// <value>The default output name.</value>
         [DataMember(45)]
         public string DefaultOutputName { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the status.
         /// </summary>
@@ -126,12 +126,6 @@ namespace SiliconStudio.Assets.Templates
         /// </summary>
         /// <value>The resource directory.</value>
         [DataMemberIgnore]
-        public UDirectory TemplateDirectory
-        {
-            get
-            {
-                return FullPath != null ? FullPath.GetParent() : null;
-            }
-        }
+        public UDirectory TemplateDirectory => FullPath?.GetParent();
     }
 }

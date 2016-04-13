@@ -16,6 +16,12 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         // Will loop every so often, but the loop condition should be unreachable for normal games (~800 hours for spawning rate of 100 particles/second)
         private uint spawnOrder = 0;
 
+        /// <inheritdoc />
+        internal override void ResetSimulation()
+        {
+            spawnOrder = 0;
+        }
+
         /// <summary>
         /// Default constructor which also registers the fields required by this updater
         /// </summary>
@@ -33,14 +39,17 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 return;
 
             var orderField = pool.GetField(ParticleFields.Order);
+            var childOrderField = pool.GetField(ParticleFields.ChildOrder);
 
             var i = startIdx;
             while (i != endIdx)
             {
                 var particle = pool.FromIndex(i);
 
-
                 (*((uint*)particle[orderField])) = spawnOrder++; // Will loop every so often, but the loop condition should be unreachable for normal games
+
+                if (childOrderField.IsValid())
+                    (*((uint*)particle[childOrderField])) = 0;
 
                 i = (i + 1) % maxCapacity;
             }

@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             var tessellationStates = RootRenderFeature.RenderData.GetData(tessellationStateKey);
@@ -241,7 +241,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
@@ -294,7 +294,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        public static unsafe bool UpdateMaterial(RenderSystem renderSystem, RenderThreadContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
+        public static unsafe bool UpdateMaterial(RenderSystem renderSystem, RenderDrawContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
             // Check if encountered first time this frame
             if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)

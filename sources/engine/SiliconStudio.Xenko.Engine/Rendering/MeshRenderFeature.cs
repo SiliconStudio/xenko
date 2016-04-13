@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
+        public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             // Setup ActiveMeshDraw
             foreach (var objectNodeReference in ObjectNodeReferences)
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             base.Prepare(context);
 

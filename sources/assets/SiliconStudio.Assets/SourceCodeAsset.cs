@@ -2,13 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
@@ -80,7 +78,7 @@ namespace SiliconStudio.Assets
         /// <returns>Guid.</returns>
         public static Guid GenerateGuidFromLocation(string location)
         {
-            if (location == null) throw new ArgumentNullException("location");
+            if (location == null) throw new ArgumentNullException(nameof(location));
             return ObjectId.FromBytes(Encoding.UTF8.GetBytes(location)).ToGuid();
         }
     }

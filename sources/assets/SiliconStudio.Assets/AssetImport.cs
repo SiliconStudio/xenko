@@ -13,11 +13,6 @@ namespace SiliconStudio.Assets
     [DataContract]
     public abstract class AssetImport : Asset
     {
-        protected AssetImport()
-        {
-            Source = new UFile("");    
-        }
-
         /// <summary>
         /// Gets or sets the source file of this asset.
         /// </summary>
@@ -27,7 +22,7 @@ namespace SiliconStudio.Assets
         /// </userdoc>
         [DataMember(-50)]
         [DefaultValue(null)]
-        public UFile Source { get; set; }
+        public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
         /// Gets or sets if source file of this asset should be copied alongside the asset file when saving.
@@ -38,7 +33,7 @@ namespace SiliconStudio.Assets
         [DataMember(-46)]
         [DefaultValue(false)]
         [Display("Keep Source Side by Side")]
-        public bool SourceKeepSideBySide { get; set; }
+        public bool SourceKeepSideBySide { get; set; } = false;
 
         /// <summary>
         /// Gets or sets id of the importer used.
@@ -47,11 +42,11 @@ namespace SiliconStudio.Assets
         [DataMember(-40)]
         [DefaultValue(null)]
         [Display(Browsable = false)]
-        public Guid? ImporterId { get; set; }
+        public Guid? ImporterId { get; set; } = null;
         
         internal AssetImport GetRootBase()
         {
-            if (Base != null && Base.Asset is AssetImport && Base.Id == Guid.Empty)
+            if (Base?.Asset is AssetImport && Base.Id == Guid.Empty)
             {
                 return (AssetImport)Base.Asset;
             }

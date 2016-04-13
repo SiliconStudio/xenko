@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
@@ -37,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
         private IObservableNode rootNode;
         private ObservableViewModel parent;
 
-        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update '{node.Name}'";
+        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
         public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
 
@@ -182,12 +181,12 @@ namespace SiliconStudio.Presentation.Quantum
             NodeValueChanged?.Invoke(this, new ObservableViewModelNodeValueChangedArgs(this, observableNodePath));
         }
 
-        internal void BeginCombinedAction()
+        internal CombinedActionsContext BeginCombinedAction(string actionName, string observableNodePath)
         {
-            ServiceProvider.TryGet<ITransactionalActionStack>()?.BeginTransaction();
+            return new CombinedActionsContext(this, actionName, observableNodePath);
         }
 
-        internal void EndCombinedAction(string displayName, string observableNodePath, object value)
+        internal void EndCombinedAction(string observableNodePath)
         {
             var handler = NodeValueChanged;
             if (handler != null)
@@ -198,7 +197,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             combinedNodeChanges.Clear();
-            ServiceProvider.TryGet<ITransactionalActionStack>()?.EndTransaction(displayName);
         }
 
         private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)

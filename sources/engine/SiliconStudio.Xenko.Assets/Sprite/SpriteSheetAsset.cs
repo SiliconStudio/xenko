@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -8,11 +8,8 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Textures;
 
@@ -31,7 +28,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
-    [ObjectFactory(typeof(SpriteSheetFactory))]
     [Display(160, "Sprite Sheet")]
     public class SpriteSheetAsset : Asset
     {
@@ -40,15 +36,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         public const string FileExtension = ".xksheet;.pdxsheet;.pdxsprite;.pdxuiimage";
         
-        /// <summary>
-        /// Create an empty sprite sheet asset.
-        /// </summary>
-        public SpriteSheetAsset()
-        {
-            // FIXME: shouldn't this constructor be made private and move the call to the virtual method in the factory?
-            SetDefaults();
-        }
-
         /// <summary>
         /// Gets or sets the type of the current sheet
         /// </summary>
@@ -68,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </userdoc>
         [DataMember(20)]
         [Display(category: "Parameters")]
-        public Color ColorKeyColor { get; set; }
+        public Color ColorKeyColor { get; set; } = new Color(255, 0, 255);
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable color key. Default is false.
@@ -92,7 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [DataMember(40)]
         [DefaultValue(TextureFormat.Compressed)]
         [Display(category: "Parameters")]
-        public TextureFormat Format { get; set; }
+        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
 
         /// <summary>
         /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
@@ -104,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [DataMember(45)]
         [DefaultValue(TextureColorSpace.Auto)]
         [Display("ColorSpace", "Parameters")]
-        public TextureColorSpace ColorSpace { get; set; }
+        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
 
         /// <summary>
         /// Gets or sets the alpha format.
@@ -116,7 +103,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [DataMember(50)]
         [DefaultValue(AlphaFormat.Auto)]
         [Display(category: "Parameters")]
-        public AlphaFormat Alpha { get; set; }
+        public AlphaFormat Alpha { get; set; } = AlphaFormat.Auto;
 
         /// <summary>
         /// Gets or sets a value indicating whether [generate mipmaps].
@@ -141,7 +128,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [DataMember(70)]
         [DefaultValue(true)]
         [Display(category: "Parameters")]
-        public bool PremultiplyAlpha { get; set; }
+        public bool PremultiplyAlpha { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the sprites of the sheet.
@@ -152,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [NotNull]
         [DataMember(100)]
         [Category("Atlas Packing")]
-        public PackingAttributes Packing { get; set; }
+        public PackingAttributes Packing { get; set; } = new PackingAttributes();
 
         /// <summary>
         /// Gets or sets the sprites of the sheet.
@@ -163,23 +150,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [DataMember(150)]
         [Category]
         [NotNullItems]
-        public List<SpriteInfo> Sprites { get; set; }
-        
-        /// <summary>
-        /// Sets default value of SpriteSheetAsset.
-        /// </summary>
-        public override void SetDefaults()
-        {
-            Sprites = new List<SpriteInfo>();
-            Format = TextureFormat.Compressed;
-            ColorSpace = TextureColorSpace.Auto;
-            Alpha = AlphaFormat.Auto;
-            ColorKeyColor = new Color(255, 0, 255);
-            ColorKeyEnabled = false;
-            GenerateMipmaps = false;
-            PremultiplyAlpha = true;
-            Packing = new PackingAttributes();
-        }
+        public List<SpriteInfo> Sprites { get; set; } = new List<SpriteInfo>();
 
         /// <summary>
         /// Retrieves Url for a texture given absolute path and sprite index
@@ -199,14 +170,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         public static string BuildTextureAtlasUrl(UFile textureAbsolutePath, int atlasIndex)
         {
             return textureAbsolutePath + "__ATLAS_TEXTURE__" + atlasIndex;
-        }
-
-        private class SpriteSheetFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new SpriteSheetAsset();
-            }
         }
 
         class RenameImageGroupsUpgrader : AssetUpgraderBase

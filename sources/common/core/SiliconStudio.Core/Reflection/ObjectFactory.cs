@@ -16,7 +16,7 @@ namespace SiliconStudio.Core.Reflection
         private static readonly Dictionary<Type, IObjectFactory> RegisteredFactories = new Dictionary<Type, IObjectFactory>();
 
         /// <summary>
-        /// Registers the factory.
+        /// Registers the factory declared with the <see cref="ObjectFactoryAttribute"/> for the specified object type.
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
         /// <returns>IObjectFactory.</returns>
@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// </exception>
         public static IObjectFactory RegisterFactory(Type objectType)
         {
-            if (objectType == null) throw new ArgumentNullException("objectType");
+            if (objectType == null) throw new ArgumentNullException(nameof(objectType));
 
             IObjectFactory factory = null;
             lock (RegisteredFactories)
@@ -62,13 +62,30 @@ namespace SiliconStudio.Core.Reflection
         /// <exception cref="System.ArgumentNullException">objectType</exception>
         public static void RegisterFactory(Type objectType, IObjectFactory factory)
         {
-            if (objectType == null) throw new ArgumentNullException("objectType");
+            if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             lock (RegisteredFactories)
             {
                 RegisteredFactories[objectType] = factory;
             }
         }
 
+        /// <summary>
+        /// Gets the factory corresponding to the given object type, if available.
+        /// </summary>
+        /// <param name="objectType">The object type for which to retrieve the factory.</param>
+        /// <returns>The factory corresponding to the given object type if available, <c>null</c> otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">objectType</exception>
+        public static IObjectFactory GetFactory(Type objectType)
+        {
+            if (objectType == null) throw new ArgumentNullException(nameof(objectType));
+            lock (RegisteredFactories)
+            {
+                IObjectFactory factory;
+                RegisteredFactories.TryGetValue(objectType, out factory);
+                return factory;
+            }
+        }
+        
         /// <summary>
         /// Finds the registered factories.
         /// </summary>
@@ -98,7 +115,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns>A new default instance of an object.</returns>
         public static object NewInstance(Type objectType)
         {
-            if (objectType == null) throw new ArgumentNullException("objectType");
+            if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             IObjectFactory factory;
 
             lock (RegisteredFactories)
@@ -110,12 +127,7 @@ namespace SiliconStudio.Core.Reflection
             }
 
             // If no registered factory, creates directly the asset
-            if (factory == null)
-            {
-                return Activator.CreateInstance(objectType);
-            }
-
-            return factory.New(objectType);
+            return factory != null ? factory.New(objectType) : Activator.CreateInstance(objectType);
         }
     }
 }
