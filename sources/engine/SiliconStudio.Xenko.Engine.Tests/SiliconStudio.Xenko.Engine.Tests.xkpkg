@@ -90,10 +90,10 @@ RootAssets:
     - 6a254330-7598-451f-8d7b-7671199c5e46:MaterialTests/Base/MaterialDiffuseColor
     - 6b2212c8-0e0c-4989-afba-a170fc4de6b6:MaterialTests/Base/MaterialDiffuseTextureOffset
     - 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
+    - 6e4549c1-7159-432a-ac4c-6b3cca4aad90:MaterialTests/MaterialScene
     - 731de5a2-8804-4875-886f-51f5cc5cf439:megalodon
     - 7af692c0-b030-4897-a6e4-f9fa5d7b761c:MaterialTests/Layers/MaterialLayerBBB
     - 830b4499-01b7-4613-a0e7-0143c06939f8:MaterialTests/BinaryOperators/MaterialBinaryOperatorMultiply
-    - 840c905d-04c7-40c6-b81a-95d7a69d6885:MaterialTests/Sphere
     - 8866a602-efc2-49ae-8797-bf22d0794b8d:PNTessellation
     - 8c44b810-9571-448b-b94a-0143a2c89c5f:MaterialTests/Features/MaterialNormalMapCompressed
     - 8d12b376-ef2b-4361-b331-2ba87b9e4dc2:MaterialTests/BinaryOperators/MaterialBinaryOperatorAdd
@@ -104,7 +104,6 @@ RootAssets:
     - a8a31df9-250d-4b60-bfe3-f35042efc094:c100_weapon_nm
     - b28a1ecd-27ee-4c41-a760-681230198dd6:MaterialTests/Layers/MaterialLayerAAA
     - c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
-    - cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
     - cc4dc811-5600-4def-a7a5-d234da7ef80f:MaterialTests/Base/MaterialDiffuseTexture
     - cc7836ee-28a3-4a94-bf68-f24516109ef5:FlatTessellationDispl
     - d4fe46ef-c9fe-4718-9311-0f5e71429b92:c100_body_em
