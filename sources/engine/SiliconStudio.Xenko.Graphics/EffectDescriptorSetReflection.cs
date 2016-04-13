@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Find resource groups
             // TODO: We should precompute most of that at compile time in BytecodeReflection
             // just waiting for format to be more stable
-            var descriptorSetLayouts = new EffectDescriptorSetReflection();
+            var descriptorSetLayouts = new EffectDescriptorSetReflection { DefaultSetSlot = defaultSetSlot };
             foreach (var effectDescriptorSetSlot in effectDescriptorSetSlots)
             {
                 // Find all resources related to this slot name
@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             return descriptorSetLayouts;
         }
+
+        internal string DefaultSetSlot { get; private set; }
 
         internal List<LayoutEntry> Layouts { get; } = new List<LayoutEntry>();
 

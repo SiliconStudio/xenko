@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Graphics
         private bool framebufferDirty = true;
         private Framebuffer activeFramebuffer;
 
+        private SharpVulkan.DescriptorPool descriptorPool;
         //private CommandAllocator nativeCommandAllocator;
         //internal GraphicsCommandList NativeCommandList;
 
@@ -64,11 +65,22 @@ namespace SiliconStudio.Xenko.Graphics
             device.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
             NativeCommandBuffer = nativeCommandBuffer;
 
-            //nativeCommandAllocator = device.NativeDevice.CreateCommandAllocator(CommandListType.Direct);
-            //NativeCommandList = device.NativeDevice.CreateCommandList(CommandListType.Direct, nativeCommandAllocator, null);
+            var poolSizes = new[]
+            {
+                new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = 1 << 16 },
+                new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = 1 << 16 },
+                new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = 1 << 16 },
+            };
 
-            //ResetSrvHeap();
-            //ResetSamplerHeap();
+            var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
+            {
+                StructureType = StructureType.DescriptorPoolCreateInfo,
+                PoolSizeCount = (uint)poolSizes.Length,
+                PoolSizes = new IntPtr(Interop.Fixed(poolSizes)),
+                MaxSets = 1 << 16,
+                Flags = DescriptorPoolCreateFlags.FreeDescriptorSet
+            };
+            descriptorPool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
 
             Reset();
         }
@@ -85,6 +97,14 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.NativeDevice.DestroyFramebuffer(framebuffer);
             }
             framebuffers.Clear();
+
+            if (descriptorSets.Count > 0)
+            {
+                fixed (SharpVulkan.DescriptorSet* descriptorSetsPointer = &descriptorSets.Items[0])
+                    GraphicsDevice.NativeDevice.FreeDescriptorSets(descriptorPool, (uint)descriptorSets.Count, descriptorSetsPointer);
+                descriptorSets.Clear(true);
+            }
+            //GraphicsDevice.NativeDevice.ResetDescriptorPool(descriptorPool, DescriptorPoolResetFlags.None);
 
             //ResetSrvHeap();
             //ResetSamplerHeap();
@@ -222,20 +242,84 @@ namespace SiliconStudio.Xenko.Graphics
 
             NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, 0);
 
-            NativeCommandBuffer.SetBlendConstants(0);
-
             // Lazily set the render pass and frame buffer
             EnsureRenderPass();
 
-            // Bind descriptor sets
-            if (boundDescriptorSets.Count != 0)
+            var allocateInfo = new DescriptorSetAllocateInfo
             {
-                fixed (SharpVulkan.DescriptorSet* descriptorSetsPointer = &boundDescriptorSets.Items[0])
+                StructureType = StructureType.DescriptorSetAllocateInfo,
+                DescriptorPool = descriptorPool,
+                DescriptorSetCount = 1, //(uint)activePipeline.NativeDescriptorSetLayouts.Length,
+                SetLayouts = new IntPtr(Interop.Fixed(activePipeline.NativeDescriptorSetLayouts))
+            };
+            var descriptorSet = GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo);
+            descriptorSets.Add(descriptorSet);
+
+            
+
+            writes.Clear(true);
+            copies.Clear(true);
+            samplerInfos.Clear(true);
+            samplerInfos.EnsureCapacity(activePipeline.ImmutableSamplers.Length);
+
+            fixed (DescriptorImageInfo* samplerInfosPointer = &samplerInfos.Items[0])
+            {
+                for (int i = 0; i < boundDescriptorSets.Count; i++)
                 {
-                    NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, (uint)activePipeline.ResourceGroupCount, descriptorSetsPointer, 0, null);
+                    var setInfo = activePipeline.DescriptorSetMapping[i];
+
+                    if (setInfo.Index >= 0)
+                    {
+                        for (int j = 0; j < setInfo.BindingCount; j++)
+                        {
+                            var destinationBinding = setInfo.BindingOffset + j;
+                            var immutableSampler = activePipeline.ImmutableSamplers[destinationBinding];
+
+                            // TODO VULKAN: Why do we need to update bindings that are just an immutable sampler?
+                            if (immutableSampler != Sampler.Null)
+                            {
+                                writes.Add(new WriteDescriptorSet
+                                {
+                                    StructureType = StructureType.WriteDescriptorSet,
+                                    DescriptorCount = 1,
+                                    DestinationSet = descriptorSet,
+                                    DestinationBinding = (uint)destinationBinding,
+                                    DescriptorType = DescriptorType.Sampler,
+                                    ImageInfo = new IntPtr(samplerInfosPointer + samplerInfos.Count)
+                                });
+
+                                samplerInfos.Add(new DescriptorImageInfo { Sampler = immutableSampler });
+                            }
+                            else
+                            {
+                                copies.Add(new CopyDescriptorSet
+                                {
+                                    StructureType = StructureType.CopyDescriptorSet,
+                                    SourceSet = boundDescriptorSets[i],
+                                    SourceBinding = (uint)j,
+                                    SourceArrayElement = 0,
+                                    DestinationSet = descriptorSet,
+                                    DestinationBinding = (uint)destinationBinding,
+                                    DestinationArrayElement = 0,
+                                    DescriptorCount = 1
+                                });
+                            }
+                        }
+                    }
                 }
+
+                GraphicsDevice.NativeDevice.UpdateDescriptorSets(
+                    (uint)writes.Count, writes.Count > 0 ? (WriteDescriptorSet*)Interop.Fixed(writes.Items) : null,
+                    (uint)copies.Count, copies.Count > 0 ? (CopyDescriptorSet*)Interop.Fixed(copies.Items) : null);
             }
+
+            NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &descriptorSet, 0, null);
         }
+
+        private readonly FastList<DescriptorImageInfo> samplerInfos = new FastList<DescriptorImageInfo>();
+        private readonly FastList<WriteDescriptorSet> writes = new FastList<WriteDescriptorSet>();
+        private readonly FastList<CopyDescriptorSet> copies = new FastList<CopyDescriptorSet>();
+        private readonly FastList<SharpVulkan.DescriptorSet> descriptorSets = new FastList<SharpVulkan.DescriptorSet>(); 
 
         public void SetStencilReference(int stencilReference)
         {
@@ -340,25 +424,10 @@ namespace SiliconStudio.Xenko.Graphics
             if (index != 0)
                 throw new NotImplementedException();
 
-            // TODO VULKAN: Do this late, so SetPipelineState and SetDescriptorSets can be unordered?
-
-
-            boundDescriptorSets.Clear();
-            for (int i = 0; i < activePipeline.ResourceGroupCount; i++)
-            {
-                // TODO VULKAN: Use empty descriptor set
-                boundDescriptorSets.Add(descriptorSets[0].NativeDescriptorSet);
-            }
-
+            boundDescriptorSets.Clear(true);
             for (int i = 0; i < descriptorSets.Length; i++)
             {
-                var descriptorSetIndex = activePipeline.ResourceGroupMapping[i];
-
-                // Is the descriptor set index used in the pipeline layout?
-                if (descriptorSetIndex >= 0)
-                {
-                    boundDescriptorSets[descriptorSetIndex] = descriptorSets[i].NativeDescriptorSet;
-                }
+                boundDescriptorSets.Add(descriptorSets[i].NativeDescriptorSet);
             }
         }
 

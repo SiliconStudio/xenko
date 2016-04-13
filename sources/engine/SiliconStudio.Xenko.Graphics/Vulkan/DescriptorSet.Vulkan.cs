@@ -72,9 +72,10 @@ namespace SiliconStudio.Xenko.Graphics
             var texture = shaderResourceView as Texture;
             if (texture != null)
             {
-                var imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = texture.NativeLayout };
+                var imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
 
-                write.DescriptorType = Description.Bindings[slot].HasImmutableSampler ? DescriptorType.CombinedImageSampler : DescriptorType.SampledImage;
+                write.DescriptorType = DescriptorType.SampledImage;
+                //write.DescriptorType = Description.ImmutableSamplers[slot] != Sampler.Null ? DescriptorType.CombinedImageSampler : DescriptorType.SampledImage;
                 write.ImageInfo = new IntPtr(&imageInfo);
 
                 GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
@@ -117,7 +118,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public unsafe void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
-            var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = (ulong)size };
+            var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = ~0UL /*size*/ }; // WholeSize, because size < bufferSize seems not to work?
 
             var write = new WriteDescriptorSet
             {

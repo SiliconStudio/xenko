@@ -147,7 +147,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3,
                     KeepSamplers = isVulkan,
-                    CombinedSamplers = reflection.SamplerStates.Select(sampler => sampler.KeyName).ToList(),
+                    CombinedSamplers = new List<string>(),//reflection.ResourceBindings.Join(reflection.SamplerStates, data => data.Param.KeyName, binding => binding.KeyName, (data, binding) => data.Param.RawName).ToList(),
                     InputAttributeNames = inputAttributeNames
                 };
                 convertor.Run(result);
