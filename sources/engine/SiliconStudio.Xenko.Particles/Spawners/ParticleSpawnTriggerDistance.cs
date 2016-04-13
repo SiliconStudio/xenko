@@ -39,5 +39,20 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
             return deltaPosition;
         }
+
+        /// <inheritdoc/>
+        public override void AddRequiredParentFields(ParticleEmitter parentEmitter)
+        {
+            parentEmitter?.AddRequiredField(ParticleFields.Position);
+            parentEmitter?.AddRequiredField(ParticleFields.OldPosition);
+        }
+
+        /// <inheritdoc/>
+        public override void RemoveRequiredParentFields(ParticleEmitter parentEmitter)
+        {
+            parentEmitter?.RemoveRequiredField(ParticleFields.Position);
+            parentEmitter?.RemoveRequiredField(ParticleFields.OldPosition);
+        }
+
     }
 }

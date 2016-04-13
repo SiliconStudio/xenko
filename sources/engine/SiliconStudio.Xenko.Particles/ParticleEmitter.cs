@@ -169,9 +169,6 @@ namespace SiliconStudio.Xenko.Particles
             AddRequiredField(ParticleFields.RandomSeed);
             AddRequiredField(ParticleFields.Position);
 
-            // TODO: Temporary - remove me
-            AddRequiredField(ParticleFields.OldPosition);
-
             initialDefaultFields = new InitialDefaultFields();
 
             Initializers = new FastTrackingCollection<ParticleInitializer>();

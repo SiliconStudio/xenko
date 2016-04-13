@@ -24,6 +24,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         private ParentControlFlag parentControlFlag = ParentControlFlag.Group00;
 
         /// <summary>
+        /// <see cref="ParticleSpawnTrigger"/> provides a class which checks if the spawning condition has triggered
+        /// </summary>
+        [DataMemberIgnore]
+        private ParticleSpawnTrigger particleSpawnTrigger = null;
+
+        /// <summary>
         /// Referenced parent emitter
         /// </summary>
         [DataMemberIgnore]
@@ -85,6 +91,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private void RemoveControlGroup()
         {
+            ParticleSpawnTrigger?.RemoveRequiredParentFields(Parent);
+
             var groupIndex = (int)parentControlFlag;
             if (groupIndex >= ParticleFields.ChildrenFlags.Length)
                 return;
@@ -97,6 +105,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private void AddControlGroup()
         {
+            ParticleSpawnTrigger?.AddRequiredParentFields(Parent);
+
             var groupIndex = (int)parentControlFlag;
             if (groupIndex >= ParticleFields.ChildrenFlags.Length)
                 return;
@@ -121,7 +131,16 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <see cref="ParticleSpawnTrigger"/> provides a class which checks if the spawning condition has triggered
         /// </summary>
         [DataMember(45)]
-        public ParticleSpawnTrigger ParticleSpawnTrigger { get; set; }
+        public ParticleSpawnTrigger ParticleSpawnTrigger
+        {
+            get { return particleSpawnTrigger; }
+            set
+            {
+                RemoveControlGroup();
+                particleSpawnTrigger = value;
+                AddControlGroup();
+            }
+        }
 
         /// <summary>
         /// The amount of particles this spawner will emit when the event is triggered
