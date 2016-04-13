@@ -373,6 +373,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
         private static void CleanupReflection(EffectReflection reflection)
         {
+            return;
+
             // TODO GRAPHICS REFACTOR we hardcode several resource group we want to preserve or optimize completly
             // Somehow this should be handled some other place (or probably we shouldn't cleanup reflection at all?)
             bool hasMaterialGroup = false;
