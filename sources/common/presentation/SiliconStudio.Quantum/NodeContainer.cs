@@ -228,7 +228,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, Stack<object> indices = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, object index = null)
         {
             if (reference == null) throw new ArgumentNullException(nameof(reference));
             if (node == null) throw new ArgumentNullException(nameof(node));
@@ -239,14 +239,9 @@ namespace SiliconStudio.Quantum
             var singleReference = reference as ObjectReference;
             if (referenceEnumerable != null)
             {
-                if (indices == null)
-                    indices = new Stack<object>();
-
                 foreach (var itemReference in referenceEnumerable)
                 {
-                    indices.Push(itemReference.Index);
-                    UpdateOrCreateReferenceTarget(itemReference, node, indices);
-                    indices.Pop();
+                    UpdateOrCreateReferenceTarget(itemReference, node, itemReference.Index);
                 }
             }
             else if (singleReference != null && content.ShouldProcessReference)
@@ -262,12 +257,8 @@ namespace SiliconStudio.Quantum
                     var target = singleReference.SetTarget(this, defaultNodeFactory);
                     if (target != null)
                     {
-                        var structContent = target.Content as BoxedContent;
-                        if (structContent != null)
-                        {
-                            structContent.BoxedStructureOwner = content;
-                            structContent.BoxedStructureOwnerIndices = indices?.Reverse().ToArray();
-                        }
+                        var boxedContent = target.Content as BoxedContent;
+                        boxedContent?.SetOwnerContent(content, index);
                     }
                     else
                     {
