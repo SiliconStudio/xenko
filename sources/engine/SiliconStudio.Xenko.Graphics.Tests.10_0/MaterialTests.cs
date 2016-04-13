@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// <summary>
     /// Test <see cref="Material"/>.
     /// </summary>
+    [TestFixture]
     public class MaterialTests : GameTestBase
     {
         private string testName;

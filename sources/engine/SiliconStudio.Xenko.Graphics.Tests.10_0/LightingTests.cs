@@ -10,6 +10,11 @@ using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
+    /// <summary>
+    /// Test lighting and shadows.
+    /// </summary>
+    /// Note: shadows stabilization is still not working, new golds will be needed when fixed.
+    [TestFixture]
     public class LightingTests : GameTestBase
     {
         public Action<LightingTests> SetupLighting { get; set; }
