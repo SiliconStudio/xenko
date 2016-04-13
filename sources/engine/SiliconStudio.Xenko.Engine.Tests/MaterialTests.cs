@@ -33,7 +33,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private MaterialTests(Func<MaterialTests, Material> createMaterial)
         {
-            ForceInteractiveMode = true;
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
         }
