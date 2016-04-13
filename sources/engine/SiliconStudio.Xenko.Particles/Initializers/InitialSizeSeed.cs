@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialSizeSeed")]
-    [Display("Initial Size")]
+    [Display("Size")]
     public class InitialSizeSeed : ParticleInitializer
     {
         public InitialSizeSeed()

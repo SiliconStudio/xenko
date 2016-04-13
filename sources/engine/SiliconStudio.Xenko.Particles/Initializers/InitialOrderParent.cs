@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialOrderParent"/> is an initializer which sets the particle's spawn order based on a followed (parent) particle's order
     /// </summary>
     [DataContract("InitialOrderParent")]
-    [Display("Order from parent")]
+    [Display("Spawn Order (parent)")]
     public class InitialOrderParent : ParticleChildInitializer
     {
         // Will loop every so often, but the loop condition should be unreachable for normal games (~800 hours for spawning rate of 100 particles/second)

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialPositionSeed"/> is an initializer which sets the particle's initial position at the time of spawning
     /// </summary>
     [DataContract("InitialPositionSeed")]
-    [Display("Initial Position")]
+    [Display("Position")]
     public class InitialPositionSeed : ParticleInitializer
     {
         /// <summary>

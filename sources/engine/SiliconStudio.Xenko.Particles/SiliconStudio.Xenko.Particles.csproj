@@ -117,6 +117,7 @@
     <Compile Include="Spawners\ParticleSpawnTrigger.cs" />
     <Compile Include="Spawners\ParticleSpawnTriggerCollision.cs" />
     <Compile Include="Spawners\ParticleSpawnTriggerLifetime.cs" />
+    <Compile Include="Spawners\SpawnerFromDistance.cs" />
     <Compile Include="Spawners\SpawnerFromParent.cs" />
     <Compile Include="Updaters\ParticleCollisionAttribute.cs" />
     <Compile Include="Updaters\UpdaterColorOverTime.cs" />

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialSizeParent"/> is an initializer which sets the particle's size based on a followed (parent) particle's size
     /// </summary>
     [DataContract("InitialSizeParent")]
-    [Display("Size from parent")]
+    [Display("Size (parent)")]
     public class InitialSizeParent : ParticleChildInitializer
     {
         /// <summary>

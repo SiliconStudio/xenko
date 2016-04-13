@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
     /// The <see cref="UpdaterForceField"/> updates the particles' positions and velocity based on proximity and relative position to a bounding force field
     /// </summary>
     [DataContract("UpdaterForceField")]
-    [Display("ForceField")]
+    [Display("Force Field")]
     public class UpdaterForceField : ParticleUpdater
     {
         /// <summary>

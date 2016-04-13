@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialColorParent"/> is an initializer which sets the particle's initial color based on a followed (parent) particle's color
     /// </summary>
     [DataContract("InitialColorParent")]
-    [Display("Color from parent")]
+    [Display("Color (parent)")]
     public class InitialColorParent : ParticleChildInitializer
     {
 
