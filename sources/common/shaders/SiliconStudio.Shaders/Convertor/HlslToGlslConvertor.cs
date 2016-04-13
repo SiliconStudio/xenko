@@ -3606,21 +3606,15 @@ namespace SiliconStudio.Shaders.Convertor
                 return new VariableReferenceExpression(matchingTextureSampler.First().Value.Name);
             }
 
-            if (KeepSamplers && !CombinedSamplers.Contains(sampler.Name))
-            {
-                var combinedTextureSampler =
-                    texture.Type == TextureType.Texture1D ? SamplerType.Sampler1D :
-                    texture.Type == TextureType.Texture2D ? SamplerType.Sampler2D :
-                    texture.Type == TextureType.Texture3D ? SamplerType.Sampler3D :
-                    texture.Type == TextureType.TextureCube ? SamplerType.SamplerCube : null;
-
-                return new MethodInvocationExpression(new TypeReferenceExpression(combinedTextureSampler), new VariableReferenceExpression(texture), new VariableReferenceExpression(sampler));
-            }
-
             var samplerKey = new SamplerTextureKey(sampler, texture);
             if (!samplerMapping.TryGetValue(samplerKey, out glslSampler))
             {
                 return null;
+            }
+
+            if (KeepSamplers && !CombinedSamplers.Contains(sampler.Name))
+            {
+                return new MethodInvocationExpression(new TypeReferenceExpression(glslSampler.Type), new VariableReferenceExpression(texture), new VariableReferenceExpression(sampler));
             }
 
             return new VariableReferenceExpression(glslSampler.Name);
@@ -4122,6 +4116,7 @@ namespace SiliconStudio.Shaders.Convertor
             // Sampler objects
             mapToGlsl.Add(SamplerStateType.SamplerState, new TypeName("sampler"));
             mapToGlsl.Add(new StateType("SamplerState"), new TypeName("sampler"));
+            mapToGlsl.Add(new StateType("SamplerComparisonState"), new TypeName("samplerShadow"));
             //mapToGlsl.Add(SamplerStateType.SamplerComparisonState, new TypeName("sampler"));
 
             // Texture objects
