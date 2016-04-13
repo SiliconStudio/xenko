@@ -132,69 +132,72 @@ namespace SiliconStudio.Xenko.Graphics
             var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
             commandBuffer.Begin(ref beginInfo);
 
-            // Copy to upload buffer
-            if (dataPointer != IntPtr.Zero)
+            if (Description.SizeInBytes > 0)
             {
-                var sizeInBytes = bufferDescription.SizeInBytes;
-                SharpVulkan.Buffer uploadResource;
-                int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(sizeInBytes, out uploadResource, out uploadOffset);
+                // Copy to upload buffer
+                if (dataPointer != IntPtr.Zero)
+                {
+                    var sizeInBytes = bufferDescription.SizeInBytes;
+                    SharpVulkan.Buffer uploadResource;
+                    int uploadOffset;
+                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer(sizeInBytes, out uploadResource, out uploadOffset);
 
-                Utilities.CopyMemory(uploadMemory, dataPointer, sizeInBytes);
+                    Utilities.CopyMemory(uploadMemory, dataPointer, sizeInBytes);
+
+                    // Barrier
+                    var bufferMemoryBarrier2 = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = uploadResource,
+                        SourceAccessMask = AccessFlags.HostWrite,
+                        DestinationAccessMask = AccessFlags.TransferRead
+                    };
+                    commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier2, 0, null);
+
+                    // Copy
+                    var bufferCopy = new BufferCopy
+                    {
+                        SourceOffset = (uint)uploadOffset,
+                        DestinationOffset = 0,
+                        Size = (uint)sizeInBytes
+                    };
+                    commandBuffer.CopyBuffer(uploadResource, NativeBuffer, 1, &bufferCopy);
+                }
+                else
+                {
+                    // TODO VULKAN: Not be needed when synced correctly
+                    commandBuffer.FillBuffer(NativeBuffer, 0, (uint)bufferDescription.SizeInBytes, 0);
+                }
 
                 // Barrier
-                var bufferMemoryBarrier2 = new BufferMemoryBarrier
+                var bufferMemoryBarrier = new BufferMemoryBarrier
                 {
                     StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = uploadResource,
-                    SourceAccessMask = AccessFlags.HostWrite,
-                    DestinationAccessMask = AccessFlags.TransferRead
+                    Buffer = NativeBuffer,
+                    SourceAccessMask = AccessFlags.TransferWrite,
+                    DestinationAccessMask = NativeAccessMask
                 };
-                commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier2, 0, null);
+                commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 0, null);
 
-                // Copy
-                var bufferCopy = new BufferCopy
+                // Close and submit
+                commandBuffer.End();
+
+                var submitInfo = new SubmitInfo
                 {
-                    SourceOffset = (uint)uploadOffset,
-                    DestinationOffset = 0,
-                    Size = (uint)sizeInBytes
+                    StructureType = StructureType.SubmitInfo,
+                    CommandBufferCount = 1,
+                    CommandBuffers = new IntPtr(&commandBuffer),
                 };
-                commandBuffer.CopyBuffer(uploadResource, NativeBuffer, 1, &bufferCopy);
+
+                GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+                GraphicsDevice.NativeCommandQueue.WaitIdle();
+                //commandBuffer.Reset(CommandBufferResetFlags.None);
+                GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
+
+                // Staging resource don't have any views
+                if (!isStaging)
+                    InitializeViews();
             }
-            else
-            {
-                // TODO VULKAN: Not be needed when synced correctly
-                commandBuffer.FillBuffer(NativeBuffer, 0, (uint)bufferDescription.SizeInBytes, 0);
-            }
-
-            // Barrier
-            var bufferMemoryBarrier = new BufferMemoryBarrier
-            {
-                StructureType = StructureType.BufferMemoryBarrier,
-                Buffer = NativeBuffer,
-                SourceAccessMask = AccessFlags.TransferWrite,
-                DestinationAccessMask = NativeAccessMask
-            };
-            commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 0, null);
-
-            // Close and submit
-            commandBuffer.End();
-
-            var submitInfo = new SubmitInfo
-            {
-                StructureType = StructureType.SubmitInfo,
-                CommandBufferCount = 1,
-                CommandBuffers = new IntPtr(&commandBuffer),
-            };
-
-            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
-            GraphicsDevice.NativeCommandQueue.WaitIdle();
-            //commandBuffer.Reset(CommandBufferResetFlags.None);
-            GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
-
-            // Staging resource don't have any views
-            if (!isStaging)
-                InitializeViews();
 
             //// TODO D3D12 where should that go longer term? should it be precomputed for future use? (cost would likely be additional check on SetDescriptorSets/Draw)
             //NativeResourceStates = ResourceStates.Common;
