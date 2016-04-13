@@ -37,16 +37,6 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         public readonly static PropertyKey<float> DefaultDepthPropertyKey =
             new PropertyKey<float>("DefaultDepthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
-        /// <summary>
-        /// The key to the name dependency property.
-        /// </summary>
-        public readonly static PropertyKey<string> NamePropertyKey =
-            new PropertyKey<string>("NameKey", typeof(UIElement), DefaultValueMetadata.Static<string>(null), ObjectInvalidationMetadata.New<string>(NameInvalidationCallback));
-        /// <summary>
-        /// The key to the Background color dependency property.
-        /// </summary>
-        private readonly static PropertyKey<Color> BackgroundColorPropertyKey =
-            new PropertyKey<Color>("BackgroundColorKey", typeof(Color), DefaultValueMetadata.Static(new Color(0, 0, 0, 0)));
         
         private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
             EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));
@@ -88,6 +78,7 @@ namespace SiliconStudio.Xenko.UI
         internal Matrix WorldMatrixInternal;
         internal protected Thickness MarginInternal = Thickness.UniformCuboid(0f);
 
+        private string name;
         private Visibility visibility = Visibility.Visible;
         private float opacity = 1.0f;
         private bool isEnabled = true;
@@ -389,12 +380,6 @@ namespace SiliconStudio.Xenko.UI
             IsArrangeValid = false;
 
             VisualParent?.ForceMeasure();
-        }
-
-        private static void NameInvalidationCallback(object propertyOwner, PropertyKey<string> propertyKey, string propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.OnNameChanged();
         }
 
         /// <summary>
@@ -778,11 +763,18 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the name of this element. This is a dependency property.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
         public string Name
         {
-            get { return DependencyProperties.Get(NamePropertyKey); }
-            set { DependencyProperties.Set(NamePropertyKey, value); }
+            get { return name; }
+            set
+            {
+                if (name == value)
+                    return;
+
+                name = value;
+                OnNameChanged();
+            }
         }
 
         /// <summary>
@@ -879,12 +871,8 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The background color of the element.
         /// </summary>
-        [DataMemberIgnore]
-        public Color BackgroundColor
-        {
-            get { return DependencyProperties.Get(BackgroundColorPropertyKey); }
-            set { DependencyProperties.Set(BackgroundColorPropertyKey, value); }
-        }
+        [DataMember]
+        public Color BackgroundColor { get; set; }
 
         private unsafe bool Vector3BinaryEqual(ref Vector3 left, ref Vector3 right)
         {
@@ -1128,16 +1116,6 @@ namespace SiliconStudio.Xenko.UI
                 return this;
 
             return VisualChildren.Select(child => child.FindName(name)).FirstOrDefault(elt => elt != null);
-        }
-
-        /// <summary>
-        /// Provides an accessor that simplifies access to the NameScope registration method.
-        /// </summary>
-        /// <param name="name">Name to use for the specified name-object mapping.</param>
-        /// <param name="scopedElement">Object for the mapping.</param>
-        protected void RegisterName(string name, UIElement scopedElement)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

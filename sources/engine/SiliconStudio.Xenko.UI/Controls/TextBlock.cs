@@ -18,40 +18,13 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("TextBlock - Name={Name}")]
     public class TextBlock : UIElement
     {
-        /// <summary>
-        /// The key to the Font dependency property.
-        /// </summary>
-        public readonly static PropertyKey<SpriteFont> FontPropertyKey = new PropertyKey<SpriteFont>("FontKey", typeof(TextBlock), DefaultValueMetadata.Static<SpriteFont>(null), ObjectInvalidationMetadata.New<SpriteFont>(InvalidateFont));
-
-        /// <summary>
-        /// The key to the TextColor dependency property.
-        /// </summary>
-        public readonly static PropertyKey<Color> TextColorPropertyKey = new PropertyKey<Color>("TextColorKey", typeof(TextBlock), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
-
-        private static void InvalidateFont(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
-        {
-            var element = (TextBlock)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
+        private SpriteFont font;
         private string text;
-
-        private bool wrapText;
-
-        private string wrappedText;
-
         private float? textSize;
-
+        private bool wrapText;
         private bool synchronousCharacterGeneration;
 
-        /// <summary>
-        /// Method triggered when the <see cref="Text"/> changes.
-        /// Can be overridden in inherited class to changed the default behavior.
-        /// </summary>
-        protected virtual void OnTextChanged()
-        {
-            InvalidateMeasure();
-        }
+        private string wrappedText;
 
         /// <summary>
         /// Returns the text to display during the draw call.
@@ -61,11 +34,18 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the font of the text block
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
         public SpriteFont Font
         {
-            get { return DependencyProperties.Get(FontPropertyKey); }
-            set { DependencyProperties.Set(FontPropertyKey, value); }
+            get { return font; }
+            set
+            {
+                if (font == value)
+                    return;
+
+                font = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
@@ -85,12 +65,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the text of the text block
         /// </summary>
-        [DataMemberIgnore]
-        public Color TextColor
-        {
-            get { return DependencyProperties.Get(TextColorPropertyKey); }
-            set { DependencyProperties.Set(TextColorPropertyKey, value); }
-        }
+        [DataMember]
+        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit
@@ -108,7 +84,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             set
             {
                 textSize = Math.Max(0, Math.Min(float.MaxValue, value));
-
                 InvalidateMeasure();
             }
         }
@@ -127,7 +102,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                     return;
 
                 wrapText = value;
-
                 InvalidateMeasure();
             }
         }
@@ -176,6 +150,15 @@ namespace SiliconStudio.Xenko.UI.Controls
             return CalculateTextSize(TextToDisplay);
         }
 
+        /// <inheritdoc/>
+        protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
+        {
+            if (WrapText)
+                UpdateWrappedText(finalSizeWithoutMargins);
+
+            return base.ArrangeOverride(finalSizeWithoutMargins);
+        }
+
         /// <summary>
         /// Calculate and returns the size of the provided <paramref name="textToMeasure"/>"/> in virtual pixels size.
         /// </summary>
@@ -187,6 +170,24 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             return CalculateTextSize(new SpriteFont.StringProxy(textToMeasure));
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
+        {
+            if (WrapText)
+                UpdateWrappedText(availableSizeWithoutMargins);
+
+            return new Vector3(CalculateTextSize(), 0);
+        }
+
+        /// <summary>
+        /// Method triggered when the <see cref="Text"/> changes.
+        /// Can be overridden in inherited class to changed the default behavior.
+        /// </summary>
+        protected virtual void OnTextChanged()
+        {
+            InvalidateMeasure();
         }
 
         private Vector2 CalculateTextSize(StringBuilder textToMeasure)
@@ -216,22 +217,6 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             return realSize;
         } 
-
-        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
-        {
-            if (WrapText)
-                UpdateWrappedText(availableSizeWithoutMargins);
-
-            return new Vector3(CalculateTextSize(), 0);
-        }
-
-        protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
-        {
-            if (WrapText)
-                UpdateWrappedText(finalSizeWithoutMargins);
-
-            return base.ArrangeOverride(finalSizeWithoutMargins);
-        }
 
         private void UpdateWrappedText(Vector3 availableSpace)
         {

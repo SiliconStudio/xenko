@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.AreEqual(HorizontalAlignment.Stretch, newElement.HorizontalAlignment);
             Assert.AreEqual(VerticalAlignment.Stretch, newElement.VerticalAlignment);
             Assert.AreEqual(DepthAlignment.Center, newElement.DepthAlignment);
-            Assert.AreEqual(null, newElement.DependencyProperties.Get(NamePropertyKey));
+            Assert.AreEqual(null, newElement.Name);
             Assert.AreEqual(Thickness.UniformCuboid(0), newElement.Margin);
             Assert.AreEqual(Matrix.Identity, newElement.LocalMatrix);
 
