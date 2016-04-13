@@ -136,6 +136,7 @@
     </Compile>
     <Compile Include="BackBufferSizeMode.cs" />
     <Compile Include="BlockingBufferedStream.cs" />
+    <Compile Include="FpsTestCamera.cs" />
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
     <Compile Include="GameTestBase.cs" />

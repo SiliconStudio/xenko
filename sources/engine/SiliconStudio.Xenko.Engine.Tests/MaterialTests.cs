@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -18,12 +20,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
     /// <summary>
     /// Test <see cref="Material"/>.
     /// </summary>
-    public class MaterialTests : EngineTestBase
+    public class MaterialTests : GameTestBase
     {
         private string testName;
-        private Entity cube;
-        private Entity sphere;
-        private TestCamera camera;
         private Func<MaterialTests, Material> createMaterial;
 
         public MaterialTests() : this(null)
@@ -33,47 +32,31 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private MaterialTests(Func<MaterialTests, Material> createMaterial)
         {
+            CurrentVersion = 1;
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+        }
+
+        protected internal override void PrepareContext()
+        {
+            base.PrepareContext();
+
+            SceneSystem.InitialSceneUrl = "MaterialTests/MaterialScene";
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            // Load both cube and sphere procedural models
-            var cubeModel = Content.Load<Model>("MaterialTests/Cube");
-            var sphereModel = Content.Load<Model>("MaterialTests/Sphere");
+            var cube = SceneSystem.SceneInstance.First(x => x.Name == "Cube");
+            var sphere = SceneSystem.SceneInstance.First(x => x.Name == "Sphere");
 
-            cube = new Entity { new ModelComponent { Model = cubeModel } };
-            sphere = new Entity { new ModelComponent { Model = sphereModel } };
-
-            cube.Transform.Position.X = -0.8f;
-            sphere.Transform.Position.X = 0.8f;
-
-            Scene.Entities.Add(cube);
-            Scene.Entities.Add(sphere);
-
-            camera = new TestCamera();
-            CameraComponent = camera.Camera;
-            Script.Add(camera);
-
-            // Place camera to see both cube and sphere at an interesting angle
-            camera.Yaw = (float)(Math.PI * 0.10f);
-            camera.Pitch = -(float)(Math.PI * 0.15f);
-            camera.Position = new Vector3(0.6f, 1.0f, 2.0f);
-
-            // Make ambient light lower intensity
-            AmbientLight.Intensity = 0.2f;
-
-            // Add two directional lights
-            var directionalLight1 = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White) }, Intensity = 0.4f } };
-            directionalLight1.Transform.Rotation = Quaternion.RotationYawPitchRoll(MathUtil.DegreesToRadians(30.0f), MathUtil.DegreesToRadians(-70.0f), 0.0f);
-            Scene.Entities.Add(directionalLight1);
-
-            var directionalLight2 = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White) }, Intensity = 0.4f } };
-            directionalLight2.Transform.Rotation = Quaternion.RotationYawPitchRoll(MathUtil.DegreesToRadians(220.0f), MathUtil.DegreesToRadians(-20.0f), 0.0f);
-            Scene.Entities.Add(directionalLight2);
+            var camera = SceneSystem.SceneInstance.First(x => x.Name == "Camera");
+            if (camera != null)
+            {
+                var cameraScript = new FpsTestCamera();
+                camera.Add(cameraScript);
+            }
 
             var material = createMaterial(this);
 
