@@ -7,15 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Colors;
-using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-namespace SiliconStudio.Xenko.Engine.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     /// <summary>
     /// Test <see cref="Material"/>.
@@ -27,20 +25,20 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public MaterialTests() : this(null)
         {
-            
         }
 
         private MaterialTests(Func<MaterialTests, Material> createMaterial)
         {
             CurrentVersion = 1;
             this.createMaterial = createMaterial;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 
-        protected internal override void PrepareContext()
+        protected override void PrepareContext()
         {
             base.PrepareContext();
 
+            // Override initial scene
             SceneSystem.InitialSceneUrl = "MaterialTests/MaterialScene";
         }
 

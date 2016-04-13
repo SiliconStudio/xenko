@@ -14,7 +14,7 @@ Attributes:
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Emissive: !MaterialEmissiveMapFeature
         EmissiveMap: !ComputeTextureColor
-            Texture: 0a16e4d3-90f5-4a67-a6c0-7732643a5096/51144a89-25ee-4065-9f5b-34f57c7640a6:BasicDisplacementMap
+            Texture: 8c7a7607-4c19-4bdd-806c-aeebf84c5bf3/d9b06a1f-70df-4c7a-a550-ebe4b6f2e370:MaterialTests/EmissiveMap
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}

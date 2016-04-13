@@ -6,8 +6,8 @@ DefaultScene: cab6f2df-0aaf-478f-9fb6-41d5376be18c/ae4ecc1b-0b47-4c9d-ac8e-7f972
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         ~Id: ab0b41dd-a77d-4371-920f-51e0338af20f
-        DefaultBackBufferWidth: 1280
-        DefaultBackBufferHeight: 720
+        DefaultBackBufferWidth: 800
+        DefaultBackBufferHeight: 480
         DefaultGraphicsProfile: Level_9_1
         ColorSpace: Linear
         DisplayOrientation: Default
