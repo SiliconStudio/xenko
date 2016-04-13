@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Graphics
             var applicationInfo = new ApplicationInfo
             {
                 StructureType = StructureType.ApplicationInfo,
-                ApiVersion = Vulkan.ApiVersion,
+                ApiVersion = new SharpVulkan.Version(1, 0, 0),
                 EngineName = Marshal.StringToHGlobalAnsi("Xenko"),
                 //EngineVersion = new SharpVulkan.Version()
             };
@@ -33,12 +33,12 @@ namespace SiliconStudio.Xenko.Graphics
             var enabledLayerNames = new[]
             {
                 Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_threading"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_param_checker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_parameter_validation"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_device_limits"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_object_tracker"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_image"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_draw_state"),
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_core_validation"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
                 //Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"), // Fails on swapchain creation?
 

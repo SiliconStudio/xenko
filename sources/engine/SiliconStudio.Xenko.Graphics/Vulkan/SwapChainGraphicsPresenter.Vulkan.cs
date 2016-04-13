@@ -152,8 +152,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public unsafe override void Present()
         {
-            var semaphoreCreateInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
-            var presentCompleteSemaphore = GraphicsDevice.NativeDevice.CreateSemaphore(ref semaphoreCreateInfo);
+            //var semaphoreCreateInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
+            //var presentCompleteSemaphore = GraphicsDevice.NativeDevice.CreateSemaphore(ref semaphoreCreateInfo);
 
             try
             {
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.NativeCommandQueue.WaitIdle();
 
                 // Get next image
-                currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, presentCompleteSemaphore, Fence.Null);
+                currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, Semaphore.Null, Fence.Null);
 
                 // Flip render targets
                 backbuffer.SetNativeHandles(swapchainImages[currentBufferIndex].NativeImage, swapchainImages[currentBufferIndex].NativeColorAttachmentView);
@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Graphics
             finally
             {
 
-                GraphicsDevice.NativeDevice.DestroySemaphore(presentCompleteSemaphore);
+                //GraphicsDevice.NativeDevice.DestroySemaphore(presentCompleteSemaphore);
             }
         }
 

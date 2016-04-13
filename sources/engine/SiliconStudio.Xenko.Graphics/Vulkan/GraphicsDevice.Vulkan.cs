@@ -215,15 +215,24 @@ namespace SiliconStudio.Xenko.Graphics
 
             var enabledLayerNames = new[]
             {
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_standard_validation"),
+
                 Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_threading"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_param_checker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_parameter_validation"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_device_limits"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_object_tracker"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_image"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_draw_state"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
+                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_core_validation"),
+                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
                 //Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"),
+            };
+
+            var enabledFeature = new PhysicalDeviceFeatures
+            {
+                FillModeNonSolid = true,
+                ShaderClipDistance = true,
+                SamplerAnisotropy = true,
             };
 
             var enabledExtensionNames = new[]
@@ -241,10 +250,11 @@ namespace SiliconStudio.Xenko.Graphics
                         StructureType = StructureType.DeviceCreateInfo,
                         QueueCreateInfoCount = 1,
                         QueueCreateInfos = new IntPtr(&queueCreateInfo),
-                        EnabledLayerCount = (uint)enabledLayerNames.Length,
-                        EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
+                        //EnabledLayerCount = (uint)enabledLayerNames.Length,
+                        //EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
-                        EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
+                        EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer),
+                        EnabledFeatures = new IntPtr(&enabledFeature)
                     };
 
                     nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
