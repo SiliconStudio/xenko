@@ -1,14 +1,11 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
@@ -18,7 +15,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     [DataContract("UIAsset")]
     [AssetDescription(FileExtension)]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [ObjectFactory(typeof(UIFactory))]
     [Display("UI")]
     public sealed class UIAsset : Asset
     {
@@ -28,11 +24,6 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// The default file extension used by the <see cref="UIAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkui";
-
-        public UIAsset()
-        {
-            SetDefaults();
-        }
 
         /// <summary>
         /// Gets or sets the fonts used by the UI.
@@ -56,18 +47,5 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <userdoc>The sprites used by the UI.</userdoc>
         [DataMember(20)]
         public Graphics.SpriteSheet Sprites { get; set; }
-
-        public void SetDefaults()
-        {
-            RootElement = new Grid();
-        }
-
-        private class UIFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new UIAsset();
-            }
-        }
     }
 }
