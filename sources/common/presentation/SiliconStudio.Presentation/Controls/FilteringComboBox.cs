@@ -476,7 +476,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private bool InternalFilter(object obj)
         {
-            var filter = editableTextBox?.Text;
+            var filter = editableTextBox?.Text.Trim();
             if (string.IsNullOrWhiteSpace(filter))
                 return true;
 
@@ -493,7 +493,13 @@ namespace SiliconStudio.Presentation.Controls
 
         private static bool MatchText(string inputText, string text)
         {
-            return text.IndexOf(inputText, StringComparison.InvariantCultureIgnoreCase) > -1 || MatchCamelCase(inputText, text);
+            var tokens = inputText.Split(" \t\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            foreach (var token in tokens)
+            {
+                if (text.IndexOf(token, StringComparison.InvariantCultureIgnoreCase) < 0 && !MatchCamelCase(token, text))
+                    return false;
+            }
+            return true;
         }
 
         private object ResolveDisplayMemberValue(object obj)
