@@ -104,6 +104,7 @@ TemplateFolders:
         - samples\Particles\AnimatedParticles\AnimatedParticles.xktpl
         - samples\Particles\RibbonParticles\RibbonParticles.xktpl
         - samples\Particles\ChildParticles\ChildParticles.xktpl
+        - samples\Particles\LightningsAndLasers\LightningsAndLasers.xktpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\Physics\Raycasting\Raycasting.xktpl
