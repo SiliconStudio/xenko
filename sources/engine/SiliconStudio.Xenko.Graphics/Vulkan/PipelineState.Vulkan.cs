@@ -385,7 +385,7 @@ namespace SiliconStudio.Xenko.Graphics
                 DepthBiasSlopeFactor = description.SlopeScaleDepthBias,
                 DepthBiasClamp = description.DepthBiasClamp,
                 LineWidth = 1.0f,
-                DepthClampEnable = false,
+                DepthClampEnable = !description.DepthClipEnable,
                 RasterizerDiscardEnable = false,
             };
         }
@@ -401,9 +401,8 @@ namespace SiliconStudio.Xenko.Graphics
                 StencilTestEnable = description.StencilEnable,
                 DepthWriteEnable = description.DepthBufferWriteEnable,
 
-                DepthBoundsTestEnable = pipelineStateDescription.RasterizerState.DepthClipEnable,
-                MinDepthBounds = 0f,
-                MaxDepthBounds = 1f,
+                MinDepthBounds = 0.0f,
+                MaxDepthBounds = 1.0f,
                 DepthCompareOperation = VulkanConvertExtensions.ConvertComparisonFunction(description.DepthBufferFunction),
                 Front = new StencilOperationState
                 {
