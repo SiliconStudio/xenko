@@ -29,6 +29,9 @@ namespace SiliconStudio.Xenko.Rendering
         public void Initialize()
         {
             EffectValues = new FastListStruct<EffectParameterEntry>(4);
+            
+            // Add a dummy value so that an effect without parameter fails validation first time
+            EffectValues.Add(new EffectParameterEntry());
         }
 
         public void BeginEffectValidation()
