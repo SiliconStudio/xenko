@@ -343,7 +343,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SamplesBootstrapper", "..\sources\tools\SiliconStudio.Xenko.SamplesBootstrapper\SiliconStudio.Xenko.SamplesBootstrapper.csproj", "{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SamplesBootstrapper", "..\sources\editor\SiliconStudio.Xenko.SamplesBootstrapper\SiliconStudio.Xenko.SamplesBootstrapper.csproj", "{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
 EndProject
@@ -375,9 +375,8 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
@@ -2421,7 +2420,7 @@ Global
 		{75D71310-ECF7-4592-9E35-3FE540040982} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
-		{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
+		{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 		{370ADF53-DFFA-461E-B72A-1302C0A0DE00} = {4C142567-C42B-40F5-B092-798882190209}
 		{33CC6216-3F30-4B5A-BB29-C5B47EFFA713} = {4C142567-C42B-40F5-B092-798882190209}
