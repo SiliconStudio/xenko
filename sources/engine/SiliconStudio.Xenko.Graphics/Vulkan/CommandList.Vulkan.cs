@@ -234,10 +234,10 @@ namespace SiliconStudio.Xenko.Graphics
         private unsafe void PrepareDraw()
         {
             //// TODO D3D12 Hardcoded for one viewport
-            var viewport = Viewport;
-            NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewport);
+            var viewportCopy = Viewport;
+            NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewportCopy);
 
-            var scissor = new Rect2D(0, 0, (uint)Viewport.Width, (uint)Viewport.Height);
+            var scissor = new Rect2D((int)viewportCopy.X, (int)viewportCopy.Y, (uint)viewportCopy.Width, (uint)viewportCopy.Height);
             NativeCommandBuffer.SetScissor(0, 1, &scissor);
 
             NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, 0);
@@ -998,7 +998,7 @@ namespace SiliconStudio.Xenko.Graphics
             
             if (pipelineRenderPass != RenderPass.Null)
             {
-                var renderTarget = renderTargets[0] ?? depthStencilBuffer;
+                var renderTarget = RenderTargetCount > 0 ? renderTargets[0] : depthStencilBuffer;
 
                 // Create new frame buffer
                 fixed (ImageView* attachmentsPointer = &framebufferAttachments[0])
