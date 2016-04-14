@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 return;
 
             var posField = pool.GetField(ParticleFields.Position);
+            var oldField = pool.GetField(ParticleFields.OldPosition);
             var rndField = pool.GetField(ParticleFields.RandomSeed);
 
             var leftCorner = PositionMin * WorldScale;
@@ -89,6 +90,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
                     (*((Vector3*)particle[posField])) = particleRandPos;
 
+                    if (oldField.IsValid())
+                    {
+                        (*((Vector3*)particle[oldField])) = particleRandPos;
+                    }
+
                     i = (i + 1) % maxCapacity;
                 }
             }
@@ -107,6 +113,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                     particleRandPos += zAxis*randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
 
                     (*((Vector3*)particle[posField])) = particleRandPos;
+
+                    if (oldField.IsValid())
+                    {
+                        (*((Vector3*)particle[oldField])) = particleRandPos;
+                    }
 
                     i = (i + 1)%maxCapacity;
                 }

@@ -101,6 +101,7 @@
     <Compile Include="ShapeBuilders\EdgePolicy.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderOrientedQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderTrail.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Spawners\ParticleSpawner.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
+    <Compile Include="Updaters\UpdaterSpeedToDirection.cs" />
     <Compile Include="VertexLayouts\AttributeAccessor.cs" />
     <Compile Include="VertexLayouts\AttributeDescription.cs" />
     <Compile Include="VertexLayouts\AttributeTransformer.cs" />
