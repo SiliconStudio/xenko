@@ -32,13 +32,11 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class Texture
     {
         internal SharpVulkan.Image NativeImage;
-        internal DeviceMemory NativeMemory;
         internal ImageView NativeColorAttachmentView;
         internal ImageView NativeDepthStencilView;
         internal ImageView NativeImageView;
 
         private bool isNotOwningResources;
-        private bool isPersistentImage;
 
         internal Format NativeFormat;
         internal int RowPitch;
@@ -64,7 +62,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             NativeImage = nativeImage;
 
-            isPersistentImage = true;
             return InitializeFrom(description);
         }
 
@@ -118,7 +115,7 @@ namespace SiliconStudio.Xenko.Graphics
                             Format = NativeFormat,
                             Flags = ImageCreateFlags.None,
                             Tiling = ImageTiling.Optimal,
-                            InitialLayout = ImageLayout.Undefined // dataBoxes == null ? ImageLayout.Undefined : ImageLayout.Preinitialized // TODO VULKAN: Use ImageLayout.Preinitialized
+                            InitialLayout = ImageLayout.Undefined
                         };
 
                         switch (Dimension)
@@ -280,7 +277,7 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 commandBuffer.Begin(ref beginInfo);
 
-                if (dataBoxes != null)
+                if (dataBoxes != null && dataBoxes.Length > 0)
                 {
                     int totalSize = dataBoxes.Length * 4;
                     for (int i = 0; i < dataBoxes.Length; i++)
@@ -356,11 +353,11 @@ namespace SiliconStudio.Xenko.Graphics
                 var imageMemoryBarrier = new ImageMemoryBarrier
                 {
                     StructureType = StructureType.ImageMemoryBarrier,
-                    OldLayout = dataBoxes == null ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal,
+                    OldLayout = dataBoxes == null || dataBoxes.Length == 0 ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal,
                     NewLayout = NativeLayout,
                     Image = NativeImage,
                     SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                    SourceAccessMask = dataBoxes == null ? AccessFlags.None : AccessFlags.TransferWrite,
+                    SourceAccessMask = dataBoxes == null || dataBoxes.Length == 0 ? AccessFlags.None : AccessFlags.TransferWrite,
                     DestinationAccessMask = NativeAccessMask
                 };
                 commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
