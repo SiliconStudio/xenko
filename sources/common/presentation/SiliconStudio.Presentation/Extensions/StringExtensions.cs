@@ -1,6 +1,5 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +18,15 @@ namespace SiliconStudio.Presentation.Extensions
             {
                 if (prevChar != '\0')
                 {
+                    // Split white spaces
+                    if (char.IsWhiteSpace(currentChar))
+                    {
+                        var word = str.Substring(wordStart, wordLength);
+                        result.Add(word);
+                        wordStart += wordLength;
+                        wordLength = 0;
+                    }
+
                     // aA -> split between a and A
                     if (char.IsLower(prevChar) && char.IsUpper(currentChar))
                     {
@@ -42,7 +50,7 @@ namespace SiliconStudio.Presentation.Extensions
 
             result.Add(str.Substring(wordStart, wordLength));
 
-            return result;
+            return result.Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
         }
     }
 }
