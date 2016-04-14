@@ -170,9 +170,9 @@ namespace SiliconStudio.Xenko.Graphics
                 };
 
                 // Present
-                GraphicsDevice.NativeCommandQueue.WaitIdle();
+                //GraphicsDevice.NativeCommandQueue.WaitIdle();
                 GraphicsDevice.NativeCommandQueue.Present(ref presentInfo);
-                GraphicsDevice.NativeCommandQueue.WaitIdle();
+                //GraphicsDevice.NativeCommandQueue.WaitIdle();
 
                 // Get next image
                 currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, Semaphore.Null, Fence.Null);
