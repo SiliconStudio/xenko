@@ -26,6 +26,7 @@ using namespace SiliconStudio::Xenko::Rendering;
 using namespace SiliconStudio::Xenko::Rendering::Materials;
 using namespace SiliconStudio::Xenko::Rendering::Materials::ComputeColors;
 using namespace SiliconStudio::Xenko::AssimpNet;
+using namespace SiliconStudio::Xenko::AssimpNet::Material;
 using namespace SiliconStudio::Xenko::Animations;
 using namespace SiliconStudio::Xenko::Engine;
 using namespace SiliconStudio::Xenko::Extensions;
@@ -703,10 +704,10 @@ private:
 		return animationClips;
 	}
 
-	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
+	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, TextureAddressMode addressModeU, TextureAddressMode addressModeV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
-		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
+		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, addressModeU, addressModeV, Logger);
 
 		auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue->Texture);
 		auto referenceName = attachedReference->Url;
@@ -791,7 +792,7 @@ private:
 				auto realTop = (AssimpNet::Material::StackTexture^)top;
 				String ^texPath = realTop->texturePath;
 				int indexUV = realTop->channel;
-				auto textureValue = GetTextureReferenceNode(vfsOutputFilename, texPath, indexUV, Vector2::One, false, false, finalMaterial, Logger);
+				auto textureValue = GetTextureReferenceNode(vfsOutputFilename, texPath, indexUV, Vector2::One, ConvertTextureMode(realTop->mappingModeU), ConvertTextureMode(realTop->mappingModeV), finalMaterial, Logger);
 				curComposition = textureValue;
 			}
 			
@@ -845,6 +846,22 @@ private:
 		}
 
 		return rootMaterial;
+	}
+
+	static TextureAddressMode ConvertTextureMode(MappingMode mappingMode)
+	{
+		switch (mappingMode)
+		{
+		case MappingMode::Clamp:
+			return TextureAddressMode::Clamp;
+		case MappingMode::Decal:
+			return TextureAddressMode::Border;
+		case MappingMode::Mirror:
+			return TextureAddressMode::Mirror;
+		default:
+		case MappingMode::Wrap:
+			return TextureAddressMode::Wrap;
+		}
 	}
 
 	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
