@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Particles
             debugDrawShape = DebugDrawShape.None;
             scale = new Vector3(1, 1, 1);
             translation = new Vector3(0, 0, 0);
-            rotation = new Quaternion(0, 0, 0, 1);
+            rotation = Quaternion.Identity;
             return false;
         }
 
@@ -61,12 +61,19 @@ namespace SiliconStudio.Xenko.Particles
         /// Sets the parent (particle system's) translation, rotation and scale (uniform)
         /// The module can choose to inherit, use or ignore any of the elements
         /// </summary>
-        /// <param name="translation">Particle System's translation (from the Transform component)</param>
-        /// <param name="rotation">Particle System's quaternion rotation (from the Transform component)</param>
-        /// <param name="scale">Particle System's uniform scale (from the Transform component)</param>
-        public virtual void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
+        /// <param name="transform"><see cref="ParticleSystem"/>'s transform (from the Transform component) or identity if local space is used</param>
+        /// <param name="parent">The parent <see cref="ParticleSystem"/></param>
+        public virtual void SetParentTRS(ParticleTransform transform, ParticleSystem parent)
         {
-            SetParentTransform(ref translation, ref rotation, scale);
+            SetParentTransform(transform);
+        }
+
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public virtual void InvalidateRelations()
+        {
+            
         }
     }
 }

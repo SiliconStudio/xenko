@@ -163,10 +163,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
         }
 
         /// <inheritdoc />
-        public override void SetParentTrs(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
+        public override void SetParentTRS(ParticleTransform transform, ParticleSystem parent)
         {
-            base.SetParentTrs(ref Translation, ref Rotation, Scale);
-            parentScale = (InheritScale) ? Scale : 1f;
+            base.SetParentTRS(transform, parent);
+            parentScale = (InheritScale) ? transform.WorldScale.X : 1f;
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             if (!DebugDraw)
                 return base.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale);
 
-            rotation = new Quaternion(0, 0, 0, 1);
+            rotation = Quaternion.Identity;
             scale = new Vector3(1, 1, 1);
             translation = new Vector3(0, 0, 0);
 

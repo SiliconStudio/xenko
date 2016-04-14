@@ -76,6 +76,16 @@ set Project=Xenko.OpenGL.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
+set Project=Xenko.Android.sln
+set _platform_target=Android
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
+set Project=Xenko.iOS.sln
+set _platform_target=iPhone
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
 set Project=Xenko.WindowsPhone.sln
 set _platform_target=WindowsPhone
 call :compile

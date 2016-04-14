@@ -17,8 +17,7 @@ using SiliconStudio.Core.Yaml;
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// A registry for file extensions, <see cref="IAssetImporter"/>, <see cref="IObjectFactory"/> 
-    /// and aliases associated with assets.
+    /// A registry for various content associated with assets.
     /// </summary>
     public static class AssetRegistry
     {
@@ -29,7 +28,6 @@ namespace SiliconStudio.Assets
         private static readonly HashSet<Type> RegisteredPackageSessionAnalysisTypes = new HashSet<Type>();
         private static readonly List<IAssetImporter> RegisteredImportersInternal = new List<IAssetImporter>();
         private static readonly Dictionary<Type, SortedList<string, PackageVersion>> RegisteredFormatVersions = new Dictionary<Type, SortedList<string, PackageVersion>>();
-        private static readonly HashSet<Type> RegisteredInternalAssetTypes = new HashSet<Type>();
         private static readonly HashSet<Type> AlwaysMarkAsRootAssetTypes = new HashSet<Type>();
         private static readonly Dictionary<KeyValuePair<Type, string>, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<KeyValuePair<Type, string>, AssetUpgraderCollection>();
         private static readonly Dictionary<string, Type> RegisteredAssetFileExtensions = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
@@ -38,6 +36,8 @@ namespace SiliconStudio.Assets
         private static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
+        private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
+
         private static Func<object, string, string> stringExpander;
 
         // Global lock used to secure the registry with threads
@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets
         /// Gets the supported platforms.
         /// </summary>
         /// <value>The supported platforms.</value>
-        public static SolutionPlatformCollection SupportedPlatforms { get; private set; }
+        public static SolutionPlatformCollection SupportedPlatforms { get; }
 
         /// <summary>
         /// Gets an enumeration of registered importers.
@@ -85,7 +85,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">platforms</exception>
         public static void RegisterSupportedPlatforms(List<SolutionPlatform> platforms)
         {
-            if (platforms == null) throw new ArgumentNullException("platforms");
+            if (platforms == null) throw new ArgumentNullException(nameof(platforms));
             if (SupportedPlatforms.Count > 0) throw new InvalidOperationException("Cannot register new platforms. RegisterSupportedPlatforms can only be called once");
             SupportedPlatforms.AddRange(platforms);
         }
@@ -268,6 +268,26 @@ namespace SiliconStudio.Assets
                 return RegisteredPackageSessionAnalysisTypes;
             }
         }
+
+        public static IAssetFactory<Asset> GetAssetFactory(string typeName)
+        {
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            lock (RegistryLock)
+            {
+                IAssetFactory<Asset> factory;
+                RegisteredAssetFactories.TryGetValue(typeName, out factory);
+                return factory;
+            }
+        }
+
+        public static IEnumerable<IAssetFactory<Asset>> GetAllAssetFactories()
+        {
+            lock (RegistryLock)
+            {
+                return RegisteredAssetFactories.Values.ToList();
+            }
+        }
+
         /// <summary>
         /// Returns an array of asset types that can be instanced with <see cref="ObjectFactory.NewInstance"/>.
         /// </summary>
@@ -276,7 +296,7 @@ namespace SiliconStudio.Assets
         {
             lock (RegistryLock)
             {
-                return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic && !RegisteredInternalAssetTypes.Contains(type)).ToArray();
+                return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic).ToArray();
             }
         }
 
@@ -307,7 +327,7 @@ namespace SiliconStudio.Assets
         /// <returns>An instance of the importer of null if not found.</returns>
         public static IEnumerable<IAssetImporter> FindImporterForFile(string file)
         {
-            if (file == null) throw new ArgumentNullException("file");
+            if (file == null) throw new ArgumentNullException(nameof(file));
 
             lock (RegistryLock)
             {
@@ -341,7 +361,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">importer</exception>
         public static void RegisterImporter(IAssetImporter importer)
         {
-            if (importer == null) throw new ArgumentNullException("importer");
+            if (importer == null) throw new ArgumentNullException(nameof(importer));
 
             // Register this importer
             lock (RegistryLock)
@@ -390,7 +410,7 @@ namespace SiliconStudio.Assets
         /// </exception>
         public static void RegisterAssembly(Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             lock (RegistryLock)
             {
@@ -459,6 +479,13 @@ namespace SiliconStudio.Assets
                         }
                     }
 
+                    // Register asset factory
+                    if (typeof(IAssetFactory<Asset>).IsAssignableFrom(type) && !type.IsAbstract && !type.IsGenericTypeDefinition && type.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        var factory = (IAssetFactory<Asset>)Activator.CreateInstance(type);
+                        RegisteredAssetFactories.Add(type.Name, factory);
+                    }
+
                     if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
                     {
                         RegisteredPackageSessionAnalysisTypes.Add(type);
@@ -510,17 +537,13 @@ namespace SiliconStudio.Assets
                                 }
                             }
                         }
-                        if (!assetDescriptionAttribute.AllowUserCreation)
-                        {
-                            RegisteredInternalAssetTypes.Add(assetType);
-                    }
 
-                    if (assetDescriptionAttribute.AlwaysMarkAsRoot)
-                    {
-                        lock (AlwaysMarkAsRootAssetTypes)
+                        if (assetDescriptionAttribute.AlwaysMarkAsRoot)
                         {
-                            AlwaysMarkAsRootAssetTypes.Add(assetType);
-                        }
+                            lock (AlwaysMarkAsRootAssetTypes)
+                            {
+                                AlwaysMarkAsRootAssetTypes.Add(assetType);
+                            }
                         }
                     }
 
@@ -551,29 +574,6 @@ namespace SiliconStudio.Assets
                         {
                             upgraderCollection.Validate(minVersion);
                             RegisteredAssetUpgraders.Add(new KeyValuePair<Type, string>(assetType, assetFormatVersion.Name), upgraderCollection);
-                        }
-                    }
-
-                    // Asset factory
-                    var assetFactory = assetType.GetCustomAttribute<ObjectFactoryAttribute>();
-                    if (assetFactory != null)
-                    {
-                        try
-                        {
-                            ObjectFactory.RegisterFactory(assetType);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error("Unable to instantiate factory [{0}] for asset [{1}]", ex, assetFactory.FactoryTypeName, assetType);
-                        }
-                    }
-                    else
-                    {
-                        var assetConstructor = assetType.GetConstructor(Type.EmptyTypes);
-                        if (assetConstructor != null)
-                        {
-                            // Register the asset even if it has no factory (default using empty constructor)
-                            ObjectFactory.RegisterFactory(assetType, null);
                         }
                     }
                 }
@@ -620,11 +620,6 @@ namespace SiliconStudio.Assets
                 foreach (var typeToRemove in RegisteredFormatVersions.Keys.ToList().Where(type => type.Assembly == assembly))
                 {
                     RegisteredFormatVersions.Remove(typeToRemove);
-                }
-
-                foreach (var typeToRemove in RegisteredInternalAssetTypes.ToList().Where(type => type.Assembly == assembly))
-                {
-                    RegisteredInternalAssetTypes.Remove(typeToRemove);
                 }
 
                 foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.ToList().Where(type => type.Key.Assembly == assembly))

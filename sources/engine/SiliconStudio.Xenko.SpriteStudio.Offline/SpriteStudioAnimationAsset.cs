@@ -1,34 +1,26 @@
-using System;
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Animations;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     [DataContract("SpriteStudioAnimationAsset")] // Name of the Asset serialized in YAML
     [AssetCompiler(typeof(SpriteStudioAnimationAssetCompiler))] // The compiler used to transform this asset to RangeValues
-    [AssetDescription(".xkss4a;.pdxss4a", false)] // A description used to display in the asset editor
-    [ObjectFactory(typeof(SpriteStudioAnimationAssetFactory))]
+    [AssetDescription(".xkss4a;.pdxss4a")] // A description used to display in the asset editor
     [Display("Sprite Studio Animation")]
     public class SpriteStudioAnimationAsset : AssetImportTracked
     {
         [DataMember(1)]
+        [DefaultValue(AnimationRepeatMode.LoopInfinite)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
 
         [DataMember(2)]
         [Display(Browsable = false)]
+        [DefaultValue("")]
         [DiffMember(Weight = 100)] // Because AnimationName is like a key, we use a high weight in order to match asset more accurately
-        public string AnimationName;
-
-        private class SpriteStudioAnimationAssetFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new SpriteStudioAnimationAsset();
-            }
-        }
+        public string AnimationName { get; set; } = "";
     }
 }

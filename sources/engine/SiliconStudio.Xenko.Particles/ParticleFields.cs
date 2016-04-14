@@ -3,6 +3,8 @@
 
 using System;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Spawners;
+using SiliconStudio.Xenko.Particles.Updaters;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -72,5 +74,27 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public static readonly ParticleFieldDescription<uint> Order           = new ParticleFieldDescription<uint>("Order", 0);
 
+        /// <summary>
+        /// Order of the particle's children, which is based on their spawn order
+        /// </summary>
+        public static readonly ParticleFieldDescription<uint> ChildOrder = new ParticleFieldDescription<uint>("ChildOrder", 0);
+
+        /// <summary>
+        /// Provides control flags for particles which have collision enabled
+        /// </summary>
+        public static readonly ParticleFieldDescription<ParticleCollisionAttribute> CollisionControl = new ParticleFieldDescription<ParticleCollisionAttribute>("CollisionControl", ParticleCollisionAttribute.Empty);
+
+        /// <summary>
+        /// ChildrenFlags is used to store meta-data for the dependent particles
+        /// </summary>
+        public static readonly ParticleFieldDescription<ParticleChildrenAttribute>[] ChildrenFlags = 
+        {
+            new ParticleFieldDescription<ParticleChildrenAttribute>("ChildrenFlags00", ParticleChildrenAttribute.Empty),
+            new ParticleFieldDescription<ParticleChildrenAttribute>("ChildrenFlags01", ParticleChildrenAttribute.Empty),
+            new ParticleFieldDescription<ParticleChildrenAttribute>("ChildrenFlags02", ParticleChildrenAttribute.Empty),
+            new ParticleFieldDescription<ParticleChildrenAttribute>("ChildrenFlags03", ParticleChildrenAttribute.Empty),
+        };
+
+        public static readonly int ChildrenFlagsLength = ChildrenFlags.Length;
     }
 }

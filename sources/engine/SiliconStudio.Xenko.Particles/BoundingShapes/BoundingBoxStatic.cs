@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
             debugDrawShape = DebugDrawShape.Cube;
             scale = (Maximum - Minimum);
             translation = (Maximum + Minimum) * 0.5f;
-            rotation = new Quaternion(0, 0, 0, 1);
+            rotation = Quaternion.Identity;
             return true;
         }
 

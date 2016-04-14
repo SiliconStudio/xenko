@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Markup;
@@ -40,6 +41,8 @@ using System.Windows.Markup;
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 
+[assembly: InternalsVisibleTo("SiliconStudio.Presentation.Tests")]
+
 [assembly: XmlnsPrefix("http://schemas.siliconstudio.co.jp/xaml/presentation", "sskk")]
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation")]
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.Behaviors")]
@@ -53,4 +56,3 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.ValueConverters")]
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.View")]
 [assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.ViewModel")]
-[assembly: XmlnsDefinition("http://schemas.siliconstudio.co.jp/xaml/presentation", "SiliconStudio.Presentation.ViewModel.ActionStack")]

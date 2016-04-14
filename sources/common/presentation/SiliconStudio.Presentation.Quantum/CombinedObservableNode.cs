@@ -29,6 +29,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, index)
         {
+            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
@@ -64,7 +65,14 @@ namespace SiliconStudio.Presentation.Quantum
             IsReadOnly = isReadOnly;
             IsVisible = isVisible;
 
-            ResetInitialValues = new AnonymousCommand(ServiceProvider, () => { Owner.BeginCombinedAction(); CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.Value = x.Item2); Refresh(); Owner.EndCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path, null); });
+            ResetInitialValues = new AnonymousCommand(ServiceProvider, () =>
+            {
+                using (Owner.BeginCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path))
+                {
+                    CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.Value = x.Item2);
+                    Refresh();
+                }
+            });
         }
 
         internal void Initialize()
@@ -453,12 +461,13 @@ namespace SiliconStudio.Presentation.Quantum
             }
             set
             {
-                Owner.BeginCombinedAction();
-                OnPropertyChanging(nameof(TypedValue));
-                CombinedNodes.ForEach(x => x.Value = value);
-                OnPropertyChanged(nameof(TypedValue));
                 var displayName = Owner.FormatCombinedUpdateMessage(this, value);
-                Owner.EndCombinedAction(displayName, Path, value);
+                using (Owner.BeginCombinedAction(displayName, Path))
+                {
+                    OnPropertyChanging(nameof(TypedValue));
+                    CombinedNodes.ForEach(x => x.Value = value);
+                    OnPropertyChanged(nameof(TypedValue));
+                }
             }
         }
 

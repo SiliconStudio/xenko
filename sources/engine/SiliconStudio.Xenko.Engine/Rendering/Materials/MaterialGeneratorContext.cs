@@ -220,7 +220,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             currentLayerContext.ShadingModels.Add(shadingModel, shaderSource);
         }
 
-        private void ProcessLayer(MaterialBlendLayerContext layer, bool isLastChild)
+        private void ProcessLayer(MaterialBlendLayerContext layer, bool isLastLayer)
         {
             // Check if we have at least one shading model for this layer
             if (layer.ShadingModels.Count > 0)
@@ -237,7 +237,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             if (layer.Parent != null)
             {
-                ProcessIntermediateLayer(layer, isLastChild);
+                ProcessIntermediateLayer(layer, isLastLayer);
             }
             else
             {
@@ -245,20 +245,31 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-        private void ProcessIntermediateLayer(MaterialBlendLayerContext layer, bool isLastChild)
+        /// <summary>
+        /// Processes the intermediate layer.
+        /// </summary>
+        /// <param name="layer">The layer.</param>
+        /// <param name="isLastLayer">if set to <c>true</c> the layer is the last children of the parent layer.</param>
+        private void ProcessIntermediateLayer(MaterialBlendLayerContext layer, bool isLastLayer)
         {
+            // note: SM = Shading Model
             var parent = layer.Parent;
-            var hasParentShadingModel = parent.ShadingModelCount > 0;
 
-            // If current shading model is not set, 
-            if (!hasParentShadingModel && layer.ShadingModelCount > 0)
+            // Check if SM is changing relative to the state of the parent layer
+            bool sameShadingModel = true;
+            if (parent.ShadingModelCount > 0)
             {
+                sameShadingModel = layer.ShadingModels.Equals(parent.ShadingModels);
+            }
+            else if (layer.ShadingModelCount > 0)
+            {
+                // If the current layer has a SM, copy it to the parent
                 layer.ShadingModels.CopyTo(parent.ShadingModels);
-                hasParentShadingModel = true;
+                layer.ShadingModels.Clear();
                 parent.ShadingModelCount++;
             }
 
-            var sameShadingModel = hasParentShadingModel && layer.ShadingModels.Equals(parent.ShadingModels);
+            // If SM is the same, we can blend attributes
             if (sameShadingModel)
             {
                 // If shading model is not changing, we generate the BlendStream shaders
@@ -272,7 +283,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var parentPixelLayerContext = parent.GetContextPerStage(MaterialShaderStage.Pixel);
             var pendingPixelLayerContext = parent.PendingPixelLayerContext;
 
-            // Copy streams to parent
+            // --------------------------------------------
+            // Copy streams to parent, but not for the PixelLayer if SM is changing
+            // --------------------------------------------
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
             {
                 var stageContext = layer.GetContextPerStage(stage);
@@ -296,11 +309,21 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 parentStageContext.ShaderSources.AddRange(stageContext.ShaderSources);
             }
 
-            var forceBlendingShadingModel = isLastChild && (parent.ShadingModelCount > 1 || !sameShadingModel);
-            if (!sameShadingModel || forceBlendingShadingModel)
+            // --------------------------------------------
+            // Apply shading: with 1) blending or 2) no blending
+            // --------------------------------------------
+            
+            // Check if we need to force shading
+            var forceShading = isLastLayer && (parent.ShadingModelCount > 1 || !sameShadingModel);
+            if (!sameShadingModel || forceShading)
             {
-                if (forceBlendingShadingModel && parent.BlendMapForShadingModel == null)
+                // true if the current layer has been blended already
+                bool currentLayerAlreadyBlended = false;
+               
+                // If we need to shade but there is not yet a blend map setup (e.g: a single layer with a new SM != from parent SM)
+                if (forceShading && parent.BlendMapForShadingModel == null)
                 {
+                    // Do we have a pending SM, if yes, we need to perform shading for the pending SM
                     if (!sameShadingModel)
                     {
                         foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
@@ -317,39 +340,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         layer.ShadingModels.CopyTo(parent.ShadingModels);
                     }
 
+                    // Setup a blend map so that we will blend SM just after
                     parent.BlendMapForShadingModel = layer.BlendMap;
+
+                    // Copy pixel shaders to pending so it will be picked up by BlendShadingModel
                     var currentPixelLayerContext = layer.GetContextPerStage(MaterialShaderStage.Pixel);
                     pendingPixelLayerContext.ShaderSources.AddRange(currentPixelLayerContext.ShaderSources);
+                    currentLayerAlreadyBlended = true;
                 }
 
                 // Do we need to blend shading model?
                 if (parent.BlendMapForShadingModel != null)
                 {
-                    var shaderBlendingSource = new ShaderMixinSource();
-                    shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingBlend"));
-
-                    parent.SetStreamBlend(MaterialShaderStage.Pixel, parent.BlendMapForShadingModel);
-
-                    // Add shader source already setup for the parent
-                    foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
-                    {
-                        shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
-                    }
-
-                    // Add shader source generated for blending this layer
-                    foreach (var shaderSource in parent.ShadingModels.Generate(this))
-                    {
-                        shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
-                    }
-                    parent.ShadingModels.Clear();
-
-                    parentPixelLayerContext.ShaderSources.Add(shaderBlendingSource);
-
-                    pendingPixelLayerContext.Reset();
-                    parent.BlendMapForShadingModel = null;
+                    BlendShadingModel(parent, pendingPixelLayerContext, parentPixelLayerContext);
                 }
                 else
                 {
+                    // Else, we just expect to shade the current SM
                     foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
                     {
                         parentPixelLayerContext.ShaderSources.Add(shaderSource);
@@ -361,20 +368,56 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         parentPixelLayerContext.ShaderSources.Add(shaderSource);
                     }
                     parent.ShadingModels.Clear();
+                }
+
+                // If we changed the SM and the current layer has not been already blended
+                if (!sameShadingModel && !currentLayerAlreadyBlended)
+                {
+                    // Save the BlendMap of the current layer for future blending
                     parent.BlendMapForShadingModel = layer.BlendMap;
 
-                    // Copy the shading model of this layer to the parent
+                    // Copy the SM of the current layer to the parent layer
+                    parent.ShadingModels.Clear();
                     layer.ShadingModels.CopyTo(parent.ShadingModels);
-                }
 
-                // If the shading model is different, the current attributes of the layer are not part of this blending
-                // So they will contribute to the next blending
-                if (!sameShadingModel && !forceBlendingShadingModel)
-                {
+                    // If the shading model is different, the current attributes of the layer are not part of this blending
+                    // So they will contribute to the next blending
                     var currentPixelLayerContext = layer.GetContextPerStage(MaterialShaderStage.Pixel);
                     pendingPixelLayerContext.ShaderSources.AddRange(currentPixelLayerContext.ShaderSources);
+
+                    // If this is the last layer and we have more than 1 SM already, we force to blend the shading models
+                    if (isLastLayer && parent.ShadingModelCount > 1)
+                    {
+                        BlendShadingModel(parent, pendingPixelLayerContext, parentPixelLayerContext);
+                    }
                 }
             }
+        }
+
+        private void BlendShadingModel(MaterialBlendLayerContext parent, MaterialBlendLayerPerStageContext pendingPixelLayerContext, MaterialBlendLayerPerStageContext parentPixelLayerContext)
+        {
+            var shaderBlendingSource = new ShaderMixinSource();
+            shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingBlend"));
+
+            parent.SetStreamBlend(MaterialShaderStage.Pixel, parent.BlendMapForShadingModel);
+
+            // Add shader source already setup for the parent
+            foreach (var shaderSource in pendingPixelLayerContext.ShaderSources)
+            {
+                shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
+            }
+
+            // Add shader source generated for blending this layer
+            foreach (var shaderSource in parent.ShadingModels.Generate(this))
+            {
+                shaderBlendingSource.AddCompositionToArray("layers", shaderSource);
+            }
+            parent.ShadingModels.Clear();
+
+            parentPixelLayerContext.ShaderSources.Add(shaderBlendingSource);
+
+            pendingPixelLayerContext.Reset();
+            parent.BlendMapForShadingModel = null;
         }
 
         private void ProcessRootLayer(MaterialBlendLayerContext layer)
