@@ -201,14 +201,17 @@ namespace SiliconStudio.Xenko.Graphics
             var colorAttachmentReferences = new AttachmentReference[renderTargetCount];
 
             fixed (PixelFormat* renderTargetFormat = &pipelineStateDescription.Output.RenderTargetFormat0)
+            fixed (BlendStateRenderTargetDescription* blendDescription = &pipelineStateDescription.BlendState.RenderTarget0)
             {
                 for (int i = 0; i < renderTargetCount; i++)
                 {
+                    var currentBlendDesc = pipelineStateDescription.BlendState.IndependentBlendEnable ? (blendDescription + i) : blendDescription;
+
                     attachments[i] = new AttachmentDescription
                     {
                         Format = VulkanConvertExtensions.ConvertPixelFormat(*(renderTargetFormat + i)),
                         Samples = SampleCountFlags.Sample1,
-                        LoadOperation = AttachmentLoadOperation.Load, // TODO VULKAN: Only if any destination blend?
+                        LoadOperation = currentBlendDesc->BlendEnable ? AttachmentLoadOperation.Load : AttachmentLoadOperation.DontCare, // TODO VULKAN: Only if any destination blend?
                         StoreOperation = AttachmentStoreOperation.Store,
                         StencilLoadOperation = AttachmentLoadOperation.DontCare,
                         StencilStoreOperation = AttachmentStoreOperation.DontCare,
@@ -250,7 +253,7 @@ namespace SiliconStudio.Xenko.Graphics
                 PipelineBindPoint = PipelineBindPoint.Graphics,
                 ColorAttachmentCount = (uint)renderTargetCount,
                 ColorAttachments = colorAttachmentReferences.Length > 0 ? new IntPtr(Interop.Fixed(colorAttachmentReferences)) : IntPtr.Zero,
-                DepthStencilAttachment = new IntPtr(&depthAttachmentReference)
+                DepthStencilAttachment = hasDepthStencilAttachment ? new IntPtr(&depthAttachmentReference) : IntPtr.Zero,
             };
 
             var renderPassCreateInfo = new RenderPassCreateInfo
