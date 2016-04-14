@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -191,7 +193,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // Register 3D card name
-            ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description.Split('\0')[0].TrimEnd(' '); // Workaround for sharpDX bug: Description ends with an series trailing of '\0' characters
+            // TODO: This doesn't work well because ImageTester.ImageTestResultConnection is static, this will need improvements
+            if (!ImageTester.ImageTestResultConnection.DeviceName.Contains("_"))
+                ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description.Split('\0')[0].TrimEnd(' '); // Workaround for sharpDX bug: Description ends with an series trailing of '\0' characters
 #endif
 
             Script.AddTask(RegisterTestsInternal);
@@ -199,7 +203,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         private Task RegisterTestsInternal()
         {
-            if(!FrameGameSystem.IsUnityTestFeeding)
+            if(!FrameGameSystem.IsUnitTestFeeding)
                 RegisterTests();
 
             return Task.FromResult(true);
@@ -226,10 +230,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (!ScreenShotAutomationEnabled)
                 return;
 
+            string testName;
+
             if (FrameGameSystem.AllTestsCompleted)
                 Exit();
-            else if (FrameGameSystem.TakeSnapshot)
-                SaveBackBuffer(FrameGameSystem.TestName);
+            else if (FrameGameSystem.IsScreenshotNeeded(out testName))
+                SaveBackBuffer(testName);
         }
 
         protected void PerformTest(Action<Game> testAction, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
@@ -241,7 +247,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
 
             // register the tests.
-            game.FrameGameSystem.IsUnityTestFeeding = true;
+            game.FrameGameSystem.IsUnitTestFeeding = true;
             game.FrameGameSystem.Draw(() => testAction(game));
             if (takeSnapshot)
                 game.FrameGameSystem.TakeScreenshot();
@@ -249,7 +255,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             RunGameTest(game);
         }
 
-        protected void PerformDrawTest(Action<Game, RenderDrawContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        protected void PerformDrawTest(Action<Game, RenderDrawContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string subTestName = null, bool takeSnapshot = true)
         {
             // create the game instance
             var typeGame = GetType();
@@ -258,10 +264,10 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
 
             // register the tests.
-            game.FrameGameSystem.IsUnityTestFeeding = true;
-            game.FrameGameSystem.TestName = TestContext.CurrentContext.Test.FullName+testName;
+            game.FrameGameSystem.IsUnitTestFeeding = true;
+            var testName = TestContext.CurrentContext.Test.FullName+subTestName;
             if (takeSnapshot)
-                game.FrameGameSystem.TakeScreenshot();
+                game.FrameGameSystem.TakeScreenshot(null, testName);
 
             // add the render callback
             var graphicsCompositor = new SceneGraphicsCompositorLayers
@@ -296,8 +302,19 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             GameTester.RunGameTest(game);
 
+            var failedTests = new List<string>();
+
             if (game.ScreenShotAutomationEnabled)
-                Assert.IsTrue(ImageTester.RequestImageComparisonStatus(game.CurrentTestContext.Test.FullName), "The image comparison returned false.");
+            {
+                foreach (var testName in game.FrameGameSystem.TestNames)
+                {
+                    if (!ImageTester.RequestImageComparisonStatus(testName))
+                        failedTests.Add(testName);
+                }
+            }
+
+            if (failedTests.Count > 0)
+                Assert.Fail($"Some image comparison tests failed: {string.Join(", ", failedTests.Select(x => x))}");
         }
         
         /// <summary>

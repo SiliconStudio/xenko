@@ -2,8 +2,8 @@
 Id: 85bbbc80-2261-4acb-bc89-71dc5a1a88f6
 Tags: []
 DefaultScene: b28bf403-c197-43c7-8614-c422d702909c:MainScene
-BackBufferWidth: 1280
-BackBufferHeight: 720
+BackBufferWidth: 800
+BackBufferHeight: 480
 DefaultGraphicsProfile: Level_9_1
 DisplayOrientation: Default
 TextureQuality: Fast

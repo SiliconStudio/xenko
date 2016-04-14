@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Performs pipeline initialization, enumerates views and populates visibility groups.
         /// </summary>
         /// <param name="context"></param>
-        public void Collect(RenderThreadContext context)
+        public void Collect(RenderDrawContext context)
         {
             foreach (var renderFeature in RenderFeatures)
             {
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Extract data from entities, should be as fast as possible to not block simulation loop. It should be mostly copies, and the actual processing should be part of Prepare().
         /// </summary>
-        public void Extract(RenderThreadContext context)
+        public void Extract(RenderDrawContext context)
         {
             // Prepare views
             for (int index = 0; index < Views.Count; index++)
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Performs most of the work (computation and resource preparation). Later game simulation might be running during that step.
         /// </summary>
         /// <param name="context"></param>
-        public unsafe void Prepare(RenderThreadContext context)
+        public unsafe void Prepare(RenderDrawContext context)
         {
             // Sync point: after extract, before prepare (game simulation could resume now)
 
