@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     {
         protected Scene Scene;
         protected Entity Camera = new Entity { new CameraComponent() };
+        protected LightComponent AmbientLight;
 
         protected CameraComponent CameraComponent
         {
@@ -80,7 +81,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
             Scene.Entities.Add(Camera);
 
-            var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
+            AmbientLight = new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 };
+            var ambientLight = new Entity { AmbientLight };
             Scene.Entities.Add(ambientLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);

@@ -124,28 +124,37 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             var session = new PackageSession();
             var result = new LoggerResult();
 
-            var templateGeneratorParameters = new TemplateGeneratorParameters();
+            var templateGeneratorParameters = new SessionTemplateGeneratorParameters();
             templateGeneratorParameters.OutputDirectory = outputDirectory;
             templateGeneratorParameters.Session = session;
             templateGeneratorParameters.Name = name;
             templateGeneratorParameters.Logger = result;
             templateGeneratorParameters.Description = new TemplateDescription();
 
-            PackageUnitTestGenerator.Default.Generate(templateGeneratorParameters);
+            if (!PackageUnitTestGenerator.Default.PrepareForRun(templateGeneratorParameters))
+            {
+                Console.WriteLine(@"Error generating package: PackageUnitTestGenerator.PrepareForRun returned false");
+                return;
+            }
+            if (!PackageUnitTestGenerator.Default.Run(templateGeneratorParameters))
+            {
+                Console.WriteLine(@"Error generating package: PackageUnitTestGenerator.Run returned false");
+                return;
+            }
             if (result.HasErrors)
             {
-                Console.WriteLine("Error generating package: {0}", result.ToText());
+                Console.WriteLine($"Error generating package: {result.ToText()}");
                 return;
             }
 
-            var package = templateGeneratorParameters.Package;
+            var package = session.LocalPackages.Single();
 
             var previousCurrent = session.CurrentPackage;
             session.CurrentPackage = package;
 
             // Compute Xenko Sdk relative path
             // We are supposed to be in standard output binary folder, so Xenko root should be at ..\..
-            var xenkoPath = UDirectory.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new UDirectory(@"..\.."));
+            var xenkoPath = UPath.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new UDirectory(@"..\.."));
             var xenkoRelativePath = new UDirectory(xenkoPath)
                 .MakeRelative(outputDirectory)
                 .ToString()

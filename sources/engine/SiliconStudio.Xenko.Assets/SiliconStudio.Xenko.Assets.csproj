@@ -192,6 +192,7 @@
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
+    <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
     <Compile Include="GameSettingsAssetExtensions.cs" />
+    <Compile Include="GameSettingsFactory.cs" />
     <Compile Include="GameSettingsProfileBase.cs" />
     <Compile Include="GameUserSettings.cs" />
     <Compile Include="IGameSettingsProfile.cs" />
@@ -228,11 +230,14 @@
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
+    <Compile Include="Physics\ColliderShapeFactories.cs" />
     <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
+    <Compile Include="SpriteFont\SpriteFontAssetFactories.cs" />
+    <Compile Include="Sprite\SpriteSheetFactories.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
@@ -264,7 +269,6 @@
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
-    <Compile Include="Templates\TemplateScriptDescription.cs" />
     <Compile Include="Textures\TextureColorSpace.cs" />
     <Compile Include="Sprite\PackingAttributes.cs" />
     <Compile Include="Textures\Packing\AtlasTextureElement.cs" />

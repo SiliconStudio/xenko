@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 };
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(RenderDrawContext context, ParameterCollection parameters)
             {
                 parameters.Set(countKey, Count);
                 parameters.Set(lightsKey, Count, ref lights[0]);

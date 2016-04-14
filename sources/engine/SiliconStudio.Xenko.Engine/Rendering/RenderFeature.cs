@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Perform effect permutations, before <see cref="Prepare"/>.
         /// </summary>
         /// <param name="context"></param>
-        public virtual void PrepareEffectPermutations(RenderThreadContext context)
+        public virtual void PrepareEffectPermutations(RenderDrawContext context)
         {
         }
 
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Performs most of the work (computation and resource preparation). Later game simulation might be running during that step.
         /// </summary>
         /// <param name="context"></param>
-        public virtual void Prepare(RenderThreadContext context)
+        public virtual void Prepare(RenderDrawContext context)
         {
         }
 

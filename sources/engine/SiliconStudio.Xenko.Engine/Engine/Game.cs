@@ -200,6 +200,7 @@ namespace SiliconStudio.Xenko.Engine
             AutoLoadDefaultSettings = true;
         }
 
+        /// <inheritdoc/>
         protected override void Destroy()
         {
             OnGameDestroyed(this);
@@ -210,7 +211,8 @@ namespace SiliconStudio.Xenko.Engine
                 GlobalLogger.GlobalMessageLogged -= logListener;
         }
 
-        protected internal override void PrepareContext()
+        /// <inheritdoc/>
+        protected override void PrepareContext()
         {
             base.PrepareContext();
 
