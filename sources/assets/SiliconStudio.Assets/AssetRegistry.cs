@@ -280,6 +280,14 @@ namespace SiliconStudio.Assets
             }
         }
 
+        public static IEnumerable<IAssetFactory<Asset>> GetAllAssetFactories()
+        {
+            lock (RegistryLock)
+            {
+                return RegisteredAssetFactories.Values.ToList();
+            }
+        }
+
         /// <summary>
         /// Returns an array of asset types that can be instanced with <see cref="ObjectFactory.NewInstance"/>.
         /// </summary>

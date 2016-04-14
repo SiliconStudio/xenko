@@ -1,0 +1,17 @@
+!Texture
+Id: d9b06a1f-70df-4c7a-a550-ebe4b6f2e370
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../data/tests/basicDisplacement.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Hint: Grayscale
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

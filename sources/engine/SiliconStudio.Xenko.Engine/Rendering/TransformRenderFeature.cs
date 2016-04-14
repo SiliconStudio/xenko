@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderThreadContext context)
+        public unsafe override void Prepare(RenderDrawContext context)
         {
             // Compute WorldView, WorldViewProj
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
