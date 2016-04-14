@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         [DataMember(20)]
         public Graphics.SpriteSheet Sprites { get; set; }
 
-        public override void SetDefaults()
+        public void SetDefaults()
         {
             RootElement = new Grid();
         }
