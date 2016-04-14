@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.UI.Controls;
@@ -70,7 +71,9 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets the <see cref="UIElementCollection"/> of child elements of this Panel.
         /// </summary>
-        [DataMember]
+        [DataMember(DataMemberMode.Content)]
+        [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
         public UIElementCollection Children { get; }
 
         /// <summary>
