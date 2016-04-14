@@ -28,7 +28,10 @@ namespace SiliconStudio.Xenko.Graphics
                 DescriptorSetCount = 1,
                 SetLayouts = new IntPtr(&nativeLayoutCopy)
             };
-            NativeDescriptorSet = graphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo);
+
+            SharpVulkan.DescriptorSet descriptorSet;
+            graphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &descriptorSet);
+            NativeDescriptorSet = descriptorSet;
         }
 
         /// <summary>

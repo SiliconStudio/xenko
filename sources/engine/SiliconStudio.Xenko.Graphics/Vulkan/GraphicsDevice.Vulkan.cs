@@ -4,17 +4,11 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Shaders;
-using SiliconStudio.Core.Diagnostics;
-using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -31,26 +25,18 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandPool NativeCopyCommandPool;
         internal CommandBuffer NativeCopyCommandBuffer;
 
-        //internal CommandAllocator NativeCopyCommandAllocator;
-        //internal GraphicsCommandList NativeCopyCommandList;
-
-        //internal DescriptorAllocator ShaderResourceViewAllocator;
-        //internal DescriptorAllocator DepthStencilViewAllocator;
-        //internal DescriptorAllocator RenderTargetViewAllocator;
-
         private SharpVulkan.Buffer nativeUploadBuffer;
         private DeviceMemory nativeUploadBufferMemory;
         private IntPtr nativeUploadBufferStart;
         private int nativeUploadBufferSize;
         private int nativeUploadBufferOffset;
 
-        internal int SrvHandleIncrementSize;
-        internal int SamplerHandleIncrementSize;
-
+        private Queue<KeyValuePair<long, Fence>> nativeFences = new Queue<KeyValuePair<long, Fence>>();
         private long lastCompletedFence;
-        private FastList<Fence> fences = new FastList<Fence>();
-        private AutoResetEvent fenceEvent = new AutoResetEvent(false);
+        internal long NextFenceValue = 1;
         internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
+
+        internal HeapPool descriptorPools;
 
         internal struct BufferInfo
         {
@@ -233,6 +219,7 @@ namespace SiliconStudio.Xenko.Graphics
                 FillModeNonSolid = true,
                 ShaderClipDistance = true,
                 SamplerAnisotropy = true,
+                DepthClamp = true,
             };
 
             var enabledExtensionNames = new[]
@@ -306,8 +293,7 @@ namespace SiliconStudio.Xenko.Graphics
             //NativeCopyCommandList = NativeDevice.CreateCommandList(CommandListType.Direct, NativeCopyCommandAllocator, null);
             //NativeCopyCommandList.Close();
 
-            //// Fence for next frame and resource cleaning
-            //nativeFence = NativeDevice.CreateFence(0, FenceFlags.None);
+            descriptorPools = new HeapPool(this, 1 << 16);
         }
 
         internal unsafe IntPtr AllocateUploadBuffer(int size, out SharpVulkan.Buffer resource, out int offset)
@@ -318,7 +304,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
                 {
                     NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                    TemporaryResources.Enqueue(new BufferInfo(fences.Count, nativeUploadBuffer, nativeUploadBufferMemory));
+                    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
                 }
 
                 // Allocate new buffer
@@ -387,20 +373,12 @@ namespace SiliconStudio.Xenko.Graphics
         internal unsafe void ReleaseTemporaryResources()
         {
             // Release previous frame resources
-            //while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().FenceValue))
-
-            if (TemporaryResources.Count > 0)
-                NativeCommandQueue.WaitIdle();
-
-            foreach (var temporaryResource in TemporaryResources)
+            while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().FenceValue))
             {
-                //var temporaryResource = TemporaryResources.Dequeue();
-
+                var temporaryResource = TemporaryResources.Dequeue();
                 NativeDevice.FreeMemory(temporaryResource.Memory);
                 NativeDevice.DestroyBuffer(temporaryResource.Buffer);
             }
-
-            TemporaryResources.Clear();
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
@@ -427,18 +405,19 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal unsafe long ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer)
         {
-            if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
-            {
-                NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                TemporaryResources.Enqueue(new BufferInfo(fences.Count, nativeUploadBuffer, nativeUploadBufferMemory));
+            //if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+            //{
+            //    NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+            //    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
 
-                nativeUploadBuffer = SharpVulkan.Buffer.Null;
-                nativeUploadBufferMemory = DeviceMemory.Null;
-            }
+            //    nativeUploadBuffer = SharpVulkan.Buffer.Null;
+            //    nativeUploadBufferMemory = DeviceMemory.Null;
+            //}
 
-            //var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
-            //var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
-            //fences.Add(fence);
+            // Create new fence
+            var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
+            var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
+            nativeFences.Enqueue(new KeyValuePair<long, Fence>(NextFenceValue, fence));
 
             // Submit commands
             var nativeCommandBufferCopy = nativeCommandBuffer;
@@ -451,19 +430,33 @@ namespace SiliconStudio.Xenko.Graphics
                 CommandBuffers = new IntPtr(&nativeCommandBufferCopy),
                 WaitDstStageMask = new IntPtr(&pipelineStageFlags),
             };
-            NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+            NativeCommandQueue.Submit(1, &submitInfo, fence);
 
-            return fences.Count - 1;
+            return NextFenceValue++;
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)
         {
-            //// Try to avoid checking the fence if possible
-            //if (fenceValue > lastCompletedFence)
-            //    lastCompletedFence = Math.Max(lastCompletedFence, nativeFence.CompletedValue); // Protect against race conditions
+            // Try to avoid checking the fence if possible
+            if (fenceValue > lastCompletedFence)
+            {
+                GetCompletedValue();
+            }
 
-            //return fenceValue <= lastCompletedFence;
-            return false;
+            return fenceValue <= lastCompletedFence;
+        }
+
+        internal unsafe long GetCompletedValue()
+        {
+            // TODO VULKAN: SpinLock this
+            while (nativeFences.Count > 0 && NativeDevice.GetFenceStatus(nativeFences.Peek().Value) == Result.Success)
+            {
+                var fence = nativeFences.Dequeue();
+                NativeDevice.DestroyFence(fence.Value);
+                lastCompletedFence = Math.Max(lastCompletedFence, fence.Key);
+            }
+
+            return lastCompletedFence;
         }
 
         internal unsafe void WaitForFenceInternal(long fenceValue)
@@ -471,17 +464,192 @@ namespace SiliconStudio.Xenko.Graphics
             if (IsFenceCompleteInternal(fenceValue))
                 return;
 
-            //// TODO D3D12 in case of concurrency, this lock could end up blocking too long a second thread with lower fenceValue then first one
-            //lock (fences)
-            //{
-            //    nativeFence.SetEventOnCompletion(fenceValue, fenceEvent.SafeWaitHandle.DangerousGetHandle());
-            //    fenceEvent.WaitOne();
-            //    lastCompletedFence = fenceValue;
+            // TODO D3D12 in case of concurrency, this lock could end up blocking too long a second thread with lower fenceValue then first one
+            lock (nativeFences)
+            {
+                while (nativeFences.Count > 0 && nativeFences.Peek().Key <= fenceValue)
+                {
+                    var fence = nativeFences.Dequeue();
+                    var fenceCopy = fence.Value;
 
-            //    var fenceCopy = fences[(int)fenceValue];
-            //    //NativeDevice.WaitForFences(1, &fenceCopy, true, -1);
-            //}
+                    NativeDevice.WaitForFences(1, &fenceCopy, true, ulong.MaxValue);
+                    NativeDevice.DestroyFence(fence.Value);
+                    lastCompletedFence = fenceValue;
+                }
+            }
         }
+    }
+
+    internal abstract class ResourcePool<T>
+    {
+        protected readonly GraphicsDevice GraphicsDevice;
+        private readonly Queue<KeyValuePair<long, T>> liveObjects = new Queue<KeyValuePair<long, T>>();
+
+        protected ResourcePool(GraphicsDevice graphicsDevice)
+        {
+            GraphicsDevice = graphicsDevice;
+        }
+
+        public T GetObject()
+        {
+            lock (liveObjects)
+            {
+                // Check if first allocator is ready for reuse
+                if (liveObjects.Count > 0)
+                {
+                    var firstAllocator = liveObjects.Peek();
+                    if (firstAllocator.Key <= GraphicsDevice.GetCompletedValue())
+                    {
+                        liveObjects.Dequeue();
+                        ResetObject(firstAllocator.Value);
+                        return firstAllocator.Value;
+                    }
+                }
+
+                return CreateObject();
+            }
+        }
+
+        protected abstract T CreateObject();
+
+        protected abstract void ResetObject(T obj);
+
+        public void RecycleObject(long fenceValue, T obj)
+        {
+            lock (liveObjects)
+            {
+                liveObjects.Enqueue(new KeyValuePair<long, T>(fenceValue, obj));
+            }
+        }
+    }
+
+    internal class CommandBufferPool : ResourcePool<CommandBuffer>
+    {
+        private readonly CommandPool commandPool;
+
+        public unsafe CommandBufferPool(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+            var commandPoolCreateInfo = new CommandPoolCreateInfo
+            {
+                StructureType = StructureType.CommandPoolCreateInfo,
+                QueueFamilyIndex = 0, //device.NativeCommandQueue.FamilyIndex
+                Flags = CommandPoolCreateFlags.ResetCommandBuffer
+            };
+
+            commandPool = graphicsDevice.NativeDevice.CreateCommandPool(ref commandPoolCreateInfo);
+        }
+
+        protected unsafe override CommandBuffer CreateObject()
+        {
+            // No allocator ready to be used, let's create a new one
+            var commandBufferAllocationInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                Level = CommandBufferLevel.Primary,
+                CommandPool = commandPool,
+                CommandBufferCount = 1,
+            };
+
+            CommandBuffer commandBuffer;
+            GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &commandBuffer);
+            return commandBuffer;
+        }
+
+        protected unsafe override void ResetObject(CommandBuffer obj)
+        {
+            obj.Reset(CommandBufferResetFlags.None);
+        }
+    }
+
+    internal class HeapPool : ResourcePool<HeapPool.DescriptorAllocation>
+    {
+        public class DescriptorAllocation
+        {
+            public SharpVulkan.DescriptorPool Pool;
+            public FastList<SharpVulkan.DescriptorSet> Sets = new FastList<SharpVulkan.DescriptorSet>(); 
+        };
+
+        private readonly uint heapSize;
+
+        public HeapPool(GraphicsDevice graphicsDevice, uint heapSize) : base(graphicsDevice)
+        {
+            this.heapSize = heapSize;
+        }
+
+        protected unsafe override DescriptorAllocation CreateObject()
+        {
+            // No allocator ready to be used, let's create a new one
+            var poolSizes = new[]
+            {
+                new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = heapSize },
+                new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = heapSize },
+                new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = heapSize },
+            };
+
+            var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
+            {
+                StructureType = StructureType.DescriptorPoolCreateInfo,
+                PoolSizeCount = (uint)poolSizes.Length,
+                PoolSizes = new IntPtr(Interop.Fixed(poolSizes)),
+                MaxSets = heapSize,
+                Flags = DescriptorPoolCreateFlags.FreeDescriptorSet,
+            };
+            return new DescriptorAllocation { Pool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo) };
+        }
+
+        protected unsafe override void ResetObject(DescriptorAllocation obj)
+        {
+            // TODO VULKAN: Resetting the pool crashes. Only when using DescriptorSetCopies to the sets though.
+
+            //GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
+            GraphicsDevice.NativeDevice.FreeDescriptorSets(obj.Pool, (uint)obj.Sets.Count, obj.Sets.Count > 0 ? (SharpVulkan.DescriptorSet*)Interop.Fixed(obj.Sets.Items) : null);
+            obj.Sets.Clear(true);
+        }
+    }
+
+    internal class FramebufferCollector : TemporaryResourceCollector<Framebuffer>
+    {
+        public FramebufferCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected unsafe override void ReleaseObject(Framebuffer item)
+        {
+            GraphicsDevice.NativeDevice.DestroyFramebuffer(item);
+        }
+    }
+
+
+    internal abstract class TemporaryResourceCollector<T>
+    {
+        protected readonly GraphicsDevice GraphicsDevice;
+        private readonly Queue<KeyValuePair<long, T>> items = new Queue<KeyValuePair<long, T>>();
+
+        protected TemporaryResourceCollector(GraphicsDevice graphicsDevice)
+        {
+            GraphicsDevice = graphicsDevice;
+        }
+
+        public void Add(long fenceValue, T item)
+        {
+            lock (items)
+            {
+                items.Enqueue(new KeyValuePair<long, T>(fenceValue, item));
+            }
+        }
+
+        public void Release()
+        {
+            lock (items)
+            {
+                while (items.Count > 0 && GraphicsDevice.IsFenceCompleteInternal(items.Peek().Key))
+                {
+                    ReleaseObject(items.Dequeue().Value);
+                }
+            }
+        }
+
+        protected abstract void ReleaseObject(T item);
     }
 }
 #endif

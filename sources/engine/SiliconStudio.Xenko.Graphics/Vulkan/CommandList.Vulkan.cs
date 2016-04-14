@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class CommandList
     {
-        private CommandPool nativeCommandPool;
+        private readonly CommandBufferPool commandBufferPool;
         internal CommandBuffer NativeCommandBuffer;
 
         private RenderPass activeRenderPass;
@@ -26,92 +26,32 @@ namespace SiliconStudio.Xenko.Graphics
         private int framebufferAttachmentCount;
         private bool framebufferDirty = true;
         private Framebuffer activeFramebuffer;
+        private readonly FramebufferCollector framebufferCollector;
 
-        private SharpVulkan.DescriptorPool descriptorPool;
-        //private CommandAllocator nativeCommandAllocator;
-        //internal GraphicsCommandList NativeCommandList;
+        private HeapPool.DescriptorAllocation descriptorPool;
+        private SharpVulkan.DescriptorSet descriptorSet;
 
-        //private const int SrvHeapSize = 2048;
-        //private DescriptorHeap srvHeap;
-        //private int srvHeapOffset = SrvHeapSize;
-        //private const int SamplerHeapSize = 64;
-        //private DescriptorHeap samplerHeap;
-        //private int samplerHeapOffset = SamplerHeapSize;
-
-        //private PipelineState boundPipelineState;
-        //private DescriptorHeap[] descriptorHeaps = new DescriptorHeap[2];
-
-        //private Dictionary<IntPtr, GpuDescriptorHandle> srvMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
-        //private Dictionary<IntPtr, GpuDescriptorHandle> samplerMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
-
-        public unsafe CommandList(GraphicsDevice device) : base(device)
+        public CommandList(GraphicsDevice device) : base(device)
         {
-            var commandPoolCreateInfo = new CommandPoolCreateInfo
-            {
-                StructureType = StructureType.CommandPoolCreateInfo,
-                QueueFamilyIndex = 0, //device.NativeCommandQueue.FamilyIndex
-                Flags = CommandPoolCreateFlags.ResetCommandBuffer
-            };
-            nativeCommandPool = device.NativeDevice.CreateCommandPool(ref commandPoolCreateInfo);
+            commandBufferPool = new CommandBufferPool(GraphicsDevice);
 
-            var commandBufferAllocationInfo = new CommandBufferAllocateInfo
-            {
-                StructureType = StructureType.CommandBufferAllocateInfo,
-                Level = CommandBufferLevel.Primary,
-                CommandPool = nativeCommandPool,
-                CommandBufferCount = 1
-            };
-            CommandBuffer nativeCommandBuffer;
-            device.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
-            NativeCommandBuffer = nativeCommandBuffer;
-
-            var poolSizes = new[]
-            {
-                new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = 1 << 16 },
-                new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = 1 << 16 },
-                new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = 1 << 16 },
-            };
-
-            var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
-            {
-                StructureType = StructureType.DescriptorPoolCreateInfo,
-                PoolSizeCount = (uint)poolSizes.Length,
-                PoolSizes = new IntPtr(Interop.Fixed(poolSizes)),
-                MaxSets = 1 << 16,
-                Flags = DescriptorPoolCreateFlags.FreeDescriptorSet
-            };
-            descriptorPool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
+            framebufferCollector = new FramebufferCollector(GraphicsDevice);
 
             Reset();
         }
 
-        public unsafe void Reset()
+        public void Reset()
         {
             CleanupRenderPass();
             boundDescriptorSets.Clear();
 
             GraphicsDevice.ReleaseTemporaryResources();
 
-            foreach (var framebuffer in framebuffers)
-            {
-                GraphicsDevice.NativeDevice.DestroyFramebuffer(framebuffer);
-            }
-            framebuffers.Clear();
+            framebufferCollector.Release();
 
-            if (descriptorSets.Count > 0)
-            {
-                fixed (SharpVulkan.DescriptorSet* descriptorSetsPointer = &descriptorSets.Items[0])
-                    GraphicsDevice.NativeDevice.FreeDescriptorSets(descriptorPool, (uint)descriptorSets.Count, descriptorSetsPointer);
-                descriptorSets.Clear(true);
-            }
-            //GraphicsDevice.NativeDevice.ResetDescriptorPool(descriptorPool, DescriptorPoolResetFlags.None);
+            descriptorPool = GraphicsDevice.descriptorPools.GetObject();
 
-            //ResetSrvHeap();
-            //ResetSamplerHeap();
-
-            //// Clear descriptor mappings
-            //srvMapping.Clear();
-            //samplerMapping.Clear();
+            NativeCommandBuffer = commandBufferPool.GetObject();
 
             // NOTE: Begin implies Reset(CommandBufferResetFlags.None)
             var beginInfo = new CommandBufferBeginInfo
@@ -120,13 +60,9 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             NativeCommandBuffer.Begin(ref beginInfo);
-
-            // TODO VULKAN: Reset whole pool per frame?
-            // NativeCommandBuffer.Reset(CommandBufferResetFlags.ReleaseResources);
-            // GraphicsDevice.NativeDevice.ResetCommandPool(nativeCommandPool, CommandPoolResetFlags.ReleseResources);
         }
 
-        public void Close()
+        public unsafe void Close()
         {
             // End active render pass
             CleanupRenderPass();
@@ -134,14 +70,37 @@ namespace SiliconStudio.Xenko.Graphics
             // Close
             NativeCommandBuffer.End();
 
+            GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
+
+            commandBufferPool.RecycleObject(GraphicsDevice.NextFenceValue, NativeCommandBuffer);
+
             // Submit
             GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
+        }
 
+        private unsafe long FlushInternal(bool wait)
+        {
+            CleanupRenderPass();
 
-            // TODO VULKAN
-            GraphicsDevice.NativeCommandQueue.WaitIdle();
+            NativeCommandBuffer.End();
+
+            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
+
+            if (wait)
+                GraphicsDevice.WaitForFenceInternal(fenceValue);
 
             NativeCommandBuffer.Reset(CommandBufferResetFlags.None);
+
+            // Restore states
+            if (activePipeline != null)
+            {
+                SetPipelineState(activePipeline);
+                var descriptorSetCopy = descriptorSet;
+                NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &descriptorSetCopy, 0, null);
+            }
+            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
+
+            return fenceValue;
         }
 
         private void ClearStateImpl()
@@ -248,15 +207,16 @@ namespace SiliconStudio.Xenko.Graphics
             var allocateInfo = new DescriptorSetAllocateInfo
             {
                 StructureType = StructureType.DescriptorSetAllocateInfo,
-                DescriptorPool = descriptorPool,
+                DescriptorPool = descriptorPool.Pool,
                 DescriptorSetCount = 1, //(uint)activePipeline.NativeDescriptorSetLayouts.Length,
                 SetLayouts = new IntPtr(Interop.Fixed(activePipeline.NativeDescriptorSetLayouts))
             };
-            var descriptorSet = GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo);
-            descriptorSets.Add(descriptorSet);
 
+            SharpVulkan.DescriptorSet localDescriptorSet;
+            GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &localDescriptorSet);
+            descriptorPool.Sets.Add(localDescriptorSet);
+            this.descriptorSet = localDescriptorSet;
             
-
             writes.Clear(true);
             copies.Clear(true);
             samplerInfos.Clear(true);
@@ -282,7 +242,7 @@ namespace SiliconStudio.Xenko.Graphics
                                 {
                                     StructureType = StructureType.WriteDescriptorSet,
                                     DescriptorCount = 1,
-                                    DestinationSet = descriptorSet,
+                                    DestinationSet = localDescriptorSet,
                                     DestinationBinding = (uint)destinationBinding,
                                     DescriptorType = DescriptorType.Sampler,
                                     ImageInfo = new IntPtr(samplerInfosPointer + samplerInfos.Count)
@@ -298,7 +258,7 @@ namespace SiliconStudio.Xenko.Graphics
                                     SourceSet = boundDescriptorSets[i],
                                     SourceBinding = (uint)j,
                                     SourceArrayElement = 0,
-                                    DestinationSet = descriptorSet,
+                                    DestinationSet = localDescriptorSet,
                                     DestinationBinding = (uint)destinationBinding,
                                     DestinationArrayElement = 0,
                                     DescriptorCount = 1
@@ -313,13 +273,12 @@ namespace SiliconStudio.Xenko.Graphics
                     (uint)copies.Count, copies.Count > 0 ? (CopyDescriptorSet*)Interop.Fixed(copies.Items) : null);
             }
 
-            NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &descriptorSet, 0, null);
+            NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &localDescriptorSet, 0, null);
         }
 
         private readonly FastList<DescriptorImageInfo> samplerInfos = new FastList<DescriptorImageInfo>();
         private readonly FastList<WriteDescriptorSet> writes = new FastList<WriteDescriptorSet>();
         private readonly FastList<CopyDescriptorSet> copies = new FastList<CopyDescriptorSet>();
-        private readonly FastList<SharpVulkan.DescriptorSet> descriptorSets = new FastList<SharpVulkan.DescriptorSet>(); 
 
         public void SetStencilReference(int stencilReference)
         {
@@ -387,7 +346,9 @@ namespace SiliconStudio.Xenko.Graphics
                         texture.NativeAccessMask = AccessFlags.ShaderRead;
                         break;
                     default:
-                        throw new NotImplementedException();
+                        texture.NativeLayout = ImageLayout.General;
+                        texture.NativeAccessMask = (AccessFlags)~0;
+                        break;
                 }
 
                 if (oldLayout == texture.NativeLayout && oldAccessMask == texture.NativeAccessMask)
@@ -771,9 +732,74 @@ namespace SiliconStudio.Xenko.Graphics
             throw new NotImplementedException();
         }
 
-        public void Copy(GraphicsResource source, GraphicsResource destination)
+        public unsafe void Copy(GraphicsResource source, GraphicsResource destination)
         {
-            throw new NotImplementedException();
+            var sourceTexture = source as Texture;
+            var destinationTexture = destination as Texture;
+
+            if (sourceTexture != null && destinationTexture != null)
+            {
+                CleanupRenderPass();
+
+                var sourceParent = sourceTexture.ParentTexture ?? sourceTexture;
+                var destinationParent = destinationTexture.ParentTexture ?? destinationTexture;
+
+                var barriers = stackalloc ImageMemoryBarrier[2];
+
+                barriers[0] = new ImageMemoryBarrier
+                {
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    Image = sourceParent.NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
+                    OldLayout = sourceTexture.NativeLayout,
+                    NewLayout = ImageLayout.TransferSourceOptimal,
+                    SourceAccessMask = sourceTexture.NativeAccessMask,
+                    DestinationAccessMask = AccessFlags.TransferRead,
+                };
+
+                barriers[1] = new ImageMemoryBarrier
+                {
+                    StructureType = StructureType.ImageMemoryBarrier,
+                    Image = sourceParent.NativeImage,
+                    SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
+                    OldLayout = sourceTexture.NativeLayout,
+                    NewLayout = ImageLayout.TransferDestinationOptimal,
+                    SourceAccessMask = sourceTexture.NativeAccessMask,
+                    DestinationAccessMask = AccessFlags.TransferWrite,
+                };
+
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 0, null, 2, barriers);
+
+                // TODO VULKAN: One copy per mip level
+                var copy = new ImageCopy
+                {
+                    SourceSubresource = new ImageSubresourceLayers { AspectMask = sourceParent.NativeImageAspect, BaseArrayLayer = (uint)sourceTexture.ArraySlice, LayerCount = (uint)sourceTexture.ArraySize, MipLevel = (uint)sourceTexture.MipLevel },
+                    DestinationSubresource = new ImageSubresourceLayers { AspectMask = destinationParent.NativeImageAspect, BaseArrayLayer = (uint)destinationTexture.ArraySlice, LayerCount = (uint)destinationTexture.ArraySize, MipLevel = (uint)destinationTexture.MipLevel },
+                    Extent = new Extent3D((uint)sourceTexture.ViewWidth, (uint)sourceTexture.ViewHeight, (uint)sourceTexture.ViewDepth),
+                };
+                NativeCommandBuffer.CopyImage(sourceParent.NativeImage, ImageLayout.TransferSourceOptimal, destinationParent.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &copy);
+
+                if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
+                {
+                    destinationParent.StagingFenceValue = GraphicsDevice.NextFenceValue;
+                }
+
+                barriers[0].OldLayout = ImageLayout.TransferSourceOptimal;
+                barriers[0].NewLayout = sourceParent.NativeLayout;
+                barriers[0].SourceAccessMask = AccessFlags.TransferRead;
+                barriers[0].DestinationAccessMask = sourceParent.NativeAccessMask;
+
+                barriers[1].OldLayout = ImageLayout.TransferDestinationOptimal;
+                barriers[1].NewLayout = destinationParent.NativeLayout;
+                barriers[1].SourceAccessMask = AccessFlags.TransferWrite;
+                barriers[1].DestinationAccessMask = destinationParent.NativeAccessMask;
+
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 2, barriers);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
@@ -889,17 +915,24 @@ namespace SiliconStudio.Xenko.Graphics
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
         {
             if (resource == null) throw new ArgumentNullException("resource");
+
+            var rowPitch = 0;
             var texture = resource as Texture;
+            var buffer = resource as Buffer;
+            var usage = GraphicsResourceUsage.Default;
+
             if (texture != null)
             {
+                usage = texture.Usage;
                 if (lengthInBytes == 0)
                     lengthInBytes = texture.ViewWidth * texture.ViewHeight * texture.ViewDepth * texture.ViewFormat.SizeInBytes();
+                // rowPitch = (texture.RowStride + 255) / 256 * 256;
             }
             else
             {
-                var buffer = resource as Buffer;
                 if (buffer != null)
                 {
+                    usage = buffer.Usage;
                     if (lengthInBytes == 0)
                         lengthInBytes = buffer.SizeInBytes;
                 }
@@ -917,6 +950,33 @@ namespace SiliconStudio.Xenko.Graphics
                     UploadOffset = uploadOffset,
                 };
             }
+            else if (mapMode == MapMode.Read || mapMode == MapMode.ReadWrite || mapMode == MapMode.Write)
+            {
+                // Is non-staging ever possible?
+                if (usage != GraphicsResourceUsage.Staging)
+                    throw new InvalidOperationException();
+
+                if (mapMode != MapMode.WriteNoOverwrite)
+                {
+                    // Need to wait?
+                    if (!GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue))
+                    {
+                        if (doNotWait)
+                        {
+                            return new MappedResource(resource, subResourceIndex, new DataBox(IntPtr.Zero, 0, 0));
+                        }
+
+                        // Need to flush (part of current command list)
+                        if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
+                            FlushInternal(false);
+
+                        GraphicsDevice.WaitForFenceInternal(texture.StagingFenceValue);
+                    }
+                }
+
+                var mappedMemory = GraphicsDevice.NativeDevice.MapMemory(resource.NativeMemory, (ulong)offsetInBytes, (ulong)lengthInBytes, MemoryMapFlags.None);
+                return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, 0), offsetInBytes, lengthInBytes);
+            }
             else
             {
                 throw new NotImplementedException();
@@ -926,41 +986,48 @@ namespace SiliconStudio.Xenko.Graphics
         // TODO GRAPHICS REFACTOR what should we do with this?
         public unsafe void UnmapSubresource(MappedResource unmapped)
         {
-             // Copy back
-            var buffer = unmapped.Resource as Buffer;
-            if (buffer != null)
+            if (unmapped.UploadResource != SharpVulkan.Buffer.Null)
             {
-                CleanupRenderPass();
-
-                var memoryBarrier = new BufferMemoryBarrier
+                // Copy back
+                var buffer = unmapped.Resource as Buffer;
+                if (buffer != null)
                 {
-                    StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = buffer.NativeBuffer,
-                    Offset = (uint)unmapped.OffsetInBytes,
-                    Size = (uint)unmapped.SizeInBytes,
-                    SourceAccessMask = buffer.NativeAccessMask,
-                    DestinationAccessMask = AccessFlags.TransferWrite,
-                };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+                    CleanupRenderPass();
 
-                var bufferCopy = new BufferCopy
-                {
-                    DestinationOffset = (uint)unmapped.OffsetInBytes,
-                    SourceOffset = (uint)unmapped.UploadOffset,
-                    Size = (uint)unmapped.SizeInBytes
-                };
-                NativeCommandBuffer.CopyBuffer(unmapped.UploadResource, buffer.NativeBuffer, 1, &bufferCopy);
+                    var memoryBarrier = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = buffer.NativeBuffer,
+                        Offset = (uint)unmapped.OffsetInBytes,
+                        Size = (uint)unmapped.SizeInBytes,
+                        SourceAccessMask = buffer.NativeAccessMask,
+                        DestinationAccessMask = AccessFlags.TransferWrite,
+                    };
+                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
 
-                memoryBarrier = new BufferMemoryBarrier
-                {
-                    StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = buffer.NativeBuffer,
-                    Offset = (uint)unmapped.OffsetInBytes,
-                    Size = (uint)unmapped.SizeInBytes,
-                    SourceAccessMask = AccessFlags.TransferWrite,
-                    DestinationAccessMask = buffer.NativeAccessMask,
-                };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+                    var bufferCopy = new BufferCopy
+                    {
+                        DestinationOffset = (uint)unmapped.OffsetInBytes,
+                        SourceOffset = (uint)unmapped.UploadOffset,
+                        Size = (uint)unmapped.SizeInBytes
+                    };
+                    NativeCommandBuffer.CopyBuffer(unmapped.UploadResource, buffer.NativeBuffer, 1, &bufferCopy);
+
+                    memoryBarrier = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = buffer.NativeBuffer,
+                        Offset = (uint)unmapped.OffsetInBytes,
+                        Size = (uint)unmapped.SizeInBytes,
+                        SourceAccessMask = AccessFlags.TransferWrite,
+                        DestinationAccessMask = buffer.NativeAccessMask,
+                    };
+                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+                }
+            }
+            else
+            {
+                GraphicsDevice.NativeDevice.UnmapMemory(unmapped.Resource.NativeMemory);
             }
         }
 
@@ -1014,7 +1081,7 @@ namespace SiliconStudio.Xenko.Graphics
                         Layers = 1, // TODO VULKAN: Use correct view depth/array size
                     };
                     activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
-                    framebuffers.Add(activeFramebuffer);
+                    framebufferCollector.Add(GraphicsDevice.NextFenceValue, activeFramebuffer);
                 }
                 framebufferDirty = false;
 
@@ -1031,9 +1098,7 @@ namespace SiliconStudio.Xenko.Graphics
                 activeRenderPass = pipelineRenderPass;
             }
         }
-
-        private List<Framebuffer> framebuffers = new List<Framebuffer>(); 
-
+        
         private unsafe void CleanupRenderPass()
         {
             if (activeRenderPass != RenderPass.Null)
@@ -1044,7 +1109,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (activeFramebuffer != Framebuffer.Null)
             {
-                //GraphicsDevice.NativeDevice.DestroyFramebuffer(activeFramebuffer);
                 activeFramebuffer = Framebuffer.Null;
 
                 framebufferDirty = true;

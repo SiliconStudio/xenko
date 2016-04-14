@@ -294,8 +294,6 @@ namespace SiliconStudio.Xenko.Graphics
             return GraphicsDevice.NativeDevice.CreateBufferView(ref createInfo);
         }
 
-        private DeviceMemory NativeMemory;
-
         protected unsafe void AllocateMemory(IntPtr dataPointer, MemoryPropertyFlags memoryProperties)
         {
             if (NativeMemory != DeviceMemory.Null)
