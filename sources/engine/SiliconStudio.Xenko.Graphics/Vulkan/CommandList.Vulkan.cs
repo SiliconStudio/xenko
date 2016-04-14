@@ -53,7 +53,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             NativeCommandBuffer = commandBufferPool.GetObject();
 
-            // NOTE: Begin implies Reset(CommandBufferResetFlags.None)
             var beginInfo = new CommandBufferBeginInfo
             {
                 StructureType = StructureType.CommandBufferBeginInfo,
@@ -84,12 +83,21 @@ namespace SiliconStudio.Xenko.Graphics
 
             NativeCommandBuffer.End();
 
+            commandBufferPool.RecycleObject(GraphicsDevice.NextFenceValue, NativeCommandBuffer);
+
             var fenceValue = GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
 
             if (wait)
                 GraphicsDevice.WaitForFenceInternal(fenceValue);
 
-            NativeCommandBuffer.Reset(CommandBufferResetFlags.None);
+            NativeCommandBuffer = commandBufferPool.GetObject();
+
+            var beginInfo = new CommandBufferBeginInfo
+            {
+                StructureType = StructureType.CommandBufferBeginInfo,
+                Flags = CommandBufferUsageFlags.OneTimeSubmit,
+            };
+            NativeCommandBuffer.Begin(ref beginInfo);
 
             // Restore states
             if (activePipeline != null)
@@ -760,7 +768,7 @@ namespace SiliconStudio.Xenko.Graphics
                 barriers[1] = new ImageMemoryBarrier
                 {
                     StructureType = StructureType.ImageMemoryBarrier,
-                    Image = sourceParent.NativeImage,
+                    Image = destinationParent.NativeImage,
                     SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
                     OldLayout = sourceTexture.NativeLayout,
                     NewLayout = ImageLayout.TransferDestinationOptimal,

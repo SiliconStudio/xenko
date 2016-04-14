@@ -78,6 +78,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (wait)
                 GraphicsDevice.WaitForFenceInternal(fenceValue);
 
+            // TODO D3D12: Get new allocator, in case we didn't wait
             NativeCommandList.Reset(nativeCommandAllocator, null);
 
             // Restore states
