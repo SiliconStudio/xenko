@@ -2770,7 +2770,8 @@ namespace SiliconStudio.Shaders.Convertor
                     if (variable != null)
                     {
                         var variableRef = variable.InitialValue as VariableReferenceExpression;
-                        if (/*variable.Type is TextureType || */(variableRef != null && declarationListToRemove.Contains(variableRef.TypeInference.Declaration)))
+                        if ((variable.Type is TextureType && samplerMapping.All(x => x.Key.Texture != variable)) ||
+                            (variableRef != null && declarationListToRemove.Contains(variableRef.TypeInference.Declaration)))
                         {
                             return null;
                         }
