@@ -79,6 +79,13 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
         protected virtual void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
         {
+            // Set default render target states
+            foreach (var renderTarget in output.RenderTargets)
+            {
+                context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
+            }
+            context.CommandList.ResourceBarrierTransition(output.DepthStencil, GraphicsResourceState.DepthWrite);
+
             // Setup the render target
             context.CommandList.SetRenderTargetsAndViewport(disableDepth ? null : output.DepthStencil, output.RenderTargets);
         }

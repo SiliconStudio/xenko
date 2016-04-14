@@ -140,6 +140,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <param name="context"></param>
         protected virtual void SetRenderTargets(RenderDrawContext context)
         {
+            // Transtion inputs to read sources
+            for (int i = 0; i <= maxInputTextureIndex; ++i)
+            {
+                if (inputTextures[i] != null)
+                    context.CommandList.ResourceBarrierTransition(inputTextures[i], GraphicsResourceState.GenericRead);
+            }
+
             if (outputRenderTargetView != null)
             {
                 // Transition render target
@@ -205,12 +212,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         protected virtual void DisposeCreatedRenderTargetViews(RenderDrawContext context)
         {
-            // Transtion render targets back to read sources
-            for (int i = 0; i < context.CommandList.RenderTargetCount; ++i)
-            {
-                context.CommandList.ResourceBarrierTransition(context.CommandList.RenderTargets[i], GraphicsResourceState.GenericRead);
-            }
-
             if(createdOutputRenderTargetViews == null)
                 return;
 
