@@ -548,11 +548,11 @@ namespace SiliconStudio.Presentation.Quantum
                 return 1;
 
             // Then we use index, if they are set and comparable.
-            if (a.Index != null && b.Index != null)
+            if (!a.Index.IsEmpty && !b.Index.IsEmpty)
             {
-                if (a.Index.GetType() == b.Index.GetType() && a.Index is IComparable)
+                if (a.Index.Value.GetType() == b.Index.Value.GetType())
                 {
-                    return ((IComparable)a.Index).CompareTo(b.Index);
+                    return a.Index.CompareTo(b.Index); 
                 }
             }
 
