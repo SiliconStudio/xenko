@@ -19,6 +19,11 @@ namespace SiliconStudio.Xenko.Particles
     public class ParticleSystem : IDisposable
     {
         /// <summary>
+        /// If positive, it indicates how much remaining time there is before the system calls Stop()
+        /// </summary>
+        private float timeout = 0f;
+
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleSystem"/> is enabled.
         /// </summary>
         /// <value>
@@ -198,6 +203,15 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
+            if (timeout > 0f)
+            {
+                timeout -= dt;
+                if (timeout <= 0f)
+                {
+                    Stop();
+                }
+            }
+
             // Check for changes in the emitters
             if (oldEmitterCount != Emitters.Count)
             {
@@ -308,6 +322,22 @@ namespace SiliconStudio.Xenko.Particles
         {
             ResetSimulation();
             isPaused = true;
+        }
+
+        /// <summary>
+        /// Disables emission of new particles and sets a time limit on the system. After the time expires, the system stops.
+        /// </summary>
+        public void Timeout(float timeLimit)
+        {
+            if (timeLimit < 0f)
+                return;
+
+            foreach (var particleEmitter in Emitters)
+            {
+                particleEmitter.CanEmitParticles = false;
+            }
+
+            timeout = timeLimit;
         }
 
         /// <summary>

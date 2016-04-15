@@ -967,8 +967,16 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="count"></param>
         public void EmitParticles(int count)
         {
+            if (!CanEmitParticles)
+                return;
+
             particlesToSpawn += count;
         }
+
+        /// <summary>
+        /// Indicates if the emitter is allowed to emit new particles or not.
+        /// </summary>
+        public bool CanEmitParticles { get; set; } = true;
 
         /// <summary>
         /// Changes the particle fields whenever the simulation space changes (World to Local or Local to World)
