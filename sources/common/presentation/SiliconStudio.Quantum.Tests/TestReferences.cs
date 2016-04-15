@@ -123,8 +123,8 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestReferenceEnumerable(memberNode.Content.Reference, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Content.Retrieve());
-            Assert.AreEqual(instance1, memberNode.Content.Retrieve(0));
-            Assert.AreEqual(instance2, memberNode.Content.Retrieve(1));
+            Assert.AreEqual(instance1, memberNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(instance2, memberNode.Content.Retrieve(new Index(1)));
 
             var reference1 = memberNode.Content.Reference.AsEnumerable.First();
             Helper.TestMemberContentNode(reference1.TargetNode, reference1.TargetNode.Children.First(), instance1, instance1.Name, nameof(TestObject.Name), false);
@@ -150,8 +150,8 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestReferenceEnumerable(memberNode.Content.Reference, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Content.Retrieve());
-            Assert.AreEqual(null, memberNode.Content.Retrieve(0));
-            Assert.AreEqual(null, memberNode.Content.Retrieve(1));
+            Assert.AreEqual(null, memberNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(null, memberNode.Content.Retrieve(new Index(1)));
         }
 
         /// <summary>
@@ -173,11 +173,11 @@ namespace SiliconStudio.Quantum.Tests
 
             // Update item 0 to a new instance and item 1 to null
             var newInstance = new TestObject { Name = "Test3" };
-            memberNode.Content.Update(newInstance, 0);
-            memberNode.Content.Update(null, 1);
+            memberNode.Content.Update(newInstance, new Index(0));
+            memberNode.Content.Update(null, new Index(1));
             Assert.AreEqual(container.Instances, memberNode.Content.Retrieve());
-            Assert.AreEqual(newInstance, memberNode.Content.Retrieve(0));
-            Assert.AreEqual(null, memberNode.Content.Retrieve(1));
+            Assert.AreEqual(newInstance, memberNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(null, memberNode.Content.Retrieve(new Index(1)));
             Helper.TestReferenceEnumerable(memberNode.Content.Reference, container.Instances);
 
             var newReference = memberNode.Content.Reference.AsEnumerable;

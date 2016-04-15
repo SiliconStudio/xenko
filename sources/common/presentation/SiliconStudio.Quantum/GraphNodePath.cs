@@ -38,6 +38,7 @@ namespace SiliconStudio.Quantum
         {
             public ElementType Type;
             public object Value;
+
             public override string ToString()
             {
                 switch (Type)
@@ -89,16 +90,16 @@ namespace SiliconStudio.Quantum
         /// <param name="targetIndex">The index to the target node, if applicable.</param>
         /// <returns>The node corresponding to this path.</returns>
         /// <exception cref="InvalidOperationException">The path is invalid.</exception>
-        public IGraphNode GetSourceNode(out object targetIndex)
+        public IGraphNode GetSourceNode(out Index targetIndex)
         {
             if (!IsValid)
                 throw new InvalidOperationException("The node path is invalid.");
 
             IGraphNode node = RootNode;
-            targetIndex = null;
+            targetIndex = Index.Empty;
             foreach (var itemPath in path)
             {
-                targetIndex = null;
+                targetIndex = Index.Empty;
                 switch (itemPath.Type)
                 {
                     case ElementType.Member:
@@ -119,7 +120,7 @@ namespace SiliconStudio.Quantum
                             var objectRefererence = enumerableReference.Single(x => Equals(x.Index, itemPath.Value));
                             node = objectRefererence.TargetNode;
                         }
-                        targetIndex = itemPath.Value;
+                        targetIndex = (Index)itemPath.Value;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -135,7 +136,7 @@ namespace SiliconStudio.Quantum
         /// <exception cref="InvalidOperationException">The path is invalid.</exception>
         public IGraphNode GetSourceNode()
         {
-            object index;
+            Index index;
             return GetSourceNode(out index);
         }
 

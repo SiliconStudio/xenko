@@ -301,8 +301,8 @@ Hierarchy:
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
                                             SeedOffset: 0
-                                            PositionMin: {X: 0.0, Y: 0.1, Z: 0.0}
-                                            PositionMax: {X: 0.0, Y: 0.1, Z: 0.0}
+                                            PositionMin: {X: 0.0, Y: 1.0, Z: 0.0}
+                                            PositionMax: {X: 0.0, Y: 1.0, Z: 0.0}
                                     Updaters:
                                         - !UpdaterGravity
                                             ~Id: 0fe37598-66b9-4404-8af4-2440ecbecc14
@@ -389,8 +389,8 @@ Hierarchy:
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
                                             SeedOffset: 0
-                                            PositionMin: {X: 0.0, Y: 0.2, Z: 0.0}
-                                            PositionMax: {X: 0.0, Y: 0.2, Z: 0.0}
+                                            PositionMin: {X: 0.0, Y: 1.0, Z: 0.0}
+                                            PositionMax: {X: 0.0, Y: 1.0, Z: 0.0}
                                         - !InitialSizeSeed
                                             ~Id: 841d8ad7-59cb-44f0-9b1e-f5ec40dd8e3e
                                             InheritPosition: true
@@ -630,7 +630,7 @@ Hierarchy:
                                         UVRotate:
                                             FlipX: false
                                             FlipY: false
-                                            UvClockwise: Degree0
+                                            UVClockwise: Degree0
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 44d4e425-ffdb-4704-999a-c4c00f3fd674
                                         AlphaAdditive: 0.0

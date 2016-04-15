@@ -10,7 +10,7 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : NodeCommandBase
     {
-        public override void Execute(IContent content, object index, object parameter)
+        public override void Execute(IContent content, Index index, object parameter)
         {
             var currentValue = content.Retrieve(index);
             var newValue = ChangeValue(currentValue, parameter);

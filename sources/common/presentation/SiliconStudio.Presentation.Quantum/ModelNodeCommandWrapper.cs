@@ -31,7 +31,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             using (var transaction = ActionService.CreateTransaction())
             {
-                object index;
+                Index index;
                 var modelNode = NodePath.GetSourceNode(out index);
                 if (modelNode == null)
                     throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
