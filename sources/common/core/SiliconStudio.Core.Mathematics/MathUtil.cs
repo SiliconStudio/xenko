@@ -513,5 +513,69 @@ namespace SiliconStudio.Core.Mathematics
         {
             return (float)Math.Pow(2, Math.Floor(Math.Log(size, 2)));
         }
+
+        /// <summary>
+        /// Snaps a value to the nearest interval.
+        /// </summary>
+        /// <param name="value">The value to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>The nearest interval to the provided value.</returns>
+        public static float Snap(float value, float gap)
+        {
+            return (float)Math.Round((value / gap), MidpointRounding.AwayFromZero) * gap;
+        }
+
+        /// <summary>
+        /// Snaps a value to the nearest interval.
+        /// </summary>
+        /// <param name="value">The value to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>The nearest interval to the provided value.</returns>
+        public static double Snap(double value, double gap)
+        {
+            return Math.Round((value / gap), MidpointRounding.AwayFromZero) * gap;
+        }
+
+        /// <summary>
+        /// Snaps all vector components to the nearest interval.
+        /// </summary>
+        /// <param name="value">The vector to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>A vector which components are snapped to the nearest interval.</returns>
+        public static Vector2 Snap(Vector2 value, float gap)
+        {
+            return new Vector2(
+                (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap);
+        }
+
+        /// <summary>
+        /// Snaps all vector components to the nearest interval.
+        /// </summary>
+        /// <param name="value">The vector to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>A vector which components are snapped to the nearest interval.</returns>
+        public static Vector3 Snap(Vector3 value, float gap)
+        {
+            return new Vector3(
+                (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Z / gap), MidpointRounding.AwayFromZero) * gap);
+        }
+
+        /// <summary>
+        /// Snaps all vector components to the nearest interval.
+        /// </summary>
+        /// <param name="value">The vector to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>A vector which components are snapped to the nearest interval.</returns>
+        public static Vector4 Snap(Vector4 value, float gap)
+        {
+            return new Vector4(
+                (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Z / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.W / gap), MidpointRounding.AwayFromZero) * gap);
+        }
     }
 }
