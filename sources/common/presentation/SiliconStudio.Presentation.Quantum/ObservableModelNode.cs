@@ -129,7 +129,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order => CustomOrder ?? (SourceNode.Content is MemberContent && Index == null ? ((MemberContent)SourceNode.Content).Member.Order : null);
+        public override int? Order => CustomOrder ?? (SourceNode.Content is MemberContent && Index.IsEmpty ? ((MemberContent)SourceNode.Content).Member.Order : null);
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
