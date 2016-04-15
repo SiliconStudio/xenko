@@ -26,8 +26,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="SingleObservableNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
-        /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        protected SingleObservableNode(ObservableViewModel ownerViewModel, string baseName, object index = null)
+        /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
+        protected SingleObservableNode(ObservableViewModel ownerViewModel, string baseName, Index index)
             : base(ownerViewModel, index)
         {
             if (baseName == null && index == null)
@@ -87,10 +87,10 @@ namespace SiliconStudio.Presentation.Quantum
                 Name = nodeName;
                 DisplayName = Utils.SplitCamelCase(nodeName);
             }
-            else if (index != null)
+            else if (!index.IsEmpty)
             {
                 // TODO: make a better interface for custom naming specification
-                var propertyKey = index as PropertyKey;
+                var propertyKey = index.Value as PropertyKey;
                 if (propertyKey != null)
                 {
                     string name = propertyKey.Name.Replace(".", "-");

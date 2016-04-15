@@ -247,5 +247,14 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         /// <returns>Peak particles per second</returns>
         public abstract int GetMaxParticlesPerSecond();
+
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public virtual void InvalidateRelations()
+        {
+
+        }
+
     }
 }

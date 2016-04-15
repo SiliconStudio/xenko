@@ -40,6 +40,11 @@
     <Compile Include="TestUPath.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transactions\OrderedOperation.cs" />
+    <Compile Include="Transactions\SimpleOperation.cs" />
+    <Compile Include="Transactions\TestTransaction.cs" />
+    <Compile Include="Transactions\TestTransactionEvent.cs" />
+    <Compile Include="Transactions\TestTransactionStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpYaml, Version=1.2.0.27065, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">

@@ -25,6 +25,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="node">The corresponding graph node.</param>
         /// <param name="index">The index of the element in the node, if relevant..</param>
         /// <returns><c>True</c> if the node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldConstructNode(IContentNode node, object index);
+        bool ShouldConstructNode(IContentNode node, Index index);
     }
 }

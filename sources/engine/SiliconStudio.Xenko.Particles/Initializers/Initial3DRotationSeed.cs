@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(30)]
         [Display("Orientation A")]
-        public Quaternion RotationQuaternionMin { get; set; } = new Quaternion(0, 0, 0, 1);
+        public Quaternion RotationQuaternionMin { get; set; } = Quaternion.Identity;
 
         /// <summary>
         /// The second orientation to interpolate to
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(40)]
         [Display("Orientation B")]
-        public Quaternion RotationQuaternionMax { get; set; } = new Quaternion(0, 0, 0, 1);
+        public Quaternion RotationQuaternionMax { get; set; } = Quaternion.Identity;
         
     }
 }

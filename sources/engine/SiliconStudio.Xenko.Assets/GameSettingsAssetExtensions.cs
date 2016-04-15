@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets
                     gameSettings = currentPackage.GetGameSettingsAsset();
                 }
             }
-            return gameSettings ?? new GameSettingsAsset();
+            return gameSettings ?? GameSettingsFactory.Create();
         }
 
         public static GameSettingsAsset CloneGameSettingsAsset(this Package package)

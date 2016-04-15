@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
@@ -22,9 +21,9 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
-    /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
+    /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index);
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
 
     public class ObservableViewModel : DispatcherViewModel, IDisposable
     {
@@ -37,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
         private IObservableNode rootNode;
         private ObservableViewModel parent;
 
-        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update '{node.Name}'";
+        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
         public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
 
@@ -63,7 +62,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
             PropertiesProvider = propertyProvider;
-            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, null);
+            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
@@ -116,7 +115,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNodes.Skip(1).Any(x => x.Type != rootNodeType))
                 rootNodeType = typeof(object);
 
-            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, null);
+            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, Index.Empty);
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
             return combinedViewModel;
@@ -182,12 +181,12 @@ namespace SiliconStudio.Presentation.Quantum
             NodeValueChanged?.Invoke(this, new ObservableViewModelNodeValueChangedArgs(this, observableNodePath));
         }
 
-        internal void BeginCombinedAction()
+        internal CombinedActionsContext BeginCombinedAction(string actionName, string observableNodePath)
         {
-            ServiceProvider.TryGet<ITransactionalActionStack>()?.BeginTransaction();
+            return new CombinedActionsContext(this, actionName, observableNodePath);
         }
 
-        internal void EndCombinedAction(string displayName, string observableNodePath, object value)
+        internal void EndCombinedAction(string observableNodePath)
         {
             var handler = NodeValueChanged;
             if (handler != null)
@@ -198,10 +197,9 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             combinedNodeChanges.Clear();
-            ServiceProvider.TryGet<ITransactionalActionStack>()?.EndTransaction(displayName);
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
         }

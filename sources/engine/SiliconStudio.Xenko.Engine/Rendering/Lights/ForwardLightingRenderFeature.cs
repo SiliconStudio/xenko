@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
@@ -246,7 +246,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
@@ -272,7 +272,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private unsafe bool PrepareLightParameterEntry(RenderThreadContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
+        private unsafe bool PrepareLightParameterEntry(RenderDrawContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
         {
             var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
 
@@ -314,12 +314,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Set values
             foreach (var lightGroup in lightParameterEntry.DirectLightGroupDatas)
             {
-                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(context, parameters);
             }
 
             foreach (var lightGroup in lightParameterEntry.EnvironmentLightDatas)
             {
-                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(context, parameters);
             }
 
             context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightParameterEntry.Resources);

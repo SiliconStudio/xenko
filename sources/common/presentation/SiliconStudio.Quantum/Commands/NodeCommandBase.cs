@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SiliconStudio.ActionStack;
-using SiliconStudio.Core.Reflection;
+﻿using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
@@ -23,7 +18,7 @@ namespace SiliconStudio.Quantum.Commands
         public abstract bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
         /// <inheritdoc/>
-        public abstract void Execute(IContent content, object index, object parameter);
+        public abstract void Execute(IContent content, Index index, object parameter);
 
         /// <inheritdoc/>
         public virtual void StartCombinedInvoke()

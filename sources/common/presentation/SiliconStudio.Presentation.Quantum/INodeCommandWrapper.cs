@@ -8,6 +8,8 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public interface INodeCommandWrapper : ICommandBase
     {
+        string ActionName { get; }
+
         string Name { get; }
 
         CombineMode CombineMode { get; }
