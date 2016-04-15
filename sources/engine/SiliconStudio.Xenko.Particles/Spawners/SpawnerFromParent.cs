@@ -98,6 +98,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                 return;
 
             Parent?.RemoveRequiredField(ParticleFields.ChildrenFlags[groupIndex]);
+
+            if (Parent != null) Parent.DelayParticleDeath--;
         }
 
         /// <summary>
@@ -112,6 +114,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                 return;
 
             Parent?.AddRequiredField(ParticleFields.ChildrenFlags[groupIndex]);
+
+            if (Parent != null) Parent.DelayParticleDeath++;
         }
 
         /// <summary>

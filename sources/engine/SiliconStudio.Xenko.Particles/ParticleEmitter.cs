@@ -118,6 +118,12 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         private Vector2 particleLifetime = new Vector2(1, 1);
 
+        /// <summary>
+        /// If positive, forces particles to stay one frame more when they are about ot expire
+        /// </summary>
+        [DataMemberIgnore]
+        public int DelayParticleDeath { get; set; } = 0;
+
         // Draw location can be different than the particle position if we are using local coordinate system
         private readonly ParticleTransform drawTransform = new ParticleTransform();
         private readonly ParticleTransform identityTransform = new ParticleTransform();
@@ -696,9 +702,21 @@ namespace SiliconStudio.Xenko.Particles
 
                     var startingLife = particleLifetime.X + lifeStep * randSeed.GetFloat(0);
 
-                    if (*life <= 0 || (*life -= (dt / startingLife)) <= 0)
+                    if (*life <= MathUtil.ZeroTolerance)
                     {
                         particleEnumerator.RemoveCurrent(ref particle);
+                    }
+                    else
+                    if ((*life -= (dt / startingLife)) <= MathUtil.ZeroTolerance)
+                    {
+                        if (DelayParticleDeath > 0)
+                        {
+                            *life = MathUtil.ZeroTolerance;
+                        }
+                        else
+                        {
+                            particleEnumerator.RemoveCurrent(ref particle);
+                        }
                     }
                 }
             }
