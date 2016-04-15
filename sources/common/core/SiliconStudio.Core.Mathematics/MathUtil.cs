@@ -43,7 +43,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// The value for which all absolute numbers smaller than are considered equal to zero.
         /// </summary>
-        public const double ZeroToleranceDouble = Double.Epsilon*8;
+        public const double ZeroToleranceDouble = double.Epsilon*8;
 
         /// <summary>
         /// A value specifying the approximation of π which is 180 degrees.
@@ -144,16 +144,16 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Does something with arrays.
+        /// Creates a one-dimensional array of the specified <typeparamref name="T"/> and <paramref name="length"/> filled with the specified <paramref name="value"/>.
         /// </summary>
-        /// <typeparam name="T">Most likely the type of elements in the array.</typeparam>
-        /// <param name="value">Who knows what this is for.</param>
-        /// <param name="count">Probably the length of the array.</param>
-        /// <returns>An array of who knows what.</returns>
-        public static T[] Array<T>(T value, int count)
+        /// <typeparam name="T">The Type of the array to create.</typeparam>
+        /// <param name="value">The value to fill the array with.</param>
+        /// <param name="length">The size of the array to create.</param>
+        /// <returns>A new one-dimensional array of the specified type with the specified length and filled with the specified value.</returns>
+        public static T[] Array<T>(T value, int length)
         {
-            T[] result = new T[count];
-            for (int i = 0; i < count; i++)
+            var result = new T[length];
+            for (var i = 0; i < length; i++)
                 result[i] = value;
 
             return result;
@@ -512,6 +512,70 @@ namespace SiliconStudio.Core.Mathematics
         public static float PreviousPowerOfTwo(float size)
         {
             return (float)Math.Pow(2, Math.Floor(Math.Log(size, 2)));
+        }
+
+        /// <summary>
+        /// Snaps a value to the nearest interval.
+        /// </summary>
+        /// <param name="value">The value to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>The nearest interval to the provided value.</returns>
+        public static float Snap(float value, float gap)
+        {
+            return (float)Math.Round((value / gap), MidpointRounding.AwayFromZero) * gap;
+        }
+
+        /// <summary>
+        /// Snaps a value to the nearest interval.
+        /// </summary>
+        /// <param name="value">The value to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>The nearest interval to the provided value.</returns>
+        public static double Snap(double value, double gap)
+        {
+            return Math.Round((value / gap), MidpointRounding.AwayFromZero) * gap;
+        }
+
+        /// <summary>
+        /// Snaps all vector components to the nearest interval.
+        /// </summary>
+        /// <param name="value">The vector to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>A vector which components are snapped to the nearest interval.</returns>
+        public static Vector2 Snap(Vector2 value, float gap)
+        {
+            return new Vector2(
+                (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap);
+        }
+
+        /// <summary>
+        /// Snaps all vector components to the nearest interval.
+        /// </summary>
+        /// <param name="value">The vector to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>A vector which components are snapped to the nearest interval.</returns>
+        public static Vector3 Snap(Vector3 value, float gap)
+        {
+            return new Vector3(
+                (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Z / gap), MidpointRounding.AwayFromZero) * gap);
+        }
+
+        /// <summary>
+        /// Snaps all vector components to the nearest interval.
+        /// </summary>
+        /// <param name="value">The vector to snap.</param>
+        /// <param name="gap">The interval gap.</param>
+        /// <returns>A vector which components are snapped to the nearest interval.</returns>
+        public static Vector4 Snap(Vector4 value, float gap)
+        {
+            return new Vector4(
+                (float)Math.Round((value.X / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Y / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.Z / gap), MidpointRounding.AwayFromZero) * gap,
+                (float)Math.Round((value.W / gap), MidpointRounding.AwayFromZero) * gap);
         }
     }
 }

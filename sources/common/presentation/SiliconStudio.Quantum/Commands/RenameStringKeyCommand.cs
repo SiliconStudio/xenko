@@ -29,13 +29,13 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        public override void Execute(IContent content, object index, object parameter)
+        public override void Execute(IContent content, Index index, object parameter)
         {
-            var oldName = (string)index;
-            var newName = (string)parameter;
+            var oldName = index;
+            var newName = new Index(parameter);
             var renamedObject = content.Retrieve(oldName);
-            content.Remove(oldName, renamedObject);
-            content.Add(newName, renamedObject);
+            content.Remove(renamedObject, oldName);
+            content.Add(renamedObject, newName);
         }
     }
 }

@@ -14,9 +14,11 @@ namespace SiliconStudio.Presentation.Quantum
     {
         public delegate void PropertyChangeDelegate(string[] propertyNames);
         private readonly IGraphNode node;
+        private readonly string propertyName;
+        private readonly PropertyChangeDelegate propertyChanging;
+        private readonly PropertyChangeDelegate propertyChanged;
         private readonly Func<TContentType, TTargetType> converter;
-        private readonly EventHandler<ContentChangeEventArgs> changingHandler;
-        private readonly EventHandler<ContentChangeEventArgs> changedHandler;
+        private readonly bool notifyChangesOnly;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeBinding{TTargetType, TContentType}"/> class.
@@ -32,32 +34,20 @@ namespace SiliconStudio.Presentation.Quantum
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (converter == null) throw new ArgumentNullException(nameof(converter));
             this.node = node;
+            this.propertyName = propertyName;
+            this.propertyChanging = propertyChanging;
+            this.propertyChanged = propertyChanged;
             this.converter = converter;
-
-            changingHandler = (s, e) =>
-            {
-                if (!notifyChangesOnly || !Equals(e.Content.Retrieve(e.OldValue, e.Index), e.Content.Retrieve(e.NewValue, e.Index)))
-                {
-                    propertyChanging?.Invoke(new[] { propertyName });
-                }
-            };
-            node.Content.Changing += changingHandler;
-
-            changedHandler = (s, e) =>
-            {
-                if (!notifyChangesOnly || !Equals(e.Content.Retrieve(e.OldValue, e.Index), e.Content.Retrieve(e.NewValue, e.Index)))
-                {
-                    propertyChanged?.Invoke(new[] { propertyName });
-                }
-            };
-            node.Content.Changed += changedHandler;
+            this.notifyChangesOnly = notifyChangesOnly;
+            node.Content.Changing += ContentChanging;
+            node.Content.Changed += ContentChanged;
         }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            node.Content.Changing -= changingHandler;
-            node.Content.Changed -= changedHandler;
+            node.Content.Changing -= ContentChanging;
+            node.Content.Changed -= ContentChanged;
         }
 
         /// <summary>
@@ -80,6 +70,22 @@ namespace SiliconStudio.Presentation.Quantum
         public void SetNodeValue(TContentType value)
         {
             node.Content.Update(value);
+        }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
+            if (!notifyChangesOnly || !Equals(Content.Retrieve(e.OldValue, e.Index, e.Content.Descriptor), Content.Retrieve(e.NewValue, e.Index, e.Content.Descriptor)))
+            {
+                propertyChanging?.Invoke(new[] { propertyName });
+            }
+        }
+
+        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        {
+            if (!notifyChangesOnly || !Equals(Content.Retrieve(e.OldValue, e.Index, e.Content.Descriptor), Content.Retrieve(e.NewValue, e.Index, e.Content.Descriptor)))
+            {
+                propertyChanged?.Invoke(new[] { propertyName });
+            }
         }
     }
 
