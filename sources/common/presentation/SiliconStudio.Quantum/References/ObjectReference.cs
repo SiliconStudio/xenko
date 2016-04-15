@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum.References
         /// <param name="objectValue">A data object to reference. Can be null.</param>
         /// <param name="objectType">The type of data object to reference.</param>
         /// <param name="index">The index of this reference in its parent reference, if it is a <see cref="ReferenceEnumerable"/>.</param>
-        internal ObjectReference(object objectValue, Type objectType, object index)
+        internal ObjectReference(object objectValue, Type objectType, Index index)
         {
             Reference.CheckReferenceCreationSafeGuard();
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
@@ -40,7 +40,7 @@ namespace SiliconStudio.Quantum.References
         public Type Type { get; }
 
         /// <inheritdoc/>
-        public object Index { get; }
+        public Index Index { get; }
 
         /// <inheritdoc/>
         public ObjectReference AsObject => this;
@@ -54,9 +54,9 @@ namespace SiliconStudio.Quantum.References
         public Guid TargetGuid { get; private set; }
 
         /// <inheritdoc/>
-        public bool HasIndex(object index)
+        public bool HasIndex(Index index)
         {
-            return index == null;
+            return index.IsEmpty;
         }
 
         /// <inheritdoc/>
