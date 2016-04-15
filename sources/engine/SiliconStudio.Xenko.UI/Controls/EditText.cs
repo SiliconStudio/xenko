@@ -566,6 +566,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Accepted character are characters that the provided predicate function returns <value>true</value>.
         /// </summary>
         /// <remarks>If <see cref="CharacterFilterPredicate"/> is not set all characters are accepted.</remarks>
+        [DataMemberIgnore]
         public Func<char, bool> CharacterFilterPredicate
         {
             get

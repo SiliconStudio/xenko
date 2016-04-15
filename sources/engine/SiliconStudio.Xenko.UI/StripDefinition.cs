@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI
@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.UI
     /// <summary>
     /// Represent the definition of a grid strip.
     /// </summary>
+    [DataContract(nameof(StripDefinition))]
     public class StripDefinition
     {
         private float maximumSize;
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The actual size of the strip in virtual pixels.
         /// </summary>
+        [DataMemberIgnore]
         public float ActualSize { get; internal set; }
 
         /// <summary>
@@ -48,6 +50,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative.</exception>
         /// <exception cref="InvalidOperationException">The provided value is smaller than <see cref="MinimumSize"/></exception>
+        [DataMember]
         public float MaximumSize
         {
             get { return maximumSize; }
@@ -70,6 +73,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative or infinity.</exception>
         /// <exception cref="InvalidOperationException">The provided value is bigger than <see cref="MaximumSize"/></exception>
+        [DataMember]
         public float MinimumSize
         {
             get { return minimumSize; }
@@ -90,6 +94,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the type of the strip.
         /// </summary>
+        [DataMember]
         public StripType Type
         {
             get { return type; }
@@ -109,6 +114,7 @@ namespace SiliconStudio.Xenko.UI
         /// Note that the value is interpreted differently depending on the strip <see cref="Type"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The size must be finite positive value.</exception>
+        [DataMember]
         public float SizeValue
         {
             get { return sizeValue; }

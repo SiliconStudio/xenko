@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the text of the text block
         /// </summary>
         [DataMember]
-        public Color TextColor { get; set; }
+        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit
