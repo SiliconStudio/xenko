@@ -146,6 +146,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     FlipRenderTarget = true,
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3,
+                    UnrollForLoops = true,
                     KeepSamplers = isVulkan,
                     CombinedSamplers = new List<string>(),//reflection.ResourceBindings.Join(reflection.SamplerStates, data => data.Param.KeyName, binding => binding.KeyName, (data, binding) => data.Param.RawName).ToList(),
                     InputAttributeNames = inputAttributeNames
