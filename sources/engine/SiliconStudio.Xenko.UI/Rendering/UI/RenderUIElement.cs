@@ -1,8 +1,9 @@
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.UI.Engine;
 
-namespace SiliconStudio.Xenko.Rendering.UI
+namespace SiliconStudio.Xenko.UI.Rendering.UI
 {
     [DefaultPipelinePlugin(typeof(UIPipelinePlugin))]
     public class RenderUIElement : RenderObject

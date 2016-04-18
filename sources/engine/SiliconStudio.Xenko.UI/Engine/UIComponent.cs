@@ -4,13 +4,12 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.UI;
-using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.UI.Rendering.UI;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.UI.Engine
 {
     /// <summary>
     /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.

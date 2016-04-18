@@ -3,8 +3,9 @@
 
 using System.Linq;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Rendering.UI
+namespace SiliconStudio.Xenko.UI.Rendering.UI
 {
     /// <summary>
     /// Automatically registers UI rendering.

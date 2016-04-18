@@ -14,6 +14,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Engine;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
@@ -73,6 +74,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         }
 
         /// <summary>
+        /// Gets the UI system.
+        /// </summary>
+        /// <value>The UI.</value>
+        protected UISystem UI { get; private set; }
+
+        /// <summary>
         /// Create an instance of the game test
         /// </summary>
         public UITestGameBase()
@@ -104,6 +111,13 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UIComponent.IsFullScreen = true;
             UIComponent.VirtualResolution = new Vector3(1000, 500, 500);
             UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
+
+            UI = (UISystem)Services.GetService(typeof(UISystem));
+            if (UI == null)
+            {
+                UI = new UISystem(Services);
+                GameSystems.Add(UI);
+            }
         }
 
         protected virtual void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)

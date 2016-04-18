@@ -10,6 +10,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Engine;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {

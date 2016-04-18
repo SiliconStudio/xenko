@@ -234,6 +234,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Quantum.Tests", "..\sources\common\presentation\SiliconStudio.Quantum.Tests\SiliconStudio.Quantum.Tests.csproj", "{49AAA22D-D1C8-4E0F-82E8-F462D5442463}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI", "..\sources\engine\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj", "{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C121A566-555E-42B9-9B0A-1696529A9088} = {C121A566-555E-42B9-9B0A-1696529A9088}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.UI.Tests\SiliconStudio.Xenko.UI.Tests.Windows.csproj", "{E7B1B17F-D04B-4978-B504-A6BB3EE846C9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -368,8 +371,8 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4

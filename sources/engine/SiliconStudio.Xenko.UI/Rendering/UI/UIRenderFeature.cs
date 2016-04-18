@@ -1,28 +1,22 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.Collections.Generic;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.UI.Renderers;
+using SiliconStudio.Xenko.UI.Engine;
 
-namespace SiliconStudio.Xenko.Rendering
+namespace SiliconStudio.Xenko.UI.Rendering.UI
 {
-    // TODO GRAPHICS REFACTOR rewrite this
-    /// <summary>
-    /// The renderer in charge of drawing the UI.
-    /// </summary>
-    [Obsolete]
-    public class UIComponentRenderer : EntityComponentRendererBase, IRendererManager
+    public class UIRenderFeature : RootRenderFeature
     {
         private IGame game;
         private UISystem uiSystem;
@@ -43,81 +37,85 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly List<PointerEvent> compactedPointerEvents = new List<PointerEvent>();
 
-        private readonly List<UIComponentProcessor.UIComponentState> uiElementStates = new List<UIComponentProcessor.UIComponentState>();
+        private readonly List<RenderUIElement> uiElementStates = new List<RenderUIElement>();
 
         private readonly ViewParameters viewParameters = new ViewParameters();
 
         private Vector2 viewportTargetRatio;
+
+        public override Type SupportedRenderObjectType => typeof(RenderUIElement);
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
             Name = "UIComponentRenderer";
-            game = (IGame)Services.GetService(typeof(IGame));
-            input = (InputManager)Services.GetService(typeof(InputManager));
-            uiSystem = (UISystem)Services.GetService(typeof(UISystem));
+            game = (IGame)RenderSystem.Services.GetService(typeof(IGame));
+            input = (InputManager)RenderSystem.Services.GetService(typeof(InputManager));
+            uiSystem = (UISystem)RenderSystem.Services.GetService(typeof(UISystem));
+            if (uiSystem == null)
+            {
+                uiSystem = new UISystem(RenderSystem.Services);
+                game?.GameSystems.Add(uiSystem);
+            }
 
-            rendererManager = new RendererManager(new DefaultRenderersFactory(Services));
+            rendererManager = new RendererManager(new DefaultRenderersFactory(RenderSystem.Services));
 
             batch = uiSystem.Batch;
         }
 
-        protected override void Destroy()
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            base.Destroy();
+            base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
-            rendererManager.Dispose();
-        }
+            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
 
-        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
-        {
-            var uiProcessor = SceneInstance.GetProcessor<UIComponentProcessor>();
+            var uiProcessor = renderView.SceneInstance.GetProcessor<UIRenderProcessor>();
             if (uiProcessor == null)
                 return;
 
-            foreach (var uiRoot in uiProcessor.UIRoots)
-            {
-                // Perform culling on group and accept
-                if (!CurrentCullingMask.Contains(uiRoot.UIComponent.Entity.Group))
-                    continue;
+            //foreach (var uiRoot in uiProcessor.UIRoots)
+            //{
+            //    // Perform culling on group and accept
+            //    if (!renderView.SceneCameraRenderer.CullingMask.Contains(uiRoot.UIComponent.Entity.Group))
+            //        continue;
 
-                // skips empty UI elements
-                if(uiRoot.UIComponent.RootElement == null)
-                    continue;
+            //    // skips empty UI elements
+            //    if (uiRoot.UIComponent.RootElement == null)
+            //        continue;
 
-                // Project the position
-                // TODO: This code is duplicated from SpriteComponent -> unify it at higher level?
-                var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
+            //    // Project the position
+            //    // TODO: This code is duplicated from SpriteComponent -> unify it at higher level?
+            //    var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
 
-                float projectedZ;
-                if (uiRoot.UIComponent.IsFullScreen)
-                {
-                    projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
-                }
-                else
-                {
-                    Vector4 projectedPosition;
-                    var cameraComponent = context.Tags.Get(CameraComponentRendererExtensions.Current);
-                    if (cameraComponent == null)
-                        continue;
+            //    float projectedZ;
+            //    if (uiRoot.UIComponent.IsFullScreen)
+            //    {
+            //        projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
+            //    }
+            //    else
+            //    {
+            //        Vector4 projectedPosition;
+            //        var cameraComponent = renderView.Camera;
+            //        if (cameraComponent == null)
+            //            continue;
 
-                    Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
-                    projectedZ = projectedPosition.Z / projectedPosition.W;
-                }
+            //        Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
+            //        projectedZ = projectedPosition.Z / projectedPosition.W;
+            //    }
 
-                transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
-            }
-        }
+            //    transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
+            //}
 
-        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
-        {
             // build the list of the UI elements to render
             uiElementStates.Clear();
-            for (var i = fromIndex; i <= toIndex; ++i)
+            for (var index = startIndex; index < endIndex; index++)
             {
-                var renderItem = renderItems[i];
-                uiElementStates.Add((UIComponentProcessor.UIComponentState)renderItem.DrawContext);
+                var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
+                var renderNode = GetRenderNode(renderNodeReference);
+                var renderElement = (RenderUIElement)renderNode.RenderObject;
+ 
+                uiElementStates.Add(renderElement);
             }
 
             // evaluate the current draw time (game instance is null for thumbnails)
@@ -126,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering
             // update the rendering context
             renderingContext.GraphicsContext = context.GraphicsContext;
             renderingContext.Time = drawTime;
-            renderingContext.RenderTarget = CurrentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
+            renderingContext.RenderTarget = currentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
             // cache the ratio between viewport and target.
             var viewportSize = context.CommandList.Viewport.Size;
@@ -143,11 +141,11 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     var renderTarget = renderingContext.RenderTarget;
                     var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
-                    scopedDepthBuffer = PushScopedResource(context.RenderContext.Allocator.GetTemporaryTexture(description));
+                    scopedDepthBuffer = context.RenderContext.Allocator.GetTemporaryTexture(description);
                     break;
                 }
             }
-            
+
             // render the UI elements of all the entities
             foreach (var uiElementState in uiElementStates)
             {
@@ -169,7 +167,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedHeightAdaptableWidth)
                         virtualResolution.X = virtualResolution.Y * targetSize.X / targetSize.Y;
                 }
-                
+
                 // Update the view parameters
                 if (uiComponent.IsFullScreen)
                 {
@@ -177,10 +175,10 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 else
                 {
-                    var cameraComponent = context.Tags.Get(CameraComponentRendererExtensions.Current);
+                    var cameraComponent = context.RenderContext.Tags.Get(CameraComponentRendererExtensions.Current);
                     viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
-                
+
                 // Analyze the input and trigger the UI element touch and key events
                 // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
                 //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
@@ -201,14 +199,14 @@ namespace SiliconStudio.Xenko.Rendering
                 renderingContext.ViewMatrix = viewParameters.ViewMatrix;
                 renderingContext.ProjectionMatrix = viewParameters.ProjectionMatrix;
                 renderingContext.ViewProjectionMatrix = viewParameters.ViewProjectionMatrix;
-                renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : CurrentRenderFrame.DepthStencil;
+                renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : currentRenderFrame.DepthStencil;
                 renderingContext.ShouldSnapText = uiComponent.SnapText;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
                 var virtualOrigin = viewParameters.ViewProjectionMatrix.Row4;
-                var virtualWidth = new Vector4(virtualResolution.X/2, 0, 0, 1);
+                var virtualWidth = new Vector4(virtualResolution.X / 2, 0, 0, 1);
                 var virtualHeight = new Vector4(0, virtualResolution.Y / 2, 0, 1);
-                var transformedVirtualWidth = Vector4.Zero; 
+                var transformedVirtualWidth = Vector4.Zero;
                 var transformedVirtualHeight = Vector4.Zero;
                 for (int i = 0; i < 4; i++)
                 {
@@ -218,7 +216,10 @@ namespace SiliconStudio.Xenko.Rendering
                 var projectedOrigin = virtualOrigin.XY() / virtualOrigin.W;
                 var projectedVirtualWidth = viewportSize * (transformedVirtualWidth.XY() / transformedVirtualWidth.W - projectedOrigin);
                 var projectedVirtualHeight = viewportSize * (transformedVirtualHeight.XY() / transformedVirtualHeight.W - projectedOrigin);
-                
+
+                // set default resource dictionary
+                rootElement.ResourceDictionary = uiSystem.DefaultResourceDictionary;
+
                 // update layouting context.
                 layoutingContext.VirtualResolution = virtualResolution;
                 layoutingContext.RealResolution = viewportSize;
@@ -243,11 +244,11 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
-                context.CommandList.SetDepthAndRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetRenderTargetAndViewport(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
                 ReccursiveDrawWithClipping(context, rootElement);
@@ -260,7 +261,13 @@ namespace SiliconStudio.Xenko.Rendering
             ClearPointerEvents();
 
             // revert the depth stencil buffer to the default value 
-            context.CommandList.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
+            context.CommandList.SetRenderTargetsAndViewport(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
+
+            // Release scroped texture
+            if (scopedDepthBuffer != null)
+            {
+                context.RenderContext.Allocator.ReleaseReference(scopedDepthBuffer);
+            }
         }
 
         private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element)
@@ -277,15 +284,15 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // flush current elements
                 batch.End();
-                
+
                 // render the clipping region
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue += 1;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
 
             // render the design of the element
@@ -304,13 +311,13 @@ namespace SiliconStudio.Xenko.Rendering
                 renderingContext.DepthBias = element.MaxChildrenDepthBias;
 
                 // render the clipping region
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue -= 1;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
         }
 
@@ -354,7 +361,7 @@ namespace SiliconStudio.Xenko.Rendering
             compactedPointerEvents.Clear();
         }
 
-        private void UpdateTouchEvents(UIComponentProcessor.UIComponentState state, GameTime gameTime)
+        private void UpdateTouchEvents(RenderUIElement state, GameTime gameTime)
         {
             var rootElement = state.UIComponent.RootElement;
             var intersectionPoint = Vector3.Zero;
@@ -449,7 +456,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void UpdateMouseOver(UIComponentProcessor.UIComponentState state)
+        private void UpdateMouseOver(RenderUIElement state)
         {
             if (input == null || !input.HasMouse)
                 return;
@@ -651,7 +658,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Rotation of Pi along 0x to go from UI space to world space
-                worldMatrix.Row2 = -worldMatrix.Row2; 
+                worldMatrix.Row2 = -worldMatrix.Row2;
                 worldMatrix.Row3 = -worldMatrix.Row3;
 
                 ProjectionMatrix = camera.ProjectionMatrix;

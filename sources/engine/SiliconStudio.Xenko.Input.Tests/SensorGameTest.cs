@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Engine;
 using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Input.Tests
