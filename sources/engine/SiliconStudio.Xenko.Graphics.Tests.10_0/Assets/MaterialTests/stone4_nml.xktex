@@ -1,0 +1,16 @@
+!Texture
+Id: 38ae6ae8-009d-4ae5-87ba-d0e3be283dcd
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../../samples/Graphics/MaterialSample/Resources/stone4_nml.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+Hint: NormalMap
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

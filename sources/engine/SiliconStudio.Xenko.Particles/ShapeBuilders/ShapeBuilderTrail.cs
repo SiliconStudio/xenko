@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <inheritdoc />
-        public override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
+        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Get all the required particle fields
@@ -122,13 +122,30 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
             var trsIdentity = (spaceScale == 1f);
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
-            trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
+            trsIdentity = trsIdentity && (spaceRotation.Equals(Quaternion.Identity));
 
 
             var renderedParticles = 0;
+            vtxBuilder.RestartBuffer();
+
+            uint oldOrderValue = 0;
+            var orderField = sorter.GetField(ParticleFields.Order);
 
             foreach (var particle in sorter)
             {
+                if (orderField.IsValid())
+                {
+                    var orderValue = (*((uint*)particle[orderField]));
+
+                    if ((orderValue >> 16) != (oldOrderValue >> 16))
+                    {
+                        ribbonizer.Ribbonize(vtxBuilder, QuadsPerParticle);
+                        ribbonizer.RibbonSplit();
+                    }
+
+                    oldOrderValue = orderValue;
+                }
+
                 var centralPos = particle.Get(positionField);
 
                 var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;
@@ -217,6 +234,14 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     positions = new Vector3[requiredCapacity];
                     directions = new Vector3[requiredCapacity];
                 }
+            }
+
+            /// <summary>
+            /// Splits (cuts) the trail without restarting or rebuilding the vertex buffer
+            /// </summary>
+            public void RibbonSplit()
+            {
+                lastParticle = 0;
             }
 
             /// <summary>
@@ -334,8 +359,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             {
                 if (lastParticle <= 0)
                     return;
-
-                vtxBuilder.RestartBuffer();
 
                 var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
                 var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);

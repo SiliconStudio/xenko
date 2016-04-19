@@ -50,7 +50,7 @@ namespace SiliconStudio.Presentation.Services
             {
                 var operationA = transaction.Operations[i] as IMergeableOperation;
                 var operationB = transaction.Operations[j] as IMergeableOperation;
-                if (operationA != null && operationB != null && operationB.CanMerge(operationA))
+                if (operationA != null && operationB != null && operationA.CanMerge(operationB))
                 {
                     operationA.Merge(transaction.Operations[j]);
                     transaction.Operations.RemoveAt(j);

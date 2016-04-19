@@ -1,30 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class RenderThreadContext : ComponentBase
-    {
-        public RenderContext RenderContext { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="ResourceGroup"/> allocator.
-        /// </summary>
-        public ResourceGroupAllocator ResourceGroupAllocator { get; }
-
-        public RenderThreadContext(RenderContext renderContext, ResourceGroupAllocator resourceGroupAllocator)
-        {
-            RenderContext = renderContext;
-            ResourceGroupAllocator = resourceGroupAllocator;
-        }
-    }
-
     /// <summary>
     /// Rendering context used during <see cref="IGraphicsRenderer.Draw"/>.
     /// </summary>
-    public sealed class RenderDrawContext : RenderThreadContext
+    public sealed class RenderDrawContext : ComponentBase
     {
         // States
         private int currentStateIndex = -1;
@@ -33,14 +18,25 @@ namespace SiliconStudio.Xenko.Rendering
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
 
         public RenderDrawContext(IServiceRegistry services, RenderContext renderContext, GraphicsContext graphicsContext)
-            : base(renderContext, graphicsContext.ResourceGroupAllocator)
         {
             if (services == null) throw new ArgumentNullException("services");
 
+            RenderContext = renderContext;
+            ResourceGroupAllocator = graphicsContext.ResourceGroupAllocator;
             GraphicsDevice = RenderContext.GraphicsDevice;
             GraphicsContext = graphicsContext;
             CommandList = graphicsContext.CommandList;
         }
+
+        /// <summary>
+        /// Gets the render context.
+        /// </summary>
+        public RenderContext RenderContext { get; }
+
+        /// <summary>
+        /// Gets the <see cref="ResourceGroup"/> allocator.
+        /// </summary>
+        public ResourceGroupAllocator ResourceGroupAllocator { get; }
 
         /// <summary>
         /// Gets the command list.
@@ -50,6 +46,18 @@ namespace SiliconStudio.Xenko.Rendering
         public GraphicsContext GraphicsContext { get; private set; }
 
         public GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Locks the command list until <see cref="IDisposable.Dispose()"/> is called on the returned value type.
+        /// </summary>
+        /// <returns></returns>
+        /// This is necessary only during Collect(), Extract() and Prepare() phases, not during Draw().
+        /// Some graphics API might not require actual locking, in which case this object might do nothing.
+        public CommandListLock LockCommandList()
+        {
+            // TODO: Temporary, for now we use the CommandList itself as a lock
+            return new CommandListLock(CommandList);
+        }
 
         /// <summary>
         /// Pushes render targets and viewport state.
@@ -145,6 +153,29 @@ namespace SiliconStudio.Xenko.Rendering
                 commandList.SetRenderTargetsAndViewport(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
                 if (RenderTargetCount > 0)
                     commandList.SetViewports(Viewports);
+            }
+        }
+
+        /// <summary>
+        /// Used to prevent concurrent uses of CommandList.
+        /// </summary>
+        public struct CommandListLock : IDisposable
+        {
+            private readonly bool lockTaken;
+            private object lockObject;
+
+            public CommandListLock(object lockObject)
+            {
+                this.lockObject = lockObject;
+                lockTaken = false;
+                Monitor.Enter(lockObject, ref lockTaken);
+            }
+
+            public void Dispose()
+            {
+                if (lockTaken)
+                    Monitor.Exit(lockObject);
+                lockObject = null;
             }
         }
     }

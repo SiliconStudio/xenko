@@ -694,6 +694,162 @@ Compositions:
             AssertShaderSourceEqual(expected, pixelShaders);
         }
 
+        /// <summary>
+        /// Test material with 3 shading models and 2 layers
+        /// </summary>
+        [Test]
+        public void Test2Layers3ShadingModels()
+        {
+            // - LayerRoot: SM0
+            //   - Layer1: SM1
+            //   - Layer2: SM2
+            var context = new MaterialGeneratorContextExtended();
+            var materialDesc = new MaterialDescriptor
+            {
+                Attributes =
+                {
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(Color.Red)),
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature()
+                },
+
+                Layers =
+                {
+                    new MaterialBlendLayer()
+                    {
+                        BlendMap = new ComputeFloat(0.5f) { Key = BlendValueCustom1 },
+                        Material = context.MapTo(new Material(), new MaterialDescriptor()
+                        {
+                            Attributes =
+                            {
+                                Specular= new MaterialMetalnessMapFeature(new ComputeFloat(1.0f)),
+                                SpecularModel = new MaterialSpecularMicrofacetModelFeature()
+                            },
+                        })
+                    },
+                    new MaterialBlendLayer()
+                    {
+                        BlendMap = new ComputeFloat(0.1f) { Key = BlendValueCustom2 },
+                        Material = context.MapTo(new Material(), new MaterialDescriptor()
+                        {
+                            Attributes =
+                            {
+                                Emissive = new MaterialEmissiveMapFeature(new ComputeColor(Color.Blue))
+                            },
+                        })
+                    }
+
+                }
+            };
+
+            var result = MaterialGenerator.Generate(materialDesc, context, "diffuse_and_specular_and_emissive");
+            Assert.False(result.HasErrors);
+
+            var material = result.Material;
+            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+
+            // Check that the color is correctly store in the shader parameters
+            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+
+            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+
+            var expected = @"!ShaderMixinSource
+Mixins:
+    -   ClassName: MaterialSurfaceArray
+Compositions:
+    layers: !ShaderArraySource
+        Values:
+            - !ShaderMixinSource
+                Mixins:
+                    -   ClassName: MaterialSurfaceDiffuse
+                Compositions:
+                    diffuseMap: !ShaderClassSource
+                        ClassName: ComputeColorConstantColorLink
+                        GenericArguments: [Material.DiffuseValue]
+            - !ShaderMixinSource
+                Mixins:
+                    -   ClassName: MaterialSurfaceLightingAndShading
+                Compositions:
+                    surfaces: !ShaderArraySource
+                        Values:
+                            - !ShaderClassSource
+                                ClassName: MaterialSurfaceShadingDiffuseLambert
+                                GenericArguments: [false]
+            - !ShaderMixinSource
+                Mixins:
+                    -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                        GenericArguments: [matBlend, r]
+                Compositions:
+                    computeColorSource: !ShaderClassSource
+                        ClassName: ComputeColorConstantFloatLink
+                        GenericArguments: [TestMaterialGenerator.BlendValueCustom1]
+            - !ShaderMixinSource
+                Mixins:
+                    -   ClassName: MaterialSurfaceShadingBlend
+                Compositions:
+                    layers: !ShaderArraySource
+                        Values:
+                            - !ShaderMixinSource
+                                Mixins:
+                                    -   ClassName: MaterialSurfaceMetalness
+                                Compositions:
+                                    metalnessMap: !ShaderClassSource
+                                        ClassName: ComputeColorConstantFloatLink
+                                        GenericArguments: [Material.MetalnessValue]
+                            - !ShaderMixinSource
+                                Mixins:
+                                    -   ClassName: MaterialSurfaceLightingAndShading
+                                Compositions:
+                                    surfaces: !ShaderArraySource
+                                        Values:
+                                            - !ShaderMixinSource
+                                                Mixins:
+                                                    -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
+                                                Compositions:
+                                                    fresnelFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetFresnelSchlick
+                                                    geometricShadowingFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+                                                    normalDistributionFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
+            - !ShaderMixinSource
+                Mixins:
+                    -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                        GenericArguments: [matBlend, r]
+                Compositions:
+                    computeColorSource: !ShaderClassSource
+                        ClassName: ComputeColorConstantFloatLink
+                        GenericArguments: [TestMaterialGenerator.BlendValueCustom2]
+            - !ShaderMixinSource
+                Mixins:
+                    -   ClassName: MaterialSurfaceShadingBlend
+                Compositions:
+                    layers: !ShaderArraySource
+                        Values:
+                            - !ShaderMixinSource
+                                Mixins:
+                                    -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                        GenericArguments: [matEmissive, rgba]
+                                Compositions:
+                                    computeColorSource: !ShaderClassSource
+                                        ClassName: ComputeColorConstantColorLink
+                                        GenericArguments: [Material.EmissiveValue]
+                            - !ShaderMixinSource
+                                Mixins:
+                                    -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                        GenericArguments: [matEmissiveIntensity, r]
+                                Compositions:
+                                    computeColorSource: !ShaderClassSource
+                                        ClassName: ComputeColorConstantFloatLink
+                                        GenericArguments: [Material.EmissiveIntensity]
+                            - !ShaderClassSource
+                                ClassName: MaterialSurfaceEmissiveShading
+                                GenericArguments: [false]";
+
+            AssertShaderSourceEqual(expected, pixelShaders);
+        }
+
+
         private class MaterialGeneratorContextExtended : MaterialGeneratorContext
         {
             private readonly Dictionary<object, object> assetMap = new Dictionary<object, object>();

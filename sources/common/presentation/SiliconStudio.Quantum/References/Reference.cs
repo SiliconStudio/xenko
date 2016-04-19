@@ -14,9 +14,9 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// A constant value used as index of a reference that is not in a collection.
         /// </summary>
-        internal static readonly object NotInCollection = new object();
+        internal static readonly Index NotInCollection = new Index(new object());
 
-        internal static IReference CreateReference(object objectValue, Type objectType, object index)
+        internal static IReference CreateReference(object objectValue, Type objectType, Index index)
         {
             if (objectValue != null && !objectType.IsInstanceOfType(objectValue)) throw new ArgumentException(@"objectValue type does not match objectType", nameof(objectValue));
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Quantum.References
         }
 
 
-        internal static Type GetReferenceType(object objectValue, object index)
+        internal static Type GetReferenceType(object objectValue, Index index)
         {
             return objectValue != null && HasCollectionReference(objectValue.GetType()) && index == NotInCollection ? typeof(ReferenceEnumerable) : typeof(ObjectReference);
         }

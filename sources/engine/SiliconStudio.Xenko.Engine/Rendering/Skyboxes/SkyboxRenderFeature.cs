@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
+        public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             var renderEffects = RenderData.GetData(RenderEffectKey);
 
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderThreadContext context)
+        public override unsafe void Prepare(RenderDrawContext context)
         {
             base.Prepare(context);
 

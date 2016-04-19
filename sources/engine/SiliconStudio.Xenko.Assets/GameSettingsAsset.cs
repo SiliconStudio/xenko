@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtensions, false, AlwaysMarkAsRoot = true, AllowArchetype = false)]
+    [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [Display(80, "Game Settings")]
@@ -190,10 +190,8 @@ namespace SiliconStudio.Xenko.Assets
                     }
 
                     // Create asset
-                    var gameSettingsAsset = new GameSettingsAsset
-                    {
-                        DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location)
-                    };
+                    var gameSettingsAsset = GameSettingsFactory.Create();
+                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location);
 
                     var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
                     renderingSettings.DisplayOrientation = (RequiredDisplayOrientation) Get(packageSharedProfile.Properties, DisplayOrientation);
@@ -327,29 +325,6 @@ namespace SiliconStudio.Xenko.Assets
                     asset.Defaults.Add(setting);
                 }
             }
-        }
-
-        public static GameSettingsAsset New()
-        {
-            var asset = new GameSettingsAsset();
-            //add default filters , todo maybe a config file somewhere is better
-            asset.PlatformFilters.Add("PowerVR SGX 54[0-9]");
-            asset.PlatformFilters.Add("Adreno \\(TM\\) 2[0-9][0-9]");
-            asset.PlatformFilters.Add("Adreno (TM) 320");
-            asset.PlatformFilters.Add("Adreno (TM) 330");
-            asset.PlatformFilters.Add("Adreno \\(TM\\) 4[0-9][0-9]");
-            asset.PlatformFilters.Add("NVIDIA Tegra");
-            asset.PlatformFilters.Add("Intel(R) HD Graphics");
-            asset.PlatformFilters.Add("^Mali\\-4");
-            asset.PlatformFilters.Add("^Mali\\-T6");
-            asset.PlatformFilters.Add("^Mali\\-T7");
-
-            asset.Get<RenderingSettings>();
-            asset.Get<EditorSettings>();
-            asset.Get<TextureSettings>();
-            asset.Get<PhysicsSettings>();
-
-            return asset;
         }
     }
 }

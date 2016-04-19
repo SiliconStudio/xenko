@@ -112,7 +112,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 if (gameSettingsAsset == null)
                 {
                     builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
-                    gameSettingsAsset = new GameSettingsAsset();
+                    gameSettingsAsset = GameSettingsFactory.Create();
                 }
 
                 // Create context
@@ -120,8 +120,14 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform,
-                    BuildConfiguration =  builderOptions.ProjectConfiguration
+                    BuildConfiguration = builderOptions.ProjectConfiguration
                 };
+
+                // Command line properties
+                foreach (var property in builderOptions.Properties)
+                    context.OptionProperties.Add(property.Key, property.Value);
+
+                // Set current game settings
                 context.SetGameSettingsAsset(gameSettingsAsset);
 
                 // Copy properties from shared profiles to context properties

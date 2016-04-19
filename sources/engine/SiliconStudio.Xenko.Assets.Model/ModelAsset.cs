@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Model")]
-    [AssetDescription(FileExtension, false, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [Display(190, "Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
@@ -30,28 +30,18 @@ namespace SiliconStudio.Xenko.Assets.Model
         public const string FileExtension = ".xkm3d;pdxm3d";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelAsset"/> class.
-        /// </summary>
-        public ModelAsset()
-        {
-            ScaleImport = 1.0f;
-            Materials = new List<ModelMaterial>();
-            SetDefaults();
-        }
-
-        /// <summary>
         /// Gets or sets the scale import.
         /// </summary>
         /// <value>The scale import.</value>
         /// <userdoc>The scale applied when importing a model.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
-        public float ScaleImport { get; set; }
+        public float ScaleImport { get; set; } = 1.0f;
 
         /// <inheritdoc/>
         [DataMember(40)]
         [MemberCollection(ReadOnly = true)]
-        public List<ModelMaterial> Materials { get; }
+        public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         /// <summary>
         /// Gets or sets the Skeleton.

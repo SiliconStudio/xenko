@@ -480,7 +480,10 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal protected virtual void PrepareContext()
+        /// <summary>
+        /// Creates or updates <see cref="Context"/> before window and device are created.
+        /// </summary>
+        protected virtual void PrepareContext()
         {
         }
 

@@ -11,7 +11,7 @@ using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
-
+using SiliconStudio.Quantum;
 using Expression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
             ReservedNames.Add("Type");
         }
 
-        protected ObservableNode(ObservableViewModel ownerViewModel, object index = null)
+        protected ObservableNode(ObservableViewModel ownerViewModel, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
             Owner = ownerViewModel;
@@ -104,7 +104,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
         /// </summary>
-        public object Index { get; }
+        public Index Index { get; }
 
         /// <summary>
         /// Gets a unique identifier for this observable node.
@@ -548,11 +548,11 @@ namespace SiliconStudio.Presentation.Quantum
                 return 1;
 
             // Then we use index, if they are set and comparable.
-            if (a.Index != null && b.Index != null)
+            if (!a.Index.IsEmpty && !b.Index.IsEmpty)
             {
-                if (a.Index.GetType() == b.Index.GetType() && a.Index is IComparable)
+                if (a.Index.Value.GetType() == b.Index.Value.GetType())
                 {
-                    return ((IComparable)a.Index).CompareTo(b.Index);
+                    return a.Index.CompareTo(b.Index); 
                 }
             }
 

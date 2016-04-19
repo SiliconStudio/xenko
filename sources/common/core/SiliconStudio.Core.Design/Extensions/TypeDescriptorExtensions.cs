@@ -128,56 +128,5 @@ namespace SiliconStudio.Core.Extensions
 
             return type;
         }
-
-        /// <summary>
-        /// Attempts to return the content of an object according to its type descriptor and a potential index. If the given type descriptor is
-        /// a <see cref="CollectionDescriptor"/> or a <see cref="DictionaryDescriptor"/>, this method will return the value of <see cref="instance"/>
-        /// at the provided index. Otherwise, it will return the instance itself.
-        /// </summary>
-        /// <param name="typeDescriptor">The type descriptor.</param>
-        /// <param name="instance">The instance object on which to retrieve the content value.</param>
-        /// <param name="index">The index to use, if the instance is a collection or a dictionary.</param>
-        /// <returns>The item of the collection at the given index if the instance is a collection, otherwise the instance itself.</returns>
-        public static object GetInnerCollectionContent(this ITypeDescriptor typeDescriptor, object instance, object index)
-        {
-            var collectionDescriptor = typeDescriptor as CollectionDescriptor;
-            if (collectionDescriptor != null)
-                instance = collectionDescriptor.GetValue(instance, index);
-
-            var dictionaryDescriptor = typeDescriptor as DictionaryDescriptor;
-            if (dictionaryDescriptor != null)
-                instance = dictionaryDescriptor.GetValue(instance, index);
-
-            return instance;
-        }
-
-        /// <summary>
-        /// Attempts to set the item of an object according to its type descriptor and a potential index. If the given type descriptor is
-        /// a <see cref="CollectionDescriptor"/> or a <see cref="DictionaryDescriptor"/>, this method will set the value of <see cref="instance"/>
-        /// at the provided index. Otherwise, it does nothing.
-        /// </summary>
-        /// <param name="typeDescriptor">The type descriptor.</param>
-        /// <param name="instance">The instance object on which to set the item value.</param>
-        /// <param name="index">The index to use, if the instance is a collection or a dictionary.</param>
-        /// <param name="newValue">The new value to set.</param>
-        /// <returns>The instance itself if is a collection, otherwise the newValue.</returns>
-        public static object SetInnerCollectionContent(this ITypeDescriptor typeDescriptor, object instance, object index, object newValue)
-        {
-            var collectionDescriptor = typeDescriptor as CollectionDescriptor;
-            if (collectionDescriptor != null)
-            {
-                collectionDescriptor.SetValue(instance, index, newValue);
-                return instance;
-            }
-
-            var dictionaryDescriptor = typeDescriptor as DictionaryDescriptor;
-            if (dictionaryDescriptor != null)
-            {
-                dictionaryDescriptor.SetValue(instance, index, newValue);
-                return instance;
-            }
-
-            return newValue;
-        }
     }
 }

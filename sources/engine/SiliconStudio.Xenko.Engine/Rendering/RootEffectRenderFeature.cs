@@ -249,14 +249,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// Actual implementation of <see cref="PrepareEffectPermutations"/>.
         /// </summary>
         /// <param name="context"></param>
-        public virtual void PrepareEffectPermutationsImpl(RenderThreadContext context)
+        public virtual void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             
         }
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             base.PrepareEffectPermutations(context);
 
@@ -471,7 +471,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             EffectObjectNodes.Clear();
 

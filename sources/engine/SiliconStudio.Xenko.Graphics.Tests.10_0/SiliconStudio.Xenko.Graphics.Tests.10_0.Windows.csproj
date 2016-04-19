@@ -162,6 +162,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="LightingTests.cs" />
+    <Compile Include="MaterialTests.cs" />
     <Compile Include="NextGen\NextGenTest1.cs" />
     <Compile Include="NextGen\TestCamera.cs" />
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />

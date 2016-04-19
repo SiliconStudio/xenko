@@ -9,7 +9,7 @@
     <RootNamespace>SiliconStudio.Presentation</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation</AssemblyName>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
-    <TargetFrameworkVersion>$(TargetFrameworkVersionToolLow)</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\build\</SolutionDir>
@@ -34,6 +34,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
     <Compile Include="Dirtiables\DirtiableSnapshot.cs" />

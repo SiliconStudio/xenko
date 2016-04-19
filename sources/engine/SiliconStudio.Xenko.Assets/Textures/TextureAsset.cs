@@ -7,7 +7,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Assets.Textures
@@ -35,14 +34,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public const string FileExtension = ".xktex;.pdxtex";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextureAsset"/> class.
-        /// </summary>
-        public TextureAsset()
-        {
-            SetDefaults();
-        }
-
-        /// <summary>
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
@@ -53,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(100.0f)]
         [DataMemberRange(0, 10000, 1, 10)]
         [Display(null, "Size")]
-        public float Width { get; set; }
+        public float Width { get; set; } = 100.0f;
 
         /// <summary>
         /// Gets or sets the height.
@@ -66,7 +57,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(100.0f)]
         [DataMemberRange(0, 10000, 1, 10)]
         [Display(null, "Size")]
-        public float Height { get; set; }
+        public float Height { get; set; } = 100.0f;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is using size in percentage. Default is true. See remarks.
@@ -83,7 +74,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(40)]
         [DefaultValue(true)]
         [Display(null, "Size")]
-        public bool IsSizeInPercentage { get; set; }
+        public bool IsSizeInPercentage { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable color key. Default is false.
@@ -106,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(45)]
         [Display(null, "Transparency")]
-        public Color ColorKeyColor { get; set; }
+        public Color ColorKeyColor { get; set; } = new Color(255, 0, 255);
 
         /// <summary>
         /// Gets or sets the texture format.
@@ -118,7 +109,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(50)]
         [DefaultValue(TextureFormat.Compressed)]
         [Display(null, "Format")]
-        public TextureFormat Format { get; set; }
+        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
 
         /// <summary>
         /// Gets or sets the hint to indicate the type of texture. See remarks.
@@ -131,7 +122,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(51)]
         [DefaultValue(TextureHint.Color)]
         [Display(null, "Format")]
-        public TextureHint Hint { get; set; }
+        public TextureHint Hint { get; set; } = TextureHint.Color;
 
         /// <summary>
         /// Gets or sets the alpha format.
@@ -143,7 +134,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(55)]
         [DefaultValue(AlphaFormat.Auto)]
         [Display(null, "Transparency")]
-        public AlphaFormat Alpha { get; set; }
+        public AlphaFormat Alpha { get; set; } = AlphaFormat.Auto;
 
         /// <summary>
         /// Gets or sets a value indicating whether to generate mipmaps.
@@ -155,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(60)]
         [DefaultValue(true)]
         [Display(null, "Format")]
-        public bool GenerateMipmaps { get; set; }
+        public bool GenerateMipmaps { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
@@ -167,7 +158,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(70)]
         [DefaultValue(TextureColorSpace.Auto)]
         [Display("ColorSpace", "Format")]
-        public TextureColorSpace ColorSpace { get; set; }
+        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
 
         /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.
@@ -179,22 +170,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(80)]
         [DefaultValue(true)]
         [Display(null, "Transparency")]
-        public bool PremultiplyAlpha { get; set; }
-
-        public override void SetDefaults()
-        {
-            Width = 100.0f;
-            Height = 100.0f;
-            Format = TextureFormat.Compressed;
-            Hint = TextureHint.Color;
-            ColorSpace = TextureColorSpace.Auto;
-            Alpha = AlphaFormat.Auto;
-            ColorKeyColor = new Color(255, 0, 255);
-            ColorKeyEnabled = false;
-            IsSizeInPercentage = true;
-            GenerateMipmaps = true;
-            PremultiplyAlpha = true;
-        }
+        public bool PremultiplyAlpha { get; set; } = true;
 
         private class TransformSRgbToColorSpace : AssetUpgraderBase
         {

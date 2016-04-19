@@ -35,6 +35,20 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Gets the name of the directory.
+        /// </summary>
+        /// <returns>The name of the directory.</returns>
+        public string GetDirectoryName()
+        {
+            var directory = GetDirectory();
+            if (directory == null)
+                return string.Empty;
+
+            var index = directory.IndexOfReverse(DirectorySeparatorChar);
+            return index > 0 ? directory.Substring(Math.Min(index + 1, directory.Length)) : string.Empty;
+        }
+
+        /// <summary>
         /// Makes this instance relative to the specified anchor directory.
         /// </summary>
         /// <param name="anchorDirectory">The anchor directory.</param>
@@ -61,7 +75,7 @@ namespace SiliconStudio.Core.IO
         /// <returns><c>true</c> if this directory contains the specified path; otherwise, <c>false</c>.</returns>
         public bool Contains(UPath path)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null) throw new ArgumentNullException(nameof(path));
             if (FullPath == null) return false;
             if (path.FullPath == null) return false;
 

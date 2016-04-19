@@ -30,14 +30,14 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor != null && collectionDescriptor.HasInsert;
         }
 
-        public override void Execute(IContent content, object index, object parameter)
+        public override void Execute(IContent content, Index index, object parameter)
         {
             var indices = (Tuple<int, int>)parameter;
-            var sourceIndex = indices.Item1;
-            var targetIndex = indices.Item2;
+            var sourceIndex = new Index(indices.Item1);
+            var targetIndex = new Index(indices.Item2);
             var value = content.Retrieve(sourceIndex);
-            content.Remove(sourceIndex, value);
-            content.Add(targetIndex, value);
+            content.Remove(value, sourceIndex);
+            content.Add(value, targetIndex);
         }
     }
 }

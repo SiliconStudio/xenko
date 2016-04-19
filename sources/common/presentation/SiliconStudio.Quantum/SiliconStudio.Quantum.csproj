@@ -28,6 +28,7 @@
     <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
+    <Compile Include="Contents\Content.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
@@ -37,6 +38,7 @@
     <Compile Include="IContentNode.cs" />
     <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
+    <Compile Include="Index.cs" />
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="INodeContainer.cs" />
     <Compile Include="NodeConstructingArgs.cs" />

@@ -45,7 +45,7 @@ namespace SiliconStudio.Presentation.ViewModel
             if (operation.container != container)
                 return false;
 
-            if (operation.HasSameDirtiables(operation))
+            if (!HasSameDirtiables(operation))
                 return false;
 
             return true;
