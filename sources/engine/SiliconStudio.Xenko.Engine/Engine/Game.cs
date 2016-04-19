@@ -264,43 +264,23 @@ namespace SiliconStudio.Xenko.Engine
 
             deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
 
+            //if our device height is actually smaller then requested we use the device one
+            deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Math.Min(renderingSettings.DefaultBackBufferHeight, Window.ClientBounds.Height);
+            //if our device width is actually smaller then requested we use the device one
+            deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Math.Min(renderingSettings.DefaultBackBufferWidth, Window.ClientBounds.Width);
+
             if (renderingSettings.AdaptBackBufferToScreen)
             {
                 var deviceAr = Window.ClientBounds.Width / (float)Window.ClientBounds.Height;
 
                 if (renderingSettings.DefaultBackBufferHeight > renderingSettings.DefaultBackBufferWidth)
                 {
-                    //if our device height is actually smaller then requested we use the device one
-                    if (renderingSettings.DefaultBackBufferHeight > Window.ClientBounds.Height)
-                    {
-                        deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Window.ClientBounds.Height;
-                    }
-                    else
-                    {
-                        deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
-                    }
-
                     deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
                 }
                 else
-                {
-                    //if our device width is actually smaller then requested we use the device one
-                    if (renderingSettings.DefaultBackBufferWidth > Window.ClientBounds.Width)
-                    {
-                        deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Window.ClientBounds.Width;
-                    }
-                    else
-                    {
-                        deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                    }
-
+                { 
                     deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
                 }
-            }
-            else
-            {
-                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
             }
         }
 
