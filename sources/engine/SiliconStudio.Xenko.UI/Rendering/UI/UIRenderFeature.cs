@@ -176,7 +176,8 @@ namespace SiliconStudio.Xenko.UI.Rendering.UI
                 else
                 {
                     var cameraComponent = context.RenderContext.Tags.Get(CameraComponentRendererExtensions.Current);
-                    viewParameters.Update(uiComponent.Entity, cameraComponent);
+                    if (cameraComponent != null)
+                        viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
                 // Analyze the input and trigger the UI element touch and key events
