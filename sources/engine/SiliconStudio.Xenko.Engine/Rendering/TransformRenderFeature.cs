@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
@@ -127,31 +128,22 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Copy Camera to PerView cbuffer
-                var cameraComponent = view.Camera;
-                if (cameraComponent != null)
+                foreach (var viewLayout in viewFeature.Layouts)
                 {
-                    foreach (var viewLayout in viewFeature.Layouts)
-                    {
-                        var cameraOffset = viewLayout.GetConstantBufferOffset(camera);
-                        if (cameraOffset == -1)
-                            continue;
+                    var cameraOffset = viewLayout.GetConstantBufferOffset(camera);
+                    if (cameraOffset == -1)
+                        continue;
 
-                        var resourceGroup = viewLayout.Entries[view.Index].Resources;
-                        var mappedCB = resourceGroup.ConstantBuffer.Data;
+                    var resourceGroup = viewLayout.Entries[view.Index].Resources;
+                    var mappedCB = resourceGroup.ConstantBuffer.Data;
 
-                        var perViewCamera = (PerViewCamera*)((byte*)mappedCB + cameraOffset);
+                    var perViewCamera = (PerViewCamera*)((byte*)mappedCB + cameraOffset);
 
-                        perViewCamera->NearClipPlane = cameraComponent.NearClipPlane;
-                        perViewCamera->FarClipPlane = cameraComponent.FarClipPlane;
-                        perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(cameraComponent.NearClipPlane, cameraComponent.FarClipPlane);
-
-                        if (view.SceneCameraRenderer != null)
-                            perViewCamera->ViewSize = new Vector2(view.SceneCameraRenderer.ComputedViewport.Width, view.SceneCameraRenderer.ComputedViewport.Height);
-
-                        perViewCamera->AspectRatio = cameraComponent.AspectRatio;
-                        perViewCamera->VerticalFieldOfView = cameraComponent.VerticalFieldOfView;
-                        perViewCamera->OrthoSize = cameraComponent.OrthographicSize;
-                    }
+                    perViewCamera->NearClipPlane = view.NearClipPlane;
+                    perViewCamera->FarClipPlane = view.FarClipPlane;
+                    perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(view.NearClipPlane, view.FarClipPlane);
+                    perViewCamera->ViewSize = view.ViewSize;
+                    perViewCamera->AspectRatio = view.ViewSize.X / Math.Min(view.ViewSize.Y, 1.0f);
                 }
             }
 
@@ -235,9 +227,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             public Vector2 ViewSize;
             public float AspectRatio;
-            public float VerticalFieldOfView;
-
-            public float OrthoSize;
         }
     }
 }

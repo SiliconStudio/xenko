@@ -90,14 +90,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var camera = shadowMapRenderer.CurrentView.Camera;
-            var shadowCamera = shadowMapRenderer.ShadowCamera;
+            var shadowRenderView = shadowMapRenderer.CurrentView;
 
-            var viewToWorld = camera.ViewMatrix;
+            var viewToWorld = shadowRenderView.View;
             viewToWorld.Invert();
 
             // Update the frustum infos
-            UpdateFrustum(camera);
+            UpdateFrustum(shadowRenderView);
 
             // Computes the cascade splits
             var minMaxDistance = ComputeCascadeSplits(context, shadowMapRenderer, ref lightShadowMap);
@@ -141,7 +140,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
-            float splitMaxRatio = (minMaxDistance.X - camera.NearClipPlane) / (camera.FarClipPlane - camera.NearClipPlane);
+            float splitMaxRatio = (minMaxDistance.X - shadowRenderView.NearClipPlane) / (shadowRenderView.FarClipPlane - shadowRenderView.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
                 // Calculate frustum corners for this cascade
@@ -217,28 +216,29 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Update the shadow camera
-                shadowCamera.ViewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
-                shadowCamera.ProjectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
-                shadowCamera.Update();
+                var viewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
+                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                Matrix viewProjectionMatrix;
+                Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
                 // Stabilize the Shadow matrix on the projection
                 if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
-                    var shadowPixelPosition = shadowCamera.ViewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;
+                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;
                     shadowPixelPosition.Z = 0;
                     var shadowPixelPositionRounded = new Vector3((float)Math.Round(shadowPixelPosition.X), (float)Math.Round(shadowPixelPosition.Y), 0.0f);
 
                     var shadowPixelOffset = new Vector4(shadowPixelPositionRounded - shadowPixelPosition, 0.0f);
                     shadowPixelOffset *= 2.0f / lightShadowMap.Size;
-                    shadowCamera.ProjectionMatrix.Row4 += shadowPixelOffset;
-                    shadowCamera.Update();
+                    projectionMatrix.Row4 += shadowPixelOffset;
+                    Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
                 }
 
-                shaderData.ViewMatrix[cascadeLevel] = shadowCamera.ViewMatrix;
-                shaderData.ProjectionMatrix[cascadeLevel] = shadowCamera.ProjectionMatrix;
+                shaderData.ViewMatrix[cascadeLevel] = viewMatrix;
+                shaderData.ProjectionMatrix[cascadeLevel] = projectionMatrix;
 
                 // Cascade splits in light space using depth: Store depth on first CascaderCasterMatrix in last column of each row
-                shaderData.CascadeSplits[cascadeLevel] = MathUtil.Lerp(camera.NearClipPlane, camera.FarClipPlane, cascadeSplitRatios[cascadeLevel]);
+                shaderData.CascadeSplits[cascadeLevel] = MathUtil.Lerp(shadowRenderView.NearClipPlane, shadowRenderView.FarClipPlane, cascadeSplitRatios[cascadeLevel]);
 
                 var shadowMapRectangle = lightShadowMap.GetRectangle(cascadeLevel);
 
@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Compute receiver view proj matrix
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
-                Matrix.Multiply(ref shadowCamera.ViewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
+                Matrix.Multiply(ref viewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
             }
         }
 
@@ -274,13 +274,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             projection = shaderData.ProjectionMatrix[cascadeIndex];
         }
 
-        private void UpdateFrustum(CameraComponent camera)
+        private void UpdateFrustum(RenderView renderView)
         {
-            var projectionToView = camera.ProjectionMatrix;
+            var projectionToView = renderView.Projection;
             projectionToView.Invert();
 
             // Compute frustum-dependent variables (common for all shadow maps)
-            var projectionToWorld = camera.ViewProjectionMatrix;
+            var projectionToWorld = renderView.ViewProjection;
             projectionToWorld.Invert();
 
             // Transform Frustum corners in World Space (8 points) - algorithm is valid only if the view matrix does not do any kind of scale/shear transformation
@@ -301,10 +301,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private Vector2 ComputeCascadeSplits(RenderContext context, ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
-            var camera = shadowContext.CurrentView.Camera;
+            var shadowRenderView = shadowContext.CurrentView;
 
-            var cameraNear = camera.NearClipPlane;
-            var cameraFar = camera.FarClipPlane;
+            var cameraNear = shadowRenderView.NearClipPlane;
+            var cameraFar = shadowRenderView.FarClipPlane;
             var cameraRange = cameraFar - cameraNear;
 
             var minDistance = cameraNear + LightDirectionalShadowMap.DepthRangeParameters.DefaultMinDistance;
