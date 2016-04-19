@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case Blend.InverseSecondarySourceColor:
                     return BlendFactor.OneMinusSource1Color;
                 case Blend.InverseSourceAlpha:
-                    return BlendFactor.OneMinusSource1Alpha;
+                    return BlendFactor.OneMinusSourceAlpha;
                 case Blend.InverseSourceColor:
                     return BlendFactor.OneMinusSourceColor;
                 case Blend.One:
