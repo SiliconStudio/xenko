@@ -661,6 +661,14 @@ namespace SiliconStudio.Xenko.UI.Rendering.UI
                 worldMatrix.Row2 = -worldMatrix.Row2;
                 worldMatrix.Row3 = -worldMatrix.Row3;
 
+                // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
+                if (!uiComponent.IsFullScreen)
+                {
+                    var splashPosition = worldMatrix.TranslationVector;
+                    worldMatrix *= Matrix.Scaling(uiComponent.ActualSize / uiComponent.VirtualResolution);
+                    worldMatrix.TranslationVector = splashPosition;
+                }
+
                 ProjectionMatrix = camera.ProjectionMatrix;
                 Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out ViewMatrix);
                 Matrix.Invert(ref ViewMatrix, out ViewMatrixInverse);

@@ -30,7 +30,9 @@ namespace SiliconStudio.Xenko.UI
 
         private InputManagerBase input;
 
-        public UISystem(IServiceRegistry registry)
+        public bool AllowDepthWrite { get; set; } = false;
+
+    public UISystem(IServiceRegistry registry)
             : base(registry)
         {
             Services.AddService(typeof(UISystem), this);
@@ -74,7 +76,7 @@ namespace SiliconStudio.Xenko.UI
             Batch = new UIBatch(GraphicsDevice);
 
             // create depth stencil states
-            var depthStencilDescription = new DepthStencilStateDescription(true, true)
+            var depthStencilDescription = new DepthStencilStateDescription(true, AllowDepthWrite)
                 {
                     StencilEnable = true,
                     FrontFace = new DepthStencilStencilOpDescription
