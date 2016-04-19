@@ -360,7 +360,7 @@ namespace SiliconStudio.Xenko.Graphics
             Draw(texture, ref elementInfo);
         }
 
-        internal void DrawCharacter(Texture texture, ref Matrix worldViewProjectionMatrix, ref RectangleF sourceRectangle, ref Color color, int depthBias, SwizzleMode swizzle)
+        internal void DrawCharacter(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Color color, int depthBias, SwizzleMode swizzle)
         {
             // Check that texture is not null
             if (texture == null)
@@ -381,10 +381,17 @@ namespace SiliconStudio.Xenko.Graphics
                 Swizzle = swizzle,
                 Primitive = PrimitiveType.Rectangle,
                 VertexShift = Vector4.Zero,
-                UnitXWorld = worldViewProjectionMatrix.Row1,
-                UnitYWorld = worldViewProjectionMatrix.Row2,
-                LeftTopCornerWorld = worldViewProjectionMatrix.Row4,
             };
+
+            Matrix worldViewProjection;
+            Matrix.Multiply(ref worldMatrix, ref viewProjectionMatrix, out worldViewProjection);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
+
+            // rotate origin and unit axis if need.
+            var leftTopCorner = vector4LeftTop;
+            Vector4.Transform(ref leftTopCorner, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
+            drawInfo.LeftTopCornerWorld = worldViewProjection.Row4;
 
             var elementInfo = new ElementInfo(4, 6, ref drawInfo, depthBias);
 
@@ -438,9 +445,10 @@ namespace SiliconStudio.Xenko.Graphics
             worldMatrix.M41 -= worldMatrix.M11 * offsets.X + worldMatrix.M21 * offsets.Y;
             worldMatrix.M42 -= worldMatrix.M12 * offsets.X + worldMatrix.M22 * offsets.Y;
             worldMatrix.M43 -= worldMatrix.M13 * offsets.X + worldMatrix.M23 * offsets.Y;
+            drawCommand.Matrix = worldMatrix;
 
             // transform the world matrix into the world view project matrix
-            Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
+            //            Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
 
             // do not snap static fonts when real/virtual resolution does not match.
             if (!font.IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
