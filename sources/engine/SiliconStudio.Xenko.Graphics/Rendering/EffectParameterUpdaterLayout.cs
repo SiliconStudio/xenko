@@ -36,6 +36,10 @@ namespace SiliconStudio.Xenko.Rendering
                 for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex)
                 {
                     var layoutEntry = layout.Entries[entryIndex];
+
+                    if (!layoutEntry.IsUsed)
+                        continue;
+
                     if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
                     {
                         // For now we assume first cbuffer will be the main one
