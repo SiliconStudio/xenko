@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UIComponent.IsFullScreen = false;
             UIComponent.IsBillboard = false;
             UIComponent.VirtualResolution = new Vector3(200, 200, 100);
+            UIRoot.Transform.Scale = new Vector3(200, 200, 100);
 
             var cube = new Entity { new ModelComponent { Model = Content.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
