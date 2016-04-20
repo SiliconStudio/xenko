@@ -21,9 +21,13 @@
     <XenkoBuildTags>*</XenkoBuildTags>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+      <PropertyGroup>
+        <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    </PropertyGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
