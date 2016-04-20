@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// Initializer which sets the initial velocity for particles based on RandomSeed information
     /// </summary>
     [DataContract("InitialDirectionSeed")]
-    [Display("Initial Direction")]
+    [Display("Direction")]
     public class InitialDirectionSeed : ParticleInitializer
     {
         public InitialDirectionSeed()
