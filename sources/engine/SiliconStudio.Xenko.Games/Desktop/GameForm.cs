@@ -96,7 +96,10 @@ namespace SiliconStudio.Xenko.Games
             Text = GameContext.ProductName;
             try
             {
-                Icon = Icon.ExtractAssociatedIcon(GameContext.ProductLocation);
+                var productLocation = GameContext.ProductLocation;
+                Icon = !string.IsNullOrEmpty(productLocation)
+                    ? Icon.ExtractAssociatedIcon(productLocation)
+                    : SystemIcons.Application;
             }
             catch
             {

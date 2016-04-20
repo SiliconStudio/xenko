@@ -68,6 +68,7 @@ RootAssets:
     - 30f8ca08-885b-417c-9d49-c0d315b2b3ec:Material1
     - 405852fc-5281-496f-aa02-49544230ac63:MaterialTests/Features/MaterialSpecular
     - 40ce4596-bdfe-45b0-a1a2-614857b5724c:MaterialTests/Base/MaterialDiffuseTextureCoord1
+    - 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87:LightingTests/LightingScene
     - 43e075b4-84ab-4548-8059-58c21dabac5d:MaterialTests/Features/MaterialCavity
     - 44c1cac3-08a6-425f-9e42-59fd8300f619:MaterialTests/Base/MaterialDiffuseTextureClampMirror
     - 54874636-1c97-4911-85d2-79a9054efd38:MaterialTests/Layers/MaterialLayerABB

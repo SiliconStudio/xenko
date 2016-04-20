@@ -73,5 +73,12 @@
       </ItemGroup>
     </When>
   </Choose>
-  
+
+  <!-- Override graphics platform (no need to get it from game settings asset) -->
+  <Target Name="SiliconStudioGetGraphicsPlatform">
+    <!-- Do nothing for SiliconStudioXenkoGraphicsApi, keep it as set by locals target -->
+    <PropertyGroup>
+      <SiliconStudioXenkoCompileAssetOptions>$(SiliconStudioXenkoCompileAssetOptions) --property:SiliconStudioXenkoGraphicsApi=$(SiliconStudioXenkoGraphicsApi)</SiliconStudioXenkoCompileAssetOptions>
+    </PropertyGroup>
+  </Target>
 </Project>
