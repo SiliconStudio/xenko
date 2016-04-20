@@ -53,50 +53,46 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Matrix ViewProjection;
 
-        // TODO GRAPHICS REFACTOR we might want to remove some of the following data
+        // TODO GRAPHICS REFACTOR probably obsolete (otherwise we can't share view between multiple SceneInstance)
         /// <summary>
-        /// The camera for this view. 
+        /// The scene instance that created this view.
         /// </summary>
-        public CameraComponent Camera;
-
         public SceneInstance SceneInstance;
 
-        public SceneCameraRenderer SceneCameraRenderer;
+        /// <summary>
+        /// Far clip plane.
+        /// </summary>
+        public float NearClipPlane;
 
-        public SceneCameraSlotCollection SceneCameraSlotCollection;
+        /// <summary>
+        /// Near clip plane.
+        /// </summary>
+        public float FarClipPlane;
+
+        /// <summary>
+        /// The frustum extracted from the view projection matrix.
+        /// </summary>
+        public BoundingFrustum Frustum;
+
+        /// <summary>
+        /// The size of the view being rendered.
+        /// </summary>
+        public Vector2 ViewSize;
+
+        // TODO GRAPHICS REFACTOR likely to be replaced soon
+        /// <summary>
+        /// The culling mask.
+        /// </summary>
+        public EntityGroupMask CullingMask { get; set; } = EntityGroupMask.All;
+
+        /// <summary>
+        /// The culling mode.
+        /// </summary>
+        public CameraCullingMode CullingMode { get; set; } = CameraCullingMode.Frustum;
 
         public override string ToString()
         {
             return $"RenderView ({Features.Sum(x => x.ViewObjectNodes.Count)} objects, {Features.Sum(x => x.RenderNodes.Count)} render nodes, {RenderStages.Count} stages)";
-        }
-
-        public void UpdateCameraToRenderView()
-        {
-            // TODO: Currently set up during Collect/Prepare/Draw. Should be initialized before
-            if (SceneCameraRenderer == null)
-                return;
-
-            Camera = SceneCameraSlotCollection.GetCamera(SceneCameraRenderer.Camera);
-
-            if (Camera == null)
-                return;
-
-            // Setup viewport size
-            var currentViewport = SceneCameraRenderer.ComputedViewport;
-            var aspectRatio = currentViewport.AspectRatio;
-
-            if (Camera.UseCustomAspectRatio && !Camera.AddLetterboxPillarbox)
-            {
-                aspectRatio = Camera.AspectRatio;
-            }
-
-            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-            Camera.Update(aspectRatio);
-
-            View = Camera.ViewMatrix;
-            Projection = Camera.ProjectionMatrix;
-
-            Matrix.Multiply(ref View, ref Projection, out ViewProjection);
         }
     }
 }

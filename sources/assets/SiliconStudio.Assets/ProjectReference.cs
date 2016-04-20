@@ -55,6 +55,12 @@ namespace SiliconStudio.Assets
         [DataMember(30)]
         public ProjectType Type { get; set; }
 
+        /// <summary>
+        /// Gets or set the root namespace of the project
+        /// </summary>
+        [DataMemberIgnore]
+        public string RootNamespace { get; internal set; }
+
         public bool Equals(ProjectReference other)
         {
             if (ReferenceEquals(null, other)) return false;

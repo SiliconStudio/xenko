@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialRotationSeed"/> is an initializer which sets the particle's rotation around the Z axis in clip space (camera-facing)
     /// </summary>
     [DataContract("InitialRotationSeed")]
-    [Display("Initial Rotation")]
+    [Display("Rotation")]
     public class InitialRotationSeed : ParticleInitializer
     {
         private Vector2 angularRotation = new Vector2(-60f, 60f);

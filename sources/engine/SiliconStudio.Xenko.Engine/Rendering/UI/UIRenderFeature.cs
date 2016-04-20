@@ -120,10 +120,12 @@ namespace SiliconStudio.Xenko.Rendering.UI
             renderingContext.Time = drawTime;
             renderingContext.RenderTarget = currentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
+            var viewport = context.CommandList.Viewport;
+
             // cache the ratio between viewport and target.
-            var viewportSize = renderView.SceneCameraRenderer.ComputedViewport.Size;
+            var viewportSize = renderView.ViewSize;
             viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
-            viewportOffset = new Vector2(renderView.SceneCameraRenderer.ComputedViewport.X / renderView.SceneCameraRenderer.ComputedViewport.Width, renderView.SceneCameraRenderer.ComputedViewport.Y / renderView.SceneCameraRenderer.ComputedViewport.Height);
+            viewportOffset = new Vector2(viewport.X/ viewport.Width, viewport.Y/ viewport.Height);
 
             // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
             CompactPointerEvents();
@@ -156,7 +158,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 
                 if (uiComponent.IsFullScreen)
                 {
-                    var targetSize = new Vector2(renderView.SceneCameraRenderer.ComputedViewport.Width, renderView.SceneCameraRenderer.ComputedViewport.Height);
+                    var targetSize = viewportSize;
 
                     // update the virtual resolution of the renderer
                     if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedWidthAdaptableHeight)
@@ -238,7 +240,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
                     context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
                 context.CommandList.SetRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
-                context.CommandList.SetViewport(renderView.SceneCameraRenderer.ComputedViewport);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
@@ -255,7 +256,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             ClearPointerEvents();
 
             // revert the depth stencil buffer to the default value 
-            context.CommandList.SetRenderTargetsAndViewport(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
+            context.CommandList.SetRenderTargets(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
 
             // Release scroped texture
             if (scopedDepthBuffer != null)

@@ -398,9 +398,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (renderView.GetType() != typeof(RenderView))
                     continue;
 
-                if (renderView.Camera == null)
-                    continue;
-
                 lightProcessor = renderView.SceneInstance.GetProcessor<LightProcessor>();
 
                 // No light processors means no light in the scene, so we can early exit
@@ -424,10 +421,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 renderViewLightData.VisibleLightsWithShadows.Clear();
 
                 // TODO GRAPHICS REFACTOR
-                var sceneCullingMask = renderView.SceneCameraRenderer.CullingMask;
+                var sceneCullingMask = renderView.CullingMask;
 
                 // 2) Cull lights with the frustum
-                var frustum = renderView.Camera.Frustum;
+                var frustum = renderView.Frustum;
                 foreach (var light in lightProcessor.Lights)
                 {
                     // If light is not part of the culling mask group, we can skip it

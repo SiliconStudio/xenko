@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialPositionParent"/> is an initializer which sets the particle's initial position at the time of spawning
     /// </summary>
     [DataContract("InitialPositionParent")]
-    [Display("Position from parent")]
+    [Display("Position (parent)")]
     public class InitialPositionParent : ParticleChildInitializer
     {
         /// <summary>
@@ -73,11 +73,14 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             {
                 parentParticlesCount = 0;
             }
-            
+
+            var oldPosFieldParent = parentPool?.GetField(ParticleFields.OldPosition) ?? ParticleFieldAccessor<Vector3>.Invalid();
+
             var spawnControlField = GetSpawnControlField();
 
             var posField = pool.GetField(ParticleFields.Position);
             var rndField = pool.GetField(ParticleFields.RandomSeed);
+            var oldField = pool.GetField(ParticleFields.OldPosition);
 
             var leftCorner = PositionMin * WorldScale;
             var xAxis = new Vector3(PositionMax.X * WorldScale.X - leftCorner.X, 0, 0);
@@ -100,6 +103,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             var sequentialParentParticles = 0;
             var parentIndex = 0;
 
+            // Interpolation - if parent particle has OldPosition field
+            var stepF = 0f;
+            var stepTotal = 0f;
+            var positionDistance = new Vector3(0, 0, 0);
+
             var i = startIdx;
             while (i != endIdx)
             {
@@ -119,6 +127,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                     // Spawn is fixed - parent particles have spawned a very specific number of children each
                     if (spawnControlField.IsValid())
                     {
+                        // Interpolation - if parent particle has OldPosition field
+
                         while (sequentialParentParticles == 0)
                         {
                             // Early out - no more fixed number children. Rest of the particles (if any) are skipped intentionally
@@ -132,12 +142,21 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                             var childrenAttribute = (*((ParticleChildrenAttribute*)tempParentParticle[spawnControlField]));
 
                             sequentialParentParticles = (int)childrenAttribute.ParticlesToEmit;
+
+                            if (oldPosFieldParent.IsValid())
+                            {
+                                stepF = (sequentialParentParticles > 0) ? (1f/(float)sequentialParentParticles) : 1;
+                                stepTotal = 0f;
+                                positionDistance = ((*((Vector3*)tempParentParticle[oldPosFieldParent])) - (*((Vector3*)tempParentParticle[posFieldParent])));
+                            }
                         }
 
                         sequentialParentParticles--;
 
                         var parentParticle = parentPool.FromIndex(parentIndex);
                         parentParticlePosition = (*((Vector3*)parentParticle[posFieldParent]));
+                        parentParticlePosition += positionDistance * stepTotal;
+                        stepTotal += stepF;
                     }
 
                     // Spawn is not fixed - pick a parent at random
@@ -163,6 +182,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
 
                 (*((Vector3*)particle[posField])) = particleRandPos;
+
+                if (oldField.IsValid())
+                {
+                    (*((Vector3*)particle[oldField])) = particleRandPos;
+                }
 
                 i = (i + 1) % maxCapacity;
             }
