@@ -155,9 +155,15 @@ namespace SiliconStudio.Assets.CompilerApp
 
             BuildResultCode exitCode;
 
+            RemoteLogForwarder assetLogger = null;
+
             try
             {
                 var unexpectedArgs = p.Parse(args);
+
+                // Set remote logger
+                assetLogger = new RemoteLogForwarder(options.Logger, options.LogPipeNames);
+                GlobalLogger.GlobalMessageLogged += assetLogger;
 
                 // Activate proper log level
                 buildEngineLogger.ActivateLog(options.LoggerType);
@@ -253,6 +259,13 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             finally
             {
+                // Flush and close remote logger
+                if (assetLogger != null)
+                {
+                    GlobalLogger.GlobalMessageLogged -= assetLogger;
+                    assetLogger.Dispose();
+                }
+
                 if (fileLogListener != null)
                 {
                     GlobalLogger.GlobalMessageLogged -= fileLogListener;
