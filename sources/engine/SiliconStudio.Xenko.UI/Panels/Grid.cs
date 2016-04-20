@@ -147,18 +147,21 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The definitions of the grid columns.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        [DataMember]
         public StripDefinitionCollection ColumnDefinitions => stripDefinitions[0];
 
         /// <summary>
         /// The definitions of the grid rows.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        [DataMember]
         public StripDefinitionCollection RowDefinitions => stripDefinitions[1];
 
         /// <summary>
         /// The definitions of the grid layers.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        [DataMember]
         public StripDefinitionCollection LayerDefinitions => stripDefinitions[2];
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
