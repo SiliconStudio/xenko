@@ -1324,8 +1324,9 @@ namespace SiliconStudio.Assets
             foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
             {
                 var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                string @namespace;
-                var codePaths = FindCodeAssetsInProject(realFullPath, out @namespace);
+                string defaultNamespace;
+                var codePaths = FindCodeAssetsInProject(realFullPath, out defaultNamespace);
+                libs.RootNamespace = defaultNamespace;
                 var dir = new UDirectory(realFullPath.GetFullDirectory());
                 var parentDir = dir.GetParent();
 

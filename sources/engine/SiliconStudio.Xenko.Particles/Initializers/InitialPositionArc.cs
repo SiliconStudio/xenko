@@ -58,18 +58,25 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         public float ArcHeight = 1f;
 
         /// <summary>
-        /// If the particles should be ordered on the line by index or in a random fashion
+        /// If <C>true</C> the particles will appear along the arc path in the order they are added.
+        /// Otherwise, their positions will be random along the arc, not preserving the order of appearance.
         /// </summary>
         /// <userdoc>
-        /// If the particles should be ordered on the line by index or in a random fashion
+        /// If true the particles will appear along the arc path in the order they are added.
+        /// Otherwise, their positions will be random along the arc, not preserving the order of appearance.
         /// </userdoc>
         [DataMember(30)]
         [Display("Ordered")]
         public bool Sequential = true;
 
         /// <summary>
-        /// Used to limit the number of particles when spawning 
+        /// If positive, it will limit the number of possible positions where the particles can appear along the arc to the specified count.
+        /// More particles will start appearing over from the biginning of the arc path.
         /// </summary>
+        /// <userdoc>
+        /// If positive, it will limit the number of possible positions where the particles can appear along the arc to the specified count.
+        /// More particles will start appearing over from the biginning of the arc path.
+        /// </userdoc>
         [DataMember(35)]
         [Display("Fixed Count")]
         public int FixedLength = 0;

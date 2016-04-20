@@ -27,7 +27,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 //        const int ParticleTestVersion = 4;  // Changed the default size for billboards, hexagons and quads (previous visual tests are broken)
 //        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
 //        const int ParticleTestVersion = 6;  // Moved the main update from Update() to Draw() cycle
-        const int ParticleTestVersion = 7;  // Children Particles visual test updated
+//        const int ParticleTestVersion = 7;  // Children Particles visual test updated
+        const int ParticleTestVersion = 8;  // Camera ignores scaling, due to float precision issues it renders slightly differently
 
         // Local screenshots
         private readonly string xenkoDir;

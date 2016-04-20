@@ -146,15 +146,6 @@
   </PropertyGroup>
 
   <!-- 
-    Settings SiliconStudioUI specific defines.
-    The computation of SiliconStudioUIDefineConstants is done in SiliconStudio.PreSettings.targets.
-  -->
-
-  <PropertyGroup>
-    <SiliconStudioUIDefines>@(SiliconStudioUIDefineConstants->'%(Argument)')</SiliconStudioUIDefines>
-  </PropertyGroup>
- 
-  <!-- 
     Global Defines
   -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug'">
@@ -172,10 +163,13 @@
 
   <PropertyGroup>
     <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
-    <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
     <DefineConstants Condition="'$(SiliconStudioAudio)' == 'SDL'">$(DefineConstants);SILICONSTUDIO_XENKO_SOUND_SDL</DefineConstants>
+    <DefineConstants Condition="$(SiliconStudioUI.Contains('SDL'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_SDL</DefineConstants>
+    <DefineConstants Condition="$(SiliconStudioUI.Contains('OPENTK'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_OPENTK</DefineConstants>
+    <DefineConstants Condition="$(SiliconStudioUI.Contains('WINFORMS'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_WINFORMS</DefineConstants>
+    <DefineConstants Condition="$(SiliconStudioUI.Contains('WPF'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_WPF</DefineConstants>
   </PropertyGroup>
-  
+
   <!-- Signing -->
   <PropertyGroup Condition=" '$(SiliconStudioOpenSourceSign)' == 'true'">
     <SiliconStudioSign>true</SiliconStudioSign>
