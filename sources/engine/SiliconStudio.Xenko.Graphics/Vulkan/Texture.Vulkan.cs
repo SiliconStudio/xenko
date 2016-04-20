@@ -332,8 +332,8 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             BufferOffset = (ulong)uploadOffset,
                             ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
-                            BufferRowLength = (uint)(dataBoxes[i].RowPitch / pixelSize),
-                            BufferImageHeight = (uint)(dataBoxes[i].SlicePitch / dataBoxes[i].SlicePitch),
+                            BufferRowLength = 0,//(uint)(dataBoxes[i].RowPitch / pixelSize),
+                            BufferImageHeight = 0,//(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
                             ImageOffset = new Offset3D(0, 0, arraySlice),
                             ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
                         };
