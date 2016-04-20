@@ -10,11 +10,10 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Renderers;
-using SiliconStudio.Xenko.UI.Engine;
 
-namespace SiliconStudio.Xenko.UI.Rendering.UI
+namespace SiliconStudio.Xenko.Rendering.UI
 {
     public class UIRenderFeature : RootRenderFeature
     {

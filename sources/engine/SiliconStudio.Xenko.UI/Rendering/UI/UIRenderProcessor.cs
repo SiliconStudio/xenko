@@ -4,9 +4,8 @@
 using System.Collections.Generic;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.UI.Engine;
 
-namespace SiliconStudio.Xenko.UI.Rendering.UI
+namespace SiliconStudio.Xenko.Rendering.UI
 {
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.

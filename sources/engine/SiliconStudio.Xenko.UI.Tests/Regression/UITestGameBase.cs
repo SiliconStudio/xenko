@@ -14,7 +14,6 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Controls;
-using SiliconStudio.Xenko.UI.Engine;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
