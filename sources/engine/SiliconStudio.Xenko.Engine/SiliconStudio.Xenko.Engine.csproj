@@ -25,7 +25,13 @@
     <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
       <PropertyGroup>
         <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    </PropertyGroup>
+      </PropertyGroup>
+      <ItemGroup>
+        <Compile Include="Resources\Resource.Designer.cs" />
+        <AndroidResource Include="Resources\Layout\Game.axml">
+          <SubType>AndroidResource</SubType>
+        </AndroidResource>
+      </ItemGroup>
     </When>
   </Choose>
   <Choose>
@@ -3660,12 +3666,6 @@
     <Folder Include="Rendering\Gizmos\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
-    <Compile Include="Resources\Resource.Designer.cs" />
-    <AndroidResource Include="Resources\Layout\Game.axml">
-      <SubType>AndroidResource</SubType>
-    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
