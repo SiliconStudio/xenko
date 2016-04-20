@@ -30,6 +30,10 @@ namespace SiliconStudio.Presentation.Services
             Complete();
         }
 
+        public void Continue()
+        {
+        }
+
         public void Complete()
         {
             if (isCompleted)

@@ -49,6 +49,12 @@ namespace SiliconStudio.Core.Transactions
         }
 
         /// <inheritdoc/>
+        public void Continue()
+        {
+            synchronizationContext = SynchronizationContext.Current;
+        }
+
+        /// <inheritdoc/>
         public void Complete()
         {
             if (isCompleted)
