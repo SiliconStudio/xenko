@@ -176,11 +176,11 @@ namespace SiliconStudio.ExecServer
                     appDomainCallback.EnvironmentVariables = environmentVariables;
                     appDomainCallback.Arguments = args;
                     appDomain.DoCallBack(appDomainCallback.Run);
-                    var result = appDomainCallback.Result;
+                    var result = appDomain.GetData("Result") as int?;
 
                     //var result = appDomain.ExecuteAssembly(mainAssemblyPath, args);
                     Console.WriteLine("Return result: {0}", result);
-                    return result;
+                    return result ?? -1;
                 }
             }
             catch (Exception exception)
@@ -438,8 +438,6 @@ namespace SiliconStudio.ExecServer
 
             public string[] Arguments { get; set; }
 
-            public int Result { get; private set; }
-
             public void RegisterAssemblyLoad()
             {
                 var currentDomain = AppDomain.CurrentDomain;
@@ -473,7 +471,7 @@ namespace SiliconStudio.ExecServer
 
                 currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
                 var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
-                Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments }));
+                AppDomain.CurrentDomain.SetData("Result", Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments })));
 
                 // Force a GC after the process is finished
                 GC.Collect(2, GCCollectionMode.Forced);
