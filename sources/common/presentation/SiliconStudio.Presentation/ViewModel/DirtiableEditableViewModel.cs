@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.ViewModel
     /// An implementation of the <see cref="EditableViewModel"/> that is also itself an <see cref="IDirtiable"/>. The <see cref="Dirtiables"/> 
     /// property returns an enumerable containing the instance itself.
     /// </summary>
-    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiable, IDisposable
+    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiable
     {
         private bool isDirty;
 
@@ -28,32 +28,6 @@ namespace SiliconStudio.Presentation.ViewModel
 
         /// <inheritdoc/>
         public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
-
-        /// <inheritdoc/>
-        /// <summary>
-        /// Gets whether this view model has been disposed.
-        /// </summary>
-        protected bool IsDisposed { get; private set; }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Protected implementation of the Dispose pattern.
-        /// </summary>
-        /// <remarks>
-        /// Derived class should override this method, implement specific cleanup and then call the base implementation.
-        /// See https://msdn.microsoft.com/en-us/library/fs2xkftw(v=vs.110).aspx
-        /// </remarks>
-        /// <param name="disposing">True if called from the <see cref="Dispose"/> method, False if called from a Finalize (destructor) method.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            IsDisposed = true;
-        }
 
         protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)
         {
