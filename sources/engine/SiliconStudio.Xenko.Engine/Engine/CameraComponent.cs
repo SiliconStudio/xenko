@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -194,7 +195,18 @@ namespace SiliconStudio.Xenko.Engine
             if (!UseCustomViewMatrix)
             {
                 var worldMatrix = EnsureEntity.Transform.WorldMatrix;
-                Matrix.Invert(ref worldMatrix, out ViewMatrix);
+
+                Vector3 scale, translation;
+                worldMatrix.Decompose(out scale, out ViewMatrix, out translation);
+
+                // Transpose ViewMatrix (rotation only, so equivalent to inversing it)
+                ViewMatrix.Transpose();
+
+                // Rotate our translation so that we can inject it in the view matrix directly
+                Vector3.TransformCoordinate(ref translation, ref ViewMatrix, out translation);
+
+                // Apply inverse of translation (equivalent to opposite)
+                ViewMatrix.TranslationVector = -translation;
             }
             
             // Calculates the projection

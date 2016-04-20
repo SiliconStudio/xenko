@@ -224,6 +224,12 @@
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorThreshold.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\ComputeColors\VertexStreamDefinitionBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamScalar.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\VertexUserStreamDefinition.cs" />
@@ -328,6 +334,10 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HighlightShader.cs</LastGenOutput>
