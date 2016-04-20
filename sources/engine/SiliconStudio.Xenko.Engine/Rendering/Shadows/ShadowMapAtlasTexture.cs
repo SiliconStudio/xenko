@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         private readonly GuillotinePacker packer = new GuillotinePacker();
 
-        private bool clearNeeded;
+        private bool clearNeeded = true;
 
         public ShadowMapAtlasTexture(Texture texture, int textureId)
         {

@@ -31,6 +31,12 @@ namespace SiliconStudio.Xenko.Assets
 
         public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context, Package package)
         {
+            // If we have a command line override, use it first
+            string graphicsApi;
+            if (context.OptionProperties.TryGetValue("SiliconStudioXenkoGraphicsApi", out graphicsApi))
+                return (GraphicsPlatform)Enum.Parse(typeof(GraphicsPlatform), graphicsApi);
+
+            // Ohterwise, use game settings, or default as fallback
             var settings = package.GetGameSettingsAsset();
             return settings == null ? context.Platform.GetDefaultGraphicsPlatform() : RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>(context.Profile).PreferredGraphicsPlatform);
         }

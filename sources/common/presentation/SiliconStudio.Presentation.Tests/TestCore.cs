@@ -3,7 +3,7 @@
 using System;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.ViewModel;
@@ -87,46 +87,33 @@ namespace SiliconStudio.Presentation.Tests
         [Test]
         public void TestCamelCaseSplit()
         {
-            const string String1 = "ThisIsOneTestString";
-            const string String2 = "ThisOneABCContainsAbreviation";
-            const string String3 = "ThisOneContainsASingleCharacterWord";
-            const string String4 = "ThisOneEndsWithAbbreviationABC";
-            const string String5 = "ThisOneEndsWithASingleCharacterWordZ";
-            var expected1 = new[] { "This", "Is", "One", "Test", "String" };
-            var expected2 = new[] { "This", "One", "ABC", "Contains", "Abreviation" };
-            var expected3 = new[] { "This", "One", "Contains", "A", "Single", "Character", "Word" };
-            var expected4 = new[] { "This", "One", "Ends", "With", "Abbreviation", "ABC" };
-            var expected5 = new[] { "This", "One", "Ends", "With", "A", "Single", "Character", "Word", "Z" };
+            var inputStrings = new[]
+            {
+                "ThisIsOneTestString",
+                "ThisOneABCContainsAbreviation",
+                "ThisOneContainsASingleCharacterWord",
+                "ThisOneEndsWithAbbreviationABC",
+                "ThisOneEndsWithASingleCharacterWordZ",
+                "  This OneContains   SpacesBetweenSome OfThe Words  ",
+            };
+            var expectedResult = new[]
+            {
+                new[] { "This", "Is", "One", "Test", "String" },
+                new[] { "This", "One", "ABC", "Contains", "Abreviation" },
+                new[] { "This", "One", "Contains", "A", "Single", "Character", "Word" },
+                new[] { "This", "One", "Ends", "With", "Abbreviation", "ABC" },
+                new[] { "This", "One", "Ends", "With", "A", "Single", "Character", "Word", "Z" },
+                new[] { "This", "One", "Contains", "Spaces", "Between", "Some", "Of", "The", "Words" },
+            };
 
-            var split1 = String1.CamelCaseSplit();
-            Assert.AreEqual(expected1.Length, split1.Count);
-            for (int i = 0; i < expected1.Length; ++i)
+            foreach (var testCase in inputStrings.Zip(expectedResult))
             {
-                Assert.AreEqual(expected1[i], split1[i]);
-            }
-            var split2 = String2.CamelCaseSplit();
-            Assert.AreEqual(expected2.Length, split2.Count);
-            for (int i = 0; i < expected2.Length; ++i)
-            {
-                Assert.AreEqual(expected2[i], split2[i]);
-            }
-            var split3 = String3.CamelCaseSplit();
-            Assert.AreEqual(expected3.Length, split3.Count);
-            for (int i = 0; i < expected3.Length; ++i)
-            {
-                Assert.AreEqual(expected3[i], split3[i]);
-            }
-            var split4 = String4.CamelCaseSplit();
-            Assert.AreEqual(expected4.Length, split4.Count);
-            for (int i = 0; i < expected4.Length; ++i)
-            {
-                Assert.AreEqual(expected4[i], split4[i]);
-            }
-            var split5 = String5.CamelCaseSplit();
-            Assert.AreEqual(expected5.Length, split5.Count);
-            for (int i = 0; i < expected5.Length; ++i)
-            {
-                Assert.AreEqual(expected5[i], split5[i]);
+                var split = testCase.Item1.CamelCaseSplit();
+                Assert.AreEqual(testCase.Item2.Length, split.Count);
+                for (var i = 0; i < testCase.Item2.Length; ++i)
+                {
+                    Assert.AreEqual(testCase.Item2[i], split[i]);
+                }
             }
         }
     }

@@ -46,7 +46,7 @@ namespace SiliconStudio.Core
         /// Gets the default value metadata.
         /// </summary>
         [DataMemberIgnore]
-        public DefaultValueMetadata DefaultValueMetadata
+        internal DefaultValueMetadata DefaultValueMetadata
         {
             get { return defaultValueMetadata;}
             set
@@ -61,21 +61,21 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <value>The validate value metadata.</value>
         [DataMemberIgnore]
-        public ValidateValueMetadata ValidateValueMetadata { get; private set; }
+        internal ValidateValueMetadata ValidateValueMetadata { get; private set; }
 
         /// <summary>
         /// Gets the object invalidation metadata (may be null).
         /// </summary>
         /// <value>The object invalidation metadata.</value>
         [DataMemberIgnore]
-        public ObjectInvalidationMetadata ObjectInvalidationMetadata { get; private set; }
+        internal ObjectInvalidationMetadata ObjectInvalidationMetadata { get; private set; }
 
         /// <summary>
         /// Gets the accessor metadata (may be null).
         /// </summary>
         /// <value>The accessor metadata.</value>
         [DataMemberIgnore]
-        public AccessorMetadata AccessorMetadata { get; private set; }
+        internal AccessorMetadata AccessorMetadata { get; private set; }
 
         /// <summary>Gets or sets the property update callback.</summary>
         /// <value>The property update callback.</value>

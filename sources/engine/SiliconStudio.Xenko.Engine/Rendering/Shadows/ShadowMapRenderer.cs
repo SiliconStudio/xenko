@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;
-                    shadowMapTexture.Renderer.Extract(RenderSystem.RenderContextOld, this, shadowMapTexture);
+                    shadowMapTexture.Renderer.Collect(RenderSystem.RenderContextOld, this, shadowMapTexture);
                     for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
                         // Allocate shadow render view
