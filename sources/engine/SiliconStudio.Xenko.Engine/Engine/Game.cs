@@ -21,7 +21,6 @@ using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -86,12 +85,6 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The audio.</value>
         public AudioSystem Audio { get; private set; }
-
-        /// <summary>
-        /// Gets the UI system.
-        /// </summary>
-        /// <value>The UI.</value>
-        protected UISystem UI { get; private set; }
 
         /// <summary>
         /// Gets the sprite animation system.
@@ -187,7 +180,6 @@ namespace SiliconStudio.Xenko.Engine
             Script = new ScriptSystem(Services);
             SceneSystem = new SceneSystem(Services);
             Audio = new AudioSystem(Services);
-            UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
@@ -284,9 +276,6 @@ namespace SiliconStudio.Xenko.Engine
             // - Must be before Entities/Camera/Audio/UI, so that scripts can apply
             // changes in the same frame they will be applied
             GameSystems.Add(Script);
-
-            // Add the UI System
-            GameSystems.Add(UI);
 
             // Add the Audio System
             GameSystems.Add(Audio);
