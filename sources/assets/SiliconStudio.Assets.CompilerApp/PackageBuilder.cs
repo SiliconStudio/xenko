@@ -120,8 +120,14 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform,
-                    BuildConfiguration =  builderOptions.ProjectConfiguration
+                    BuildConfiguration = builderOptions.ProjectConfiguration
                 };
+
+                // Command line properties
+                foreach (var property in builderOptions.Properties)
+                    context.OptionProperties.Add(property.Key, property.Value);
+
+                // Set current game settings
                 context.SetGameSettingsAsset(gameSettingsAsset);
 
                 // Copy properties from shared profiles to context properties

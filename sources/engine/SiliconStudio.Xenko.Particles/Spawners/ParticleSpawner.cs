@@ -81,6 +81,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         [DataMemberIgnore]
         private uint randomOffset = 0;
 
+        [DataMemberIgnore]
+        private Vector2 delay = new Vector2(0, 0);
+
+        [DataMemberIgnore]
+        private Vector2 duration = new Vector2(1, 1);
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleSpawner"/> is enabled.
         /// </summary>
@@ -99,7 +105,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </userdoc>
         [DataMember(5)]
         [Display("Loop")]
-        public SpawnerLoopCondition LoopCondition = SpawnerLoopCondition.Looping;
+        public SpawnerLoopCondition LoopCondition { get; set; } = SpawnerLoopCondition.Looping;
 
         /// <summary>
         /// The minimum and maximum time the spawner should wait before starting to emit particles
@@ -109,7 +115,16 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </userdoc>
         [DataMember(10)]
         [Display("Delay")]
-        public Vector2 Delay = new Vector2(0, 0);
+        public Vector2 Delay
+        {
+            get { return delay; }
+            set
+            {
+                delay = value;
+                delay.X = Math.Max(delay.X, 0f);
+                delay.Y = Math.Max(delay.Y, 0f);
+            }
+        }
 
         /// <summary>
         /// The minimum and maximum duration the spawner will be active once it starts spawning particles
@@ -119,7 +134,16 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </userdoc>
         [DataMember(15)]
         [Display("Duration")]
-        public Vector2 Duration = new Vector2(1, 1);
+        public Vector2 Duration
+        {
+            get { return duration; }
+            set
+            {
+                duration = value;
+                duration.X = Math.Max(duration.X, 0.001f);
+                duration.Y = Math.Max(duration.Y, 0.001f);
+            }
+        }
 
 
         /// <summary>
@@ -162,12 +186,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
             if (state == SpawnerState.Active)
             {
-                stateDuration = Duration.X + (Duration.Y - Duration.X) * NextFloat();
+                stateDuration = duration.X + (duration.Y - duration.X) * NextFloat();
             }
             else
             if (state == SpawnerState.Rest)
             {
-                stateDuration = Delay.X + (Delay.Y - Delay.X) * NextFloat();
+                stateDuration = delay.X + (delay.Y - delay.X) * NextFloat();
             }
             else
             {
