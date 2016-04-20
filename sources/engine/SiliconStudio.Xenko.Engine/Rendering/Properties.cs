@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        internal T this[ViewObjectNodeReference index]
+        public T this[ViewObjectNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -47,14 +47,14 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct ViewObjectNodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
         /// </summary>
 		public static readonly ViewObjectNodeReference Invalid = new ViewObjectNodeReference(-1);
 
-        internal ViewObjectNodeReference(int index)
+        public ViewObjectNodeReference(int index)
         {
             Index = index;
         }
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        internal T this[ObjectNodeReference index]
+        public T this[ObjectNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -164,14 +164,14 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct ObjectNodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
         /// </summary>
 		public static readonly ObjectNodeReference Invalid = new ObjectNodeReference(-1);
 
-        internal ObjectNodeReference(int index)
+        public ObjectNodeReference(int index)
         {
             Index = index;
         }
@@ -258,7 +258,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        internal T this[RenderNodeReference index]
+        public T this[RenderNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -281,7 +281,7 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct RenderNodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
@@ -375,7 +375,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        internal T this[EffectObjectNodeReference index]
+        public T this[EffectObjectNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -398,14 +398,14 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct EffectObjectNodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
         /// </summary>
 		public static readonly EffectObjectNodeReference Invalid = new EffectObjectNodeReference(-1);
 
-        internal EffectObjectNodeReference(int index)
+        public EffectObjectNodeReference(int index)
         {
             Index = index;
         }
@@ -492,7 +492,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        internal T this[ViewNodeReference index]
+        public T this[ViewNodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -515,14 +515,14 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct ViewNodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
         /// </summary>
 		public static readonly ViewNodeReference Invalid = new ViewNodeReference(-1);
 
-        internal ViewNodeReference(int index)
+        public ViewNodeReference(int index)
         {
             Index = index;
         }
@@ -632,14 +632,14 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct StaticObjectNodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
         /// </summary>
 		public static readonly StaticObjectNodeReference Invalid = new StaticObjectNodeReference(-1);
 
-        internal StaticObjectNodeReference(int index)
+        public StaticObjectNodeReference(int index)
         {
             Index = index;
         }

@@ -118,6 +118,12 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         private Vector2 particleLifetime = new Vector2(1, 1);
 
+        /// <summary>
+        /// If positive, forces particles to stay one frame more when they are about ot expire
+        /// </summary>
+        [DataMemberIgnore]
+        public int DelayParticleDeath { get; set; } = 0;
+
         // Draw location can be different than the particle position if we are using local coordinate system
         private readonly ParticleTransform drawTransform = new ParticleTransform();
         private readonly ParticleTransform identityTransform = new ParticleTransform();
@@ -696,18 +702,41 @@ namespace SiliconStudio.Xenko.Particles
 
                     var startingLife = particleLifetime.X + lifeStep * randSeed.GetFloat(0);
 
-                    if (*life <= 0 || (*life -= (dt / startingLife)) <= 0)
+                    if (*life <= MathUtil.ZeroTolerance)
                     {
                         particleEnumerator.RemoveCurrent(ref particle);
                     }
+                    else
+                    if ((*life -= (dt / startingLife)) <= MathUtil.ZeroTolerance)
+                    {
+                        if (DelayParticleDeath > 0)
+                        {
+                            *life = MathUtil.ZeroTolerance;
+                        }
+                        else
+                        {
+                            particleEnumerator.RemoveCurrent(ref particle);
+                        }
+                    }
+                }
+            }
+
+            // Hardcoded position and old position updates
+            // If we have to preserve the particle's old position, do it before updating the position for the first time
+            if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.OldPosition))
+            {
+                var posField = pool.GetField(ParticleFields.Position);
+                var oldField = pool.GetField(ParticleFields.OldPosition);
+
+                foreach (var particle in pool)
+                {
+                    (*((Vector3*)particle[oldField])) = (*((Vector3*)particle[posField]));
                 }
             }
 
             // Hardcoded position and velocity update
             if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
             {
-                // should this be a separate module?
-                // Position and velocity update only
                 var posField = pool.GetField(ParticleFields.Position);
                 var velField = pool.GetField(ParticleFields.Velocity);
 
@@ -938,8 +967,16 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="count"></param>
         public void EmitParticles(int count)
         {
+            if (!CanEmitParticles)
+                return;
+
             particlesToSpawn += count;
         }
+
+        /// <summary>
+        /// Indicates if the emitter is allowed to emit new particles or not.
+        /// </summary>
+        public bool CanEmitParticles { get; set; } = true;
 
         /// <summary>
         /// Changes the particle fields whenever the simulation space changes (World to Local or Local to World)

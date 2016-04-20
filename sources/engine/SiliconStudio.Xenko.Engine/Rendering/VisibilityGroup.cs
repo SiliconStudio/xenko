@@ -102,12 +102,12 @@ namespace SiliconStudio.Xenko.Rendering
             // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
             // TODO GRAPHICS REFACTOR frustum culling is currently hardcoded (cf previous TODO, we should make this more modular and move it out of here)
             var frustum = new BoundingFrustum(ref view.ViewProjection);
-            var cullingMode = view.SceneCameraRenderer?.CullingMode ?? CameraCullingMode.Frustum;
+            var cullingMode = view.CullingMode;
 
             // TODO GRAPHICS REFACTOR we currently forward SceneCameraRenderer.CullingMask
             // Note sure this is really a good mechanism long term (it forces to recreate multiple time the same view, instead of using RenderStage + selectors or a similar mechanism)
             // This is still supported so that existing gizmo code kept working with new graphics refactor. Might be reconsidered at some point.
-            var cullingMask = view.SceneCameraRenderer?.CullingMask ?? EntityGroupMask.All;
+            var cullingMask = view.CullingMask;
 
             // Process objects
             foreach (var renderObject in RenderObjects)

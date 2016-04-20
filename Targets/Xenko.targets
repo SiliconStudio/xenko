@@ -208,8 +208,9 @@
     <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\AudioAssets\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\AudioAssets\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
     <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Shaders.Bytecodes\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Shaders.Bytecodes\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
   </PropertyGroup>
-  
-  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioXenkoGameSettings)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+
+  <!-- Compute graphics platform from game settings asset -->
+  <Target Name="SiliconStudioComputeGraphicsPlatformFromGameSettings" Inputs="$(SiliconStudioXenkoGameSettings)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     
@@ -222,11 +223,15 @@
     <!-- Write result back to disk -->
     <WriteLinesToFile File="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Lines="$(SiliconStudioXenkoGraphicsApiComputed)" Overwrite="true" />
   </Target>
-  
-  <Target Name="SiliconStudioUpdateGraphicsPlatform" DependsOnTargets="SiliconStudioGetGraphicsPlatform" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+
+  <!-- Default way to resolve graphics platform (from game settings asset) -->
+  <Target Name="SiliconStudioGetGraphicsPlatform" DependsOnTargets="SiliconStudioComputeGraphicsPlatformFromGameSettings">
     <ReadLinesFromFile File="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache">
       <Output TaskParameter="Lines" PropertyName="SiliconStudioXenkoGraphicsApi"/>
     </ReadLinesFromFile>
+  </Target>
+  
+  <Target Name="SiliconStudioUpdateGraphicsPlatform" DependsOnTargets="SiliconStudioGetGraphicsPlatform" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioXenkoGraphicsApi)"/>
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
@@ -249,7 +254,7 @@
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     <PropertyGroup>
-      <SiliconStudioXenkoCompileAssetCommandProxy>$(SiliconStudioXenkoCompileAssetCommandProxy) $(SiliconStudioXenkoCompileAssetOptions) --disable-auto-compile --project-configuration &quot;$(Configuration)&quot; --platform=$(SiliconStudioPlatform) --graphics-platform=$(SiliconStudioXenkoGraphicsApi) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
+      <SiliconStudioXenkoCompileAssetCommandProxy>$(SiliconStudioXenkoCompileAssetCommandProxy) $(SiliconStudioXenkoCompileAssetOptions) --disable-auto-compile --project-configuration &quot;$(Configuration)&quot; --platform=$(SiliconStudioPlatform) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
       <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogVerbose)' != ''">$(SiliconStudioXenkoCompileAssetCommandProxy) --verbose</SiliconStudioXenkoCompileAssetCommandProxy>
       <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogDebug)' != ''">$(SiliconStudioXenkoCompileAssetCommandProxy) --debug</SiliconStudioXenkoCompileAssetCommandProxy>
     </PropertyGroup>

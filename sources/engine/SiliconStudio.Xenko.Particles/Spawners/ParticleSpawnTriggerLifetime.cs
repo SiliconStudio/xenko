@@ -45,15 +45,16 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             FieldAccessor = pool.GetField(ParticleFields.RemainingLife);
         }
 
-        public unsafe override bool HasTriggered(Particle parentParticle)
+        public unsafe override float HasTriggered(Particle parentParticle)
         {
             if (!FieldAccessor.IsValid())
-                return false;
+                return 0f;
 
             // We store remaining lifetime in the particle field, so for progress [0..1) we need to take (1 - remaining)
             var currentLifetime = 1f - (*((float*)parentParticle[FieldAccessor]));
 
-            return ((currentLifetime >= LifetimeLowerLimit) ^ (currentLifetime <= LifetimeUpperLimit) ^ limitsAreInOrder);
+            // TODO - Time difference ?
+            return ((currentLifetime >= LifetimeLowerLimit) ^ (currentLifetime <= LifetimeUpperLimit) ^ limitsAreInOrder) ? 1f : 0f;
         }
     }
 }

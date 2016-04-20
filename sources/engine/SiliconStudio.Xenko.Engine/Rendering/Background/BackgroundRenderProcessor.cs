@@ -53,6 +53,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     // Select the first active background
                     renderBackground.Texture = backgroundComponent.Texture;
                     renderBackground.Intensity = backgroundComponent.Intensity;
+                    renderBackground.RenderGroup = backgroundComponent.Entity.Group;
 
                     ActiveBackground = renderBackground;
                     break;

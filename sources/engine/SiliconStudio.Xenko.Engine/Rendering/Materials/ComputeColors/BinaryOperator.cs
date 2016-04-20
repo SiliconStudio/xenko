@@ -161,6 +161,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// </summary>
         SubstituteAlpha,
 
+        /// <summary>
+        /// Threshold, resulting in a black-white texture for grayscale against a set threshold
+        /// </summary>
+        Threshold,
+
         //TODO: lerp, clamp ?
     }
 }
