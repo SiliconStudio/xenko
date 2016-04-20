@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public class UIBatch : BatchBase<UIBatch.UIImageDrawInfo>
     {
-        public bool AllowDepthWrite { get; set; } = false;
+        public bool AllowDepthWrite { get; set; } = true;
 
         private static readonly List<short[]> PrimiteTypeToIndices = new List<short[]>(4);
 
