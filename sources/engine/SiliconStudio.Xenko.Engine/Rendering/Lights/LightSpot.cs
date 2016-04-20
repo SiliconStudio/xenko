@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             return box;
         }
 
-        public override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
+        public override float ComputeScreenCoverage(RenderView renderView, Vector3 position, Vector3 direction)
         {
             // http://stackoverflow.com/questions/21648630/radius-of-projected-sphere-in-screen-space
             // Use a sphere at target point to compute the screen coverage. This is a very rough approximation.
@@ -124,15 +124,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // TODO: Check if we can improve this calculation with a better model
             var targetPosition = new Vector4(position + direction * Range, 1.0f);
             Vector4 projectedTarget;
-            Vector4.Transform(ref targetPosition, ref camera.ViewProjectionMatrix, out projectedTarget);
+            Vector4.Transform(ref targetPosition, ref renderView.ViewProjection, out projectedTarget);
 
             var d = Math.Abs(projectedTarget.W) + 0.00001f;
             var r = Range * Math.Sin(MathUtil.DegreesToRadians(AngleOuter/2.0f));
-            var coTanFovBy2 = camera.ProjectionMatrix.M22;
+            var coTanFovBy2 = renderView.Projection.M22;
             var pr = r * coTanFovBy2 / (Math.Sqrt(d * d - r * r) + 0.00001f);
 
             // Size on screen
-            return (float)pr * Math.Max(width, height);
+            return (float)pr * Math.Max(renderView.ViewSize.X, renderView.ViewSize.Y);
         }
     }
 }

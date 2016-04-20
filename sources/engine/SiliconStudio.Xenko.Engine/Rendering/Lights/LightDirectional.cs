@@ -37,10 +37,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             return BoundingBox.Empty;
         }
 
-        public override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
+        public override float ComputeScreenCoverage(RenderView renderView, Vector3 position, Vector3 direction)
         {
             // As the directional light is covering the whole screen, we take the max of current width, height
-            return Math.Max(width, height);
+            return Math.Max(renderView.ViewSize.X, renderView.ViewSize.Y);
         }
 
         public override bool Update(LightComponent lightComponent)
