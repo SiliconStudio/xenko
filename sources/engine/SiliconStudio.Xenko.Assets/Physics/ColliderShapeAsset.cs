@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [DataContract("ColliderShapeAsset")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
-    [ObjectFactory(typeof(ColliderShapeFactory))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(Box2DRemovalUpgrader))]
@@ -31,15 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
     {
         public const string FileExtension = ".xkphy;pdxphy";
 
-        public ColliderShapeAsset()
-        {
-            ColliderShapes = new List<IAssetColliderShapeDesc>();
-        }
-
-        protected override int InternalBuildOrder
-        {
-            get { return 600; } //make sure we build after Models
-        }
+        protected override int InternalBuildOrder => 600; //make sure we build after Models
 
         /// <userdoc>
         /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
@@ -47,19 +38,11 @@ namespace SiliconStudio.Xenko.Assets.Physics
         [DataMember(10)]
         [Category]
         [NotNullItems]
-        public List<IAssetColliderShapeDesc> ColliderShapes { get; set; }
-
-        private class ColliderShapeFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new ColliderShapeAsset();
-            }
-        }
+        public List<IAssetColliderShapeDesc> ColliderShapes { get; set; } = new List<IAssetColliderShapeDesc>();
 
         private class UpgraderShapeDescriptions : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 if (asset.ColliderShapes == null)
                     return;
@@ -105,7 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         private class Box2DRemovalUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 if (asset.ColliderShapes == null)
                     return;

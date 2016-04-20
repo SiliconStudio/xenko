@@ -1139,8 +1139,8 @@ public:
 		auto texturePath = FindFilePath(lFileTexture);
 		auto wrapModeU = lFileTexture->GetWrapModeU();
 		auto wrapModeV = lFileTexture->GetWrapModeV();
-		bool wrapTextureU = (wrapModeU == FbxTexture::EWrapMode::eRepeat);
-		bool wrapTextureV = (wrapModeV == FbxTexture::EWrapMode::eRepeat);
+		auto wrapTextureU = (wrapModeU == FbxTexture::EWrapMode::eRepeat) ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
+		auto wrapTextureV = (wrapModeV == FbxTexture::EWrapMode::eRepeat) ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 		
 		ComputeTextureColor^ textureValue;
 		

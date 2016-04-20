@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         }
 
         /// <inheritdoc/>
-        public override void PrepareEffectPermutationsImpl(RenderThreadContext context)
+        public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             base.PrepareEffectPermutationsImpl(context);
 
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderThreadContext context)
+        public override unsafe void Prepare(RenderDrawContext context)
         {
             // Reset pipeline states if necessary
             for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)

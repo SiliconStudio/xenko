@@ -1324,8 +1324,9 @@ namespace SiliconStudio.Assets
             foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
             {
                 var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                string @namespace;
-                var codePaths = FindCodeAssetsInProject(realFullPath, out @namespace);
+                string defaultNamespace;
+                var codePaths = FindCodeAssetsInProject(realFullPath, out defaultNamespace);
+                libs.RootNamespace = defaultNamespace;
                 var dir = new UDirectory(realFullPath.GetFullDirectory());
                 var parentDir = dir.GetParent();
 
@@ -1355,7 +1356,8 @@ namespace SiliconStudio.Assets
             {
                 var assetImportBase = (AssetImport)AssetCloner.Clone(assetImport);
                 assetImportBase.SetAsRootImport();
-                assetImportBase.SetDefaults();
+                // We removed SetDefaults, but I guess we can remove this whole method?
+                //assetImportBase.SetDefaults();
 
                 // Setup default importer
                 if (!String.IsNullOrEmpty(assetImport.Source.GetFileExtension()))
@@ -1379,7 +1381,7 @@ namespace SiliconStudio.Assets
 
         private class RemoveRawImports : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 if (asset.Profiles != null)
                 {
@@ -1405,7 +1407,7 @@ namespace SiliconStudio.Assets
 
         private class RenameSystemPackage : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var dependencies = asset.Meta?.Dependencies;
 

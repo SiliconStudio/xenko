@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
     {
         private readonly Dictionary<string, SamplerStateDescription> samplers = new Dictionary<string, SamplerStateDescription>();
         private readonly EffectReflection effectReflection;
-        private readonly Dictionary<ShaderConstantBufferDescription, List<EffectParameterValueData>> valueBindings = new Dictionary<ShaderConstantBufferDescription, List<EffectParameterValueData>>();
+        private readonly Dictionary<EffectConstantBufferDescription, List<EffectValueDescription>> valueBindings = new Dictionary<EffectConstantBufferDescription, List<EffectValueDescription>>();
         private readonly ShaderMixinParsingResult parsingResult;
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             {
                 var parameterKey = this.GetLinkParameterKey(node);
                 if (parameterKey != null)
-                    LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey, parameterKey.Count);
+                    LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey, parameterKey.Type.Elements);
             }
 
             node.Childrens(OnProcessor);
@@ -313,8 +313,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 return null;
             }
 
-            bool isColor = attributable.Attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
-
             foreach (var annotation in attributable.Attributes.OfType<AttributeDeclaration>())
             {
                 if (annotation.Name != "Link" || annotation.Parameters.Count < 1)
@@ -327,205 +325,286 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 var variable = node as Variable;
                 if (variable != null)
                 {
-                    var variableType = variable.Type;
-
                     var cbuffer = (ConstantBuffer)variable.GetTag(XenkoTags.ConstantBuffer);
                     if (cbuffer != null && cbuffer.Type == XenkoConstantBufferType.ResourceGroup)
                     {
                         parameterKey.ResourceGroup = cbuffer.Name;
                     }
 
-                    if (variableType.TypeInference.TargetType != null)
-                        variableType = variableType.TypeInference.TargetType;
+                    var variableType = variable.Type;
 
-                    if (variableType is ArrayType)
-                    {
-                        var arrayType = (ArrayType)variableType;
-                        variableType = arrayType.Type;
-                        parameterKey.Count = (int)((LiteralExpression)arrayType.Dimensions[0]).Literal.Value;
-
-                        if (variableType.TypeInference.TargetType != null)
-                            variableType = variableType.TypeInference.TargetType;
-                    }
-                    
-                    if (variableType.IsBuiltIn)
-                    {
-                        var variableTypeName = variableType.Name.Text.ToLower();
-
-                        switch (variableTypeName)
-                        {
-                            case "cbuffer":
-                                parameterKey.Class = EffectParameterClass.ConstantBuffer;
-                                parameterKey.Type = EffectParameterType.ConstantBuffer;
-                                break;
-
-                            case "tbuffer":
-                                parameterKey.Class = EffectParameterClass.TextureBuffer;
-                                parameterKey.Type = EffectParameterType.TextureBuffer;
-                                break;
-
-                            case "structuredbuffer":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.StructuredBuffer;
-                                break;
-                            case "rwstructuredbuffer":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWStructuredBuffer;
-                                break;
-                            case "consumestructuredbuffer":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.ConsumeStructuredBuffer;
-                                break;
-                            case "appendstructuredbuffer":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.AppendStructuredBuffer;
-                                break;
-                            case "buffer":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.Buffer;
-                                break;
-                            case "rwbuffer":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWBuffer;
-                                break;
-                            case "byteaddressbuffer":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.ByteAddressBuffer;
-                                break;
-                            case "rwbyteaddressbuffer":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWByteAddressBuffer;
-                                break;
-
-                            case "texture1d":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.Texture1D;
-                                break;
-
-                            case "texturecube":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.TextureCube;
-                                break;
-
-                            case "texture2d":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.Texture2D;
-                                break;
-
-                            case "texture3d":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.Texture3D;
-                                break;
-
-                            case "texture1darray":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.Texture1DArray;
-                                break;
-
-                            case "texturecubearray":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.TextureCubeArray;
-                                break;
-
-                            case "texture2darray":
-                                parameterKey.Class = EffectParameterClass.ShaderResourceView;
-                                parameterKey.Type = EffectParameterType.Texture2DArray;
-                                break;
-
-                            case "rwtexture1d":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWTexture1D;
-                                break;
-
-                            case "rwtexture2d":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWTexture2D;
-                                break;
-
-                            case "rwtexture3d":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWTexture3D;
-                                break;
-
-                            case "rwtexture1darray":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWTexture1DArray;
-                                break;
-
-                            case "rwtexture2darray":
-                                parameterKey.Class = EffectParameterClass.UnorderedAccessView;
-                                parameterKey.Type = EffectParameterType.RWTexture2DArray;
-                                break;
-
-                            case "samplerstate":
-                            case "samplercomparisonstate":
-                                parameterKey.Class = EffectParameterClass.Sampler;
-                                parameterKey.Type = EffectParameterType.Sampler;
-                                break;
-                        }
-                    }
-                    else if (variableType is ScalarType)
-                    {
-                        // Uint and int are collapsed to int
-                        if (variableType == ScalarType.Int || variableType == ScalarType.UInt)
-                        {
-                            parameterKey.Class = EffectParameterClass.Scalar;
-                            parameterKey.Type = variableType == ScalarType.Int ? EffectParameterType.Int : EffectParameterType.UInt;
-                        }
-                        else if (variableType == ScalarType.Float)
-                        {
-                            parameterKey.Class = EffectParameterClass.Scalar;
-                            parameterKey.Type = EffectParameterType.Float;
-                        }
-                        else if (variableType == ScalarType.Bool)
-                        {
-                            parameterKey.Class = EffectParameterClass.Scalar;
-                            parameterKey.Type = EffectParameterType.Bool;
-                        }
-
-                        parameterKey.RowCount = 1;
-                        parameterKey.ColumnCount = 1;
-                    }
-                    else if (variableType is VectorType)
-                    {
-                        if (variableType == VectorType.Float2 || variableType == VectorType.Float3 || variableType == VectorType.Float4)
-                        {
-                            parameterKey.Class = isColor ? EffectParameterClass.Color : EffectParameterClass.Vector;
-                            parameterKey.Type = EffectParameterType.Float;
-                        }
-                        else if (variableType == VectorType.Int2 || variableType == VectorType.Int3 || variableType == VectorType.Int4)
-                        {
-                            parameterKey.Class = EffectParameterClass.Vector;
-                            parameterKey.Type = EffectParameterType.Int;
-                        }
-                        else if (variableType == VectorType.UInt2 || variableType == VectorType.UInt3 || variableType == VectorType.UInt4)
-                        {
-                            parameterKey.Class = EffectParameterClass.Vector;
-                            parameterKey.Type = EffectParameterType.UInt;
-                        }
-
-                        parameterKey.RowCount = 1;
-                        parameterKey.ColumnCount = (variableType as VectorType).Dimension;
-                    }
-                    else if (variableType is MatrixType)
-                    {
-                        parameterKey.Class = EffectParameterClass.MatrixColumns;
-                        parameterKey.Type = EffectParameterType.Float;
-                        parameterKey.RowCount = (variableType as MatrixType).RowCount;
-                        parameterKey.ColumnCount = (variableType as MatrixType).ColumnCount;
-                    }
-                    else if (variableType is StructType)
-                    {
-                        parameterKey.Class = EffectParameterClass.Struct;
-                        parameterKey.RowCount = 1;
-                        parameterKey.ColumnCount = 1;
-                    }
+                    parameterKey.Type = CreateTypeInfo(variableType, attributable.Attributes);
                 }
 
                 return parameterKey;
             }
 
             return null;
+        }
+
+        private static EffectTypeDescription CreateTypeInfo(TypeBase variableType, List<AttributeBase> attributes)
+        {
+            var parameterTypeInfo = new EffectTypeDescription();
+
+            if (variableType.TypeInference.TargetType != null)
+                variableType = variableType.TypeInference.TargetType;
+
+            if (variableType is ArrayType)
+            {
+                var arrayType = (ArrayType)variableType;
+                variableType = arrayType.Type;
+                parameterTypeInfo.Elements = (int)((LiteralExpression)arrayType.Dimensions[0]).Literal.Value;
+
+                if (variableType.TypeInference.TargetType != null)
+                    variableType = variableType.TypeInference.TargetType;
+            }
+
+            if (variableType.IsBuiltIn)
+            {
+                var variableTypeName = variableType.Name.Text.ToLower();
+
+                switch (variableTypeName)
+                {
+                    case "cbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.ConstantBuffer;
+                        parameterTypeInfo.Type = EffectParameterType.ConstantBuffer;
+                        break;
+
+                    case "tbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.TextureBuffer;
+                        parameterTypeInfo.Type = EffectParameterType.TextureBuffer;
+                        break;
+
+                    case "structuredbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.StructuredBuffer;
+                        break;
+                    case "rwstructuredbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWStructuredBuffer;
+                        break;
+                    case "consumestructuredbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.ConsumeStructuredBuffer;
+                        break;
+                    case "appendstructuredbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.AppendStructuredBuffer;
+                        break;
+                    case "buffer":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Buffer;
+                        break;
+                    case "rwbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWBuffer;
+                        break;
+                    case "byteaddressbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.ByteAddressBuffer;
+                        break;
+                    case "rwbyteaddressbuffer":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWByteAddressBuffer;
+                        break;
+
+                    case "texture1d":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture1D;
+                        break;
+
+                    case "texturecube":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.TextureCube;
+                        break;
+
+                    case "texture2d":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture2D;
+                        break;
+
+                    case "texture3d":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture3D;
+                        break;
+
+                    case "texture1darray":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture1DArray;
+                        break;
+
+                    case "texturecubearray":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.TextureCubeArray;
+                        break;
+
+                    case "texture2darray":
+                        parameterTypeInfo.Class = EffectParameterClass.ShaderResourceView;
+                        parameterTypeInfo.Type = EffectParameterType.Texture2DArray;
+                        break;
+
+                    case "rwtexture1d":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWTexture1D;
+                        break;
+
+                    case "rwtexture2d":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWTexture2D;
+                        break;
+
+                    case "rwtexture3d":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWTexture3D;
+                        break;
+
+                    case "rwtexture1darray":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWTexture1DArray;
+                        break;
+
+                    case "rwtexture2darray":
+                        parameterTypeInfo.Class = EffectParameterClass.UnorderedAccessView;
+                        parameterTypeInfo.Type = EffectParameterType.RWTexture2DArray;
+                        break;
+
+                    case "samplerstate":
+                    case "samplercomparisonstate":
+                        parameterTypeInfo.Class = EffectParameterClass.Sampler;
+                        parameterTypeInfo.Type = EffectParameterType.Sampler;
+                        break;
+                }
+            }
+            else if (variableType is ScalarType)
+            {
+                // Uint and int are collapsed to int
+                if (variableType == ScalarType.Int || variableType == ScalarType.UInt)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = variableType == ScalarType.Int ? EffectParameterType.Int : EffectParameterType.UInt;
+                }
+                else if (variableType == ScalarType.Float)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = EffectParameterType.Float;
+                }
+                else if (variableType == ScalarType.Bool)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = EffectParameterType.Bool;
+                }
+
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = 1;
+            }
+            else if (variableType is VectorType)
+            {
+                if (variableType == VectorType.Float2 || variableType == VectorType.Float3 || variableType == VectorType.Float4)
+                {
+                    bool isColor = attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
+                    parameterTypeInfo.Class = isColor ? EffectParameterClass.Color : EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.Float;
+                }
+                else if (variableType == VectorType.Int2 || variableType == VectorType.Int3 || variableType == VectorType.Int4)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.Int;
+                }
+                else if (variableType == VectorType.UInt2 || variableType == VectorType.UInt3 || variableType == VectorType.UInt4)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.UInt;
+                }
+
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = ((VectorType)variableType).Dimension;
+            }
+            else if (variableType is MatrixType)
+            {
+                parameterTypeInfo.Class = EffectParameterClass.MatrixColumns;
+                parameterTypeInfo.Type = EffectParameterType.Float;
+                parameterTypeInfo.RowCount = ((MatrixType)variableType).RowCount;
+                parameterTypeInfo.ColumnCount = ((MatrixType)variableType).ColumnCount;
+            }
+            else if (variableType is StructType)
+            {
+                var structType = (StructType)variableType;
+
+                parameterTypeInfo.Class = EffectParameterClass.Struct;
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = 1;
+                parameterTypeInfo.Name = structType.Name.Text;
+
+                var members = new List<EffectTypeMemberDescription>();
+                foreach (var field in structType.Fields)
+                {
+                    var memberInfo = new EffectTypeMemberDescription
+                    {
+                        Name = field.Name.Text,
+                        Type = CreateTypeInfo(field.Type, field.Attributes),
+                    };
+                    members.Add(memberInfo);
+                }
+
+                parameterTypeInfo.Members = members.ToArray();
+            }
+
+            return parameterTypeInfo;
+        }
+
+        private int ComputeSize(TypeBase type)
+        {
+            if (type.TypeInference.TargetType != null)
+                type = type.TypeInference.TargetType;
+
+            var structType = type as StructType;
+            if (structType != null)
+            {
+                var structSize = 0;
+                foreach (var field in structType.Fields)
+                {
+                    var memberSize = ComputeSize(field.Type);
+
+                    // Seems like this element needs to be split accross multiple lines, 
+                    if ((structSize + memberSize - 1) / 16 != structSize / 16)
+                        structSize = (structSize + 16 - 1) / 16 * 16;
+
+                    structSize += memberSize;
+                }
+                return structSize;
+            }
+
+            if (type is ScalarType)
+            {
+                // Uint and int are collapsed to int
+                if (type == ScalarType.Int || type == ScalarType.UInt
+                    || type == ScalarType.Float || type == ScalarType.Bool)
+                {
+                    return 4;
+                }
+                else if (type == ScalarType.Double)
+                {
+                    return 8;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            var vectorType = type as VectorType;
+            if (vectorType != null)
+            {
+                return ComputeSize(vectorType.Type) * vectorType.Dimension;
+            }
+
+            var matrixType = type as MatrixType;
+            if (matrixType is MatrixType)
+            {
+                return (4 * (matrixType.ColumnCount - 1) + matrixType.RowCount);
+            }
+
+            throw new NotImplementedException();
         }
 
         private void ParseConstantBufferVariable(string cbName, Variable variable)
@@ -568,7 +647,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
         private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey, int slotCount)
         {
-            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1 };
+            var binding = new EffectResourceBindingDescription { KeyInfo = { KeyName = parameterKey.Name }, Class = parameterKey.Type.Class, Type = parameterKey.Type.Type, RawName = variableName, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1, ResourceGroup = parameterKey.ResourceGroup };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -578,29 +657,25 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             var constantBuffer = effectReflection.ConstantBuffers.FirstOrDefault(buffer => buffer.Name == cbName);
             if (constantBuffer == null)
             {
-                constantBuffer = new ShaderConstantBufferDescription() {Name = cbName, Type = ConstantBufferType.ConstantBuffer};
+                constantBuffer = new EffectConstantBufferDescription() {Name = cbName, Type = ConstantBufferType.ConstantBuffer};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
-                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, ResourceGroup = cbName }, SlotStart = -1, SlotCount = 1 };
+                var constantBufferBinding = new EffectResourceBindingDescription { KeyInfo = { KeyName = cbName }, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, SlotStart = -1, SlotCount = 1, ResourceGroup = cbName };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);
-                valueBindings.Add(constantBuffer, new List<EffectParameterValueData>());
+                valueBindings.Add(constantBuffer, new List<EffectValueDescription>());
             }
 
             // Get the list of members of this constant buffer
             var members = valueBindings[constantBuffer];
 
-            var binding = new EffectParameterValueData
+            var binding = new EffectValueDescription
+            {
+                KeyInfo =
                 {
-                    Param =
-                        {
-                            KeyName = parameterKey.Name,
-                            Class = parameterKey.Class,
-                            Type = parameterKey.Type,
-                            RawName = variable.Name
-                        },
-                    RowCount = parameterKey.RowCount,
-                    ColumnCount = parameterKey.ColumnCount,
-                    Count = parameterKey.Count,
-                };
+                    KeyName = parameterKey.Name,
+                },
+                Type = parameterKey.Type,
+                RawName = variable.Name,
+            };
             
             members.Add(binding);
         }
@@ -611,7 +686,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             public string ResourceGroup;
 
-            public EffectParameterClass Class;
+            public EffectTypeDescription Type;
+
+            /*public EffectParameterClass Class;
 
             public EffectParameterType Type;
 
@@ -619,7 +696,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             public int ColumnCount;
 
-            public int Count = 0;
+            public int Elements;
+
+            public string TypeName;
+            public EffectParameterTypeInfo[] Members;*/
         }
     }
 }

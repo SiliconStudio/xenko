@@ -230,7 +230,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             
             foreach (var replaceCandidateMixinInfo in MixinInfos.Where(x => x != mixinInfo && x.ShaderSource.Equals(mixinInfo.ShaderSource) && x.HashPreprocessSource == mixinInfo.HashPreprocessSource))
             {
-                if (replaceCandidateMixinInfo != null && replaceCandidateMixinInfo.Mixin.DependenciesStatus != AnalysisStatus.None)
+                if (replaceCandidateMixinInfo.Mixin.DependenciesStatus != AnalysisStatus.None)
                 {
                     if (replaceCandidateMixinInfo.Mixin.MinimalContext != null)
                     {

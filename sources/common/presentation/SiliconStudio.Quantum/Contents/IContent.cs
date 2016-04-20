@@ -51,7 +51,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <summary>
         /// Gets all the indices in the value of this content, if it is a collection. Otherwise, this property returns null.
         /// </summary>
-        IEnumerable<object> Indices { get; }
+        IEnumerable<Index> Indices { get; }
 
         /// <summary>
         /// Gets whether the <see cref="Reference"/> contained in this content should lead to the creation of model node for the referenced object.
@@ -79,31 +79,28 @@ namespace SiliconStudio.Quantum.Contents
         event EventHandler<ContentChangeEventArgs> Changed;
 
         /// <summary>
-        /// Retrieves the value of this content or one of its item if it holds a collection.
+        /// Retrieves the value of this content.
         /// </summary>
-        /// <param name="index">The index to use to retrieve the value, if applicable. index should be <c>null</c> otherwise.</param>
-        object Retrieve(object index = null);
+        object Retrieve();
 
         /// <summary>
-        /// Retrieves the value of this content or one of its item if it holds a collection.
+        /// Retrieves the value of one of the item if this content, if it holds a collection.
         /// </summary>
-        /// <param name="value">The value of this content.</param>
-        /// <param name="index">The index to use to retrieve the value, if applicable. index should be <c>null</c> otherwise.</param>
-        object Retrieve(object value, object index);
+        /// <param name="index">The index to use to retrieve the value.</param>
+        object Retrieve(Index index);
 
         /// <summary>
-        /// Updates the <see cref="Value"/> property of this content with the given value, at the given index if applicable.
+        /// Updates the value of this content with the given value.
         /// </summary>
         /// <param name="newValue">The new value to set.</param>
-        /// <param name="index">The index where to update the value, if applicable. index should be <c>null</c> otherwise.</param>
-        void Update(object newValue, object index = null);
+        void Update(object newValue);
 
         /// <summary>
-        /// Adds a new item at the given index to this content, assuming the content is a collection.
+        /// Updates the value of this content at the given index with the given value.
         /// </summary>
-        /// <param name="itemIndex">The index at which the new item must be added.</param>
-        /// <param name="newItem">The new item to add to the collection.</param>
-        void Add(object itemIndex, object newItem);
+        /// <param name="newValue">The new value to set.</param>
+        /// <param name="index">The index where to update the value.</param>
+        void Update(object newValue, Index index);
 
         /// <summary>
         /// Adds a new item to this content, assuming the content is a collection.
@@ -112,13 +109,17 @@ namespace SiliconStudio.Quantum.Contents
         void Add(object newItem);
 
         /// <summary>
+        /// Adds a new item at the given index to this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="newItem">The new item to add to the collection.</param>
+        /// <param name="itemIndex">The index at which the new item must be added.</param>
+        void Add(object newItem, Index itemIndex);
+
+        /// <summary>
         /// Removes an item from this content, assuming the content is a collection.
         /// </summary>
+        /// <param name="item">The item to remove.</param>
         /// <param name="itemIndex">The index from which the item must be removed.</param>
-        /// <param name="item"></param>
-        void Remove(object itemIndex, object item);
-
-        // TODO: implement clear if needed
-        //void Clear();
+        void Remove(object item, Index itemIndex);
     }
 }

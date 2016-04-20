@@ -138,14 +138,17 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Converting:
                     ConvertingRequest converting = (ConvertingRequest)request;
-                    return SupportFormat(converting.Format) && SupportFormat(converting.Format);
+                    return SupportFormat(converting.Format) && SupportFormat(image.Format);
 
                 case RequestType.Export:
                     return SupportFormat(image.Format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
 
                 case RequestType.Rescaling:
                     RescalingRequest rescale = (RescalingRequest)request;
-                    return rescale.Filter == Filter.Rescaling.Box || rescale.Filter == Filter.Rescaling.Bicubic || rescale.Filter == Filter.Rescaling.Bicubic || rescale.Filter == Filter.Rescaling.Nearest;
+                    return rescale.Filter == Filter.Rescaling.Box ||
+                        rescale.Filter == Filter.Rescaling.Bilinear ||
+                        rescale.Filter == Filter.Rescaling.Bicubic ||
+                        rescale.Filter == Filter.Rescaling.Nearest;
 
                 case RequestType.Decompressing:
                     return SupportFormat(image.Format);
@@ -167,7 +170,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             switch (request.Type)
             {
                 case RequestType.Loading:
-                    Load(image, libraryData, (LoadingRequest)request);
+                    Load(image, (LoadingRequest)request);
                     break;
                 case RequestType.Compressing:
                     Compress(image, libraryData, (CompressingRequest)request);
@@ -203,16 +206,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// Loads the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
-        /// <param name="libraryData">The library data.</param>
         /// <param name="loader">The loader.</param>
         /// <exception cref="TextureToolsException">Loading dds file failed</exception>
-        private void Load(TexImage image, DxtTextureLibraryData libraryData, LoadingRequest loader)
+        private void Load(TexImage image, LoadingRequest loader)
         {
             Log.Debug("Loading " + loader.FilePath + " ...");
 
-            libraryData = new DxtTextureLibraryData();
+            var libraryData = new DxtTextureLibraryData();
             image.LibraryData[this] = libraryData;
-
             libraryData.Image = new ScratchImage();
             libraryData.Metadata = new TexMetadata();
 

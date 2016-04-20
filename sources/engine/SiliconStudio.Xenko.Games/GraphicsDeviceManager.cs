@@ -951,9 +951,7 @@ namespace SiliconStudio.Xenko.Games
         {
             newInfo.PresentationParameters.IsFullScreen = isFullScreen;
             newInfo.PresentationParameters.PresentationInterval = SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate;
-            newInfo.DeviceCreationFlags = DeviceCreationFlags;
-
-            OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(newInfo));
+            newInfo.DeviceCreationFlags = DeviceCreationFlags;        
 
             // this.ValidateGraphicsDeviceInformation(newInfo);
 
@@ -1021,6 +1019,10 @@ namespace SiliconStudio.Xenko.Games
                     game.Window.SetSupportedOrientations(SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true));
 
                     var graphicsDeviceInformation = FindBestDevice(forceCreate);
+
+                    OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
+
+                    isFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
                     game.Window.BeginScreenDeviceChange(graphicsDeviceInformation.PresentationParameters.IsFullScreen);
                     isBeginScreenDeviceChange = true;
                     bool needToCreateNewDevice = true;
@@ -1029,7 +1031,6 @@ namespace SiliconStudio.Xenko.Games
                     // try to reset and resize it.
                     if (!forceCreate && GraphicsDevice != null)
                     {
-                        OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
                         if (CanResetDevice(graphicsDeviceInformation))
                         {
                             try

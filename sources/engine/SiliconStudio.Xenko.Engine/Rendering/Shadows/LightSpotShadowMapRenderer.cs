@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return new LightSpotShadowMapGroupShaderData(compositionKey, shadowType, maxLightCount);
         }
         
-        public override void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+        public override void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
         {
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var shadow = (LightStandardShadowMap)lightShadowMap.Shadow;
@@ -237,7 +237,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
             }
 
-            public void ApplyParameters(ParameterCollection parameters)
+            public void ApplyParameters(RenderDrawContext context, ParameterCollection parameters)
             {
                 parameters.Set(shadowMapTextureKey, shadowMapTexture);
                 parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);

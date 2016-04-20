@@ -15,7 +15,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="Key"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty KeyProperty = DependencyProperty.Register("Key", typeof(object), typeof(TextBoxKeyUpCommandBehavior), new PropertyMetadata(Key.Enter));
+        public static readonly DependencyProperty KeyProperty = DependencyProperty.Register("Key", typeof(Key), typeof(TextBoxKeyUpCommandBehavior), new PropertyMetadata(Key.Enter));
 
         /// <summary>
         /// Gets or sets the command to invoke.

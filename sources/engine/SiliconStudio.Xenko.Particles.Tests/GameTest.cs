@@ -25,7 +25,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
 //        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
 //        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
 //        const int ParticleTestVersion = 4;  // Changed the default size for billboards, hexagons and quads (previous visual tests are broken)
-        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
+//        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
+//        const int ParticleTestVersion = 6;  // Moved the main update from Update() to Draw() cycle
+//        const int ParticleTestVersion = 7;  // Children Particles visual test updated
+        const int ParticleTestVersion = 8;  // Camera ignores scaling, due to float precision issues it renders slightly differently
 
         // Local screenshots
         private readonly string xenkoDir;
@@ -52,7 +55,9 @@ namespace SiliconStudio.Xenko.Particles.Tests
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1, };
             
             IsFixedTimeStep = true;
-           // This still doesn't work IsDrawDesynchronized = false; // Double negation!
+            ForceOneUpdatePerDraw = true;
+            IsDrawDesynchronized = false;
+            // This still doesn't work IsDrawDesynchronized = false; // Double negation!
             TargetElapsedTime = TimeSpan.FromTicks(10000000 / 60); // target elapsed time is by default 60Hz
         }
 
@@ -144,6 +149,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
             using (var game = new VisualTestCurves()) { game.Run(); }
 
             using (var game = new VisualTestRibbons()) { game.Run(); }
+
+            using (var game = new VisualTestChildren()) { game.Run(); }
         }
     }
 }

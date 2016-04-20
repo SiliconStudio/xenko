@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using Microsoft.Build.Framework.XamlTypes;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -44,10 +42,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
         /// </summary>
-        internal protected virtual int InternalBuildOrder 
-        {
-            get { return 0; }
-        }
+        internal protected virtual int InternalBuildOrder => 0;
 
         /// <summary>
         /// Gets or sets the unique identifier of this asset.
@@ -169,13 +164,6 @@ namespace SiliconStudio.Assets
             };
 
             return AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
-        }
-
-        /// <summary>
-        /// Sets the defaults values for this instance
-        /// </summary>
-        public virtual void SetDefaults()
-        {
         }
 
         public override string ToString()

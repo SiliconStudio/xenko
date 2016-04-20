@@ -21,9 +21,13 @@
     <XenkoBuildTags>*</XenkoBuildTags>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+      <PropertyGroup>
+        <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    </PropertyGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -117,6 +121,7 @@
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
+    <Compile Include="Engine\Network\ExceptionMessage.cs" />
     <Compile Include="Engine\Network\SimpleSocketException.cs" />
     <Compile Include="Engine\Network\SocketExtensions.cs" />
     <Compile Include="Engine\Network\SocketMessageLayer.cs" />
@@ -223,6 +228,12 @@
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorThreshold.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\ComputeColors\VertexStreamDefinitionBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamScalar.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\VertexUserStreamDefinition.cs" />
@@ -235,7 +246,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Materials\MaterialBlendLayerContext.cs" />
+    <Compile Include="Rendering\Materials\MaterialBlendLayerPerStageContext.cs" />
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialShadingModelCollection.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderProcessor.cs" />
     <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
@@ -324,6 +338,10 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HighlightShader.cs</LastGenOutput>
@@ -1903,8 +1921,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceBlendShading.cs">
-      <DependentUpon>MaterialSurfaceBlendShading.xksl</DependentUpon>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceShadingBlend.cs">
+      <DependentUpon>MaterialSurfaceShadingBlend.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -3328,9 +3346,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceArray.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Materials\Shaders\MaterialSurfaceBlendShading.xksl">
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceShadingBlend.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceBlendShading.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceShadingBlend.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceEmissiveShading.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

@@ -33,12 +33,12 @@ namespace SiliconStudio.Xenko.Graphics
                         if (resourceBinding.Stage == ShaderStage.None)
                             continue;
 
-                        if (resourceBinding.Param.Key == layoutEntry.Key)
+                        if (resourceBinding.KeyInfo.Key == layoutEntry.Key)
                         {
                             bindingOperations.Add(new BindingOperation
                             {
                                 EntryIndex = resourceIndex,
-                                Class = resourceBinding.Param.Class,
+                                Class = resourceBinding.Class,
                                 Stage = resourceBinding.Stage,
                                 SlotStart = resourceBinding.SlotStart,
                                 ImmutableSampler = layoutEntry.ImmutableSampler,

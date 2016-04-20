@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public static ShaderSourceWithHash CreateShaderSourceWithHash(string type, string source)
         {
-            return new ShaderSourceWithHash()
+            return new ShaderSourceWithHash
             {
                 Path = type,
                 Source = source,
@@ -174,20 +174,22 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                             using (var sourceStream = OpenStream(sourceUrl))
                             {
                                 var databaseStream = sourceStream as IDatabaseStream;
-                                var fileStream = sourceStream as FileStream;
-                                if (databaseStream != null || fileStream != null)
-                                {
-                                    using (var sr = new StreamReader(sourceStream))
-                                        shaderSource.Source = sr.ReadToEnd();
 
-                                    if (databaseStream != null)
-                                        shaderSource.Hash = databaseStream.ObjectId;
-                                    else
-                                        shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(sourceUrl));
-                                }
-                                else
+                                using (var sr = new StreamReader(sourceStream))
                                 {
-                                    throw new Exception(string.Format("Unsupported Stream type to load shader [{0}.xksl]", type));
+                                    shaderSource.Source = sr.ReadToEnd();
+
+                                    if (databaseStream == null)
+                                    {
+                                        sourceStream.Position = 0;
+                                        var data = new byte[sourceStream.Length];
+                                        sourceStream.Read(data, 0, (int)sourceStream.Length);
+                                        shaderSource.Hash = ObjectId.FromBytes(data);
+                                    }
+                                    else
+                                    {
+                                        shaderSource.Hash = databaseStream.ObjectId;
+                                    }
                                 }
                             }
                         }
@@ -196,7 +198,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     }
                     else
                     {
-                        throw new FileNotFoundException(string.Format("Unable to find shader [{0}]", type), string.Format("{0}.xksl", type));
+                        throw new FileNotFoundException($"Unable to find shader [{type}]", $"{type}.xksl");
                     }
                 }
                 return shaderSource;

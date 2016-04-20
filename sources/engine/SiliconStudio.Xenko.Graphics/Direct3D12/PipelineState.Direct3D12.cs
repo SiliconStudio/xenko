@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics
                         // Find matching resource bindings
                         foreach (var binding in effectReflection.ResourceBindings)
                         {
-                            if (binding.Stage == ShaderStage.None || binding.Param.Key != item.Key)
+                            if (binding.Stage == ShaderStage.None || binding.KeyInfo.Key != item.Key)
                                 continue;
 
                             List<DescriptorRange> descriptorRanges;
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
                             else
                             {
                                 DescriptorRangeType descriptorRangeType;
-                                switch (binding.Param.Class)
+                                switch (binding.Class)
                                 {
                                     case EffectParameterClass.ConstantBuffer:
                                         descriptorRangeType = DescriptorRangeType.ConstantBufferView;

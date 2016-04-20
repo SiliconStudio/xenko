@@ -290,7 +290,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 unchecked
                 {
-                    hashCode = hashCode = Key.GetHashCode();
+                    hashCode = Key.GetHashCode();
                     hashCode = (hashCode * 397) ^ Name.GetHashCode();
                     hashCode = (hashCode * 397) ^ Indexer;
                 }

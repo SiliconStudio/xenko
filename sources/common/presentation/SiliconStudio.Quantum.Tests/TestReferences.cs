@@ -16,7 +16,7 @@ namespace SiliconStudio.Quantum.Tests
         public class ObjectContainer
         {
             public object Instance { get; set; }
-            public override string ToString() => $"{{ObjectContainer: {Instance}}}";
+            public override string ToString() => $"{{ObjectContainer: {(Instance != this ? Instance : "This")}}}";
         }
 
         public class ObjectsContainer
@@ -123,8 +123,8 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestReferenceEnumerable(memberNode.Content.Reference, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Content.Retrieve());
-            Assert.AreEqual(instance1, memberNode.Content.Retrieve(0));
-            Assert.AreEqual(instance2, memberNode.Content.Retrieve(1));
+            Assert.AreEqual(instance1, memberNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(instance2, memberNode.Content.Retrieve(new Index(1)));
 
             var reference1 = memberNode.Content.Reference.AsEnumerable.First();
             Helper.TestMemberContentNode(reference1.TargetNode, reference1.TargetNode.Children.First(), instance1, instance1.Name, nameof(TestObject.Name), false);
@@ -150,8 +150,8 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestReferenceEnumerable(memberNode.Content.Reference, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Content.Retrieve());
-            Assert.AreEqual(null, memberNode.Content.Retrieve(0));
-            Assert.AreEqual(null, memberNode.Content.Retrieve(1));
+            Assert.AreEqual(null, memberNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(null, memberNode.Content.Retrieve(new Index(1)));
         }
 
         /// <summary>
@@ -173,11 +173,11 @@ namespace SiliconStudio.Quantum.Tests
 
             // Update item 0 to a new instance and item 1 to null
             var newInstance = new TestObject { Name = "Test3" };
-            memberNode.Content.Update(newInstance, 0);
-            memberNode.Content.Update(null, 1);
+            memberNode.Content.Update(newInstance, new Index(0));
+            memberNode.Content.Update(null, new Index(1));
             Assert.AreEqual(container.Instances, memberNode.Content.Retrieve());
-            Assert.AreEqual(newInstance, memberNode.Content.Retrieve(0));
-            Assert.AreEqual(null, memberNode.Content.Retrieve(1));
+            Assert.AreEqual(newInstance, memberNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(null, memberNode.Content.Retrieve(new Index(1)));
             Helper.TestReferenceEnumerable(memberNode.Content.Reference, container.Instances);
 
             var newReference = memberNode.Content.Reference.AsEnumerable;
@@ -331,5 +331,50 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance2Node.Children.First().Content.Reference.AsObject.TargetNode, instance1Node);
         }
 
+        /// <summary>
+        /// This test creates two objects and updates them to referencing each other. It verifies that the same nodes are reused between instances and references.
+        /// </summary>
+        [Test]
+        public void TestCircularReferencesUpdate()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance1 = new ObjectContainer();
+            var instance2 = new ObjectContainer();
+            var instance1Node = nodeContainer.GetOrCreateNode(instance1);
+            var instance2Node = nodeContainer.GetOrCreateNode(instance2);
+            instance1Node.Children.First().Content.Update(instance2);
+            instance2Node.Children.First().Content.Update(instance1);
+            Assert.AreEqual(instance1Node.Children.First().Content.Reference.AsObject.TargetNode, instance2Node);
+            Assert.AreEqual(instance2Node.Children.First().Content.Reference.AsObject.TargetNode, instance1Node);
+        }
+
+        /// <summary>
+        /// This test creates an object and make it reference itself. It verifies that the same nodes are reused.
+        /// </summary>
+        [Test]
+        public void TestSelfReference()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance = new ObjectContainer();
+            instance.Instance = instance;
+            var instanceNode = nodeContainer.GetOrCreateNode(instance);
+            Assert.AreEqual(1, instanceNode.Children.Count);
+            Assert.AreEqual(instanceNode.Children.First().Content.Reference.AsObject.TargetNode, instanceNode);
+        }
+
+        /// <summary>
+        /// This test creates an object and update it to make it reference itself. It verifies that the same nodes are reused.
+        /// </summary>
+        [Test]
+        public void TestSelfReferenceUpdate()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance = new ObjectContainer();
+            var instanceNode = nodeContainer.GetOrCreateNode(instance);
+            instanceNode.Children.First().Content.Update(instance);
+            instance.Instance = instance;
+            Assert.AreEqual(1, instanceNode.Children.Count);
+            Assert.AreEqual(instanceNode.Children.First().Content.Reference.AsObject.TargetNode, instanceNode);
+        }
     }
 }

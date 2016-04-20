@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 mixin.AddComposition("diffuseMap", computeColorSource);
                 context.UseStream(MaterialShaderStage.Pixel, DiffuseStream.Stream);
                 context.UseStream(MaterialShaderStage.Pixel, ColorBaseStream.Stream);
-                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+                context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
             }
         }
 

@@ -100,7 +100,6 @@
     <Compile Include="AsyncBridgeProcessor.cs" />
     <Compile Include="CecilArraySerializerFactory.cs" />
     <Compile Include="ComplexSerializerGenerator.cs" />
-    <Compile Include="Core\Utilities.cs" />
     <Compile Include="CustomAssemblyResolver.cs" />
     <Compile Include="DataContractAliasProcessor.cs" />
     <Compile Include="FixupValueTypeVisitor.cs" />
@@ -148,6 +147,7 @@
     <Compile Include="TypeReferenceEqualityComparer.cs" />
     <Compile Include="UpdateEngineProcessor.IL.cs" />
     <Compile Include="UpdateEngineProcessor.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComplexSerializerCodeGenerator.tt">

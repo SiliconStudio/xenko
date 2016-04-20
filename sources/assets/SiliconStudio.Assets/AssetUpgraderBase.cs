@@ -14,18 +14,25 @@ namespace SiliconStudio.Assets
             dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
             // upgrade the asset
-            UpgradeAsset(context, currentVersion, targetVersion, asset, assetFile);
+            var baseBranch = asset[Asset.BaseProperty];
+            var basePartsBranch = asset[Asset.BasePartsProperty] as DynamicYamlArray;
+
+            // Detect in what kind of override context we are
+            var overrideHint = (baseBranch != null || (basePartsBranch != null && basePartsBranch.Node.Children.Count > 0))
+                ? OverrideUpgraderHint.Derived
+                : OverrideUpgraderHint.Unknown;
+
+            // Upgrade the asset
+            UpgradeAsset(context, currentVersion, targetVersion, asset, assetFile, overrideHint);
             SetSerializableVersion(asset, dependencyName, targetVersion);
 
-            // upgrade its base
-            var baseBranch = asset[Asset.BaseProperty];
+            // Upgrade its base
             if (baseBranch != null)
             {
                 UpgradeBase(context, dependencyName, currentVersion, targetVersion, baseBranch, assetFile);
             }
 
-            // upgrade base parts
-            var basePartsBranch = asset[Asset.BasePartsProperty] as DynamicYamlArray;
+            // Upgrade base parts
             if (basePartsBranch != null)
             {
                 foreach (dynamic assetBase in basePartsBranch)
@@ -40,12 +47,12 @@ namespace SiliconStudio.Assets
             var baseAsset = assetBase[nameof(AssetBase.Asset)];
             if (baseAsset != null)
             {
-                UpgradeAsset(context, currentVersion, targetVersion, baseAsset, assetFile);
+                UpgradeAsset(context, currentVersion, targetVersion, baseAsset, assetFile, OverrideUpgraderHint.Base);
                 SetSerializableVersion(baseAsset, dependencyName, targetVersion);
             }
         }
 
-        protected abstract void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile);
+        protected abstract void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint);
 
         public static void SetSerializableVersion(dynamic asset, string dependencyName, PackageVersion value)
         {

@@ -3,6 +3,7 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
 {

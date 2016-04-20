@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         private void AddDiscardFromLuminance(MaterialShaderStage stage, MaterialGeneratorContext context)
         {
-            context.AddSurfaceShader(MaterialShaderStage.Pixel, new ShaderClassSource("MaterialSurfaceTransparentAlphaDiscard"));
+            context.AddShaderSource(MaterialShaderStage.Pixel, new ShaderClassSource("MaterialSurfaceTransparentAlphaDiscard"));
         }
     }
 }

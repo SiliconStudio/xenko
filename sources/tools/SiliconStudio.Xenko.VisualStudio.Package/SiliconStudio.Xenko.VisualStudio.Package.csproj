@@ -180,6 +180,9 @@
     <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
       <Link>Commands\NugetStore.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverrideType.cs">
+      <Link>Core\OverrideType.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
       <Link>Core\Design\Windows\FileLock.cs</Link>
     </Compile>

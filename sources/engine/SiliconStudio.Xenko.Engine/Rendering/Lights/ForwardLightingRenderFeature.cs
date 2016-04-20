@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
@@ -226,8 +226,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                             continue;
 
+                        var renderModel = renderMesh.RenderModel;
+                        var modelComponent = renderModel.ModelComponent;
+                        var isShadowReceiver = renderMesh.IsShadowReceiver && modelComponent.IsShadowReceiver;
+
                         // TODO GRAPHICS REFACTOR: Shader permutations can be collected per-object. Only parameter permutations need to be per-view-object.
-                        var renderObjectInfo = PrepareRenderMeshForRendering(renderViewData, renderMesh, renderEffect, effectSlotCount);
+                        var renderObjectInfo = PreparePermutationEntryForRendering(renderViewData, isShadowReceiver, ref modelComponent.BoundingBox, modelComponent.Entity.Group, i);
+                        renderObjectInfo.ApplyEffectPermutations(renderEffect);
                         renderViewObjectInfoData[renderPerViewNodeReference] = renderObjectInfo;
 
                         if (renderObjectInfo == null)
@@ -241,7 +246,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
 
@@ -267,7 +272,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private unsafe bool PrepareLightParameterEntry(RenderThreadContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
+        private unsafe bool PrepareLightParameterEntry(RenderDrawContext context, LightParametersPermutationEntry lightParameterEntry, RenderEffect renderEffect)
         {
             var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
 
@@ -309,12 +314,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Set values
             foreach (var lightGroup in lightParameterEntry.DirectLightGroupDatas)
             {
-                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(context, parameters);
             }
 
             foreach (var lightGroup in lightParameterEntry.EnvironmentLightDatas)
             {
-                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(context, parameters);
             }
 
             context.ResourceGroupAllocator.PrepareResourceGroup(lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightParameterEntry.Resources);
@@ -467,15 +472,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private LightParametersPermutationEntry PrepareRenderMeshForRendering(RenderViewLightData renderViewData, RenderMesh renderMesh, RenderEffect renderEffect, int effectSlot)
+        private LightParametersPermutationEntry PreparePermutationEntryForRendering(RenderViewLightData renderViewData, bool isShadowReceiver, ref BoundingBox boundingBox, EntityGroup group, int effectSlot)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
-
-            var renderModel = renderMesh.RenderModel;
-            var modelComponent = renderModel.ModelComponent;
-            var group = modelComponent.Entity.Group;
-            var boundingBox = modelComponent.BoundingBox;
 
             directLightsPerMesh.Clear();
             directLightShaderGroupEntryKeys.Clear();
@@ -485,7 +485,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Create different parameter collections depending on shadows
             // TODO GRAPHICS REFACTOR can we use the same parameter collection for shadowed/non-shadowed?
-            var isShadowReceiver = renderMesh.IsShadowReceiver && modelComponent.IsShadowReceiver;
             parametersKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
             shaderKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
             shaderKeyIdBuilder.Write((uint)effectSlot);
@@ -528,6 +527,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 else
                 {
                     ILightShadowMapRenderer currentShadowRenderer = null;
+                    bool hasDirectLight = false;
 
                     for (int i = 0; i < lightMaxCount; i++)
                     {
@@ -549,8 +549,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                             newShadowRenderer = (ILightShadowMapRenderer)shadowTexture.Renderer;
                         }
 
-                        if (i == 0)
+                        if (!hasDirectLight)
                         {
+                            hasDirectLight = true;
                             currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType);
                             currentShadowRenderer = newShadowRenderer;
                         }
@@ -580,7 +581,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         directLightsPerMesh.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, light, shadowTexture));
                     }
 
-                    if (directLightsPerMesh.Count > 0)
+                    if (hasDirectLight)
                     {
                         unsafe
                         {
@@ -604,7 +605,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             LightShaderPermutationEntry newLightShaderPermutationEntry;
             if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
             {
-                newLightShaderPermutationEntry = CreateShaderPermutationEntry(renderEffect);
+                newLightShaderPermutationEntry = CreateShaderPermutationEntry();
                 shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
             }
 
@@ -616,14 +617,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
             }
 
-            newShaderEntryParameters.ApplyEffectPermutations(renderEffect);
-
             return newShaderEntryParameters;
         }
 
-        private LightShaderPermutationEntry CreateShaderPermutationEntry(RenderEffect renderEffect)
+        private LightShaderPermutationEntry CreateShaderPermutationEntry()
         {
-            var shaderEntry = new LightShaderPermutationEntry(renderEffect);
+            var shaderEntry = new LightShaderPermutationEntry();
 
             // Direct Lights (with or without shadows)
             for (int i = 0; i < directLightShaderGroupEntryKeys.Count; i++)
@@ -780,9 +779,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightShaderPermutationEntry
         {
-            public LightShaderPermutationEntry(RenderEffect renderEffect)
+            public LightShaderPermutationEntry()
             {
-                RenderEffect = renderEffect;
                 ParameterCollectionEntryPool = new PoolListStruct<LightParametersPermutationEntry>(1, CreateParameterCollectionEntry);
 
                 DirectLightGroups = new List<LightShaderGroup>();
@@ -825,7 +823,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public int ResourceCount;
 
-            public ShaderConstantBufferDescription ConstantBufferReflection;
+            public EffectConstantBufferDescription ConstantBufferReflection;
 
             private LightParametersPermutationEntry CreateParameterCollectionEntry()
             {

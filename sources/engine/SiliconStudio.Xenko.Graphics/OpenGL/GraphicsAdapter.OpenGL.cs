@@ -26,6 +26,20 @@ namespace SiliconStudio.Xenko.Graphics
             int versionMajor = 1;
             int versionMinor = 0;
 
+            var renderer = GL.GetString(StringName.Renderer);
+            var vendor = GL.GetString(StringName.Vendor);
+
+            // Stay close to D3D: Cut renderer after first / (ex: "GeForce 670/PCIe/SSE2")
+            var rendererSlash = renderer.IndexOf('/');
+            if (rendererSlash != -1)
+                renderer = renderer.Substring(0, rendererSlash);
+
+            // Stay close to D3D: Remove "Corporation" from vendor
+            vendor = vendor.Replace(" Corporation", string.Empty);
+
+            // Generate adapter Description
+            Description = $"{vendor} {renderer}";
+
             // get real values
             // using glGetIntegerv(GL_MAJOR_VERSION / GL_MINOR_VERSION) only works on opengl (es) > 3.0
             var version = GL.GetString(StringName.Version);
@@ -63,10 +77,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the description of this adapter.
         /// </summary>
         /// <value>The description.</value>
-        public string Description
-        {
-            get { return "Default OpenGL Adapter"; }
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Determines if this instance of GraphicsAdapter is the default adapter.

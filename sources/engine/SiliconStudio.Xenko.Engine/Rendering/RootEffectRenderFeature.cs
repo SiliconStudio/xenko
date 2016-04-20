@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 foreach (var member in resourceGroupLayout.ConstantBufferReflection.Members)
                 {
-                    if (member.Param.KeyName == variable)
+                    if (member.KeyInfo.KeyName == variable)
                     {
                         resourceGroupLayout.ConstantBufferOffsets[index] = member.Offset;
                         return;
@@ -249,14 +249,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// Actual implementation of <see cref="PrepareEffectPermutations"/>.
         /// </summary>
         /// <param name="context"></param>
-        public virtual void PrepareEffectPermutationsImpl(RenderThreadContext context)
+        public virtual void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             
         }
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(RenderThreadContext context)
+        public override void PrepareEffectPermutations(RenderDrawContext context)
         {
             base.PrepareEffectPermutations(context);
 
@@ -324,7 +324,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.Effect = null;
                         renderEffect.State = RenderEffectState.Skip;
                     }
-                    else if (renderEffect.EffectValidator.EndEffectValidation())
+                    else if (renderEffect.EffectValidator.EndEffectValidation() && (renderEffect.Effect == null || !renderEffect.Effect.SourceChanged))
                     {
                         InvalidateEffectPermutation(renderObject, renderEffect);
                     
@@ -471,7 +471,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Prepare(RenderThreadContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             EffectObjectNodes.Clear();
 

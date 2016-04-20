@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMap", Invert));
                 mixin.AddComposition("glossinessMap", computeColorSource);
-                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+                context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
             }
         }
 
