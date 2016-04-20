@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -19,6 +20,10 @@ namespace SiliconStudio.Xenko.UI
     /// Provides a base class for all the User Interface elements in Xenko applications.
     /// </summary>
     [DataContract(Inherited = true)]
+    [CategoryOrder(10, AppearanceCategory, Expand = ExpandRule.Auto)]
+    [CategoryOrder(20, BehaviorCategory, Expand = ExpandRule.Auto)]
+    [CategoryOrder(30, LayoutCategory, Expand = ExpandRule.Auto)]
+    [CategoryOrder(100, MiscCategory, Expand = ExpandRule.Auto)]
     [DebuggerDisplay("UIElement: {Name}")]
     public abstract class UIElement : IUIElementUpdate, IIdentifiable
     {
@@ -72,7 +77,12 @@ namespace SiliconStudio.Xenko.UI
             EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyReleased", RoutingStrategy.Bubble, typeof(UIElement));
 
         private static readonly Queue<List<RoutedEventHandlerInfo>> RoutedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
-        
+
+        protected const string AppearanceCategory = "Appearance";
+        protected const string BehaviorCategory = "Behavior";
+        protected const string LayoutCategory = "Layout";
+        protected const string MiscCategory = "Misc";
+
         internal bool HierarchyDisablePicking;
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
@@ -151,6 +161,7 @@ namespace SiliconStudio.Xenko.UI
         /// List of the dependency properties attached to the object.
         /// </summary>
         [DataMember]
+        [Display(category: MiscCategory)]
         public PropertyContainer DependencyProperties;
 
         /// <summary>
@@ -212,6 +223,7 @@ namespace SiliconStudio.Xenko.UI
         /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         public int DrawLayerNumber { get; set; }
 
         internal bool ForceNextMeasure = true;
@@ -395,18 +407,21 @@ namespace SiliconStudio.Xenko.UI
         /// If this property is true, the UI system performs hit test on the UIElement.
         /// </summary>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         public bool CanBeHitByUser { get; set; }
 
         /// <summary>
         /// This property can be set to <value>true</value> to disable all touch events on the element's children.
         /// </summary>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         public bool PreventChildrenFromBeingHit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
         /// </summary>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         public virtual bool IsEnabled
         {
             get { return isEnabled; }
@@ -438,6 +453,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         public float Opacity
         {
             get { return opacity; }
@@ -448,6 +464,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the user interface (UI) visibility of this element. This is a dependency property.
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         public Visibility Visibility
         {
             get { return visibility; }
@@ -526,6 +543,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float Height
         {
             get { return height; }
@@ -544,6 +562,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float Width
         {
             get { return width; }
@@ -562,6 +581,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float Depth
         {
             get { return depth; }
@@ -613,6 +633,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float MinimumWidth
         {
             get { return minimumWidth; }
@@ -630,6 +651,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float MinimumHeight
         {
             get { return minimumHeight; }
@@ -647,6 +669,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float MinimumDepth
         {
             get { return minimumDepth; }
@@ -665,6 +688,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public bool ClipToBounds { get; set; }
 
         /// <summary>
@@ -672,6 +696,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float MaximumWidth
         {
             get { return maximumWidth; }
@@ -689,6 +714,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float MaximumHeight
         {
             get { return maximumHeight; }
@@ -706,6 +732,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public float MaximumDepth
         {
             get { return maximumDepth; }
@@ -722,6 +749,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the vertical alignment of this element.
         /// </summary>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public HorizontalAlignment HorizontalAlignment
         {
             get { return horizontalAlignment; }
@@ -736,6 +764,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the vertical alignment of this element.
         /// </summary>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public VerticalAlignment VerticalAlignment
         {
             get { return verticalAlignment; }
@@ -750,6 +779,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the depth alignment of this element.
         /// </summary>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public DepthAlignment DepthAlignment
         {
             get { return depthAlignment; }
@@ -764,6 +794,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the name of this element. This is a dependency property.
         /// </summary>
         [DataMember]
+        [Display(category: MiscCategory)]
         public string Name
         {
             get { return name; }
@@ -805,6 +836,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the margins of this element.
         /// </summary>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public Thickness Margin
         {
             get { return MarginInternal; }
@@ -872,6 +904,7 @@ namespace SiliconStudio.Xenko.UI
         /// The background color of the element.
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         public Color BackgroundColor { get; set; }
 
         private unsafe bool Vector3BinaryEqual(ref Vector3 left, ref Vector3 right)
