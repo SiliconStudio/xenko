@@ -23,22 +23,30 @@ namespace SiliconStudio.Xenko.Graphics
 
         public PixelFormat DepthStencilFormat;
 
-        public RenderOutputDescription(PixelFormat renderTargetFormat, PixelFormat depthStencilFormat = PixelFormat.None) : this()
+        public MSAALevel MultiSampleLevel;
+
+        public RenderOutputDescription(PixelFormat renderTargetFormat, PixelFormat depthStencilFormat = PixelFormat.None, MSAALevel multiSampleLevel = MSAALevel.None) : this()
         {
             RenderTargetCount = renderTargetFormat != PixelFormat.None ? 1 : 0;
             RenderTargetFormat0 = renderTargetFormat;
             DepthStencilFormat = depthStencilFormat;
+            MultiSampleLevel = multiSampleLevel;
         }
 
         public unsafe void CaptureState(CommandList commandList)
         {
             DepthStencilFormat = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.ViewFormat : PixelFormat.None;
+            MultiSampleLevel = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.MultiSampleLevel : MSAALevel.None;
+
             RenderTargetCount = commandList.RenderTargetCount;
             fixed (PixelFormat* renderTargetFormat0 = &RenderTargetFormat0)
             {
                 var renderTargetFormat = renderTargetFormat0;
                 for (int i = 0; i < RenderTargetCount; ++i)
+                {
                     *renderTargetFormat++ = commandList.RenderTargets[i].ViewFormat;
+                    MultiSampleLevel = commandList.RenderTargets[i].MultiSampleLevel; // multisample should all be equal
+                }
             }
         }
 
