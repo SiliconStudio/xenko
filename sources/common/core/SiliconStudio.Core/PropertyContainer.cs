@@ -81,7 +81,7 @@ namespace SiliconStudio.Core
             {
                 foreach (var property in properties)
                 {
-                    yield return new KeyValuePair<PropertyKey, object>(property.Key, property.Value);
+                    yield return new KeyValuePair<PropertyKey, object>(property.Key, property.Key.IsValueType ? ((ValueHolder)property.Value).ObjectValue : property.Value);
                 }
             }
 
@@ -647,12 +647,12 @@ namespace SiliconStudio.Core
         {
             return ((IDictionary<PropertyKey, object>)properties).Remove(item);
         }
-
+        
         internal abstract class ValueHolder
         {
             public abstract object ObjectValue { get; }
         }
-
+        
         internal class ValueHolder<T> : ValueHolder
         {
             public T Value;
