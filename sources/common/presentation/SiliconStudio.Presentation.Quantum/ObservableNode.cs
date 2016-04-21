@@ -130,11 +130,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the level of depth of this node, starting from 0 for the root node.
         /// </summary>
         public int Level => Parent?.Level + 1 ?? 0;
-
-        /// <summary>
-        /// Gets whether this node has been disposed.
-        /// </summary>
-        public bool IsDisposed { get; private set; }
      
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -153,6 +148,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
+
+        internal new bool IsDestroyed => base.IsDestroyed;
 
         /// <inheritdoc/>
         [Obsolete("This event is deprecated, IContent.Changed should be used instead")] // Unless needed for virtual/combined nodes?
@@ -184,10 +181,10 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose()
+        public override void Destroy()
         {
-            EnsureNotDisposed();
-            IsDisposed = true;
+            EnsureNotDestroyed();
+            base.Destroy();
         }
 
         /// <inheritdoc/>
@@ -359,9 +356,9 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void EnsureNotDisposed()
+        protected void EnsureNotDestroyed()
         {
-            if (IsDisposed)
+            if (IsDestroyed)
             {
                 throw new ObjectDisposedException(Name);
             }

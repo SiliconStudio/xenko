@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -11,7 +13,7 @@ namespace SiliconStudio.Presentation.ViewModel
     /// This abstract class represents a basic view model, implementing <see cref="INotifyPropertyChanging"/> and <see cref="INotifyPropertyChanged"/> and providing
     /// a set of <b>SetValue</b> helper methods to easly update a property and trigger the change notifications.
     /// </summary>
-    public abstract class ViewModelBase : INotifyPropertyChanging, INotifyPropertyChanged
+    public abstract class ViewModelBase : INotifyPropertyChanging, INotifyPropertyChanged, IDestroyable
     {
 #if DEBUG
         private readonly List<string> changingProperties = new List<string>();
@@ -36,6 +38,22 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             ServiceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        /// Gets whether this view model has been destroyed.
+        /// </summary>
+        /// <seealso cref="Destroy"/>
+        /// <seealso cref="IDestroyable"/>
+        protected bool IsDestroyed { get; private set; }
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Derived class should override this method, implement specific cleanup and then call the base implementation.
+        /// </remarks>
+        public virtual void Destroy()
+        {
+            IsDestroyed = true;
         }
 
         /// <summary>
