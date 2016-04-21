@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 
@@ -35,6 +36,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the font of the text block
         /// </summary>
         [DataMember]
+        [DefaultValue(null)]
         public SpriteFont Font
         {
             get { return font; }
@@ -52,6 +54,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the text of the text block
         /// </summary>
         [DataMember]
+        [DefaultValue(null)]
         public string Text
         {
             get { return text; }
@@ -72,6 +75,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
         [DataMember]
+        [DefaultValue(0.0f)]
         public float TextSize
         {
             get
@@ -93,6 +97,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// should automatically return to the beginning of the line when it is too big for the line width.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool WrapText
         {
             get { return wrapText; }
@@ -112,6 +117,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
         [DataMember]
+        [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
         {
             get { return synchronousCharacterGeneration; }
@@ -131,6 +137,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the alignment of the text to display.
         /// </summary>
         [DataMember]
+        [DefaultValue(default(TextAlignment))]
         public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
@@ -139,6 +146,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>When <value>true</value>, the element's text is never snapped. 
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
         [DataMember]
+        [DefaultValue(false)]
         public bool DoNotSnapText { get; set; }
 
         /// <summary>
