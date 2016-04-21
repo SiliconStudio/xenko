@@ -33,9 +33,6 @@ namespace SiliconStudio.Core.Transactions
         /// <inheritdoc/>
         public IReadOnlyList<Operation> Operations => operations;
 
-        /// <inheritdoc/>
-        public event EventHandler<EventArgs> BeforeComplete;
-
         /// <summary>
         /// Disposes the transaction by completing it and registering it to the transaction stack.
         /// </summary>
@@ -49,6 +46,12 @@ namespace SiliconStudio.Core.Transactions
         }
 
         /// <inheritdoc/>
+        public void Continue()
+        {
+            synchronizationContext = SynchronizationContext.Current;
+        }
+
+        /// <inheritdoc/>
         public void Complete()
         {
             if (isCompleted)
@@ -57,12 +60,8 @@ namespace SiliconStudio.Core.Transactions
             if (synchronizationContext != SynchronizationContext.Current)
                 throw new TransactionException("This transaction is being completed in a different synchronization context.");
 
-            BeforeComplete?.Invoke(this, EventArgs.Empty);
-            // Clear the reference since we're not supposed to exist as an ITransaction anymore, we're now disposed and turning to an IReadOnlyTransaction
-            BeforeComplete = null;
-
+            TryMergeOperations();
             transactionStack.CompleteTransaction(this);
-
             // Don't keep reference to synchronization context after completion
             synchronizationContext = null;
             isCompleted = true;
@@ -110,6 +109,26 @@ namespace SiliconStudio.Core.Transactions
             foreach (var operation in operations)
             {
                 operation.Interface.Freeze();
+            }
+        }
+
+        private void TryMergeOperations()
+        {
+            int i = 0, j = 1;
+            while (j < operations.Count)
+            {
+                var operationA = operations[i] as IMergeableOperation;
+                var operationB = operations[j] as IMergeableOperation;
+                if (operationA != null && operationB != null && operationA.CanMerge(operationB))
+                {
+                    operationA.Merge(operations[j]);
+                    operations.RemoveAt(j);
+                }
+                else
+                {
+                    ++i;
+                    ++j;
+                }
             }
         }
     }

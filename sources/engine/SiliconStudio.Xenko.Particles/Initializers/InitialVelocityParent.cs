@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialVelocityParent"/> is an initializer which sets the particle's velocity based on a followed (parent) particle's velocity
     /// </summary>
     [DataContract("InitialVelocityParent")]
-    [Display("Velocity from parent")]
+    [Display("Velocity (parent)")]
     public class InitialVelocityParent : ParticleChildInitializer
     {
         /// <summary>

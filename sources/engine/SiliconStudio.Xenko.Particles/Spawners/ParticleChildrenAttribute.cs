@@ -11,9 +11,13 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
         private uint flags;
 
+        // Maybe encode it in 0-255 value and put it in flags?
+        private float carryOver;
+
         public ParticleChildrenAttribute(ParticleChildrenAttribute other)
         {
             flags = other.flags;
+            carryOver = other.carryOver;
         }
 
         private const uint MaskParticlesToEmit = 0xFF << 0;
@@ -25,6 +29,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 flags = (flags & ~MaskParticlesToEmit) + Math.Min(value, MaskParticlesToEmit);
             }
+        }
+
+        public float CarryOver
+        {
+            get { return carryOver; }
+            set { carryOver = value; }
         }
     }
 }

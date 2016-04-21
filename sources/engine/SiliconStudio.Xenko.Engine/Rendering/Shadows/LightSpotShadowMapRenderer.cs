@@ -44,7 +44,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var shadow = (LightStandardShadowMap)lightShadowMap.Shadow;
-            var shadowCamera = shadowMapRenderer.ShadowCamera;
 
             // Computes the cascade splits
             var lightComponent = lightShadowMap.LightComponent;
@@ -79,10 +78,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
             // Update the shadow camera
-            shadowCamera.ViewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
+            var viewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
             // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
-            shadowCamera.ProjectionMatrix = Matrix.PerspectiveFovLH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
-            shadowCamera.Update();
+            var projectionMatrix = Matrix.PerspectiveFovLH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
+            Matrix viewProjectionMatrix;
+            Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
             var shadowMapRectangle = lightShadowMap.GetRectangle(0);
 
@@ -107,10 +107,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Compute receiver view proj matrix
             Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
             // Calculate View Proj matrix from World space to Cascade space
-            Matrix.Multiply(ref shadowCamera.ViewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV);
+            Matrix.Multiply(ref viewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV);
 
-            shaderData.ViewMatrix = shadowCamera.ViewMatrix;
-            shaderData.ProjectionMatrix = shadowCamera.ProjectionMatrix;
+            shaderData.ViewMatrix = viewMatrix;
+            shaderData.ProjectionMatrix = projectionMatrix;
         }
 
         public override void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)

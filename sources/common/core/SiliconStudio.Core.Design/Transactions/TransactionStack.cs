@@ -29,9 +29,7 @@ namespace SiliconStudio.Core.Transactions
         /// </summary>
         public IReadOnlyList<IReadOnlyTransaction> Transactions => transactions;
 
-        /// <summary>
-        /// Gets whether there is a transaction rollback or rollforward currently in progress.
-        /// </summary>
+        /// <inheritdoc/>
         public bool RollInProgress { get; private set; }
 
         /// <inheritdoc/>

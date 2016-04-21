@@ -18,8 +18,6 @@ namespace SiliconStudio.Presentation.Services
 
         IList<Operation> ITransaction.Operations { get; } = new Operation[0];
 
-        public event EventHandler<EventArgs> BeforeComplete;
-
         public bool IsEmpty => true;
 
         public void Dispose()
@@ -28,6 +26,10 @@ namespace SiliconStudio.Presentation.Services
                 throw new TransactionException("This transaction has already been completed.");
 
             Complete();
+        }
+
+        public void Continue()
+        {
         }
 
         public void Complete()
