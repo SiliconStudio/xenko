@@ -23,20 +23,19 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the ZIndex dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> ZIndexPropertyKey = new PropertyKey<int>("ZIndexKey", typeof(Panel), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(PanelZSortedChildInvalidator));
+        public readonly static PropertyKey<int> ZIndexPropertyKey = new PropertyKey<int>(nameof(ZIndexPropertyKey), typeof(Panel), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(PanelZSortedChildInvalidator));
 
         /// <summary>
         /// The key to the PanelArrangeMatrix dependency property. This property can be used by panels to arrange they children as they want.
         /// </summary>
-        protected readonly static PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = new PropertyKey<Matrix>("PanelArrangeMatrixKey", typeof(Panel), DefaultValueMetadata.Static(Matrix.Identity), ObjectInvalidationMetadata.New<Matrix>(InvalidateArrangeMatrix));
+        protected readonly static PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = new PropertyKey<Matrix>(nameof(PanelArrangeMatrixPropertyKey), typeof(Panel), DefaultValueMetadata.Static(Matrix.Identity), ObjectInvalidationMetadata.New<Matrix>(InvalidateArrangeMatrix));
 
         private static void InvalidateArrangeMatrix(object propertyOwner, PropertyKey<Matrix> propertyKey, Matrix propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
             var parentPanel = element.VisualParent as Panel;
-
-            if(parentPanel!=null) // if the element is not added to a panel yet, the invalidation will occur during the add of the child
-                parentPanel.childrenWithArrangeMatrixInvalidated.Add(element);
+            // if the element is not added to a panel yet, the invalidation will occur during the add of the child
+            parentPanel?.childrenWithArrangeMatrixInvalidated.Add(element);
         }
 
         private readonly bool[] shouldAnchor = new bool[3];

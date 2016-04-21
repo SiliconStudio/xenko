@@ -17,17 +17,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the NotPressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> NotPressedImagePropertyKey = new PropertyKey<Sprite>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<Sprite> NotPressedImagePropertyKey = new PropertyKey<Sprite>(nameof(NotPressedImagePropertyKey), typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the PressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> PressedImagePropertyKey = new PropertyKey<Sprite>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<Sprite> PressedImagePropertyKey = new PropertyKey<Sprite>(nameof(PressedImagePropertyKey), typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>(nameof(MouseOverImagePropertyKey), typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
 
         public Button()
         {

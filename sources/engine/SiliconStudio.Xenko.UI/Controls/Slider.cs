@@ -26,57 +26,57 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the TrackBackgroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> TrackBackgroundImagePropertyKey = new PropertyKey<Sprite>("TrackBackgroundImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(InvalidateTrackBackground));
+        public static readonly PropertyKey<Sprite> TrackBackgroundImagePropertyKey = new PropertyKey<Sprite>(nameof(TrackBackgroundImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(InvalidateTrackBackground));
 
         /// <summary>
         /// The key to the TrackForegroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> TrackForegroundImagePropertyKey = new PropertyKey<Sprite>("TrackForegroundImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> TrackForegroundImagePropertyKey = new PropertyKey<Sprite>(nameof(TrackForegroundImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the ThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> ThumbImagePropertyKey = new PropertyKey<Sprite>("ThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> ThumbImagePropertyKey = new PropertyKey<Sprite>(nameof(ThumbImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the TickImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> TickImagePropertyKey = new PropertyKey<Sprite>("ThickImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> TickImagePropertyKey = new PropertyKey<Sprite>(nameof(TickImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the MouseOverThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverThumbImagePropertyKey = new PropertyKey<Sprite>("MouseOverThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<Sprite> MouseOverThumbImagePropertyKey = new PropertyKey<Sprite>(nameof(MouseOverThumbImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the Minimum dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> MinimumPropertyKey = new PropertyKey<float>("MinimumKey", typeof(Slider), DefaultValueMetadata.Static<float>(0), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
+        public static readonly PropertyKey<float> MinimumPropertyKey = new PropertyKey<float>(nameof(MinimumPropertyKey), typeof(Slider), DefaultValueMetadata.Static<float>(0), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
 
         /// <summary>
         /// The key to the Maximum dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> MaximumPropertyKey = new PropertyKey<float>("MaximumKey", typeof(Slider), DefaultValueMetadata.Static<float>(1), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
+        public static readonly PropertyKey<float> MaximumPropertyKey = new PropertyKey<float>(nameof(MaximumPropertyKey), typeof(Slider), DefaultValueMetadata.Static<float>(1), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
 
         /// <summary>
         /// The key to the Step dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> StepPropertyKey = new PropertyKey<float>("StepKey", typeof(Slider), DefaultValueMetadata.Static(0.1f));
+        public static readonly PropertyKey<float> StepPropertyKey = new PropertyKey<float>(nameof(StepPropertyKey), typeof(Slider), DefaultValueMetadata.Static(0.1f));
 
         /// <summary>
         /// The key to the TickFrequency dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> TickFrequencyPropertyKey = new PropertyKey<float>("TickFrequencyKey", typeof(Slider), DefaultValueMetadata.Static(10f), ObjectInvalidationMetadata.New<float>(TickFrequencyInvalidated));
+        public static readonly PropertyKey<float> TickFrequencyPropertyKey = new PropertyKey<float>(nameof(TickFrequencyPropertyKey), typeof(Slider), DefaultValueMetadata.Static(10f), ObjectInvalidationMetadata.New<float>(TickFrequencyInvalidated));
 
         /// <summary>
         /// The key to the TickFrequency dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> TickOffsetPropertyKey = new PropertyKey<float>("TickOffsetKey", typeof(Slider), DefaultValueMetadata.Static(10f));
+        public static readonly PropertyKey<float> TickOffsetPropertyKey = new PropertyKey<float>(nameof(TickOffsetPropertyKey), typeof(Slider), DefaultValueMetadata.Static(10f));
 
         /// <summary>
         /// The key to the TrackStartingOffsets dependency property.
         /// </summary>
-        public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = new PropertyKey<Vector2>("TrackStartingOffsetKey", typeof(Slider), DefaultValueMetadata.Static(new Vector2()));
+        public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = new PropertyKey<Vector2>(nameof(TrackStartingOffsetsrPropertyKey), typeof(Slider), DefaultValueMetadata.Static(new Vector2()));
 
         private static void InvalidateTrackBackground(object propertyowner, PropertyKey<Sprite> propertykey, Sprite propertyoldvalue)
         {
@@ -359,8 +359,10 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return base.MeasureOverride(availableSizeWithoutMargins);
 
             var idealSize = image.SizeInPixels.Y;
-            var desiredSize = new Vector3(idealSize, idealSize, 0);
-            desiredSize[(int)Orientation] = availableSizeWithoutMargins[(int)Orientation];
+            var desiredSize = new Vector3(idealSize, idealSize, 0)
+            {
+                [(int)Orientation] = availableSizeWithoutMargins[(int)Orientation]
+            };
 
             return desiredSize;
         }

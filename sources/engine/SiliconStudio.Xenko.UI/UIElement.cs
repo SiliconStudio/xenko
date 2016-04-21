@@ -31,17 +31,17 @@ namespace SiliconStudio.Xenko.UI
         /// The key to the height dependency property.
         /// </summary>
         public readonly static PropertyKey<float> DefaultWidthPropertyKey =
-            new PropertyKey<float>("DefaultWidthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+            new PropertyKey<float>(nameof(DefaultWidthPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
         public readonly static PropertyKey<float> DefaultHeightPropertyKey =
-            new PropertyKey<float>("DefaultHeightKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+            new PropertyKey<float>(nameof(DefaultHeightPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
         public readonly static PropertyKey<float> DefaultDepthPropertyKey =
-            new PropertyKey<float>("DefaultDepthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+            new PropertyKey<float>(nameof(DefaultDepthPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         
         private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
             EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));

@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the Content dependency property.
         /// </summary>
-        public readonly static PropertyKey<UIElement> ContentPropertyKey = new PropertyKey<UIElement>("ContentKey", typeof(ContentPresenter), DefaultValueMetadata.Static<UIElement>(null), ObjectInvalidationMetadata.New<UIElement>(ContentInvalidationCallback));
+        public readonly static PropertyKey<UIElement> ContentPropertyKey = new PropertyKey<UIElement>(nameof(ContentPropertyKey), typeof(ContentPresenter), DefaultValueMetadata.Static<UIElement>(null), ObjectInvalidationMetadata.New<UIElement>(ContentInvalidationCallback));
 
         private Matrix contentWorldMatrix;
 
@@ -67,12 +67,8 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {
-            // arrange the content
-            if (Content != null)
-            {
-                // arrange the child
-                Content.Arrange(finalSizeWithoutMargins, IsCollapsed);
-            }
+            // arrange child elements
+            Content?.Arrange(finalSizeWithoutMargins, IsCollapsed);
 
             return finalSizeWithoutMargins;
         }
