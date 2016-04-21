@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             var viewport = context.CommandList.Viewport;
 
             // cache the ratio between viewport and target.
-            var viewportSize = renderView.ViewSize;
+            var viewportSize = viewport.Size;
             viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
             viewportOffset = new Vector2(viewport.X/ viewport.Width, viewport.Y/ viewport.Height);
 
@@ -158,7 +158,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 
                 if (uiComponent.IsFullScreen)
                 {
-                    var targetSize = viewportSize;
+                    //var targetSize = viewportSize;
+                    var targetSize = new Vector2(renderingContext.RenderTarget.Width, renderingContext.RenderTarget.Height);
 
                     // update the virtual resolution of the renderer
                     if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedWidthAdaptableHeight)
