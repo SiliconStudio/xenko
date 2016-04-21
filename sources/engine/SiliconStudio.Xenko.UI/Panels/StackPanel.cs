@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -81,6 +82,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// When children virtualization is activated, hided children's measurement, arrangement and draw are avoided.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool ItemVirtualizationEnabled
         {
             get { return itemVirtualizationEnabled; }
