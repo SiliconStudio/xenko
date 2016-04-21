@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
                     DepthStencilFormat = depthFormat,
                     DeviceWindowHandle = null,
                     IsFullScreen = true,
-                    MultiSampleCount = MSAALevel.None,
+                    MultiSampleLevel = renderTarget2D.MultiSampleLevel,
                     PresentationInterval = PresentInterval.One,
                     RefreshRate = new Rational(60, 1),
                 };

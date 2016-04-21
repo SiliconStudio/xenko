@@ -347,7 +347,7 @@ namespace SiliconStudio.Xenko.Graphics
                     ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)backbufferFormat), 
                     BufferCount = bufferCount, // TODO: Do we really need this to be configurable by the user?
                     OutputHandle = handle,
-                    SampleDescription = new SampleDescription((int)Description.MultiSampleCount, 0),
+                    SampleDescription = new SampleDescription((int)Description.MultiSampleLevel, 0),
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                     SwapEffect = SwapEffect.Discard,
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12

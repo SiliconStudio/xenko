@@ -283,7 +283,7 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDescription.DepthBiasClamp = description.DepthBiasClamp;
             nativeDescription.IsDepthClipEnabled = description.DepthClipEnable;
             //nativeDescription.IsScissorEnabled = description.ScissorTestEnable;
-            nativeDescription.IsMultisampleEnabled = description.MultiSampleAntiAlias;
+            nativeDescription.IsMultisampleEnabled = description.MultiSampleLevel >= MSAALevel.None;
             nativeDescription.IsAntialiasedLineEnabled = description.MultiSampleAntiAliasLine;
 
             nativeDescription.ConservativeRaster = ConservativeRasterizationMode.Off;
