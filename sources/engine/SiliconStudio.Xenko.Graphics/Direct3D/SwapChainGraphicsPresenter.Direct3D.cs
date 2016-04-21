@@ -283,7 +283,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Height = Description.BackBufferHeight,
                 Format = (SharpDX.DXGI.Format)Description.BackBufferFormat.ToNonSRgb(),
                 Stereo = false,
-                SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultiSampleCount, 0),
+                SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultiSampleLevel, 0),
                 Usage = Usage.BackBuffer | Usage.RenderTargetOutput,
                 // Use two buffers to enable flip effect.
                 BufferCount = bufferCount,
