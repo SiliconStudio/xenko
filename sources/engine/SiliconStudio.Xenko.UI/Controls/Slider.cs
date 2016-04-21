@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -220,6 +220,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>value is truncated between <see cref="Minimum"/> and <see cref="Maximum"/></remarks>
         [DataMember]
+        [DefaultValue(0.0f)]
         public float Value
         {
             get { return value; }
@@ -271,18 +272,21 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the value indicating if the default direction of the slider should reversed or not.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool IsDirectionReversed { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating if the ticks should be displayed or not.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool AreTicksDisplayed { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating if the slider <see cref="Value"/> should be snapped to the ticks or not.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool ShouldSnapToTicks
         {
             get { return shouldSnapToTicks; }
@@ -297,6 +301,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the orientation of the slider.
         /// </summary>
         [DataMember]
+        [DefaultValue(default(Orientation))]
         public Orientation Orientation
         {
             get { return orientation; }
