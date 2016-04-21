@@ -16,8 +16,6 @@ namespace SiliconStudio.Presentation.Services
 
         public IReadOnlyList<Operation> Operations { get; } = new Operation[0];
 
-        IList<Operation> ITransaction.Operations { get; } = new Operation[0];
-
         public bool IsEmpty => true;
 
         public void Dispose()

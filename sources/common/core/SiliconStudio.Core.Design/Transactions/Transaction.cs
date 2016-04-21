@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -26,9 +25,6 @@ namespace SiliconStudio.Core.Transactions
 
         /// <inheritdoc/>
         public bool IsEmpty => operations.Count == 0;
-
-        /// <inheritdoc/>
-        IList<Operation> ITransaction.Operations => operations;
 
         /// <inheritdoc/>
         public IReadOnlyList<Operation> Operations => operations;
