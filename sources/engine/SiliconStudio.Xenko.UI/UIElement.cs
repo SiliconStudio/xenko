@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -132,7 +133,6 @@ namespace SiliconStudio.Xenko.UI
             Id = Guid.NewGuid();
             DependencyProperties = new PropertyContainer(this);
             VisualChildrenCollection = new UIElementCollection();
-            DrawLayerNumber = 1; // one layer for BackgroundColor/Clipping
         }
         
         /// <summary>
@@ -212,7 +212,8 @@ namespace SiliconStudio.Xenko.UI
         /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
         /// </summary>
         [DataMember]
-        public int DrawLayerNumber { get; set; }
+        [DefaultValue(1)]
+        public int DrawLayerNumber { get; set; } = 1; // one layer for BackgroundColor/Clipping
 
         internal bool ForceNextMeasure = true;
         internal bool ForceNextArrange = true;
@@ -395,18 +396,21 @@ namespace SiliconStudio.Xenko.UI
         /// If this property is true, the UI system performs hit test on the UIElement.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool CanBeHitByUser { get; set; }
 
         /// <summary>
         /// This property can be set to <value>true</value> to disable all touch events on the element's children.
         /// </summary>
         [DataMember]
+        [DefaultValue(false)]
         public bool PreventChildrenFromBeingHit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
         /// </summary>
         [DataMember]
+        [DefaultValue(true)]
         public virtual bool IsEnabled
         {
             get { return isEnabled; }
@@ -438,6 +442,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
         [DataMember]
+        [DefaultValue(1.0f)]
         public float Opacity
         {
             get { return opacity; }
@@ -448,6 +453,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the user interface (UI) visibility of this element. This is a dependency property.
         /// </summary>
         [DataMember]
+        [DefaultValue(Visibility.Visible)]
         public Visibility Visibility
         {
             get { return visibility; }
@@ -526,6 +532,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
         [DataMember]
+        [DefaultValue(float.NaN)]
         public float Height
         {
             get { return height; }
@@ -544,6 +551,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
         [DataMember]
+        [DefaultValue(float.NaN)]
         public float Width
         {
             get { return width; }
@@ -562,6 +570,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
+        [DefaultValue(float.NaN)]
         public float Depth
         {
             get { return depth; }
@@ -613,6 +622,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DefaultValue(0.0f)]
         public float MinimumWidth
         {
             get { return minimumWidth; }
@@ -630,6 +640,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DefaultValue(0.0f)]
         public float MinimumHeight
         {
             get { return minimumHeight; }
@@ -647,6 +658,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DefaultValue(0.0f)]
         public float MinimumDepth
         {
             get { return minimumDepth; }
@@ -665,6 +677,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DefaultValue(false)]
         public bool ClipToBounds { get; set; }
 
         /// <summary>
@@ -672,6 +685,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumWidth
         {
             get { return maximumWidth; }
@@ -689,6 +703,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumHeight
         {
             get { return maximumHeight; }
@@ -706,6 +721,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumDepth
         {
             get { return maximumDepth; }
@@ -722,6 +738,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the vertical alignment of this element.
         /// </summary>
         [DataMember]
+        [DefaultValue(HorizontalAlignment.Stretch)]
         public HorizontalAlignment HorizontalAlignment
         {
             get { return horizontalAlignment; }
@@ -736,6 +753,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the vertical alignment of this element.
         /// </summary>
         [DataMember]
+        [DefaultValue(VerticalAlignment.Stretch)]
         public VerticalAlignment VerticalAlignment
         {
             get { return verticalAlignment; }
@@ -750,6 +768,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the depth alignment of this element.
         /// </summary>
         [DataMember]
+        [DefaultValue(DepthAlignment.Center)]
         public DepthAlignment DepthAlignment
         {
             get { return depthAlignment; }
@@ -764,6 +783,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the name of this element. This is a dependency property.
         /// </summary>
         [DataMember]
+        [DefaultValue(null)]
         public string Name
         {
             get { return name; }
