@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -57,6 +58,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <exception cref="InvalidOperationException">The value passed has already a parent.</exception>
         [DataMember]
+        [DefaultValue(null)]
         public virtual UIElement Content
         {
             get { return content; }

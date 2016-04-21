@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using SiliconStudio.Core;
 
@@ -129,36 +130,42 @@ namespace SiliconStudio.Xenko.UI
         ///  The Back side of the bounding rectangle.
         /// </summary>
         [DataMember(5)]
+        [DefaultValue(0.0f)]
         public float Back;
 
         /// <summary>
         ///  The bottom side of the bounding rectangle.
         /// </summary>
         [DataMember(4)]
+        [DefaultValue(0.0f)]
         public float Bottom;
 
         /// <summary>
         ///  The front side of the bounding rectangle.
         /// </summary>
         [DataMember(2)]
+        [DefaultValue(0.0f)]
         public float Front;
 
         /// <summary>
         ///  The left side of the bounding rectangle.
         /// </summary>
         [DataMember(0)]
+        [DefaultValue(0.0f)]
         public float Left;
 
         /// <summary>
         ///  The right side of the bounding rectangle.
         /// </summary>
         [DataMember(3)]
+        [DefaultValue(0.0f)]
         public float Right;
 
         /// <summary>
         ///  The upper side of the bounding rectangle.
         /// </summary>
         [DataMember(1)]
+        [DefaultValue(0.0f)]
         public float Top;
 
         /// <summary>

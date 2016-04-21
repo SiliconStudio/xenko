@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle.
         /// </summary>
         [DataMember]
+        [DefaultValue(StretchType.Uniform)]
         public StretchType StretchType
         {
             get { return stretchType; }
@@ -36,6 +38,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets a value that indicates how the image is scaled.
         /// </summary>
         [DataMember]
+        [DefaultValue(StretchDirection.Both)]
         public StretchDirection StretchDirection
         {
             get { return stretchDirection; }
@@ -50,6 +53,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the <see cref="Sprite"/> for the image.
         /// </summary>
         [DataMember]
+        [DefaultValue(null)]
         public Sprite Source
         {
             get { return source;} 

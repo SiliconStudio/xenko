@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 
@@ -247,7 +248,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets a value that indicates whether the text box has focus and selected text.
         /// </summary>
-        [DataMember]
+        [DataMemberIgnore]
         public bool IsSelectionActive
         {
             get { return isSelectionActive; }
@@ -294,6 +295,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
         [DataMember]
+        [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
         {
             get { return synchronousCharacterGeneration; }
@@ -433,6 +435,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>When <value>true</value>, the element's text is never snapped. 
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
         [DataMember]
+        [DefaultValue(false)]
         public bool DoNotSnapText { get; set; }
 
         /// <summary>
@@ -455,6 +458,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>The value is trunked between [0, infinity-1]</remarks>
         [DataMember]
+        [DefaultValue(0)]
         public float CaretWidth
         {
             get { return caretWith; }
@@ -466,6 +470,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>The value is trunked between [0, infinity-1]</remarks>
         [DataMember]
+        [DefaultValue(0)]
         public float CaretFrequency
         {
             get { return caretFrequency; }
@@ -510,6 +515,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the edit text input type by setting a combination of <see cref="InputTypeFlags"/>.
         /// </summary>
         [DataMember]
+        [DefaultValue(default(InputTypeFlags))]
         public InputTypeFlags InputType
         {
             get { return inputType; }
@@ -530,6 +536,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
         [DataMember]
+        [DefaultValue(null)]
         public float TextSize
         {
             get
@@ -559,6 +566,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the alignment of the text to display.
         /// </summary>
         [DataMember]
+        [DefaultValue(default(TextAlignment))]
         public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
@@ -650,6 +658,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>Setting explicitly the text sets the cursor at the end of the new text.</remarks>
         [DataMember]
+        [DefaultValue("")]
         public string Text
         {
             get
