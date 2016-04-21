@@ -22,6 +22,11 @@ namespace SiliconStudio.Core.Transactions
     public interface ITransactionStack
     {
         /// <summary>
+        /// Gets whether there is a transaction rollback or rollforward currently in progress.
+        /// </summary>
+        bool RollInProgress { get; }
+
+        /// <summary>
         /// Gets the capacity of the transaction stack.
         /// </summary>
         int Capacity { get; }

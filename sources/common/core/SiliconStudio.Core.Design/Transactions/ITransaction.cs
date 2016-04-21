@@ -26,9 +26,9 @@ namespace SiliconStudio.Core.Transactions
         IList<Operation> Operations { get; }
 
         /// <summary>
-        /// Raised just before the transaction is completed.
+        /// Continues the transaction when the current <see cref="SynchronizationContext"/> has changed, allowing to push additional operations or complete it.
         /// </summary>
-        event EventHandler<EventArgs> BeforeComplete;
+        void Continue();
 
         /// <summary>
         /// Completes the transaction by closing it and adding it to the transaction stack.

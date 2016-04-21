@@ -141,7 +141,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     ViewFrustumRemap = true,
                     FlipRenderTarget = true,
                     KeepNonUniformArrayInitializers = !isOpenGLES,
-                    IsOpenGLES2 = isOpenGLES && !isOpenGLES3
+                    IsOpenGLES2 = isOpenGLES && !isOpenGLES3,
+                    UnrollForLoops = true,
                 };
                 convertor.Run(result);
 

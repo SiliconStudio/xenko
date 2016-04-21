@@ -5,7 +5,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.UI;
 using SiliconStudio.Xenko.UI;

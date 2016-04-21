@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("Initial3DRotationSeed")]
-    [Display("Initial 3D Orientation")]
+    [Display("3D Orientation")]
     public class Initial3DRotationSeed : ParticleInitializer
     {
         public Initial3DRotationSeed()

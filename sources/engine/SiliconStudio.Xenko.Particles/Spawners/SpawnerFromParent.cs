@@ -24,6 +24,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         private ParentControlFlag parentControlFlag = ParentControlFlag.Group00;
 
         /// <summary>
+        /// <see cref="ParticleSpawnTrigger"/> provides a class which checks if the spawning condition has triggered
+        /// </summary>
+        [DataMemberIgnore]
+        private ParticleSpawnTrigger particleSpawnTrigger = null;
+
+        /// <summary>
         /// Referenced parent emitter
         /// </summary>
         [DataMemberIgnore]
@@ -39,12 +45,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <c>true</c> is the parent's name has changed or the particle system has been invalidated
         /// </summary>
         private bool isParentNameDirty = true;
-
-        /// <summary>
-        /// Carry over value is used for the fractional part when number of spawned particles this frame is not an integer
-        /// </summary>
-        [DataMemberIgnore]
-        private float carryOver;
 
         /// <summary>
         /// Minimum and maximum number of particles to spawn every time the condition is met
@@ -91,11 +91,15 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private void RemoveControlGroup()
         {
+            ParticleSpawnTrigger?.RemoveRequiredParentFields(Parent);
+
             var groupIndex = (int)parentControlFlag;
             if (groupIndex >= ParticleFields.ChildrenFlags.Length)
                 return;
 
             Parent?.RemoveRequiredField(ParticleFields.ChildrenFlags[groupIndex]);
+
+            if (Parent != null) Parent.DelayParticleDeath--;
         }
 
         /// <summary>
@@ -103,11 +107,15 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// </summary>
         private void AddControlGroup()
         {
+            ParticleSpawnTrigger?.AddRequiredParentFields(Parent);
+
             var groupIndex = (int)parentControlFlag;
             if (groupIndex >= ParticleFields.ChildrenFlags.Length)
                 return;
 
             Parent?.AddRequiredField(ParticleFields.ChildrenFlags[groupIndex]);
+
+            if (Parent != null) Parent.DelayParticleDeath++;
         }
 
         /// <summary>
@@ -127,7 +135,16 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// <see cref="ParticleSpawnTrigger"/> provides a class which checks if the spawning condition has triggered
         /// </summary>
         [DataMember(45)]
-        public ParticleSpawnTrigger ParticleSpawnTrigger { get; set; }
+        public ParticleSpawnTrigger ParticleSpawnTrigger
+        {
+            get { return particleSpawnTrigger; }
+            set
+            {
+                RemoveControlGroup();
+                particleSpawnTrigger = value;
+                AddControlGroup();
+            }
+        }
 
         /// <summary>
         /// The amount of particles this spawner will emit when the event is triggered
@@ -153,7 +170,6 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         public SpawnerFromParent()
         {
             spawnCount = new Vector2(2, 5);
-            carryOver = 0f;
         }
 
         /// <inheritdoc />
@@ -201,8 +217,11 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 uint particlesToEmit = 0;
 
-                var parentEventTriggered = ParticleSpawnTrigger?.HasTriggered(parentParticle) ?? false;
-                if (parentEventTriggered)
+                ParticleChildrenAttribute childrenAttribute = (*((ParticleChildrenAttribute*)parentParticle[spawnControlGroup]));
+                var carryOver = childrenAttribute.CarryOver;
+
+                var parentEventTriggered = ParticleSpawnTrigger?.HasTriggered(parentParticle) ?? 0f;
+                if (parentEventTriggered > 0)
                 {
                     var particlesToEmitFloat = SpawnCount.X;
 
@@ -213,13 +232,13 @@ namespace SiliconStudio.Xenko.Particles.Spawners
                         particlesToEmitFloat = (SpawnCount.X + (SpawnCount.Y - SpawnCount.X) * randSeed.GetFloat(0));
                     }
 
+                    particlesToEmitFloat *= parentEventTriggered;
+
                     particlesToEmit = (uint) Math.Floor(particlesToEmitFloat + carryOver);
                     carryOver += (particlesToEmitFloat - particlesToEmit);
                 }
 
-
-                ParticleChildrenAttribute childrenAttribute = ParticleChildrenAttribute.Empty;
-
+                childrenAttribute.CarryOver = carryOver;
                 childrenAttribute.ParticlesToEmit = particlesToEmit;
                 totalParticlesToEmit += (int)particlesToEmit;
 
