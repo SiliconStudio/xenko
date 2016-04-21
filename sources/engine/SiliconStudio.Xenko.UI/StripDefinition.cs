@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -13,10 +14,10 @@ namespace SiliconStudio.Xenko.UI
     [DataContract(nameof(StripDefinition))]
     public class StripDefinition
     {
-        private float maximumSize;
+        private float maximumSize = float.PositiveInfinity;
         private float minimumSize;
-        private StripType type;
-        private float sizeValue;
+        private StripType type = StripType.Star;
+        private float sizeValue = 1;
 
         /// <summary>
         /// The actual size of the strip in virtual pixels.
@@ -28,7 +29,6 @@ namespace SiliconStudio.Xenko.UI
         /// Creates a 1-Star sized strip definition.
         /// </summary>
         public StripDefinition()
-            : this(StripType.Star, 1)
         {
         }
 
@@ -37,12 +37,10 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <param name="type">The type of the strip to create</param>
         /// <param name="sizeValue">The value of the strip to create</param>
-        public StripDefinition(StripType type, float sizeValue = 1)
+        public StripDefinition(StripType type, float sizeValue = 1.0f)
         {
             Type = type;
             SizeValue = sizeValue;
-            MaximumSize = float.PositiveInfinity;
-            MinimumSize = 0;
         }
 
         /// <summary>
@@ -51,6 +49,7 @@ namespace SiliconStudio.Xenko.UI
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative.</exception>
         /// <exception cref="InvalidOperationException">The provided value is smaller than <see cref="MinimumSize"/></exception>
         [DataMember]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumSize
         {
             get { return maximumSize; }
@@ -74,6 +73,7 @@ namespace SiliconStudio.Xenko.UI
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative or infinity.</exception>
         /// <exception cref="InvalidOperationException">The provided value is bigger than <see cref="MaximumSize"/></exception>
         [DataMember]
+        [DefaultValue(0)]
         public float MinimumSize
         {
             get { return minimumSize; }
@@ -95,6 +95,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the type of the strip.
         /// </summary>
         [DataMember]
+        [DefaultValue(StripType.Star)]
         public StripType Type
         {
             get { return type; }
@@ -115,6 +116,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The size must be finite positive value.</exception>
         [DataMember]
+        [DefaultValue(1.0f)]
         public float SizeValue
         {
             get { return sizeValue; }
