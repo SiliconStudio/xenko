@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -47,13 +48,12 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private bool isThreeState;
 
-        private ToggleState state;
+        private ToggleState state = ToggleState.UnChecked;
 
         public ToggleButton()
         {
             DrawLayerNumber += 1; // (toggle design image)
             Padding = new Thickness(10, 5, 10, 7);
-            State = ToggleState.UnChecked;
         }
 
         /// <summary>
@@ -91,6 +91,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>Setting the state of the toggle button to <see cref="ToggleState.Indeterminate"/> sets <see cref="IsThreeState"/> to true.</remarks>
         [DataMember]
+        [DefaultValue(ToggleState.UnChecked)]
         public ToggleState State
         {
             get { return state; } 
@@ -124,6 +125,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>Setting <see cref="IsThreeState"/> to false changes the <see cref="State"/> of the toggle button if currently set to <see cref="ToggleState.Indeterminate"/></remarks>
         [DataMember]
+        [DefaultValue(false)]
         public bool IsThreeState
         {
             get { return isThreeState; }
