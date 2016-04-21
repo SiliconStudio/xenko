@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -91,13 +92,15 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>Snapping will work only if <see cref="Content"/> implements interface <see cref="IScrollAnchorInfo"/></remarks>
         [DataMember]
+        [DefaultValue(false)]
         public bool SnapToAnchors { get; set; }
 
         /// <summary>
         /// Gets or sets the threshold distance over which a touch move starts scrolling.
         /// </summary>
         [DataMember]
-        public float ScrollStartThreshold { get; set; }
+        [DefaultValue(10.0f)]
+        public float ScrollStartThreshold { get; set; } = 10.0f;
 
         private Vector3 lastFrameTranslation;
 
@@ -165,7 +168,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                 SetVisualParent(bar, this);
             }
 
-            ScrollStartThreshold = 10;
             CanBeHitByUser = TouchScrollingEnabled;
             ClipToBounds = true;
         }
