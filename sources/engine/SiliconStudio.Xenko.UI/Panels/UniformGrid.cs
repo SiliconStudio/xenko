@@ -18,17 +18,17 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the Columns dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> ColumnsPropertyKey = new PropertyKey<int>("ColumnsKey", typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
+        public readonly static PropertyKey<int> ColumnsPropertyKey = new PropertyKey<int>(nameof(ColumnsPropertyKey), typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
 
         /// <summary>
         /// The key to the Rows dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> RowsPropertyKey = new PropertyKey<int>("RowsKey", typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
+        public readonly static PropertyKey<int> RowsPropertyKey = new PropertyKey<int>(nameof(RowsPropertyKey), typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
 
         /// <summary>
         /// The key to the Layers dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> LayersPropertyKey = new PropertyKey<int>("LayersKey", typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
+        public readonly static PropertyKey<int> LayersPropertyKey = new PropertyKey<int>(nameof(LayersPropertyKey), typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
 
         /// <summary>
         /// The final size of one cell

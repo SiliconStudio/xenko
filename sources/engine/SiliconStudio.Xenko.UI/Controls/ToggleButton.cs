@@ -19,17 +19,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the CheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> CheckedImagePropertyKey = new PropertyKey<Sprite>("CheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<Sprite> CheckedImagePropertyKey = new PropertyKey<Sprite>(nameof(CheckedImagePropertyKey), typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
 
         /// <summary>
         /// The key to the IndeterminateImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> IndeterminateImagePropertyKey = new PropertyKey<Sprite>("IndeterminateImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<Sprite> IndeterminateImagePropertyKey = new PropertyKey<Sprite>(nameof(IndeterminateImagePropertyKey), typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
 
         /// <summary>
         /// The key to the UncheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> UncheckedImagePropertyKey = new PropertyKey<Sprite>("UncheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<Sprite> UncheckedImagePropertyKey = new PropertyKey<Sprite>(nameof(UncheckedImagePropertyKey), typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
 
         private static void OnToggleImageInvalidated(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
         {
