@@ -81,10 +81,11 @@ namespace SiliconStudio.Quantum.Contents
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = collectionDescriptor.GetCollectionCount(Value);
+                // Some collection (such as sets) won't add item at the end but at an arbitrary location.
+                // Better send a null index in this case than sending a wrong value.
+                var index = collectionDescriptor.IsList ? (object)collectionDescriptor.GetCollectionCount(Value) : null;
                 NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
                 collectionDescriptor.Add(Value, newItem);
-
                 UpdateReferences();
                 NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
             }
