@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
@@ -22,23 +23,22 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         [InlineProperty]
         public SpriteSheet Sheet { get; set; }
 
+        /// <summary>
+        /// Gets or sets the current frame of the animation.
+        /// </summary>
+        /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
+        [DefaultValue(0)]
+        [Display("Default Frame")]
+        public int CurrentFrame { get; set; }
+
+        public int SpritesCount => Sheet?.Sprites?.Count ?? 0;
+
         public Sprite GetSprite(int index)
         {
-            if (Sheet == null || Sheet.Sprites == null || Sheet.Sprites.Count == 0)
+            if (Sheet?.Sprites == null || Sheet.Sprites.Count == 0)
                 return null;
 
             return Sheet.Sprites[index % SpritesCount];
-        }
-
-        public int SpritesCount
-        {
-            get
-            {
-                if (Sheet != null && Sheet.Sprites != null)
-                    return Sheet.Sprites.Count;
-
-                return 0;
-            }
         }
     }
 }
