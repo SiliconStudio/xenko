@@ -8,6 +8,7 @@ using SiliconStudio.Xenko.Particles.DebugDraw;
 namespace SiliconStudio.Xenko.Particles.BoundingShapes
 {
     [DataContract("BoundingBoxStatic")]
+    [Display("Rotated AABB")]
     public class BoundingBoxStatic : BoundingShape
     {
         /// <summary>
@@ -17,6 +18,7 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
         /// Lower corner of the AABB (left, bottom, back)
         /// </userdoc>
         [DataMember(20)]
+        [Display("Lower corner")]
         public Vector3 Minimum { get; set; } = new Vector3(-1, -1, -1);
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
         /// Upper corner of the AABB (right, top, front)
         /// </userdoc>
         [DataMember(40)]
+        [Display("Upper corner")]
         public Vector3 Maximum { get; set; } = new Vector3(1, 1, 1);
 
         [DataMemberIgnore]

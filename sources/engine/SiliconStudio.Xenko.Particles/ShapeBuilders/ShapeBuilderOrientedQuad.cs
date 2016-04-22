@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     /// Shape builder which builds each particle as a non-uniform quad oriented along an axis
     /// </summary>
     [DataContract("ShapeBuilderOrientedQuad")]
-    [Display("Oriented Quad")]
+    [Display("Direction Aligned Sprite")]
     public class ShapeBuilderOrientedQuad : ShapeBuilderCommon
     {
         /// <summary>
@@ -22,9 +22,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <userdoc>
         /// If true, length will scale with particle size
         /// </userdoc>
-        [DataMember(100)]
+        [DataMember(300)]
         [Display("Size to Length")]
-        public bool ScaleLength;
+        public bool ScaleLength { get; set; } = true;
 
         /// <summary>
         /// Length will be modified with this factor
@@ -32,9 +32,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <userdoc>
         /// Length will be modified with this factor
         /// </userdoc>
-        [DataMember(110)]
+        [DataMember(310)]
         [Display("Length factor")]
-        public float LengthFactor;
+        public float LengthFactor { get; set; } = 1f;
 
         /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
