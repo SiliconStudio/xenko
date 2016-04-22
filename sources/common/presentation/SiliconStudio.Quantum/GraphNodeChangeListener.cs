@@ -119,11 +119,14 @@ namespace SiliconStudio.Quantum
                         if (node.Content.IsReference && e.OldValue != null)
                         {
                             var removedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
-                            foreach (var child in removedNode.GetAllChildNodes())
+                            if (removedNode != null)
                             {
-                                UnregisterNode(child.Item1);
+                                foreach (var child in removedNode.GetAllChildNodes())
+                                {
+                                    UnregisterNode(child.Item1);
+                                }
+                                UnregisterNode(removedNode);
                             }
-                            UnregisterNode(removedNode);
                         }
                         break;
                 }
@@ -162,11 +165,14 @@ namespace SiliconStudio.Quantum
                                 addedNode = reference.TargetNode;
                             }
 
-                            var addedNodePath = path?.Append(node, addedNode, GraphNodePath.ElementType.Index, index);
-                            RegisterNode(addedNode, addedNodePath);
-                            foreach (var child in addedNode.GetAllChildNodes())
+                            if (addedNode != null)
                             {
-                                RegisterNode(child.Item1, child.Item2);
+                                var addedNodePath = path?.Append(node, addedNode, GraphNodePath.ElementType.Index, index);
+                                RegisterNode(addedNode, addedNodePath);
+                                foreach (var child in addedNode.GetAllChildNodes())
+                                {
+                                    RegisterNode(child.Item1, child.Item2);
+                                }
                             }
                         }
                         break;
