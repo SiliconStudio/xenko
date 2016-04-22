@@ -95,30 +95,33 @@ namespace SiliconStudio.Quantum.Contents
 
         public override void Add(object itemIndex, object newItem)
         {
-            NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = (int)itemIndex;
-                if (collectionDescriptor.GetCollectionCount(Value) == index || !collectionDescriptor.HasInsert)
+                var index = collectionDescriptor.IsList ? itemIndex : null;
+                NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
+                if (collectionDescriptor.GetCollectionCount(Value) == (int)itemIndex || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(Value, newItem);
                 }
                 else
                 {
-                    collectionDescriptor.Insert(Value, index, newItem);
+                    collectionDescriptor.Insert(Value, (int)itemIndex, newItem);
                 }
+                UpdateReferences();
+                NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
             }
             else if (dictionaryDescriptor != null)
             {
+                NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 dictionaryDescriptor.SetValue(Value, itemIndex, newItem);
+                UpdateReferences();
+                NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
-            UpdateReferences();
-            NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
         }
 
         public override void Remove(object itemIndex, object item)
