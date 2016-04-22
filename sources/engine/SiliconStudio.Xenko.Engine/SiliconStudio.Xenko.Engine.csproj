@@ -3724,10 +3724,10 @@
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.5.25\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Content Include="Rendering\Properties.tt">
+    <None Include="Rendering\Properties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Properties.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>
