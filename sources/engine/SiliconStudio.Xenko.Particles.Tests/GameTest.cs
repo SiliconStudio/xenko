@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 //        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
 //        const int ParticleTestVersion = 6;  // Moved the main update from Update() to Draw() cycle
         // TODO Versions will need to be aligned when master-1.6 and master merge
-        const int ParticleTestVersion = 9;  // Skip 1 + Camera ignores scaling, due to float precision issues it renders slightly differently
+        const int ParticleTestVersion = 10;  // Skip 2 (to ignore colliding with tests on the master branch) + Camera ignores scaling, due to float precision issues it renders slightly differently
 
         // Local screenshots
         private readonly string xenkoDir;
