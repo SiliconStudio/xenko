@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the current sprite.
         /// </summary>
         [DataMemberIgnore]
-        public Sprite CurrentSprite => SpriteProvider?.GetSprite(CurrentFrame);
+        public Sprite CurrentSprite => SpriteProvider?.GetSprite(SpriteProvider.CurrentFrame);
 
         private readonly static Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
 
