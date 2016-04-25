@@ -33,8 +33,11 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 new SpriteComponent
                 {
-                    SpriteProvider = new SpriteFromSheet { Sheet = sheet },
-                    CurrentFrame = sheet.FindImageIndex(frameName)
+                    SpriteProvider = new SpriteFromSheet
+                    {
+                        Sheet = sheet,
+                        CurrentFrame = sheet.FindImageIndex(frameName)
+                    }
                 }
             };
 

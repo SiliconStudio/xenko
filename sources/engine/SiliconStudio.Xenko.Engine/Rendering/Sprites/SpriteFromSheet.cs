@@ -31,14 +31,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         [Display("Default Frame")]
         public int CurrentFrame { get; set; }
 
-        public int SpritesCount => Sheet?.Sprites?.Count ?? 0;
+        public int SpritesCount => Sheet?.Sprites.Count ?? 0;
 
-        public Sprite GetSprite(int index)
+        public Sprite GetSprite()
         {
-            if (Sheet?.Sprites == null || Sheet.Sprites.Count == 0)
-                return null;
-
-            return Sheet.Sprites[index % SpritesCount];
+            return SpritesCount != 0 ? Sheet.Sprites[CurrentFrame % SpritesCount] : null;
         }
     }
 }
