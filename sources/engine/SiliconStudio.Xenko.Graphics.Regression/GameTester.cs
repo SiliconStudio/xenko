@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Starter;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
@@ -68,7 +69,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
                         // create the xenko game view 
                         var bounds = UIScreen.MainScreen.Bounds;
-                        var xenkoGameView = new Starter.XenkoApplicationDelegate.iOSXenkoView((System.Drawing.RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
+                        var xenkoGameView = new iOSXenkoView((System.Drawing.RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
 
                         // create the view controller used to display the xenko game
                         var xenkoGameController = new iOSGameTestController(game) { View = xenkoGameView };

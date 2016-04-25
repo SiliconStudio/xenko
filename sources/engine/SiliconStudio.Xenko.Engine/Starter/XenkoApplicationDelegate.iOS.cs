@@ -3,16 +3,11 @@
 #if SILICONSTUDIO_PLATFORM_IOS
 using System;
 using System.Drawing;
-using CoreAnimation;
+using CoreGraphics;
 using Foundation;
-using ObjCRuntime;
 using UIKit;
-using OpenTK.Graphics.ES30;
-using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
-
-using RenderbufferInternalFormat = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 
 namespace SiliconStudio.Xenko.Starter
 {
@@ -38,11 +33,9 @@ namespace SiliconStudio.Xenko.Starter
             // create the game main windows
             MainWindow = new UIWindow(bounds);
 
-            // create the xenko game view 
-            var xenkoGameView = new iOSXenkoView((RectangleF)bounds) {ContentScaleFactor = UIScreen.MainScreen.Scale};
+            var xenkoGameView = CreateView(bounds);
 
-            // create the view controller used to display the xenko game
-            var xenkoGameController = new XenkoGameController { View = xenkoGameView };
+            var xenkoGameController = CreateViewController(xenkoGameView);
 
             // create the game context
             var gameContext = new GameContextiOS(new iOSWindow(MainWindow, xenkoGameView, xenkoGameController));
@@ -64,77 +57,16 @@ namespace SiliconStudio.Xenko.Starter
             return Game.IsRunning;
         }
 
-        // note: for more information on iOS application life cycle, 
-        // see http://docs.xamarin.com/guides/cross-platform/application_fundamentals/backgrounding/part_1_introduction_to_backgrounding_in_ios
-
-        [Register("iOSXenkoView")]
-        internal class iOSXenkoView : iPhoneOSGameView, IAnimatedGameView
+        protected virtual iOSXenkoView CreateView(CGRect bounds, nfloat? contentScaleFactor = null)
         {
-            CADisplayLink displayLink;
-            private bool isRunning;
+            // create the xenko game view 
+            return new iOSXenkoView((RectangleF)bounds) { ContentScaleFactor = contentScaleFactor ?? UIScreen.MainScreen.Scale };
+        }
 
-            public iOSXenkoView(RectangleF frame)
-                : base(frame)
-            {
-            }
-
-            protected override void CreateFrameBuffer()
-            {
-                base.CreateFrameBuffer();
-
-                // TODO: PDX-364: depth format is currently hard coded (need to investigate how it can be transmitted)
-                // Create a depth renderbuffer
-                uint depthRenderBuffer;
-                GL.GenRenderbuffers(1, out depthRenderBuffer);
-                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthRenderBuffer);
-
-                // Allocate storage for the new renderbuffer
-                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.Depth24Stencil8, (int)(Size.Width * Layer.ContentsScale), (int)(Size.Height * Layer.ContentsScale));
-
-                // Attach the renderbuffer to the framebuffer's depth attachment point
-                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, depthRenderBuffer);
-                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.StencilAttachment, RenderbufferTarget.Renderbuffer, depthRenderBuffer);
-            }
-
-            [Export("layerClass")]
-            public static Class LayerClass()
-            {
-                return GetLayerClass();
-            }
-
-            public void StartAnimating()
-            {
-                if (isRunning)
-                    return;
-
-                CreateFrameBuffer();
-
-                var displayLink = UIScreen.MainScreen.CreateDisplayLink(this, new Selector("drawFrame"));
-                displayLink.FrameInterval = 0;
-                displayLink.AddToRunLoop(NSRunLoop.Current, NSRunLoop.NSDefaultRunLoopMode);
-                this.displayLink = displayLink;
-
-                isRunning = true;
-            }
-
-            public void StopAnimating()
-            {
-                if (!isRunning)
-                    return;
-
-                displayLink.Invalidate();
-                displayLink = null;
-
-                DestroyFrameBuffer();
-
-                isRunning = false;
-            }
-
-            [Export("drawFrame")]
-            void DrawFrame()
-            {
-                OnRenderFrame(new OpenTK.FrameEventArgs());
-            }
+        protected virtual XenkoGameController CreateViewController(iOSXenkoView xenkoGameView)
+        {
+            // create the view controller used to display the xenko game
+            return new XenkoGameController { View = xenkoGameView };
         }
     }
 }
