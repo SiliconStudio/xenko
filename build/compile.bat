@@ -60,11 +60,27 @@ set Project=Xenko.Direct3D.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
+set Project=Xenko.Vulkan.sln
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
+set Project=Xenko.Vulkan.SDL.sln
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
 set Project=Xenko.Linux.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
+set Project=Xenko.Linux.Vulkan.sln
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
 set Project=Xenko.Linux.CoreCLR.sln
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
+set Project=Xenko.Linux.Vulkan.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
