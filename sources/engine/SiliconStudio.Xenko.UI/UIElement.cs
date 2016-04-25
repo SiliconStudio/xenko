@@ -1236,9 +1236,6 @@ namespace SiliconStudio.Xenko.UI
 
         void IUIElementUpdate.Update(GameTime time)
         {
-            if(!IsEnabled)
-                return;
-
             Update(time);
 
             foreach (var child in VisualChildrenCollection)

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -26,7 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            imageElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv"))};
+            imageElement = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv"))};
             UIComponent.RootElement = imageElement;
         }
 

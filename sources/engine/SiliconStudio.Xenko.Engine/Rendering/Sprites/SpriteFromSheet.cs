@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -31,8 +32,10 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         [Display("Default Frame")]
         public int CurrentFrame { get; set; }
 
+        /// <inheritdoc/>
         public int SpritesCount => Sheet?.Sprites.Count ?? 0;
 
+        /// <inheritdoc/>
         public Sprite GetSprite()
         {
             return SpritesCount != 0 ? Sheet.Sprites[CurrentFrame % SpritesCount] : null;

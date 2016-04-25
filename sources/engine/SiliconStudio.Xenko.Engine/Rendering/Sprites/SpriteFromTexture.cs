@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -143,8 +144,10 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
+        /// <inheritdoc/>
         public int SpritesCount => sprite == null ? 0 : 1;
 
+        /// <inheritdoc/>
         public Sprite GetSprite()
         {
             if (isSpriteDirty)
@@ -172,6 +175,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         public static explicit operator SpriteFromTexture(Sprite sprite)
         {
+            if (sprite == null) throw new ArgumentNullException(nameof(sprite));
             return new SpriteFromTexture(sprite);
         }
     }
