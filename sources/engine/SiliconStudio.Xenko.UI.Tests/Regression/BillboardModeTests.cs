@@ -34,15 +34,18 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var imageElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv")) };
             var imageEntity = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(150) } };
+            imageEntity.Transform.Scale = new Vector3(150);
             imageEntity.Transform.Position = new Vector3(-500, 0, 0);
             Scene.Entities.Add(imageEntity);
 
             var imageEntity2 = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(200) } };
             imageEntity2.Transform.Position = new Vector3(0, 250, 0);
+            imageEntity2.Transform.Scale = new Vector3(200);
             Scene.Entities.Add(imageEntity2);
 
             var imageEntity3 = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(250) } };
             imageEntity3.Transform.Position = new Vector3(0, 0, -500);
+            imageEntity3.Transform.Scale = new Vector3(250);
             Scene.Entities.Add(imageEntity3);
             
             // setup the camera

@@ -175,7 +175,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 else
                 {
                     var cameraComponent = context.RenderContext.Tags.Get(CameraComponentRendererExtensions.Current);
-                    viewParameters.Update(uiComponent.Entity, cameraComponent);
+                    if (cameraComponent != null)
+                        viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
                 // Analyze the input and trigger the UI element touch and key events
@@ -659,6 +660,12 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // Rotation of Pi along 0x to go from UI space to world space
                 worldMatrix.Row2 = -worldMatrix.Row2;
                 worldMatrix.Row3 = -worldMatrix.Row3;
+
+                // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
+                if (!uiComponent.IsFullScreen)
+                {
+                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.VirtualResolution) * worldMatrix;
+                }
 
                 ProjectionMatrix = camera.ProjectionMatrix;
                 Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out ViewMatrix);
