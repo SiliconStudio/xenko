@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.UI
             Batch = new UIBatch(GraphicsDevice);
 
             // create depth stencil states
-            var depthStencilDescription = new DepthStencilStateDescription(true, Batch.AllowDepthWrite)
+            var depthStencilDescription = new DepthStencilStateDescription(true, true)
                 {
                     StencilEnable = true,
                     FrontFace = new DepthStencilStencilOpDescription

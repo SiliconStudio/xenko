@@ -14,8 +14,6 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public class UIBatch : BatchBase<UIBatch.UIImageDrawInfo>
     {
-        public bool AllowDepthWrite { get; set; } = true;
-
         private static readonly List<short[]> PrimiteTypeToIndices = new List<short[]>(4);
 
         private const int MaxVerticesPerElement = 16;
@@ -515,16 +513,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                         vertex->Position.X = currentPosition.X;
                         vertex->Position.Y = currentPosition.Y;
-
-                        if (AllowDepthWrite)
-                        {
-                            vertex->Position.Z = currentPosition.Z - currentPosition.W*drawInfo->DepthBias*DepthBiasShiftOneUnit;
-                        }
-                        else
-                        {
-                            vertex->Position.Z = currentPosition.Z;
-                        }
-
+                        vertex->Position.Z = currentPosition.Z - currentPosition.W*drawInfo->DepthBias*DepthBiasShiftOneUnit;
                         vertex->Position.W = currentPosition.W;
 
                         vertex++;
@@ -582,15 +571,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     vertex->Position.X = currentPosition.X;
                     vertex->Position.Y = currentPosition.Y;
-                    if (AllowDepthWrite)
-                    {
-                        vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
-                    }
-                    else
-                    {
-                        vertex->Position.Z = currentPosition.Z;
-                    }
-
+                    vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
                     vertex->Position.W = currentPosition.W;
 
                     vertex->Color = drawInfo->Color;
@@ -639,15 +620,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     vertex->Position.X = currentPosition.X;
                     vertex->Position.Y = currentPosition.Y;
-                    if (AllowDepthWrite)
-                    {
-                        vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
-                    }
-                    else
-                    {
-                        vertex->Position.Z = currentPosition.Z;
-                    }
-
+                    vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
                     vertex->Position.W = currentPosition.W;
 
                     if (drawInfo->SnapImage)
