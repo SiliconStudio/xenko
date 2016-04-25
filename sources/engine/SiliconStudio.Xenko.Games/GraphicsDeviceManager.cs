@@ -934,10 +934,7 @@ namespace SiliconStudio.Xenko.Games
         {
             if ((!isChangingDevice && ((game.Window.ClientBounds.Height != 0) || (game.Window.ClientBounds.Width != 0))) && (game.Window.CurrentOrientation != currentWindowOrientation))
             {
-                if (GraphicsDevice != null)
-                {
-                    ChangeOrCreateDevice(false);
-                }
+                Window_ClientSizeChanged(sender, e);
             }
         }
 
@@ -951,7 +948,7 @@ namespace SiliconStudio.Xenko.Games
         {
             newInfo.PresentationParameters.IsFullScreen = isFullScreen;
             newInfo.PresentationParameters.PresentationInterval = SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate;
-            newInfo.DeviceCreationFlags = DeviceCreationFlags;        
+            newInfo.DeviceCreationFlags = DeviceCreationFlags;
 
             // this.ValidateGraphicsDeviceInformation(newInfo);
 
@@ -1016,8 +1013,9 @@ namespace SiliconStudio.Xenko.Games
                 try
                 {
                     // Notifies the game window for the new orientation
-                    game.Window.SetSupportedOrientations(SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true));
-
+                    var orientation = SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true);
+                    game.Window.SetSupportedOrientations(orientation);
+                    
                     var graphicsDeviceInformation = FindBestDevice(forceCreate);
 
                     OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
