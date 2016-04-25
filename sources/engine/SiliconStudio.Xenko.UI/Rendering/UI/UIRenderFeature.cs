@@ -664,7 +664,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
                 if (!uiComponent.IsFullScreen)
                 {
-                    worldMatrix = Matrix.Scaling(uiComponent.ActualSize / uiComponent.VirtualResolution) * worldMatrix;
+                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.VirtualResolution) * worldMatrix;
                 }
 
                 ProjectionMatrix = camera.ProjectionMatrix;

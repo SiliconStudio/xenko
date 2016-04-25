@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Engine
             IsBillboard = true;
             IsFullScreen = true;
             VirtualResolution = new Vector3(1280, 720, 1000);
-            ActualSize = new Vector3(1, 1, 1);
+            Size = new Vector3(1, 1, 1);
             VirtualResolutionMode = VirtualResolutionMode.FixedWidthAdaptableHeight;
         }
 
@@ -57,12 +57,12 @@ namespace SiliconStudio.Xenko.Engine
         public Vector3 VirtualResolution { get; set; }
 
         /// <summary>
-        /// Gets or sets the actual size of the UI component in world units. The actual size is only used when no in fullscreen.
+        /// Gets or sets the actual size of the UI component in world units. This value is ignored in fullscreen mode.
         /// </summary>
-        /// <userdoc>Gets or sets the actual size of the UI component in world units. The actual size is only used when no in fullscreen.</userdoc>
+        /// <userdoc>Gets or sets the actual size of the UI component in world units. This value is ignored in fullscreen mode.</userdoc>
         [DataMember(35)]
-        [Display("Actual Size")]
-        public Vector3 ActualSize { get; set; }
+        [Display("Size")]
+        public Vector3 Size { get; set; }
 
         /// <summary>
         /// Gets or sets the camera.
