@@ -237,8 +237,8 @@ namespace SiliconStudio.Xenko.Graphics
                         StructureType = StructureType.DeviceCreateInfo,
                         QueueCreateInfoCount = 1,
                         QueueCreateInfos = new IntPtr(&queueCreateInfo),
-                        //EnabledLayerCount = (uint)enabledLayerNames.Length,
-                        //EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
+                        EnabledLayerCount = (uint)enabledLayerNames.Length,
+                        EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer),
                         EnabledFeatures = new IntPtr(&enabledFeature)
