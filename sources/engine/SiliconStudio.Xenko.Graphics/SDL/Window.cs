@@ -62,6 +62,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     Handle = info.info.win.window;
 #elif SILICONSTUDIO_PLATFORM_LINUX
                     Handle = info.info.x11.window;
+                    Display = info.info.x11.display;
 #endif
                 }
                 Application.RegisterWindow(this);
@@ -485,9 +486,16 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Platform specific handle for Window:
         /// - On Windows: the HWND of the window
-        /// - On Unix: ...
+        /// - On Unix: the Window ID (XID). Note that on Unix, the value is 32-bit (See X11/X.h for the typedef of XID).
         /// </summary>
         public IntPtr Handle { get; private set; }
+
+#if SILICONSTUDIO_PLATFORM_LINUX
+        /// <summary>
+        /// Display of current Window.
+        /// </summary>
+        public IntPtr Display { get; private set;}
+#endif
 
         /// <summary>
         /// The SDL window handle.

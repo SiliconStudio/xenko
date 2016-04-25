@@ -25,7 +25,12 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using SDL2;
+#if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
 using System.Windows.Forms;
+#elif SILICONSTUDIO_XENKO_UI_SDL
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
+#endif
 using SharpVulkan;
 using ImageLayout = SharpVulkan.ImageLayout;
 
@@ -363,13 +368,18 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             throw new NotImplementedException();
 #elif SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_XENKO_UI_SDL
+            var control = Description.DeviceWindowHandle.NativeHandle as SDL.Window;
             var createInfo = new XlibSurfaceCreateInfo
             {
                 StructureType = StructureType.XlibSurfaceCreateInfo,
-                Window = ,
-                Dpy = ,
-            }
+                Window = checked((uint) control.Handle),    // On Linux, a Window identifier is 32-bit
+                Dpy = control.Display,
+            };
             surface = GraphicsAdapterFactory.Instance.CreateXlibSurface(ref createInfo);
+#else
+            throw new NotSupportedException("Only SDL is supported for the time being on Linux");
+#endif
 #else
             throw new NotSupportedException();
 #endif
