@@ -5,12 +5,12 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 #if SILICONSTUDIO_PLATFORM_IOS
 using UIKit;
+using SiliconStudio.Xenko.Starter;
 #endif
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Starter;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
