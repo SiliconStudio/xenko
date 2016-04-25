@@ -345,17 +345,14 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 throw new ArgumentException("DeviceWindowHandle cannot be null");
             }
-
+            // Create surface
+#if SILICONSTUDIO_PLATFORM_WINDOWS
             var control = Description.DeviceWindowHandle.NativeHandle as Control;
             if (control == null)
             {
                 throw new NotSupportedException($"Form of type [{Description.DeviceWindowHandle.GetType().Name}] is not supported. Only System.Windows.Control are supported");
             }
 
-            // TODO VULKAN Check queue surface support
-
-            // Create surface
-#if SILICONSTUDIO_PLATFORM_WINDOWS
             var surfaceCreateInfo = new Win32SurfaceCreateInfo
             {
                 StructureType = StructureType.Win32SurfaceCreateInfo,
@@ -366,7 +363,13 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             throw new NotImplementedException();
 #elif SILICONSTUDIO_PLATFORM_LINUX
-            throw new NotImplementedException();
+            var createInfo = new XlibSurfaceCreateInfo
+            {
+                StructureType = StructureType.XlibSurfaceCreateInfo,
+                Window = ,
+                Dpy = ,
+            }
+            surface = GraphicsAdapterFactory.Instance.CreateXlibSurface(ref createInfo);
 #else
             throw new NotSupportedException();
 #endif
