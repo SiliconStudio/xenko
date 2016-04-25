@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -133,7 +134,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public int CurrentFrame
         {
             get { return 0; }
-            set { /* do nothing */ }
+            set
+            {
+                if (value != 0)
+                    throw new ArgumentOutOfRangeException(nameof(CurrentFrame));
+            }
         }
 
         public int SpritesCount => sprite == null ? 0 : 1;
