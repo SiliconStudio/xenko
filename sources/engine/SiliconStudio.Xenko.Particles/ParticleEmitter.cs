@@ -206,6 +206,12 @@ namespace SiliconStudio.Xenko.Particles
         internal bool DirtyParticlePool { get; set; }
 
         /// <summary>
+        /// Indicates if the emitter is allowed to emit new particles or not.
+        /// </summary>
+        [DataMemberIgnore]
+        public bool CanEmitParticles { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleEmitter"/> is enabled.
         /// </summary>
         /// <value>
@@ -972,11 +978,6 @@ namespace SiliconStudio.Xenko.Particles
 
             particlesToSpawn += count;
         }
-
-        /// <summary>
-        /// Indicates if the emitter is allowed to emit new particles or not.
-        /// </summary>
-        public bool CanEmitParticles { get; set; } = true;
 
         /// <summary>
         /// Changes the particle fields whenever the simulation space changes (World to Local or Local to World)

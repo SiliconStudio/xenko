@@ -39,7 +39,9 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void RepeatButtonReleased(object sender, RepeatButtonPressedRoutedEventArgs e)
         {
+            transaction?.Continue();
             transaction?.Complete();
+            transaction = null;
         }
     }
 }

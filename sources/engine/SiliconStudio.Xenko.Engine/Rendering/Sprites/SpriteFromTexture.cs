@@ -129,6 +129,15 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
+        [DataMemberIgnore]
+        public int CurrentFrame
+        {
+            get { return 0; }
+            set { /* do nothing */ }
+        }
+
+        public int SpritesCount => sprite == null ? 0 : 1;
+
         public Sprite GetSprite(int index)
         {
             if (isSpriteDirty)
@@ -141,8 +150,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
             return sprite;
         }
-
-        public int SpritesCount { get { return sprite == null ? 0 : 1; } }
 
         private void UpdateSprite()
         {
