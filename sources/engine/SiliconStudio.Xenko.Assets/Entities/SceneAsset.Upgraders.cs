@@ -992,5 +992,37 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        /// <summary>
+        /// Upgrader from version 1.6.0-beta03 to 1.7.0-beta01.
+        /// </summary>
+        /// <remarks>
+        /// CurrentFrame is now serialized in <see cref="ISpriteProvider"/> (was previously serialized at the <see cref="SpriteComponent"/> level.
+        /// </remarks>
+        private sealed class SpriteComponentUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = hierarchy.Entities;
+                foreach (var entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Node.Tag;
+                        if (componentTag != "!SpriteComponent")
+                            continue;
+
+                        var provider = component.SpriteProvider;
+                        if (provider == null)
+                            continue;
+
+                        provider.AddChild("CurrentFrame", component.CurrentFrame);
+                        component.RemoveChild("CurrentFrame");
+                    }
+                }
+            }
+        }
     }
 }

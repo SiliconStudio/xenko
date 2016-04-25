@@ -21,9 +21,19 @@
     <XenkoBuildTags>*</XenkoBuildTags>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+      <PropertyGroup>
+        <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+      </PropertyGroup>
+      <ItemGroup>
+        <Compile Include="Resources\Resource.Designer.cs" />
+        <AndroidResource Include="Resources\Layout\Game.axml">
+          <SubType>AndroidResource</SubType>
+        </AndroidResource>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -3652,12 +3662,6 @@
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
-    <Compile Include="Resources\Resource.Designer.cs" />
-    <AndroidResource Include="Resources\Layout\Game.axml">
-      <SubType>AndroidResource</SubType>
-    </AndroidResource>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -3720,10 +3724,10 @@
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.5.25\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Content Include="Rendering\Properties.tt">
+    <None Include="Rendering\Properties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Properties.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

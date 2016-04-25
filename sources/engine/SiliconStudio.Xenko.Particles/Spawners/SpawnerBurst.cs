@@ -73,6 +73,14 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
             emitter.EmitParticles(spawnCount);
         }
+
+        /// <inheritdoc />
+        protected override void NotifyStateSwitch(SpawnerState newState)
+        {
+            if (newState != SpawnerState.Active)
+                hasBursted = false;
+        }
+
     }
 }
 

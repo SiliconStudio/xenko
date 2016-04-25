@@ -13,15 +13,20 @@ namespace SiliconStudio.Xenko.Engine
     public interface ISpriteProvider
     {
         /// <summary>
-        /// Get the sprite located at <paramref name="index"/> in the sprite sequence.
+        /// Gets or sets the current frame of the animation.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        Sprite GetSprite(int index);
+        int CurrentFrame { get; set; }
 
         /// <summary>
         /// Gets the number of sprites available in the sequence.
         /// </summary>
         int SpritesCount { get; }
+
+        /// <summary>
+        /// Get the sprite located at <paramref name="index"/> in the sprite sequence.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        Sprite GetSprite(int index);
     }
 }

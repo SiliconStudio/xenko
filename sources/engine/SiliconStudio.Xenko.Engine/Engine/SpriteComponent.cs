@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -8,7 +9,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine
@@ -80,26 +80,19 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets or sets the current frame of the animation.
         /// </summary>
-        /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
-        [DataMember(8)]
-        [DefaultValue(0)]
-        [Display("Default Frame")]
-        public int CurrentFrame { get; set; }
+        [DataMemberIgnore]
+        [Obsolete("Use SpriteProvider.CurrentFrame instead.")]
+        public int CurrentFrame
+        {
+            get { return SpriteProvider.CurrentFrame; }
+            set { SpriteProvider.CurrentFrame = value; }
+        }
 
         /// <summary>
         /// Gets the current sprite.
         /// </summary>
         [DataMemberIgnore]
-        public Sprite CurrentSprite
-        {
-            get
-            {
-                if (SpriteProvider == null)
-                    return null;
-
-                return SpriteProvider.GetSprite(CurrentFrame);
-            }
-        }
+        public Sprite CurrentSprite => SpriteProvider?.GetSprite(CurrentFrame);
 
         private readonly static Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
 

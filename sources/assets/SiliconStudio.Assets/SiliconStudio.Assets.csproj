@@ -133,6 +133,7 @@
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
+    <Compile Include="IO\FileExtensionCollection.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />
@@ -251,12 +252,12 @@
     <Compile Include="Serializers\AssetReferenceSerializer.cs" />
     <Compile Include="AssetRegistry.cs" />
     <Compile Include="AssetItem.cs" />
-    <Compile Include="FileUtility.cs" />
+    <Compile Include="IO\FileUtility.cs" />
     <Compile Include="IAssetImporter.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="PropertyCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SearchDirection.cs" />
+    <Compile Include="IO\SearchDirection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">

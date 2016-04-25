@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Games
 
         private bool isFullScreen;
 
-        private bool preferMultiSampling;
+        private MSAALevel preferredMultiSampleLevel;
 
         private PixelFormat preferredBackBufferFormat;
 
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Games
             preferredBackBufferWidth = DefaultBackBufferWidth;
             preferredBackBufferHeight = DefaultBackBufferHeight;
             preferredRefreshRate = new Rational(60, 1);
-            PreferMultiSampling = false;
+            PreferredMultiSampleLevel = MSAALevel.None;
             PreferredGraphicsProfile = new[]
                 {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
@@ -257,18 +257,18 @@ namespace SiliconStudio.Xenko.Games
         /// Gets or sets a value indicating whether [prefer multi sampling].
         /// </summary>
         /// <value><c>true</c> if [prefer multi sampling]; otherwise, <c>false</c>.</value>
-        public bool PreferMultiSampling
+        public MSAALevel PreferredMultiSampleLevel
         {
             get
             {
-                return preferMultiSampling;
+                return preferredMultiSampleLevel;
             }
 
             set
             {
-                if (preferMultiSampling != value)
+                if (preferredMultiSampleLevel != value)
                 {
-                    preferMultiSampling = value;
+                    preferredMultiSampleLevel = value;
                     deviceSettingsChanged = true;
                 }
             }
@@ -641,7 +641,7 @@ namespace SiliconStudio.Xenko.Games
                     PreferredRefreshRate =  PreferredRefreshRate,
                     PreferredFullScreenOutputIndex = PreferredFullScreenOutputIndex,
                     IsFullScreen = IsFullScreen,
-                    PreferMultiSampling = PreferMultiSampling,
+                    PreferredMultiSampleLevel = PreferredMultiSampleLevel,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
                     ColorSpace = PreferredColorSpace
@@ -743,9 +743,9 @@ namespace SiliconStudio.Xenko.Games
                         }
 
                         // Sort by MultiSampleCount
-                        if (leftParams.MultiSampleCount != rightParams.MultiSampleCount)
+                        if (leftParams.MultiSampleLevel != rightParams.MultiSampleLevel)
                         {
-                            return leftParams.MultiSampleCount <= rightParams.MultiSampleCount ? 1 : -1;
+                            return leftParams.MultiSampleLevel <= rightParams.MultiSampleLevel ? 1 : -1;
                         }
 
                         // Sort by AspectRatio

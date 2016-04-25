@@ -16,9 +16,8 @@ using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal partial class InputManagerWinforms: InputManagerWindows<Control>
+    internal class InputManagerWinforms: InputManagerWindows<Control>
     {
-        private Control uiControl;
         private readonly Stopwatch pointerClock;
 
         public InputManagerWinforms(IServiceRegistry registry)

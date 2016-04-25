@@ -197,6 +197,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 stateDuration = 10f;
             }
+
+            NotifyStateSwitch(newState);
         }
 
         /// <summary>
@@ -278,6 +280,15 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         public virtual void InvalidateRelations()
         {
 
+        }
+
+        /// <summary>
+        /// Will be called when the state changes. Override if you need to set/reset variables based on state changes
+        /// </summary>
+        /// <param name="newState">The new state</param>
+        protected virtual void NotifyStateSwitch(SpawnerState newState)
+        {
+            
         }
 
     }
