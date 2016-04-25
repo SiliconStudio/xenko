@@ -4,13 +4,20 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using Android.App;
 using Android.Content;
+using Android.Content.Res;
+using Android.Views;
 using Android.Views.InputMethods;
+using OpenTK;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games.Android;
 using SiliconStudio.Xenko.Graphics;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 using OpenTK.Platform.Android;
+using Configuration = Android.Content.Res.Configuration;
+using Android.Hardware;
+using Android.Runtime;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -21,18 +28,12 @@ namespace SiliconStudio.Xenko.Games
     {
         private AndroidXenkoGameView xenkoGameForm;
         private WindowHandle nativeWindow;
-        
-        public override WindowHandle NativeWindow
-        {
-            get
-            {
-                return nativeWindow;
-            }
-        }
+        private Activity currentActivity;
+
+        public override WindowHandle NativeWindow => nativeWindow;
 
         public override void BeginScreenDeviceChange(bool willBeFullScreen)
         {
-
         }
 
         public override void EndScreenDeviceChange(int clientWidth, int clientHeight)
@@ -45,15 +46,31 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
+        private Activity GetActivity()
+        {
+            var context = xenkoGameForm.Context;
+            while (context is ContextWrapper) {
+                var activity = context as Activity;
+                if (activity != null) {
+                    return activity;
+                }
+                context = ((ContextWrapper)context).BaseContext;
+            }
+            return null;
+        }
+
         protected override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
             xenkoGameForm = gameContext.Control;
             nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm);
 
+            currentActivity = GetActivity();
+
             xenkoGameForm.Load += gameForm_Resume;
             xenkoGameForm.OnPause += gameForm_OnPause;
             xenkoGameForm.Unload += gameForm_Unload;
             xenkoGameForm.RenderFrame += gameForm_RenderFrame;
+            xenkoGameForm.Resize += gameForm_Resize;
 
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
@@ -73,8 +90,19 @@ namespace SiliconStudio.Xenko.Games
             xenkoGameForm.RequestedGraphicsProfile = gameContext.RequestedGraphicsProfile;
 
             xenkoGameForm.Size = new Size(width, height);
+        }
 
-            //xenkoGameForm.Resize += OnClientSizeChanged;
+        private SurfaceOrientation currentOrientation;
+
+        private void gameForm_Resize(object sender, EventArgs e)
+        {
+            var newOrientation = currentActivity.WindowManager.DefaultDisplay.Rotation;
+
+            if (currentOrientation != newOrientation)
+            {
+                currentOrientation = newOrientation;
+                OnOrientationChanged(this, EventArgs.Empty);
+            }
         }
 
         void gameForm_Resume(object sender, EventArgs e)
@@ -166,34 +194,34 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        public override Rectangle ClientBounds
-        {
-            get
-            {
-                return new Rectangle(0, 0, xenkoGameForm.Size.Width, xenkoGameForm.Size.Height);
-            }
-        }
+        public override Rectangle ClientBounds => new Rectangle(0, 0, xenkoGameForm.Size.Width, xenkoGameForm.Size.Height);
 
         public override DisplayOrientation CurrentOrientation
         {
             get
             {
-                return DisplayOrientation.Default;
+                switch (currentOrientation)
+                {
+                    case SurfaceOrientation.Rotation0:
+                        return DisplayOrientation.Portrait;
+                    case SurfaceOrientation.Rotation180:
+                        return DisplayOrientation.Portrait;
+                    case SurfaceOrientation.Rotation270:
+                        return DisplayOrientation.LandscapeRight;
+                    case SurfaceOrientation.Rotation90:
+                        return DisplayOrientation.LandscapeLeft;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
-        public override bool IsMinimized
-        {
-            get
-            {
-                return xenkoGameForm.WindowState == OpenTK.WindowState.Minimized;
-            }
-        }
+        public override bool IsMinimized => xenkoGameForm.WindowState == OpenTK.WindowState.Minimized;
 
         public override bool IsMouseVisible
         {
             get { return false; }
-            set {}
+            set { }
         }
 
         protected override void Destroy()
@@ -221,4 +249,5 @@ namespace SiliconStudio.Xenko.Games
         }
     }
 }
+
 #endif
