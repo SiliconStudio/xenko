@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the ClickMode dependency property.
         /// </summary>
-        public readonly static PropertyKey<ClickMode> ClickModePropertyKey = new PropertyKey<ClickMode>(nameof(ClickModePropertyKey), typeof(ButtonBase), DefaultValueMetadata.Static(ClickMode.Release));
+        public static readonly PropertyKey<ClickMode> ClickModePropertyKey = new PropertyKey<ClickMode>(nameof(ClickModePropertyKey), typeof(ButtonBase), DefaultValueMetadata.Static(ClickMode.Release));
         
         static ButtonBase()
         {

@@ -19,17 +19,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the ScrollingSpeed dependency property.
         /// </summary>
-        protected readonly static PropertyKey<float> ScrollingSpeedPropertyKey = new PropertyKey<float>(nameof(ScrollingSpeedPropertyKey), typeof(ScrollingText), DefaultValueMetadata.Static(40f), ValidateValueMetadata.New<float>(ValidateScrollingSpeedCallback));
+        protected static readonly PropertyKey<float> ScrollingSpeedPropertyKey = new PropertyKey<float>(nameof(ScrollingSpeedPropertyKey), typeof(ScrollingText), DefaultValueMetadata.Static(40f), ValidateValueMetadata.New<float>(ValidateScrollingSpeedCallback));
 
         /// <summary>
         /// The key to the TextWrapped dependency property.
         /// </summary>
-        protected readonly static PropertyKey<bool> RepeatTextPropertyKey = new PropertyKey<bool>(nameof(RepeatTextPropertyKey), typeof(ScrollingText), DefaultValueMetadata.Static(true), ObjectInvalidationMetadata.New<bool>(RepeatTextInvalidationCallback));
+        protected static readonly PropertyKey<bool> RepeatTextPropertyKey = new PropertyKey<bool>(nameof(RepeatTextPropertyKey), typeof(ScrollingText), DefaultValueMetadata.Static(true), ObjectInvalidationMetadata.New<bool>(RepeatTextInvalidationCallback));
 
         /// <summary>
         /// The key to the DesiredCharacterNumber dependency property.
         /// </summary>
-        protected readonly static PropertyKey<uint> DesiredCharacterNumberPropertyKey = new PropertyKey<uint>(nameof(DesiredCharacterNumberPropertyKey), typeof(ScrollingText), DefaultValueMetadata.Static((uint)10), ObjectInvalidationMetadata.New<uint>(InvalidateCharacterNumber));
+        protected static readonly PropertyKey<uint> DesiredCharacterNumberPropertyKey = new PropertyKey<uint>(nameof(DesiredCharacterNumberPropertyKey), typeof(ScrollingText), DefaultValueMetadata.Static((uint)10), ObjectInvalidationMetadata.New<uint>(InvalidateCharacterNumber));
 
         private static void InvalidateCharacterNumber(object propertyOwner, PropertyKey<uint> propertyKey, uint propertyOldValue)
         {

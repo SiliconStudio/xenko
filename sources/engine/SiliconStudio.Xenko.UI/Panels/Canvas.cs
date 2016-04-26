@@ -19,22 +19,22 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the RelativeSize dependency property. RelativeSize indicate the ratio of the size of the <see cref="UIElement"/> with respect to the parent size.
         /// </summary>
         /// <remarks>Relative size must be strictly positive</remarks>
-        public readonly static PropertyKey<Vector3> RelativeSizePropertyKey = new PropertyKey<Vector3>(nameof(RelativeSizePropertyKey), typeof(Canvas), DefaultValueMetadata.Static(new Vector3(float.NaN)), ValidateValueMetadata.New<Vector3>(ValidateRelativeSize), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
+        public static readonly PropertyKey<Vector3> RelativeSizePropertyKey = new PropertyKey<Vector3>(nameof(RelativeSizePropertyKey), typeof(Canvas), DefaultValueMetadata.Static(new Vector3(float.NaN)), ValidateValueMetadata.New<Vector3>(ValidateRelativeSize), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
 
         /// <summary>
         /// The key to the RelativePosition dependency property. RelativePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        public readonly static PropertyKey<Vector3> RelativePositionPropertyKey = new PropertyKey<Vector3>(nameof(RelativePositionPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnRelativePositionChanged));
+        public static readonly PropertyKey<Vector3> RelativePositionPropertyKey = new PropertyKey<Vector3>(nameof(RelativePositionPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnRelativePositionChanged));
 
         /// <summary>
         /// The key to the AbsolutePosition dependency property. AbsolutePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        public readonly static PropertyKey<Vector3> AbsolutePositionPropertyKey = new PropertyKey<Vector3>(nameof(AbsolutePositionPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnAbsolutePositionChanged));
+        public static readonly PropertyKey<Vector3> AbsolutePositionPropertyKey = new PropertyKey<Vector3>(nameof(AbsolutePositionPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnAbsolutePositionChanged));
 
         /// <summary>
         /// The key to the useAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
         /// </summary>
-        private readonly static PropertyKey<bool> UseAbsolutionPositionPropertyKey = new PropertyKey<bool>(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(false));
+        private static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = new PropertyKey<bool>(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(false));
 
         /// <summary>
         /// The key to the PinOrigin dependency property. The PinOrigin indicate which point of the <see cref="UIElement"/> should be pinned to the canvas. 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Those values are normalized between 0 and 1. (0,0,0) represent the Left/Top/Back corner and (1,1,1) represent the Right/Bottom/Front corner. 
         /// <see cref="UIElement"/>'s margins are included in the normalization. 
         /// Values beyond [0,1] are clamped.</remarks>
-        public readonly static PropertyKey<Vector3> PinOriginPropertyKey = new PropertyKey<Vector3>(nameof(PinOriginPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(Vector3.Zero), ValidateValueMetadata.New<Vector3>(PinOriginValueValidator), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
+        public static readonly PropertyKey<Vector3> PinOriginPropertyKey = new PropertyKey<Vector3>(nameof(PinOriginPropertyKey), typeof(Canvas), DefaultValueMetadata.Static(Vector3.Zero), ValidateValueMetadata.New<Vector3>(PinOriginValueValidator), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
         
         private static void OnRelativePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
         {

@@ -23,12 +23,12 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the ZIndex dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> ZIndexPropertyKey = new PropertyKey<int>(nameof(ZIndexPropertyKey), typeof(Panel), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(PanelZSortedChildInvalidator));
+        public static readonly PropertyKey<int> ZIndexPropertyKey = new PropertyKey<int>(nameof(ZIndexPropertyKey), typeof(Panel), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(PanelZSortedChildInvalidator));
 
         /// <summary>
         /// The key to the PanelArrangeMatrix dependency property. This property can be used by panels to arrange they children as they want.
         /// </summary>
-        protected readonly static PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = new PropertyKey<Matrix>(nameof(PanelArrangeMatrixPropertyKey), typeof(Panel), DefaultValueMetadata.Static(Matrix.Identity), ObjectInvalidationMetadata.New<Matrix>(InvalidateArrangeMatrix));
+        protected static readonly PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = new PropertyKey<Matrix>(nameof(PanelArrangeMatrixPropertyKey), typeof(Panel), DefaultValueMetadata.Static(Matrix.Identity), ObjectInvalidationMetadata.New<Matrix>(InvalidateArrangeMatrix));
 
         private static void InvalidateArrangeMatrix(object propertyOwner, PropertyKey<Matrix> propertyKey, Matrix propertyOldValue)
         {
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// A instance of <see cref="PanelChildrenComparer"/> that can be used to sort panels children by increasing Z-Indices.
         /// </summary>
-        protected readonly static PanelChildrenComparer PanelChildrenSorter = new PanelChildrenComparer();
+        protected static readonly PanelChildrenComparer PanelChildrenSorter = new PanelChildrenComparer();
 
         private readonly HashSet<UIElement> childrenWithArrangeMatrixInvalidated = new HashSet<UIElement>();
         private Matrix[] childrenArrangeWorldMatrix = new Matrix[2];

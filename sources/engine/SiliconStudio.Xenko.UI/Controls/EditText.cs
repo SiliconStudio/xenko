@@ -59,51 +59,51 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the IsReadOnly dependency property.
         /// </summary>
-        public readonly static PropertyKey<bool> IsReadOnlyPropertyKey =
+        public static readonly PropertyKey<bool> IsReadOnlyPropertyKey =
             new PropertyKey<bool>(nameof(IsReadOnlyPropertyKey), typeof(EditText), DefaultValueMetadata.Static(false), ObjectInvalidationMetadata.New<bool>(InvalidateIsReadOnly));
 
         /// <summary>
         /// The key to the Font dependency property.
         /// </summary>
-        public readonly static PropertyKey<SpriteFont> FontPropertyKey =
+        public static readonly PropertyKey<SpriteFont> FontPropertyKey =
             new PropertyKey<SpriteFont>(nameof(FontPropertyKey), typeof(EditText), DefaultValueMetadata.Static<SpriteFont>(null), ObjectInvalidationMetadata.New<SpriteFont>(InvalidateFont));
 
         /// <summary>
         /// The key to the TextColor dependency property.
         /// </summary>
-        public readonly static PropertyKey<Color> TextColorPropertyKey =
+        public static readonly PropertyKey<Color> TextColorPropertyKey =
             new PropertyKey<Color>(nameof(TextColorPropertyKey), typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
 
         /// <summary>
         /// The key to the SelectionColor dependency property.
         /// </summary>
-        public readonly static PropertyKey<Color> SelectionColorPropertyKey =
+        public static readonly PropertyKey<Color> SelectionColorPropertyKey =
             new PropertyKey<Color>(nameof(SelectionColorPropertyKey), typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0x623574FF)));
 
         /// <summary>
         /// The key to the SelectionColor dependency property.
         /// </summary>
-        public readonly static PropertyKey<Color> CaretColorPropertyKey =
+        public static readonly PropertyKey<Color> CaretColorPropertyKey =
             new PropertyKey<Color>(nameof(CaretColorPropertyKey), typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> MaxLengthPropertyKey =
+        public static readonly PropertyKey<int> MaxLengthPropertyKey =
             new PropertyKey<int>(nameof(MaxLengthPropertyKey), typeof(EditText),
             DefaultValueMetadata.Static(int.MaxValue), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMaxLength));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> MaxLinesPropertyKey =
+        public static readonly PropertyKey<int> MaxLinesPropertyKey =
             new PropertyKey<int>(nameof(MaxLinesPropertyKey), typeof(EditText),
             DefaultValueMetadata.Static(int.MaxValue), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMaxLines));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> MinLinesPropertyKey =
+        public static readonly PropertyKey<int> MinLinesPropertyKey =
             new PropertyKey<int>(nameof(MinLinesPropertyKey), typeof(EditText),
             DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMinLines));
 

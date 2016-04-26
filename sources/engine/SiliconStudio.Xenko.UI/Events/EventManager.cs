@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.UI.Events
             return null;
         }
 
-        private readonly static Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>> ClassesToClassHandlers = new Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>>();
+        private static readonly Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>> ClassesToClassHandlers = new Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>>();
 
         /// <summary>
         /// Registers a new routed event.
@@ -138,8 +138,8 @@ namespace SiliconStudio.Xenko.UI.Events
             return newRoutedEvent;
         }
 
-        private readonly static List<RoutedEvent> RoutedEvents = new List<RoutedEvent>();
-        private readonly static Dictionary<Type, Dictionary<string, RoutedEvent>> OwnerToEvents = new Dictionary<Type, Dictionary<string, RoutedEvent>>();
+        private static readonly List<RoutedEvent> RoutedEvents = new List<RoutedEvent>();
+        private static readonly Dictionary<Type, Dictionary<string, RoutedEvent>> OwnerToEvents = new Dictionary<Type, Dictionary<string, RoutedEvent>>();
  
         /// <summary>
         /// This functions reset all the registers and invalidate all the created routed events.
