@@ -72,8 +72,8 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         StructureType = StructureType.InstanceCreateInfo,
                         ApplicationInfo = new IntPtr(&applicationInfo),
-                        //EnabledLayerCount = (uint)enabledLayerNames.Length,
-                        //EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
+                        EnabledLayerCount = (uint)enabledLayerNames.Length,
+                        EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
                     };
