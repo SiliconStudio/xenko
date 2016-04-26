@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Games
     {
         private AndroidXenkoGameView xenkoGameForm;
         private WindowHandle nativeWindow;
-        private Activity currentActivity;
 
         public override WindowHandle NativeWindow => nativeWindow;
 
@@ -64,8 +63,6 @@ namespace SiliconStudio.Xenko.Games
             xenkoGameForm = gameContext.Control;
             nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm);
 
-            currentActivity = GetActivity();
-
             xenkoGameForm.Load += gameForm_Resume;
             xenkoGameForm.OnPause += gameForm_OnPause;
             xenkoGameForm.Unload += gameForm_Unload;
@@ -96,13 +93,17 @@ namespace SiliconStudio.Xenko.Games
 
         private void gameForm_Resize(object sender, EventArgs e)
         {
-            var newOrientation = currentActivity.WindowManager.DefaultDisplay.Rotation;
-
-            if (currentOrientation != newOrientation)
+            var windowManager = xenkoGameForm.Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
+            if (windowManager != null)
             {
-                currentOrientation = newOrientation;
-                OnOrientationChanged(this, EventArgs.Empty);
-            }
+                var newOrientation = windowManager.DefaultDisplay.Rotation;
+
+                if (currentOrientation != newOrientation)
+                {
+                    currentOrientation = newOrientation;
+                    OnOrientationChanged(this, EventArgs.Empty);
+                }
+            }         
         }
 
         void gameForm_Resume(object sender, EventArgs e)
