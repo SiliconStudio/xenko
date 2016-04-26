@@ -92,46 +92,19 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (parentUIComponent.IsFullScreen)
                 {
-                    // The resulting matrix should be in pixel units adjusted to the constructed fullscreen camera matrix
-
-                    // TODO: Fullscreen UI uses a different camera matrix which has to be taken into account
+                    // The resulting matrix should be in pixel units
 
                     // The fullscreen ui component is always in the center
                     worldMatrix = Matrix.Identity;
 
-                    if (camera != null)
-                    {
-                        // TODO Only compute once per virtual resolution
-                        var cameraComponent = GetUICameraComponent(parentUIComponent);
+                    // The resulting matrix should be in world units
+                    parentWorldMatrix.Row2 = -parentWorldMatrix.Row2;
+                    parentWorldMatrix.Row3 = -parentWorldMatrix.Row3;
 
-                        Matrix ViewProjectionMatrix;
-                        Matrix ViewMatrix;
-                        var ProjectionMatrix = cameraComponent.ProjectionMatrix;
-                        Matrix.Multiply(ref worldMatrix, ref cameraComponent.ViewMatrix, out ViewMatrix);
-                        Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+                    parentInverseMatrix.Row2 = -parentInverseMatrix.Row2;
+                    parentInverseMatrix.Row3 = -parentInverseMatrix.Row3;
 
-                        Matrix followedMatrix = followedElement.WorldMatrix;
-
-                        // The resulting matrix should be in world units
-                        parentWorldMatrix.Row2 = -parentWorldMatrix.Row2;
-                        parentWorldMatrix.Row3 = -parentWorldMatrix.Row3;
-                        parentWorldMatrix = Matrix.Scaling(parentUIComponent.VirtualResolution / parentUIComponent.Size) * parentWorldMatrix;
-
-                        parentInverseMatrix.Row2 = -parentInverseMatrix.Row2;
-                        parentInverseMatrix.Row3 = -parentInverseMatrix.Row3;
-                        //parentInverseMatrix = Matrix.Scaling(parentUIComponent.Size / parentUIComponent.VirtualResolution) * parentInverseMatrix;
-                        // Matrix.Invert(ref parentWorldMatrix, out parentInverseMatrix);
-
-                        followedMatrix = parentWorldMatrix * followedElement.WorldMatrix * parentInverseMatrix;
-
-                        Matrix WorldAccumulated;
-                        Matrix.Multiply(ref followedMatrix, ref ViewProjectionMatrix, out WorldAccumulated);
-
-                        Matrix WorldViewProjectionMatrix = camera.ViewProjectionMatrix;
-                        WorldViewProjectionMatrix.Invert();
-
-                        Matrix.Multiply(ref WorldAccumulated, ref WorldViewProjectionMatrix, out matrix);
-                    }
+                    matrix = parentWorldMatrix * followedElement.WorldMatrix * parentInverseMatrix;
                 }
                 else
                 {
