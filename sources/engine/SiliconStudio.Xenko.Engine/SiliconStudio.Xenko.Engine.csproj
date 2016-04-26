@@ -473,7 +473,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\VirtualResolutionMode.cs" />
+    <Compile Include="Rendering\ResolutionStretch.cs" />
     <Compile Include="Rendering\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
