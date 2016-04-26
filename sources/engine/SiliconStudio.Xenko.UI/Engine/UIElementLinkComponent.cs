@@ -24,6 +24,17 @@ namespace SiliconStudio.Xenko.Engine
         public UIComponent Target { get; set; }
 
         /// <summary>
+        /// Gets or sets the camera component which is required if the UI component is a billboard.
+        /// </summary>
+        /// <value>
+        /// The camera component which is required if the UI component is a billboard.
+        /// </value>
+        /// <userdoc>The reference to the target camera used to render the component. It is only required in case the parent UI component is a billboard.</userdoc>
+        [Display("Camera (if billboard)")]
+        public CameraComponent Camera { get; set; }
+
+
+        /// <summary>
         /// Gets or sets the name of the element.
         /// </summary>
         /// <value>

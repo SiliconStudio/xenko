@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                         uiComponent = uiEntity?.Get<UIComponent>();
 
                     // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
-                    transformComponent.TransformLink = uiComponent != null ? new UIElementTransformLink(uiComponent, modelNodeLink.NodeName, uiEntity != transformComponent.Parent?.Entity) : null;
+                    transformComponent.TransformLink = uiComponent != null ? new UIElementTransformLink(uiComponent, modelNodeLink.Camera, modelNodeLink.NodeName, uiEntity != transformComponent.Parent?.Entity) : null;
                 }
             }
         }
