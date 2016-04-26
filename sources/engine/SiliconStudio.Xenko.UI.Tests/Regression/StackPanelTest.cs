@@ -107,8 +107,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var sprites = Content.Load<SpriteSheet>("UIImages");
             var img1 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")) };
-            var img2 = new ImageElement { Source = new SpriteFromSheet {Sheet = sprites, CurrentFrame = sprites.FindImageIndex("GameScreenLeft") } };
-            var img3 = new ImageElement { Source = new SpriteFromSheet { Sheet = sprites, CurrentFrame = sprites.FindImageIndex("GameScreenRight") } };
+            var img2 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "GameScreenLeft") };
+            var img3 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "GameScreenRight") };
 
             stackPanel1 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             stackPanel1.Children.Add(img1);

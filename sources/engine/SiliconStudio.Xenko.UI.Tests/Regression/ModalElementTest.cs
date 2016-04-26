@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             sprites = Content.Load<SpriteSheet>("UIImages");
 
-            var lifeBar = new ImageElement { Source = new SpriteFromSheet { Sheet = sprites, CurrentFrame = sprites.FindImageIndex("Logo") }, HorizontalAlignment = HorizontalAlignment.Center };
+            var lifeBar = new ImageElement { Source = SpriteFromSheet.Create(sprites, "Logo"), HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
 
             var quitGameButton = new Button

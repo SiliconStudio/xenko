@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, fromEmptySheet.SpritesCount);
             Assert.IsNull(fromEmptySheet.GetSprite());
 
-            var validSheet = new SpriteSheet() { Sprites = { new Sprite("0"), new Sprite("1") } };
+            var validSheet = new SpriteSheet { Sprites = { new Sprite("0"), new Sprite("1") } };
             var fromValidSheet = new SpriteFromSheet { Sheet = validSheet };
             Assert.AreEqual(2, fromValidSheet.SpritesCount);
             for (var i = 0; i < fromValidSheet.SpritesCount; i++)

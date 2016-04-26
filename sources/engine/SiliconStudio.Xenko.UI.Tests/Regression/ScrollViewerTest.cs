@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var img4 = new ImageElement { Name = "UV grid", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")) };
             var img5 = new ImageElement { Name = "UV grid 2", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")) };
-            var img6 = new ImageElement { Name = "Game screen grid", Source = new SpriteFromSheet { Sheet = sprites, CurrentFrame = sprites.FindImageIndex("GameScreen") } };
+            var img6 = new ImageElement { Name = "Game screen grid", Source = SpriteFromSheet.Create(sprites, "GameScreen") };
 
             img4.DependencyProperties.Set(GridBase.ColumnPropertyKey, 0);
             img4.DependencyProperties.Set(GridBase.RowPropertyKey, 0);

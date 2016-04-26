@@ -48,11 +48,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             var suffix = setRotatedImages ? "Rotated" : "";
 
-            slider.TrackBackgroundImage = new SpriteFromSheet { Sheet = sliderImages, CurrentFrame = sliderImages.FindImageIndex("Background" + suffix) };
-            slider.TrackForegroundImage = new SpriteFromSheet { Sheet = sliderImages, CurrentFrame = sliderImages.FindImageIndex("Foreground" + suffix) };
-            slider.ThumbImage = new SpriteFromSheet { Sheet = sliderImages, CurrentFrame = sliderImages.FindImageIndex("Thumb" + suffix) };
-            slider.MouseOverThumbImage = new SpriteFromSheet { Sheet = sliderImages, CurrentFrame = sliderImages.FindImageIndex("ThumbOverred" + suffix) };
-            slider.TickImage = new SpriteFromSheet { Sheet = sliderImages, CurrentFrame = sliderImages.FindImageIndex("Tick" + suffix) };
+            slider.TrackBackgroundImage = SpriteFromSheet.Create(sliderImages, "Background" + suffix);
+            slider.TrackForegroundImage = SpriteFromSheet.Create(sliderImages, "Foreground" + suffix);
+            slider.ThumbImage = SpriteFromSheet.Create(sliderImages, "Thumb" + suffix);
+            slider.MouseOverThumbImage = SpriteFromSheet.Create(sliderImages, "ThumbOverred" + suffix);
+            slider.TickImage = SpriteFromSheet.Create(sliderImages, "Tick" + suffix);
         }
 
         private void ResetSliderImages()

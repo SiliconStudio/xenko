@@ -35,6 +35,27 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// <inheritdoc/>
         public int SpritesCount => Sheet?.Sprites.Count ?? 0;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="SpriteFromSheet"/> with the specified <see cref="SpriteSheet"/>.
+        /// <see cref="CurrentFrame"/> is initialized according to the specified <paramref name="spriteName"/>.
+        /// </summary>
+        /// <param name="sheet"></param>
+        /// <param name="spriteName">The name of the sprite.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">sheet</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">No sprite in the sheet has the given name.</exception>
+        /// <remarks>If two sprites have the provided name then the first sprite found is used.</remarks>
+        public static SpriteFromSheet Create(SpriteSheet sheet, string spriteName)
+        {
+            if (sheet == null) throw new ArgumentNullException(nameof(sheet));
+
+            return new SpriteFromSheet
+            {
+                Sheet = sheet,
+                CurrentFrame = sheet.FindImageIndex(spriteName)
+            };
+        }
+
         /// <inheritdoc/>
         public Sprite GetSprite()
         {

@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Name = "4",
                 Width = 200, Height = 100,
                 LocalMatrix = Matrix.Translation(-50, -50, 0),
-                BackgroundImage = new SpriteFromSheet { Sheet = uiGroup, CurrentFrame = uiGroup.FindImageIndex("uvNotRotated") }
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "uvNotRotated")
             };
 
             element3 = new ContentDecorator
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Width = 300, Height = 150,
                 Content = element4,
                 LocalMatrix = Matrix.Translation(-200, -100, 0),
-                BackgroundImage = new SpriteFromSheet { Sheet = uiGroup, CurrentFrame = uiGroup.FindImageIndex("uvRotated90") }
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "uvRotated90")
             };
             
             element2 = new ContentDecorator
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Name = "2",
                 Width = 600, Height = 300,
                 Content = element3,
-                BackgroundImage = new SpriteFromSheet { Sheet = uiGroup, CurrentFrame = uiGroup.FindImageIndex("BorderButton") }
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "BorderButton")
             };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(400, 200, 0));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             {
                 Name = "1",
                 Width = 600, Height = 300,
-                BackgroundImage = new SpriteFromSheet { Sheet = uiGroup, CurrentFrame = uiGroup.FindImageIndex("GameScreen") }
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "GameScreen")
             };
 
             var canvas = new Canvas();

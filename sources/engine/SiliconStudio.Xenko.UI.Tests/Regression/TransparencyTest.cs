@@ -39,8 +39,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var sprites = Content.Load<SpriteSheet>("UIImages");
             element1 = new Button { Name = "1", Width = 300, Height = 150 };
-            element1.PressedImage = new SpriteFromSheet { Sheet = sprites, CurrentFrame = sprites.FindImageIndex("Logo") };
-            element1.NotPressedImage = new SpriteFromSheet { Sheet = sprites, CurrentFrame = sprites.FindImageIndex("BorderButton") };
+            element1.PressedImage = SpriteFromSheet.Create(sprites, "Logo");
+            element1.NotPressedImage = SpriteFromSheet.Create(sprites, "BorderButton");
             element1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(350, 300, 0));
             element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
 
