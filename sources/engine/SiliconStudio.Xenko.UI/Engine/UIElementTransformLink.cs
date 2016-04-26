@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Core;
+﻿using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.UI;
@@ -42,6 +43,29 @@ namespace SiliconStudio.Xenko.Engine
             return null;
         }
 
+
+        protected CameraComponent GetUICameraComponent(UIComponent uiComponent)
+        {
+            var virtualResolution = uiComponent.VirtualResolution;
+
+            var nearPlane = virtualResolution.Z / 2;
+            var farPlane = nearPlane + virtualResolution.Z;
+            var zOffset = nearPlane + virtualResolution.Z / 2;
+            var aspectRatio = virtualResolution.X / virtualResolution.Y;
+            var verticalFov = (float)Math.Atan2(virtualResolution.Y / 2, zOffset) * 2;
+
+            var cameraComponent = new CameraComponent(nearPlane, farPlane)
+            {
+                UseCustomAspectRatio = true,
+                AspectRatio = aspectRatio,
+                VerticalFieldOfView = MathUtil.RadiansToDegrees(verticalFov),
+                ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, zOffset), Vector3.Zero, Vector3.UnitY),
+                ProjectionMatrix = Matrix.PerspectiveFovRH(verticalFov, aspectRatio, nearPlane, farPlane),
+            };
+
+            return cameraComponent;
+        }
+
         /// <inheritdoc/>
         public override void ComputeMatrix(bool recursive, out Matrix matrix)
         {
@@ -75,14 +99,39 @@ namespace SiliconStudio.Xenko.Engine
                     // The fullscreen ui component is always in the center
                     worldMatrix = Matrix.Identity;
 
-                    //// The resulting matrix should be in world units
-                    //parentWorldMatrix.Row2 = -parentWorldMatrix.Row2;
-                    //parentWorldMatrix.Row3 = -parentWorldMatrix.Row3;
+                    if (camera != null)
+                    {
+                        // TODO Only compute once per virtual resolution
+                        var cameraComponent = GetUICameraComponent(parentUIComponent);
 
-                    //parentInverseMatrix.Row2 = -parentInverseMatrix.Row2;
-                    //parentInverseMatrix.Row3 = -parentInverseMatrix.Row3;
+                        Matrix ViewProjectionMatrix;
+                        Matrix ViewMatrix;
+                        var ProjectionMatrix = cameraComponent.ProjectionMatrix;
+                        Matrix.Multiply(ref worldMatrix, ref cameraComponent.ViewMatrix, out ViewMatrix);
+                        Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
 
-                    //matrix = parentWorldMatrix * followedElement.WorldMatrix * parentInverseMatrix;
+                        Matrix followedMatrix = followedElement.WorldMatrix;
+
+                        // The resulting matrix should be in world units
+                        parentWorldMatrix.Row2 = -parentWorldMatrix.Row2;
+                        parentWorldMatrix.Row3 = -parentWorldMatrix.Row3;
+                        parentWorldMatrix = Matrix.Scaling(parentUIComponent.VirtualResolution / parentUIComponent.Size) * parentWorldMatrix;
+
+                        parentInverseMatrix.Row2 = -parentInverseMatrix.Row2;
+                        parentInverseMatrix.Row3 = -parentInverseMatrix.Row3;
+                        //parentInverseMatrix = Matrix.Scaling(parentUIComponent.Size / parentUIComponent.VirtualResolution) * parentInverseMatrix;
+                        // Matrix.Invert(ref parentWorldMatrix, out parentInverseMatrix);
+
+                        followedMatrix = parentWorldMatrix * followedElement.WorldMatrix * parentInverseMatrix;
+
+                        Matrix WorldAccumulated;
+                        Matrix.Multiply(ref followedMatrix, ref ViewProjectionMatrix, out WorldAccumulated);
+
+                        Matrix WorldViewProjectionMatrix = camera.ViewProjectionMatrix;
+                        WorldViewProjectionMatrix.Invert();
+
+                        Matrix.Multiply(ref WorldAccumulated, ref WorldViewProjectionMatrix, out matrix);
+                    }
                 }
                 else
                 {
