@@ -51,6 +51,8 @@
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
     <Compile Include="Controls\Slider.cs" />
+    <Compile Include="DependencyPropertyFactory.cs" />
+    <Compile Include="DependencyPropertyKeyMetadata.cs" />
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
