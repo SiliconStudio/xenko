@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
 
         protected CameraComponent GetUICameraComponent(UIComponent uiComponent)
         {
-            var virtualResolution = uiComponent.VirtualResolution;
+            var virtualResolution = uiComponent.Resolution;
 
             var nearPlane = virtualResolution.Z / 2;
             var farPlane = nearPlane + virtualResolution.Z;
@@ -130,11 +130,11 @@ namespace SiliconStudio.Xenko.Engine
                     // The resulting matrix should be in world units
                     parentWorldMatrix.Row2 = -parentWorldMatrix.Row2;
                     parentWorldMatrix.Row3 = -parentWorldMatrix.Row3;
-                    parentWorldMatrix = Matrix.Scaling(parentUIComponent.VirtualResolution / parentUIComponent.Size) * parentWorldMatrix;
+                    parentWorldMatrix = Matrix.Scaling(parentUIComponent.Resolution / parentUIComponent.Size) * parentWorldMatrix;
 
                     parentInverseMatrix.Row2 = -parentInverseMatrix.Row2;
                     parentInverseMatrix.Row3 = -parentInverseMatrix.Row3;
-                    parentInverseMatrix = Matrix.Scaling(parentUIComponent.Size / parentUIComponent.VirtualResolution) * parentInverseMatrix;
+                    parentInverseMatrix = Matrix.Scaling(parentUIComponent.Size / parentUIComponent.Resolution) * parentInverseMatrix;
                    // Matrix.Invert(ref parentWorldMatrix, out parentInverseMatrix);
 
                     matrix = parentWorldMatrix * followedElement.WorldMatrix * parentInverseMatrix;
