@@ -248,9 +248,8 @@ namespace SiliconStudio.Xenko.Games
                 deviceInfo.PresentationParameters.BackBufferHeight = preferredParameters.PreferredBackBufferHeight;
             }
 
-            // TODO: Handle multisampling 
             deviceInfo.PresentationParameters.DepthStencilFormat = preferredParameters.PreferredDepthStencilFormat;
-            deviceInfo.PresentationParameters.MultiSampleCount = MSAALevel.None;
+            deviceInfo.PresentationParameters.MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel;
 
             if (!graphicsDeviceInfos.Contains(deviceInfo))
             {
@@ -287,7 +286,7 @@ namespace SiliconStudio.Xenko.Games
                             GraphicsProfile = featureLevel,
                             PresentationParameters =
                             {
-                                MultiSampleCount = MSAALevel.None,
+                                MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel,
                                 IsFullScreen = preferredParameters.IsFullScreen,
                                 PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
                                 PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,

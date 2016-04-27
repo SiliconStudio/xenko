@@ -26,6 +26,8 @@ namespace SiliconStudio.Assets.Templates
 
         public string FactoryTypeName { get; set; }
 
+        public bool ImportSource { get; set; }
+
         public IAssetFactory<Asset> GetFactory()
         {
             if (factory != null)

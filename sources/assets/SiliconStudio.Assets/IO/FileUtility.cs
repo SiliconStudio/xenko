@@ -17,12 +17,8 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <returns><c>true</c> if the specified file is locked; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static bool IsFileLocked(string filePath)
-        {
-            if (filePath == null) throw new ArgumentNullException("filePath");
-            return IsFileLocked(new FileInfo(filePath));
-        }
+        /// <exception cref="ArgumentNullException"><paramref name="filePath"/> is null</exception>
+        public static bool IsFileLocked(string filePath) => IsFileLocked(new FileInfo(filePath));
 
 
         /// <summary>
@@ -30,12 +26,13 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns><c>true</c> if the specified file is locked; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="file"/> is null</exception>
         public static bool IsFileLocked(FileInfo file)
         {
-            if (file == null) throw new ArgumentNullException("file");
+            if (file == null) throw new ArgumentNullException(nameof(file));
             try
             {
-                using (var stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                using (file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                 {
                 }
             }
@@ -47,7 +44,7 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the absolute path.
+        /// Converts a relative path to an absolute path using the current working directoy.
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <returns>An absolute path.</returns>
@@ -73,7 +70,7 @@ namespace SiliconStudio.Assets
             {
                 return fileExtension;
             }
-            return String.Format(".{0}", fileExtension);
+            return $".{fileExtension}";
         }
 
 
@@ -84,7 +81,7 @@ namespace SiliconStudio.Assets
         /// <returns>An array of file extensions.</returns>
         public static HashSet<string> GetFileExtensionsAsSet(string fileExtensions)
         {
-            if (fileExtensions == null) throw new ArgumentNullException("fileExtensions");
+            if (fileExtensions == null) throw new ArgumentNullException(nameof(fileExtensions));
             var fileExtensionArray = fileExtensions.Split(new[] { ',', ';' }).Select(fileExt => fileExt.Trim().ToLower()).ToList();
             var filteredExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var fileExtension in fileExtensionArray.Select(NormalizeFileExtension))
@@ -112,7 +109,7 @@ namespace SiliconStudio.Assets
 
         public static IEnumerable<DirectoryInfo> EnumerateDirectories(string rootDirectory, SearchDirection direction)
         {
-            if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
+            if (rootDirectory == null) throw new ArgumentNullException(nameof(rootDirectory));
 
             var directory = new DirectoryInfo(rootDirectory);
             if (Directory.Exists(rootDirectory))

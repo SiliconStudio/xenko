@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Enumerates the different ways to interpret a visual resolution value.
     /// </summary>
     [DataContract]
-    public enum VirtualResolutionMode
+    public enum ResolutionStretch
     {
         /// <summary>
         /// The resolution is determined by the width, height and depth of the field.

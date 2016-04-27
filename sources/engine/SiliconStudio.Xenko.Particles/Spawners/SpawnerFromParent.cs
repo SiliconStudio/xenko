@@ -161,6 +161,8 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 MarkAsDirty();
                 spawnCount = value;
+                spawnCount.X = Math.Min(Math.Max(spawnCount.X, 0), 250);
+                spawnCount.Y = Math.Min(Math.Max(spawnCount.Y, 0), 250);
             }
         }
 

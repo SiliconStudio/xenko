@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -33,13 +34,13 @@ namespace SiliconStudio.Presentation.Dialogs
         /// <inheritdoc/>
         public string DefaultFileName { get { return OpenDlg.DefaultFileName; } set { OpenDlg.DefaultFileName = value; } }
 
-        private CommonOpenFileDialog OpenDlg { get { return (CommonOpenFileDialog)Dialog; } }
+        private CommonOpenFileDialog OpenDlg => (CommonOpenFileDialog)Dialog;
 
         /// <inheritdoc/>
         public override DialogResult Show()
         {
             OpenDlg.Filters.Clear();
-            foreach (var filter in Filters)
+            foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
             {
                 OpenDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
