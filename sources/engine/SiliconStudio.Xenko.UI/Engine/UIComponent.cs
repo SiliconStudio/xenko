@@ -25,9 +25,9 @@ namespace SiliconStudio.Xenko.Engine
             SnapText = true;
             IsBillboard = true;
             IsFullScreen = true;
-            VirtualResolution = new Vector3(1280, 720, 1000);
+            Resolution = new Vector3(1280, 720, 1000);
             Size = new Vector3(1, 1, 1);
-            VirtualResolutionMode = VirtualResolutionMode.FixedWidthAdaptableHeight;
+            ResolutionStretch = ResolutionStretch.FixedWidthAdaptableHeight;
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <userdoc>The value in pixels of the resolution of the UI</userdoc>
         [DataMember(30)]
-        [Display("Virtual Resolution")]
-        public Vector3 VirtualResolution { get; set; }
+        [Display("Resolution")]
+        public Vector3 Resolution { get; set; }
 
         /// <summary>
         /// Gets or sets the actual size of the UI component in world units. This value is ignored in fullscreen mode.
@@ -71,8 +71,8 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>Indicate how the virtual resolution value should be interpreted</userdoc>
         [DataMember(40)]
         [Display("Virtual Resolution Mode")]
-        [DefaultValue(VirtualResolutionMode.FixedWidthAdaptableHeight)]
-        public VirtualResolutionMode VirtualResolutionMode { get; set; }
+        [DefaultValue(ResolutionStretch.FixedWidthAdaptableHeight)]
+        public ResolutionStretch ResolutionStretch { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be displayed as billboard.

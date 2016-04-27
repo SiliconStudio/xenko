@@ -156,14 +156,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 var updatableRootElement = (IUIElementUpdate)rootElement;
 
                 // calculate the size of the virtual resolution depending on target size (UI canvas)
-                var virtualResolution = uiComponent.VirtualResolution;
+                var virtualResolution = uiComponent.Resolution;
                 var targetSize = new Vector2(renderingContext.RenderTarget.Width, renderingContext.RenderTarget.Height);
                 if (uiComponent.IsFullScreen)
                 {
                     // update the virtual resolution of the renderer
-                    if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedWidthAdaptableHeight)
+                    if (uiComponent.ResolutionStretch == ResolutionStretch.FixedWidthAdaptableHeight)
                         virtualResolution.Y = virtualResolution.X * targetSize.Y / targetSize.X;
-                    if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedHeightAdaptableWidth)
+                    if (uiComponent.ResolutionStretch == ResolutionStretch.FixedHeightAdaptableWidth)
                         virtualResolution.X = virtualResolution.Y * targetSize.X / targetSize.Y;
                 }
 
@@ -664,7 +664,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
                 if (!uiComponent.IsFullScreen)
                 {
-                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.VirtualResolution) * worldMatrix;
+                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.Resolution) * worldMatrix;
                 }
 
                 ProjectionMatrix = camera.ProjectionMatrix;

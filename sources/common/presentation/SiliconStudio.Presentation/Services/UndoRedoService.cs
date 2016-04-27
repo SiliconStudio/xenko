@@ -23,6 +23,8 @@ namespace SiliconStudio.Presentation.Services
 
         public bool CanRedo => stack.CanRollforward;
 
+        public bool TransactionInProgress => stack.TransactionInProgress;
+
         public bool UndoRedoInProgress { get; private set; }
 
         public event EventHandler<TransactionEventArgs> Done { add { stack.TransactionCompleted += value; } remove { stack.TransactionCompleted -= value; } }
