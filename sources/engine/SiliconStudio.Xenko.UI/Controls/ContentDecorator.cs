@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -14,13 +14,13 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the NotPressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> BackgroundImagePropertyKey = new PropertyKey<Sprite>(nameof(BackgroundImagePropertyKey), typeof(ContentDecorator), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> BackgroundImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(BackgroundImagePropertyKey), typeof(ContentDecorator), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// Gets or sets the image that the button displays when pressed
         /// </summary>
         [DataMemberIgnore]
-        public Sprite BackgroundImage
+        public ISpriteProvider BackgroundImage
         {
             get { return DependencyProperties.Get(BackgroundImagePropertyKey); }
             set { DependencyProperties.Set(BackgroundImagePropertyKey, value); }

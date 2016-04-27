@@ -7,6 +7,7 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.UI.Events;
@@ -110,20 +111,20 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the ActiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> ActiveImagePropertyKey =
-            new PropertyKey<Sprite>(nameof(ActiveImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> ActiveImagePropertyKey =
+            new PropertyKey<ISpriteProvider>(nameof(ActiveImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the InactiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> InactiveImagePropertyKey =
-            new PropertyKey<Sprite>(nameof(InactiveImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> InactiveImagePropertyKey =
+            new PropertyKey<ISpriteProvider>(nameof(InactiveImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey =
-            new PropertyKey<Sprite>(nameof(MouseOverImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey =
+            new PropertyKey<ISpriteProvider>(nameof(MouseOverImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         private static void CheckStrictlyPositive(ref int value)
         {
@@ -403,7 +404,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the image that is displayed in background when the edit is active
         /// </summary>
         [DataMemberIgnore]
-        public Sprite ActiveImage
+        public ISpriteProvider ActiveImage
         {
             get { return DependencyProperties.Get(ActiveImagePropertyKey); }
             set { DependencyProperties.Set(ActiveImagePropertyKey, value); }
@@ -413,7 +414,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the image that is displayed in background when the edit is inactive
         /// </summary>
         [DataMemberIgnore]
-        public Sprite InactiveImage
+        public ISpriteProvider InactiveImage
         {
             get { return DependencyProperties.Get(InactiveImagePropertyKey); }
             set { DependencyProperties.Set(InactiveImagePropertyKey, value); }
@@ -423,7 +424,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
         [DataMemberIgnore]
-        public Sprite MouseOverImage
+        public ISpriteProvider MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }

@@ -3,6 +3,7 @@
 using NUnit.Framework;
 
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Layering
@@ -30,8 +31,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public void TestBasicInvalidations()
         {
             // - test the properties that are not supposed to invalidate the object layout state
-            UIElementLayeringTests.TestNoInvalidation(this, () => PressedImage = new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(this, () => NotPressedImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(this, () => PressedImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(this, () => NotPressedImage = (SpriteFromTexture)new Sprite());
         }
     }
 }

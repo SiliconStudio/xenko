@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -17,19 +16,20 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             var fromNullSheet = new SpriteFromSheet();
             Assert.AreEqual(0, fromNullSheet.SpritesCount);
-            Assert.IsNull(fromNullSheet.GetSprite(0));
+            Assert.IsNull(fromNullSheet.GetSprite());
 
             var emptySheet = new SpriteSheet();
             var fromEmptySheet = new SpriteFromSheet { Sheet = emptySheet };
             Assert.AreEqual(0, fromEmptySheet.SpritesCount);
-            Assert.IsNull(fromEmptySheet.GetSprite(0));
+            Assert.IsNull(fromEmptySheet.GetSprite());
 
-            var validSheet = new SpriteSheet() { Sprites = { new Sprite("0"), new Sprite("1") } };
+            var validSheet = new SpriteSheet { Sprites = { new Sprite("0"), new Sprite("1") } };
             var fromValidSheet = new SpriteFromSheet { Sheet = validSheet };
             Assert.AreEqual(2, fromValidSheet.SpritesCount);
-            for (int i = 0; i < fromValidSheet.SpritesCount; i++)
+            for (var i = 0; i < fromValidSheet.SpritesCount; i++)
             {
-                Assert.AreEqual(i.ToString(), fromValidSheet.GetSprite(i).Name);
+                fromValidSheet.CurrentFrame = i;
+                Assert.AreEqual(i.ToString(), fromValidSheet.GetSprite().Name);
             }
         }
 
@@ -40,9 +40,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 var provider = new SpriteFromTexture();
                 Assert.AreEqual(1, provider.SpritesCount);
-                Assert.IsNotNull(provider.GetSprite(0));
+                Assert.IsNotNull(provider.GetSprite());
 
-                var sprite = provider.GetSprite(0);
+                var sprite = provider.GetSprite();
                 Assert.IsNull(sprite.Texture);
                 Assert.AreEqual(new RectangleF(), sprite.Region);
                 Assert.AreEqual(Vector2.Zero, sprite.Center);

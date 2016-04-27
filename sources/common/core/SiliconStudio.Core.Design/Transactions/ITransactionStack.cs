@@ -22,6 +22,11 @@ namespace SiliconStudio.Core.Transactions
     public interface ITransactionStack
     {
         /// <summary>
+        /// Gets whether there is a transaction currently in progress.
+        /// </summary>
+        bool TransactionInProgress { get; }
+
+        /// <summary>
         /// Gets whether there is a transaction rollback or rollforward currently in progress.
         /// </summary>
         bool RollInProgress { get; }
@@ -83,13 +88,6 @@ namespace SiliconStudio.Core.Transactions
         /// <remarks>The transaction will be completed when the returned <see cref="ITransaction"/> object is disposed or when <see cref="ITransaction.Complete"/> is called.</remarks>
         /// <returns>A transaction object that must be completed in order to add the transaction to the stack.</returns>
         ITransaction CreateTransaction();
-
-        /// <summary>
-        /// Creates a new asynchronous transaction. An asynchronous transaction is a transaction that can be completed asynchronously. It
-        /// provides additional safety such as preventing another asynchronous transaction to be created when there is one already in progress.
-        /// </summary>
-        /// <returns>An asynchronous transaction that must be completed in order to add the transaction to the stack or start another asynchronous transaction.</returns>
-        IAsyncTransaction CreateAsyncTransaction();
 
         /// <summary>
         /// Clears the transaction stack.

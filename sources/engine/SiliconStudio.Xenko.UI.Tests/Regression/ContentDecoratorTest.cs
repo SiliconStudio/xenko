@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new Sprite(Content.Load<Texture>("DumbWhite"))
+                BackgroundImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;
