@@ -8,6 +8,8 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     stage stream float4 Position : POSITION;
 
+    stage stream float ZDepth : Z_DEPTH_VALUE;
+
     // -------------------------------------
     // conditional streams - may or may not be present depending on existing particle fields
     // -------------------------------------
@@ -24,7 +26,9 @@ class ParticleBase : ShaderBase, Texturing
 
     cbuffer PerView
     {
-        stage float4x4 MatrixTransform;
+        stage float4x4 ViewMatrix;
+        stage float4x4 ProjectionMatrix;
+        stage float4x4 ViewProjectionMatrix;
     }
 
     cbuffer PerMaterial
@@ -33,6 +37,9 @@ class ParticleBase : ShaderBase, Texturing
 
         // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
         stage float AlphaAdditive;
+
+        // Z offset is how much the depth should be adjusted when rendering
+        stage float ZOffset;
     }
             
     // -------------------------------------
@@ -42,7 +49,21 @@ class ParticleBase : ShaderBase, Texturing
     {
         float4 worldPos = streams.Position;
 
-        streams.ShadingPosition = mul(worldPos, MatrixTransform);
+        float4 viewPos = mul(worldPos, ViewMatrix);
+
+        streams.ShadingPosition = mul(viewPos, ProjectionMatrix);
+
+        // Z Offset
+        // TODO Maybe move this to the Pixel shader when soft edge is done
+        viewPos.w = 1;
+        viewPos.z += ZOffset;
+
+        streams.ZDepth = viewPos.z;
+
+        float4 viewProjPos = mul(viewPos, ProjectionMatrix);
+
+        streams.ShadingPosition.z = (viewProjPos.z / viewProjPos.w) * streams.ShadingPosition.w;
+
     }
 
     // Shading of the sprite

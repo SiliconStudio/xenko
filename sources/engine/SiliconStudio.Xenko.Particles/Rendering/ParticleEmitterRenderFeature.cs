@@ -20,7 +20,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
-        private ConstantBufferOffsetReference view;
+        private ConstantBufferOffsetReference viewProjectionMatrix;
+
+        private ConstantBufferOffsetReference viewMatrix;
+
+        private ConstantBufferOffsetReference projectionMatrix;
 
         // Material alive during this frame
         private readonly Dictionary<ParticleMaterial, ParticleMaterialInfo> allMaterialInfos = new Dictionary<ParticleMaterial, ParticleMaterialInfo>();
@@ -44,7 +48,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             renderEffectKey = RenderEffectKey;
 
-            view = CreateViewCBufferOffsetSlot(ParticleBaseKeys.MatrixTransform.Name);
+            viewProjectionMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewProjectionMatrix.Name);
+
+            viewMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewMatrix.Name);
+
+            projectionMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ProjectionMatrix.Name);
 
             perMaterialDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }
@@ -182,15 +190,33 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 // Copy ViewProjection to PerFrame cbuffer
                 foreach (var viewLayout in viewFeature.Layouts)
                 {
-                    var viewProjectionOffset = viewLayout.GetConstantBufferOffset(this.view);
-                    if (viewProjectionOffset == -1)
-                        continue;
-
                     var resourceGroup = viewLayout.Entries[view.Index].Resources;
                     var mappedCB = resourceGroup.ConstantBuffer.Data;
 
-                    var perView = (Matrix*)((byte*)mappedCB + viewProjectionOffset);
-                    *perView = view.ViewProjection;
+                    // ViewProjection matrix
+                    var viewProjectionOffset = viewLayout.GetConstantBufferOffset(this.viewProjectionMatrix);
+                    if (viewProjectionOffset != -1)
+                    {
+                        var perView = (Matrix*)((byte*)mappedCB + viewProjectionOffset);
+                        *perView = view.ViewProjection;
+                    }
+
+                    // View matrix
+                    var viewOffset = viewLayout.GetConstantBufferOffset(this.viewMatrix);
+                    if (viewOffset != -1)
+                    {
+                        var perView = (Matrix*)((byte*)mappedCB + viewOffset);
+                        *perView = view.View;
+                    }
+
+                    // Projection matrix
+                    var projectionOffset = viewLayout.GetConstantBufferOffset(this.projectionMatrix);
+                    if (projectionOffset != -1)
+                    {
+                        var perView = (Matrix*)((byte*)mappedCB + projectionOffset);
+                        *perView = view.Projection;
+                    }
+
                 }
             }
         }

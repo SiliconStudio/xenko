@@ -37,6 +37,16 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public float AlphaAdditive { get; set; }
 
         /// <summary>
+        /// Adjusts the depth of the particle in regard to opaque objects
+        /// </summary>
+        /// <userdoc>
+        /// Adjusts the depth of the particle in regard to opaque objects
+        /// </userdoc>
+        [DataMember(30)]
+        [Display("Z Offset")]
+        public float ZOffset { get; set; } = 0f;
+
+        /// <summary>
         /// Allows the particle shape to be back- or front-face culled.
         /// </summary>
         /// <userdoc>
@@ -72,6 +82,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+
+            Parameters.Set(ParticleBaseKeys.ZOffset, ZOffset);
         }
 
         public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)
