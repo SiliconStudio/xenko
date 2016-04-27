@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             var width = 400;
             var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
-            var ui = new UIComponent { VirtualResolution = new Vector3(width, width / bufferRatio, 500) };
+            var ui = new UIComponent { Resolution = new Vector3(width, width / bufferRatio, 500) };
             SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
 
             currentText = new TextBlock { Font = font, TextColor = Color.White, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center };
