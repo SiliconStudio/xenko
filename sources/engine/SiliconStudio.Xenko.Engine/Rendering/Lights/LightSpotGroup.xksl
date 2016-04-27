@@ -5,18 +5,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a group of spot lights
     /// </summary>
-    class LightSpotGroup<int TMaxLightCount> : DirectLightGroup, NormalStream, PositionStream4, LightUtil
+    class LightSpotGroup<int TMaxLightCount> : DirectLightGroupPerDraw, NormalStream, PositionStream4, LightUtil, LightStructures
     {
-        struct SpotLightData
-        {
-            float3 PositionWS;
-            float3 DirectionWS;
-            float3 AngleOffsetAndInvSquareRadius;
-            [Color]
-            float3 Color;
-        };
-
-        cbuffer PerLighting
+        cbuffer PerDraw_Lighting
         {
             SpotLightData Lights[TMaxLightCount];
         }

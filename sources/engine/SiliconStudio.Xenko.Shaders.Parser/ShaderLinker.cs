@@ -331,6 +331,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                         parameterKey.ResourceGroup = cbuffer.Name;
                     }
 
+                    parameterKey.LogicalGroup = (string)variable.GetTag(XenkoTags.LogicalGroup);
+
                     var variableType = variable.Type;
 
                     parameterKey.Type = CreateTypeInfo(variableType, attributable.Attributes);
@@ -647,7 +649,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
         private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey, int slotCount)
         {
-            var binding = new EffectResourceBindingDescription { KeyInfo = { KeyName = parameterKey.Name }, Class = parameterKey.Type.Class, Type = parameterKey.Type.Type, RawName = variableName, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1, ResourceGroup = parameterKey.ResourceGroup };
+            var binding = new EffectResourceBindingDescription { KeyInfo = { KeyName = parameterKey.Name }, Class = parameterKey.Type.Class, Type = parameterKey.Type.Type, RawName = variableName, SlotStart = -1, SlotCount = slotCount > 0 ? slotCount : 1, ResourceGroup = parameterKey.ResourceGroup, LogicalGroup = parameterKey.LogicalGroup };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -673,6 +675,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 {
                     KeyName = parameterKey.Name,
                 },
+                LogicalGroup = (string)variable.GetTag(XenkoTags.LogicalGroup),
                 Type = parameterKey.Type,
                 RawName = variable.Name,
             };
@@ -685,6 +688,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             public string Name;
 
             public string ResourceGroup;
+
+            public string LogicalGroup;
 
             public EffectTypeDescription Type;
 

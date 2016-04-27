@@ -8,12 +8,12 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// </summary>
     class RoughnessCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing, MaterialPixelShadingStream
     {
-        cbuffer PerLighting
+        cbuffer PerView_Lighting
         {
             float MipCount;
         }
 
-        rgroup PerLighting
+        rgroup PerView_Lighting
         {
             TextureCube CubeMap;
         }

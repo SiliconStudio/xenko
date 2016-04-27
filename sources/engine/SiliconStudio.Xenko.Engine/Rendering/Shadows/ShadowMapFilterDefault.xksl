@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Performs default filtering: no filtering.
     /// </summary>
-    class ShadowMapFilterDefault : ShadowMapFilterBase
+    class ShadowMapFilterDefault<MemberName PerLighting> : ShadowMapFilterBase<PerLighting>
     {
         /// <summary>
         /// Calculate the shadow factor based on the shadow map texture, the position, a sampler

@@ -229,7 +229,26 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Rendering\IRenderCollector.cs" />
+    <Compile Include="Rendering\Lights\DirectLightGroupPerDraw.cs">
+      <DependentUpon>DirectLightGroupPerDraw.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Lights\DirectLightGroupPerView.cs">
+      <DependentUpon>DirectLightGroupPerView.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Lights\LightStructures.cs">
+      <DependentUpon>LightStructures.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
+    <Compile Include="Rendering\LogicalGroupReference.cs" />
     <Compile Include="Rendering\MaterialNull.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
@@ -274,7 +293,7 @@
     <Compile Include="Rendering\Lights\LightPointGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightShaderGroup.cs" />
     <Compile Include="Rendering\Lights\LightSkyboxRenderer.cs" />
-    <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightSpotGroupRenderer.cs" />
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
     <Compile Include="Rendering\MeshRenderFeature.cs" />
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
@@ -345,6 +364,18 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Lights\DirectLightGroupPerDraw.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>DirectLightGroupPerDraw.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Lights\DirectLightGroupPerView.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>DirectLightGroupPerView.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Lights\LightStructures.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightStructures.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>

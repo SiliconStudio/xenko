@@ -51,5 +51,10 @@ namespace SiliconStudio.Xenko.Shaders
         /// The number of slots bound to this parameter starting at <see cref="SlotStart"/>.
         /// </summary>
         public int SlotCount;
+
+        /// <summary>
+        /// Logical group, used to group related descriptors and variables together.
+        /// </summary>
+        public string LogicalGroup;
     }
 }

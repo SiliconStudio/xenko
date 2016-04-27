@@ -7,11 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class DirectLightGroup : LightStream, ShadowGroup, NormalStream
     {
-        cbuffer PerLighting
-        {
-            int LightCount;
-        }
-
         int GetMaxLightCount()
         {
             return 0;
@@ -22,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         int GetLightCount()
         {
-            return LightCount;
+            return 0;
         }
 
         /// <summary>

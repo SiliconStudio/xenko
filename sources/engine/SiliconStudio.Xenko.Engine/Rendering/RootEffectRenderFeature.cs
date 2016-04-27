@@ -31,9 +31,12 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly Dictionary<ObjectId, DescriptorSetLayout> createdDescriptorSetLayouts = new Dictionary<ObjectId, DescriptorSetLayout>();
 
-        private readonly List<ConstantBufferOffsetDefinition> frameCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
-        private readonly List<ConstantBufferOffsetDefinition> viewCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
-        private readonly List<ConstantBufferOffsetDefinition> drawCBufferOffsetSlots = new List<ConstantBufferOffsetDefinition>();
+        private readonly List<NamedSlotDefinition> frameCBufferOffsetSlots = new List<NamedSlotDefinition>();
+        private readonly List<NamedSlotDefinition> viewCBufferOffsetSlots = new List<NamedSlotDefinition>();
+        private readonly List<NamedSlotDefinition> drawCBufferOffsetSlots = new List<NamedSlotDefinition>();
+
+        private readonly List<NamedSlotDefinition> viewLogicalGroups = new List<NamedSlotDefinition>();
+        private readonly List<NamedSlotDefinition> drawLogicalGroups = new List<NamedSlotDefinition>();
 
         // Common slots
         private EffectDescriptorSetReference perFrameDescriptorSetSlot;
@@ -130,7 +133,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             // TODO: Handle duplicates, and allow removal
             var slotReference = new ConstantBufferOffsetReference(frameCBufferOffsetSlots.Count);
-            frameCBufferOffsetSlots.Add(new ConstantBufferOffsetDefinition(variable));
+            frameCBufferOffsetSlots.Add(new NamedSlotDefinition(variable));
 
             // Update existing instantiated buffers
             foreach (var frameResourceLayoutEntry in frameResourceLayouts)
@@ -149,9 +152,24 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ConstantBufferOffsetReference CreateViewCBufferOffsetSlot(string variable)
         {
-            // TODO: Handle duplicates, and allow removal
-            var slotReference = new ConstantBufferOffsetReference(viewCBufferOffsetSlots.Count);
-            viewCBufferOffsetSlots.Add(new ConstantBufferOffsetDefinition(variable));
+            // TODO: Handle duplicates
+            var slotReference = new ConstantBufferOffsetReference(-1);
+            for (int index = 0; index < viewCBufferOffsetSlots.Count; index++)
+            {
+                var slot = viewCBufferOffsetSlots[index];
+                if (slot.Variable == null)
+                {
+                    // Empty slot, reuse it
+                    slotReference = new ConstantBufferOffsetReference(index);
+                }
+            }
+
+            // Need a new slot
+            if (slotReference.Index == -1)
+            {
+                slotReference = new ConstantBufferOffsetReference(viewCBufferOffsetSlots.Count);
+                viewCBufferOffsetSlots.Add(new NamedSlotDefinition(variable));
+            }
 
             // Update existing instantiated buffers
             foreach (var viewResourceLayoutEntry in viewResourceLayouts)
@@ -168,11 +186,58 @@ namespace SiliconStudio.Xenko.Rendering
             return slotReference;
         }
 
+        public void RemoveViewCBufferOffsetSlot(ConstantBufferOffsetReference cbufferOffsetSlot)
+        {
+            viewCBufferOffsetSlots[cbufferOffsetSlot.Index] = new NamedSlotDefinition(null);
+        }
+
+        public LogicalGroupReference CreateViewLogicalGroup(string logicalGroup)
+        {
+            // Need a new slot
+            var slotReference = new LogicalGroupReference(viewLogicalGroups.Count);
+            viewLogicalGroups.Add(new NamedSlotDefinition(logicalGroup));
+
+            // Update existing instantiated buffers
+            foreach (var viewResourceLayoutEntry in viewResourceLayouts)
+            {
+                var resourceGroupLayout = viewResourceLayoutEntry.Value;
+
+                // Ensure there is enough space
+                if (resourceGroupLayout.LogicalGroups == null || resourceGroupLayout.LogicalGroups.Length < viewLogicalGroups.Count)
+                    Array.Resize(ref resourceGroupLayout.LogicalGroups, viewLogicalGroups.Count);
+
+                ResolveLogicalGroup(resourceGroupLayout, slotReference.Index, logicalGroup);
+            }
+
+            return slotReference;
+        }
+
+        public LogicalGroupReference CreateDrawLogicalGroup(string logicalGroup)
+        {
+            // Need a new slot
+            var slotReference = new LogicalGroupReference(drawLogicalGroups.Count);
+            drawLogicalGroups.Add(new NamedSlotDefinition(logicalGroup));
+
+            // Update existing instantiated buffers
+            foreach (var effect in InstantiatedEffects)
+            {
+                var resourceGroupLayout = effect.Value.PerDrawLayout;
+
+                // Ensure there is enough space
+                if (resourceGroupLayout.LogicalGroups == null || resourceGroupLayout.LogicalGroups.Length < drawLogicalGroups.Count)
+                    Array.Resize(ref resourceGroupLayout.LogicalGroups, drawLogicalGroups.Count);
+
+                ResolveLogicalGroup(resourceGroupLayout, slotReference.Index, logicalGroup);
+            }
+
+            return slotReference;
+        }
+
         public ConstantBufferOffsetReference CreateDrawCBufferOffsetSlot(string variable)
         {
             // TODO: Handle duplicates, and allow removal
             var slotReference = new ConstantBufferOffsetReference(drawCBufferOffsetSlots.Count);
-            drawCBufferOffsetSlots.Add(new ConstantBufferOffsetDefinition(variable));
+            drawCBufferOffsetSlots.Add(new NamedSlotDefinition(variable));
 
             // Update existing instantiated buffers
             foreach (var effect in InstantiatedEffects)
@@ -187,6 +252,12 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             return slotReference;
+        }
+
+        private void ResolveLogicalGroup(RenderSystemResourceGroupLayout resourceGroupLayout, int index, string logicalGroupName)
+        {
+            // Update slot
+            resourceGroupLayout.LogicalGroups[index] = resourceGroupLayout.CreateLogicalGroup(logicalGroupName);
         }
 
         private void ResolveCBufferOffset(RenderSystemResourceGroupLayout resourceGroupLayout, int index, string variable)
@@ -412,9 +483,9 @@ namespace SiliconStudio.Xenko.Rendering
                             renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
                             // Prepare well-known descriptor set layouts
-                            renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perDrawDescriptorSetSlot.Index], effect.Bytecode);
-                            renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perFrameDescriptorSetSlot.Index], effect.Bytecode);
-                            renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perViewDescriptorSetSlot.Index], effect.Bytecode);
+                            renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perDrawDescriptorSetSlot.Index], renderEffect.State);
+                            renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perFrameDescriptorSetSlot.Index], renderEffect.State);
+                            renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.ResourceGroupDescriptions[perViewDescriptorSetSlot.Index], renderEffect.State);
 
                             InstantiatedEffects.Add(effect, renderEffectReflection);
 
@@ -640,7 +711,7 @@ namespace SiliconStudio.Xenko.Rendering
             return descriptorSetLayout;
         }
 
-        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
+        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, RenderEffectState effectState)
         {
             if (resourceGroupDescription.DescriptorSetLayout == null)
                 return null;
@@ -650,6 +721,8 @@ namespace SiliconStudio.Xenko.Rendering
                 DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                 ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
             };
+
+            result.State = effectState;
 
             if (resourceGroupDescription.ConstantBufferReflection != null)
             {
@@ -664,16 +737,25 @@ namespace SiliconStudio.Xenko.Rendering
                 ResolveCBufferOffset(result, index, drawCBufferOffsetSlots[index].Variable);
             }
 
+            // Resolve logical groups
+            result.LogicalGroups = new RenderSystemResourceGroupLayout.LogicalGroup[drawLogicalGroups.Count];
+            for (int index = 0; index < drawLogicalGroups.Count; index++)
+            {
+                ResolveLogicalGroup(result, index, drawLogicalGroups[index].Variable);
+            }
+
             return result;
         }
 
-        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
+        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, RenderEffectState effectState)
         {
             if (resourceGroupDescription.DescriptorSetLayout == null)
                 return null;
 
             // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
             var hash = resourceGroupDescription.Hash;
+            var effectStateHash = new ObjectId(0, 0, 0, (uint)effectState);
+            ObjectId.Combine(ref effectStateHash, ref hash, out hash);
 
             FrameResourceGroupLayout result;
             if (!frameResourceLayouts.TryGetValue(hash, out result))
@@ -682,6 +764,7 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                     ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
+                    State = effectState,
                 };
 
                 result.Entry.Resources = new ResourceGroup();
@@ -705,13 +788,15 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private ViewResourceGroupLayout CreateViewResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, EffectBytecode effectBytecode)
+        private ViewResourceGroupLayout CreateViewResourceGroupLayout(ResourceGroupDescription resourceGroupDescription, RenderEffectState effectState)
         {
             if (resourceGroupDescription.DescriptorSetLayout == null)
                 return null;
 
             // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
             var hash = resourceGroupDescription.Hash;
+            var effectStateHash = new ObjectId(0, 0, 0, (uint)effectState);
+            ObjectId.Combine(ref effectStateHash, ref hash, out hash);
 
             ViewResourceGroupLayout result;
             if (!viewResourceLayouts.TryGetValue(hash, out result))
@@ -721,6 +806,7 @@ namespace SiliconStudio.Xenko.Rendering
                     DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                     ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
                     Entries = new ResourceGroupEntry[RenderSystem.Views.Count],
+                    State = effectState,
                 };
 
                 for (int index = 0; index < result.Entries.Length; index++)
@@ -739,6 +825,13 @@ namespace SiliconStudio.Xenko.Rendering
                 for (int index = 0; index < viewCBufferOffsetSlots.Count; index++)
                 {
                     ResolveCBufferOffset(result, index, viewCBufferOffsetSlots[index].Variable);
+                }
+
+                // Resolve logical groups
+                result.LogicalGroups = new RenderSystemResourceGroupLayout.LogicalGroup[viewLogicalGroups.Count];
+                for (int index = 0; index < viewLogicalGroups.Count; index++)
+                {
+                    ResolveLogicalGroup(result, index, viewLogicalGroups[index].Variable);
                 }
 
                 viewResourceLayouts.Add(hash, result);
@@ -774,11 +867,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        struct ConstantBufferOffsetDefinition
+        struct NamedSlotDefinition
         {
             public readonly string Variable;
 
-            public ConstantBufferOffsetDefinition(string variable)
+            public NamedSlotDefinition(string variable)
             {
                 Variable = variable;
             }

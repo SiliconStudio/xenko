@@ -11,17 +11,21 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
-    public struct PointLightData
+    public struct SpotLightData
     {
         public Vector3 PositionWS;
-        public float InvSquareRadius;
-        public Color3 Color;
         private float padding0;
+        public Vector3 DirectionWS;
+        private float padding1;
+        public Vector3 AngleOffsetAndInvSquareRadius;
+        private float padding2;
+        public Color3 Color;
+        private float padding3;
     }
 
-    public class LightPointGroupRenderer : LightGroupRendererDynamic
+    public class LightSpotGroupRenderer : LightGroupRendererDynamic
     {
-        public LightPointGroupRenderer()
+        public LightSpotGroupRenderer()
         {
             CanHaveShadows = true;
         }
@@ -32,16 +36,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)
         {
-            return new PointLightShaderGroup(context, shadowGroup);
+            return new SpotLightShaderGroup(context, shadowGroup);
         }
 
-        class PointLightShaderGroup : LightShaderGroupDynamic
+        class SpotLightShaderGroup : LightShaderGroupDynamic
         {
             private ValueParameterKey<int> countKey;
-            private ValueParameterKey<PointLightData> lightsKey;
-            private FastListStruct<PointLightData> lightsData = new FastListStruct<PointLightData>(8);
+            private ValueParameterKey<SpotLightData> lightsKey;
+            private FastListStruct<SpotLightData> lightsData = new FastListStruct<SpotLightData>(8);
 
-            public PointLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroupData)
+            public SpotLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(context, shadowGroupData)
             {
             }
@@ -51,7 +55,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 base.UpdateLayout(compositionName);
 
                 countKey = DirectLightGroupPerDrawKeys.LightCount.ComposeWith(compositionName);
-                lightsKey = LightPointGroupKeys.Lights.ComposeWith(compositionName);
+                lightsKey = LightSpotGroupKeys.Lights.ComposeWith(compositionName);
             }
 
             protected override void UpdateLightCount()
@@ -59,9 +63,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 base.UpdateLightCount();
 
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("LightPointGroup", LightCurrentCount));
+                mixin.Mixins.Add(new ShaderClassSource("LightSpotGroup", LightCurrentCount));
                 // Old fixed path kept in case we need it again later
-                //mixin.Mixins.Add(new ShaderClassSource("LightPointGroup", LightCurrentCount));
+                //mixin.Mixins.Add(new ShaderClassSource("LightSpotGroup", LightCurrentCount));
                 //mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", LightCurrentCount));
                 ShadowGroup?.ApplyShader(mixin);
 
@@ -83,11 +87,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     var light = lightEntry.Light;
 
-                    var pointLight = (LightPoint)light.Type;
-                    lightsData.Add(new PointLightData
+                    var spotLight = (LightSpot)light.Type;
+                    lightsData.Add(new SpotLightData
                     {
                         PositionWS = light.Position,
-                        InvSquareRadius = pointLight.InvSquareRadius,
+                        DirectionWS = light.Direction,
+                        AngleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange),
                         Color = light.Color,
                     });
                 }

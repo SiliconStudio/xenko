@@ -5,16 +5,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a group of directional lights
     /// </summary>
-    class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroup, NormalStream
+    class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroupPerView, NormalStream, LightStructures
     {
-        struct DirectionalLightData
-        {
-            float3 DirectionWS;
-            [Color]
-            float3 Color;
-        };
-
-        cbuffer PerLighting
+        cbuffer PerView_Lighting
         {
             DirectionalLightData Lights[TMaxLightCount];
         }

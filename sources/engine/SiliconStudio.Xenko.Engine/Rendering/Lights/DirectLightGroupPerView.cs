@@ -16,7 +16,8 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
-    public static partial class DirectLightGroupKeys
+    public static partial class DirectLightGroupPerViewKeys
     {
+        public static readonly ValueParameterKey<int> LightCount = ParameterKeys.NewValue<int>();
     }
 }
