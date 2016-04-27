@@ -19,37 +19,37 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the Column attached dependency property. This defines the column an item is inserted into.
         /// </summary>
         /// <remarks>First column has 0 as index</remarks>
-        public readonly static PropertyKey<int> ColumnPropertyKey = new PropertyKey<int>(nameof(ColumnPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        public static readonly PropertyKey<int> ColumnPropertyKey = new PropertyKey<int>(nameof(ColumnPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
 
         /// <summary>
         /// The key to the Row attached dependency property. This defines the row an item is inserted into.
         /// </summary>
         /// <remarks>First row has 0 as index</remarks>
-        public readonly static PropertyKey<int> RowPropertyKey = new PropertyKey<int>(nameof(RowPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        public static readonly PropertyKey<int> RowPropertyKey = new PropertyKey<int>(nameof(RowPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
 
         /// <summary>
         /// The key to the Layer attached dependency property. This defines the layer an item is inserted into.
         /// </summary>
         /// <remarks>First layer has 0 as index</remarks>
-        public readonly static PropertyKey<int> LayerPropertyKey = new PropertyKey<int>(nameof(LayerPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        public static readonly PropertyKey<int> LayerPropertyKey = new PropertyKey<int>(nameof(LayerPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
 
         /// <summary>
         /// The key to the ColumnSpan attached dependency property. This defines the number of columns an item takes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public readonly static PropertyKey<int> ColumnSpanPropertyKey = new PropertyKey<int>(nameof(ColumnSpanPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        public static readonly PropertyKey<int> ColumnSpanPropertyKey = new PropertyKey<int>(nameof(ColumnSpanPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
 
         /// <summary>
         /// The key to the RowSpan attached dependency property. This defines the number of rows an item takes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public readonly static PropertyKey<int> RowSpanPropertyKey = new PropertyKey<int>(nameof(RowSpanPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        public static readonly PropertyKey<int> RowSpanPropertyKey = new PropertyKey<int>(nameof(RowSpanPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
 
         /// <summary>
         /// The key to the LayerSpan attached dependency property. This defines the number of layers an item takes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public readonly static PropertyKey<int> LayerSpanPropertyKey = new PropertyKey<int>(nameof(LayerSpanPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        public static readonly PropertyKey<int> LayerSpanPropertyKey = new PropertyKey<int>(nameof(LayerSpanPropertyKey), typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
 
         private static void InvalidateParentGridMeasure(object propertyowner, PropertyKey<int> propertykey, int propertyoldvalue)
         {

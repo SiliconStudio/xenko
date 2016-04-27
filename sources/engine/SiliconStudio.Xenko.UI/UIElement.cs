@@ -31,17 +31,17 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
-        public readonly static PropertyKey<float> DefaultWidthPropertyKey =
+        public static readonly PropertyKey<float> DefaultWidthPropertyKey =
             new PropertyKey<float>(nameof(DefaultWidthPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
-        public readonly static PropertyKey<float> DefaultHeightPropertyKey =
+        public static readonly PropertyKey<float> DefaultHeightPropertyKey =
             new PropertyKey<float>(nameof(DefaultHeightPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
-        public readonly static PropertyKey<float> DefaultDepthPropertyKey =
+        public static readonly PropertyKey<float> DefaultDepthPropertyKey =
             new PropertyKey<float>(nameof(DefaultDepthPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
         
         private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.UI
         internal bool HierarchyDisablePicking;
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
-        internal protected Thickness MarginInternal = Thickness.UniformCuboid(0f);
+        protected internal Thickness MarginInternal = Thickness.UniformCuboid(0f);
 
         private string name;
         private Visibility visibility = Visibility.Visible;
@@ -317,7 +317,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>If the class is inherited it is the responsibility of the descendant class to correctly update this collection</remarks>
         [DataMemberIgnore]
-        internal protected UIElementCollection VisualChildrenCollection { get; }
+        protected internal UIElementCollection VisualChildrenCollection { get; }
 
         private static void DefaultSizeInvalidation(object propertyOwner, PropertyKey<float> propertyKey, float propertyOldValue)
         {
@@ -1213,7 +1213,7 @@ namespace SiliconStudio.Xenko.UI
         /// <param name="ray">The ray in world space coordinate</param>
         /// <param name="intersectionPoint">The intersection point in world space coordinate</param>
         /// <returns><value>true</value> if the two elements intersects, <value>false</value> otherwise</returns>
-        internal protected virtual bool Intersects(ref Ray ray, out Vector3 intersectionPoint)
+        protected internal virtual bool Intersects(ref Ray ray, out Vector3 intersectionPoint)
         {
             // does ray intersect element Oxy face?
             var intersects = CollisionHelper.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 2, out intersectionPoint);
