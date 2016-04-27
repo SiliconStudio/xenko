@@ -109,8 +109,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Camera.Transform.Position = new Vector3(0, 0, 1000);
 
             UIComponent.IsFullScreen = true;
-            UIComponent.VirtualResolution = new Vector3(1000, 500, 500);
-            UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
+            UIComponent.Resolution = new Vector3(1000, 500, 500);
+            UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
 
             UI = (UISystem)Services.GetService(typeof(UISystem));
             if (UI == null)

@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var resolution = (Vector3)UIComponent.VirtualResolution;
+            var resolution = (Vector3)UIComponent.Resolution;
 
             var canvas = new Canvas();
             var imgElt = new ImageElement { Name = "UV image", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), Width = resolution.X / 5, Height = resolution.Y / 5, StretchType = StretchType.Fill };

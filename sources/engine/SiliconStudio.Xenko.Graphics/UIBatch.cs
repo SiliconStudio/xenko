@@ -513,7 +513,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                         vertex->Position.X = currentPosition.X;
                         vertex->Position.Y = currentPosition.Y;
-                        vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
+                        vertex->Position.Z = currentPosition.Z - currentPosition.W*drawInfo->DepthBias*DepthBiasShiftOneUnit;
                         vertex->Position.W = currentPosition.W;
 
                         vertex++;
@@ -571,7 +571,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     vertex->Position.X = currentPosition.X;
                     vertex->Position.Y = currentPosition.Y;
-                    vertex->Position.Z = currentPosition.Z - (currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit);
+                    vertex->Position.Z = currentPosition.Z - currentPosition.W * drawInfo->DepthBias * DepthBiasShiftOneUnit;
                     vertex->Position.W = currentPosition.W;
 
                     vertex->Color = drawInfo->Color;
@@ -685,10 +685,10 @@ namespace SiliconStudio.Xenko.Graphics
             public bool SnapImage;
             public PrimitiveType Primitive;
 
-            public float CalculateDepthOrigin()
-            {
-                return LeftTopCornerWorld.Z / LeftTopCornerWorld.W - DepthBias * DepthBiasShiftOneUnit;
-            }
+            //public float CalculateDepthOrigin()
+            //{
+            //    return LeftTopCornerWorld.Z / LeftTopCornerWorld.W - DepthBias * DepthBiasShiftOneUnit;
+            //}
         }
     }
 }
