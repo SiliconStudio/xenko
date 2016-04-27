@@ -183,7 +183,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Destroy()
         {
-            EnsureNotDestroyed();
+            EnsureNotDestroyed(Name);
             base.Destroy();
         }
 
@@ -353,14 +353,6 @@ namespace SiliconStudio.Presentation.Quantum
             if (changingProperties.Remove(propertyName))
             {
                 OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
-            }
-        }
-
-        protected void EnsureNotDestroyed()
-        {
-            if (IsDestroyed)
-            {
-                throw new ObjectDisposedException(Name);
             }
         }
 

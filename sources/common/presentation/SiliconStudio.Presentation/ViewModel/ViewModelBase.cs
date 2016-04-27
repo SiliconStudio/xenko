@@ -57,6 +57,18 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <summary>
+        /// Checks whether this view model has been disposed, and throws an <see cref="ObjectDisposedException"/> if it is the case. 
+        /// </summary>
+        /// <param name="name">The name to supply to the <see cref="ObjectDisposedException"/>.</param>
+        protected void EnsureNotDestroyed(string name = null)
+        {
+            if (IsDestroyed)
+            {
+                throw new ObjectDisposedException(name, "This view model has already been disposed.");
+            }
+        }
+
+        /// <summary>
         /// Sets the value of a field to the given value. Both values are compared with the default <see cref="EqualityComparer{T}"/>, and if they are equals,
         /// this method does nothing. If they are different, the <see cref="PropertyChanging"/> event will be raised first, then the field value will be modified,
         /// and finally the <see cref="PropertyChanged"/> event will be raised.
