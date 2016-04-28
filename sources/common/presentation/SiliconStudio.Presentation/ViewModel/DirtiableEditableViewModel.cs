@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.ViewModel
     /// An implementation of the <see cref="EditableViewModel"/> that is also itself an <see cref="IDirtiable"/>. The <see cref="Dirtiables"/> 
     /// property returns an enumerable containing the instance itself.
     /// </summary>
-    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiable, IDisposable
+    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiable
     {
         private bool isDirty;
 
@@ -28,12 +28,6 @@ namespace SiliconStudio.Presentation.ViewModel
 
         /// <inheritdoc/>
         public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
-
-        /// <inheritdoc/>
-        public virtual void Dispose()
-        {
-            // intentionally do nothing
-        }
 
         protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)
         {
