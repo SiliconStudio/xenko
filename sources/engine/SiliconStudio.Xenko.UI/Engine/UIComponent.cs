@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>The camera.</value>
         /// <userdoc>Indicate how the virtual resolution value should be interpreted</userdoc>
         [DataMember(40)]
-        [Display("Virtual Resolution Mode")]
+        [Display("Resolution Stretch")]
         [DefaultValue(ResolutionStretch.FixedWidthAdaptableHeight)]
         public ResolutionStretch ResolutionStretch { get; set; }
 
