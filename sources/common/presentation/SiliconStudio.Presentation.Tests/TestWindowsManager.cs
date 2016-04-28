@@ -103,9 +103,51 @@ namespace SiliconStudio.Presentation.Tests
 
             NativeHelper.SendMessage(windowHandle, NativeHelper.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
         }
+
         public static void KillWindow(IntPtr hwnd)
         {
             NativeHelper.SendMessage(hwnd, NativeHelper.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        public static void AssertWindowsStatus(Window mainWindow, params Window[] modalWindows)
+        {
+            if (modalWindows != null)
+            {
+                Assert.AreEqual(modalWindows.Length, WindowManager.modalWindows.Count);
+                for (int i = modalWindows.Length - 1; i >= 0; --i)
+                {
+                    bool expectedIsDisabled = i < modalWindows.Length - 1;
+                    WindowInfo expectedOwner = i > 0 ? WindowManager.modalWindows[i - 1] : WindowManager.mainWindow;
+                    Assert.AreEqual(modalWindows[i], WindowManager.modalWindows[i].Window);
+                    Assert.AreEqual(modalWindows[i].Owner, WindowManager.modalWindows[i].Window.Owner);
+                    Assert.AreEqual(expectedOwner, WindowManager.modalWindows[i].Owner);
+                    Assert.AreEqual(true, WindowManager.modalWindows[i].IsModal);
+                    Assert.AreEqual(expectedIsDisabled, WindowManager.modalWindows[i].IsDisabled);
+                    Assert.AreEqual(true, WindowManager.modalWindows[i].IsShown);
+                }
+            }
+            if (mainWindow != null)
+            {
+                Assert.NotNull(WindowManager.mainWindow);
+                Assert.AreEqual(mainWindow, WindowManager.mainWindow.Window);
+                Assert.AreEqual(null, WindowManager.mainWindow.Owner);
+                Assert.AreEqual(null, WindowManager.mainWindow.Window.Owner);
+                Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
+                Assert.AreEqual(WindowManager.modalWindows.Count > 0, WindowManager.mainWindow.IsDisabled);
+                Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+            }
+            else
+            {
+                Assert.Null(WindowManager.mainWindow);
+            }
+        }
+
+        public static void AssertWindowClosed(WindowInfo window)
+        {
+            Assert.AreEqual(null, window.Owner);
+            Assert.AreEqual(false, window.IsModal);
+            Assert.AreEqual(false, window.IsDisabled);
+            Assert.AreEqual(false, window.IsShown);
         }
     }
 
@@ -146,13 +188,7 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(shown);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.NotNull(WindowManager.mainWindow);
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                    WindowManagerHelper.AssertWindowsStatus(window);
                 });
 
                 // Close the main window
@@ -162,11 +198,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(hidden);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(null, WindowManager.mainWindow);
-                    Assert.AreEqual(null, mainWindow.Owner);
-                    Assert.AreEqual(false, mainWindow.IsModal);
-                    Assert.AreEqual(false, mainWindow.IsDisabled);
-                    Assert.AreEqual(false, mainWindow.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
@@ -187,6 +220,10 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
 
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
@@ -195,18 +232,7 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow);
                 });
 
                 // Close the modal window
@@ -216,18 +242,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow, modalWindowInfo.Window);
-                    Assert.AreEqual(null, modalWindowInfo.Owner);
-                    Assert.AreEqual(false, modalWindowInfo.IsModal);
-                    Assert.AreEqual(false, modalWindowInfo.IsDisabled);
-                    Assert.AreEqual(false, modalWindowInfo.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindowInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window);
                 });
 
                 // Close the main window
@@ -237,11 +253,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(hidden);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(null, WindowManager.mainWindow);
-                    Assert.AreEqual(null, mainWindow.Owner);
-                    Assert.AreEqual(false, mainWindow.IsModal);
-                    Assert.AreEqual(false, mainWindow.IsDisabled);
-                    Assert.AreEqual(false, mainWindow.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
@@ -262,6 +275,10 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
 
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
@@ -270,18 +287,7 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow);
                 });
 
                 // Close the main window - this should also close the modal window
@@ -293,17 +299,9 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(Task.WhenAll(hidden, modalWindowClosed));
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(null, WindowManager.mainWindow);
-                    Assert.AreEqual(null, mainWindow.Owner);
-                    Assert.AreEqual(false, mainWindow.IsModal);
-                    Assert.AreEqual(false, mainWindow.IsDisabled);
-                    Assert.AreEqual(false, mainWindow.IsShown);
-                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow, modalWindowInfo.Window);
-                    Assert.AreEqual(null, modalWindowInfo.Owner);
-                    Assert.AreEqual(false, modalWindowInfo.IsModal);
-                    Assert.AreEqual(false, modalWindowInfo.IsDisabled);
-                    Assert.AreEqual(false, modalWindowInfo.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowClosed(modalWindowInfo);
+                    WindowManagerHelper.AssertWindowsStatus(null);
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
@@ -324,12 +322,20 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
 
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
                 dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow1);
+                });
 
                 // Open a second modal window
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
@@ -338,23 +344,7 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(2, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow1, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
-                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[1].Window);
-                    Assert.AreEqual(WindowManager.modalWindows[0], WindowManager.modalWindows[1].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[1].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[1].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[1].IsShown);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow1, modalWindow2);
                 });
 
                 // Close the second modal window
@@ -364,23 +354,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow1, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
-                    Assert.AreEqual(modalWindow2, modalWindow2Info.Window);
-                    Assert.AreEqual(null, modalWindow2Info.Owner);
-                    Assert.AreEqual(false, modalWindow2Info.IsModal);
-                    Assert.AreEqual(false, modalWindow2Info.IsDisabled);
-                    Assert.AreEqual(false, modalWindow2Info.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindow2Info);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow1);
                 });
 
                 // Close the first modal window
@@ -390,18 +365,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow1, modalWindow1Info.Window);
-                    Assert.AreEqual(null, modalWindow1Info.Owner);
-                    Assert.AreEqual(false, modalWindow1Info.IsModal);
-                    Assert.AreEqual(false, modalWindow1Info.IsDisabled);
-                    Assert.AreEqual(false, modalWindow1Info.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindow1Info);
+                    WindowManagerHelper.AssertWindowsStatus(window);
                 });
 
                 // Close the main window
@@ -411,11 +376,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(hidden);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(null, WindowManager.mainWindow);
-                    Assert.AreEqual(null, mainWindow.Owner);
-                    Assert.AreEqual(false, mainWindow.IsModal);
-                    Assert.AreEqual(false, mainWindow.IsDisabled);
-                    Assert.AreEqual(false, mainWindow.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
@@ -436,18 +398,30 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
 
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
                 dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow1);
+                });
 
                 // Open a second modal window
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
                 dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow2));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow1, modalWindow2);
+                });
 
                 // Close the first modal window
                 var modalWindow1Info = WindowManager.modalWindows[0];
@@ -456,23 +430,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
-                    Assert.AreEqual(modalWindow1, modalWindow1Info.Window);
-                    Assert.AreEqual(null, modalWindow1Info.Owner);
-                    Assert.AreEqual(false, modalWindow1Info.IsModal);
-                    Assert.AreEqual(false, modalWindow1Info.IsDisabled);
-                    Assert.AreEqual(false, modalWindow1Info.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindow1Info);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow2);
                 });
 
                 // Close the second modal window
@@ -482,18 +441,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow2, modalWindow2Info.Window);
-                    Assert.AreEqual(null, modalWindow2Info.Owner);
-                    Assert.AreEqual(false, modalWindow2Info.IsModal);
-                    Assert.AreEqual(false, modalWindow2Info.IsDisabled);
-                    Assert.AreEqual(false, modalWindow2Info.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindow2Info);
+                    WindowManagerHelper.AssertWindowsStatus(window);
                 });
 
                 // Close the main window
@@ -503,11 +452,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(hidden);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(null, WindowManager.mainWindow);
-                    Assert.AreEqual(null, mainWindow.Owner);
-                    Assert.AreEqual(false, mainWindow.IsModal);
-                    Assert.AreEqual(false, mainWindow.IsDisabled);
-                    Assert.AreEqual(false, mainWindow.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
@@ -528,12 +474,20 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
 
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
                 dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow1);
+                });
 
                 // Open a second modal window in background
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
@@ -542,23 +496,7 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(2, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
-                    Assert.AreEqual(modalWindow1, WindowManager.modalWindows[1].Window);
-                    Assert.AreEqual(WindowManager.modalWindows[0], WindowManager.modalWindows[1].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[1].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[1].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[1].IsShown);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow2, modalWindow1);
                 });
 
                 // Close the first modal window
@@ -568,23 +506,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[0].Window);
-                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
-                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
-                    Assert.AreEqual(modalWindow1, modalWindow1Info.Window);
-                    Assert.AreEqual(null, modalWindow1Info.Owner);
-                    Assert.AreEqual(false, modalWindow1Info.IsModal);
-                    Assert.AreEqual(false, modalWindow1Info.IsDisabled);
-                    Assert.AreEqual(false, modalWindow1Info.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindow1Info);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow2);
                 });
 
                 // Close the second modal window
@@ -594,18 +517,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
-                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
-                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
-                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
-                    Assert.AreEqual(modalWindow2, modalWindow2Info.Window);
-                    Assert.AreEqual(null, modalWindow2Info.Owner);
-                    Assert.AreEqual(false, modalWindow2Info.IsModal);
-                    Assert.AreEqual(false, modalWindow2Info.IsDisabled);
-                    Assert.AreEqual(false, modalWindow2Info.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(modalWindow2Info);
+                    WindowManagerHelper.AssertWindowsStatus(window);
                 });
 
                 // Close the main window
@@ -615,11 +528,8 @@ namespace SiliconStudio.Presentation.Tests
                 await WindowManagerHelper.TaskWithTimeout(hidden);
                 dispatcher.Invoke(() =>
                 {
-                    Assert.AreEqual(null, WindowManager.mainWindow);
-                    Assert.AreEqual(null, mainWindow.Owner);
-                    Assert.AreEqual(false, mainWindow.IsModal);
-                    Assert.AreEqual(false, mainWindow.IsDisabled);
-                    Assert.AreEqual(false, mainWindow.IsShown);
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
                 });
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
