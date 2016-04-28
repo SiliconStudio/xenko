@@ -326,7 +326,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, Index.Empty);
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
                         if (shouldConstruct)
                         {
                             var childPath = graphNodePath.GetChildPath(modelNode, child);

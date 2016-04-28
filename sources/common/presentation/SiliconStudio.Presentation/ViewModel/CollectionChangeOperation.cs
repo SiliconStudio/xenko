@@ -61,7 +61,7 @@ namespace SiliconStudio.Presentation.ViewModel
 
         public NotifyCollectionChangedAction ActionToUndo { get; private set; }
 
-        public int ItemCount => items.Count;
+        public int ItemCount => items?.Count ?? 0;
 
         /// <inheritdoc/>
         protected override void FreezeContent()

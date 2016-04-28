@@ -11,9 +11,9 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class PointerEvent : EventArgs
     {
-        internal readonly static Queue<PointerEvent> Pool = new Queue<PointerEvent>();
+        public readonly static Queue<PointerEvent> Pool = new Queue<PointerEvent>();
 
-        internal static PointerEvent GetOrCreatePointerEvent()
+        public static PointerEvent GetOrCreatePointerEvent()
         {
             lock (Pool)
                 return Pool.Count > 0 ? Pool.Dequeue() : new PointerEvent();
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="PointerEvent" /> class.
         /// </summary>
-        internal PointerEvent()
+        public PointerEvent()
         {
         }
 
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the delta position of the pointer since the previous frame.
         /// </summary>
         /// <value>The delta position.</value>
-        public Vector2 DeltaPosition { get; internal set; }
+        public Vector2 DeltaPosition { get; set; }
 
         /// <summary>
         /// Gets the amount of time since the previous state.

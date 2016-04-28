@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {

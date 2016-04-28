@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
     /// <see cref="ParticleMaterialComputeColor"/> uses a <see cref="IComputeColor"/> tree to calculate the pixel's emissive value
     /// </summary>
     [DataContract("ParticleMaterialComputeColor")]
-    [Display("DynamicEmissive")]
+    [Display("Emissive Map")]
     public class ParticleMaterialComputeColor : ParticleMaterialSimple
     {
         // TODO Part of the graphics improvement XK-3052
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Emissive component ignores light and defines a fixed color this particle should use (emit) when rendered.
         /// </userdoc>
         [DataMember(100)]
-        [Display("Emissive")]
+        [Display("Emissive Map")]
         public IComputeColor ComputeColor { get; set; } = new ComputeTextureColor();
 
         /// <summary>

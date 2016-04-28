@@ -352,9 +352,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HighlightShader.cs</LastGenOutput>
     </None>
-    <Compile Include="Rendering\UI\RenderUIElement.cs" />
-    <Compile Include="Rendering\UI\UIPipelinePlugin.cs" />
-    <Compile Include="Rendering\UI\UIRenderFeature.cs" />
     <Compile Include="Rendering\Utils\HighlightShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -391,7 +388,6 @@
     <Compile Include="Engine\SkyboxComponent.cs" />
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="Engine\TransformComponent.cs" />
-    <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Rendering\RenderEffectState.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMax.cs" />
     <Compile Include="Rendering\Images\DepthMinMax\DepthMinMaxShader.cs">
@@ -477,7 +473,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\VirtualResolutionMode.cs" />
+    <Compile Include="Rendering\ResolutionStretch.cs" />
     <Compile Include="Rendering\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2340,7 +2336,6 @@
     <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />
     <Compile Include="Rendering\Sprites\SpriteType.cs" />
-    <Compile Include="Rendering\UI\UIRenderProcessor.cs" />
     <Compile Include="Engine\Design\DefaultEntityComponentProcessorAttribute.cs" />
     <Compile Include="Engine\Design\EntityComponentEventArgs.cs" />
     <Compile Include="Shaders.Compiler\EffectCompileRequest.cs" />
@@ -3718,11 +3713,6 @@
       <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
-      <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
-      <Name>SiliconStudio.Xenko.UI</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Xenko</Name>
@@ -3734,10 +3724,10 @@
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.5.25\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Content Include="Rendering\Properties.tt">
+    <None Include="Rendering\Properties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Properties.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

@@ -65,9 +65,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 return BuildGetGraphicsPlatform();
             }
 
-            assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             AssetCompilerContext context = null;
-            GlobalLogger.GlobalMessageLogged += assetLogger;
             PackageSession projectSession = null;
             try
             {
@@ -172,9 +170,6 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Dispose the session (in order to unload assemblies)
                 projectSession?.Dispose();
                 context?.Dispose();
-                // Flush and close logger
-                GlobalLogger.GlobalMessageLogged -= assetLogger;
-                assetLogger.Dispose();
             }
         }
 

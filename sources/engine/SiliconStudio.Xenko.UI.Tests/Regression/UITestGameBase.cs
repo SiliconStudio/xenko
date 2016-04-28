@@ -73,6 +73,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         }
 
         /// <summary>
+        /// Gets the UI system.
+        /// </summary>
+        /// <value>The UI.</value>
+        protected UISystem UI { get; private set; }
+
+        /// <summary>
         /// Create an instance of the game test
         /// </summary>
         public UITestGameBase()
@@ -102,8 +108,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Camera.Transform.Position = new Vector3(0, 0, 1000);
 
             UIComponent.IsFullScreen = true;
-            UIComponent.VirtualResolution = new Vector3(1000, 500, 500);
-            UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
+            UIComponent.Resolution = new Vector3(1000, 500, 500);
+            UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
+
+            UI = (UISystem)Services.GetService(typeof(UISystem));
+            if (UI == null)
+            {
+                UI = new UISystem(Services);
+                GameSystems.Add(UI);
+            }
         }
 
         protected virtual void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
