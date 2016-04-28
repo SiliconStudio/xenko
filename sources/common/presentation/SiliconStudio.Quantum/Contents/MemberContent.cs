@@ -117,7 +117,7 @@ namespace SiliconStudio.Quantum.Contents
             else if (dictionaryDescriptor != null)
             {
                 NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
-                dictionaryDescriptor.SetValue(Value, itemIndex, newItem);
+                dictionaryDescriptor.SetValue(Value, itemIndex.Value, newItem);
                 UpdateReferences();
                 NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
             }
