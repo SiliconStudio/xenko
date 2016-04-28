@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the Orientation dependency property.
         /// </summary>
-        public static readonly PropertyKey<Orientation> OrientationPropertyKey = new PropertyKey<Orientation>(nameof(OrientationPropertyKey), typeof(StackPanel), DefaultValueMetadata.Static(Orientation.Vertical), ObjectInvalidationMetadata.New<Orientation>(InvalidationCallback));
+        public static readonly PropertyKey<Orientation> OrientationPropertyKey = DependencyPropertyFactory.Register(nameof(OrientationPropertyKey), typeof(StackPanel), Orientation.Vertical, InvalidationCallback);
 
         /// <summary>
         /// Indicate the first index of Vector3 to use to maximize depending on the stack panel orientation.

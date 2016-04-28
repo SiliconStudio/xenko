@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the IsModal dependency property.
         /// </summary>
-        protected static readonly PropertyKey<bool> IsModalPropertyKey = new PropertyKey<bool>(nameof(IsModalPropertyKey), typeof(ModalElement), DefaultValueMetadata.Static(true));
+        protected static readonly PropertyKey<bool> IsModalPropertyKey = DependencyPropertyFactory.Register(nameof(IsModalPropertyKey), typeof(ModalElement), true);
 
         /// <summary>
         /// Occurs when the element is modal and the user click outside of the modal element.

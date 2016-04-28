@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the Content dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIElement> ContentPropertyKey = new PropertyKey<UIElement>(nameof(ContentPropertyKey), typeof(ContentPresenter), DefaultValueMetadata.Static<UIElement>(null), ObjectInvalidationMetadata.New<UIElement>(ContentInvalidationCallback));
+        public static readonly PropertyKey<UIElement> ContentPropertyKey = DependencyPropertyFactory.Register(nameof(ContentPropertyKey), typeof(ContentPresenter), default(UIElement), ContentInvalidationCallback);
 
         private Matrix contentWorldMatrix;
 

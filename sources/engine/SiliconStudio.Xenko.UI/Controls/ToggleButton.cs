@@ -20,17 +20,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the CheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> CheckedImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(CheckedImagePropertyKey), typeof(ToggleButton), ObjectInvalidationMetadata.New<ISpriteProvider>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> CheckedImagePropertyKey = DependencyPropertyFactory.Register(nameof(CheckedImagePropertyKey), typeof(ToggleButton), default(ISpriteProvider), OnToggleImageInvalidated);
 
         /// <summary>
         /// The key to the IndeterminateImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> IndeterminateImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(IndeterminateImagePropertyKey), typeof(ToggleButton), ObjectInvalidationMetadata.New<ISpriteProvider>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> IndeterminateImagePropertyKey = DependencyPropertyFactory.Register(nameof(IndeterminateImagePropertyKey), typeof(ToggleButton), default(ISpriteProvider), OnToggleImageInvalidated);
 
         /// <summary>
         /// The key to the UncheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> UncheckedImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(UncheckedImagePropertyKey), typeof(ToggleButton), ObjectInvalidationMetadata.New<ISpriteProvider>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> UncheckedImagePropertyKey = DependencyPropertyFactory.Register(nameof(UncheckedImagePropertyKey), typeof(ToggleButton), default(ISpriteProvider), OnToggleImageInvalidated);
 
         private static void OnToggleImageInvalidated(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
         {

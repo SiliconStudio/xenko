@@ -32,17 +32,17 @@ namespace SiliconStudio.Xenko.UI
         /// The key to the height dependency property.
         /// </summary>
         public static readonly PropertyKey<float> DefaultWidthPropertyKey =
-            new PropertyKey<float>(nameof(DefaultWidthPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+            DependencyPropertyFactory.Register(nameof(DefaultWidthPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
         public static readonly PropertyKey<float> DefaultHeightPropertyKey =
-            new PropertyKey<float>(nameof(DefaultHeightPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+            DependencyPropertyFactory.Register(nameof(DefaultHeightPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
         public static readonly PropertyKey<float> DefaultDepthPropertyKey =
-            new PropertyKey<float>(nameof(DefaultDepthPropertyKey), typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
+            DependencyPropertyFactory.Register(nameof(DefaultDepthPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
         
         private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
             EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));

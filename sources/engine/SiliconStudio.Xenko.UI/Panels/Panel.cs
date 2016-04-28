@@ -23,12 +23,12 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the ZIndex dependency property.
         /// </summary>
-        public static readonly PropertyKey<int> ZIndexPropertyKey = new PropertyKey<int>(nameof(ZIndexPropertyKey), typeof(Panel), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(PanelZSortedChildInvalidator));
+        public static readonly PropertyKey<int> ZIndexPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ZIndexPropertyKey), typeof(Panel), 0, PanelZSortedChildInvalidator);
 
         /// <summary>
         /// The key to the PanelArrangeMatrix dependency property. This property can be used by panels to arrange they children as they want.
         /// </summary>
-        protected static readonly PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = new PropertyKey<Matrix>(nameof(PanelArrangeMatrixPropertyKey), typeof(Panel), DefaultValueMetadata.Static(Matrix.Identity), ObjectInvalidationMetadata.New<Matrix>(InvalidateArrangeMatrix));
+        protected static readonly PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(PanelArrangeMatrixPropertyKey), typeof(Panel), Matrix.Identity, InvalidateArrangeMatrix);
 
         private static void InvalidateArrangeMatrix(object propertyOwner, PropertyKey<Matrix> propertyKey, Matrix propertyOldValue)
         {

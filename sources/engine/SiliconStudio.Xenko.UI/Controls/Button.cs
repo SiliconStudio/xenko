@@ -17,17 +17,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the NotPressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> NotPressedImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(NotPressedImagePropertyKey), typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> NotPressedImagePropertyKey = DependencyPropertyFactory.Register(nameof(NotPressedImagePropertyKey), typeof(Button), default(ISpriteProvider), OnAspectImageInvalidated);
 
         /// <summary>
         /// The key to the PressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> PressedImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(PressedImagePropertyKey), typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> PressedImagePropertyKey = DependencyPropertyFactory.Register(nameof(PressedImagePropertyKey), typeof(Button), default(ISpriteProvider), OnAspectImageInvalidated);
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(MouseOverImagePropertyKey), typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey = DependencyPropertyFactory.Register(nameof(MouseOverImagePropertyKey), typeof(Button), default(ISpriteProvider), OnAspectImageInvalidated);
 
         public Button()
         {

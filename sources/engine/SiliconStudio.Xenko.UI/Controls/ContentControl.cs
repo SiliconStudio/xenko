@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the ContentArrangeMatrix dependency property.
         /// </summary>
-        protected static readonly PropertyKey<Matrix> ContentArrangeMatrixPropertyKey = new PropertyKey<Matrix>(nameof(ContentArrangeMatrixPropertyKey), typeof(ContentControl), DefaultValueMetadata.Static(Matrix.Identity));
+        protected static readonly PropertyKey<Matrix> ContentArrangeMatrixPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ContentArrangeMatrixPropertyKey), typeof(ContentControl), Matrix.Identity);
 
         private Matrix contentWorldMatrix;
 

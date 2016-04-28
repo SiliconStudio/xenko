@@ -61,70 +61,67 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// The key to the IsReadOnly dependency property.
         /// </summary>
         public static readonly PropertyKey<bool> IsReadOnlyPropertyKey =
-            new PropertyKey<bool>(nameof(IsReadOnlyPropertyKey), typeof(EditText), DefaultValueMetadata.Static(false), ObjectInvalidationMetadata.New<bool>(InvalidateIsReadOnly));
+            DependencyPropertyFactory.Register(nameof(IsReadOnlyPropertyKey), typeof(EditText), false, InvalidateIsReadOnly);
 
         /// <summary>
         /// The key to the Font dependency property.
         /// </summary>
         public static readonly PropertyKey<SpriteFont> FontPropertyKey =
-            new PropertyKey<SpriteFont>(nameof(FontPropertyKey), typeof(EditText), DefaultValueMetadata.Static<SpriteFont>(null), ObjectInvalidationMetadata.New<SpriteFont>(InvalidateFont));
+            DependencyPropertyFactory.Register(nameof(FontPropertyKey), typeof(EditText), default(SpriteFont), InvalidateFont);
 
         /// <summary>
         /// The key to the TextColor dependency property.
         /// </summary>
         public static readonly PropertyKey<Color> TextColorPropertyKey =
-            new PropertyKey<Color>(nameof(TextColorPropertyKey), typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
+            DependencyPropertyFactory.Register(nameof(TextColorPropertyKey), typeof(EditText), Color.FromAbgr(0xF0F0F0FF));
 
         /// <summary>
         /// The key to the SelectionColor dependency property.
         /// </summary>
         public static readonly PropertyKey<Color> SelectionColorPropertyKey =
-            new PropertyKey<Color>(nameof(SelectionColorPropertyKey), typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0x623574FF)));
+            DependencyPropertyFactory.Register(nameof(SelectionColorPropertyKey), typeof(EditText), Color.FromAbgr(0x623574FF));
 
         /// <summary>
         /// The key to the SelectionColor dependency property.
         /// </summary>
         public static readonly PropertyKey<Color> CaretColorPropertyKey =
-            new PropertyKey<Color>(nameof(CaretColorPropertyKey), typeof(EditText), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
+            DependencyPropertyFactory.Register(nameof(CaretColorPropertyKey), typeof(EditText), Color.FromAbgr(0xF0F0F0FF));
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
         public static readonly PropertyKey<int> MaxLengthPropertyKey =
-            new PropertyKey<int>(nameof(MaxLengthPropertyKey), typeof(EditText),
-            DefaultValueMetadata.Static(int.MaxValue), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMaxLength));
+            DependencyPropertyFactory.Register(nameof(MaxLengthPropertyKey), typeof(EditText), int.MaxValue, CheckStrictlyPositive, InvalidateMaxLength);
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
         public static readonly PropertyKey<int> MaxLinesPropertyKey =
-            new PropertyKey<int>(nameof(MaxLinesPropertyKey), typeof(EditText),
-            DefaultValueMetadata.Static(int.MaxValue), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMaxLines));
+            DependencyPropertyFactory.Register(nameof(MaxLinesPropertyKey), typeof(EditText), int.MaxValue, CheckStrictlyPositive, InvalidateMaxLines);
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
         public static readonly PropertyKey<int> MinLinesPropertyKey =
-            new PropertyKey<int>(nameof(MinLinesPropertyKey), typeof(EditText),
-            DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(CheckStrictlyPositive), ObjectInvalidationMetadata.New<int>(InvalidateMinLines));
+            DependencyPropertyFactory.Register(nameof(MinLinesPropertyKey), typeof(EditText), 1, CheckStrictlyPositive, InvalidateMinLines);
 
         /// <summary>
         /// The key to the ActiveImage dependency property.
         /// </summary>
         public static readonly PropertyKey<ISpriteProvider> ActiveImagePropertyKey =
-            new PropertyKey<ISpriteProvider>(nameof(ActiveImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
+            DependencyPropertyFactory.Register(nameof(ActiveImagePropertyKey), typeof(EditText), default(ISpriteProvider));
 
         /// <summary>
         /// The key to the InactiveImage dependency property.
         /// </summary>
         public static readonly PropertyKey<ISpriteProvider> InactiveImagePropertyKey =
-            new PropertyKey<ISpriteProvider>(nameof(InactiveImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
+            DependencyPropertyFactory.Register(nameof(InactiveImagePropertyKey), typeof(EditText), default(ISpriteProvider));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
         public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey =
-            new PropertyKey<ISpriteProvider>(nameof(MouseOverImagePropertyKey), typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
+            DependencyPropertyFactory.Register(nameof(MouseOverImagePropertyKey), typeof(EditText), default(ISpriteProvider));
 
         private static void CheckStrictlyPositive(ref int value)
         {

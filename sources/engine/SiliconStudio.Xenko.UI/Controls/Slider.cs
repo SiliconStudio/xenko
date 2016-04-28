@@ -26,57 +26,57 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the TrackBackgroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> TrackBackgroundImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(TrackBackgroundImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(InvalidateTrackBackground));
+        public static readonly PropertyKey<ISpriteProvider> TrackBackgroundImagePropertyKey = DependencyPropertyFactory.Register(nameof(TrackBackgroundImagePropertyKey), typeof(Slider), default(ISpriteProvider), InvalidateTrackBackground);
 
         /// <summary>
         /// The key to the TrackForegroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> TrackForegroundImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(TrackForegroundImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
+        public static readonly PropertyKey<ISpriteProvider> TrackForegroundImagePropertyKey = DependencyPropertyFactory.Register(nameof(TrackForegroundImagePropertyKey), typeof(Slider), default(ISpriteProvider));
 
         /// <summary>
         /// The key to the ThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> ThumbImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(ThumbImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
+        public static readonly PropertyKey<ISpriteProvider> ThumbImagePropertyKey = DependencyPropertyFactory.Register(nameof(ThumbImagePropertyKey), typeof(Slider), default(ISpriteProvider));
 
         /// <summary>
         /// The key to the TickImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> TickImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(TickImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
+        public static readonly PropertyKey<ISpriteProvider> TickImagePropertyKey = DependencyPropertyFactory.Register(nameof(TickImagePropertyKey), typeof(Slider), default(ISpriteProvider));
 
         /// <summary>
         /// The key to the MouseOverThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> MouseOverThumbImagePropertyKey = new PropertyKey<ISpriteProvider>(nameof(MouseOverThumbImagePropertyKey), typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
+        public static readonly PropertyKey<ISpriteProvider> MouseOverThumbImagePropertyKey = DependencyPropertyFactory.Register(nameof(MouseOverThumbImagePropertyKey), typeof(Slider), default(ISpriteProvider));
 
         /// <summary>
         /// The key to the Minimum dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> MinimumPropertyKey = new PropertyKey<float>(nameof(MinimumPropertyKey), typeof(Slider), DefaultValueMetadata.Static<float>(0), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
+        public static readonly PropertyKey<float> MinimumPropertyKey = DependencyPropertyFactory.Register(nameof(MinimumPropertyKey), typeof(Slider), 0.0f, ValidateExtremum);
 
         /// <summary>
         /// The key to the Maximum dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> MaximumPropertyKey = new PropertyKey<float>(nameof(MaximumPropertyKey), typeof(Slider), DefaultValueMetadata.Static<float>(1), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
+        public static readonly PropertyKey<float> MaximumPropertyKey = DependencyPropertyFactory.Register(nameof(MaximumPropertyKey), typeof(Slider), 1.0f, ValidateExtremum);
 
         /// <summary>
         /// The key to the Step dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> StepPropertyKey = new PropertyKey<float>(nameof(StepPropertyKey), typeof(Slider), DefaultValueMetadata.Static(0.1f));
+        public static readonly PropertyKey<float> StepPropertyKey = DependencyPropertyFactory.Register(nameof(StepPropertyKey), typeof(Slider), 0.1f);
 
         /// <summary>
         /// The key to the TickFrequency dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> TickFrequencyPropertyKey = new PropertyKey<float>(nameof(TickFrequencyPropertyKey), typeof(Slider), DefaultValueMetadata.Static(10f), ObjectInvalidationMetadata.New<float>(TickFrequencyInvalidated));
+        public static readonly PropertyKey<float> TickFrequencyPropertyKey = DependencyPropertyFactory.Register(nameof(TickFrequencyPropertyKey), typeof(Slider), 10f, TickFrequencyInvalidated);
 
         /// <summary>
         /// The key to the TickFrequency dependency property.
         /// </summary>
-        public static readonly PropertyKey<float> TickOffsetPropertyKey = new PropertyKey<float>(nameof(TickOffsetPropertyKey), typeof(Slider), DefaultValueMetadata.Static(10f));
+        public static readonly PropertyKey<float> TickOffsetPropertyKey = DependencyPropertyFactory.Register(nameof(TickOffsetPropertyKey), typeof(Slider), 10f);
 
         /// <summary>
         /// The key to the TrackStartingOffsets dependency property.
         /// </summary>
-        public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = new PropertyKey<Vector2>(nameof(TrackStartingOffsetsrPropertyKey), typeof(Slider), DefaultValueMetadata.Static(new Vector2()));
+        public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = DependencyPropertyFactory.Register(nameof(TrackStartingOffsetsrPropertyKey), typeof(Slider), new Vector2());
 
         private static void InvalidateTrackBackground(object propertyowner, PropertyKey<ISpriteProvider> propertykey, ISpriteProvider propertyoldvalue)
         {
