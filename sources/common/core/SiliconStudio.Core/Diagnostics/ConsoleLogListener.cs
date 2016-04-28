@@ -85,7 +85,7 @@ namespace SiliconStudio.Core.Diagnostics
 
             var exceptionMsg = GetExceptionText(logMessage);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
             // save initial console color
             ConsoleColor initialColor = Console.ForegroundColor;
 
@@ -110,22 +110,19 @@ namespace SiliconStudio.Core.Diagnostics
                     break;
             }
 #endif
-            // By default output to debug logger
-            bool useDebugLogger = true;
 
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            useDebugLogger = System.Diagnostics.Debugger.IsAttached;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+            if (Debugger.IsAttached)
 #endif
-            if (useDebugLogger)
             {
                 // Log the actual message
-                System.Diagnostics.Debug.WriteLine(GetDefaultText(logMessage));
+                Debug.WriteLine(GetDefaultText(logMessage));
                 if (!string.IsNullOrEmpty(exceptionMsg))
                 {
-                    System.Diagnostics.Debug.WriteLine(logMessage);
+                    Debug.WriteLine(logMessage);
                 }
             }
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
             else
             {
                 // Log the actual message
@@ -137,7 +134,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
 #endif
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
 
             // revert console initial color
             Console.ForegroundColor = (initialColor);
