@@ -100,18 +100,41 @@ namespace SiliconStudio.Presentation.Windows
             }
             internal set
             {
-                if (Window == null)
-                    throw new NotSupportedException("Cannot change the owner of this window because it is not a WPF window.");
+                if (value == Owner)
+                    return;
 
-                if (value != null && value.Window == null)
-                    throw new NotSupportedException("Cannot change the owner of this window because the new owner is not a WPF window.");
+                //if (Window == null)
+                //    throw new NotSupportedException("Cannot change the owner of this window because it is not a WPF window.");
 
-                if (ReferenceEquals(value?.Window, Window))
-                    throw new NotSupportedException("Cannot set a window to be its own owner.");
+                //if (value != null && value.Window == null)
+                //    throw new NotSupportedException("Cannot change the owner of this window because the new owner is not a WPF window.");
 
-                Window.Owner = value?.Window;
+                //if (ReferenceEquals(value?.Window, Window))
+                //    throw new NotSupportedException("Cannot set a window to be its own owner.");
 
-                // This code does not work unfortunately.
+                if (Window != null)
+                {
+                    if (value?.Window == null)
+                    {
+                        Window.Owner = null;
+                        if (value != null)
+                        {
+                            HwndHelper.SetOwner(Hwnd, value.Hwnd);
+                        }
+                    }
+                    else
+                    {
+                        Window.Owner = value.Window;
+                    }
+                }
+                else
+                {
+                    HwndHelper.SetOwner(Hwnd, value.Hwnd);
+                }
+
+                //Window.Owner = value?.Window;
+
+                //// This code does not work unfortunately.
                 //var ownerHwnd = value?.Hwnd ?? IntPtr.Zero;
                 //HwndHelper.SetOwner(Hwnd, ownerHwnd);
             }
@@ -151,19 +174,19 @@ namespace SiliconStudio.Presentation.Windows
         /// <inheritdoc/>
         public bool Equals(WindowInfo other)
         {
-            return Window.Equals(other.Window) && Hwnd == other.Hwnd;
+            return Equals(other.Window) && Equals(other.Hwnd);
         }
 
         /// <inheritdoc/>
         public bool Equals(Window other)
         {
-            return Window.Equals(other);
+            return Equals(Window, other);
         }
 
         /// <inheritdoc/>
         public bool Equals(IntPtr other)
         {
-            return Hwnd.Equals(other);
+            return Equals(Hwnd, other);
         }
 
         private static IntPtr ToHwnd(Window window)

@@ -91,6 +91,24 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
+        //public static void ShowStandaloneModal(Action showDialog)
+        //{
+        //    if (showDialog == null) throw new ArgumentNullException(nameof(showDialog));
+        //    CheckDispatcher();
+        //    Dispatcher.PushFrame
+        //    var owner = modalWindows.FirstOrDefault() ?? mainWindow;
+        //    window.Owner = owner?.Window;
+        //    window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+        //    if (owner != null)
+        //    {
+        //        owner.IsDisabled = true;
+        //    }
+        //    var windowInfo = new WindowInfo(window);
+        //    modalWindows.Add(windowInfo);
+        //    allWindows.Add(windowInfo);
+        //    window.Show();
+        //}
+
         public static void ShowBackgroundModal(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));

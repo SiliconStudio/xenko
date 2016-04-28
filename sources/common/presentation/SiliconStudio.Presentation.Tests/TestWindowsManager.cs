@@ -10,6 +10,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Tests.WPF;
 using SiliconStudio.Presentation.Windows;
+using MessageBox = System.Windows.MessageBox;
 
 namespace SiliconStudio.Presentation.Tests
 {
@@ -95,15 +96,6 @@ namespace SiliconStudio.Presentation.Tests
             return manager;
         }
 
-        public static void KillWindow(string title)
-        {
-            var windowHandle = NativeHelper.FindWindow(null, title);
-            if (windowHandle == IntPtr.Zero)
-                throw new InvalidOperationException("Unable to find a window with the given title");
-
-            NativeHelper.SendMessage(windowHandle, NativeHelper.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-        }
-
         public static void KillWindow(IntPtr hwnd)
         {
             NativeHelper.SendMessage(hwnd, NativeHelper.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
@@ -119,7 +111,7 @@ namespace SiliconStudio.Presentation.Tests
                     bool expectedIsDisabled = i < modalWindows.Length - 1;
                     WindowInfo expectedOwner = i > 0 ? WindowManager.modalWindows[i - 1] : WindowManager.mainWindow;
                     Assert.AreEqual(modalWindows[i], WindowManager.modalWindows[i].Window);
-                    Assert.AreEqual(modalWindows[i].Owner, WindowManager.modalWindows[i].Window.Owner);
+                    Assert.AreEqual(modalWindows[i]?.Owner, WindowManager.modalWindows[i].Window?.Owner);
                     Assert.AreEqual(expectedOwner, WindowManager.modalWindows[i].Owner);
                     Assert.AreEqual(true, WindowManager.modalWindows[i].IsModal);
                     Assert.AreEqual(expectedIsDisabled, WindowManager.modalWindows[i].IsDisabled);
@@ -145,7 +137,7 @@ namespace SiliconStudio.Presentation.Tests
         public static void AssertWindowClosed(WindowInfo window)
         {
             Assert.AreEqual(null, window.Owner);
-            Assert.AreEqual(false, window.IsModal);
+            //Assert.AreEqual(false, window.IsModal);
             Assert.AreEqual(false, window.IsDisabled);
             Assert.AreEqual(false, window.IsShown);
         }
@@ -265,7 +257,7 @@ namespace SiliconStudio.Presentation.Tests
         public async void TestMainWindowThenModalBoxCloseMain()
         {
             LoggerResult loggerResult;
-            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            const string messageBoxName = nameof(TestMainWindowThenModalBoxCloseMain);
             var dispatcher = await WindowManagerHelper.CreateUIThread();
             using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
             {
@@ -312,7 +304,7 @@ namespace SiliconStudio.Presentation.Tests
         public async void TestMainWindowThenTwoModalBoxes()
         {
             LoggerResult loggerResult;
-            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            const string messageBoxName = nameof(TestMainWindowThenTwoModalBoxes);
             var dispatcher = await WindowManagerHelper.CreateUIThread();
             using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
             {
@@ -388,7 +380,7 @@ namespace SiliconStudio.Presentation.Tests
         public async void TestMainWindowThenTwoModalBoxesReverseClose()
         {
             LoggerResult loggerResult;
-            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            const string messageBoxName = nameof(TestMainWindowThenTwoModalBoxesReverseClose);
             var dispatcher = await WindowManagerHelper.CreateUIThread();
             using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
             {
@@ -464,7 +456,7 @@ namespace SiliconStudio.Presentation.Tests
         public async void TestMainWindowThenModalBoxThenBackgroundModal()
         {
             LoggerResult loggerResult;
-            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            const string messageBoxName = nameof(TestMainWindowThenModalBoxThenBackgroundModal);
             var dispatcher = await WindowManagerHelper.CreateUIThread();
             using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
             {
@@ -535,5 +527,286 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(false, loggerResult.HasErrors);
             dispatcher.InvokeShutdown();
         }
+
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenMessageBox()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenMessageBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
+
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Open a message box
+                var messageBoxOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => MessageBox.Show("Test", messageBoxName));
+                await WindowManagerHelper.TaskWithTimeout(messageBoxOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, null);
+                });
+
+                // Close the message box
+                var messageBoxInfo = WindowManager.modalWindows[0];
+                var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
+                WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
+                await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(messageBoxInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Close the main window
+                var mainWindow = WindowManager.mainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenModalBoxThenMessageBox()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenModalBoxThenMessageBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
+
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Open a modal window
+                var modalWindows = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindows));
+                await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindows);
+                });
+
+                // Open a message box
+                var messageBoxOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => MessageBox.Show("Test", messageBoxName));
+                await WindowManagerHelper.TaskWithTimeout(messageBoxOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindows, null);
+                });
+
+                // Close the messageBox
+                var messageBoxInfo = WindowManager.modalWindows[1];
+                var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
+                WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
+                await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(messageBoxInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindows);
+                });
+
+                // Close the modal window
+                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindows.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(modalWindowInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Close the main window
+                var mainWindow = WindowManager.mainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenMessageBoxThenBackgroundModalBox()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenMessageBoxThenBackgroundModalBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
+
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Open a message box
+                var messageBoxOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => MessageBox.Show("Test", messageBoxName));
+                await WindowManagerHelper.TaskWithTimeout(messageBoxOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, null);
+                });
+
+                // Open a modal window
+                var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowBackgroundModal(modalWindow));
+                await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow, null);
+                });
+
+                // Close the messageBox
+                var messageBoxInfo = WindowManager.modalWindows[1];
+                var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
+                WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
+                await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(messageBoxInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow);
+                });
+
+                // Close the modal window
+                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindow.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(modalWindowInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Close the main window
+                var mainWindow = WindowManager.mainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenMessageBoxThenBackgroundModalBoxReverseClose()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenMessageBoxThenBackgroundModalBoxReverseClose);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
+
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Open a message box
+                var messageBoxOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => MessageBox.Show("Test", messageBoxName));
+                await WindowManagerHelper.TaskWithTimeout(messageBoxOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, null);
+                });
+
+                // Open a modal window
+                var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowBackgroundModal(modalWindow));
+                await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow, null);
+                });
+
+                // Close the modal window
+                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindow.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(modalWindowInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window, null);
+                });
+
+                // Close the messageBox
+                var messageBoxInfo = WindowManager.modalWindows[0];
+                var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
+                WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
+                await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(messageBoxInfo);
+                    WindowManagerHelper.AssertWindowsStatus(window);
+                });
+
+                // Close the main window
+                var mainWindow = WindowManager.mainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
+
     }
 }
