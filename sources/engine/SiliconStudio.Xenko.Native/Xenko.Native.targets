@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <SiliconStudioXenkoNativeObjFiles>$(SiliconStudioXenkoNativeObjFiles) %(CFiles.Filename).o</SiliconStudioXenkoNativeObjFiles>   
-    <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioXenkoSdkBinDir>
+    <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)..\Bin\$(SiliconStudioBuildDirectory)</SiliconStudioXenkoSdkBinDir>
     <SiliconStudioXenkoNativeAndroidGCC>-nostdlib -lstdc++ -lc -lm</SiliconStudioXenkoNativeAndroidGCC>
     <SiliconStudioXenkoNativeClang>-Wall</SiliconStudioXenkoNativeClang>
   </PropertyGroup>
@@ -132,11 +132,11 @@
 
   <Target Name="CompileNativeClang_Linux" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Build">
     <MakeDir Directories="$(SiliconStudioXenkoSdkBinDir)\x86;$(SiliconStudioXenkoSdkBinDir)\x64;"/>
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-linux-gnu" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so&quot; $(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -fPIC -target x86_64-linux-gnu" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so&quot; &quot;$(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Linux\x86_64\libNativePath.a&quot;" />
 
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i386-linux-gnu" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_i386 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so&quot; $(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_i386 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so&quot; &quot;$(ProjectDir)\obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Linux\x86\libNativePath.a&quot;" />
   </Target>
 
   <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean">

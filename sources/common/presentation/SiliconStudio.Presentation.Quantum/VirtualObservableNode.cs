@@ -30,7 +30,8 @@ namespace SiliconStudio.Presentation.Quantum
             Name = name;
         }
 
-        public override void Dispose()
+        /// <inheritdoc/>
+        public override void Destroy()
         {
             if (associatedContent != null)
             {
@@ -38,7 +39,7 @@ namespace SiliconStudio.Presentation.Quantum
                 associatedContent.Changed -= ContentChanged;
                 associatedContent = null;
             }
-            base.Dispose();
+            base.Destroy();
         }
 
         public override int? Order { get; }
