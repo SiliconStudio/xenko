@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -140,6 +141,7 @@ namespace SiliconStudio.Presentation.Windows
             }
         }
 
+        internal TaskCompletionSource<int> WindowClosed { get; } = new TaskCompletionSource<int>();
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {

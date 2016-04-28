@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Core.Diagnostics;
@@ -74,7 +75,7 @@ namespace SiliconStudio.Presentation.Windows
             modalWindows.Clear();
         }
 
-        public static void ShowTopModal(Window window)
+        public static Task ShowTopModal(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -89,27 +90,10 @@ namespace SiliconStudio.Presentation.Windows
             modalWindows.Add(windowInfo);
             allWindows.Add(windowInfo);
             window.Show();
+            return windowInfo.WindowClosed.Task;
         }
 
-        //public static void ShowStandaloneModal(Action showDialog)
-        //{
-        //    if (showDialog == null) throw new ArgumentNullException(nameof(showDialog));
-        //    CheckDispatcher();
-        //    Dispatcher.PushFrame
-        //    var owner = modalWindows.FirstOrDefault() ?? mainWindow;
-        //    window.Owner = owner?.Window;
-        //    window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
-        //    if (owner != null)
-        //    {
-        //        owner.IsDisabled = true;
-        //    }
-        //    var windowInfo = new WindowInfo(window);
-        //    modalWindows.Add(windowInfo);
-        //    allWindows.Add(windowInfo);
-        //    window.Show();
-        //}
-
-        public static void ShowBackgroundModal(Window window)
+        public static Task ShowBackgroundModal(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -124,6 +108,7 @@ namespace SiliconStudio.Presentation.Windows
             modalWindows.Insert(0, windowInfo);
             allWindows.Add(windowInfo);
             window.Show();
+            return windowInfo.WindowClosed.Task;
         }
 
         public static void ShowMainWindow(Window window)
@@ -242,6 +227,7 @@ namespace SiliconStudio.Presentation.Windows
             }
 
             windowInfo.IsShown = false;
+            windowInfo.WindowClosed.SetResult(0);
             allWindows.Remove(windowInfo);
 
             if (mainWindow != null && mainWindow.Equals(windowInfo))

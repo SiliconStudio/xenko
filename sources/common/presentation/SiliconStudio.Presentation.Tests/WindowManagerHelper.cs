@@ -104,16 +104,17 @@ namespace SiliconStudio.Presentation.Tests
             if (modalWindows != null)
             {
                 Assert.AreEqual(modalWindows.Length, WindowManager.modalWindows.Count);
-                for (int i = modalWindows.Length - 1; i >= 0; --i)
+                for (var i = 0; i < modalWindows.Length; ++i)
                 {
-                    bool expectedIsDisabled = i < modalWindows.Length - 1;
-                    WindowInfo expectedOwner = i > 0 ? WindowManager.modalWindows[i - 1] : WindowManager.mainWindow;
+                    var expectedIsDisabled = i < modalWindows.Length - 1;
+                    var expectedOwner = i > 0 ? WindowManager.modalWindows[i - 1] : WindowManager.mainWindow;
                     Assert.AreEqual(modalWindows[i], WindowManager.modalWindows[i].Window);
                     Assert.AreEqual(modalWindows[i]?.Owner, WindowManager.modalWindows[i].Window?.Owner);
                     Assert.AreEqual(expectedOwner, WindowManager.modalWindows[i].Owner);
                     Assert.AreEqual(true, WindowManager.modalWindows[i].IsModal);
                     Assert.AreEqual(expectedIsDisabled, WindowManager.modalWindows[i].IsDisabled);
                     Assert.AreEqual(true, WindowManager.modalWindows[i].IsShown);
+                    Assert.AreEqual(false, WindowManager.modalWindows[i].WindowClosed.Task.IsCompleted);
                 }
             }
             if (mainWindow != null)
@@ -125,6 +126,7 @@ namespace SiliconStudio.Presentation.Tests
                 Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
                 Assert.AreEqual(WindowManager.modalWindows.Count > 0, WindowManager.mainWindow.IsDisabled);
                 Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                Assert.AreEqual(false, WindowManager.mainWindow.WindowClosed.Task.IsCompleted);
             }
             else
             {
@@ -138,6 +140,7 @@ namespace SiliconStudio.Presentation.Tests
             //Assert.AreEqual(false, window.IsModal);
             Assert.AreEqual(false, window.IsDisabled);
             Assert.AreEqual(false, window.IsShown);
+            Assert.AreEqual(true, window.WindowClosed.Task.IsCompleted);
         }
     }
 }

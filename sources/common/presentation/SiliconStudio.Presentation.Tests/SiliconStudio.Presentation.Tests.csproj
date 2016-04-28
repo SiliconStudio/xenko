@@ -39,6 +39,7 @@
     <Compile Include="TestObservableList.cs" />
     <Compile Include="TestObservableSet.cs" />
     <Compile Include="TestWindowsManager.cs" />
+    <Compile Include="WindowManagerHelper.cs" />
     <Compile Include="WPF\StandardWindow.xaml.cs">
       <DependentUpon>StandardWindow.xaml</DependentUpon>
     </Compile>
