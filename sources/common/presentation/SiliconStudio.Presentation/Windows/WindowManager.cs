@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Windows
         internal static List<WindowInfo> modalWindows = new List<WindowInfo>();
         private static Dispatcher dispatcher;
         private static bool initialized;
-        internal static List<WindowInfo> allWindows = new List<WindowInfo>();
+        private static List<WindowInfo> allWindows = new List<WindowInfo>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowManager"/> class.
@@ -81,13 +81,31 @@ namespace SiliconStudio.Presentation.Windows
             var owner = modalWindows.FirstOrDefault() ?? mainWindow;
             window.Owner = owner?.Window;
             window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
-            window.ShowDialog();
+            if (owner != null)
+            {
+                owner.IsDisabled = true;
+            }
+            var windowInfo = new WindowInfo(window);
+            modalWindows.Add(windowInfo);
+            allWindows.Add(windowInfo);
+            window.Show();
         }
 
         public static void ShowBackgroundModal(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
+            var owner = mainWindow;
+            window.Owner = owner?.Window;
+            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            if (owner != null)
+            {
+                owner.IsDisabled = true;
+            }
+            var windowInfo = new WindowInfo(window);
+            modalWindows.Insert(0, windowInfo);
+            allWindows.Add(windowInfo);
+            window.Show();
         }
 
         public static void ShowMainWindow(Window window)
@@ -106,7 +124,6 @@ namespace SiliconStudio.Presentation.Windows
             mainWindow = new WindowInfo(window);
             allWindows.Add(mainWindow);
 
-            //window.Closed += WindowClosed;
             window.Show();
         }
 
@@ -171,12 +188,23 @@ namespace SiliconStudio.Presentation.Windows
                             lastModal.IsDisabled = true;
                         }
                         modalWindows.Add(windowInfo);
-                        logger.Info("Standalone modal window shown.");
+                        logger.Info("Modal window shown. (standalone)");
                     }
                     else
                     {
-                        // TODO
-                        //logger.Info("Standalone modal window shown.");
+                        var index = modalWindows.IndexOf(windowInfo);
+                        var childModal = index < modalWindows.Count - 1 ? modalWindows[index + 1] : null;
+                        var parentModal = index > 0 ? modalWindows[index - 1] : mainWindow;
+                        if (childModal != null)
+                        {
+                            childModal.Owner = windowInfo;
+                            windowInfo.IsDisabled = true;
+                        }
+                        if (parentModal != null)
+                        {
+                            parentModal.IsDisabled = true;
+                        }
+                        logger.Info("Modal window shown. (with WindowManager)");
                     }
                     ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(mainWindow));
                 }
@@ -214,6 +242,8 @@ namespace SiliconStudio.Presentation.Windows
                     if (childModal != null)
                     {
                         childModal.Owner = parentModal;
+                        if (parentModal != null)
+                            parentModal.IsDisabled = true;
                     }
                     else if (parentModal != null)
                     {
@@ -233,14 +263,17 @@ namespace SiliconStudio.Presentation.Windows
 
         }
 
-        private static WindowInfo Find(Window window)
+        internal static WindowInfo Find(IntPtr hwnd)
         {
-            return allWindows.FirstOrDefault(x => x.Equals(window));
-        }
+            if (hwnd == IntPtr.Zero)
+                return null;
 
-        private static WindowInfo Find(IntPtr hwnd)
-        {
-            return allWindows.FirstOrDefault(x => x.Equals(hwnd));
+            var result = allWindows.FirstOrDefault(x => x.Equals(hwnd));
+            if (result != null)
+                return result;
+
+            var window = WindowInfo.FromHwnd(hwnd);
+            return window != null ? allWindows.FirstOrDefault(x => x.Equals(window)) : null;
         }
     }
 }

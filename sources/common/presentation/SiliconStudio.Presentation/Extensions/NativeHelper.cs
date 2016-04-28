@@ -83,14 +83,14 @@ namespace SiliconStudio.Presentation.Extensions
             return SetWindowLongPtr64(hwnd, index, wndProcPtr);
         }
 
-        [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
-        public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
-
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
+
+        [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);

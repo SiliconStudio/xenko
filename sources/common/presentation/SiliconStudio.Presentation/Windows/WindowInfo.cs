@@ -18,6 +18,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <param name="window">The window represented by this object.</param>
         internal WindowInfo(Window window)
         {
+            if (window == null) throw new ArgumentNullException(nameof(window));
             Window = window;
         }
 
@@ -27,6 +28,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <param name="hwnd">The hwnd of the window represented by this object.</param>
         internal WindowInfo(IntPtr hwnd)
         {
+            if (hwnd == IntPtr.Zero) throw new ArgumentException(@"The hwnd cannot be null", nameof(hwnd));
             var window = FromHwnd(hwnd);
             Window = window;
             if (window == null)
@@ -87,13 +89,31 @@ namespace SiliconStudio.Presentation.Windows
         {
             get
             {
+                if (!IsShown)
+                    return null;
+
+                if (Window != null)
+                    return WindowManager.Find(ToHwnd(Window.Owner));
+
                 var owner = HwndHelper.GetOwner(Hwnd);
-                return owner != IntPtr.Zero ? new WindowInfo(owner) : null;
+                return owner != IntPtr.Zero ? (WindowManager.Find(owner) ?? new WindowInfo(owner)) : null;
             }
             internal set
             {
-                var ownerHwnd = value?.Hwnd ?? IntPtr.Zero;
-                HwndHelper.SetOwner(Hwnd, ownerHwnd);
+                if (Window == null)
+                    throw new NotSupportedException("Cannot change the owner of this window because it is not a WPF window.");
+
+                if (value != null && value.Window == null)
+                    throw new NotSupportedException("Cannot change the owner of this window because the new owner is not a WPF window.");
+
+                if (ReferenceEquals(value?.Window, Window))
+                    throw new NotSupportedException("Cannot set a window to be its own owner.");
+
+                Window.Owner = value?.Window;
+
+                // This code does not work unfortunately.
+                //var ownerHwnd = value?.Hwnd ?? IntPtr.Zero;
+                //HwndHelper.SetOwner(Hwnd, ownerHwnd);
             }
         }
 
@@ -148,12 +168,12 @@ namespace SiliconStudio.Presentation.Windows
 
         private static IntPtr ToHwnd(Window window)
         {
-            return new WindowInteropHelper(window).Handle;
+            return window != null ? new WindowInteropHelper(window).Handle : IntPtr.Zero;
         }
 
-        private static Window FromHwnd(IntPtr hwnd)
+        internal static Window FromHwnd(IntPtr hwnd)
         {
-            return HwndSource.FromHwnd(hwnd)?.RootVisual as Window;
+            return hwnd != IntPtr.Zero ? HwndSource.FromHwnd(hwnd)?.RootVisual as Window : null;
         }
     }
 }

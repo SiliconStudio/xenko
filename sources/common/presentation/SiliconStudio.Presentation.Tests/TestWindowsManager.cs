@@ -191,7 +191,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.BeginInvoke(new Func<bool?>(() => modalWindow.ShowDialog()));
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
@@ -266,7 +266,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.BeginInvoke(new Func<bool?>(() => modalWindow.ShowDialog()));
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
@@ -328,13 +328,13 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.BeginInvoke(new Func<bool?>(() => modalWindow1.ShowDialog()));
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
 
                 // Open a second modal window
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.BeginInvoke(new Func<bool?>(() => modalWindow2.ShowDialog()));
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow2));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -422,5 +422,208 @@ namespace SiliconStudio.Presentation.Tests
             dispatcher.InvokeShutdown();
         }
 
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenTwoModalBoxesReverseClose()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
+
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+
+                // Open a first modal window
+                var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
+                await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
+
+                // Open a second modal window
+                var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow2));
+                await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
+
+                // Close the first modal window
+                var modalWindow1Info = WindowManager.modalWindows[0];
+                var modalWindow1Closed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindow1.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
+                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
+                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
+                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[0].Window);
+                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
+                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
+                    Assert.AreEqual(modalWindow1, modalWindow1Info.Window);
+                    Assert.AreEqual(null, modalWindow1Info.Owner);
+                    Assert.AreEqual(false, modalWindow1Info.IsModal);
+                    Assert.AreEqual(false, modalWindow1Info.IsDisabled);
+                    Assert.AreEqual(false, modalWindow1Info.IsShown);
+                });
+
+                // Close the second modal window
+                var modalWindow2Info = WindowManager.modalWindows[0];
+                var modalWindow2Closed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindow2.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
+                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
+                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
+                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
+                    Assert.AreEqual(modalWindow2, modalWindow2Info.Window);
+                    Assert.AreEqual(null, modalWindow2Info.Owner);
+                    Assert.AreEqual(false, modalWindow2Info.IsModal);
+                    Assert.AreEqual(false, modalWindow2Info.IsDisabled);
+                    Assert.AreEqual(false, modalWindow2Info.IsShown);
+                });
+
+                // Close the main window
+                var mainWindow = WindowManager.mainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(null, WindowManager.mainWindow);
+                    Assert.AreEqual(null, mainWindow.Owner);
+                    Assert.AreEqual(false, mainWindow.IsModal);
+                    Assert.AreEqual(false, mainWindow.IsDisabled);
+                    Assert.AreEqual(false, mainWindow.IsShown);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenModalBoxThenBackgroundModal()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
+
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+
+                // Open a first modal window
+                var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
+                await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
+
+                // Open a second modal window in background
+                var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowBackgroundModal(modalWindow2));
+                await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
+                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
+                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                    Assert.AreEqual(2, WindowManager.modalWindows.Count);
+                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[0].Window);
+                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsDisabled);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
+                    Assert.AreEqual(modalWindow1, WindowManager.modalWindows[1].Window);
+                    Assert.AreEqual(WindowManager.modalWindows[0], WindowManager.modalWindows[1].Owner);
+                    Assert.AreEqual(true, WindowManager.modalWindows[1].IsModal);
+                    Assert.AreEqual(false, WindowManager.modalWindows[1].IsDisabled);
+                    Assert.AreEqual(true, WindowManager.modalWindows[1].IsShown);
+                });
+
+                // Close the first modal window
+                var modalWindow1Info = WindowManager.modalWindows[1];
+                var modalWindow1Closed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindow1.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
+                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
+                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsDisabled);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                    Assert.AreEqual(1, WindowManager.modalWindows.Count);
+                    Assert.AreEqual(modalWindow2, WindowManager.modalWindows[0].Window);
+                    Assert.AreEqual(WindowManager.mainWindow, WindowManager.modalWindows[0].Owner);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsModal);
+                    Assert.AreEqual(false, WindowManager.modalWindows[0].IsDisabled);
+                    Assert.AreEqual(true, WindowManager.modalWindows[0].IsShown);
+                    Assert.AreEqual(modalWindow1, modalWindow1Info.Window);
+                    Assert.AreEqual(null, modalWindow1Info.Owner);
+                    Assert.AreEqual(false, modalWindow1Info.IsModal);
+                    Assert.AreEqual(false, modalWindow1Info.IsDisabled);
+                    Assert.AreEqual(false, modalWindow1Info.IsShown);
+                });
+
+                // Close the second modal window
+                var modalWindow2Info = WindowManager.modalWindows[0];
+                var modalWindow2Closed = WindowManagerHelper.NextModalWindowClosed();
+                dispatcher.Invoke(() => modalWindow2.Close());
+                await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(window, WindowManager.mainWindow.Window);
+                    Assert.AreEqual(window.ToHwnd(dispatcher), WindowManager.mainWindow.Hwnd);
+                    Assert.AreEqual(null, WindowManager.mainWindow.Owner);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
+                    Assert.AreEqual(false, WindowManager.mainWindow.IsDisabled);
+                    Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
+                    Assert.AreEqual(0, WindowManager.modalWindows.Count);
+                    Assert.AreEqual(modalWindow2, modalWindow2Info.Window);
+                    Assert.AreEqual(null, modalWindow2Info.Owner);
+                    Assert.AreEqual(false, modalWindow2Info.IsModal);
+                    Assert.AreEqual(false, modalWindow2Info.IsDisabled);
+                    Assert.AreEqual(false, modalWindow2Info.IsShown);
+                });
+
+                // Close the main window
+                var mainWindow = WindowManager.mainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged();
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    Assert.AreEqual(null, WindowManager.mainWindow);
+                    Assert.AreEqual(null, mainWindow.Owner);
+                    Assert.AreEqual(false, mainWindow.IsModal);
+                    Assert.AreEqual(false, mainWindow.IsDisabled);
+                    Assert.AreEqual(false, mainWindow.IsShown);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
     }
 }
