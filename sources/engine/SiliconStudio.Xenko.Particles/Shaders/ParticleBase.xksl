@@ -16,9 +16,6 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     stage stream float4 Position : POSITION;
 
-    stage stream float ZDepth : Z_DEPTH_VALUE;
-
-
     // -------------------------------------
     // conditional streams - may or may not be present depending on existing particle fields
     // -------------------------------------
@@ -61,18 +58,6 @@ class ParticleBase : ShaderBase, Texturing
         float4 viewPos = mul(worldPos, ViewMatrix);
 
         streams.ShadingPosition = mul(viewPos, ProjectionMatrix);
-
-        // Z Offset
-        // TODO Maybe move this to the Pixel shader when soft edge is done
-        viewPos.w = 1;
-        viewPos.z += ZOffset;
-
-        streams.ZDepth = viewPos.z;
-
-        float4 viewProjPos = mul(viewPos, ProjectionMatrix);
-
-        streams.ShadingPosition.z = (viewProjPos.z / viewProjPos.w) * streams.ShadingPosition.w;
-
     }
 
     // Shading of the sprite
@@ -80,26 +65,47 @@ class ParticleBase : ShaderBase, Texturing
     {
         float4 colorTarget = Shading();
 
-        // TODO Get correct screen coordinates
+        // SoftEdge START
+
+        // TODO These parameters will be set by the material
+        float screenWidth = 1280;
+        float screenHeight = 720;
+        float zNear = 0.1;
+        float zFar = 1000;
+        float softEdgeDistance = 0.5; // 50 cm
+        float inverseSoftEdgeDistance = 1 / softEdgeDistance;
+
         var screenCoords = streams.ShadingPosition.xy;
-        screenCoords.x /= 1280;
-        screenCoords.y /= 720;
+        screenCoords.x /= screenWidth;
+        screenCoords.y /= screenHeight;
 
         // Read depth
         float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
-
         float ownDepth = streams.ShadingPosition.z;
-        if (ownDepth >= opaqueDepth)
+
+        //// TODO Change to If(...) with shader permutation
+        //if (ownDepth >= opaqueDepth)
+        //{
+        //    discard;
+        //}
+
+        // Get the linear opaque depth
+        float linearZOwn = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * ownDepth - 1));
+        float linearZ = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * opaqueDepth - 1));
+
+        // TODO Maybe set upper and lower bounds for more interesting effects
+
+        //  Get the positive difference
+        var depthDistance = linearZ - linearZOwn + ZOffset;
+        if (depthDistance <= 0)
         {
             discard;
         }
 
-        //  Get the positive difference
-        var depthDistance = opaqueDepth - ownDepth;
-
-        // TODO Make it linear depth
-        var softEdge = saturate(depthDistance * 500);
+        var softEdge = saturate(depthDistance * inverseSoftEdgeDistance);
         colorTarget.rgba *= softEdge;
+
+        // SoftEdge END
 
         colorTarget.a *= AlphaAdditive;
 
