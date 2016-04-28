@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ParticleBaseKeys
     {
+        public static readonly ObjectParameterKey<Texture> TextureDepth = ParameterKeys.NewObject<Texture>();
         public static readonly ValueParameterKey<Matrix> ViewMatrix = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> ProjectionMatrix = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> ViewProjectionMatrix = ParameterKeys.NewValue<Matrix>();

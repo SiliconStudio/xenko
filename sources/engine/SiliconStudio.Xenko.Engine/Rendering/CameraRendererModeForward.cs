@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
                 MainRenderStage = RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (TransparentRenderStage == null)
                 TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-
+           
             // Setup stage RenderOutputDescription (since we have the render frame bound)
             var output = Context.Tags.Get(RenderFrame.Current);
             MainRenderStage.Output = output.GetRenderOutputDescription();
@@ -114,6 +114,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Draw [main view | main stage]
             RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+
+            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+            currentRenderFrame.Activate(context, false);
 
             // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);

@@ -63,6 +63,25 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             base.Extract();
         }
 
+        protected Texture DepthStencilRO { get; private set; } = null;
+
+        private Texture depthStencilOld = null;
+
+        protected void PrepareDepthStencilRO(RenderDrawContext context)
+        {
+            // Get the depthstencil buffer as a readonly texture
+            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+            if (DepthStencilRO == null || depthStencilOld != currentRenderFrame.DepthStencil)
+            {
+                // Release
+                DepthStencilRO?.Dispose();
+
+                // Assign
+                depthStencilOld = currentRenderFrame.DepthStencil;
+                DepthStencilRO = currentRenderFrame.DepthStencil.ToDepthStencilReadOnlyTexture();
+            }
+        }
+
         /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
@@ -110,6 +129,12 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                     // TODO: Iterate PermuatationParameters automatically?
                     material.ValidateEffect(RenderSystem.RenderContextOld, ref renderEffect.EffectValidator);
+
+
+                    //// TODO Validate Depth texture here
+                    //PrepareDepthStencilRO(context);
+                    //renderEffect.EffectValidator.ValidateParameter(ParticleBaseKeys.TextureDepth, DepthStencilRO);
+
                 }
             }
         }
@@ -147,6 +172,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // TODO: ParticleMaterial should set this up
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
+
+                PrepareDepthStencilRO(context);
+                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, depthStencilOld);
             }
 
             base.Prepare(context);
@@ -295,6 +323,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 commandList.SetPipelineState(renderEffect.PipelineState);
                 commandList.SetDescriptorSets(0, descriptorSets);
+
+                if (renderEffect.Effect.HasParameter(ParticleBaseKeys.TextureDepth))
+                {
+                    
+                }
 
                 commandList.DrawIndexed(vertexBuilder.LivingQuads * vertexBuilder.IndicesPerQuad, vertexBuilder.ResourceContext.IndexBufferPosition);
             }

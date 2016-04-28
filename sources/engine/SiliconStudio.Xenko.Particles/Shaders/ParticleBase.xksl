@@ -4,11 +4,20 @@
 class ParticleBase : ShaderBase, Texturing
 {
     // -------------------------------------
+    // Resources
+    // -------------------------------------
+    rgroup PerMaterial
+    {
+        stage Texture2D TextureDepth;
+    }
+
+    // -------------------------------------
     // streams
     // -------------------------------------
     stage stream float4 Position : POSITION;
 
     stage stream float ZDepth : Z_DEPTH_VALUE;
+
 
     // -------------------------------------
     // conditional streams - may or may not be present depending on existing particle fields
@@ -71,17 +80,35 @@ class ParticleBase : ShaderBase, Texturing
     {
         float4 colorTarget = Shading();
 
+        // TODO Get correct screen coordinates
+        var screenCoords = streams.ShadingPosition.xy;
+        screenCoords.x /= 1280;
+        screenCoords.y /= 720;
+
+        // Read depth
+        float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
+
+        float ownDepth = streams.ShadingPosition.z;
+        if (ownDepth >= opaqueDepth)
+        {
+            discard;
+        }
+
+        //  Get the positive difference
+        var depthDistance = opaqueDepth - ownDepth;
+
+        // TODO Make it linear depth
+        var softEdge = saturate(depthDistance * 500);
+        colorTarget.rgba *= softEdge;
+
         colorTarget.a *= AlphaAdditive;
 
         streams.ColorTarget = colorTarget;
     }
-
-    //compose ParticleColor particleColor;
-
+    
     stage float4 Shading()
     {
         return ColorScale;
-        //return ColorScale * particleColor.Compute();
     }
 
     // -------------------------------------
