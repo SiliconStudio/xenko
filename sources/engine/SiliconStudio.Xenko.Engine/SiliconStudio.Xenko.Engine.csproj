@@ -473,7 +473,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\VirtualResolutionMode.cs" />
+    <Compile Include="Rendering\ResolutionStretch.cs" />
     <Compile Include="Rendering\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2441,6 +2441,7 @@
     </Compile>
     <Compile Include="Rendering\Shaders\TransformationKeys.cs" />
     <Compile Include="Engine\SyncScript.cs" />
+    <Compile Include="Starter\iOSXenkoView.cs" />
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
     <Compile Include="Updater\BlittableHelper.cs" />
     <Compile Include="Updater\CompiledUpdate.cs" />

@@ -18,7 +18,11 @@ namespace SiliconStudio.Xenko.Native
 
         static NativeInvoke()
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(Library + ".dll");
+#else
+            NativeLibrary.PreloadLibrary(Library + ".so");
+#endif
         }
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR

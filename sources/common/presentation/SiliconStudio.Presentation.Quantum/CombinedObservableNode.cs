@@ -44,7 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             foreach (var node in this.combinedNodes)
             {
-                if (node.IsDisposed)
+                if (node.IsDestroyed)
                     throw new InvalidOperationException("One of the combined node is already disposed.");
 
                 if (node.IsReadOnly)
@@ -80,7 +80,7 @@ namespace SiliconStudio.Presentation.Quantum
             var commandGroups = new Dictionary<string, List<ModelNodeCommandWrapper>>();
             foreach (var node in combinedNodes)
             {
-                if (node.IsDisposed)
+                if (node.IsDestroyed)
                     throw new InvalidOperationException("One of the combined node is already disposed.");
 
                 foreach (var command in node.Commands)
@@ -164,13 +164,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed bool HasDictionary => CombinedNodes.First().HasDictionary;
 
-        public override void Dispose()
+        /// <inheritdoc/>
+        public override void Destroy()
         {
-            foreach (var node in CombinedNodes.Where(x => !x.IsDisposed))
+            foreach (var node in CombinedNodes.Where(x => !x.IsDestroyed))
             {
-                node.Dispose();
+                node.Destroy();
             }
-            base.Dispose();
+            base.Destroy();
         }
 
         public void Refresh()
@@ -187,8 +188,8 @@ namespace SiliconStudio.Presentation.Quantum
                 {
                     ClearCommands();
 
-                    // Dispose all children and remove them
-                    Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
+                    // Destroy all children and remove them
+                    Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
                     foreach (var child in Children.Cast<ObservableNode>().ToList())
                     {
                         RemoveChild(child);

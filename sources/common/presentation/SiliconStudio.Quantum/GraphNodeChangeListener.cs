@@ -154,7 +154,7 @@ namespace SiliconStudio.Quantum
                         {
                             var index = e.Index;
                             IGraphNode addedNode;
-                            if (index != null)
+                            if (!index.IsEmpty)
                             {
                                 addedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
                             }

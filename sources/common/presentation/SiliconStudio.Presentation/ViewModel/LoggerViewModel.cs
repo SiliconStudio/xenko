@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
-using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.ViewModel
     /// A view model that monitors messages from one or several loggers and update an observable collection of <see cref="ILogMessage"/> using the dispatcher.
     /// The updates are grouped together after a customizable delay to prevent blocking the UI thread.
     /// </summary>
-    public class LoggerViewModel : DispatcherViewModel, IDisposable
+    public class LoggerViewModel : DispatcherViewModel
     {
         /// <summary>
         /// The default delay to wait before updating the <see cref="Messages"/> collection, after a message has been received.
@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerViewModel"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         public LoggerViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerViewModel"/> class with a single logger.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="logger">The <see cref="Logger"/> to monitor.</param>
         public LoggerViewModel(IViewModelServiceProvider serviceProvider, Logger logger)
             : this(serviceProvider)
@@ -64,7 +64,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerViewModel"/> class with multiple loggers.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="loggers">The collection of <see cref="Logger"/> to monitor.</param>
         public LoggerViewModel(IViewModelServiceProvider serviceProvider, IEnumerable<Logger> loggers)
             : this(serviceProvider)
@@ -79,9 +79,10 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose()
+        public override void Destroy()
         {
             ClearLoggers();
+            base.Destroy();
         }
 
         /// <summary>
