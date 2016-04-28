@@ -104,33 +104,6 @@ namespace SiliconStudio.Xenko.Rendering
             //TODO camera can be null but we still push it as null... review me please.
             //TODO this is needed or if we have no camera we don't render anything e.g. UI only
 
-            //re-compute the viewport if we require custom aspect ratio
-            if (camera != null && camera.UseCustomAspectRatio && camera.AddLetterboxPillarbox)
-            {
-                var output = GetOutput(context);
-                var currentAr =  output.Width / (float)output.Height;
-                var requiredAr = camera.AspectRatio;
-
-                var arDiff = currentAr - requiredAr;
-                if (Math.Abs(arDiff) > 0.01f)
-                {
-                    // Pillarbox 
-                    if (arDiff > 0.0f)
-                    {
-                        var newWidth = (float)Math.Max(1.0f, Math.Round(output.Height * requiredAr));
-                        var adjX = (float)Math.Round(0.5f * (output.Width - newWidth));
-                        ComputedViewport = new Viewport((int)adjX, 0, (int)newWidth, output.Height);
-                    }
-                    // Letterbox
-                    else
-                    {
-                        var newHeight = (float)Math.Max(1.0f, Math.Round(output.Width / requiredAr));
-                        var adjY = (float)Math.Round(0.5f * (output.Height - newHeight));
-                        ComputedViewport = new Viewport(0, (int)adjY, output.Width, (int)newHeight);
-                    }
-                }
-            }
-
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
             using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))

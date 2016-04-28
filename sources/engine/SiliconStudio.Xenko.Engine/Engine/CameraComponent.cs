@@ -121,16 +121,6 @@ namespace SiliconStudio.Xenko.Engine
         public bool UseCustomAspectRatio { get; set; }
 
         /// <summary>
-        /// Gets or sets a value wether to edit the Viewport to add letterboxes or pillarboxes
-        /// </summary>
-        /// <value>The use custom aspect ratio.</value>
-        /// <userdoc>If checked and Custom Aspect Ratio is checked as well, the viewport will be modified to fit, and letterboxes/pillarboxes might be added.</userdoc>
-        [DataMember(36)]
-        [DefaultValue(false)]
-        [Display("Add Letterbox/Pillarbox")]
-        public bool AddLetterboxPillarbox { get; set; }
-
-        /// <summary>
         /// Gets or sets the aspect ratio.
         /// </summary>
         /// <value>
@@ -225,7 +215,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 // Calculates the aspect ratio
                 var aspectRatio = AspectRatio;
-                if (screenAspectRatio.HasValue && ((UseCustomAspectRatio && AddLetterboxPillarbox) || !UseCustomAspectRatio))
+                if (screenAspectRatio.HasValue && !UseCustomAspectRatio)
                 {
                     aspectRatio = screenAspectRatio.Value;
                 }

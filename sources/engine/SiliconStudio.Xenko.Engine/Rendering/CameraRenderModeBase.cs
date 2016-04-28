@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
             var aspectRatio = currentViewport.AspectRatio;
 
             // Update the aspect ratio
-            if (camera.UseCustomAspectRatio && !camera.AddLetterboxPillarbox)
+            if (camera.UseCustomAspectRatio)
             {
                 aspectRatio = camera.AspectRatio;
             }
