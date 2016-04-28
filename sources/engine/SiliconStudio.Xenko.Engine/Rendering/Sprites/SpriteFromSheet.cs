@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Gets or sets the <see cref="Sheet"/> of the provider.
         /// </summary>
         /// <userdoc>The sheet that provides the sprites</userdoc>
+        [DataMember]
         [InlineProperty]
         public SpriteSheet Sheet { get; set; }
 
@@ -28,6 +29,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Gets or sets the current frame of the animation.
         /// </summary>
         /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
+        [DataMember]
+        [DataMemberRange(0, int.MaxValue)]
         [DefaultValue(0)]
         [Display("Default Frame")]
         public int CurrentFrame { get; set; }
