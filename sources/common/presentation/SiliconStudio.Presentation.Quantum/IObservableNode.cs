@@ -3,12 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using SiliconStudio.Core;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDisposable
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDestroyable
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.
