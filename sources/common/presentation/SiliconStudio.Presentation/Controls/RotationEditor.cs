@@ -55,7 +55,7 @@ namespace SiliconStudio.Presentation.Controls
                 return;
 
             var rotationMatrix = Matrix.RotationQuaternion(value);
-            rotationMatrix.DecomposeXYZ(out decomposedRotation);
+            rotationMatrix.Decompose(out decomposedRotation.Y, out decomposedRotation.X, out decomposedRotation.Z);
             SetCurrentValue(XProperty, MathUtil.RadiansToDegrees(decomposedRotation.X));
             SetCurrentValue(YProperty, MathUtil.RadiansToDegrees(decomposedRotation.Y));
             SetCurrentValue(ZProperty, MathUtil.RadiansToDegrees(decomposedRotation.Z));

@@ -147,8 +147,7 @@ namespace SiliconStudio.Core.Diagnostics
                     return;
             }
 
-            var handler = GlobalMessageLogged;
-            if (handler != null) handler(logMessage);
+            GlobalMessageLogged?.Invoke(logMessage);
         }
     }
 }

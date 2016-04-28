@@ -111,11 +111,7 @@ namespace SiliconStudio.Core.Diagnostics
             if (EnableTypes[(int)logMessage.Type])
             {
                 LogRaw(logMessage);
-                var handler = MessageLogged;
-                if (handler != null)
-                {
-                    handler(this, new MessageLoggedEventArgs(logMessage));
-                }
+                MessageLogged?.Invoke(this, new MessageLoggedEventArgs(logMessage));
             }
         }
 
