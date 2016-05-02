@@ -8,6 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -96,22 +97,20 @@ namespace SiliconStudio.Xenko.Rendering
                 var requiredAr = FixedAspectRatio;
 
                 var arDiff = currentAr - requiredAr;
-                if (Math.Abs(arDiff) > 0.01f)
+
+                // Pillarbox 
+                if (arDiff > 0.0f)
                 {
-                    // Pillarbox 
-                    if (arDiff > 0.0f)
-                    {
-                        var newWidth = (float)Math.Max(1.0f, Math.Round(output.Height * requiredAr));
-                        var adjX = (float)Math.Round(0.5f * (output.Width - newWidth));
-                        ComputedViewport = new Viewport((int)adjX, 0, (int)newWidth, output.Height);
-                    }
-                    // Letterbox
-                    else
-                    {
-                        var newHeight = (float)Math.Max(1.0f, Math.Round(output.Width / requiredAr));
-                        var adjY = (float)Math.Round(0.5f * (output.Height - newHeight));
-                        ComputedViewport = new Viewport(0, (int)adjY, output.Width, (int)newHeight);
-                    }
+                    var newWidth = (float)Math.Max(1.0f, Math.Round(output.Height * requiredAr));
+                    var adjX = (float)Math.Round(0.5f * (output.Width - newWidth));
+                    ComputedViewport = new Viewport((int)adjX, 0, (int)newWidth, output.Height);
+                }
+                // Letterbox
+                else
+                {
+                    var newHeight = (float)Math.Max(1.0f, Math.Round(output.Width / requiredAr));
+                    var adjY = (float)Math.Round(0.5f * (output.Height - newHeight));
+                    ComputedViewport = new Viewport(0, (int)adjY, output.Width, (int)newHeight);
                 }
             }
         }
