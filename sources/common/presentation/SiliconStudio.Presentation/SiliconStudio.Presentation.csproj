@@ -42,6 +42,11 @@
     <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
+    <Compile Include="Resources\KeyGestures.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KeyGestures.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\DummyTransaction.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
     <Compile Include="Services\UndoRedoService.cs" />
@@ -358,6 +363,10 @@
     <Resource Include="Resources\Images\gear--pencil.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\KeyGestures.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>KeyGestures.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
