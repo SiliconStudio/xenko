@@ -480,8 +480,7 @@ namespace SiliconStudio.Xenko.Input
 
         private void HandleSizeChangedEvent(Size size)
         {
-            ControlHeight = (float)size.Height;
-            ControlWidth = (float)size.Width;
+            ControlRectangle = new RectangleF(0, 0, (float)size.Width, (float)size.Height);
         }
 
         private void HandleKeyFrameworkElement(KeyRoutedEventArgs args, InputEventType inputEventType)

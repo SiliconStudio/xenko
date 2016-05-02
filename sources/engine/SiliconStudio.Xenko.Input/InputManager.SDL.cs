@@ -107,8 +107,7 @@ namespace SiliconStudio.Xenko.Input
             };
             uiControl.ResizeEndActions += UiWindowOnSizeChanged;
 
-            ControlWidth = uiControl.ClientSize.Width;
-            ControlHeight = uiControl.ClientSize.Height;
+            ControlRectangle = new RectangleF(0, 0, uiControl.ClientSize.Width, uiControl.ClientSize.Height);
         }
 
         private void OnKeyEvent(SDL.SDL_KeyboardEvent e, bool isKeyUp)
@@ -126,8 +125,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void UiWindowOnSizeChanged(SDL.SDL_WindowEvent eventArgs)
         {
-            ControlWidth = uiControl.ClientSize.Width;
-            ControlHeight = uiControl.ClientSize.Height;
+            //not really correct as viewport should be the authority
+            ControlRectangle = new RectangleF(0, 0, uiControl.ClientSize.Width, uiControl.ClientSize.Height);
         }
 
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)

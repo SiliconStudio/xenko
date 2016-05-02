@@ -8,7 +8,9 @@ using System.Windows;
 using System.Windows.Forms;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
+using Point = System.Windows.Point;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 using WinFormsKeys = System.Windows.Forms.Keys;
@@ -90,8 +92,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(uiControl)), MouseButton.Middle, InputEventType.Wheel, e.Delta);
             uiControl.SizeChanged += OnWpfSizeChanged;
 
-            ControlWidth = (float)uiControl.ActualWidth;
-            ControlHeight = (float)uiControl.ActualHeight;
+            ControlRectangle = new RectangleF(0, 0, (float)uiControl.ActualWidth, (float)uiControl.ActualHeight);
         }
 
         private static int ClientWidth(Window ctrl)
@@ -126,8 +127,7 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnWpfSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ControlWidth = (float)e.NewSize.Width;
-            ControlHeight = (float)e.NewSize.Height;
+            ControlRectangle = new RectangleF(0, 0, (float)e.NewSize.Width, (float)e.NewSize.Height);
         }
 
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)

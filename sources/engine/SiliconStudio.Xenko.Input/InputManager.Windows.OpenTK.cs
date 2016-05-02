@@ -7,6 +7,7 @@ using System;
 using OpenTK.Input;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Core.Mathematics;
 using GameWindow = OpenTK.GameWindow;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
@@ -59,14 +60,15 @@ namespace SiliconStudio.Xenko.Input
 
         private void GameWindowOnResize(object sender, EventArgs eventArgs)
         {
-            ControlHeight = gameWindow.Height;
-            ControlWidth = gameWindow.Width;
+            ControlRectangle = new RectangleF(0, 0, gameWindow.Width, gameWindow.Height);
         }
 
         void Mouse_Move(object sender, MouseMoveEventArgs e)
         {
             var previousMousePosition = CurrentMousePosition;
-            CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
+
+            var pixelPosition = new Vector2(e.X, e.Y);
+            CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
 
             CurrentMouseDelta += CurrentMousePosition - previousMousePosition;
 
@@ -88,7 +90,9 @@ namespace SiliconStudio.Xenko.Input
             if (!MouseButtonCurrentlyDown[buttonId])
                 return;
             
-            CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
+            var pixelPosition = new Vector2(e.X, e.Y);
+            CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
+
             var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = button };
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);
@@ -102,7 +106,9 @@ namespace SiliconStudio.Xenko.Input
             var button = ConvertMouseButtonFromOpenTK(e.Button);
             var buttonId = (int)button;
 
-            CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
+            var pixelPosition = new Vector2(e.X, e.Y);
+            CurrentMousePosition = NormalizeScreenPosition(pixelPosition);            
+
             var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Down, MouseButton = button };
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);

@@ -217,8 +217,7 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnResize(object sender, EventArgs eventArgs)
         {
-            ControlHeight = (float)uiControl.GameView.Frame.Height;
-            ControlWidth = (float)uiControl.GameView.Frame.Width;
+            ControlRectangle = new RectangleF(0, 0, (float)uiControl.GameView.Frame.Width, (float)uiControl.GameView.Frame.Height);
         }
 
         private void HandleTouches(NSSet touchesSet)
