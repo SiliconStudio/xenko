@@ -67,22 +67,26 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             base.Extract();
         }
 
-        protected Texture DepthStencilRO { get; private set; } = null;
+        protected Texture DepthStencilAsShaderResource { get; private set; } = null;
 
         private Texture depthStencilOld = null;
+        // TODO Investigate: Resizing doesn't work properly the first time!!!
+        private bool depthCacheWorkaround = true;
 
-        protected void PrepareDepthStencilRO(RenderDrawContext context)
+        protected void PrepareDepthStencilSR(RenderDrawContext context)
         {
             // Get the depthstencil buffer as a readonly texture
             var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-            if (DepthStencilRO == null || depthStencilOld != currentRenderFrame.DepthStencil)
+            if (depthCacheWorkaround || DepthStencilAsShaderResource == null || depthStencilOld == null || depthStencilOld != currentRenderFrame.DepthStencil)
             {
                 // Release
-                DepthStencilRO?.Dispose();
+                DepthStencilAsShaderResource?.Dispose();
 
                 // Assign
                 depthStencilOld = currentRenderFrame.DepthStencil;
-                DepthStencilRO = currentRenderFrame.DepthStencil.ToDepthStencilReadOnlyTexture();
+
+                // TODO Investigate: Resizing doesn't work properly the first time!!!
+                DepthStencilAsShaderResource = currentRenderFrame.DepthStencil.ToDepthStencilReadOnlyTexture();
             }
         }
 
@@ -177,8 +181,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 // TODO: ParticleMaterial should set this up
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
 
-                PrepareDepthStencilRO(context);
-                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, DepthStencilRO);
+                PrepareDepthStencilSR(context);
+                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, DepthStencilAsShaderResource);
             }
 
             base.Prepare(context);
