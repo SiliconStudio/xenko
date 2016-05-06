@@ -7,10 +7,5 @@ namespace SiliconStudio.Xenko.Rendering
         using params ParticleBaseKeys;
 
         mixin ParticleBase;
-
-        //if (ParticleBaseKeys.ParticleColor != null)
-        //{
-        //    mixin compose particleColor = ParticleBaseKeys.ParticleColor;
-        //}
    };
 }

@@ -22,8 +22,10 @@ namespace SiliconStudio.Xenko.Rendering
         public static readonly ValueParameterKey<Matrix> ViewMatrix = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> ProjectionMatrix = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> ViewProjectionMatrix = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Vector4> ViewFrustum = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<Vector4> ColorScale = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<float> AlphaAdditive = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> ZOffset = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> SoftEdgeInverseDistance = ParameterKeys.NewValue<float>();
     }
 }

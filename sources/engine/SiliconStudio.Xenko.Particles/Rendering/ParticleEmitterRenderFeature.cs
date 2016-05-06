@@ -26,6 +26,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         private ConstantBufferOffsetReference projectionMatrix;
 
+        private ConstantBufferOffsetReference viewFrustum;
+
         // Material alive during this frame
         private readonly Dictionary<ParticleMaterial, ParticleMaterialInfo> allMaterialInfos = new Dictionary<ParticleMaterial, ParticleMaterialInfo>();
 
@@ -53,6 +55,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             viewMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewMatrix.Name);
 
             projectionMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ProjectionMatrix.Name);
+
+            viewFrustum = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewFrustum.Name);
 
             perMaterialDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }
@@ -245,6 +249,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                         *perView = view.Projection;
                     }
 
+                    // View Frustum
+                    var frustumOffset = viewLayout.GetConstantBufferOffset(this.viewFrustum);
+                    if (frustumOffset != -1)
+                    {
+                        var perView = (Vector4*)((byte*)mappedCB + frustumOffset);
+                        *perView = new Vector4(view.ViewSize.X, view.ViewSize.Y, view.NearClipPlane, view.FarClipPlane);                        
+                    }
                 }
             }
         }

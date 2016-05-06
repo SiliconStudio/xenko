@@ -47,6 +47,16 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public float ZOffset { get; set; } = 0f;
 
         /// <summary>
+        /// If positive, soft particle edges will be calculated with maximum distance of the value set.
+        /// </summary>
+        /// <userdoc>
+        /// If positive, soft particle edges will be calculated with maximum distance of the value set.
+        /// </userdoc>
+        [DataMember(35)]
+        [Display("Soft Edge Distance")]
+        public float SoftEdgeDistance { get; set; } = 0f;
+
+        /// <summary>
         /// Allows the particle shape to be back- or front-face culled.
         /// </summary>
         /// <userdoc>
@@ -84,6 +94,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
 
             Parameters.Set(ParticleBaseKeys.ZOffset, ZOffset);
+
+            Parameters.Set(ParticleBaseKeys.SoftEdgeInverseDistance, (SoftEdgeDistance > 0) ? (1f / SoftEdgeDistance) : 0f);
         }
 
         public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)

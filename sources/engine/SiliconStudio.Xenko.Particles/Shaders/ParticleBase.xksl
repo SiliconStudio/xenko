@@ -35,6 +35,9 @@ class ParticleBase : ShaderBase, Texturing
         stage float4x4 ViewMatrix;
         stage float4x4 ProjectionMatrix;
         stage float4x4 ViewProjectionMatrix;
+
+        // .x - Width, .y - Height, .z - Near, .w - Far
+        stage float4   ViewFrustum;
     }
 
     cbuffer PerMaterial
@@ -46,6 +49,9 @@ class ParticleBase : ShaderBase, Texturing
 
         // Z offset is how much the depth should be adjusted when rendering
         stage float ZOffset;
+
+        // 0 if disabled, equal to 1/Distance otherwise
+        stage float SoftEdgeInverseDistance;
     }
             
     // -------------------------------------
@@ -65,47 +71,60 @@ class ParticleBase : ShaderBase, Texturing
     {
         float4 colorTarget = Shading();
 
-        // SoftEdge START
-
-        // TODO These parameters will be set by the material
-        float screenWidth = 1280;
-        float screenHeight = 720;
-        float zNear = 0.1;
-        float zFar = 1000;
-        float softEdgeDistance = 0.5; // 50 cm
-        float inverseSoftEdgeDistance = 1 / softEdgeDistance;
-
-        var screenCoords = streams.ShadingPosition.xy;
-        screenCoords.x /= screenWidth;
-        screenCoords.y /= screenHeight;
-
-        // Read depth
-        float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
-        float ownDepth = streams.ShadingPosition.z;
-
-        //// TODO Change to If(...) with shader permutation
-        //if (ownDepth >= opaqueDepth)
-        //{
-        //    discard;
-        //}
-
-        // Get the linear opaque depth
-        float linearZOwn = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * ownDepth - 1));
-        float linearZ = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * opaqueDepth - 1));
-
-        // TODO Maybe set upper and lower bounds for more interesting effects
-
-        //  Get the positive difference
-        var depthDistance = linearZ - linearZOwn + ZOffset;
-        if (depthDistance <= 0)
+        if (SoftEdgeInverseDistance > 0)
         {
-            discard;
+            // SoftEdge START
+            float screenWidth  = ViewFrustum.x; //1280;
+            float screenHeight = ViewFrustum.y; //720;
+            float zNear = ViewFrustum.z;        //0.1;
+            float zFar = ViewFrustum.w;         //1000;
+
+            var screenCoords = streams.ShadingPosition.xy;
+            screenCoords.x /= screenWidth;
+            screenCoords.y /= screenHeight;
+
+            // Read depth
+            float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
+            float ownDepth = streams.ShadingPosition.z;
+
+            // Get the linear opaque depth
+            float linearZOwn = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * ownDepth - 1));
+            float linearZ = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * opaqueDepth - 1));
+
+            // TODO Maybe set upper and lower bounds for more interesting effects
+
+            //  Get the positive difference
+            var depthDistance = linearZ - linearZOwn + ZOffset;
+            if (depthDistance <= 0)
+            {
+                discard;
+            }
+
+            var softEdge = saturate(depthDistance * SoftEdgeInverseDistance);
+            colorTarget.rgba *= softEdge;
+
+            // SoftEdge END
         }
+        else
+        {
+            // TODO Enable depth testing instead and delete this code
 
-        var softEdge = saturate(depthDistance * inverseSoftEdgeDistance);
-        colorTarget.rgba *= softEdge;
+            float screenWidth  = ViewFrustum.x; //1280;
+            float screenHeight = ViewFrustum.y; //720;
 
-        // SoftEdge END
+            var screenCoords = streams.ShadingPosition.xy;
+            screenCoords.x /= screenWidth;
+            screenCoords.y /= screenHeight;
+
+            // Read depth
+            float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
+            float ownDepth = streams.ShadingPosition.z;
+
+            if (ownDepth >= opaqueDepth)
+            {
+                discard;
+            }
+        }
 
         colorTarget.a *= AlphaAdditive;
 
