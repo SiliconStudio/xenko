@@ -2,12 +2,36 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
+    internal class EventTaskScheduler : TaskScheduler
+    {
+        public static readonly EventTaskScheduler Scheduler = new EventTaskScheduler();
+
+        protected override void QueueTask(Task task)
+        {
+            TryExecuteTask(task);
+        }
+
+        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        {
+            return false;
+        }
+
+        protected override IEnumerable<Task> GetScheduledTasks()
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Creates a new EventKey used to broadcast events.
     /// </summary>
@@ -40,7 +64,7 @@ namespace SiliconStudio.Xenko.Engine.Events
     /// Creates a new EventKey used to broadcast T type events.
     /// </summary>
     /// <typeparam name="T">The data type of the event you wish to send</typeparam>
-    public class EventKey<T>
+    public class EventKey<T> : IDisposable
     {
         internal readonly Logger Logger;
         internal readonly ulong EventId = EventKeyCounter.New();
@@ -48,18 +72,37 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         private readonly string broadcastDebug;
 
-        private readonly BroadcastBlock<T> broadcastBlock = new BroadcastBlock<T>(null);
+        private readonly BroadcastBlock<T> broadcastBlock;
 
         public EventKey(string category = "General", string eventName = "Event")
         {
+            broadcastBlock = new BroadcastBlock<T>(null, new DataflowBlockOptions { TaskScheduler = EventTaskScheduler.Scheduler });
+
             EventName = eventName;
             Logger = GlobalLogger.GetLogger($"Event - {category}");
             broadcastDebug = $"Broadcasting '{eventName}' ({EventId})";
         }
 
+        ~EventKey()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
         internal IDisposable Connect(EventReceiver<T> target)
         {
             return broadcastBlock.LinkTo(target.BufferBlock);
+        }
+
+        internal T GetPendingValue()
+        {
+            T data;
+            broadcastBlock.TryReceive(out data);
+            return data;
         }
 
         /// <summary>

@@ -69,10 +69,14 @@ namespace SiliconStudio.Xenko.Engine.Events
         private void Init(EventKey<T> key, EventReceiverOptions options)
         {
             Key = key;
+
             BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
             link = key.Connect(this);
+
             receivedDebugString = $"Received '{key.EventName}' ({key.EventId})";
             receivedManyDebugString = $"Received All '{key.EventName}' ({key.EventId})";
+
+            ReceiveOne(); //clear any previous event, we don't want to receive old events, as broadcast block will always have the last event avail
         }
 
         /// <summary>
@@ -145,6 +149,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             }
 
             Key.Logger.Debug(receivedDebugString);
+            
             return BufferBlock.Receive();
         }
 
@@ -164,13 +169,17 @@ namespace SiliconStudio.Xenko.Engine.Events
             return result;
         }
 
-        /// <summary>
-        /// Removes the link between this receiver and the broadcaster
-        /// </summary>
+        ~EventReceiver()
+        {
+            Dispose();
+        }
+
         public void Dispose()
         {
             link.Dispose();
-            cancellationTokenSource.Cancel();
-        }     
+            cancellationTokenSource?.Dispose();
+
+            GC.SuppressFinalize(this);
+        }
     }
 }
