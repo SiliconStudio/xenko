@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine.Events
     /// <summary>
     /// Creates an event receiver that is used to receive events from an EventKey
     /// </summary>
-    public class EventReceiver : EventReceiver<byte>
+    public class EventReceiver : EventReceiver<bool>
     {
         /// <summary>
         /// Creates an event receiver, ready to receive broadcasts from the key
