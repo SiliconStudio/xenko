@@ -447,6 +447,14 @@ namespace SiliconStudio.Xenko.Graphics
                 textureViewDescription.Flags = description.Flags;
             }
 
+            // TODO Is this the intended behavior?
+            //  DepthStencilReadOnly = 8 + Texture.DepthStencilReadOnlyFlags ignores ShaderResource flags
+            if (ParentTexture != null)
+            {
+                if (ParentTexture.IsShaderResource)
+                    textureViewDescription.Flags |= TextureFlags.ShaderResource;
+            }
+
             // Check that the view is compatible with the parent texture
             var filterViewFlags = (TextureFlags)((int)ViewFlags & (~DepthStencilReadOnlyFlags));
             if ((Flags & filterViewFlags) != filterViewFlags)
@@ -455,6 +463,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             InitializeFromImpl(textureDatas);
+
+ 
 
             return this;
         }

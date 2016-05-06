@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
 
                 PrepareDepthStencilRO(context);
-                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, depthStencilOld);
+                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, DepthStencilRO);
             }
 
             base.Prepare(context);
