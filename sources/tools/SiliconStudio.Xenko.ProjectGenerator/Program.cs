@@ -330,7 +330,8 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             foreach (var solutionProject in solution.Projects.ToArray())
             {
                 // Is it really a project?
-                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj") && !solutionProject.FullPath.EndsWith(".shproj"))
+                bool isSharedProject = solutionProject.FullPath.EndsWith(".shproj");
+                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj") && !isSharedProject)
                     continue;
 
                 // Load XML project
@@ -372,6 +373,27 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 {
                     removedProjects.Add(solutionProject);
                     solution.Projects.Remove(solutionProject);
+                    // Remove any reference of shared projects in the GlobalSections.
+                    if (isSharedProject)
+                    {
+                        var projects = solution.GlobalSections.FirstOrDefault(s => s.Name == "SharedMSBuildProjectFiles");
+                        if (projects != null)
+                        {
+                            List<PropertyItem> toRemove = new List<PropertyItem>();
+                            foreach (var proj in projects.Properties)
+                            {
+                                // We assume here that we do not have the same project name in 2 or more locations
+                                if (proj.Name.Contains(solutionProject.Name))
+                                {
+                                    toRemove.Add(proj);
+                                }
+                            }
+                            foreach (var proj in toRemove)
+                            {
+                                projects.Properties.Remove(proj);
+                            }
+                        }
+                    }
                 }
             }
         }
