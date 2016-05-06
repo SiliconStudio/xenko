@@ -96,6 +96,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
             Parameters.Set(ParticleBaseKeys.ZOffset, ZOffset);
 
             Parameters.Set(ParticleBaseKeys.SoftEdgeInverseDistance, (SoftEdgeDistance > 0) ? (1f / SoftEdgeDistance) : 0f);
+            Parameters.Set(ParticleBaseKeys.UsesSoftEdge, (SoftEdgeDistance > 0));
+//            Parameters.Set(ParticleBaseKeys.UsesSoftEdge, true);
         }
 
         public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)

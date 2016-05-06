@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         mixin ParticleBaseEffect;
 
-        mixin ParticleComputeColorShader;
+        mixin ParticleComputeColorShader<ParticleBaseKeys.UsesSoftEdge>;
 
         //if (ParticleBaseKeys.ParticleColor != null)
         //{

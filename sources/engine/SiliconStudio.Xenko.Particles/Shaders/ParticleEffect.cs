@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ParticleBaseEffect");
-                context.Mixin(mixin, "ParticleComputeColorShader");
+                context.Mixin(mixin, "ParticleComputeColorShader", context.GetParam(ParticleBaseKeys.UsesSoftEdge));
                 if (context.GetParam(ParticleBaseKeys.BaseColor) != null)
                 {
 

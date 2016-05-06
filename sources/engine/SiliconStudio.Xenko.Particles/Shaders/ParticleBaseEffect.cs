@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ParticleBase");
+                context.Mixin(mixin, "ParticleBase", context.GetParam(ParticleBaseKeys.UsesSoftEdge));
             }
 
             [ModuleInitializer]
