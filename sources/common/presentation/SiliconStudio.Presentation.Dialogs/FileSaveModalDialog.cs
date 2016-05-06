@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -36,7 +37,7 @@ namespace SiliconStudio.Presentation.Dialogs
         private CommonSaveFileDialog SaveDlg => (CommonSaveFileDialog)Dialog;
 
         /// <inheritdoc/>
-        public override DialogResult Show()
+        public override async Task<DialogResult> Show()
         {
             SaveDlg.Filters.Clear();
             foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
@@ -44,7 +45,7 @@ namespace SiliconStudio.Presentation.Dialogs
                 SaveDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
             SaveDlg.AlwaysAppendDefaultExtension = true;
-            var result = InvokeDialog();
+            var result = await InvokeDialog();
             FilePath = result != DialogResult.Cancel ? SaveDlg.FileName : null;
             return result;
         }

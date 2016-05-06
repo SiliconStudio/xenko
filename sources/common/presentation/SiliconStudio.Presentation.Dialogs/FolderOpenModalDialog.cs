@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -24,9 +26,9 @@ namespace SiliconStudio.Presentation.Dialogs
 
         private CommonOpenFileDialog OpenDlg { get { return (CommonOpenFileDialog)Dialog; } }
 
-        public override DialogResult Show()
+        public override async Task<DialogResult> Show()
         {
-            var result = InvokeDialog();
+            var result = await InvokeDialog();
             Directory = result != DialogResult.Cancel ? OpenDlg.FileName : null;
             return result;
         }

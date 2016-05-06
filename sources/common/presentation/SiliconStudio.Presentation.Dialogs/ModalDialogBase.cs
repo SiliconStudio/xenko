@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -22,15 +24,11 @@ namespace SiliconStudio.Presentation.Dialogs
         /// <inheritdoc/>
         public object DataContext { get; set; }
 
-        protected DialogResult InvokeDialog()
+        protected Task<DialogResult> InvokeDialog()
         {
-            if (dispatcher.CheckAccess())
-            {
-                return (DialogResult)Dialog.ShowDialog(parentWindow);
-            }
-            return dispatcher.Invoke(() => (DialogResult)Dialog.ShowDialog(parentWindow));
+            return dispatcher.InvokeAsync(() => (DialogResult)Dialog.ShowDialog(parentWindow)).Task;
         }
 
-        public abstract DialogResult Show();
+        public abstract Task<DialogResult> Show();
     }
 }

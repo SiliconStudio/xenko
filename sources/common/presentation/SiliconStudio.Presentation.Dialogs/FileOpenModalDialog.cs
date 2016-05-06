@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -37,14 +38,14 @@ namespace SiliconStudio.Presentation.Dialogs
         private CommonOpenFileDialog OpenDlg => (CommonOpenFileDialog)Dialog;
 
         /// <inheritdoc/>
-        public override DialogResult Show()
+        public override async Task<DialogResult> Show()
         {
             OpenDlg.Filters.Clear();
             foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
             {
                 OpenDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
-            var result = InvokeDialog();
+            var result = await InvokeDialog();
             FilePaths = result != DialogResult.Cancel ? new List<string>(OpenDlg.FileNames) : new List<string>();
             return result;
         }
