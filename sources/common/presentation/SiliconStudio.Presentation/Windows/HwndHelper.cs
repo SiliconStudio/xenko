@@ -49,8 +49,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <returns><c>True</c> if the window is disabled, <c>False</c> otherwise.</returns>
         public static bool IsDisabled(IntPtr hwnd)
         {
-            var style = NativeHelper.GetWindowLong(hwnd, NativeHelper.GWL_STYLE);
-            return MatchFlag(style, NativeHelper.WS_DISABLED);
+            return HasStyleFlag(hwnd, NativeHelper.WS_DISABLED);
         }
 
         /// <summary>
@@ -70,6 +69,18 @@ namespace SiliconStudio.Presentation.Windows
                 style &= ~NativeHelper.WS_DISABLED;
             }
             NativeHelper.SetWindowLong(hwnd, NativeHelper.GWL_STYLE, style);
+        }
+
+        /// <summary>
+        /// Gets whether the window corresponding to the given hwnd has the given style flag.
+        /// </summary>
+        /// <param name="hwnd">The hwnd of the window.</param>
+        /// <param name="flag">The flag to check.</param>
+        /// <returns><c>True</c> if the window has the given flag, <c>False</c> otherwise.</returns>
+        public static bool HasStyleFlag(IntPtr hwnd, int flag)
+        {
+            var style = NativeHelper.GetWindowLong(hwnd, NativeHelper.GWL_STYLE);
+            return MatchFlag(style, flag);
         }
 
         private static bool MatchFlag(int value, int flag) => (value & flag) == flag;

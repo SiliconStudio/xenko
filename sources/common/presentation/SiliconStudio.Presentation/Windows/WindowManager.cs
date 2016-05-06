@@ -17,7 +17,8 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public class WindowManager : IDisposable
     {
-        private static readonly Logger logger = GlobalLogger.GetLogger(nameof(WindowManager));
+        //private static readonly Logger logger = GlobalLogger.GetLogger(nameof(WindowManager));
+        private static readonly Logger logger = new LoggerResult();
         // This must remains a field to prevent garbage collection!
         private static NativeHelper.WinEventDelegate winEventProc;
         internal static WindowInfo mainWindow;
