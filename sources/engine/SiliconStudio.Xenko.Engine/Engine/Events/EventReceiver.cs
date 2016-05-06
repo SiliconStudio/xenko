@@ -50,16 +50,30 @@ namespace SiliconStudio.Xenko.Engine.Events
     /// <typeparam name="T">The type of data the EventKey will send</typeparam>
     public class EventReceiver<T> : IDisposable
     {
-        private readonly IDisposable link;
+        private IDisposable link;
         private readonly ScriptComponent attachedScript;
         private readonly CancellationTokenSource cancellationTokenSource;
-        internal readonly BufferBlock<T> BufferBlock;
+        private string receivedDebugString;
+        private string receivedManyDebugString;
+
+        internal BufferBlock<T> BufferBlock;
+
+        public EventKey<T> Key { get; private set; }
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly DataflowBlockOptions CapacityOptions = new DataflowBlockOptions
         {
             BoundedCapacity = 1
         };
+
+        private void Init(EventKey<T> key, EventReceiverOptions options)
+        {
+            Key = key;
+            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
+            link = key.Connect(this);
+            receivedDebugString = $"Received '{key.EventName}' ({key.EventId})";
+            receivedManyDebugString = $"Received All '{key.EventName}' ({key.EventId})";
+        }
 
         /// <summary>
         /// Creates an event receiver, ready to receive broadcasts from the key
@@ -68,8 +82,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
-            link = key.Connect(this);
+            Init(Key, options);
         }
 
         /// <summary>
@@ -80,8 +93,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
-            link = key.Connect(this);
+            Init(Key, options);
 
             this.attachedScript = attachedScript;
             var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && attachedScript != null;
@@ -107,7 +119,9 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <returns></returns>
         public async Task<T> ReceiveAsync()
         {
-            return await BufferBlock.ReceiveAsync();
+            var res = await BufferBlock.ReceiveAsync();
+            Key.Logger.Debug(receivedDebugString);
+            return res;
         }
 
         /// <summary>
@@ -125,7 +139,13 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <returns></returns>
         public T ReceiveOne()
         {
-            return !HasEvents() ? default(T) : BufferBlock.Receive();
+            if (!HasEvents())
+            {
+                return default(T);
+            }
+
+            Key.Logger.Debug(receivedDebugString);
+            return BufferBlock.Receive();
         }
 
         /// <summary>
@@ -135,7 +155,13 @@ namespace SiliconStudio.Xenko.Engine.Events
         public IList<T> ReceiveMany()
         {
             IList<T> result;
-            return !BufferBlock.TryReceiveAll(out result) ? null : result;
+            if (!BufferBlock.TryReceiveAll(out result))
+            {
+                return null;
+            }
+
+            Key.Logger.Debug(receivedManyDebugString);
+            return result;
         }
 
         /// <summary>
