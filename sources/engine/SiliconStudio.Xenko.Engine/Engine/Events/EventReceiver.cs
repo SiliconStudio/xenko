@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            Init(Key, options);
+            Init(key, options);
         }
 
         /// <summary>
