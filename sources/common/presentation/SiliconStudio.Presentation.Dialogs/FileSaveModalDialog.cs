@@ -37,7 +37,7 @@ namespace SiliconStudio.Presentation.Dialogs
         private CommonSaveFileDialog SaveDlg => (CommonSaveFileDialog)Dialog;
 
         /// <inheritdoc/>
-        public override async Task<DialogResult> Show()
+        public override async Task<DialogResult> ShowModal()
         {
             SaveDlg.Filters.Clear();
             foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
@@ -46,9 +46,8 @@ namespace SiliconStudio.Presentation.Dialogs
             }
             SaveDlg.AlwaysAppendDefaultExtension = true;
             await InvokeDialog();
-            var result = ((IModalDialogInternal)this).Result;
-            FilePath = result != DialogResult.Cancel ? SaveDlg.FileName : null;
-            return result;
+            FilePath = Result != DialogResult.Cancel ? SaveDlg.FileName : null;
+            return Result;
         }
     }
 }

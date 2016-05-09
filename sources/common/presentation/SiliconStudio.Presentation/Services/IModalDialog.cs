@@ -11,10 +11,10 @@ namespace SiliconStudio.Presentation.Services
     public interface IModalDialog
     {
         /// <summary>
-        /// Display the modal dialog. This method will block until the user close the dialog.
+        /// Displays the modal dialog. This method returns a task that completes when the user close the dialog.
         /// </summary>
         /// <returns>A <see cref="DialogResult"/> value indicating how the user closed the dialog.</returns>
-        Task<DialogResult> Show();
+        Task<DialogResult> ShowModal();
 
         /// <summary>
         /// Gets or sets a data context for the modal dialog.

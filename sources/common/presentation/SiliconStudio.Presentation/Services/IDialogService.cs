@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using SiliconStudio.Presentation.Windows;
@@ -83,6 +84,7 @@ namespace SiliconStudio.Presentation.Services
         /// Attempts to close the current window.
         /// </summary>
         /// <param name="dialogResult">a nullable boolean indicating, if the current window behave like a dialog window, the result of the dialog invocation.</param>
+        [Obsolete("This method will be removed soon.")]
         void CloseCurrentWindow(bool? dialogResult = null);
     }
 }

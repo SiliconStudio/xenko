@@ -18,16 +18,13 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public class WindowManager : IDisposable
     {
-        //private static readonly Logger logger = GlobalLogger.GetLogger(nameof(WindowManager));
-        private static readonly Logger logger = new LoggerResult();
+        private static readonly List<WindowInfo> ModalWindowsList = new List<WindowInfo>();
+        private static readonly HashSet<WindowInfo> AllWindowsList = new HashSet<WindowInfo>();
         // This must remains a field to prevent garbage collection!
         private static NativeHelper.WinEventDelegate winEventProc;
-        internal static WindowInfo mainWindow;
         private static IntPtr hook;
-        internal static List<WindowInfo> modalWindows = new List<WindowInfo>();
         private static Dispatcher dispatcher;
         private static bool initialized;
-        private static List<WindowInfo> allWindows = new List<WindowInfo>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowManager"/> class.
@@ -44,9 +41,19 @@ namespace SiliconStudio.Presentation.Windows
             hook = NativeHelper.SetWinEventHook(NativeHelper.EVENT_OBJECT_SHOW, NativeHelper.EVENT_OBJECT_HIDE, IntPtr.Zero, winEventProc, processId, 0, NativeHelper.WINEVENT_OUTOFCONTEXT);
             if (hook == IntPtr.Zero)
                 throw new InvalidOperationException("Unable to initialize the window manager.");
+
+            Logger.Info($"{nameof(WindowManager)} initialized");
         }
 
-        public Logger Logger => logger;
+#if DEBUG // Use a logger result for debugging
+        public static Logger Logger { get; } = new LoggerResult();
+#else
+        public static Logger Logger { get; } = GlobalLogger.GetLogger(nameof(WindowManager));
+#endif
+
+        public static WindowInfo MainWindow { get; private set; }
+
+        public static IReadOnlyList<WindowInfo> ModalWindows => ModalWindowsList;
 
         /// <summary>
         /// Raised when the main window has changed.
@@ -67,16 +74,19 @@ namespace SiliconStudio.Presentation.Windows
         {
             if (!NativeHelper.UnhookWinEvent(hook))
                 throw new InvalidOperationException("An error occurred while disposing the window manager.");
-            hook = IntPtr.Zero;
 
+            hook = IntPtr.Zero;
             winEventProc = null;
             initialized = false;
             dispatcher = null;
-            mainWindow = null;
-            allWindows.Clear();
-            modalWindows.Clear();
+            MainWindow = null;
+            AllWindowsList.Clear();
+            ModalWindowsList.Clear();
+
+            Logger.Info($"{nameof(WindowManager)} disposed");
         }
 
+        [Obsolete("This method will be removed soon")]
         public static DialogResult ToDialogResult(bool? dialogResult)
         {
             if (dialogResult.HasValue)
@@ -86,58 +96,99 @@ namespace SiliconStudio.Presentation.Windows
             return DialogResult.None;
         }
 
-        public static Task ShowTopModal(Window window)
-        {
-            if (window == null) throw new ArgumentNullException(nameof(window));
-            CheckDispatcher();
-            var owner = modalWindows.FirstOrDefault() ?? mainWindow;
-            window.Owner = owner?.Window;
-            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
-            if (owner != null)
-            {
-                owner.IsDisabled = true;
-            }
-            var windowInfo = new WindowInfo(window);
-            modalWindows.Add(windowInfo);
-            allWindows.Add(windowInfo);
-            window.Show();
-            return windowInfo.WindowClosed.Task;
-        }
-
-        public static Task ShowBackgroundModal(Window window)
-        {
-            if (window == null) throw new ArgumentNullException(nameof(window));
-            CheckDispatcher();
-            var owner = mainWindow;
-            window.Owner = owner?.Window;
-            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
-            if (owner != null)
-            {
-                owner.IsDisabled = true;
-            }
-            var windowInfo = new WindowInfo(window);
-            modalWindows.Insert(0, windowInfo);
-            allWindows.Add(windowInfo);
-            window.Show();
-            return windowInfo.WindowClosed.Task;
-        }
-
         public static void ShowMainWindow(Window window)
         {
+            if (window == null)
+                throw new ArgumentNullException(nameof(window));
+            CheckDispatcher();
+
+            if (MainWindow != null)
+            {
+                var message = "This application already has a main window.";
+                Logger.Error(message);
+                throw new InvalidOperationException(message);
+            }
+            Logger.Info("Main window showing.");
+
+            MainWindow = new WindowInfo(window);
+            AllWindowsList.Add(MainWindow);
+
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            window.Show();
+        }
+
+        public static Task ShowModal(Window window, WindowOwner windowOwner = WindowOwner.LastModal)
+        {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
 
-            if (mainWindow != null)
+            var windowInfo = new WindowInfo(window);
+            if (ModalWindowsList.Contains(windowInfo))
+                throw new InvalidOperationException("This window has already been shown as modal.");
+
+            WindowInfo owner;
+            switch (windowOwner)
             {
-                var message = "This application already has a main window.";
-                logger.Error(message);
-                throw new InvalidOperationException(message);
+                case WindowOwner.LastModal:
+                    owner = ModalWindows.FirstOrDefault() ?? MainWindow;
+                    break;
+                case WindowOwner.MainWindow:
+                    owner = MainWindow;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
             }
-            logger.Info("Main window showing.");
 
-            mainWindow = new WindowInfo(window);
-            allWindows.Add(mainWindow);
+            window.Owner = owner?.Window;
+            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            if (owner != null)
+            {
+                owner.IsDisabled = true;
+            }
 
+            AllWindowsList.Add(windowInfo);
+
+            switch (windowOwner)
+            {
+                case WindowOwner.LastModal:
+                    ModalWindowsList.Add(windowInfo);
+                    break;
+                case WindowOwner.MainWindow:
+                    ModalWindowsList.Insert(0, windowInfo);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
+            }
+
+            window.Show();
+            return windowInfo.WindowClosed.Task;
+        }
+
+        public static void ShowNonModal(Window window, WindowOwner windowOwner = WindowOwner.MainWindow)
+        {
+            if (window == null) throw new ArgumentNullException(nameof(window));
+            CheckDispatcher();
+
+            WindowInfo owner;
+            switch (windowOwner)
+            {
+                case WindowOwner.LastModal:
+                    owner = ModalWindows.FirstOrDefault() ?? MainWindow;
+                    break;
+                case WindowOwner.MainWindow:
+                    owner = MainWindow;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
+            }
+
+            window.Owner = owner?.Window;
+            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+
+            var windowInfo = new WindowInfo(window);
+            AllWindowsList.Add(windowInfo);
+
+            Logger.Info("Non-modal window showing.");
             window.Show();
         }
 
@@ -146,7 +197,7 @@ namespace SiliconStudio.Presentation.Windows
             if (dispatcher.Thread != Thread.CurrentThread)
             {
                 const string message = "This method must be invoked from the dispatcher thread";
-                logger.Error(message);
+                Logger.Error(message);
                 throw new InvalidOperationException(message);
             }
         }
@@ -156,9 +207,10 @@ namespace SiliconStudio.Presentation.Windows
             if (hwnd == IntPtr.Zero)
                 return;
 
-            if (NativeHelper.GetAncestor(hwnd, NativeHelper.GetAncestorFlags.GetRoot) != hwnd)
+            var rootHwnd = NativeHelper.GetAncestor(hwnd, NativeHelper.GetAncestorFlags.GetRoot);
+            if (rootHwnd != IntPtr.Zero && rootHwnd != hwnd)
             {
-                logger.Debug("Discarding non-root window");
+                Logger.Debug($"Discarding non-root window ({hwnd}) - root: ({NativeHelper.GetAncestor(hwnd, NativeHelper.GetAncestorFlags.GetRoot)})");
                 return;
             }
 
@@ -176,45 +228,45 @@ namespace SiliconStudio.Presentation.Windows
         {
             if (!HwndHelper.HasStyleFlag(hwnd, NativeHelper.WS_VISIBLE))
             {
-                logger.Debug("Discarding non-visible window");
+                Logger.Debug($"Discarding non-visible window ({hwnd})");
                 return;
             }
 
-            logger.Verbose("Processing newly shown window...");
+            Logger.Verbose($"Processing newly shown window ({hwnd})...");
             var windowInfo = Find(hwnd);
             if (windowInfo == null)
             {
                 windowInfo = new WindowInfo(hwnd);
-                allWindows.Add(windowInfo);
+                AllWindowsList.Add(windowInfo);
             }
             windowInfo.IsShown = true;
 
-            if (windowInfo == mainWindow)
+            if (windowInfo == MainWindow)
             {
-                logger.Info("Main window shown.");
-                MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(mainWindow));
+                Logger.Info("Main window shown.");
+                MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(MainWindow));
             }
             else
             {
                 if (windowInfo.IsModal)
                 {
                     // If this window has not been shown using a WindowManager method, add it as a top-level modal window
-                    if (!modalWindows.Any(x => x.Equals(windowInfo)))
+                    if (!ModalWindows.Any(x => x.Equals(windowInfo)))
                     {
-                        var lastModal = modalWindows.LastOrDefault() ?? mainWindow;
+                        var lastModal = ModalWindows.LastOrDefault() ?? MainWindow;
                         if (lastModal != null)
                         {
                             windowInfo.Owner = lastModal;
                             lastModal.IsDisabled = true;
                         }
-                        modalWindows.Add(windowInfo);
-                        logger.Info("Modal window shown. (standalone)");
+                        ModalWindowsList.Add(windowInfo);
+                        Logger.Info("Modal window shown. (standalone)");
                     }
                     else
                     {
-                        var index = modalWindows.IndexOf(windowInfo);
-                        var childModal = index < modalWindows.Count - 1 ? modalWindows[index + 1] : null;
-                        var parentModal = index > 0 ? modalWindows[index - 1] : mainWindow;
+                        var index = ModalWindowsList.IndexOf(windowInfo);
+                        var childModal = index < ModalWindows.Count - 1 ? ModalWindows[index + 1] : null;
+                        var parentModal = index > 0 ? ModalWindows[index - 1] : MainWindow;
                         if (childModal != null)
                         {
                             childModal.Owner = windowInfo;
@@ -224,42 +276,42 @@ namespace SiliconStudio.Presentation.Windows
                         {
                             parentModal.IsDisabled = true;
                         }
-                        logger.Info("Modal window shown. (with WindowManager)");
+                        Logger.Info("Modal window shown. (with WindowManager)");
                     }
-                    ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(mainWindow));
+                    ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(MainWindow));
                 }
             }
         }
 
         private static void WindowHidden(IntPtr hwnd)
         {
-            logger.Verbose("Processing newly hidden window...");
+            Logger.Verbose($"Processing newly hidden window ({hwnd})...");
 
             var windowInfo = Find(hwnd);
             if (windowInfo == null)
             {
-                var message = $"A window has been closed but was not handled by the {nameof(WindowManager)}.";
-                logger.Error(message);
-                throw new InvalidOperationException(message);
+                var message = $"This window was not handled by the {nameof(WindowManager)} ({hwnd})";
+                Logger.Verbose(message);
+                return;
             }
 
             windowInfo.IsShown = false;
             windowInfo.WindowClosed.SetResult(0);
-            allWindows.Remove(windowInfo);
+            AllWindowsList.Remove(windowInfo);
 
-            if (mainWindow != null && mainWindow.Equals(windowInfo))
+            if (MainWindow != null && MainWindow.Equals(windowInfo))
             {
-                logger.Info("Main window closed.");
-                mainWindow = null;
-                MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(mainWindow));
+                Logger.Info("Main window closed.");
+                MainWindow = null;
+                MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(MainWindow));
             }
             else
             {
-                var index = modalWindows.IndexOf(windowInfo);
+                var index = ModalWindowsList.IndexOf(windowInfo);
                 if (index >= 0)
                 {
-                    var childModal = index < modalWindows.Count - 1 ? modalWindows[index + 1] : null;
-                    var parentModal = index > 0 ? modalWindows[index - 1] : mainWindow;
+                    var childModal = index < ModalWindows.Count - 1 ? ModalWindows[index + 1] : null;
+                    var parentModal = index > 0 ? ModalWindows[index - 1] : MainWindow;
                     if (childModal != null)
                     {
                         childModal.Owner = parentModal;
@@ -271,17 +323,10 @@ namespace SiliconStudio.Presentation.Windows
                         parentModal.IsDisabled = false;
                     }
                     ModalWindowClosed?.Invoke(null, new WindowManagerEventArgs(windowInfo));
-                    modalWindows.RemoveAt(index);
-                    logger.Info("Modal window closed.");
+                    ModalWindowsList.RemoveAt(index);
+                    Logger.Info("Modal window closed.");
                 }
             }
-        }
-
-        public static void ShowNonModal(Window window)
-        {
-            if (dispatcher == null)
-                dispatcher = window.Dispatcher;
-
         }
 
         internal static WindowInfo Find(IntPtr hwnd)
@@ -289,12 +334,12 @@ namespace SiliconStudio.Presentation.Windows
             if (hwnd == IntPtr.Zero)
                 return null;
 
-            var result = allWindows.FirstOrDefault(x => x.Equals(hwnd));
+            var result = AllWindowsList.FirstOrDefault(x => x.Equals(hwnd));
             if (result != null)
                 return result;
 
             var window = WindowInfo.FromHwnd(hwnd);
-            return window != null ? allWindows.FirstOrDefault(x => x.Equals(window)) : null;
+            return window != null ? AllWindowsList.FirstOrDefault(x => x.Equals(window)) : null;
         }
     }
 }

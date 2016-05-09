@@ -38,7 +38,7 @@ namespace SiliconStudio.Presentation.Dialogs
         private CommonOpenFileDialog OpenDlg => (CommonOpenFileDialog)Dialog;
 
         /// <inheritdoc/>
-        public override async Task<DialogResult> Show()
+        public override async Task<DialogResult> ShowModal()
         {
             OpenDlg.Filters.Clear();
             foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
@@ -46,9 +46,8 @@ namespace SiliconStudio.Presentation.Dialogs
                 OpenDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
             await InvokeDialog();
-            var result = ((IModalDialogInternal)this).Result;
-            FilePaths = result != DialogResult.Cancel ? new List<string>(OpenDlg.FileNames) : new List<string>();
-            return result;
+            FilePaths = Result != DialogResult.Cancel ? new List<string>(OpenDlg.FileNames) : new List<string>();
+            return Result;
         }
     }
 }

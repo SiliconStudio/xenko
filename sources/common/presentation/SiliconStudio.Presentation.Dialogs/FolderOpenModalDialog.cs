@@ -26,12 +26,11 @@ namespace SiliconStudio.Presentation.Dialogs
 
         private CommonOpenFileDialog OpenDlg => (CommonOpenFileDialog)Dialog;
 
-        public override async Task<DialogResult> Show()
+        public override async Task<DialogResult> ShowModal()
         {
             await InvokeDialog();
-            var result = ((IModalDialogInternal)this).Result;
-            Directory = result != DialogResult.Cancel ? OpenDlg.FileName : null;
-            return result;
+            Directory = Result != DialogResult.Cancel ? OpenDlg.FileName : null;
+            return Result;
         }
     }
 }

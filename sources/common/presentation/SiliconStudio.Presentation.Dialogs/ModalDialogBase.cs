@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Dialogs
         public object DataContext { get; set; }
 
         /// <inheritdoc/>
-        DialogResult IModalDialogInternal.Result { get; set; }
+        public DialogResult Result { get; set; }
 
         protected Task InvokeDialog()
         {
@@ -36,13 +36,13 @@ namespace SiliconStudio.Presentation.Dialogs
                 switch (result1)
                 {
                     case CommonFileDialogResult.None:
-                        ((IModalDialogInternal)this).Result = DialogResult.None;
+                        Result = DialogResult.None;
                         break;
                     case CommonFileDialogResult.Ok:
-                        ((IModalDialogInternal)this).Result = DialogResult.Ok;
+                        Result = DialogResult.Ok;
                         break;
                     case CommonFileDialogResult.Cancel:
-                        ((IModalDialogInternal)this).Result = DialogResult.Cancel;
+                        Result = DialogResult.Cancel;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -50,6 +50,6 @@ namespace SiliconStudio.Presentation.Dialogs
             }).Task;
         }
 
-        public abstract Task<DialogResult> Show();
+        public abstract Task<DialogResult> ShowModal();
     }
 }

@@ -90,7 +90,7 @@ namespace SiliconStudio.Presentation.Tests
         public static WindowManager InitWindowManager(Dispatcher dispatcher, out LoggerResult loggerResult)
         {
             var manager = new WindowManager(dispatcher);
-            loggerResult = CreateLoggerResult(manager.Logger);
+            loggerResult = CreateLoggerResult(WindowManager.Logger);
             return manager;
         }
 
@@ -103,34 +103,34 @@ namespace SiliconStudio.Presentation.Tests
         {
             if (modalWindows != null)
             {
-                Assert.AreEqual(modalWindows.Length, WindowManager.modalWindows.Count);
+                Assert.AreEqual(modalWindows.Length, WindowManager.ModalWindows.Count);
                 for (var i = 0; i < modalWindows.Length; ++i)
                 {
                     var expectedIsDisabled = i < modalWindows.Length - 1;
-                    var expectedOwner = i > 0 ? WindowManager.modalWindows[i - 1] : WindowManager.mainWindow;
-                    Assert.AreEqual(modalWindows[i], WindowManager.modalWindows[i].Window);
-                    Assert.AreEqual(modalWindows[i]?.Owner, WindowManager.modalWindows[i].Window?.Owner);
-                    Assert.AreEqual(expectedOwner, WindowManager.modalWindows[i].Owner);
-                    Assert.AreEqual(true, WindowManager.modalWindows[i].IsModal);
-                    Assert.AreEqual(expectedIsDisabled, WindowManager.modalWindows[i].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.modalWindows[i].IsShown);
-                    Assert.AreEqual(false, WindowManager.modalWindows[i].WindowClosed.Task.IsCompleted);
+                    var expectedOwner = i > 0 ? WindowManager.ModalWindows[i - 1] : WindowManager.MainWindow;
+                    Assert.AreEqual(modalWindows[i], WindowManager.ModalWindows[i].Window);
+                    Assert.AreEqual(modalWindows[i]?.Owner, WindowManager.ModalWindows[i].Window?.Owner);
+                    Assert.AreEqual(expectedOwner, WindowManager.ModalWindows[i].Owner);
+                    Assert.AreEqual(true, WindowManager.ModalWindows[i].IsModal);
+                    Assert.AreEqual(expectedIsDisabled, WindowManager.ModalWindows[i].IsDisabled);
+                    Assert.AreEqual(true, WindowManager.ModalWindows[i].IsShown);
+                    Assert.AreEqual(false, WindowManager.ModalWindows[i].WindowClosed.Task.IsCompleted);
                 }
             }
             if (mainWindow != null)
             {
-                Assert.NotNull(WindowManager.mainWindow);
-                Assert.AreEqual(mainWindow, WindowManager.mainWindow.Window);
-                Assert.AreEqual(null, WindowManager.mainWindow.Owner);
-                Assert.AreEqual(null, WindowManager.mainWindow.Window.Owner);
-                Assert.AreEqual(true, WindowManager.mainWindow.IsModal);
-                Assert.AreEqual(WindowManager.modalWindows.Count > 0, WindowManager.mainWindow.IsDisabled);
-                Assert.AreEqual(true, WindowManager.mainWindow.IsShown);
-                Assert.AreEqual(false, WindowManager.mainWindow.WindowClosed.Task.IsCompleted);
+                Assert.NotNull(WindowManager.MainWindow);
+                Assert.AreEqual(mainWindow, WindowManager.MainWindow.Window);
+                Assert.AreEqual(null, WindowManager.MainWindow.Owner);
+                Assert.AreEqual(null, WindowManager.MainWindow.Window.Owner);
+                Assert.AreEqual(true, WindowManager.MainWindow.IsModal);
+                Assert.AreEqual(WindowManager.ModalWindows.Count > 0, WindowManager.MainWindow.IsDisabled);
+                Assert.AreEqual(true, WindowManager.MainWindow.IsShown);
+                Assert.AreEqual(false, WindowManager.MainWindow.WindowClosed.Task.IsCompleted);
             }
             else
             {
-                Assert.Null(WindowManager.mainWindow);
+                Assert.Null(WindowManager.MainWindow);
             }
         }
 

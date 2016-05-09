@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -77,9 +76,6 @@ namespace SiliconStudio.Presentation.Windows
             get
             {
                 if (Hwnd == IntPtr.Zero)
-                    return false;
-
-                if (HwndHelper.HasStyleFlag(Hwnd, NativeHelper.WS_POPUP))
                     return false;
 
                 var owner = Owner;

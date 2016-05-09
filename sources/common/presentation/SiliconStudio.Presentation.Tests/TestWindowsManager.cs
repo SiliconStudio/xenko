@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -47,13 +48,10 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
-                dispatcher.Invoke(() =>
-                {
-                    WindowManagerHelper.AssertWindowsStatus(window);
-                });
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window));
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -81,23 +79,17 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
-                dispatcher.Invoke(() =>
-                {
-                    WindowManagerHelper.AssertWindowsStatus(window);
-                });
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window));
 
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
-                dispatcher.Invoke(() =>
-                {
-                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow);
-                });
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window, modalWindow));
 
                 // Close the modal window
-                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowInfo = WindowManager.ModalWindows[0];
                 var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
@@ -108,7 +100,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -136,24 +128,18 @@ namespace SiliconStudio.Presentation.Tests
                 var shown = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
                 await WindowManagerHelper.TaskWithTimeout(shown);
-                dispatcher.Invoke(() =>
-                {
-                    WindowManagerHelper.AssertWindowsStatus(window);
-                });
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window));
 
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
-                dispatcher.Invoke(() =>
-                {
-                    WindowManagerHelper.AssertWindowsStatus(window, modalWindow);
-                });
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window, modalWindow));
 
                 // Close the main window - this should also close the modal window
-                var mainWindow = WindowManager.mainWindow;
-                var modalWindowInfo = WindowManager.modalWindows[0];
+                var mainWindow = WindowManager.MainWindow;
+                var modalWindowInfo = WindowManager.ModalWindows[0];
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => window.Close());
@@ -164,6 +150,28 @@ namespace SiliconStudio.Presentation.Tests
                     WindowManagerHelper.AssertWindowClosed(modalWindowInfo);
                     WindowManagerHelper.AssertWindowsStatus(null);
                 });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
+        [Test, RequiresSTA]
+        public async void TestSameModalTwice()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenModalBoxCloseMain);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                // Open a modal window
+                var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow));
+                await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(null, modalWindow));
+
+                // Try to open it again without having closed it
+                Assert.Throws<InvalidOperationException>(() => dispatcher.Invoke(() => WindowManager.ShowModal(modalWindow)));
             }
             Assert.AreEqual(false, loggerResult.HasErrors);
             dispatcher.InvokeShutdown();
@@ -191,7 +199,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -201,7 +209,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a second modal window
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow2));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow2));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -209,7 +217,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the second modal window
-                var modalWindow2Info = WindowManager.modalWindows[1];
+                var modalWindow2Info = WindowManager.ModalWindows[1];
                 var modalWindow2Closed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow2.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
@@ -220,7 +228,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the first modal window
-                var modalWindow1Info = WindowManager.modalWindows[0];
+                var modalWindow1Info = WindowManager.ModalWindows[0];
                 var modalWindow1Closed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow1.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
@@ -231,7 +239,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -267,7 +275,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -277,7 +285,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a second modal window
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow2));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow2));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -285,7 +293,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the first modal window
-                var modalWindow1Info = WindowManager.modalWindows[0];
+                var modalWindow1Info = WindowManager.ModalWindows[0];
                 var modalWindow1Closed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow1.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
@@ -296,7 +304,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the second modal window
-                var modalWindow2Info = WindowManager.modalWindows[0];
+                var modalWindow2Info = WindowManager.ModalWindows[0];
                 var modalWindow2Closed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow2.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
@@ -307,7 +315,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -343,7 +351,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a first modal window
                 var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow1Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindow1));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow1));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -353,7 +361,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a second modal window in background
                 var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindow2Opened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowBackgroundModal(modalWindow2));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow2, WindowOwner.MainWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Opened);
                 dispatcher.Invoke(() =>
                 {
@@ -361,7 +369,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the first modal window
-                var modalWindow1Info = WindowManager.modalWindows[1];
+                var modalWindow1Info = WindowManager.ModalWindows[1];
                 var modalWindow1Closed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow1.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindow1Closed);
@@ -372,7 +380,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the second modal window
-                var modalWindow2Info = WindowManager.modalWindows[0];
+                var modalWindow2Info = WindowManager.ModalWindows[0];
                 var modalWindow2Closed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow2.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindow2Closed);
@@ -383,7 +391,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -426,7 +434,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the message box
-                var messageBoxInfo = WindowManager.modalWindows[0];
+                var messageBoxInfo = WindowManager.ModalWindows[0];
                 var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
                 WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
                 await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
@@ -437,7 +445,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -473,7 +481,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a modal window
                 var modalWindows = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowTopModal(modalWindows));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindows));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
@@ -490,7 +498,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the messageBox
-                var messageBoxInfo = WindowManager.modalWindows[1];
+                var messageBoxInfo = WindowManager.ModalWindows[1];
                 var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
                 WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
                 await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
@@ -501,7 +509,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the modal window
-                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowInfo = WindowManager.ModalWindows[0];
                 var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindows.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
@@ -512,7 +520,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -557,7 +565,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowBackgroundModal(modalWindow));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow, WindowOwner.MainWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
@@ -565,7 +573,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the messageBox
-                var messageBoxInfo = WindowManager.modalWindows[1];
+                var messageBoxInfo = WindowManager.ModalWindows[1];
                 var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
                 WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
                 await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
@@ -576,7 +584,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the modal window
-                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowInfo = WindowManager.ModalWindows[0];
                 var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
@@ -587,7 +595,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
@@ -632,7 +640,7 @@ namespace SiliconStudio.Presentation.Tests
                 // Open a modal window
                 var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
                 var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened();
-                dispatcher.InvokeAsync(() => WindowManager.ShowBackgroundModal(modalWindow));
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow, WindowOwner.MainWindow));
                 await WindowManagerHelper.TaskWithTimeout(modalWindowOpened);
                 dispatcher.Invoke(() =>
                 {
@@ -640,7 +648,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the modal window
-                var modalWindowInfo = WindowManager.modalWindows[0];
+                var modalWindowInfo = WindowManager.ModalWindows[0];
                 var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed();
                 dispatcher.Invoke(() => modalWindow.Close());
                 await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
@@ -651,7 +659,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the messageBox
-                var messageBoxInfo = WindowManager.modalWindows[0];
+                var messageBoxInfo = WindowManager.ModalWindows[0];
                 var messageBoxClosed = WindowManagerHelper.NextModalWindowClosed();
                 WindowManagerHelper.KillWindow(messageBoxInfo.Hwnd);
                 await WindowManagerHelper.TaskWithTimeout(messageBoxClosed);
@@ -662,7 +670,7 @@ namespace SiliconStudio.Presentation.Tests
                 });
 
                 // Close the main window
-                var mainWindow = WindowManager.mainWindow;
+                var mainWindow = WindowManager.MainWindow;
                 var hidden = WindowManagerHelper.NextMainWindowChanged();
                 dispatcher.Invoke(() => window.Close());
                 await WindowManagerHelper.TaskWithTimeout(hidden);
