@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal CommandPool NativeCopyCommandPool;
         internal CommandBuffer NativeCopyCommandBuffer;
+        private SemaphoreCollector semaphoreCollector;
 
         private SharpVulkan.Buffer nativeUploadBuffer;
         private DeviceMemory nativeUploadBufferMemory;
@@ -294,6 +295,8 @@ namespace SiliconStudio.Xenko.Graphics
             //NativeCopyCommandList.Close();
 
             descriptorPools = new HeapPool(this, 1 << 16);
+
+            semaphoreCollector = new SemaphoreCollector(this);
         }
 
         internal unsafe IntPtr AllocateUploadBuffer(int size, out SharpVulkan.Buffer resource, out int offset)
@@ -423,14 +426,20 @@ namespace SiliconStudio.Xenko.Graphics
             var nativeCommandBufferCopy = nativeCommandBuffer;
             var pipelineStageFlags = PipelineStageFlags.AllCommands;
 
+            var presentSemaphoreCopy = presentSemaphore;
             var submitInfo = new SubmitInfo
             {
                 StructureType = StructureType.SubmitInfo,
                 CommandBufferCount = 1,
                 CommandBuffers = new IntPtr(&nativeCommandBufferCopy),
+                WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
+                WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
                 WaitDstStageMask = new IntPtr(&pipelineStageFlags),
             };
             NativeCommandQueue.Submit(1, &submitInfo, fence);
+
+            presentSemaphore = Semaphore.Null;
+            semaphoreCollector.Release();
 
             return NextFenceValue++;
         }
@@ -477,6 +486,16 @@ namespace SiliconStudio.Xenko.Graphics
                     lastCompletedFence = fenceValue;
                 }
             }
+        }
+
+        private Semaphore presentSemaphore;
+
+        public unsafe Semaphore GetNextPresentSemaphore()
+        {
+            var createInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
+            presentSemaphore = NativeDevice.CreateSemaphore(ref createInfo);
+            semaphoreCollector.Add(NextFenceValue, presentSemaphore);
+            return presentSemaphore;
         }
     }
 
@@ -613,9 +632,21 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        protected unsafe override void ReleaseObject(Framebuffer item)
+        protected override unsafe void ReleaseObject(Framebuffer item)
         {
             GraphicsDevice.NativeDevice.DestroyFramebuffer(item);
+        }
+    }
+
+    internal class SemaphoreCollector : TemporaryResourceCollector<Semaphore>
+    {
+        public SemaphoreCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected override unsafe void ReleaseObject(Semaphore item)
+        {
+            GraphicsDevice.NativeDevice.DestroySemaphore(item);
         }
     }
 

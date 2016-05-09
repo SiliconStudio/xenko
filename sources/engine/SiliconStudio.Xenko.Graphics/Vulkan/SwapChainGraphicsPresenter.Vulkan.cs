@@ -155,15 +155,10 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 
-        public unsafe override void Present()
+        public override unsafe void Present()
         {
-            //var semaphoreCreateInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
-            //var presentCompleteSemaphore = GraphicsDevice.NativeDevice.CreateSemaphore(ref semaphoreCreateInfo);
-
             try
             {
-                // TODO VULKAN: draw + image layout transition
-
                 var swapChainCopy = swapChain;
                 var currentBufferIndexCopy = currentBufferIndex;
                 var presentInfo = new PresentInfo
@@ -175,12 +170,10 @@ namespace SiliconStudio.Xenko.Graphics
                 };
 
                 // Present
-                //GraphicsDevice.NativeCommandQueue.WaitIdle();
                 GraphicsDevice.NativeCommandQueue.Present(ref presentInfo);
-                //GraphicsDevice.NativeCommandQueue.WaitIdle();
 
                 // Get next image
-                currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, Semaphore.Null, Fence.Null);
+                currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, GraphicsDevice.GetNextPresentSemaphore(), Fence.Null);
 
                 // Flip render targets
                 backbuffer.SetNativeHandles(swapchainImages[currentBufferIndex].NativeImage, swapchainImages[currentBufferIndex].NativeColorAttachmentView);
@@ -188,11 +181,6 @@ namespace SiliconStudio.Xenko.Graphics
             catch (SharpVulkanException e) when (e.Result == Result.ErrorOutOfDate)
             {
                 // TODO VULKAN 
-            }
-            finally
-            {
-
-                //GraphicsDevice.NativeDevice.DestroySemaphore(presentCompleteSemaphore);
             }
         }
 
@@ -209,7 +197,7 @@ namespace SiliconStudio.Xenko.Graphics
             base.OnNameChanged();
         }
 
-        public unsafe override void OnDestroyed()
+        public override unsafe void OnDestroyed()
         {
             backbuffer.Dispose();
             backbuffer = null;
@@ -455,7 +443,7 @@ namespace SiliconStudio.Xenko.Graphics
             commandBuffer.Reset(CommandBufferResetFlags.None);
 
             // Get next image
-            currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, Semaphore.Null, Fence.Null);
+            currentBufferIndex = GraphicsDevice.NativeDevice.AcquireNextImage(swapChain, ulong.MaxValue, GraphicsDevice.GetNextPresentSemaphore(), Fence.Null);
             
             // Apply the first swap chain image to the texture
             backbuffer.SetNativeHandles(swapchainImages[currentBufferIndex].NativeImage, swapchainImages[currentBufferIndex].NativeColorAttachmentView);
