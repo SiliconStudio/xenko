@@ -106,7 +106,7 @@ class ParticleBase<bool UsesSoftEdge> : ShaderBase, Texturing
             // SoftEdge END
 
             // DEBUG COLOR
-            colorTarget.g = 1;
+            // colorTarget.g = 1;
         }
         else
         {
@@ -129,7 +129,7 @@ class ParticleBase<bool UsesSoftEdge> : ShaderBase, Texturing
             }
 
             // DEBUG COLOR
-            colorTarget.r = 1;
+            // colorTarget.r = 1;
         }
 
         colorTarget.a *= AlphaAdditive;

@@ -95,9 +95,15 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             Parameters.Set(ParticleBaseKeys.ZOffset, ZOffset);
 
+            // This is correct. We invert the value here to reduce calculations on the shader side later
             Parameters.Set(ParticleBaseKeys.SoftEdgeInverseDistance, (SoftEdgeDistance > 0) ? (1f / SoftEdgeDistance) : 0f);
-            Parameters.Set(ParticleBaseKeys.UsesSoftEdge, (SoftEdgeDistance > 0));
-//            Parameters.Set(ParticleBaseKeys.UsesSoftEdge, true);
+        }
+
+        public override void ValidateEffect(RenderContext context, ref EffectValidator effectValidator)
+        {
+            base.ValidateEffect(context, ref effectValidator);
+
+            effectValidator.ValidateParameter(ParticleBaseKeys.UsesSoftEdge, (SoftEdgeDistance > 0));
         }
 
         public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)

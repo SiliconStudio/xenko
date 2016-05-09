@@ -160,7 +160,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         public override void ValidateEffect(RenderContext context, ref EffectValidator effectValidator)
         {
-            //UpdateShaders(context.GraphicsDevice);
+            base.ValidateEffect(context, ref effectValidator);
+
             effectValidator.ValidateParameter(ParticleBaseKeys.BaseColor, shaderSource);
         }
 
