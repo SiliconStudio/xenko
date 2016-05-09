@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.Windows
         /// Initializes a new instance of the <see cref="WindowInfo"/> class.
         /// </summary>
         /// <param name="window">The window represented by this object.</param>
-        internal WindowInfo(Window window)
+        public WindowInfo(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             Window = window;

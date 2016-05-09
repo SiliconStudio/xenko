@@ -45,7 +45,8 @@ namespace SiliconStudio.Presentation.Dialogs
             {
                 OpenDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
-            var result = await InvokeDialog();
+            await InvokeDialog();
+            var result = ((IModalDialogInternal)this).Result;
             FilePaths = result != DialogResult.Cancel ? new List<string>(OpenDlg.FileNames) : new List<string>();
             return result;
         }

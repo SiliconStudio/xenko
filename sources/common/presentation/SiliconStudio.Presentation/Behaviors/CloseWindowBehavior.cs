@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Presentation.Services;
+using SiliconStudio.Presentation.Windows;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -98,8 +100,10 @@ namespace SiliconStudio.Presentation.Behaviors
             if (window == null) throw new InvalidOperationException("The button attached to this behavior is not in a window");
 
             bool dialogResultUpdated = false;
+            var modal = window as IModalDialogInternal;
+
             // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
-            if (IsModal(window))
+            if (WpfModalHelper.IsModal(window))
             {
                 if (DialogResult != window.DialogResult)
                 {
@@ -107,6 +111,10 @@ namespace SiliconStudio.Presentation.Behaviors
                     window.DialogResult = DialogResult;
                     dialogResultUpdated = true;
                 }
+            }
+            else if (modal != null)
+            {
+                modal.Result = WindowManager.ToDialogResult(DialogResult);
             }
             else if (DialogResult != null)
             {
@@ -119,9 +127,23 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private static bool IsModal(Window window)
+    }
+
+    internal static class WpfModalHelper
+    {
+        private static readonly FieldInfo ShowingAsDialog;
+        private const string FieldName = "_showingAsDialog";
+
+        static WpfModalHelper()
         {
-            return (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
+            ShowingAsDialog = typeof(Window).GetField(FieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (ShowingAsDialog == null)
+                throw new MissingFieldException(nameof(Window), FieldName);
+        }
+
+        public static bool IsModal(Window window)
+        {
+            return (bool)ShowingAsDialog.GetValue(window);
         }
     }
 }

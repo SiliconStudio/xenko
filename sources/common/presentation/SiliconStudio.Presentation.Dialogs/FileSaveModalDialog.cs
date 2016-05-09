@@ -45,7 +45,8 @@ namespace SiliconStudio.Presentation.Dialogs
                 SaveDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
             SaveDlg.AlwaysAppendDefaultExtension = true;
-            var result = await InvokeDialog();
+            await InvokeDialog();
+            var result = ((IModalDialogInternal)this).Result;
             FilePath = result != DialogResult.Cancel ? SaveDlg.FileName : null;
             return result;
         }

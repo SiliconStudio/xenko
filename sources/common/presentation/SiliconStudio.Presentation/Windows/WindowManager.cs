@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.View;
 
 namespace SiliconStudio.Presentation.Windows
@@ -74,6 +75,15 @@ namespace SiliconStudio.Presentation.Windows
             mainWindow = null;
             allWindows.Clear();
             modalWindows.Clear();
+        }
+
+        public static DialogResult ToDialogResult(bool? dialogResult)
+        {
+            if (dialogResult.HasValue)
+            {
+                return dialogResult.Value ? DialogResult.Ok : DialogResult.Cancel;
+            }
+            return DialogResult.None;
         }
 
         public static Task ShowTopModal(Window window)

@@ -24,11 +24,12 @@ namespace SiliconStudio.Presentation.Dialogs
         /// <inheritdoc/>
         public string InitialDirectory { get { return OpenDlg.InitialDirectory; } set { OpenDlg.InitialDirectory = value.Replace('/', '\\'); } }
 
-        private CommonOpenFileDialog OpenDlg { get { return (CommonOpenFileDialog)Dialog; } }
+        private CommonOpenFileDialog OpenDlg => (CommonOpenFileDialog)Dialog;
 
         public override async Task<DialogResult> Show()
         {
-            var result = await InvokeDialog();
+            await InvokeDialog();
+            var result = ((IModalDialogInternal)this).Result;
             Directory = result != DialogResult.Cancel ? OpenDlg.FileName : null;
             return result;
         }
