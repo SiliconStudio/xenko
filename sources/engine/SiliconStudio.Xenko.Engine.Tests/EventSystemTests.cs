@@ -269,7 +269,37 @@ namespace SiliconStudio.Xenko.Engine.Tests
             game.Dispose();
         }
 
+        [Test]
+        public void EveryFrameClear()
+        {
+            var game = new EventSystemTestGame();
 
-        //todo verify clear behavior
+            var frameCount = 0;
+
+            game.Script.AddTask(async () =>
+            {
+                var evt = new EventKey();
+                var rcv = new EventReceiver(evt, game.Script, EventReceiverOptions.ClearEveryFrame | EventReceiverOptions.Buffered);
+                while (frameCount < 25)
+                {
+                    evt.Broadcast();
+
+                    if (frameCount == 20)
+                    {
+                        var manyEvents = rcv.ReceiveMany();
+                        Assert.AreEqual(manyEvents.Count, 1);
+                        game.Exit();
+                    }
+
+                    await game.Script.NextFrame();
+
+                    frameCount++;
+                }
+            });
+
+            game.Run();
+
+            game.Dispose();
+        }
     }
 }
