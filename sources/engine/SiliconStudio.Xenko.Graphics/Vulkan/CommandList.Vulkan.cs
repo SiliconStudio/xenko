@@ -75,6 +75,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Submit
             GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
+
+            activePipeline = null;
         }
 
         private unsafe long FlushInternal(bool wait)
@@ -102,7 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Restore states
             if (activePipeline != null)
             {
-                SetPipelineState(activePipeline);
+                NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, activePipeline.NativePipeline);
                 var descriptorSetCopy = descriptorSet;
                 NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &descriptorSetCopy, 0, null);
             }
@@ -1057,20 +1059,8 @@ namespace SiliconStudio.Xenko.Graphics
                 return;
 
             // End old render pass
-            if (activeRenderPass != RenderPass.Null)
-            {
-                NativeCommandBuffer.EndRenderPass();
-                activeRenderPass = RenderPass.Null;
-            }
+            CleanupRenderPass();
 
-            // Release old frame buffer
-            if (activeFramebuffer != Framebuffer.Null)
-            {
-                throw new NotImplementedException();
-                //GraphicsDevice.NativeDevice.DestroyFramebuffer(activeFramebuffer);
-                activeFramebuffer = Framebuffer.Null;
-            }           
-            
             if (pipelineRenderPass != RenderPass.Null)
             {
                 var renderTarget = RenderTargetCount > 0 ? renderTargets[0] : depthStencilBuffer;
