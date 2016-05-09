@@ -15,14 +15,6 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public abstract class MessageDialogBase : Window
     {
-        private int result;
-
-        protected MessageDialogBase()
-        {
-            var serviceProvider = new ViewModelServiceProvider(new[] { new DispatcherService(Dispatcher) });
-            ButtonCommand = new AnonymousCommand<int>(serviceProvider, ButtonClick);
-        }
-
         /// <summary>
         /// Identifies the <see cref="ButtonsSource"/> dependency property.
         /// </summary>
@@ -48,10 +40,22 @@ namespace SiliconStudio.Presentation.Windows
             DependencyProperty.Register(nameof(Result), typeof(int), typeof(MessageDialogBase));
 
         /// <summary>
+        /// Identifies the <see cref="ButtonCommand"/> dependency property key.
+        /// </summary>
+        private static readonly DependencyPropertyKey ButtonCommandPropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(ButtonCommand), typeof(ICommandBase), typeof(MessageDialogBase), new PropertyMetadata());
+        /// <summary>
         /// Identifies the <see cref="ButtonCommand"/> dependency property.
         /// </summary>
-        private static readonly DependencyProperty ButtonCommandProperty =
-            DependencyProperty.Register(nameof(ButtonCommand), typeof(ICommandBase), typeof(MessageDialogBase));
+        protected static readonly DependencyProperty ButtonCommandProperty = ButtonCommandPropertyKey.DependencyProperty;
+
+        private int result;
+
+        protected MessageDialogBase()
+        {
+            var serviceProvider = new ViewModelServiceProvider(new[] { new DispatcherService(Dispatcher) });
+            ButtonCommand = new AnonymousCommand<int>(serviceProvider, ButtonClick);
+        }
 
         public IEnumerable<DialogButtonInfo> ButtonsSource { get { return (IEnumerable<DialogButtonInfo>)GetValue(ButtonsSourceProperty); } set { SetValue(ButtonsSourceProperty, value); } }
 
@@ -61,7 +65,7 @@ namespace SiliconStudio.Presentation.Windows
 
         public int Result { get { return (int)GetValue(ResultProperty); } protected set { SetValue(ResultProperty, value); } }
 
-        private ICommandBase ButtonCommand { get { return (ICommandBase)GetValue(ButtonCommandProperty); } set { SetValue(ButtonCommandProperty, value); } }
+        protected ICommandBase ButtonCommand { get { return (ICommandBase)GetValue(ButtonCommandProperty); } private set { SetValue(ButtonCommandPropertyKey, value); } }
 
         protected int ShowInternal()
         {

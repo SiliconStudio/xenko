@@ -24,11 +24,9 @@ namespace SiliconStudio.Xenko.UI.Renderers
             var button = (Button)element;
             var color = button.RenderOpacity * Color.White;
 
-            var image = button.PressedImage;
-            if(!button.IsPressed)
-                image = button.MouseOverState == MouseOverState.MouseOverElement? button.MouseOverImage : button.NotPressedImage;
-
-            if(image == null || image.Texture == null)
+            var provider = button.IsPressed ? button.PressedImage : button.MouseOverState == MouseOverState.MouseOverElement ? button.MouseOverImage : button.NotPressedImage;
+            var image = provider?.GetSprite();
+            if(image?.Texture == null)
                 return;
 
             Batch.DrawImage(image.Texture, ref button.WorldMatrixInternal, ref image.RegionInternal, ref button.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);

@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Particles
         /// AABB (Axis-Aligned Bounding Box) used for fast culling and optimizations. Can be specified by the user. Leave it Null to disable culling.
         /// </userdoc>
         [DataMember(5)]
-        [Display("Bounding Shape")]
+        [Display("Culling AABB")]
         public BoundingShape BoundingShape { get; set; } = null;
 
         /// <summary>

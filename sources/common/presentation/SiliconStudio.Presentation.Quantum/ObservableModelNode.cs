@@ -326,7 +326,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, Index.Empty);
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
                         if (shouldConstruct)
                         {
                             var childPath = graphNodePath.GetChildPath(modelNode, child);
@@ -352,7 +352,7 @@ namespace SiliconStudio.Presentation.Quantum
             ClearCommands();
 
             // Dispose all children and remove them
-            Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
+            Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
             foreach (var child in Children.Cast<ObservableNode>().ToList())
             {
                 RemoveChild(child);
@@ -428,11 +428,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
 
-        public override void Dispose()
+        /// <inheritdoc/>
+        public override void Destroy()
         {
             SourceNode.Content.Changing -= ContentChanging;
             SourceNode.Content.Changed -= ContentChanged;
-            base.Dispose();
+            base.Destroy();
         }
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
@@ -452,7 +453,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
                 // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
-                if (!IsPrimitive && !IsDisposed && !(Value?.GetType().IsStruct() ?? false))
+                if (!IsPrimitive && !IsDestroyed && !(Value?.GetType().IsStruct() ?? false))
                 {
                     Refresh();
                 }

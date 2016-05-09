@@ -23,11 +23,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
             var image = (ImageElement)element;
             var imageColor = element.RenderOpacity * image.Color;
 
-            if(image.Source == null)
+            var source = image.Source?.GetSprite();
+            if (source == null)
                 return;
 
-            Batch.DrawImage(image.Source.Texture, ref image.WorldMatrixInternal, ref image.Source.RegionInternal,
-                ref element.RenderSizeInternal, ref image.Source.BordersInternal, ref imageColor, context.DepthBias, image.Source.Orientation);
+            Batch.DrawImage(source.Texture, ref image.WorldMatrixInternal, ref source.RegionInternal,
+                ref element.RenderSizeInternal, ref source.BordersInternal, ref imageColor, context.DepthBias, source.Orientation);
         }
     }
 }

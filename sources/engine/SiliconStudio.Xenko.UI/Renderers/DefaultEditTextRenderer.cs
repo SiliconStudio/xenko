@@ -31,11 +31,10 @@ namespace SiliconStudio.Xenko.UI.Renderers
             // determine the image to draw in background of the edit text
             var fontScale = element.LayoutingContext.RealVirtualResolutionRatio;
             var color = editText.RenderOpacity * Color.White;
-            var image = editText.ActiveImage;
-            if(!editText.IsSelectionActive)
-                image = editText.MouseOverState == MouseOverState.MouseOverElement? editText.MouseOverImage : editText.InactiveImage;
+            var provider = editText.IsSelectionActive ? editText.ActiveImage : editText.MouseOverState == MouseOverState.MouseOverElement ? editText.MouseOverImage : editText.InactiveImage;
+            var image = provider?.GetSprite();
 
-            if (image != null && image.Texture != null)
+            if (image?.Texture != null)
             {
                 Batch.DrawImage(image.Texture, ref editText.WorldMatrixInternal, ref image.RegionInternal, ref editText.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
             }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace SiliconStudio.Core.Transactions
@@ -21,14 +20,9 @@ namespace SiliconStudio.Core.Transactions
         bool IsEmpty { get; }
 
         /// <summary>
-        /// Gets the operations currently contained in the transaction.
+        /// Continues the transaction when the current <see cref="SynchronizationContext"/> has changed, allowing to push additional operations or complete it.
         /// </summary>
-        IList<Operation> Operations { get; }
-
-        /// <summary>
-        /// Raised just before the transaction is completed.
-        /// </summary>
-        event EventHandler<EventArgs> BeforeComplete;
+        void Continue();
 
         /// <summary>
         /// Completes the transaction by closing it and adding it to the transaction stack.

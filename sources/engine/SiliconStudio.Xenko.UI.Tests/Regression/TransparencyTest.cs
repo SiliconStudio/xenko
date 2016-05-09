@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -36,18 +37,18 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var Sprites = Content.Load<SpriteSheet>("UIImages");
+            var sprites = Content.Load<SpriteSheet>("UIImages");
             element1 = new Button { Name = "1", Width = 300, Height = 150 };
-            element1.PressedImage = Sprites["Logo"];
-            element1.NotPressedImage = Sprites["BorderButton"];
+            element1.PressedImage = SpriteFromSheet.Create(sprites, "Logo");
+            element1.NotPressedImage = SpriteFromSheet.Create(sprites, "BorderButton");
             element1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(350, 300, 0));
             element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
 
             element2 = new Button { Name = "2", Width = 600, Height = 300 };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(200, 100, -50));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
-            element2.PressedImage = new Sprite(Content.Load<Texture>("ImageButtonPressed"));
-            element2.NotPressedImage = new Sprite(Content.Load<Texture>("ImageButtonNotPressed"));
+            element2.PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed"));
+            element2.NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed"));
 
             var canvas = new Canvas();
             canvas.Children.Add(element1);

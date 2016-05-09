@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -34,6 +35,20 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             PixelsPerUnit = 100;
             CenterFromMiddle = true;
             IsTransparent = true;
+        }
+
+        private SpriteFromTexture(Sprite source)
+            : this()
+        {
+            sprite = source;
+            isSpriteDirty = false;
+
+            center = sprite.Center;
+            centerFromMiddle = false;
+            isTransparent = sprite.IsTransparent;
+            // FIXME: should we use the Max, Min, average of X and/or Y?
+            pixelsPerUnit = sprite.PixelsPerUnit.X;
+            texture = sprite.Texture;
         }
 
         /// <summary>
@@ -129,7 +144,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
-        public Sprite GetSprite(int index)
+        /// <inheritdoc/>
+        public int SpritesCount => sprite == null ? 0 : 1;
+
+        /// <inheritdoc/>
+        public Sprite GetSprite()
         {
             if (isSpriteDirty)
             {
@@ -142,8 +161,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             return sprite;
         }
 
-        public int SpritesCount { get { return sprite == null ? 0 : 1; } }
-
         private void UpdateSprite()
         {
             sprite.Texture = texture;
@@ -154,6 +171,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
+        }
+
+        public static explicit operator SpriteFromTexture(Sprite sprite)
+        {
+            if (sprite == null) throw new ArgumentNullException(nameof(sprite));
+            return new SpriteFromTexture(sprite);
         }
     }
 }

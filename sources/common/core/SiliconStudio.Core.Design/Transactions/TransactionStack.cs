@@ -29,9 +29,10 @@ namespace SiliconStudio.Core.Transactions
         /// </summary>
         public IReadOnlyList<IReadOnlyTransaction> Transactions => transactions;
 
-        /// <summary>
-        /// Gets whether there is a transaction rollback or rollforward currently in progress.
-        /// </summary>
+        /// <inheritdoc/>
+        public bool TransactionInProgress { get; private set; }
+
+        /// <inheritdoc/>
         public bool RollInProgress { get; private set; }
 
         /// <inheritdoc/>
@@ -74,14 +75,9 @@ namespace SiliconStudio.Core.Transactions
 
                 var transaction = new Transaction(this);
                 transactionsInProgress.Push(transaction);
+                TransactionInProgress = true;
                 return transaction;
             }
-        }
-
-        /// <inheritdoc/>
-        public IAsyncTransaction CreateAsyncTransaction()
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
@@ -150,6 +146,9 @@ namespace SiliconStudio.Core.Transactions
                     PushOperation(transaction.Operations.Count == 1 ? transaction.Operations.Single() : transaction);
                     return;
                 }
+
+                // We're completing the last transaction
+                TransactionInProgress = false;
 
                 // Remove transactions that will be overwritten by this one
                 if (currentPosition < transactions.Count)

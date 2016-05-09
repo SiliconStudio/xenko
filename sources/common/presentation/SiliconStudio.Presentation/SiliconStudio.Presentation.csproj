@@ -42,8 +42,12 @@
     <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
+    <Compile Include="Resources\KeyGestures.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KeyGestures.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\DummyTransaction.cs" />
-    <Compile Include="Services\IMergeableOperation.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
     <Compile Include="Services\UndoRedoService.cs" />
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
@@ -320,6 +324,10 @@
     <Resource Include="Resources\Images\warning-32.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
+      <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
+      <Name>SiliconStudio.Assets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
@@ -355,6 +363,10 @@
     <Resource Include="Resources\Images\gear--pencil.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\KeyGestures.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>KeyGestures.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
