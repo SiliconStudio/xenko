@@ -148,7 +148,8 @@ namespace SiliconStudio.Xenko.Rendering
                 DepthStencilAsSR = null;
             }
 
-            depthStencilHasChanged = false;
+            // TODO Not doing this every frame currently results in a bug
+            // depthStencilHasChanged = false;
         }
 
         /// <summary>
@@ -160,11 +161,11 @@ namespace SiliconStudio.Xenko.Rendering
         {
             if (renderContext == null) throw new ArgumentNullException("renderContext");
 
-            //if (depthStencilHasChanged)
-            //    UpdateDepthStencilCache(renderContext);
+            if (depthStencilHasChanged)
+                UpdateDepthStencilCache(renderContext);
 
             // Sets the depth and render target
-            renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencil.ToDepthStencilReadOnlyTexture(), RenderTargets);
+            renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencilAsRT, RenderTargets);
         }
 
         /// <summary>

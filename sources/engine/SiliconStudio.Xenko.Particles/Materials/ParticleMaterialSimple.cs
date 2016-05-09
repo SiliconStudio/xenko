@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// If positive, soft particle edges will be calculated with maximum distance of the value set.
         /// </userdoc>
         [DataMember(35)]
-        [Display("Soft Edge Distance")]
+        [Display("Soft Edge")]
         public float SoftEdgeDistance { get; set; } = 0f;
 
         /// <summary>
