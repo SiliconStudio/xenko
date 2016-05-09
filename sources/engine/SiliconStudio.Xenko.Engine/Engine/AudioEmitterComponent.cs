@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffect == null)
             {
-                throw new ArgumentNullException("soundEffect");
+                throw new ArgumentNullException(nameof(soundEffect));
             }
             if (!SoundEffectToController.ContainsKey(soundEffect))
             {
@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffect == null)
             {
-                throw new ArgumentNullException("soundEffect");
+                throw new ArgumentNullException(nameof(soundEffect));
             }
             if (soundEffect.WaveFormat.Channels > 1)
             {
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffects == null)
             {
-                throw new ArgumentNullException("soundEffects");
+                throw new ArgumentNullException(nameof(soundEffects));
             }
 
             foreach (var soundEffect in soundEffects)
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffect == null)
             {
-                throw new ArgumentNullException("soundEffect");
+                throw new ArgumentNullException(nameof(soundEffect));
             }
             if (!SoundEffectToController.ContainsKey(soundEffect))
             {
@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffects == null)
             {
-                throw new ArgumentNullException("soundEffects");
+                throw new ArgumentNullException(nameof(soundEffects));
             }
 
             foreach (var soundEffect in soundEffects)
