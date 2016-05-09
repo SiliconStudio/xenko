@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
@@ -28,9 +29,9 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Creates an event receiver, ready to receive broadcasts from the key
         /// </summary>
         /// <param name="key">The event key to listen from</param>
-        /// <param name="attachedScript">The script from where this receiver is created, useful if we have the ClearEveryFrame option set</param>
+        /// <param name="scheduler">The scheduler where the event is awaited</param>
         /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None) : base(key, attachedScript, options)
+        public EventReceiver(EventKey key, ScriptSystem scheduler, EventReceiverOptions options = EventReceiverOptions.None) : base(key, scheduler, options)
         {
         }
 
@@ -51,7 +52,6 @@ namespace SiliconStudio.Xenko.Engine.Events
     public class EventReceiver<T> : IDisposable
     {
         private IDisposable link;
-        private readonly ScriptComponent attachedScript;
         private readonly CancellationTokenSource cancellationTokenSource;
         private string receivedDebugString;
         private string receivedManyDebugString;
@@ -86,6 +86,11 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
+            if (((options & EventReceiverOptions.ClearEveryFrame) != 0))
+            {
+                throw new InvalidOperationException("If the options ClearEveryFrame is present a valid script scheduler must be passed to the EventReceiver constructor");
+            }
+
             Init(key, options);
         }
 
@@ -93,18 +98,22 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Creates an event receiver, ready to receive broadcasts from the key
         /// </summary>
         /// <param name="key">The event key to listen from</param>
-        /// <param name="attachedScript">The script from where this receiver is created, useful if we have the ClearEveryFrame option set</param>
+        /// <param name="scheduler">The scheduler where the event is awaited</param>
         /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey<T> key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None)
+        public EventReceiver(EventKey<T> key, ScriptSystem scheduler, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            Init(Key, options);
+            Init(key, options);
 
-            this.attachedScript = attachedScript;
-            var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && attachedScript != null;
+            if (((options & EventReceiverOptions.ClearEveryFrame) != 0) && scheduler == null)
+            {
+                throw new InvalidOperationException("If the options ClearEveryFrame is present a valid script scheduler must be passed to the EventReceiver constructor");
+            }
+
+            var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && scheduler != null;
             if (!clearEveryFrame) return;
 
             cancellationTokenSource = new CancellationTokenSource();
-            attachedScript.Script.AddTask(async () =>
+            scheduler.AddTask(async () =>
             {
                 while(!cancellationTokenSource.IsCancellationRequested)
                 {
@@ -112,9 +121,9 @@ namespace SiliconStudio.Xenko.Engine.Events
                     IList<T> result;
                     BufferBlock.TryReceiveAll(out result);
                         
-                    await this.attachedScript.Script.NextFrame();
+                    await scheduler.NextFrame();
                 }
-            }, attachedScript.Priority + 1);
+            }, 0xfffffff);
         }
 
         /// <summary>
