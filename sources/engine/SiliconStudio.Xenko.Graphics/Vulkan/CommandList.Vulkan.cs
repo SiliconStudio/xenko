@@ -337,6 +337,9 @@ namespace SiliconStudio.Xenko.Graphics
                 var oldLayout = texture.NativeLayout;
                 var oldAccessMask = texture.NativeAccessMask;
 
+                var sourceStages = PipelineStageFlags.TopOfPipe;
+                var destinationStages = PipelineStageFlags.TopOfPipe;
+
                 switch (newState)
                 {
                     case GraphicsResourceState.RenderTarget:
@@ -346,6 +349,9 @@ namespace SiliconStudio.Xenko.Graphics
                     case GraphicsResourceState.Present:
                         texture.NativeLayout = ImageLayout.PresentSource;
                         texture.NativeAccessMask = AccessFlags.MemoryRead;
+
+                        sourceStages = PipelineStageFlags.AllCommands;
+                        destinationStages = PipelineStageFlags.BottomOfPipe;
                         break;
                     case GraphicsResourceState.DepthWrite:
                         texture.NativeLayout = ImageLayout.DepthStencilAttachmentOptimal;
@@ -377,10 +383,7 @@ namespace SiliconStudio.Xenko.Graphics
                     SourceAccessMask = oldAccessMask,
                     DestinationAccessMask = texture.NativeAccessMask,
                 };
-                NativeCommandBuffer.PipelineBarrier(
-                    newState == GraphicsResourceState.Present ? PipelineStageFlags.AllCommands : PipelineStageFlags.TopOfPipe,
-                    newState == GraphicsResourceState.Present ? PipelineStageFlags.BottomOfPipe : PipelineStageFlags.TopOfPipe,
-                    DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+                NativeCommandBuffer.PipelineBarrier(sourceStages, destinationStages, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
             }
             else
             {
@@ -980,7 +983,7 @@ namespace SiliconStudio.Xenko.Graphics
                         if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
                             FlushInternal(false);
 
-                        GraphicsDevice.WaitForFenceInternal(texture.StagingFenceValue);
+                        GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
                     }
                 }
 

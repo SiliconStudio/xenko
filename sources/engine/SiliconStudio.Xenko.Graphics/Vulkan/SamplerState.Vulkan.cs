@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
                 CompareOperation = VulkanConvertExtensions.ConvertComparisonFunction(Description.CompareFunction),
                 MinLod = Description.MinMipLevel,
                 MaxLod = Description.MaxMipLevel,
-                // TODO VULKAN: How to handle BorderColor
+                BorderColor = BorderColor.FloatOpaqueBlack // TODO VULKAN: How to handle BorderColor
             };
 
             ConvertMinFilter(Description.Filter, out createInfo.MinFilter, out createInfo.MagFilter, out createInfo.MipmapMode, out createInfo.CompareEnable, out createInfo.AnisotropyEnable);

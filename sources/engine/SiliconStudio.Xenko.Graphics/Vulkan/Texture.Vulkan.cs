@@ -344,8 +344,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     fixed (BufferImageCopy* copiesPointer = &copies[0])
                     {
-                        //if (totalSize < 16000000)
-                            commandBuffer.CopyBufferToImage(uploadResource, NativeImage, ImageLayout.TransferDestinationOptimal, (uint)copies.Length, copiesPointer);
+                        commandBuffer.CopyBufferToImage(uploadResource, NativeImage, ImageLayout.TransferDestinationOptimal, (uint)copies.Length, copiesPointer);
                     }
                 }
 

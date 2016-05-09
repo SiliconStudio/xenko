@@ -37,10 +37,9 @@ namespace SiliconStudio.Xenko.Graphics
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_device_limits"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_object_tracker"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_image"),
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_mem_tracker"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_core_validation"),
                 Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"), // Fails on swapchain creation?
+                Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"),
 
                 //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_api_dump"),
                 //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_vktrace"),
@@ -72,8 +71,8 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         StructureType = StructureType.InstanceCreateInfo,
                         ApplicationInfo = new IntPtr(&applicationInfo),
-                        //EnabledLayerCount = (uint)enabledLayerNames.Length,
-                        //EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
+                        EnabledLayerCount = (uint)enabledLayerNames.Length,
+                        EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
                     };

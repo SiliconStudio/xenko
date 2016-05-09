@@ -267,7 +267,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
         }
 
-        protected internal unsafe override void OnDestroyed()
+        protected internal override unsafe void OnDestroyed()
         {
             GraphicsDevice.NativeDevice.DestroyRenderPass(NativeRenderPass);
             GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
