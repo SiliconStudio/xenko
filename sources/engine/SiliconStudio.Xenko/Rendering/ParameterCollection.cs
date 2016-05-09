@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -13,6 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataSerializer(typeof(ParameterCollection.Serializer))]
     [DataSerializerGlobal(null, typeof(FastList<ParameterKeyInfo>))]
+    [DebuggerTypeProxy(typeof(ParameterCollection.DebugView))]
     public class ParameterCollection
     {
         private static readonly byte[] EmptyData = new byte[0];
@@ -78,6 +81,12 @@ namespace SiliconStudio.Xenko.Rendering
                     Utilities.CopyMemory((IntPtr)dataValuesDest, (IntPtr)dataValuesSources, DataValues.Length);
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            var parameterKeysByType = ParameterKeyInfos.GroupBy(x => x.Key.Type);
+            return $"ParameterCollection: {string.Join(", ", parameterKeysByType.Select(x => $"{x.Count()} {x.Key}(s)"))}";
         }
 
         /// <summary>
@@ -935,6 +944,106 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 Offset = offset;
                 Count = count;
+            }
+        }
+
+        class DebugView
+        {
+            private readonly ParameterCollection collection;
+
+            public DebugView(ParameterCollection collection)
+            {
+                this.collection = collection;
+            }
+
+            public ParameterCollectionLayout Layout => collection.Layout;
+
+            public int PermutationCounter => collection.PermutationCounter;
+
+            // Note: this should be named "Parameters", but since its name is hidden and we want to to appear after PermutationCounter, we prepend ZZ
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public unsafe object[] ZZParameters
+            {
+                get
+                {
+                    return collection.ParameterKeyInfos
+                        .OrderBy(x => x.Key.Type == ParameterKeyType.Value ? 0x10000 + x.Offset : x.BindingSlot) // sort by offsets or binding slot (note: values will go after objects)
+                        .SelectMany(x =>
+                        {
+                            if (x.Key.Type == ParameterKeyType.Value)
+                            {
+                                // Values
+                                var stride = (x.Key.Size + 15)/16*16;
+                                var values = new object[x.Count];
+                                fixed (byte* dataValuesStart = collection.DataValues)
+                                {
+                                    var offset = x.Offset;
+                                    for (int i = 0; i < x.Count; ++i, offset += stride)
+                                    {
+                                        // Safety check: Check if we read outside of array
+                                        var outOfBound = offset + x.Key.Size > collection.DataValues.Length;
+
+                                        // Create debug object for this parameter
+                                        values[i] = new ValueParameter
+                                        {
+                                            Key = x.Key,
+                                            Index = x.Count > 1 ? i : -1,
+                                            Offset = offset,
+                                            Value = outOfBound ? "Error (out of bound)" : x.Key.ReadValue((IntPtr)dataValuesStart + offset),
+                                        };
+                                    }
+                                }
+                                return values;
+                            }
+                            else
+                            {
+                                // Objects and permutations
+                                var objects = new object[x.Count];
+                                var slot = x.BindingSlot;
+                                for (int i = 0; i < x.Count; ++i, ++slot)
+                                {
+                                    // Create debug object for this parameter
+                                    objects[i] = new ObjectParameter
+                                    {
+                                        Key = x.Key,
+                                        Index = x.Count > 1 ? i : -1,
+                                        BindingSlot = slot,
+                                        Value = collection.ObjectValues[slot],
+                                    };
+                                }
+                                return objects;
+                            }
+                        })
+                        .ToArray();
+                }
+            }
+
+            // Represents a value
+            class ValueParameter
+            {
+                public ParameterKey Key;
+                public object Value;
+                public int Index;
+                public int Offset;
+
+                public override string ToString()
+                {
+                    return $"{Key.Type} @ Offset {Offset:X4}: {Key}{(Index != -1 ? "[" + Index + "]" : string.Empty)} => {Value ?? "null"}";
+                }
+            }
+
+            // Represents an object or permutation
+            class ObjectParameter
+            {
+                public ParameterKey Key;
+                public object Value;
+                public int Index;
+                public int BindingSlot;
+
+                public override string ToString()
+                {
+                    return $"{Key.Type} @ Slot {BindingSlot:D2}: {Key}{(Index != -1 ? "[" + Index + "]" : string.Empty)} => {Value ?? "null"}";
+                }
             }
         }
     }

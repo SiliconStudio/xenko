@@ -101,7 +101,22 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void OnRecreateImpl()
         {
-            throw new NotImplementedException();
+            // Dependency: wait for underlying texture to be recreated
+            if (ParentTexture != null && ParentTexture.LifetimeState != GraphicsResourceLifetimeState.Active)
+                return;
+
+            // Render Target / Depth Stencil are considered as "dynamic"
+            if ((Usage == GraphicsResourceUsage.Immutable
+                    || Usage == GraphicsResourceUsage.Default)
+                && !IsRenderTarget && !IsDepthStencil)
+                return;
+
+            if (ParentTexture == null && GraphicsDevice != null)
+            {
+                GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+            }
+
+            InitializeFromImpl();
         }
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)

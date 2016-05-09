@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public static readonly EffectPermutationSlot Invalid = new EffectPermutationSlot(-1);
 
-        internal readonly int Index;
+        public readonly int Index;
 
         internal EffectPermutationSlot(int index)
         {

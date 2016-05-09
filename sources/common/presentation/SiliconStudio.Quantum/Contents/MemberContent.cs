@@ -81,10 +81,11 @@ namespace SiliconStudio.Quantum.Contents
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = collectionDescriptor.GetCollectionCount(Value);
+                // Some collection (such as sets) won't add item at the end but at an arbitrary location.
+                // Better send a null index in this case than sending a wrong value.
+                var index = collectionDescriptor.IsList ? (object)collectionDescriptor.GetCollectionCount(Value) : null;
                 NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
                 collectionDescriptor.Add(Value, newItem);
-
                 UpdateReferences();
                 NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
             }
@@ -94,30 +95,33 @@ namespace SiliconStudio.Quantum.Contents
 
         public override void Add(object itemIndex, object newItem)
         {
-            NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
             {
-                var index = (int)itemIndex;
-                if (collectionDescriptor.GetCollectionCount(Value) == index || !collectionDescriptor.HasInsert)
+                var index = collectionDescriptor.IsList ? itemIndex : null;
+                NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
+                if (collectionDescriptor.GetCollectionCount(Value) == (int)itemIndex || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(Value, newItem);
                 }
                 else
                 {
-                    collectionDescriptor.Insert(Value, index, newItem);
+                    collectionDescriptor.Insert(Value, (int)itemIndex, newItem);
                 }
+                UpdateReferences();
+                NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
             }
             else if (dictionaryDescriptor != null)
             {
+                NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 dictionaryDescriptor.SetValue(Value, itemIndex, newItem);
+                UpdateReferences();
+                NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
-            UpdateReferences();
-            NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
         }
 
         public override void Remove(object itemIndex, object item)

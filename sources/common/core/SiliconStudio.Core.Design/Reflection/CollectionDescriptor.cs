@@ -54,6 +54,7 @@ namespace SiliconStudio.Core.Reflection
                 IsReadOnlyFunction = obj => ((IList)obj).IsReadOnly;
                 HasIndexerAccessors = true;
                 typeSupported = true;
+                IsList = true;
             }
             var itype = type.GetInterface(typeof(ICollection<>));
 
@@ -84,6 +85,7 @@ namespace SiliconStudio.Core.Reflection
                     var setItem = itype.GetMethod("set_Item", new[] { typeof(int), ElementType });
                     SetIndexedItem = (obj, index, value) => setItem.Invoke(obj, new[] { index, value });
                     HasIndexerAccessors = true;
+                    IsList = true;
                 }
                 else
                 {
@@ -151,6 +153,11 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <value><c>true</c> if this instance has a valid indexer setter; otherwise, <c>false</c>.</value>
         public bool HasIndexerAccessors { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this collection implements <see cref="IList"/> or <see cref="IList{T}"/>.
+        /// </summary>
+        public bool IsList { get; }
 
         /// <summary>
         /// Returns the value matching the given index in the collection.

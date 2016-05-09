@@ -66,9 +66,9 @@ namespace SiliconStudio.Xenko.Graphics
         public bool ScissorTestEnable;
 
         /// <summary>
-        /// Enable multisample antialiasing.
+        /// Multisample level.
         /// </summary>
-        public bool MultiSampleAntiAlias;
+        public MSAALevel MultiSampleLevel;
 
         /// <summary>
         /// Enable line antialiasing; only applies if doing line drawing and MultisampleEnable is false.
@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Graphics
             DepthClipEnable = true;
             FrontFaceCounterClockwise = false;
             ScissorTestEnable = false;
-            MultiSampleAntiAlias = false;
+            MultiSampleLevel = MSAALevel.None;
             MultiSampleAntiAliasLine = false;
             DepthBias = 0;
             DepthBiasClamp = 0f;
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool Equals(RasterizerStateDescription other)
         {
-            return FillMode == other.FillMode && CullMode == other.CullMode && FrontFaceCounterClockwise == other.FrontFaceCounterClockwise && DepthBias == other.DepthBias && DepthBiasClamp.Equals(other.DepthBiasClamp) && SlopeScaleDepthBias.Equals(other.SlopeScaleDepthBias) && DepthClipEnable == other.DepthClipEnable && ScissorTestEnable == other.ScissorTestEnable && MultiSampleAntiAlias == other.MultiSampleAntiAlias && MultiSampleAntiAliasLine == other.MultiSampleAntiAliasLine;
+            return FillMode == other.FillMode && CullMode == other.CullMode && FrontFaceCounterClockwise == other.FrontFaceCounterClockwise && DepthBias == other.DepthBias && DepthBiasClamp.Equals(other.DepthBiasClamp) && SlopeScaleDepthBias.Equals(other.SlopeScaleDepthBias) && DepthClipEnable == other.DepthClipEnable && ScissorTestEnable == other.ScissorTestEnable && MultiSampleLevel == other.MultiSampleLevel && MultiSampleAntiAliasLine == other.MultiSampleAntiAliasLine;
         }
 
         public override bool Equals(object obj)
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Graphics
                 hashCode = (hashCode*397) ^ SlopeScaleDepthBias.GetHashCode();
                 hashCode = (hashCode*397) ^ DepthClipEnable.GetHashCode();
                 hashCode = (hashCode*397) ^ ScissorTestEnable.GetHashCode();
-                hashCode = (hashCode*397) ^ MultiSampleAntiAlias.GetHashCode();
+                hashCode = (hashCode*397) ^ MultiSampleLevel.GetHashCode();
                 hashCode = (hashCode*397) ^ MultiSampleAntiAliasLine.GetHashCode();
                 return hashCode;
             }
