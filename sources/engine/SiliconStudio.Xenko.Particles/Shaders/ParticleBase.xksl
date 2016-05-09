@@ -1,7 +1,21 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-class ParticleBase<bool UsesSoftEdge> : ShaderBase, Texturing
+// TODO Move these definitions into a more base class
+#ifndef True
+# define True true
+#endif
+
+// TODO Move these definitions into a more base class
+#ifndef False
+# define False false
+#endif
+
+#ifndef UsesSoftEdge
+# define UsesSoftEdge false
+#endif
+
+class ParticleBase : ShaderBase, Texturing
 {
     // -------------------------------------
     // Resources

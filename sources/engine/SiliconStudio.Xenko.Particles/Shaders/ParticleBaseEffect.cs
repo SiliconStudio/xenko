@@ -22,7 +22,8 @@ namespace SiliconStudio.Xenko.Rendering
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ParticleBase", context.GetParam(ParticleBaseKeys.UsesSoftEdge));
+                mixin.AddMacro("UsesSoftEdge", context.GetParam(ParticleBaseKeys.UsesSoftEdge));
+                context.Mixin(mixin, "ParticleBase");
             }
 
             [ModuleInitializer]

@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Rendering
 {
 
-class ParticleComputeColorShader<bool UsesSoftEdgeDerived> : ParticleBase<UsesSoftEdgeDerived>
+class ParticleComputeColorShader : ParticleBase
 {
     // -------------------------------------
     // streams
