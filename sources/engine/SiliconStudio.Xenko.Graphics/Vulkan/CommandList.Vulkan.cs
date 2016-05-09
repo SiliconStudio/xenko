@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Graphics
         private RenderPass previousRenderPass;
         private PipelineState activePipeline;
 
+        private readonly Dictionary<FramebufferKey, Framebuffer> framebuffers = new Dictionary<FramebufferKey, Framebuffer>();
         private readonly ImageView[] framebufferAttachments = new ImageView[9];
         private int framebufferAttachmentCount;
         private bool framebufferDirty = true;
@@ -49,6 +50,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.ReleaseTemporaryResources();
 
             framebufferCollector.Release();
+            framebuffers.Clear();
             framebufferDirty = true;
 
             descriptorPool = GraphicsDevice.descriptorPools.GetObject();
@@ -1089,18 +1091,24 @@ namespace SiliconStudio.Xenko.Graphics
                     // Create new frame buffer
                     fixed (ImageView* attachmentsPointer = &framebufferAttachments[0])
                     {
-                        var framebufferCreateInfo = new FramebufferCreateInfo
+                        var framebufferKey = new FramebufferKey(pipelineRenderPass, framebufferAttachmentCount, attachmentsPointer);
+
+                        if (!framebuffers.TryGetValue(framebufferKey, out activeFramebuffer))
                         {
-                            StructureType = StructureType.FramebufferCreateInfo,
-                            RenderPass = pipelineRenderPass,
-                            AttachmentCount = (uint)framebufferAttachmentCount,
-                            Attachments = new IntPtr(attachmentsPointer),
-                            Width = (uint)renderTarget.ViewWidth,
-                            Height = (uint)renderTarget.ViewHeight,
-                            Layers = 1, // TODO VULKAN: Use correct view depth/array size
-                        };
-                        activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
-                        framebufferCollector.Add(GraphicsDevice.NextFenceValue, activeFramebuffer);
+                            var framebufferCreateInfo = new FramebufferCreateInfo
+                            {
+                                StructureType = StructureType.FramebufferCreateInfo,
+                                RenderPass = pipelineRenderPass,
+                                AttachmentCount = (uint)framebufferAttachmentCount,
+                                Attachments = new IntPtr(attachmentsPointer),
+                                Width = (uint)renderTarget.ViewWidth,
+                                Height = (uint)renderTarget.ViewHeight,
+                                Layers = 1, // TODO VULKAN: Use correct view depth/array size
+                            };
+                            activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
+                            framebufferCollector.Add(GraphicsDevice.NextFenceValue, activeFramebuffer);
+                            framebuffers.Add(framebufferKey, activeFramebuffer);
+                        }
                     }
                     framebufferDirty = false;
                 }
@@ -1125,6 +1133,73 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 NativeCommandBuffer.EndRenderPass();
                 activeRenderPass = RenderPass.Null;
+            }
+        }
+
+        private struct FramebufferKey : IEquatable<FramebufferKey>
+        {
+            private RenderPass renderPass;
+            private int attachmentCount;
+            private ImageView attachment0;
+            private ImageView attachment1;
+            private ImageView attachment2;
+            private ImageView attachment3;
+            private ImageView attachment4;
+            private ImageView attachment5;
+            private ImageView attachment6;
+            private ImageView attachment7;
+            private ImageView attachment8;
+            private ImageView attachment9;
+
+            public unsafe FramebufferKey(RenderPass renderPass, int attachmentCount, ImageView* attachments)
+            {
+                this.renderPass = renderPass;
+                this.attachmentCount = attachmentCount;
+
+                attachment0 = attachments[0];
+                attachment1 = attachments[1];
+                attachment2 = attachments[2];
+                attachment3 = attachments[3];
+                attachment4 = attachments[4];
+                attachment5 = attachments[5];
+                attachment6 = attachments[6];
+                attachment7 = attachments[7];
+                attachment8 = attachments[8];
+                attachment9 = attachments[9];
+            }
+
+            public override unsafe int GetHashCode()
+            {
+                var hashcode = renderPass.GetHashCode();
+
+                fixed (ImageView* attachmentsPointer = &attachment0)
+                {
+                    for (int i = 0; i < attachmentCount; i++)
+                    {
+                        hashcode = attachmentsPointer[i].GetHashCode() ^ (hashcode * 397);
+                    }
+                }
+
+                return hashcode;
+            }
+
+            public unsafe bool Equals(FramebufferKey other)
+            {
+                if (other.renderPass != this.renderPass || attachmentCount != other.attachmentCount)
+                    return false;
+
+                fixed (ImageView* attachmentsPointer = &attachment0)
+                {
+                    var otherAttachmentsPointer = &other.attachment0;
+
+                    for (int i = 0; i < attachmentCount; i++)
+                    {
+                        if (attachmentsPointer[i] != otherAttachmentsPointer[i])
+                            return false;
+                    }
+                }
+
+                return true;
             }
         }
     }
