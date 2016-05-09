@@ -164,6 +164,12 @@ namespace SiliconStudio.Presentation.Windows
 
         private static void WindowShown(IntPtr hwnd)
         {
+            if (!HwndHelper.HasStyleFlag(hwnd, NativeHelper.WS_VISIBLE))
+            {
+                logger.Debug("Discarding non-visible window");
+                return;
+            }
+
             logger.Verbose("Processing newly shown window...");
             var windowInfo = Find(hwnd);
             if (windowInfo == null)
