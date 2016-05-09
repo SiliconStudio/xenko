@@ -123,7 +123,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     StartInfo =
                     {
                         FileName = "glslangValidator.exe",
-                        Arguments = $"-V -s -o {outputFileName} {inputFileName}"
+                        Arguments = $"-V -s -o {outputFileName} {inputFileName}",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
                     }
                 };
                 process.Start();
