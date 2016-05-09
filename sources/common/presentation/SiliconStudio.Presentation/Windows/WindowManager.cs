@@ -40,7 +40,7 @@ namespace SiliconStudio.Presentation.Windows
             winEventProc = WinEventProc;
             WindowManager.dispatcher = dispatcher;
             uint processId = (uint)Process.GetCurrentProcess().Id;
-            hook = NativeHelper.SetWinEventHook(NativeHelper.EVENT_OBJECT_SHOW, NativeHelper.EVENT_OBJECT_PARENTCHANGE, IntPtr.Zero, winEventProc, processId, 0, NativeHelper.WINEVENT_OUTOFCONTEXT);
+            hook = NativeHelper.SetWinEventHook(NativeHelper.EVENT_OBJECT_SHOW, NativeHelper.EVENT_OBJECT_HIDE, IntPtr.Zero, winEventProc, processId, 0, NativeHelper.WINEVENT_OUTOFCONTEXT);
             if (hook == IntPtr.Zero)
                 throw new InvalidOperationException("Unable to initialize the window manager.");
         }
