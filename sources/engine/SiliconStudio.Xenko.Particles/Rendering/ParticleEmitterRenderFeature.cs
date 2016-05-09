@@ -67,29 +67,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             base.Extract();
         }
 
-        protected Texture DepthStencilAsShaderResource { get; private set; } = null;
-
-        private Texture depthStencilOld = null;
-        // TODO Investigate: Resizing doesn't work properly the first time!!!
-        private bool depthCacheWorkaround = true;
-
-        protected void PrepareDepthStencilSR(RenderDrawContext context)
-        {
-            // Get the depthstencil buffer as a readonly texture
-            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-            if (depthCacheWorkaround || DepthStencilAsShaderResource == null || depthStencilOld == null || depthStencilOld != currentRenderFrame.DepthStencil)
-            {
-                // Release
-                DepthStencilAsShaderResource?.Dispose();
-
-                // Assign
-                depthStencilOld = currentRenderFrame.DepthStencil;
-
-                // TODO Investigate: Resizing doesn't work properly the first time!!!
-                DepthStencilAsShaderResource = currentRenderFrame.DepthStencil.ToDepthStencilReadOnlyTexture();
-            }
-        }
-
         /// <inheritdoc/>
         public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
@@ -181,8 +158,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 // TODO: ParticleMaterial should set this up
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
 
-                PrepareDepthStencilSR(context);
-                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, DepthStencilAsShaderResource);
+                // TODO: ParticleMaterial should set this up
+                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, currentRenderFrame.DepthStencilAsSR);
             }
 
             base.Prepare(context);

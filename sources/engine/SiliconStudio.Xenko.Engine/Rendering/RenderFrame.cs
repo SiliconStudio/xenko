@@ -123,6 +123,50 @@ namespace SiliconStudio.Xenko.Rendering
             renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth ? DepthStencil : null, RenderTargets);
         }
 
+        private bool depthStencilHasChanged;
+
+        public Texture DepthStencilAsRT { get; private set; }
+
+        public Texture DepthStencilAsSR { get; private set; }
+
+        private void UpdateDepthStencilCache(RenderDrawContext renderContext)
+        {
+            if (!depthStencilHasChanged)
+                return;
+
+            if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
+            {
+                DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
+
+                DepthStencilAsSR = DepthStencil;
+            }
+            else
+            {
+                DepthStencilAsRT = DepthStencil;
+
+                // TODO Create a copy of the depth stencil buffer
+                DepthStencilAsSR = null;
+            }
+
+            depthStencilHasChanged = false;
+        }
+
+        /// <summary>
+        /// Activates the specified render context with the DepthStencil as a read only texture
+        /// </summary>
+        /// <param name="renderContext">The render context.</param>
+        /// <exception cref="System.ArgumentNullException">renderContext</exception>
+        public void ActivateReadOnlyDepth(RenderDrawContext renderContext)
+        {
+            if (renderContext == null) throw new ArgumentNullException("renderContext");
+
+            //if (depthStencilHasChanged)
+            //    UpdateDepthStencilCache(renderContext);
+
+            // Sets the depth and render target
+            renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencil.ToDepthStencilReadOnlyTexture(), RenderTargets);
+        }
+
         /// <summary>
         /// Gets a <see cref="RenderOutputDescription"/> that matches current depth stencil and render target formats.
         /// </summary>
@@ -370,6 +414,7 @@ namespace SiliconStudio.Xenko.Rendering
             Descriptor = descriptor;
             RenderTargets = renderTargets;
             DepthStencil = depthStencil;
+            depthStencilHasChanged = true;
             isOwner = ownsResources;
             if (renderTargets != null)
             {

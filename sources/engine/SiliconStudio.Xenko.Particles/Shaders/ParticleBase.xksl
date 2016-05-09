@@ -87,7 +87,6 @@ class ParticleBase : ShaderBase, Texturing
 
         if (UsesSoftEdge)
         {
-            // SoftEdge START
             float screenWidth  = ViewFrustum.x; //1280;
             float screenHeight = ViewFrustum.y; //720;
             float zNear = ViewFrustum.z;        //0.1;
@@ -116,34 +115,10 @@ class ParticleBase : ShaderBase, Texturing
 
             var softEdge = saturate(depthDistance * SoftEdgeInverseDistance);
             colorTarget.rgba *= softEdge;
-
-            // SoftEdge END
-
-            // DEBUG COLOR
-            // colorTarget.g = 1;
         }
         else
         {
-            // TODO Enable depth testing instead and delete this code
-
-            float screenWidth  = ViewFrustum.x; //1280;
-            float screenHeight = ViewFrustum.y; //720;
-
-            var screenCoords = streams.ShadingPosition.xy;
-            screenCoords.x /= screenWidth;
-            screenCoords.y /= screenHeight;
-
-            // Read depth
-            float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
-            float ownDepth = streams.ShadingPosition.z;
-
-            if (ownDepth >= opaqueDepth)
-            {
-                discard;
-            }
-
-            // DEBUG COLOR
-            // colorTarget.r = 1;
+            // Do nothing. The depth testing is enabled
         }
 
         colorTarget.a *= AlphaAdditive;

@@ -115,10 +115,14 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | main stage]
             RenderSystem.Draw(context, MainRenderView, MainRenderStage);
 
+
+            // Resolve Depth as a texture
+
             // READ: http://aras-p.info/texts/D3D9GPUHacks.html#depth
             // ALSO THIS: https://bitwisegames.wordpress.com/2011/03/25/getting-direct-access-to-the-depthbuffer-in-directx10/
             var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-            currentRenderFrame.Activate(context, false);
+            //currentRenderFrame.Activate(context, false);
+            currentRenderFrame.ActivateReadOnlyDepth(context);
 
             // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
