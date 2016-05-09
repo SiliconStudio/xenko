@@ -30,7 +30,7 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     stage stream float4 Position : POSITION;
 
-    //stage stream float ZDepth : Z_DEPTH_VALUE;
+    stage stream float ZDepth : Z_DEPTH_VALUE;
 
     // -------------------------------------
     // conditional streams - may or may not be present depending on existing particle fields
@@ -85,11 +85,18 @@ class ParticleBase : ShaderBase, Texturing
         viewPos.w = 1;
         viewPos.z += ZOffset;
 
-        //streams.ZDepth = viewPos.z;
+        streams.ZDepth = viewPos.z;
 
         float4 viewProjPos = mul(viewPos, ProjectionMatrix);
 
         streams.ShadingPosition.z = (viewProjPos.z / viewProjPos.w) * streams.ShadingPosition.w;
+    }
+
+    float GetLinearDepth(float z)
+    {
+    	float fastA = -ProjectionMatrix._33;    // = zFar / (zFar - zNear);
+	    float fastB = ProjectionMatrix._43;     // = (-zFar * zNear) / (zFar - zNear);
+	    return fastB / (z - fastA);
     }
 
     // Shading of the sprite
@@ -99,35 +106,21 @@ class ParticleBase : ShaderBase, Texturing
 
         if (UsesSoftEdge)
         {
-            float screenWidth  = ViewFrustum.x; //1280;
-            float screenHeight = ViewFrustum.y; //720;
-            float zNear = ViewFrustum.z;        //0.1;
-            float zFar = ViewFrustum.w;         //1000;
+            float screenWidth  = ViewFrustum.x;
+            float screenHeight = ViewFrustum.y;
 
             var screenCoords = streams.ShadingPosition.xy;
             screenCoords.x /= screenWidth;
             screenCoords.y /= screenHeight;
 
-            // Read depth
-            float opaqueDepth = TextureDepth.Sample(Texturing.PointSampler, screenCoords).r;
-            float ownDepth = streams.ShadingPosition.z;
-
-            // Get the linear opaque depth
-            float linearZOwn = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * ownDepth - 1));
-            float linearZ = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * opaqueDepth - 1));
-            // TODO: This is the correct function, but it results in sharper edges - lack of precision?
-//            float linearZOwn = (ownDepth + (zFar * zNear / (zFar - zNear))) * (zFar - zNear);
-//            float linearZ = (opaqueDepth + (zFar * zNear / (zFar - zNear))) * (zFar - zNear);
-
-            // TODO Maybe set upper and lower bounds for more interesting effects
+            // Convert to linear depth for proper edge smoothing
+            float linearZOwn = -streams.ZDepth;
+            float linearZOpaque = GetLinearDepth(TextureDepth.Sample(Texturing.PointSampler, screenCoords).r);
 
             //  Get the positive difference
-            var depthDistance = linearZ - linearZOwn;
-            if (depthDistance <= 0)
-            {
-                discard;
-            }
+            var depthDistance = linearZOpaque - linearZOwn;
 
+            // TODO Maybe set upper and lower bounds for more interesting effects
             // smoothstep(...) looks more natural than saturate(...):
             var softEdge = smoothstep(0, 1, depthDistance * SoftEdgeInverseDistance); 
             colorTarget.rgba *= softEdge;
