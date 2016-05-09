@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -36,10 +37,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             var sprites = Content.Load<SpriteSheet>("RotatedImages");
-            var img1 = new ImageElement { Source = sprites["NRNR"], StretchType = StretchType.Fill };
-            var img2 = new ImageElement { Source = sprites["RNR"], StretchType = StretchType.Fill };
-            var img3 = new ImageElement { Source = sprites["NRR"], StretchType = StretchType.Fill };
-            var img4 = new ImageElement { Source = sprites["RR"], StretchType = StretchType.Fill };
+            var img1 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "NRNR"), StretchType = StretchType.Fill };
+            var img2 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "RNR"), StretchType = StretchType.Fill };
+            var img3 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "NRR"), StretchType = StretchType.Fill };
+            var img4 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "RR"), StretchType = StretchType.Fill };
 
             img1.SetGridColumnSpan(2);
             img2.SetGridColumnSpan(2);

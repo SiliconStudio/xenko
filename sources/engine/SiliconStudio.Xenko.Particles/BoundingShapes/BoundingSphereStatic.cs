@@ -8,6 +8,7 @@ using SiliconStudio.Xenko.Particles.DebugDraw;
 namespace SiliconStudio.Xenko.Particles.BoundingShapes
 {
     [DataContract("BoundingSpheretatic")]
+    [Display("Uniform AABB")]
     public class BoundingSphereStatic : BoundingShape
     {
         /// <summary>
@@ -17,6 +18,7 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
         /// Fixed radius of the bounding sphere. Gets calculated as a AABB, which is a cube with corners (-R, -R, -R) - (+R, +R, +R)
         /// </userdoc>
         [DataMember(20)]
+        [Display("Distance")]
         public float Radius { get; set; } = 1f;
 
         [DataMemberIgnore]

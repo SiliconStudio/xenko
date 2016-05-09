@@ -7,7 +7,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
 {
     class VisualTestChildren : GameTest
     {
-        public VisualTestChildren() : base("VisualTestChildren") { }
+        public VisualTestChildren() : base("VisualTestChildren")
+        {
+            IndividualTestVersion = 1;  //  Changes in particle spawning
+        }
 
         [Test]
         public void RunVisualTests()

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
@@ -106,9 +107,28 @@ namespace SiliconStudio.Quantum
             var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
-                foreach (var child in node.GetAllChildNodes())
+                switch (e.ChangeType)
                 {
-                    UnregisterNode(child.Item1);
+                    case ContentChangeType.ValueChange:
+                        foreach (var child in node.GetAllChildNodes())
+                        {
+                            UnregisterNode(child.Item1);
+                        }
+                        break;
+                    case ContentChangeType.CollectionRemove:
+                        if (node.Content.IsReference && e.OldValue != null)
+                        {
+                            var removedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
+                            if (removedNode != null)
+                            {
+                                foreach (var child in removedNode.GetAllChildNodes())
+                                {
+                                    UnregisterNode(child.Item1);
+                                }
+                                UnregisterNode(removedNode);
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -121,9 +141,41 @@ namespace SiliconStudio.Quantum
             var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
-                foreach (var child in node.GetAllChildNodes(path))
+                switch (e.ChangeType)
                 {
-                    RegisterNode(child.Item1, child.Item2);
+                    case ContentChangeType.ValueChange:
+                        foreach (var child in node.GetAllChildNodes(path))
+                        {
+                            RegisterNode(child.Item1, child.Item2);
+                        }
+                        break;
+                    case ContentChangeType.CollectionAdd:
+                        if (node.Content.IsReference && e.NewValue != null)
+                        {
+                            var index = e.Index;
+                            IGraphNode addedNode;
+                            if (!index.IsEmpty)
+                            {
+                                addedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
+                            }
+                            else
+                            {
+                                var reference = node.Content.Reference.AsEnumerable.First(x => x.TargetNode.Content.Retrieve() == e.NewValue);
+                                index = reference.Index;
+                                addedNode = reference.TargetNode;
+                            }
+
+                            if (addedNode != null)
+                            {
+                                var addedNodePath = path?.Append(node, addedNode, GraphNodePath.ElementType.Index, index);
+                                RegisterNode(addedNode, addedNodePath);
+                                foreach (var child in addedNode.GetAllChildNodes())
+                                {
+                                    RegisterNode(child.Item1, child.Item2);
+                                }
+                            }
+                        }
+                        break;
                 }
             }
 

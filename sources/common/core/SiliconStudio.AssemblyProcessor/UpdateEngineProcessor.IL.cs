@@ -35,12 +35,14 @@ namespace SiliconStudio.AssemblyProcessor
             objectToPtr.Emit(OpCodes.Ret);
 
             // UpdateEngineHelper.PtrToObject
+            // Simpler "ldarg.0 + ret" doesn't work with Xamarin: https://bugzilla.xamarin.com/show_bug.cgi?id=40608
             var ptrToObject = RewriteBody(updateEngineHelperType.Methods.First(x => x.Name == "PtrToObject"));
             ptrToObject.Body.Variables.Add(new VariableDefinition("convObj", assembly.MainModule.TypeSystem.Object));
+            ptrToObject.Emit(OpCodes.Ldloca_S, (byte)0);
             ptrToObject.Emit(OpCodes.Ldarg, ptrToObject.Body.Method.Parameters[0]);
 
             // Somehow Xamarin forces us to do a roundtrip to an object
-            ptrToObject.Emit(OpCodes.Stloc_0);
+            ptrToObject.Emit(OpCodes.Stind_I);
             ptrToObject.Emit(OpCodes.Ldloc_0);
 
             ptrToObject.Emit(OpCodes.Ret);

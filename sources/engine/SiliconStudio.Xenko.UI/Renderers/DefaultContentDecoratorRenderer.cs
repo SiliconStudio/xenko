@@ -21,11 +21,10 @@ namespace SiliconStudio.Xenko.UI.Renderers
             base.RenderColor(element, context);
 
             var decorator = (ContentDecorator)element;
-
-            if (decorator.BackgroundImage == null)
+            var image = decorator.BackgroundImage?.GetSprite();
+            if (image == null)
                 return;
-
-            var image = decorator.BackgroundImage;
+            
             var color = decorator.RenderOpacity * Color.White;
 
             Batch.DrawImage(image.Texture, ref decorator.WorldMatrixInternal, ref image.RegionInternal,

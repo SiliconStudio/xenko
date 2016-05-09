@@ -47,8 +47,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
 
             Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
-
-            ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
         }
 
         private ShadowMapRenderView CreateShadowRenderView()
@@ -61,11 +59,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// </summary>
         /// <value>The render view.</value>
         public RenderView CurrentView { get; private set; }
-
-        /// <summary>
-        /// The shadow camera used for rendering from the shadow space.
-        /// </summary>
-        public readonly CameraComponent ShadowCamera;
 
         public Dictionary<Type, ILightShadowMapRenderer> Renderers { get; }
 
@@ -99,11 +92,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Gets the current camera
                 CurrentView = renderViewData.Key;
-
-                if (CurrentView.Camera == null)
-                {
-                    continue;
-                }
 
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);
@@ -221,9 +209,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             // TODO GRAPHICS REFACTOR Only lights of current scene!
 
-            var sceneCameraRenderer = renderView.SceneCameraRenderer;
-            var viewport = sceneCameraRenderer.ComputedViewport;
-
             foreach (var lightComponent in renderViewLightData.VisibleLightsWithShadows)
             {
                 var light = lightComponent.Type as IDirectLight;
@@ -250,7 +235,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var position = lightComponent.Position;
 
                 // Compute the coverage of this light on the screen
-                var size = light.ComputeScreenCoverage(renderView.Camera, position, direction, viewport.Width, viewport.Height);
+                var size = light.ComputeScreenCoverage(renderView, position, direction);
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Size);

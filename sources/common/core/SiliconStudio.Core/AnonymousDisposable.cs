@@ -8,7 +8,7 @@ namespace SiliconStudio.Core
     /// This class allows implementation of <see cref="IDisposable"/> using anonymous functions.
     /// The anonymous function will be invoked only on the first call to the <see cref="Dispose"/> method.
     /// </summary>
-    public class AnonymousDisposable : IDisposable
+    public sealed class AnonymousDisposable : IDisposable
     {
         private bool isDisposed;
         private Action onDispose;
@@ -19,8 +19,7 @@ namespace SiliconStudio.Core
         /// <param name="onDispose">The anonymous function to invoke when this object is disposed.</param>
         public AnonymousDisposable(Action onDispose)
         {
-            if (onDispose == null)
-                throw new ArgumentNullException("onDispose");
+            if (onDispose == null) throw new ArgumentNullException(nameof(onDispose));
 
             this.onDispose = onDispose;
         }

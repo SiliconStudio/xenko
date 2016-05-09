@@ -4,6 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.UI.Renderers
@@ -63,7 +64,14 @@ namespace SiliconStudio.Xenko.UI.Renderers
         {
             Asset = services.GetSafeServiceAs<IAssetManager>();
             GraphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
+
             UI = services.GetServiceAs<UISystem>();
+            if (UI == null)
+            {
+                UI = new UISystem(services);
+                var game = services.GetServiceAs<IGame>();
+                game?.GameSystems.Add(UI);
+            }
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -32,13 +33,13 @@ namespace SiliconStudio.Presentation.Dialogs
         /// <inheritdoc/>
         public string DefaultExtension { get { return SaveDlg.DefaultExtension; } set { SaveDlg.DefaultExtension = value; } }
 
-        private CommonSaveFileDialog SaveDlg { get { return (CommonSaveFileDialog)Dialog; } }
-        
+        private CommonSaveFileDialog SaveDlg => (CommonSaveFileDialog)Dialog;
+
         /// <inheritdoc/>
         public override DialogResult Show()
         {
             SaveDlg.Filters.Clear();
-            foreach (var filter in Filters)
+            foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
             {
                 SaveDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }

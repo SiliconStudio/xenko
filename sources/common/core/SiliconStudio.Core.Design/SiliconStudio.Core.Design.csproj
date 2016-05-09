@@ -46,6 +46,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
+    <Compile Include="IDestroyable.cs" />
     <Compile Include="IO\UDirectory.cs" />
     <Compile Include="IO\UDirectorySerializer.cs" />
     <Compile Include="IO\UFile.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Settings\SettingsProfileSerializer.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
     <Compile Include="Transactions\IAsyncTransaction.cs" />
+    <Compile Include="Transactions\IMergeableOperation.cs" />
     <Compile Include="Transactions\IOperation.cs" />
     <Compile Include="Transactions\IReadOnlyTransaction.cs" />
     <Compile Include="Transactions\ITransaction.cs" />

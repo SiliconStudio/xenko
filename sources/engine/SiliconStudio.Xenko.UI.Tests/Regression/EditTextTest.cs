@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var middleOfScreen = new Vector3(UIComponent.VirtualResolution.X, UIComponent.VirtualResolution.Y, 0) / 2;
+            var middleOfScreen = new Vector3(UIComponent.Resolution.X, UIComponent.Resolution.Y, 0) / 2;
 
             edit1 = new EditText(Services)
             {

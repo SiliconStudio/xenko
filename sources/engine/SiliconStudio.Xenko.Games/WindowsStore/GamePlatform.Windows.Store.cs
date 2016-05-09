@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Games
                                                  GraphicsProfile = featureLevel,
                                                  PresentationParameters =
                                                      {
-                                                         MultiSampleCount = MSAALevel.None,
+                                                         MultiSampleLevel = preferredParameters.PreferredMultiSampleLevel,
                                                          IsFullScreen = preferredParameters.IsFullScreen,
                                                          PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
                                                          DeviceWindowHandle =  MainWindow.NativeWindow,

@@ -19,16 +19,26 @@ namespace SiliconStudio.Xenko.Particles.Tests
     /// </summary>
     class GameTest : GameTestBase
     {
+        /// <summary>
+        /// The <see cref="ParticleTestVersion"/> is shared for all tests
+        /// </summary>
         // Breaking changes
         //  Please update the version number every time there is a breaking change to the particle engine and write down what has been changed
-//        const int ParticleTestVersion = 1;  // Initial tests
-//        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
-//        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
-//        const int ParticleTestVersion = 4;  // Changed the default size for billboards, hexagons and quads (previous visual tests are broken)
-//        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
-//        const int ParticleTestVersion = 6;  // Moved the main update from Update() to Draw() cycle
-//        const int ParticleTestVersion = 7;  // Children Particles visual test updated
-        const int ParticleTestVersion = 8;  // Camera ignores scaling, due to float precision issues it renders slightly differently
+        //        const int ParticleTestVersion = 1;  // Initial tests
+        //        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
+        //        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
+        //        const int ParticleTestVersion = 4;  // Changed the default size for billboards, hexagons and quads (previous visual tests are broken)
+        //        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
+        //        const int ParticleTestVersion = 6;  // Moved the main update from Update() to Draw() cycle
+        //        const int ParticleTestVersion = 7;  // Children Particles visual test updated
+        //        const int ParticleTestVersion = 8;  // Camera ignores scaling, due to float precision issues it renders slightly differently
+        //        const int ParticleTestVersion = 10;  // Skip 2 (to ignore colliding with tests on the master branch) + Camera ignores scaling, due to float precision issues it renders slightly differently
+        const int ParticleTestVersion = 11;  // Merged version between version 8 and 10
+
+        /// <summary>
+        ///  The <see cref="IndividualTestVersion"/> can be defined per test when only one of them is affected
+        /// </summary>
+        protected int IndividualTestVersion;
 
         // Local screenshots
         private readonly string xenkoDir;
@@ -50,7 +60,6 @@ namespace SiliconStudio.Xenko.Particles.Tests
             Directory.CreateDirectory(xenkoDir + "\\screenshots\\");
 #endif
 
-            CurrentVersion = ParticleTestVersion;
             AutoLoadDefaultSettings = true;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1, };
             
@@ -63,6 +72,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
         protected override async Task LoadContent()
         {
+            CurrentVersion = ParticleTestVersion + IndividualTestVersion;
+
             await base.LoadContent();
 
             var assetManager = Services.GetSafeServiceAs<ContentManager>();
