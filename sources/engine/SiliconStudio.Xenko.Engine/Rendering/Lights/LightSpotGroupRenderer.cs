@@ -25,11 +25,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
     public class LightSpotGroupRenderer : LightGroupRendererDynamic
     {
-        public LightSpotGroupRenderer()
-        {
-            CanHaveShadows = true;
-        }
-
         public override void Initialize(RenderContext context)
         {
         }

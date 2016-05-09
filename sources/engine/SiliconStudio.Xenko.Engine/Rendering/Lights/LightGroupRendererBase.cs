@@ -32,8 +32,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public byte LightRendererId { get; private set; }
 
-        public bool CanHaveShadows { get; protected set; }
-
         public virtual void Initialize(RenderContext context)
         {
         }

@@ -23,11 +23,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
     public class LightDirectionalGroupRenderer : LightGroupRendererDynamic
     {
-        public LightDirectionalGroupRenderer()
-        {
-            CanHaveShadows = true;
-        }
-
         public override void Initialize(RenderContext context)
         {
         }

@@ -435,18 +435,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         rendererToInitialize = true;
                     }
 
-                    if (renderer.CanHaveShadows)
-                    {
-                        LightComponentCollectionGroup lightGroupWithShadows;
-                        viewData.ActiveLightGroups.TryGetValue(lightTypeAndRenderer.Key, out lightGroupWithShadows);
-
-                        if (lightGroupWithShadows != null && lightGroupWithShadows.Count > 0)
-                        {
-                            viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroupWithShadows));
-                            rendererToInitialize = true;
-                        }
-                    }
-
                     if (rendererToInitialize)
                     {
                         renderer.Initialize(context);
