@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -18,17 +18,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the CheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> CheckedImagePropertyKey = new PropertyKey<Sprite>("CheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> CheckedImagePropertyKey = new PropertyKey<ISpriteProvider>("CheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<ISpriteProvider>(OnToggleImageInvalidated));
 
         /// <summary>
         /// The key to the IndeterminateImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> IndeterminateImagePropertyKey = new PropertyKey<Sprite>("IndeterminateImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> IndeterminateImagePropertyKey = new PropertyKey<ISpriteProvider>("IndeterminateImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<ISpriteProvider>(OnToggleImageInvalidated));
 
         /// <summary>
         /// The key to the UncheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> UncheckedImagePropertyKey = new PropertyKey<Sprite>("UncheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> UncheckedImagePropertyKey = new PropertyKey<ISpriteProvider>("UncheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<ISpriteProvider>(OnToggleImageInvalidated));
 
         private static void OnToggleImageInvalidated(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
         {
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when checked
         /// </summary>
-        public Sprite CheckedImage
+        public ISpriteProvider CheckedImage
         {
             get { return DependencyProperties.Get(CheckedImagePropertyKey); }
             set { DependencyProperties.Set(CheckedImagePropertyKey, value); }
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when indeterminate
         /// </summary>
-        public Sprite IndeterminateImage
+        public ISpriteProvider IndeterminateImage
         {
             get { return DependencyProperties.Get(IndeterminateImagePropertyKey); }
             set { DependencyProperties.Set(IndeterminateImagePropertyKey, value); }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when unchecked
         /// </summary>
-        public Sprite UncheckedImage
+        public ISpriteProvider UncheckedImage
         {
             get { return DependencyProperties.Get(UncheckedImagePropertyKey); }
             set { DependencyProperties.Set(UncheckedImagePropertyKey, value); }

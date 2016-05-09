@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -36,29 +37,37 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             element4 = new ContentDecorator
             {
-                Name = "4", 
-                Width = 200, 
-                Height = 100, 
+                Name = "4",
+                Width = 200, Height = 100,
                 LocalMatrix = Matrix.Translation(-50, -50, 0),
-                BackgroundImage = uiGroup["uvNotRotated"],
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "uvNotRotated")
             };
 
             element3 = new ContentDecorator
             {
                 Name = "3", 
-                Width = 300,
-                Height = 150,
+                Width = 300, Height = 150,
                 Content = element4,
                 LocalMatrix = Matrix.Translation(-200, -100, 0),
-                BackgroundImage = uiGroup["uvRotated90"],
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "uvRotated90")
             };
-
-            var borderImage = uiGroup["BorderButton"];
-            element2 = new ContentDecorator { Name = "2", Width = 600, Height = 300, Content = element3, BackgroundImage = borderImage };
+            
+            element2 = new ContentDecorator
+            {
+                Name = "2",
+                Width = 600, Height = 300,
+                Content = element3,
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "BorderButton")
+            };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(400, 200, 0));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
 
-            element1 = new ContentDecorator { Name = "1", Width = 600, Height = 300, BackgroundImage = uiGroup["GameScreen"] };
+            element1 = new ContentDecorator
+            {
+                Name = "1",
+                Width = 600, Height = 300,
+                BackgroundImage = SpriteFromSheet.Create(uiGroup, "GameScreen")
+            };
 
             var canvas = new Canvas();
             canvas.Children.Add(element1);

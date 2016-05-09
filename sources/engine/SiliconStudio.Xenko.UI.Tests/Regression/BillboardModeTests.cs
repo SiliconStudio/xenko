@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -32,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             cube.Transform.Position = new Vector3(0, 0, 10);
             Scene.Entities.Add(cube);
 
-            var imageElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv")) };
+            var imageElement = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")) };
             var imageEntity = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, Resolution = new Vector3(150) } };
             imageEntity.Transform.Scale = new Vector3(150);
             imageEntity.Transform.Position = new Vector3(-500, 0, 0);

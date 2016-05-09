@@ -37,6 +37,20 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             IsTransparent = true;
         }
 
+        private SpriteFromTexture(Sprite source)
+            : this()
+        {
+            sprite = source;
+            isSpriteDirty = false;
+
+            center = sprite.Center;
+            centerFromMiddle = false;
+            isTransparent = sprite.IsTransparent;
+            // FIXME: should we use the Max, Min, average of X and/or Y?
+            pixelsPerUnit = sprite.PixelsPerUnit.X;
+            texture = sprite.Texture;
+        }
+
         /// <summary>
         /// Gets or sets the texture of representing the sprite
         /// </summary>
@@ -130,20 +144,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
-        [DataMemberIgnore]
-        public int CurrentFrame
-        {
-            get { return 0; }
-            set
-            {
-                if (value != 0)
-                    throw new ArgumentOutOfRangeException(nameof(CurrentFrame));
-            }
-        }
-
+        /// <inheritdoc/>
         public int SpritesCount => sprite == null ? 0 : 1;
 
-        public Sprite GetSprite(int index)
+        /// <inheritdoc/>
+        public Sprite GetSprite()
         {
             if (isSpriteDirty)
             {
@@ -166,6 +171,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
+        }
+
+        public static explicit operator SpriteFromTexture(Sprite sprite)
+        {
+            if (sprite == null) throw new ArgumentNullException(nameof(sprite));
+            return new SpriteFromTexture(sprite);
         }
     }
 }

@@ -4,6 +4,8 @@ using System;
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -14,7 +16,8 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("ImageElement - Name={Name}")]
     public class ImageElement : UIElement
     {
-        private Sprite source;
+        private ISpriteProvider source;
+        private Sprite sprite;
         private StretchType stretchType = StretchType.Uniform;
         private StretchDirection stretchDirection = StretchDirection.Both;
 
@@ -30,6 +33,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 InvalidateMeasure();
             }
         }
+
         /// <summary>
         /// Gets or sets a value that indicates how the image is scaled.
         /// </summary>
@@ -44,27 +48,18 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Sprite"/> for the image.
+        /// Gets or sets the <see cref="ISpriteProvider"/> for the image.
         /// </summary>
-        public Sprite Source
+        public ISpriteProvider Source
         {
             get { return source;} 
             set
             {
-                if (source != null)
-                {
-                    source.SizeChanged -= InvalidateMeasure;
-                    source.BorderChanged -= InvalidateMeasure;
-                }
+                if (source == value)
+                    return;
 
                 source = value;
-                InvalidateMeasure();
-
-                if (source != null)
-                {
-                    source.SizeChanged += InvalidateMeasure;
-                    source.BorderChanged += InvalidateMeasure;
-                }
+                OnSpriteChanged(source?.GetSprite());
             }
         }
 
@@ -74,36 +69,40 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The initial image color is multiplied by this color.</remarks>
         public Color Color { get; set; } = Color.White;
 
-        private void InvalidateMeasure(object sender, EventArgs eventArgs)
-        {
-            InvalidateMeasure();
-        }
-
-        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
-        {
-            var desiredSize = CalculateImageSizeFromAvailable(availableSizeWithoutMargins, true);
-
-            if (source == null || !source.HasBorders)
-                return desiredSize;
-
-            var borderSum = new Vector2(source.BordersInternal.X + source.BordersInternal.Z, source.BordersInternal.Y + source.BordersInternal.W);
-            if(source.Orientation == ImageOrientation.Rotated90)
-                Utilities.Swap(ref borderSum.X, ref borderSum.Y);
-
-            return new Vector3(Math.Max(desiredSize.X, borderSum.X), Math.Max(desiredSize.Y, borderSum.Y), desiredSize.Z);
-        }
-
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {
             return CalculateImageSizeFromAvailable(finalSizeWithoutMargins, false);
         }
 
+        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
+        {
+            var desiredSize = CalculateImageSizeFromAvailable(availableSizeWithoutMargins, true);
+            
+            if (sprite == null || !sprite.HasBorders)
+                return desiredSize;
+
+            var borderSum = new Vector2(sprite.BordersInternal.X + sprite.BordersInternal.Z, sprite.BordersInternal.Y + sprite.BordersInternal.W);
+            if(sprite.Orientation == ImageOrientation.Rotated90)
+                Utilities.Swap(ref borderSum.X, ref borderSum.Y);
+
+            return new Vector3(Math.Max(desiredSize.X, borderSum.X), Math.Max(desiredSize.Y, borderSum.Y), desiredSize.Z);
+        }
+
+        protected override void Update(GameTime time)
+        {
+            var currentSprite = source?.GetSprite();
+            if (sprite != currentSprite)
+            {
+                OnSpriteChanged(currentSprite);
+            }
+        }
+
         private Vector3 CalculateImageSizeFromAvailable(Vector3 availableSizeWithoutMargins, bool isMeasuring)
         {
-            if (Source == null) // no associated image -> no region needed
+            if (sprite == null) // no associated image -> no region needed
                 return Vector3.Zero;
 
-            var idealSize = source.SizeInPixels;
+            var idealSize = sprite.SizeInPixels;
             if (idealSize.X <= 0 || idealSize.Y <= 0) // image size null or invalid -> no region needed
                 return Vector3.Zero;
 
@@ -166,6 +165,27 @@ namespace SiliconStudio.Xenko.UI.Controls
             desiredSize = new Vector3(idealSize.X * desiredScale.X, idealSize.Y * desiredScale.Y, 0f);
 
             return desiredSize;
+        }
+
+        private void InvalidateMeasure(object sender, EventArgs eventArgs)
+        {
+            InvalidateMeasure();
+        }
+
+        private void OnSpriteChanged(Sprite currentSprite)
+        {
+            if (sprite != null)
+            {
+                sprite.SizeChanged -= InvalidateMeasure;
+                sprite.BorderChanged -= InvalidateMeasure;
+            }
+            sprite = currentSprite;
+            InvalidateMeasure();
+            if (sprite != null)
+            {
+                sprite.SizeChanged += InvalidateMeasure;
+                sprite.BorderChanged += InvalidateMeasure;
+            }
         }
     }
 }
