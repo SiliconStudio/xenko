@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandBuffer NativeCommandBuffer;
 
         private RenderPass activeRenderPass;
+        private RenderPass previousRenderPass;
         private PipelineState activePipeline;
 
         private readonly ImageView[] framebufferAttachments = new ImageView[9];
@@ -48,6 +49,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.ReleaseTemporaryResources();
 
             framebufferCollector.Release();
+            framebufferDirty = true;
 
             descriptorPool = GraphicsDevice.descriptorPools.GetObject();
 
@@ -132,19 +134,28 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
         private void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
+            var oldFramebufferAttachmentCount = framebufferAttachmentCount;
             framebufferAttachmentCount = renderTargetCount;
+
             for (int i = 0; i < renderTargetCount; i++)
             {
+                if (renderTargets[i].NativeColorAttachmentView != framebufferAttachments[i])
+                    framebufferDirty = true;
+
                 framebufferAttachments[i] = renderTargets[i].NativeColorAttachmentView;
             }
             
             if (depthStencilBuffer != null)
             {
+                if (depthStencilBuffer.NativeDepthStencilView != framebufferAttachments[renderTargetCount])
+                    framebufferDirty = true;
+
                 framebufferAttachments[renderTargetCount] = depthStencilBuffer.NativeDepthStencilView;
                 framebufferAttachmentCount++;
             }
 
-            framebufferDirty = true;
+            if (framebufferAttachmentCount != oldFramebufferAttachmentCount)
+                framebufferDirty = true;
         }
 
         /// <summary>
@@ -1058,6 +1069,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             var pipelineRenderPass = activePipeline.NativeRenderPass;
 
+            // Reuse the Framebuffer if the RenderPass didn't change
+            if (previousRenderPass != pipelineRenderPass)
+                framebufferDirty = true;
+
+            // Nothing to do. RenderPass and Framebuffer are still valid
             if (!framebufferDirty && activeRenderPass == pipelineRenderPass)
                 return;
 
@@ -1068,23 +1084,26 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var renderTarget = RenderTargetCount > 0 ? renderTargets[0] : depthStencilBuffer;
 
-                // Create new frame buffer
-                fixed (ImageView* attachmentsPointer = &framebufferAttachments[0])
+                if (framebufferDirty)
                 {
-                    var framebufferCreateInfo = new FramebufferCreateInfo
+                    // Create new frame buffer
+                    fixed (ImageView* attachmentsPointer = &framebufferAttachments[0])
                     {
-                        StructureType = StructureType.FramebufferCreateInfo,
-                        RenderPass = pipelineRenderPass,
-                        AttachmentCount = (uint)framebufferAttachmentCount,
-                        Attachments = new IntPtr(attachmentsPointer),
-                        Width = (uint)renderTarget.ViewWidth,
-                        Height = (uint)renderTarget.ViewHeight,
-                        Layers = 1, // TODO VULKAN: Use correct view depth/array size
-                    };
-                    activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
-                    framebufferCollector.Add(GraphicsDevice.NextFenceValue, activeFramebuffer);
+                        var framebufferCreateInfo = new FramebufferCreateInfo
+                        {
+                            StructureType = StructureType.FramebufferCreateInfo,
+                            RenderPass = pipelineRenderPass,
+                            AttachmentCount = (uint)framebufferAttachmentCount,
+                            Attachments = new IntPtr(attachmentsPointer),
+                            Width = (uint)renderTarget.ViewWidth,
+                            Height = (uint)renderTarget.ViewHeight,
+                            Layers = 1, // TODO VULKAN: Use correct view depth/array size
+                        };
+                        activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
+                        framebufferCollector.Add(GraphicsDevice.NextFenceValue, activeFramebuffer);
+                    }
+                    framebufferDirty = false;
                 }
-                framebufferDirty = false;
 
                 // Start new render pass
                 var renderPassBegin = new RenderPassBeginInfo
@@ -1096,7 +1115,7 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 NativeCommandBuffer.BeginRenderPass(ref renderPassBegin, SubpassContents.Inline);
 
-                activeRenderPass = pipelineRenderPass;
+                previousRenderPass = activeRenderPass = pipelineRenderPass;
             }
         }
         
@@ -1106,13 +1125,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 NativeCommandBuffer.EndRenderPass();
                 activeRenderPass = RenderPass.Null;
-            }
-
-            if (activeFramebuffer != Framebuffer.Null)
-            {
-                activeFramebuffer = Framebuffer.Null;
-
-                framebufferDirty = true;
             }
         }
     }
