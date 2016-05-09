@@ -6,6 +6,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         using params ParticleBaseKeys;
 
+        mixin macro ParticleBaseKeys.UsesSoftEdge;
+
         mixin ParticleBase;
    };
 }
