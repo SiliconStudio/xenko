@@ -256,7 +256,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL || SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
                 int w, h;
                 SDL.SDL_GL_GetDrawableSize(SdlHandle, out w, out h);
                 return new Size2(w, h);
@@ -280,7 +280,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL || SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
                 int w, h;
                 SDL.SDL_GL_GetDrawableSize(SdlHandle, out w, out h);
                 return new Rectangle(0, 0, w, h);
