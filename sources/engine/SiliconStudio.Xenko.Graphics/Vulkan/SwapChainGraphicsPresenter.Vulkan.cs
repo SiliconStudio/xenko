@@ -340,7 +340,11 @@ namespace SiliconStudio.Xenko.Graphics
             }
             // Create surface
 #if SILICONSTUDIO_PLATFORM_WINDOWS
+#if SILICONSTUDIO_XENKO_UI_SDL
+            var control = Description.DeviceWindowHandle.NativeHandle as SDL.Window;
+#else
             var control = Description.DeviceWindowHandle.NativeHandle as Control;
+#endif
             if (control == null)
             {
                 throw new NotSupportedException($"Form of type [{Description.DeviceWindowHandle.GetType().Name}] is not supported. Only System.Windows.Control are supported");
