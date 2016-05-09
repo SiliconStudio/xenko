@@ -738,7 +738,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Resolve logical groups
-            result.LogicalGroups = new RenderSystemResourceGroupLayout.LogicalGroup[drawLogicalGroups.Count];
+            result.LogicalGroups = new LogicalGroup[drawLogicalGroups.Count];
             for (int index = 0; index < drawLogicalGroups.Count; index++)
             {
                 ResolveLogicalGroup(result, index, drawLogicalGroups[index].Variable);
@@ -828,7 +828,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Resolve logical groups
-                result.LogicalGroups = new RenderSystemResourceGroupLayout.LogicalGroup[viewLogicalGroups.Count];
+                result.LogicalGroups = new LogicalGroup[viewLogicalGroups.Count];
                 for (int index = 0; index < viewLogicalGroups.Count; index++)
                 {
                     ResolveLogicalGroup(result, index, viewLogicalGroups[index].Variable);

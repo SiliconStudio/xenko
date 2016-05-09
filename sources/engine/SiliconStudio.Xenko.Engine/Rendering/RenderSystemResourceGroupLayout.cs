@@ -94,20 +94,5 @@ namespace SiliconStudio.Xenko.Rendering
 
             return logicalGroup;
         }
-
-        public struct LogicalGroup
-        {
-            public ObjectId Hash;
-
-            public int DescriptorEntryStart;
-            public int DescriptorEntryCount;
-            public int DescriptorSlotStart;
-            public int DescriptorSlotCount;
-
-            public int ConstantBufferMemberStart;
-            public int ConstantBufferMemberCount;
-            public int ConstantBufferOffset;
-            public int ConstantBufferSize;
-        }
     }
 }

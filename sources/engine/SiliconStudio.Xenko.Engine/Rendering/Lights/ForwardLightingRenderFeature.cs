@@ -283,7 +283,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override unsafe void Prepare(RenderDrawContext context)
+        public override void Prepare(RenderDrawContext context)
         {
             //var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
             foreach (var view in RenderSystem.Views)
@@ -322,19 +322,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (firstViewLighting.Hash != renderViewData.ViewLayoutHash)
                 {
                     renderViewData.ViewLayoutHash = firstViewLighting.Hash;
-                    viewParameterLayout = renderViewData.ViewParameterLayout = new ParameterCollectionLayout();
 
-                    for (int index = 0; index < firstViewLighting.ConstantBufferMemberCount; ++index)
-                    {
-                        var member = firstViewLayout.ConstantBufferReflection.Members[firstViewLighting.ConstantBufferMemberStart + index];
-                        viewParameterLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(member.KeyInfo.Key, viewParameterLayout.BufferSize + member.Offset - firstViewLighting.ConstantBufferOffset, member.Type.Elements > 0 ? member.Type.Elements : 1));
-                    }
-                    for (int index = 0; index < firstViewLighting.DescriptorEntryCount; ++index)
-                    {
-                        var layoutEntry = firstViewLayout.DescriptorSetLayout.Entries[firstViewLighting.DescriptorEntryStart + index];
-                        viewParameterLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(layoutEntry.Key, viewParameterLayout.ResourceCount++));
-                    }
-                    viewParameterLayout.BufferSize += firstViewLighting.ConstantBufferSize;
+                    // Generate layout
+                    viewParameterLayout = renderViewData.ViewParameterLayout = new ParameterCollectionLayout();
+                    viewParameterLayout.ProcessLogicalGroup(firstViewLayout, ref firstViewLighting);
 
                     viewParameters.UpdateLayout(viewParameterLayout);
                 }
@@ -365,19 +356,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     var resourceGroup = viewLayout.Entries[view.Index].Resources;
 
                     // Update resources
-                    for (int resourceSlot = 0; resourceSlot < viewLighting.DescriptorSlotCount; ++resourceSlot)
-                    {
-                        resourceGroup.DescriptorSet.SetValue(viewLighting.DescriptorSlotStart + resourceSlot, viewParameters.ObjectValues[resourceSlot]);
-                    }
-
-                    // Update cbuffer
-                    if (viewLighting.ConstantBufferSize > 0)
-                    {
-                        var mappedViewLighting = resourceGroup.ConstantBuffer.Data + viewLighting.ConstantBufferOffset;
-
-                        fixed (byte* dataValues = viewParameters.DataValues)
-                            Utilities.CopyMemory(mappedViewLighting, (IntPtr)dataValues, viewLighting.ConstantBufferSize);
-                    }
+                    resourceGroup.UpdateLogicalGroup(ref viewLighting, viewParameters);
                 }
 
                 // PerDraw
@@ -403,19 +382,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (drawLighting.Hash != renderViewData.DrawLayoutHash)
                     {
                         renderViewData.DrawLayoutHash = drawLighting.Hash;
-                        var drawParameterLayout = new ParameterCollectionLayout();
 
-                        for (int index = 0; index < drawLighting.ConstantBufferMemberCount; ++index)
-                        {
-                            var member = drawLayout.ConstantBufferReflection.Members[drawLighting.ConstantBufferMemberStart + index];
-                            drawParameterLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(member.KeyInfo.Key, drawParameterLayout.BufferSize + member.Offset - drawLighting.ConstantBufferOffset, member.Type.Elements > 0 ? member.Type.Elements : 1));
-                        }
-                        for (int index = 0; index < drawLighting.DescriptorEntryCount; ++index)
-                        {
-                            var layoutEntry = drawLayout.DescriptorSetLayout.Entries[drawLighting.DescriptorEntryStart + index];
-                            drawParameterLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(layoutEntry.Key, drawParameterLayout.ResourceCount++));
-                        }
-                        drawParameterLayout.BufferSize += drawLighting.ConstantBufferSize;
+                        // Generate layout
+                        var drawParameterLayout = new ParameterCollectionLayout();
+                        drawParameterLayout.ProcessLogicalGroup(drawLayout, ref drawLighting);
+
                         drawParameters.UpdateLayout(drawParameterLayout);
                     }
 
@@ -431,22 +402,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         environmentLight.ApplyDrawParameters(context, renderViewData.ViewIndex, drawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
 
-                    var resourceGroup = renderNode.Resources;
-
                     // Update resources
-                    for (int resourceSlot = 0; resourceSlot < drawLighting.DescriptorSlotCount; ++resourceSlot)
-                    {
-                        resourceGroup.DescriptorSet.SetValue(drawLighting.DescriptorSlotStart + resourceSlot, drawParameters.ObjectValues[resourceSlot]);
-                    }
-
-                    // Update cbuffer
-                    if (drawLighting.ConstantBufferSize > 0)
-                    {
-                        var mappedDrawLighting = resourceGroup.ConstantBuffer.Data + drawLighting.ConstantBufferOffset;
-
-                        fixed (byte* dataValues = drawParameters.DataValues)
-                            Utilities.CopyMemory(mappedDrawLighting, (IntPtr)dataValues, drawLighting.ConstantBufferSize);
-                    }
+                    renderNode.Resources.UpdateLogicalGroup(ref drawLighting, drawParameters);
                 }
             }
         }
