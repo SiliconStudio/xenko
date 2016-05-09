@@ -535,6 +535,30 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 needDeploy = true;
             }
 
+            // Remove any reference of shared projects in the GlobalSections.
+            var projects = solution.GlobalSections.FirstOrDefault(s => s.Name == "SharedMSBuildProjectFiles");
+            if (projects != null)
+            {
+                List<PropertyItem> toRemove = new List<PropertyItem>();
+                foreach (var projRef in projects.Properties)
+                {
+                    // We assume here that we do not have the same project name in 2 or more locations
+                    var splitted = projRef.Name.Split('*');
+                    if (splitted.Length >= 2)
+                    {
+                        Guid guid;
+                        if (Guid.TryParse(splitted[1], out guid) && !solution.Projects.Contains(guid))
+                        {
+                            toRemove.Add(projRef);
+                        }
+                    }
+                }
+                foreach (var projRef in toRemove)
+                {
+                    projects.Properties.Remove(projRef);
+                }
+            }
+
             // Update .sln for build configurations
             if (configurations.Count > 0)
             {
