@@ -101,12 +101,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public int AddView(int viewIndex, int lightCount)
         {
             LightRanges[viewIndex] = new LightRange(Lights.Count, Lights.Count + lightCount);
-            LightCurrentCount = Math.Max(LightCurrentCount, ComputLightCount(lightCount));
+            LightCurrentCount = Math.Max(LightCurrentCount, ComputeLightCount(lightCount));
 
             return Math.Min(LightCurrentCount, lightCount);
         }
 
-        public virtual int ComputLightCount(int lightCount)
+        public virtual int ComputeLightCount(int lightCount)
         {
             // Shadows: return exact number
             // TODO: Only for PerView; PerDraw could be little bit more loose to avoid extra permutations
