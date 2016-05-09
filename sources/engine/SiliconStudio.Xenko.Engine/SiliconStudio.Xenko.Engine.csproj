@@ -224,6 +224,12 @@
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorThreshold.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\ComputeColors\VertexStreamDefinitionBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamScalar.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\VertexUserStreamDefinition.cs" />
@@ -325,6 +331,10 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HighlightShader.cs</LastGenOutput>
@@ -2423,6 +2433,7 @@
     </Compile>
     <Compile Include="Rendering\Shaders\TransformationKeys.cs" />
     <Compile Include="Engine\SyncScript.cs" />
+    <Compile Include="Starter\iOSXenkoView.cs" />
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
     <Compile Include="Updater\BlittableHelper.cs" />
     <Compile Include="Updater\CompiledUpdate.cs" />
@@ -3717,10 +3728,10 @@
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.5.25\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Content Include="Rendering\Properties.tt">
+    <None Include="Rendering\Properties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Properties.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

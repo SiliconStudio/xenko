@@ -598,6 +598,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                         // Extract outputs from render stage
                         pipelineState.Output = renderNode.RenderStage.Output;
+                        pipelineState.RasterizerState.MultiSampleLevel = renderNode.RenderStage.Output.MultiSampleLevel;
 
                         // Bind VAO
                         ProcessPipelineState(Context, renderNodeReference, ref renderNode, renderObject, pipelineState);

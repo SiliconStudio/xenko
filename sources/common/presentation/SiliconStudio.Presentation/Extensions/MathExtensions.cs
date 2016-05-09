@@ -11,6 +11,16 @@ namespace SiliconStudio.Presentation.Extensions
     public static class MathExtensions
     {
         /// <summary>
+        /// Returns the location of the center of the rectangle.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public static WindowsPoint GetCenterLocation(this WindowsRect r)
+        {
+            return new WindowsPoint(r.X + r.Width*0.5f, r.Y + r.Height*0.5f);
+        }
+
+        /// <summary>
         /// Returns a rectangle that is shrunk by the specified thickness, in all directions.
         /// </summary>
         /// <param name="r"></param>

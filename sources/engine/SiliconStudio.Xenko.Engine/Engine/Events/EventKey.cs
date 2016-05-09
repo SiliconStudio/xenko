@@ -9,14 +9,14 @@ namespace SiliconStudio.Xenko.Engine.Events
     /// <summary>
     /// Creates a new EventKey used to broadcast events.
     /// </summary>
-    public class EventKey : EventKey<byte>
+    public class EventKey : EventKey<bool>
     {
         /// <summary>
         /// Broadcasts the event to all the receivers
         /// </summary>
         public void Broadcast()
         {
-            Broadcast(0);
+            Broadcast(true);
         }
     }
 

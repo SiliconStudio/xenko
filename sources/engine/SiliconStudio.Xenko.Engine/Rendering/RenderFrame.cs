@@ -124,6 +124,32 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Gets a <see cref="RenderOutputDescription"/> that matches current depth stencil and render target formats.
+        /// </summary>
+        /// <returns>The <see cref="RenderOutputDescription"/>.</returns>
+        public unsafe RenderOutputDescription GetRenderOutputDescription()
+        {
+            var result = new RenderOutputDescription
+            {
+                DepthStencilFormat = DepthStencil != null ? DepthStencil.ViewFormat : PixelFormat.None,
+                MultiSampleLevel = DepthStencil != null ? DepthStencil.MultiSampleLevel : MSAALevel.None,
+            };
+
+            if (RenderTargets != null)
+            {
+                result.RenderTargetCount = RenderTargets.Length;
+                var renderTargetFormat = &result.RenderTargetFormat0;
+                for (int i = 0; i < RenderTargets.Length; ++i)
+                {
+                    *renderTargetFormat++ = RenderTargets[i].ViewFormat;
+                    result.MultiSampleLevel = RenderTargets[i].MultiSampleLevel; // multisample should all be equal
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="RenderFrame"/> to <see cref="Texture"/>.
         /// </summary>
         /// <param name="from">The render frame.</param>
