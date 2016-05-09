@@ -11,11 +11,11 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
-    /// A sprite provider from a <see cref="Sheet"/>
+    /// A sprite provider from a <see cref="SpriteSheet"/>
     /// </summary>
     [DataContract("SpriteFromSheet")]
     [Display("Sprite Group")]
-    public class SpriteFromSheet : ISpriteProvider
+    public class SpriteFromSheet : IAnimatableSpriteProvider
     {
         /// <summary>
         /// Gets or sets the <see cref="Sheet"/> of the provider.
