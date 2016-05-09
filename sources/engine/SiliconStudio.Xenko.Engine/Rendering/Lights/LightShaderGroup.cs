@@ -97,8 +97,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         /// <param name="viewIndex"></param>
         /// <param name="lightCount"></param>
-        /// <returns>The number of lights accepted.</returns>
-        public int AddView(int viewIndex, int lightCount)
+        /// <returns>The number of lights accepted in <see cref="CurrentLights"/>.</returns>
+        public virtual int AddView(int viewIndex, int lightCount)
         {
             LightRanges[viewIndex] = new LightRange(Lights.Count, Lights.Count + lightCount);
             LightCurrentCount = Math.Max(LightCurrentCount, ComputeLightCount(lightCount));
@@ -106,7 +106,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             return Math.Min(LightCurrentCount, lightCount);
         }
 
-        public virtual int ComputeLightCount(int lightCount)
+        /// <summary>
+        /// Compute the number of light supported by this shader. Usually a different number of light will trigger a permutation and layout update.
+        /// </summary>
+        /// <param name="lightCount"></param>
+        /// <returns></returns>
+        protected virtual int ComputeLightCount(int lightCount)
         {
             // Shadows: return exact number
             // TODO: Only for PerView; PerDraw could be little bit more loose to avoid extra permutations

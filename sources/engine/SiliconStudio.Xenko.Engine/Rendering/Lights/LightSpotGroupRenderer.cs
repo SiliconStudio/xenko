@@ -67,6 +67,22 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 ShaderSource = mixin;
             }
 
+            /// <inheritdoc/>
+            protected override int ComputeLightCount(int lightCount)
+            {
+                // TODO: Some way to override this
+                return 8;
+            }
+
+            /// <inheritdoc/>
+            public override int AddView(int viewIndex, int lightCount)
+            {
+                base.AddView(viewIndex, lightCount);
+
+                // We allow more lights than LightCurrentCount (they will be culled)
+                return lightCount;
+            }
+
             public override void ApplyDrawParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters, ref BoundingBoxExt boundingBox)
             {
                 CurrentLights.Clear();
@@ -76,20 +92,28 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 base.ApplyDrawParameters(context, viewIndex, parameters, ref boundingBox);
 
-                // TODO: BoundingBox Light culling
                 // TODO: Octree structure to select best lights quicker
+                var boundingBox2 = (BoundingBox)boundingBox;
                 foreach (var lightEntry in CurrentLights)
                 {
                     var light = lightEntry.Light;
 
-                    var spotLight = (LightSpot)light.Type;
-                    lightsData.Add(new SpotLightData
+                    if (light.BoundingBox.Intersects(ref boundingBox2))
                     {
-                        PositionWS = light.Position,
-                        DirectionWS = light.Direction,
-                        AngleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange),
-                        Color = light.Color,
-                    });
+                        var spotLight = (LightSpot)light.Type;
+                        lightsData.Add(new SpotLightData
+                        {
+                            PositionWS = light.Position,
+                            DirectionWS = light.Direction,
+                            AngleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange),
+                            Color = light.Color,
+                        });
+
+                        // Did we reach max number of simultaneous lights?
+                        // TODO: Still collect everything but sort by importance and remove the rest?
+                        if (lightsData.Count >= LightCurrentCount)
+                            break;
+                    }
                 }
 
                 parameters.Set(countKey, lightsData.Count);
