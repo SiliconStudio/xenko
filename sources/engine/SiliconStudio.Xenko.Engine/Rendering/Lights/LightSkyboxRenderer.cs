@@ -56,8 +56,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     lightShaderGroupsPerSkybox.Add(light, lightShaderGroup);
                 }
+            }
+        }
 
-                parameters.ShaderEntry.AddEnvironmentLightGroup(lightShaderGroup);
+        public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
+        {
+            // TODO: Some kind of sort?
+
+            foreach (var cubemap in lightShaderGroupsPerSkybox)
+            {
+                shaderEntry.AddEnvironmentLightGroup(cubemap.Value);
             }
         }
 

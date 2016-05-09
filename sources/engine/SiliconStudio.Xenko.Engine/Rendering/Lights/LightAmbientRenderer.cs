@@ -50,10 +50,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 ambientColor += light.Color;
             }
 
-            parameters.ShaderEntry.AddEnvironmentLightGroup(lightShaderGroup);
-
             // Store ambient sum for this view
             lightShaderGroup.AmbientColor[parameters.ViewIndex] = ambientColor;
+        }
+
+        public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
+        {
+            shaderEntry.AddEnvironmentLightGroup(lightShaderGroup);
         }
 
         private class LightAmbientShaderGroup : LightShaderGroup

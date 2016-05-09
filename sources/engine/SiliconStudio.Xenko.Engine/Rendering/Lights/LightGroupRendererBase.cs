@@ -54,19 +54,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public int ViewIndex;
             public int ViewCount;
 
-            public ForwardLightingRenderFeature.LightShaderPermutationEntry ShaderEntry;
-
             public LightComponentCollection LightCollection;
 
             public ShadowMapRenderer ShadowMapRenderer;
 
             public Dictionary<LightComponent, LightShadowMapTexture> ShadowMapTexturesPerLight;
         }
+
+        public abstract void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry);
     }
 
     public abstract class LightGroupRendererDynamic : LightGroupRendererBase
     {
         private readonly Dictionary<LightGroupKey, LightShaderGroupDynamic> lightShaderGroupPool = new Dictionary<LightGroupKey, LightShaderGroupDynamic>();
+        private readonly FastList<LightShaderGroupEntry> lightShaderGroups = new FastList<LightShaderGroupEntry>();
 
         private FastListStruct<LightDynamicEntry> processedLights = new FastListStruct<LightDynamicEntry>(8);
 
@@ -75,6 +76,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public override void Reset()
         {
             base.Reset();
+
+            lightShaderGroups.Clear();
 
             foreach (var lightShaderGroup in lightShaderGroupPool)
             {
@@ -153,10 +156,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         //for (int i = lightCount; i < processedLights.Count; ++i)
                         //    XXX.AddLight(processedLights[i], null);
 
-                        if (IsEnvironmentLight)
-                            parameters.ShaderEntry.AddEnvironmentLightGroup(lightShaderGroup);
-                        else
-                            parameters.ShaderEntry.AddDirectLightGroup(lightShaderGroup);
+                        var lightShaderGroupEntry = new LightShaderGroupEntry(lightGroupKey, lightShaderGroup);
+                        if (!lightShaderGroups.Contains(lightShaderGroupEntry))
+                            lightShaderGroups.Add(lightShaderGroupEntry);
 
                         processedLights.Clear();
                     }
@@ -168,6 +170,65 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 if (index < parameters.LightCollection.Count)
                     processedLights.Add(new LightDynamicEntry(nextLight, nextShadowTexture));
+            }
+        }
+
+        public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
+        {
+            // Sort to make sure we generate the same permutations
+            lightShaderGroups.Sort(LightShaderGroupComparer.Default);
+
+            foreach (var lightShaderGroup in lightShaderGroups)
+            {
+                if (IsEnvironmentLight)
+                    shaderEntry.AddEnvironmentLightGroup(lightShaderGroup.Value);
+                else
+                    shaderEntry.AddDirectLightGroup(lightShaderGroup.Value);
+            }
+        }
+
+        class LightShaderGroupComparer : Comparer<LightShaderGroupEntry>
+        {
+            public new static readonly LightShaderGroupComparer Default = new LightShaderGroupComparer();
+
+            public override int Compare(LightShaderGroupEntry x, LightShaderGroupEntry y)
+            {
+                var compareRenderer = (x.Key.ShadowRenderer != null).CompareTo(y.Key.ShadowRenderer != null);
+                if (compareRenderer != 0)
+                    return compareRenderer;
+
+                return x.Key.ShadowType.CompareTo(y.Key.ShadowType);
+            }
+        }
+
+        private struct LightShaderGroupEntry : IEquatable<LightShaderGroupEntry>
+        {
+            public readonly LightGroupKey Key;
+            public readonly LightShaderGroup Value;
+
+            public LightShaderGroupEntry(LightGroupKey key, LightShaderGroup value)
+            {
+                Key = key;
+                Value = value;
+            }
+
+            public bool Equals(LightShaderGroupEntry other)
+            {
+                return Key.Equals(other.Key) && Value.Equals(other.Value);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is LightShaderGroupEntry && Equals((LightShaderGroupEntry)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (Key.GetHashCode()*397) ^ Value.GetHashCode();
+                }
             }
         }
 

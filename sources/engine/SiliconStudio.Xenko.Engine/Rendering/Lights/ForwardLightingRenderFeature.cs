@@ -208,6 +208,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 PrepareLightGroups(context, viewCount, renderViewData, true, EntityGroup.Group0);
             }
 
+            // Add light shader groups using lightRenderers order to make sure we generate same shaders independently of light order
+            foreach (var lightRenderer in lightRenderers)
+            {
+                lightRenderer.Value.UpdateShaderPermutationEntry(ShaderPermutation);
+            }
+
             // TODO: Try to run that only if really required (i.e. actual layout change)
             // Notify light groups layout changed and generate shader permutation
             for (int index = 0; index < ShaderPermutation.DirectLightGroups.Count; index++)
@@ -535,7 +541,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     Context = context,
                     ViewIndex = renderViewData.ViewIndex,
                     ViewCount = renderViewCount,
-                    ShaderEntry = ShaderPermutation,
                     LightCollection = lightCollection,
                     ShadowMapRenderer = ShadowMapRenderer,
                     ShadowMapTexturesPerLight = renderViewData.LightComponentsWithShadows,
