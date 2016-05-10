@@ -340,7 +340,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             // Create surface
 #if SILICONSTUDIO_PLATFORM_WINDOWS
-#if SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL && !SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF
             var control = Description.DeviceWindowHandle.NativeHandle as SDL.Window;
 #else
             var control = Description.DeviceWindowHandle.NativeHandle as Control;

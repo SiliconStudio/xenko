@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Games
             type = AppContextType.DesktopOpenTK;
         #endif
     #elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
-        #if SILICONSTUDIO_XENKO_UI_SDL
+        #if SILICONSTUDIO_XENKO_UI_SDL && !SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF
             type = AppContextType.DesktopSDL;
         #endif
     #else
