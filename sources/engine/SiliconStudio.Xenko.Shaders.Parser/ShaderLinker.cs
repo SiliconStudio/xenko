@@ -575,6 +575,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     RowCount = parameterKey.RowCount,
                     ColumnCount = parameterKey.ColumnCount,
                     Count = parameterKey.Count,
+                    Offset = -1
                 };
             
             members.Add(binding);

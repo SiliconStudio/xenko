@@ -582,7 +582,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var parameterKeyInfo = parameterKeyInfos[i];
                 var newParameterKeyInfo = newParameterKeyInfos[i];
 
-                if (newParameterKeyInfo.Offset != -1)
+                if (newParameterKeyInfo.Offset != -1 && parameterKeyInfo.Offset != -1)
                 {
                     var elementSize = newParameterKeyInfos.Items[i].Key.Size;
                     var newTotalSize = elementSize + (elementSize + 15) / 16 * 16 * (newParameterKeyInfo.Count - 1);
@@ -757,6 +757,10 @@ namespace SiliconStudio.Xenko.Rendering
                 // Try to match elements (both source and destination should have a layout by now)
                 foreach (var parameterKeyInfo in destination.Layout.LayoutParameterKeyInfos)
                 {
+                    // Parameter not used
+                    if (parameterKeyInfo.Offset == -1)
+                        continue;
+
                     var sourceKey = parameterKeyInfo.Key;
                     if (subKey != null && sourceKey.Name.EndsWith(subKey))
                     {

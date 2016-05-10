@@ -347,7 +347,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
 
             // Process PerMaterial cbuffer
-            if (materialInfo.ConstantBufferReflection != null)
+            if (materialInfo.ConstantBufferReflection != null && materialInfo.ConstantBufferReflection.Size > 0)
             {
                 var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
                 fixed (byte* dataValues = materialInfo.ParameterCollection.DataValues)
