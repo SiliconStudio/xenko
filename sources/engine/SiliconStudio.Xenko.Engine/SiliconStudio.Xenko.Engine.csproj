@@ -197,6 +197,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\DepthBufferPolicy.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
     <Compile Include="Rendering\FrameResourceGroupLayout.cs" />

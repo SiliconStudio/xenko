@@ -111,16 +111,27 @@ namespace SiliconStudio.Xenko.Rendering
         /// Activates the specified render context.
         /// </summary>
         /// <param name="renderContext">The render context.</param>
-        /// <param name="enableDepth">if set to <c>true</c> [enable depth].</param>
+        /// <param name="enableDepth">if set to <c>DepthBufferPolicy.Enabled</c> [enable depth], if set to <c>DepthBufferPolicy.ReadOnly</c> enable testing only.</param>
         /// <exception cref="System.ArgumentNullException">renderContext</exception>
-        public void Activate(RenderDrawContext renderContext, bool enableDepth = true)
+        public void Activate(RenderDrawContext renderContext, DepthBufferPolicy enableDepth = DepthBufferPolicy.Enabled)
         {
             if (renderContext == null) throw new ArgumentNullException("renderContext");
 
             // TODO: Handle support for shared depth stencil buffer
 
-            // Sets the depth and render target
-            renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth ? DepthStencil : null, RenderTargets);
+            if (enableDepth == DepthBufferPolicy.ReadOnly)
+            {
+                if (depthStencilHasChanged)
+                    UpdateDepthStencilCache(renderContext);
+
+                // Sets the depth and render target
+                renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencilAsRT, RenderTargets);
+            }
+            else
+            {
+                // Sets the depth and render target
+                renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth == DepthBufferPolicy.Enabled ? DepthStencil : null, RenderTargets);
+            }
         }
 
         private bool depthStencilHasChanged;
@@ -150,22 +161,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO Not doing this every frame currently results in a bug
             // depthStencilHasChanged = false;
-        }
-
-        /// <summary>
-        /// Activates the specified render context with the DepthStencil as a read only texture
-        /// </summary>
-        /// <param name="renderContext">The render context.</param>
-        /// <exception cref="System.ArgumentNullException">renderContext</exception>
-        public void ActivateReadOnlyDepth(RenderDrawContext renderContext)
-        {
-            if (renderContext == null) throw new ArgumentNullException("renderContext");
-
-            if (depthStencilHasChanged)
-                UpdateDepthStencilCache(renderContext);
-
-            // Sets the depth and render target
-            renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencilAsRT, RenderTargets);
         }
 
         /// <summary>

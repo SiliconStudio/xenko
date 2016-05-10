@@ -17,6 +17,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private MeshPipelinePlugin meshPipelinePlugin;
 
+        // TODO This should be exposed to the user at some point
+        private bool enableDepthAsShaderResource = true;
+
         [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
@@ -115,14 +118,12 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | main stage]
             RenderSystem.Draw(context, MainRenderView, MainRenderStage);
 
-
-            // Resolve Depth as a texture
-
-            // READ: http://aras-p.info/texts/D3D9GPUHacks.html#depth
-            // ALSO THIS: https://bitwisegames.wordpress.com/2011/03/25/getting-direct-access-to-the-depthbuffer-in-directx10/
-            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-            //currentRenderFrame.Activate(context, false);
-            currentRenderFrame.ActivateReadOnlyDepth(context);
+            if (enableDepthAsShaderResource)
+            {
+                // Resolve Depth as a texture
+                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+                currentRenderFrame.Activate(context, DepthBufferPolicy.ReadOnly);
+            }
 
             // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
