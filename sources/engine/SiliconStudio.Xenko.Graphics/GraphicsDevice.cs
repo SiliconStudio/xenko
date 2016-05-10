@@ -95,16 +95,15 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected override void Destroy()
         {
-            DestroyPlatformDevice();
-
             // Notify listeners
-            if (Disposing != null)
-                Disposing(this, EventArgs.Empty);
+            Disposing?.Invoke(this, EventArgs.Empty);
 
             SamplerStates.Dispose();
             PrimitiveQuad.Dispose();
 
             SamplerStates = null;
+
+            DestroyPlatformDevice();
 
             base.Destroy();
         }
