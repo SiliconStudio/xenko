@@ -50,13 +50,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             renderEffectKey = RenderEffectKey;
 
-            viewProjectionMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewProjectionMatrix.Name);
+            viewProjectionMatrix = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewProjectionMatrix.Name);
 
-            viewMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewMatrix.Name);
+            viewMatrix = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewMatrix.Name);
 
-            projectionMatrix = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ProjectionMatrix.Name);
+            projectionMatrix = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ProjectionMatrix.Name);
 
-            viewFrustum = CreateViewCBufferOffsetSlot(ParticleBaseKeys.ViewFrustum.Name);
+            viewFrustum = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewFrustum.Name);
 
             perMaterialDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }

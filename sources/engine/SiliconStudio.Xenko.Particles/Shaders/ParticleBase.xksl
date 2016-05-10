@@ -15,7 +15,7 @@
 # define UsesSoftEdge false
 #endif
 
-class ParticleBase : ShaderBase, Texturing
+class ParticleBase : ShaderBase, Texturing, ParticleUtilities
 {
     // -------------------------------------
     // Resources
@@ -28,8 +28,11 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     // streams
     // -------------------------------------
+
+    // Shading position of the vertices/pixels
     stage stream float4 Position : POSITION;
 
+    // Linear depth of the position in view space in world units, used for soft edges
     stage stream float ZDepth : Z_DEPTH_VALUE;
 
     // -------------------------------------
@@ -38,23 +41,6 @@ class ParticleBase : ShaderBase, Texturing
     //stage stream float4 Color : COLOR;
     nointerpolation stage stream float Lifetime : BATCH_LIFETIME;
     nointerpolation stage stream float RandomSeed : BATCH_RANDOMSEED; // Ideally should be uint. Note! The xksl doesn't support nointerpolation, so cast the float as int before using it
-
-    // -------------------------------------
-    // uniforms
-    // -------------------------------------
-
-    // !When a bigger structure (float4) follow a smaller structure (float) the binding seems off
-    // Declare the uniforms in the order float4x4 > float4 > float > uint
-
-    cbuffer PerView
-    {
-        stage float4x4 ViewMatrix;
-        stage float4x4 ProjectionMatrix;
-        stage float4x4 ViewProjectionMatrix;
-
-        // .x - Width, .y - Height, .z - Near, .w - Far
-        stage float4   ViewFrustum;
-    }
 
     cbuffer PerMaterial
     {
@@ -73,6 +59,8 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     // VertexShader
     // -------------------------------------
+
+    // Override Vertex shader main method from the ShaderBase class
     stage override void VSMain()
     {
         float4 worldPos = streams.Position;
@@ -92,14 +80,11 @@ class ParticleBase : ShaderBase, Texturing
         streams.ShadingPosition.z = (viewProjPos.z / viewProjPos.w) * streams.ShadingPosition.w;
     }
 
-    float GetLinearDepth(float z)
-    {
-    	float fastA = -ProjectionMatrix._33;    // = zFar / (zFar - zNear);
-	    float fastB = ProjectionMatrix._43;     // = (-zFar * zNear) / (zFar - zNear);
-	    return fastB / (z - fastA);
-    }
+    // -------------------------------------
+    // PixelShader
+    // -------------------------------------
 
-    // Shading of the sprite
+    // Override Pixel shader main method from the ShaderBase class
     stage override void PSMain()
     {
         float4 colorTarget = Shading();
@@ -121,6 +106,7 @@ class ParticleBase : ShaderBase, Texturing
             var depthDistance = linearZOpaque - linearZOwn;
 
             // TODO Maybe set upper and lower bounds for more interesting effects
+
             // smoothstep(...) looks more natural than saturate(...):
             var softEdge = smoothstep(0, 1, depthDistance * SoftEdgeInverseDistance); 
             colorTarget.rgba *= softEdge;
@@ -140,37 +126,4 @@ class ParticleBase : ShaderBase, Texturing
         return ColorScale;
     }
 
-    // -------------------------------------
-    // Randomness
-    // -------------------------------------
-
-    //stage float4 GenerateRandomColor()
-    //{
-    //    float fSeed = (float) (streams.RandomSeed + ColorScaleOffset);
-
-    //    return lerp(ColorScaleMin, ColorScaleMax, GetRandom(fSeed));
-    //}
-
-    // Some notes on randomness
-    //  The algorithm below is uses unsigned integer as input and generates deterministic random values with good distribution.
-    //  Because we can't pass uint as vertex input, we use a float and cast it twice to prevent interpolation errors.
-    //  Also, casting a huge uint value to float causes underflow, so we limit the input value to 0 .. 0xFFFF (the masking is done on the CPU side)
-
-    static const float  GelfondConst = 23.1406926327792690; // e to the power of Pi = (-1) to the power of -i
-    static const float  GelfondSchneiderConst = 2.6651441426902251; // 2 to the power of sqrt(2)
-    static const float2 Gelfond = float2(GelfondConst, GelfondSchneiderConst);
-    static const float  Numerator = 123456789;
-
-    stage float GetRandom(float fSeed)
-    {
-        // Cast to int once to prevent interpolation errors
-        int uSeed = (int) (fSeed);
-        fSeed = (float) uSeed;
-
-        float2 rand2 = float2(cos(fSeed), sin(fSeed));
-
-        float dotProduct = dot(rand2, Gelfond);
-
-        return frac(fmod(Numerator, 1e-7 + 256.f * dotProduct));
-    }
 };
