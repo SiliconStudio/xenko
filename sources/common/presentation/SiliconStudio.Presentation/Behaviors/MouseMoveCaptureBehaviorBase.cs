@@ -2,10 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interactivity;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
-    public abstract class MouseMoveCaptureBehaviorBase<TElement> : DeferredBehaviorBase<TElement>
+    public abstract class MouseMoveCaptureBehaviorBase<TElement> : Behavior<TElement>
         where TElement : UIElement
     {
         /// <summary>
@@ -75,7 +76,7 @@ namespace SiliconStudio.Presentation.Behaviors
         }
 
         ///  <inheritdoc/>
-        protected override void OnAttachedOverride()
+        protected override void OnAttached()
         {
             AssociatedObject.MouseDown += MouseDown;
             AssociatedObject.MouseMove += MouseMove;
@@ -84,7 +85,7 @@ namespace SiliconStudio.Presentation.Behaviors
         }
 
         ///  <inheritdoc/>
-        protected override void OnDetachingOverride()
+        protected override void OnDetaching()
         {
             AssociatedObject.MouseDown -= MouseDown;
             AssociatedObject.MouseMove -= MouseMove;

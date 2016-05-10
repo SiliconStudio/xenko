@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 
@@ -25,6 +25,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
     [TestFixture]
     public class TestPrefabAssetMerge
     {
+        // TODO: Some tests are quite long. It woult be better to develop smaller test cases on particular cases
+        // Bigger tests are still necessary for ensuring cascading updates are working 
+        // and when things are less trivial (multiple children...etc.)
 
         [Test]
         public void TestCreateChildAsset()
@@ -704,8 +707,18 @@ namespace SiliconStudio.Xenko.Assets.Tests
         }
 
         [Test]
-        public void TestPackageAssetTemplatingAnalysis()
+        public void TestMultiplePrefabsMixedInheritance()
         {
+            PrefabAssetMerge.Debug = true;
+
+            // The purpose of this test is to check that modifying a prefab base is correctly propagated through all 
+            // derived prefabs. We use the following scenario:
+            // a1: base asset)
+            // a2: inherit from a1 by composition with 2 instances (baseParts: a1, 2 instances)
+            // a3: direct inheritance from a2 (base: a2)
+            // This scenario doesn't happen in practice, as we have restricted only to inheritance by composition for prefabs
+            // but we verify that the code is actually working for this scenario
+
             var package = new Package();
 
             var assetItems = package.Assets;
@@ -770,6 +783,388 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.AreEqual(6, a3.Hierarchy.RootEntities.Count);
                 Assert.True(a3.Hierarchy.Entities.All(it => !it.Design.BasePartInstanceId.HasValue));
                 Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && a2.Hierarchy.Entities.ContainsKey(it.Design.BaseId.Value)));
+            }
+        }
+
+
+        [Test]
+        public void TestMultiplePrefabsInheritanceAndChildren()
+        {
+            PrefabAssetMerge.Debug = true;
+
+            // The purpose of this test is to check that modifying a prefab base is correctly propagated through all 
+            // derived prefabs. We use the following scenario:
+            //
+            // a1: base asset
+            // a2: inherit from a1 by composition with 2 instances (baseParts: a1 => 2 instances)
+            // a3: inherit from a1 by composition with 1 instances (baseParts: a1 => 1 instances)
+            // a4: inherit from a2 and a3 by composition with 1 instances for each (baseParts: a1 => 1 instance, a2 => 1 instance)
+            //
+            // Unlike TestMultiplePrefabsMixedInheritance, we use only inheritance by composition for this scenario to match current use cases
+
+            var package = new Package();
+
+            var assetItems = package.Assets;
+
+
+            // First we create assets with the following configuration:
+            // a1:                  a2: (baseParts: a1, 2 instances)     a3: (baseParts: a1)               a4: (baseParts: a2 x 1, a3 x 1)
+            //  | er                 | er1 (base: er)                     | er1' (base: er)                 | eRoot
+            //    | ea                 | ea1 (base: ea)                     | ea1' (base: ea)                 | er1* (base: er)  
+            //    | eb                 | eb1 (base: eb)                     | eb1' (base: eb)                   | ea1* (base: ea)
+            //    | ec                 | ec1 (base: ec)                     | ec1' (base: ec)                   | eb1* (base: eb)
+            //                       | er2 (base: er)                                                           | ec1* (base: ec)
+            //                         | ea2 (base: ea)                                                       | er2* (base: er)  
+            //                         | eb2 (base: eb)                                                         | ea2* (base: ea)
+            //                         | ec2 (base: ec)                                                         | eb2* (base: eb)
+            //                                                                                                  | ec2* (base: ec)  
+            //                                                                                              | er1'* (base: er)     
+            //                                                                                                | ea1'* (base: ea)    
+            //                                                                                                | eb1'* (base: eb)  
+            //                                                                                                | ec1'* (base: ec)
+            var a1 = new PrefabAsset();
+            var er = new Entity("er");
+            var ea = new Entity("ea");
+            var eb = new Entity("eb");
+            var ec = new Entity("ec");
+            a1.Hierarchy.Entities.Add(er);
+            a1.Hierarchy.Entities.Add(ea);
+            a1.Hierarchy.Entities.Add(eb);
+            a1.Hierarchy.Entities.Add(ec);
+            a1.Hierarchy.RootEntities.Add(er.Id);
+            er.AddChild(ea);
+            er.AddChild(eb);
+            er.AddChild(ec);
+
+            assetItems.Add(new AssetItem("a1", a1));
+
+            var member = TypeDescriptorFactory.Default.Find(typeof(Entity))["Name"];
+            
+            var a2 = new PrefabAsset();
+            var a2PartInstance1 = a1.CreatePrefabInstance(a2, "a1");
+            foreach (var entity in a2PartInstance1.Entities)
+            {
+                entity.Entity.Name += "1";
+                entity.Entity.SetOverride(member, OverrideType.New);
+            }
+
+            var a2PartInstance2 = a1.CreatePrefabInstance(a2, "a1");
+            foreach (var entity in a2PartInstance2.Entities)
+            {
+                entity.Entity.Name += "2";
+                entity.Entity.SetOverride(member, OverrideType.New);
+            }
+
+            a2.Hierarchy.Entities.AddRange(a2PartInstance1.Entities);
+            a2.Hierarchy.Entities.AddRange(a2PartInstance2.Entities);
+            a2.Hierarchy.RootEntities.AddRange(a2PartInstance1.RootEntities);
+            a2.Hierarchy.RootEntities.AddRange(a2PartInstance2.RootEntities);
+            Assert.AreEqual(8, a2.Hierarchy.Entities.Count);
+            Assert.AreEqual(2, a2.Hierarchy.RootEntities.Count);
+            assetItems.Add(new AssetItem("a2", a2));
+
+            var a3 = new PrefabAsset();
+            var a3PartInstance1 = a1.CreatePrefabInstance(a3, "a1");
+            foreach (var entity in a3PartInstance1.Entities)
+            {
+                entity.Entity.Name += "1'";
+                entity.Entity.SetOverride(member, OverrideType.New);
+            }
+            a3.Hierarchy.Entities.AddRange(a3PartInstance1.Entities);
+            a3.Hierarchy.RootEntities.AddRange(a3PartInstance1.RootEntities);
+            Assert.AreEqual(4, a3.Hierarchy.Entities.Count);
+            Assert.AreEqual(1, a3.Hierarchy.RootEntities.Count);
+            assetItems.Add(new AssetItem("a3", a3));
+
+            var a4 = new PrefabAsset();
+            var eRoot = new Entity("eRoot");
+            var a2PartInstance3 = a2.CreatePrefabInstance(a4, "a2");
+
+            foreach (var entity in a2PartInstance3.Entities)
+            {
+                entity.Entity.Name += "*";
+                entity.Entity.SetOverride(member, OverrideType.New);
+            }
+            foreach (var entity in a2PartInstance3.Entities.Where(t => a2PartInstance3.RootEntities.Contains(t.Entity.Id)))
+            {
+                eRoot.AddChild(entity.Entity);
+            }
+            var a3PartInstance2 = a3.CreatePrefabInstance(a4, "a3");
+            foreach (var entity in a3PartInstance2.Entities)
+            {
+                entity.Entity.Name += "*";
+                entity.Entity.SetOverride(member, OverrideType.New);
+            }
+
+            a4.Hierarchy.Entities.Add(eRoot);
+            a4.Hierarchy.Entities.AddRange(a2PartInstance3.Entities);
+            a4.Hierarchy.Entities.AddRange(a3PartInstance2.Entities);
+            a4.Hierarchy.RootEntities.Add(eRoot.Id);
+            a4.Hierarchy.RootEntities.AddRange(a3PartInstance2.RootEntities);
+
+            Assert.AreEqual(13, a4.Hierarchy.Entities.Count);
+            Assert.AreEqual(2, a4.Hierarchy.RootEntities.Count);
+
+            assetItems.Add(new AssetItem("a4", a4));
+
+            Assert.True(a1.DumpTo(Console.Out, "a1 BEFORE PrefabMergeAsset"));
+            Assert.True(a2.DumpTo(Console.Out, "a2 BEFORE PrefabMergeAsset"));
+            Assert.True(a3.DumpTo(Console.Out, "a3 BEFORE PrefabMergeAsset"));
+            Assert.True(a4.DumpTo(Console.Out, "a4 BEFORE PrefabMergeAsset"));
+
+
+            // Then we simulate a concurrent change to a1 by someone that didn't have a2/a3/a4
+            // - Add one component to a1, linking to an existing entity ea
+            // - Add a root entity to a1 with a link to an existing entity eb
+            //
+            // a1:                  a2: (baseParts: a1, 2 instances)     a3: (baseParts: a1)                a4: (baseParts: a2 x 1, a3 x 1)
+            //  | er                 | er1 (base: er)                     | er1' (base: er)                  | eRoot
+            //    | ea                 | ea1 (base: ea)                     | ea1' (base: ea)                  | er1* (base: er)  
+            //    | eb                 | eb1 (base: eb)                     | eb1' (base: eb)                    | ea1* (base: ea)
+            //    | ec + link ea       | ec1 + link ea1 (base: ec)          | ec1' + link ea1' (base: ec)        | eb1* (base: eb)
+            //  | ex                 | er2 (base: er)                     | ex(1') (base: ex)                    | ec1* + link ea1* (base: ec)
+            //    | ey + link eb       | ea2 (base: ea)                     | ey(1') + link eb1'               | er2* (base: er)  
+            //                         | eb2 (base: eb)                                                          | ea2* (base: ea)
+            //                         | ec2 + link ea2 (base: ec)                                               | eb2* (base: eb)
+            //                       | ex(1)                                                                     | ec2* + link ea2* (base: ec)  
+            //                         | ey(1) + link eb1                                                    | er1'* (base: er)     
+            //                       | ex(2)                                                                   | ea1'* (base: ea)
+            //                         | ey(2) + link eb2                                                      | eb1'* (base: eb)  
+            //                                                                                                 | ec1'* + link ea1'* (base: ec)  
+            //                                                                                               | ex(1*)
+            //                                                                                                 | ey(1*) + link eb1*
+            //                                                                                               | ex(2*)
+            //                                                                                                 | ey(2*) + link eb2*
+            //                                                                                               | ex(1') (base: ex)   
+            //                                                                                                 | ey(1') + link eb1'*
+            ec.Components.Add(new TestEntityComponent() { EntityLink = ea });
+
+            var ex = new Entity("ex");
+            var ey = new Entity("ey");
+            ey.Components.Add(new TestEntityComponent() { EntityLink = eb });
+            ex.AddChild(ey);
+            a1.Hierarchy.Entities.Add(ex);
+            a1.Hierarchy.Entities.Add(ey);
+            a1.Hierarchy.RootEntities.Add(ex.Id);
+            Assert.AreEqual(6, a1.Hierarchy.Entities.Count);
+            Assert.AreEqual(2, a1.Hierarchy.RootEntities.Count);
+
+            // Simulates the loading of this package
+            using (var session = new PackageSession())
+            {
+                var logger = new LoggerResult();
+                session.AddExistingPackage(package, logger);
+
+                Assert.False(logger.HasErrors);
+
+                Assert.True(a1.DumpTo(Console.Out, "a1 AFTER PrefabMergeAsset"));
+
+                // ------------------------------------------------
+                // Check for a2
+                // ------------------------------------------------
+                // a2: (baseParts: a1, 2 instances)
+                //  | er1 (base: er)               
+                //    | ea1 (base: ea)             
+                //    | eb1 (base: eb)             
+                //    | ec1 + link ea1 (base: ec)  
+                //  | er2 (base: er)               
+                //    | ea2 (base: ea)             
+                //    | eb2 (base: eb)             
+                //    | ec2 + link ea2 (base: ec)  
+                //  | ex(1)                          
+                //    | ey(1) + link eb1             
+                //  | ex(2)                          
+                //    | ey(2) + link eb2             
+                {
+                    Assert.True(a2.DumpTo(Console.Out, "a2 AFTER PrefabMergeAsset"));
+                    Assert.AreEqual(4, a2.Hierarchy.RootEntities.Count);
+                    Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+
+                    // Check that we have all expected entities
+                    Assert.AreEqual(12, a2.Hierarchy.Entities.Count);
+
+                    var eb1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1")?.Entity;
+                    var eb2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb2")?.Entity;
+                    Assert.NotNull(eb1);
+                    Assert.NotNull(eb2);
+
+                    // Check that we have ex and ey
+                    var exList = a2.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    Assert.AreEqual(2, exList.Count);
+
+                    // Check that both [ex] have both 1 element [ey] and the links to eb1/eb2 are correct
+                    {
+                        var expecting = new List<Entity>() { eb1, eb2 };
+                        for (int i = 0; i < exList.Count; i++)
+                        {
+                            var ex1 = exList[i].Entity;
+                            Assert.AreEqual(1, ex1.Transform.Children.Count);
+                            var ey1 = ex1.Transform.Children[0].Entity;
+                            Assert.AreEqual(ey.Name, ey1.Name);
+                            Assert.NotNull(ey1.Get<TestEntityComponent>());
+
+                            var entityLink = ey1.Get<TestEntityComponent>().EntityLink;
+                            Assert.True(expecting.Contains(entityLink));
+                            expecting.Remove(entityLink);
+                        }
+                    }
+
+                    // Check link from ec1 to ea1
+                    {
+                        var ec1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec1")?.Entity;
+                        Assert.NotNull(ec1);
+
+                        var ea1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea1")?.Entity;
+                        Assert.NotNull(ea1);
+
+                        Assert.NotNull(ec1.Get<TestEntityComponent>());
+                        Assert.AreEqual(ea1, ec1.Get<TestEntityComponent>().EntityLink);
+                    }
+
+                    // Check link from ec2 to ea2
+                    {
+                        var ec2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec2")?.Entity;
+                        Assert.NotNull(ec2);
+
+                        var ea2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea2")?.Entity;
+                        Assert.NotNull(ea2);
+
+                        Assert.NotNull(ec2.Get<TestEntityComponent>());
+                        Assert.AreEqual(ea2, ec2.Get<TestEntityComponent>().EntityLink);
+                    }
+                }
+
+                // ------------------------------------------------
+                // Check for a3
+                // ------------------------------------------------
+                // a3: (baseParts: a1)             
+                //  | er1' (base: er)              
+                //    | ea1' (base: ea)            
+                //    | eb1' (base: eb)            
+                //    | ec1' + link ea1' (base: ec)
+                //  | ex1' (base: ex)              
+                //    | ey1' + link eb1'           
+                {
+                    Assert.True(a3.DumpTo(Console.Out, "a3 AFTER PrefabMergeAsset"));
+
+                    Assert.AreEqual(2, a3.Hierarchy.RootEntities.Count);
+                    Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+
+                    // Check that we have all expected entities
+                    Assert.AreEqual(6, a3.Hierarchy.Entities.Count);
+
+                    var eb1 = a3.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1'")?.Entity;
+                    Assert.NotNull(eb1);
+
+                    // Check that we have ex and ey
+                    var exList = a3.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    Assert.AreEqual(1, exList.Count);
+
+                    // Check that [ex] have 1 element [ey] and the link to eb1 is correct
+                    {
+                        var ex1 = exList[0].Entity;
+                        Assert.AreEqual(1, ex1.Transform.Children.Count);
+                        var ey1 = ex1.Transform.Children[0].Entity;
+                        Assert.AreEqual(ey.Name, ey1.Name);
+                        Assert.NotNull(ey1.Get<TestEntityComponent>());
+
+                        Assert.AreEqual(eb1, ey1.Get<TestEntityComponent>().EntityLink);
+                    }
+
+                    {
+                        var ec1 = a3.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec1'")?.Entity;
+                        Assert.NotNull(ec1);
+
+                        var ea1 = a3.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea1'")?.Entity;
+                        Assert.NotNull(ea1);
+
+                        Assert.NotNull(ec1.Get<TestEntityComponent>());
+                        Assert.AreEqual(ea1, ec1.Get<TestEntityComponent>().EntityLink);
+                    }
+                }
+
+                // ------------------------------------------------
+                // Check for a4
+                // ------------------------------------------------
+                // a4: (baseParts: a2 x 1, a3 x 1)
+                //  | eNewRoot
+                //    | er1* (base: er)  
+                //      | ea1* (base: ea)
+                //      | eb1* (base: eb)
+                //      | ec1* + link ea1* (base: ec)
+                //    | er2* (base: er)  
+                //      | ea2* (base: ea)
+                //      | eb2* (base: eb)
+                //      | ec2* + link ea2* (base: ec)
+                //  | er1'* (base: er)     
+                //    | ea1'* (base: ea)
+                //    | eb1'* (base: eb)  
+                //    | ec1'* + link ea1'* (base: ec)
+                //  | ex(1*)
+                //    | ey(1*) + link eb1*
+                //  | ex(2*)
+                //    | ey(2*) + link eb2*
+                //  | ex(1') (base: ex)   
+                //    | ey(1') + link eb1'*
+                {
+                    Assert.True(a4.DumpTo(Console.Out, "a4 AFTER PrefabMergeAsset"));
+
+                    Assert.AreEqual(5, a4.Hierarchy.RootEntities.Count);
+                    Assert.True(a4.Hierarchy.Entities.Where(it => it.Entity.Name != "eRoot").All(it => it.Entity.Name != "eRoot" && it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+
+                    // Check that we have all expected entities
+                    Assert.AreEqual(19, a4.Hierarchy.Entities.Count);
+
+                    var eb1 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1*")?.Entity;
+                    var eb1_2 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1'*")?.Entity;
+                    var eb2 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb2*")?.Entity;
+                    Assert.NotNull(eb1);
+                    Assert.NotNull(eb1_2);
+                    Assert.NotNull(eb2);
+
+                    // Check that we have ex and ey
+                    var exList = a4.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    Assert.AreEqual(3, exList.Count);
+
+                    // Check that both [ex] have both 1 element [ey] and the links to eb1/eb2 are correct
+                    {
+                        var expecting = new List<Entity>() { eb1, eb1_2, eb2 };
+
+                        for (int i = 0; i < exList.Count; i++)
+                        {
+                            var ex1 = exList[i].Entity;
+                            Assert.AreEqual(1, ex1.Transform.Children.Count);
+                            var ey1 = ex1.Transform.Children[0].Entity;
+                            Assert.AreEqual(ey.Name, ey1.Name);
+                            Assert.NotNull(ey1.Get<TestEntityComponent>());
+
+                            var entityLink = ey1.Get<TestEntityComponent>().EntityLink;
+                            Assert.True(expecting.Contains(entityLink));
+                            expecting.Remove(entityLink);
+                        }
+                    }
+
+                    // Check all [er] entities
+                    Action<string> checkErX = (erName) =>
+                    {
+                        var er1 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == erName)?.Entity;
+                        Assert.NotNull(er1);
+                        Assert.AreEqual(3, er1.Transform.Children.Count);
+
+                        var ec1 = er1.Transform.Children.FirstOrDefault(it => it.Entity.Name.StartsWith("ec"))?.Entity;
+                        Assert.NotNull(ec1);
+                        var ea1 = er1.Transform.Children.FirstOrDefault(it => it.Entity.Name.StartsWith("ea"))?.Entity;
+                        Assert.NotNull(ea1);
+
+                        Assert.NotNull(ec1.Get<TestEntityComponent>());
+
+                        Assert.AreEqual(ea1, ec1.Get<TestEntityComponent>().EntityLink);
+                    };
+
+                    checkErX("er1*");
+                    checkErX("er2*");
+                    checkErX("er1'*");
+                }
             }
         }
     }

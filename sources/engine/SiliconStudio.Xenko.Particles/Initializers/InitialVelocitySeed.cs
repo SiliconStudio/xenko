@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// Initializer which sets the initial velocity for particles based on RandomSeed information
     /// </summary>
     [DataContract("InitialVelocitySeed")]
-    [Display("Initial Velocity")]
+    [Display("Velocity")]
     public class InitialVelocitySeed : ParticleInitializer
     {
         public InitialVelocitySeed()
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(8)]
         [Display("Random Seed")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public uint SeedOffset { get; set; } = 0;
 
         /// <summary>
         /// Lower velocity value

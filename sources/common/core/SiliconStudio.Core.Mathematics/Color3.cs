@@ -762,7 +762,7 @@ namespace SiliconStudio.Core.Mathematics
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "Red:{1} Green:{2} Blue:{3}",R.ToString(format, formatProvider),
+            return string.Format(formatProvider, "Red:{0} Green:{1} Blue:{2}",R.ToString(format, formatProvider),
                 G.ToString(format, formatProvider), B.ToString(format, formatProvider));
         }
 

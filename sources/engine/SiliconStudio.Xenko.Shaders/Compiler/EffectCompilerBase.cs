@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             // Compile the whole mixin tree
             var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", mixinToCompile.Name) };
-            var bytecode = Compile(mixinToCompile, compilerParameters);
+            var bytecode = Compile(mixinToCompile, compilerParameters.EffectParameters, compilerParameters);
 
             // Since bytecode.Result is a struct, we check if any of its member has been set to know if it's valid
             if (bytecode.Result.CompilationLog != null || bytecode.Task != null)
@@ -85,9 +85,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// Compiles the ShaderMixinSource into a platform bytecode.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
+        /// <param name="effectParameters"></param>
         /// <param name="compilerParameters"></param>
         /// <returns>The platform-dependent bytecode.</returns>
-        public abstract TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
+        public abstract TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, EffectCompilerParameters effectParameters, CompilerParameters compilerParameters);
 
         public static readonly string DefaultSourceShaderFolder = "shaders";
 

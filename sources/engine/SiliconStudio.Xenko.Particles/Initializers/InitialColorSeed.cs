@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialColorSeed")]
-    [Display("Initial Color")]
+    [Display("Color")]
     public class InitialColorSeed : ParticleInitializer
     {
         public InitialColorSeed()
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(8)]
         [Display("Random Seed")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public uint SeedOffset { get; set; } = 0;
 
         /// <summary>
         /// The first color to interpolate from

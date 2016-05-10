@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         /// </userdoc>
         [DataMember(300)]
         [Display("Random Seed")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public uint SeedOffset { get; set; } = 0;
         
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)

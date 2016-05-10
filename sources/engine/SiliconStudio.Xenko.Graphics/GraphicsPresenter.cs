@@ -96,6 +96,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Default viewport that covers the whole presenter surface.
         /// </summary>
+        [Obsolete("This is not used anywhere anymore, except being created")]
         public Viewport DefaultViewport { get; protected set; }
 
         /// <summary>
@@ -160,8 +161,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
+        /// <param name="format"></param>
         public void Resize(int width, int height, PixelFormat format)
         {
+            GraphicsDevice.Begin();
+
             Description.BackBufferWidth = width;
             Description.BackBufferHeight = height;
             Description.BackBufferFormat = format;
@@ -170,6 +174,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             ResizeBackBuffer(width, height, format);
             ResizeDepthStencilBuffer(width, height, format);
+
+            GraphicsDevice.End();
         }
 
         protected abstract void ResizeBackBuffer(int width, int height, PixelFormat format);
@@ -213,12 +219,16 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Creates the depth stencil buffer.
             var flags = TextureFlags.DepthStencil;
-            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0)
+            if (GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0 && Description.MultiSampleLevel == MSAALevel.None)
             {
                 flags |= TextureFlags.ShaderResource;
             }
 
-            var depthTexture = Texture.New2D(GraphicsDevice, Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, flags);
+            // Create texture description
+            var depthTextureDescription = TextureDescription.New2D(Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, flags);
+            depthTextureDescription.MultiSampleLevel = Description.MultiSampleLevel;
+
+            var depthTexture = Texture.New(GraphicsDevice, depthTextureDescription);
             DepthStencilBuffer = depthTexture.DisposeBy(this);
         }
     }

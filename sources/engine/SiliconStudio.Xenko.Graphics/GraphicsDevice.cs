@@ -29,6 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal Effect CurrentEffect;
         private readonly bool isDeferred;
 
+        private readonly List<IDisposable> sharedDataToDispose = new List<IDisposable>();
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
         private readonly Dictionary<object, IDisposable> sharedDataPerDeviceContext = new Dictionary<object, IDisposable>();
         private GraphicsPresenter presenter;
@@ -95,13 +96,38 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected override void Destroy()
         {
-            // Notify listeners
-            Disposing?.Invoke(this, EventArgs.Empty);
+            // Clear shared data
+            for (int index = sharedDataToDispose.Count - 1; index >= 0; index--)
+                sharedDataToDispose[index].Dispose();
+            sharedDataPerDevice.Clear();
+            sharedDataPerDeviceContext.Clear();
 
             SamplerStates.Dispose();
+            SamplerStates = null;
+
             PrimitiveQuad.Dispose();
 
-            SamplerStates = null;
+            // Notify listeners
+            if (Disposing != null)
+                Disposing(this, EventArgs.Empty);
+
+            // Destroy resources
+            lock (Resources)
+            {
+                foreach (var resource in Resources)
+                {
+                    // Destroy leftover resources (note: should not happen if ResumeManager.OnDestroyed has properly been called)
+                    if (resource.LifetimeState != GraphicsResourceLifetimeState.Destroyed)
+                    {
+                        resource.OnDestroyed();
+                        resource.LifetimeState = GraphicsResourceLifetimeState.Destroyed;
+                    }
+
+                    // Remove Reload code in case it was preventing objects from being GC
+                    resource.Reload = null;
+                }
+                Resources.Clear();
+            }
 
             DestroyPlatformDevice();
 
@@ -267,7 +293,7 @@ namespace SiliconStudio.Xenko.Graphics
                         return null;
                     }
 
-                    localValue = localValue.DisposeBy(this);
+                    sharedDataToDispose.Add(localValue);
                     dictionary.Add(key, localValue);
                 }
                 return (T)localValue;

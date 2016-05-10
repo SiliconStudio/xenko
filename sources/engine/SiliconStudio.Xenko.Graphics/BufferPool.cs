@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public class BufferPool
+    public class BufferPool : IDisposable
     {
         public int Size;
         public IntPtr Data;
@@ -19,6 +19,12 @@ namespace SiliconStudio.Xenko.Graphics
         public static BufferPool New(GraphicsDevice graphicsDevice, int size)
         {
             return new BufferPool(size);
+        }
+
+        public void Dispose()
+        {
+            Marshal.FreeHGlobal(Data);
+            Data = IntPtr.Zero;
         }
 
         public void Reset()

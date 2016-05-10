@@ -62,14 +62,15 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             if (inputTexture == null)
                 return;
             
-            // Gets and checks the input texture
-            if (inputTexture.Dimension != TextureDimension.TextureCube)
-                throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringSH' effect.");
 
             const int FirstPassBlockSize = 4;
             const int FirstPassSumsCount = FirstPassBlockSize * FirstPassBlockSize;
 
             var faceCount = inputTexture.Dimension == TextureDimension.TextureCube ? 6 : 1;
+            if (faceCount == 1)
+            {
+                throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringSH' effect.");
+            }
             var inputSize = new Int2(inputTexture.Width, inputTexture.Height); // (Note: for cube maps width = height)
             var coefficientsCount = harmonicalOrder * harmonicalOrder;
 

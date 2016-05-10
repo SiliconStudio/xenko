@@ -65,9 +65,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 return BuildGetGraphicsPlatform();
             }
 
-            assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             AssetCompilerContext context = null;
-            GlobalLogger.GlobalMessageLogged += assetLogger;
             PackageSession projectSession = null;
             try
             {
@@ -112,7 +110,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 if (gameSettingsAsset == null)
                 {
                     builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
-                    gameSettingsAsset = new GameSettingsAsset();
+                    gameSettingsAsset = GameSettingsFactory.Create();
                 }
 
                 // Create context
@@ -120,8 +118,14 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform,
-                    BuildConfiguration =  builderOptions.ProjectConfiguration
+                    BuildConfiguration = builderOptions.ProjectConfiguration
                 };
+
+                // Command line properties
+                foreach (var property in builderOptions.Properties)
+                    context.OptionProperties.Add(property.Key, property.Value);
+
+                // Set current game settings
                 context.SetGameSettingsAsset(gameSettingsAsset);
 
                 // Copy properties from shared profiles to context properties
@@ -166,9 +170,6 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Dispose the session (in order to unload assemblies)
                 projectSession?.Dispose();
                 context?.Dispose();
-                // Flush and close logger
-                GlobalLogger.GlobalMessageLogged -= assetLogger;
-                assetLogger.Dispose();
             }
         }
 

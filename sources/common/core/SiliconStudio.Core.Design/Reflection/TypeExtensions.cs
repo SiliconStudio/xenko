@@ -4,11 +4,31 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.Reflection
 {
     public static class TypeExtensions
     {
+        public static Color4 GetUniqueColor(this Type type)
+        {
+            var hash = type.GetUniqueHash();
+            var hue = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type)?.CustomHue ?? hash % 360;
+            return new ColorHSV(hue, 0.75f + (hash % 101) / 400f, 0.5f + (hash % 151) / 300f, 1).ToColor();
+        }
+
+        public static float GetUniqueHue(this Type type)
+        {
+            return TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type)?.CustomHue ?? type.GetUniqueHash() % 360;
+        }
+
+        public static int GetUniqueHash(this Type type)
+        {
+            var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
+            var hash = displayAttribute?.Name.GetHashCode() ?? type.Name.GetHashCode();
+            return hash >> 16 ^ hash;
+        }
+
         public static bool HasInterface(this Type type, Type lookInterfaceType)
         {
             return type.GetInterface(lookInterfaceType) != null;

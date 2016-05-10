@@ -20,27 +20,30 @@ namespace SiliconStudio.Xenko.Physics.Shapes
     {
         public HeightfieldColliderShape(int heightStickWidth, int heightStickLength, UnmanagedArray<short> dynamicFieldData, float heightScale, float minHeight, float maxHeight, bool flipQuadEdges)
         {
+            CachedScaling = Vector3.One;
             InternalShape = new BulletSharp.HeightfieldShape(heightStickWidth, heightStickLength, dynamicFieldData.Pointer, heightScale, minHeight, maxHeight, 1, (int)BulletPhyScalarType.PhyShort, flipQuadEdges)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
             ShortArray = dynamicFieldData;
         }
 
         public HeightfieldColliderShape(int heightStickWidth, int heightStickLength, UnmanagedArray<byte> dynamicFieldData, float heightScale, float minHeight, float maxHeight, bool flipQuadEdges)
         {
+            CachedScaling = Vector3.One;
             InternalShape = new BulletSharp.HeightfieldShape(heightStickWidth, heightStickLength, dynamicFieldData.Pointer, heightScale, minHeight, maxHeight, 1, (int)BulletPhyScalarType.PhyUchar, flipQuadEdges)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
             ByteArray = dynamicFieldData;
         }
 
         public HeightfieldColliderShape(int heightStickWidth, int heightStickLength, UnmanagedArray<float> dynamicFieldData, float heightScale, float minHeight, float maxHeight, bool flipQuadEdges)
         {
+            CachedScaling = Vector3.One;
             InternalShape = new BulletSharp.HeightfieldShape(heightStickWidth, heightStickLength, dynamicFieldData.Pointer, heightScale, minHeight, maxHeight, 1, (int)BulletPhyScalarType.PhyFloat, flipQuadEdges)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
             FloatArray = dynamicFieldData;
         }

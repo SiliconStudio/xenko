@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
+using OpenTK.Graphics;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
@@ -53,6 +54,11 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             return GL.GetError();
 #endif
+        }
+
+        public static unsafe Color4 ToOpenGL(Core.Mathematics.Color4 color)
+        {
+            return *(Color4*)&color;
         }
 
         public static PrimitiveTypeGl ToOpenGL(this PrimitiveType primitiveType)

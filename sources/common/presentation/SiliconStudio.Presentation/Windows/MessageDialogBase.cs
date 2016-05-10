@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,84 +15,68 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public abstract class MessageDialogBase : Window
     {
-        private int result;
-
-        protected MessageDialogBase()
-        {
-            var serviceProvider = new ViewModelServiceProvider(new[] { new DispatcherService(this.Dispatcher) });
-            this.ButtonCommand = new AnonymousCommand<int>(serviceProvider, ButtonClick);
-        }
-
         /// <summary>
         /// Identifies the <see cref="ButtonsSource"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ButtonsSourceProperty =
-            DependencyProperty.Register("ButtonsSource", typeof(IEnumerable<DialogButtonInfo>), typeof(MessageDialogBase));
+            DependencyProperty.Register(nameof(ButtonsSource), typeof(IEnumerable<DialogButtonInfo>), typeof(MessageDialogBase));
 
         /// <summary>
         /// Identifies the <see cref="MessageTemplate"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MessageTemplateProperty =
-            DependencyProperty.Register("MessageTemplate", typeof(DataTemplate), typeof(MessageDialogBase));
+            DependencyProperty.Register(nameof(MessageTemplate), typeof(DataTemplate), typeof(MessageDialogBase));
 
         /// <summary>
         /// Identifies the <see cref="MessageTemplateSelector"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MessageTemplateSelectorProperty =
-            DependencyProperty.Register("MessageTemplateSelector", typeof(DataTemplateSelector), typeof(MessageDialogBase));
+            DependencyProperty.Register(nameof(MessageTemplateSelector), typeof(DataTemplateSelector), typeof(MessageDialogBase));
 
         /// <summary>
         /// Identifies the <see cref="Result"/> dependency property.
         /// </summary>
         protected static readonly DependencyProperty ResultProperty =
-            DependencyProperty.Register("Result", typeof(int), typeof(MessageDialogBase));
+            DependencyProperty.Register(nameof(Result), typeof(int), typeof(MessageDialogBase));
 
+        /// <summary>
+        /// Identifies the <see cref="ButtonCommand"/> dependency property key.
+        /// </summary>
+        private static readonly DependencyPropertyKey ButtonCommandPropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(ButtonCommand), typeof(ICommandBase), typeof(MessageDialogBase), new PropertyMetadata());
         /// <summary>
         /// Identifies the <see cref="ButtonCommand"/> dependency property.
         /// </summary>
-        private static readonly DependencyProperty ButtonCommandProperty =
-            DependencyProperty.Register("ButtonCommand", typeof(ICommandBase), typeof(MessageDialogBase));
+        protected static readonly DependencyProperty ButtonCommandProperty = ButtonCommandPropertyKey.DependencyProperty;
 
-        public IEnumerable<DialogButtonInfo> ButtonsSource
+        private int result;
+
+        protected MessageDialogBase()
         {
-            get { return (IEnumerable<DialogButtonInfo>)GetValue(ButtonsSourceProperty); }
-            set { SetValue(ButtonsSourceProperty, value); }
+            var serviceProvider = new ViewModelServiceProvider(new[] { new DispatcherService(Dispatcher) });
+            ButtonCommand = new AnonymousCommand<int>(serviceProvider, ButtonClick);
         }
 
-        public DataTemplate MessageTemplate
-        {
-            get { return (DataTemplate)GetValue(MessageTemplateProperty); }
-            set { SetValue(MessageTemplateProperty, value); }
-        }
+        public IEnumerable<DialogButtonInfo> ButtonsSource { get { return (IEnumerable<DialogButtonInfo>)GetValue(ButtonsSourceProperty); } set { SetValue(ButtonsSourceProperty, value); } }
 
-        public DataTemplateSelector MessageTemplateSelector
-        {
-            get { return (DataTemplateSelector)GetValue(MessageTemplateSelectorProperty); }
-            set { SetValue(MessageTemplateSelectorProperty, value); }
-        }
+        public DataTemplate MessageTemplate { get { return (DataTemplate)GetValue(MessageTemplateProperty); } set { SetValue(MessageTemplateProperty, value); } }
 
-        public int Result
-        {
-            get { return (int)GetValue(ResultProperty); }
-            protected set { SetValue(ResultProperty, value); }
-        }
+        public DataTemplateSelector MessageTemplateSelector { get { return (DataTemplateSelector)GetValue(MessageTemplateSelectorProperty); } set { SetValue(MessageTemplateSelectorProperty, value); }} 
 
-        private ICommandBase ButtonCommand
-        {
-            get { return (ICommandBase)GetValue(ButtonCommandProperty); }
-            set { SetValue(ButtonCommandProperty, value); }
-        }
+        public int Result { get { return (int)GetValue(ResultProperty); } protected set { SetValue(ResultProperty, value); } }
+
+        protected ICommandBase ButtonCommand { get { return (ICommandBase)GetValue(ButtonCommandProperty); } private set { SetValue(ButtonCommandPropertyKey, value); } }
 
         protected int ShowInternal()
         {
-            this.ShowDialog();
+            ShowDialog();
             return result;
         }
 
         private void ButtonClick(int parameter)
         {
-            this.result = parameter;
-            this.Close();
+            result = parameter;
+            Close();
         }
     }
 

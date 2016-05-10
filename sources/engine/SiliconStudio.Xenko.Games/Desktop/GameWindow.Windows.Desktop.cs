@@ -178,6 +178,7 @@ namespace SiliconStudio.Xenko.Games
                 //gameForm.AppActivated += OnActivated;
                 //gameForm.AppDeactivated += OnDeactivated;
                 gameForm.UserResized += OnClientSizeChanged;
+                gameForm.FullscreenToggle += OnFullscreenToggle;
             }
             else
             {

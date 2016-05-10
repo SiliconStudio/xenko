@@ -35,12 +35,15 @@ using Java.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Graphics.Regression;
 
 using Console = System.Console;
 using File = System.IO.File;
 using StringWriter = System.IO.StringWriter;
 using TextUI = SiliconStudio.Xenko.Graphics.Regression.TextUI;
+using SiliconStudio;
+using static System.Int32;
 
 namespace NUnitLite.Tests
 {
@@ -50,7 +53,10 @@ namespace NUnitLite.Tests
         private const char IpAddressesSplitCharacter = '%';
 
         public static Logger Logger = GlobalLogger.GetLogger("NUnitLiteLauncher");
-        private ConsoleLogListener logAction = new ConsoleLogListener();
+        private readonly ConsoleLogListener logAction = new ConsoleLogListener();
+        private string resultFile;
+        private StringBuilder stringBuilder;
+        private SimpleSocket socketContext;
 
         protected TcpClient Connect(string serverAddresses, int serverPort)
         {
@@ -90,6 +96,7 @@ namespace NUnitLite.Tests
         {
             GlobalLogger.GlobalMessageLogged += logAction;
             Logger.ActivateLog(LogMessageType.Debug);
+            logAction.LogMode = ConsoleLogMode.Always;
 
             base.OnCreate(bundle);
 
@@ -97,8 +104,8 @@ namespace NUnitLite.Tests
             if (PlatformAndroid.Context == null)
                 PlatformAndroid.Context = this;
 
-            var serverAddresses = Intent.GetStringExtra(TestRunner.XenkoServerIp);
-            if (serverAddresses == null)
+            var xenkoVersion = Intent.GetStringExtra(TestRunner.XenkoVersion);
+            if (xenkoVersion == null)
             {
                 // No explicit intent, switch to UI activity
                 StartActivity(typeof(XenkoTestSuiteActivity));
@@ -110,26 +117,37 @@ namespace NUnitLite.Tests
 
         private void RunTests()
         {
-            var serverAddresses = Intent.GetStringExtra(TestRunner.XenkoServerIp);
-            var serverPort = Int32.Parse(Intent.GetStringExtra(TestRunner.XenkoServerPort) ?? "8080");
-            var buildNumber = Int32.Parse(Intent.GetStringExtra(TestRunner.XenkoBuildNumber) ?? "-1");
+            AppDomain.CurrentDomain.UnhandledException += (a, e) =>
+            {
+                var exception = e.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    var exceptionText = exception.ToString();
+                    stringBuilder.Append($"Tests fatal failure: {exceptionText}");
+                    Logger.Debug($"Unhandled fatal exception: {exception.ToString()}");
+                    EndTesting(true);
+                }
+            };
+
+            var xenkoVersion = Intent.GetStringExtra(TestRunner.XenkoVersion);
+            var buildNumber = Parse(Intent.GetStringExtra(TestRunner.XenkoBuildNumber) ?? "-1");
             var branchName = Intent.GetStringExtra(TestRunner.XenkoBranchName) ?? "";
 
             // Remove extra (if activity is recreated)
-            Intent.RemoveExtra(TestRunner.XenkoServerIp);
-            Intent.RemoveExtra(TestRunner.XenkoServerPort);
+            Intent.RemoveExtra(TestRunner.XenkoVersion);
             Intent.RemoveExtra(TestRunner.XenkoBuildNumber);
             Intent.RemoveExtra(TestRunner.XenkoBranchName);
 
-
             Logger.Info(@"*******************************************************************************************************************************");
             Logger.Info(@"date: " + DateTime.Now);
-            Logger.Info(@"server addresses: " + serverAddresses);
-            Logger.Info(@"port: " + serverPort);
             Logger.Info(@"*******************************************************************************************************************************");
 
             // Connect to server right away to let it know we're alive
-            var client = Connect(serverAddresses, serverPort);
+            //var client = Connect(serverAddresses, serverPort);
+
+            var url = "/task/SiliconStudio.Xenko.TestRunner.exe";
+
+            socketContext = RouterClient.RequestServer(url).Result;
 
             // Update build number (if available)
             ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
@@ -150,21 +168,35 @@ namespace NUnitLite.Tests
             var timeNow = DateTime.Now;
 
             // Generate result file name
-            var resultFile = Path.Combine(cachePath, string.Format("TestResult-{0:yyyy-MM-dd_hh-mm-ss-tt}.xml", timeNow));
+            resultFile = Path.Combine(cachePath, $"TestResult-{timeNow:yyyy-MM-dd_hh-mm-ss-tt}.xml");
 
             Logger.Debug(@"Execute tests");
 
-            var stringBuilder = new StringBuilder();
+            stringBuilder = new StringBuilder();
             var stringWriter = new StringWriter(stringBuilder);
-            new TextUI(stringWriter).Execute(new [] { "-format:nunit2", string.Format("-result:{0}", resultFile) });
 
+            try
+            {
+                new TextUI(stringWriter).Execute(new[] { "-format:nunit2", $"-result:{resultFile}" });
+            }
+            catch (Exception ex)
+            {
+                stringBuilder.Append($"Tests fatal failure: {ex}");
+                Logger.Error($"Tests fatal failure: {ex}");
+            }           
+
+            EndTesting(false);
+        }
+
+        private void EndTesting(bool failure)
+        {
             Logger.Debug(@"Execute tests done");
 
             // Read result file
-            var result = File.ReadAllText(resultFile);
+            var result = File.Exists(resultFile) ? File.ReadAllText(resultFile) : "";
 
             // Delete result file
-            File.Delete(resultFile);
+            if(File.Exists(resultFile)) File.Delete(resultFile);
 
             // Display some useful info
             var output = stringBuilder.ToString();
@@ -173,7 +205,8 @@ namespace NUnitLite.Tests
             Logger.Debug(@"Sending results to server");
 
             // Send back result
-            var binaryWriter = new BinaryWriter(client.GetStream());
+            var binaryWriter = new BinaryWriter(socketContext.WriteStream);
+            binaryWriter.Write(failure);
             binaryWriter.Write(output);
             binaryWriter.Write(result);
 
@@ -181,7 +214,9 @@ namespace NUnitLite.Tests
 
             ImageTester.Disconnect();
 
-            client.Close();
+            socketContext.WriteStream.Flush();
+
+            socketContext.Dispose();
 
             Finish();
         }

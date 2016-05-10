@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets.Templates;
@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.Tests
     /// Tests for the <see cref="TemplateManager"/> class.
     /// </summary>
     [TestFixture]
-    public class TestTemplateManager: ITemplateGenerator
+    public class TestTemplateManager: TemplateGeneratorBase<SessionTemplateGeneratorParameters>
     {
         [Test, Ignore]
         public void TestTemplateDescriptions()
@@ -33,25 +33,25 @@ namespace SiliconStudio.Assets.Tests
 
             Assert.Greater(descriptions.Count, 0);
 
-            var templateGenerator = TemplateManager.FindTemplateGenerator(descriptions[0]);
+            var templateGenerator = TemplateManager.FindTemplateGenerator(new SessionTemplateGeneratorParameters());
 
             Assert.AreEqual(this, templateGenerator);
 
             TemplateManager.Unregister(this);
         }
 
-        public bool IsSupportingTemplate(TemplateDescription templateDescription)
+        public override bool IsSupportingTemplate(TemplateDescription templateDescription)
         {
             return true;
         }
 
-        public Func<bool> PrepareForRun(TemplateGeneratorParameters parameters)
+        public override bool PrepareForRun(SessionTemplateGeneratorParameters parameters)
         {
             // Nothing to do in the tests
-            return null;
+            return true;
         }
 
-        public bool AfterRun(TemplateGeneratorParameters parameters)
+        public override bool Run(SessionTemplateGeneratorParameters parameters)
         {
             return true;
         }

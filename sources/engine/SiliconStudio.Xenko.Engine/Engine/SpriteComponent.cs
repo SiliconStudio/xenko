@@ -8,7 +8,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine
@@ -78,30 +77,18 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets or sets the current frame of the animation.
+        /// Gets the current frame of the animation.
         /// </summary>
-        /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
-        [DataMember(8)]
-        [DefaultValue(0)]
-        [Display("Default Frame")]
-        public int CurrentFrame { get; set; }
+        [DataMemberIgnore]
+        public int CurrentFrame => (SpriteProvider as SpriteFromSheet)?.CurrentFrame ?? 0;
 
         /// <summary>
         /// Gets the current sprite.
         /// </summary>
         [DataMemberIgnore]
-        public Sprite CurrentSprite
-        {
-            get
-            {
-                if (SpriteProvider == null)
-                    return null;
+        public Sprite CurrentSprite => SpriteProvider?.GetSprite();
 
-                return SpriteProvider.GetSprite(CurrentFrame);
-            }
-        }
-
-        private readonly static Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
+        private static readonly Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
 
         [DataMemberIgnore]
         internal double AnimationTime;

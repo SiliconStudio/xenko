@@ -51,6 +51,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Services.AddService(typeof(ScriptSystem), this);
         }
 
+        protected override void Destroy()
+        {
+            Scheduler.ActionException -= Scheduler_ActionException;
+            Scheduler = null;
+
+            Services.RemoveService(typeof(ScriptSystem));
+
+            base.Destroy();
+        }
+
         public override void Update(GameTime gameTime)
         {
             // Copy scripts to process (so that scripts added during this frame don't affect us)

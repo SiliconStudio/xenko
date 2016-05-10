@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.Behaviors
             WordSeparators = " ";
         }
 
-        protected override void OnAttachedOverride()
+        protected override void OnAttachedAndLoaded()
         {
             parent = VisualTreeHelper.GetParent(AssociatedObject) as FrameworkElement;
             if (parent == null)
@@ -67,7 +67,7 @@ namespace SiliconStudio.Presentation.Behaviors
             ProcessText();
         }
 
-        protected override void OnDetachingOverride()
+        protected override void OnDetachingAndUnloaded()
         {
             if (parent != null)
                 parent.SizeChanged -= OnLogicalParentSizeChanged;

@@ -68,7 +68,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     }
 
                     // set the sprite frame
-                    sprite.CurrentFrame = animationInfo.SpriteIndices[sprite.CurrentIndexIndex];
+                    var provider = sprite.SpriteProvider as IAnimatableSpriteProvider;
+                    if (provider != null)
+                        provider.CurrentFrame = animationInfo.SpriteIndices[sprite.CurrentIndexIndex];
 
                     // we reached the end of the animation -> go to next animation
                     if (sprite.ElapsedTime >= oneFrameTime)

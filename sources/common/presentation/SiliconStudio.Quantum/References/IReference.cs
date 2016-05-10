@@ -19,7 +19,7 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Reference.NotInCollection"/>.
         /// </summary>
-        object Index { get; }
+        Index Index { get; }
 
         /// <summary>
         /// Gets this object casted as a <see cref="ObjectReference"/>.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Quantum.References
         /// <param name="index">The index to check.</param>
         /// <returns><c>True</c> if the reference contains the given index, <c>False</c> otherwise.</returns>
         /// <remarks>If it is an <see cref="ObjectReference"/> it will return true only for <c>null</c>.</remarks>
-        bool HasIndex(object index);
+        bool HasIndex(Index index);
 
         /// <summary>
         /// Clear the reference, making it represent a null or empty object.

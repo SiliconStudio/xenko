@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
 using NUnit.Framework;
+using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Core.IO.Tests
+namespace SiliconStudio.Core.Design.Tests
 {
     [TestFixture]
     public class TestUPath

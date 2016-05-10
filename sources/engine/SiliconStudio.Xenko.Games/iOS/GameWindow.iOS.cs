@@ -8,6 +8,7 @@ using OpenTK.Platform.iPhoneOS;
 using OpenGLES;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.OpenGL;
+using UIKit;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
 namespace SiliconStudio.Xenko.Games
@@ -20,6 +21,9 @@ namespace SiliconStudio.Xenko.Games
         private bool hasBeenInitialized;
         private iPhoneOSGameView gameForm;
         private WindowHandle nativeWindow;
+
+        private UIInterfaceOrientation currentOrientation;
+        
 
         public override WindowHandle NativeWindow
         {
@@ -41,7 +45,18 @@ namespace SiliconStudio.Xenko.Games
 
         protected internal override void SetSupportedOrientations(DisplayOrientation orientations)
         {
-            // Desktop doesn't have orientation (unless on Windows 8?)
+
+        }
+
+        private UIViewController GetViewController(iPhoneOSGameView form)
+        {
+            for (UIResponder uiResponder = form; uiResponder != null; uiResponder = uiResponder.NextResponder)
+            {
+                UIViewController uiViewController = uiResponder as UIViewController;
+                if (uiViewController != null)
+                    return uiViewController;
+            }
+            return null;
         }
 
         protected override void Initialize(GameContext<iOSWindow> gameContext)
@@ -82,14 +97,23 @@ namespace SiliconStudio.Xenko.Games
 
             gameForm.LayerColorFormat = EAGLColorFormat.RGBA8;
             //gameForm.LayerRetainsBacking = false;
+
+            currentOrientation = UIApplication.SharedApplication.StatusBarOrientation;
+
+            gameForm.Resize += GameFormOnResize;
         }
 
-        void gameForm_Load(object sender, EventArgs e)
+        private void GameFormOnResize(object sender, EventArgs eventArgs)
+        {
+            Debug.WriteLine("Resize()");
+        }
+
+        private void gameForm_Load(object sender, EventArgs e)
         {
             hasBeenInitialized = false;
         }
 
-        void gameForm_Unload(object sender, EventArgs e)
+        private void gameForm_Unload(object sender, EventArgs e)
         {
             if (hasBeenInitialized)
             {
@@ -97,13 +121,20 @@ namespace SiliconStudio.Xenko.Games
                 hasBeenInitialized = false;
             }
         }
-        
-        void gameForm_RenderFrame(object sender, OpenTK.FrameEventArgs e)
+
+        private void gameForm_RenderFrame(object sender, OpenTK.FrameEventArgs e)
         {
             if (InitCallback != null)
             {
                 InitCallback();
                 InitCallback = null;
+            }
+
+            var orientation = UIApplication.SharedApplication.StatusBarOrientation;
+            if (orientation != currentOrientation)
+            {                
+                currentOrientation = orientation;               
+                OnOrientationChanged(this, EventArgs.Empty);
             }
 
             RunCallback();
@@ -142,14 +173,8 @@ namespace SiliconStudio.Xenko.Games
         /// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
         public override bool Visible
         {
-            get
-            {
-                return gameForm.Visible;
-            }
-            set
-            {
-                gameForm.Visible = value;
-            }
+            get { return gameForm.Visible; }
+            set { gameForm.Visible = value; }
         }
 
         protected override void SetTitle(string title)
@@ -159,59 +184,57 @@ namespace SiliconStudio.Xenko.Games
 
         internal override void Resize(int width, int height)
         {
-            gameForm.Size = new Size(width, height);
+            gameForm.Size = new Size((int)(width / gameForm.ContentScaleFactor), (int)(height / gameForm.ContentScaleFactor));
         }
 
         public override bool IsBorderLess
         {
-            get
-            {
-                return true;
-            }
-            set
-            {
-            }
+            get { return true; }
+            set { }
         }
 
         public override bool AllowUserResizing
         {
-            get
-            {
-                return true;
-            }
-            set
-            {
-            }
+            get { return true; }
+            set { }
         }
 
         public override Rectangle ClientBounds
         {
-            get
-            {
-                return new Rectangle(0, 0, (int)(gameForm.Size.Width * gameForm.ContentScaleFactor), (int)(gameForm.Size.Height * gameForm.ContentScaleFactor));
-            }
+            get { return new Rectangle(0, 0, (int)(gameForm.Window.Screen.Bounds.Width*gameForm.ContentScaleFactor), (int)(gameForm.Window.Screen.Bounds.Height*gameForm.ContentScaleFactor)); }
         }
 
         public override DisplayOrientation CurrentOrientation
         {
             get
             {
-                return DisplayOrientation.Default;
+                switch (currentOrientation)
+                {
+                    case UIInterfaceOrientation.Unknown:
+                        return DisplayOrientation.Default;
+                    case UIInterfaceOrientation.Portrait:
+                        return DisplayOrientation.Portrait;
+                    case UIInterfaceOrientation.PortraitUpsideDown:
+                        return DisplayOrientation.Portrait;
+                    case UIInterfaceOrientation.LandscapeLeft:
+                        return DisplayOrientation.LandscapeLeft;
+                    case UIInterfaceOrientation.LandscapeRight:
+                        return DisplayOrientation.LandscapeRight;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
         public override bool IsMinimized
         {
-            get
-            {
-                return gameForm.WindowState == OpenTK.WindowState.Minimized;
-            }
+            get { return gameForm.WindowState == OpenTK.WindowState.Minimized; }
         }
 
         public override bool IsMouseVisible
         {
             get { return false; }
-            set {}
+            set { }
         }
 
         protected override void Destroy()
@@ -247,4 +270,5 @@ namespace SiliconStudio.Xenko.Games
         }
     }
 }
+
 #endif

@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// This class is holding the PropertyKey using to store <see cref="OverrideType"/> per object into the <see cref="ShadowObject"/>.
     /// </summary>
-    public static class Override
+    public static partial class Override
     {
         /// <summary>
         /// The OverrideType key.

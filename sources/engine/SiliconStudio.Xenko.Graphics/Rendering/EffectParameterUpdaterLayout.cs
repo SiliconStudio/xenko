@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 ParameterCollectionLayout.ProcessResources(layout);
 
-                ShaderConstantBufferDescription cbuffer = null;
+                EffectConstantBufferDescription cbuffer = null;
 
                 for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex)
                 {

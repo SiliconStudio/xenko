@@ -15,6 +15,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
     internal interface IShaderCompiler
     {
-        ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, CompilerParameters compilerParameters, EffectReflection reflection, string sourceFilename = null);
+        ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null);
     }
 }

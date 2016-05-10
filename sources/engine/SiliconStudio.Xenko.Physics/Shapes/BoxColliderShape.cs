@@ -20,9 +20,10 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.Box;
             Is2D = false;
 
+            CachedScaling = Vector3.One;
             InternalShape = new BulletSharp.BoxShape(size/2)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = CachedScaling
             };
 
             DebugPrimitiveMatrix = Matrix.Scaling(size * 1.01f);

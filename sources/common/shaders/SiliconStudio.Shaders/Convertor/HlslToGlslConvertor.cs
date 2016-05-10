@@ -448,7 +448,7 @@ namespace SiliconStudio.Shaders.Convertor
 
             // Look for global uniforms used as global temp variable
             globalUniformVisitor = new GlobalUniformVisitor(shader);
-            globalUniformVisitor.Run((MethodDefinition)entryPoint);
+            globalUniformVisitor.Run(entryPoint);
 
             var writer = new HlslWriter();
             writer.Visit(shader);
@@ -2433,7 +2433,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     TextureFunctionsCompatibilityProfile = TextureFunctionsCompatibilityProfile
                 };
-            samplerMappingVisitor.Run((MethodDefinition)entryPoint);
+            samplerMappingVisitor.Run(entryPoint);
 
             // Use the strip visitor in order to remove unused functions/declaration 
             // from the entrypoint
@@ -3898,7 +3898,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         private void RemapCoordinates(StatementList list)
         {
-            if (pipelineStage == PipelineStage.Vertex && entryPoint is MethodDefinition)
+            if (pipelineStage == PipelineStage.Vertex && (entryPoint != null))
             {
                 if (ViewFrustumRemap)
                 {

@@ -42,12 +42,8 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 var assemblyUri = new Uri(Assembly.GetEntryAssembly().CodeBase);
                 return Path.GetDirectoryName(assemblyUri.LocalPath);
-#else
-                return AppContext.BaseDirectory;
-#endif
             }
         }
 

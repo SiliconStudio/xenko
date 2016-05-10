@@ -17,13 +17,6 @@ namespace SiliconStudio.Core.Yaml
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private ITypeDescriptor cachedDescriptor;
 
-        private const char PostFixSealed = '!';
-
-        private const char PostFixNew = '*';
-
-        private const string PostFixNewSealed = "*!";
-
-        private const string PostFixNewSealedAlt = "!*";
 
         public CustomObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
@@ -49,11 +42,11 @@ namespace SiliconStudio.Core.Yaml
                     var overrideType = objectContext.Instance.GetOverride(customDescriptor);
                     if ((overrideType & OverrideType.New) != 0)
                     {
-                        memberName += PostFixNew;
+                        memberName += Override.PostFixNew;
                     }
                     if ((overrideType & OverrideType.Sealed) != 0)
                     {
-                        memberName += PostFixSealed;
+                        memberName += Override.PostFixSealed;
                     }
                 }
             }
@@ -63,21 +56,21 @@ namespace SiliconStudio.Core.Yaml
 
         public override string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
-            var newMemberName = memberName.Trim(PostFixSealed, PostFixNew);
+            var newMemberName = memberName.Trim(Override.PostFixSealed, Override.PostFixNew);
             var objectType = objectContext.Instance.GetType();
 
             if (newMemberName.Length != memberName.Length)
             {
                 var overrideType = OverrideType.Base;
-                if (memberName.Contains(PostFixNewSealed) || memberName.EndsWith(PostFixNewSealedAlt))
+                if (memberName.Contains(Override.PostFixNewSealed) || memberName.EndsWith(Override.PostFixNewSealedAlt))
                 {
                     overrideType = OverrideType.New | OverrideType.Sealed;
                 }
-                else if (memberName.EndsWith(PostFixNew))
+                else if (memberName.EndsWith(Override.PostFixNew))
                 {
                     overrideType = OverrideType.New;
                 }
-                else if (memberName.EndsWith(PostFixSealed))
+                else if (memberName.EndsWith(Override.PostFixSealed))
                 {
                     overrideType = OverrideType.Sealed;
                 }

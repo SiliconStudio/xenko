@@ -20,9 +20,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public partial class TestRunner
     {
-        public const string XenkoServerIp = "XENKO_SERVER_IP";
-
-        public const string XenkoServerPort = "XENKO_SERVER_PORT";
+        public const string XenkoVersion = "XENKO_VERSION";
 
         public const string XenkoBuildNumber = "XENKO_BUILD_NUMBER";
 

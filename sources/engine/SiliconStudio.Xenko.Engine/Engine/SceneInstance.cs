@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -108,6 +109,12 @@ namespace SiliconStudio.Xenko.Engine
             // TODO: Dispose of Scene, graphics compositor...etc.
             // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
             VisibilityGroups.Clear();
+
+            if (scene != null)
+            {
+                scene.ReleaseInternal();
+                scene = null;
+            }
 
             base.Destroy();
         }

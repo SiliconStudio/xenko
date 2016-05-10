@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -47,8 +47,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
 
             Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
-
-            ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
         }
 
         private ShadowMapRenderView CreateShadowRenderView()
@@ -61,11 +59,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// </summary>
         /// <value>The render view.</value>
         public RenderView CurrentView { get; private set; }
-
-        /// <summary>
-        /// The shadow camera used for rendering from the shadow space.
-        /// </summary>
-        public readonly CameraComponent ShadowCamera;
 
         public Dictionary<Type, ILightShadowMapRenderer> Renderers { get; }
 
@@ -100,7 +93,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Gets the current camera
                 CurrentView = renderViewData.Key;
 
-                if (CurrentView.Camera == null)
+                // Check of there is any shadow receivers at all
+                if (CurrentView.MinimumDistance >= CurrentView.MaximumDistance)
                 {
                     continue;
                 }
@@ -123,7 +117,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;
-                    shadowMapTexture.Renderer.Extract(RenderSystem.RenderContextOld, this, shadowMapTexture);
+                    shadowMapTexture.Renderer.Collect(RenderSystem.RenderContextOld, this, shadowMapTexture);
                     for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
                         // Allocate shadow render view
@@ -221,9 +215,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             // TODO GRAPHICS REFACTOR Only lights of current scene!
 
-            var sceneCameraRenderer = renderView.SceneCameraRenderer;
-            var viewport = sceneCameraRenderer.ComputedViewport;
-
             foreach (var lightComponent in renderViewLightData.VisibleLightsWithShadows)
             {
                 var light = lightComponent.Type as IDirectLight;
@@ -250,7 +241,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var position = lightComponent.Position;
 
                 // Compute the coverage of this light on the screen
-                var size = light.ComputeScreenCoverage(renderView.Camera, position, direction, viewport.Width, viewport.Height);
+                var size = light.ComputeScreenCoverage(renderView, position, direction);
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Size);

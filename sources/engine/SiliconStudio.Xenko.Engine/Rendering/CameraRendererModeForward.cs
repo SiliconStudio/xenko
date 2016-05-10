@@ -38,6 +38,11 @@ namespace SiliconStudio.Xenko.Rendering
             if (TransparentRenderStage == null)
                 TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
 
+            // Setup stage RenderOutputDescription (since we have the render frame bound)
+            var output = Context.Tags.Get(RenderFrame.Current);
+            MainRenderStage.Output = output.GetRenderOutputDescription();
+            TransparentRenderStage.Output = output.GetRenderOutputDescription();
+
             // Setup proper sort modes
             MainRenderStage.SortMode = new StateChangeSortMode();
             TransparentRenderStage.SortMode = new BackToFrontSortMode();

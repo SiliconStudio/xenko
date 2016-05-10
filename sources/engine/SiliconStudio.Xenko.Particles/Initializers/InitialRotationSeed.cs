@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// The <see cref="InitialRotationSeed"/> is an initializer which sets the particle's rotation around the Z axis in clip space (camera-facing)
     /// </summary>
     [DataContract("InitialRotationSeed")]
-    [Display("Initial Rotation")]
+    [Display("Rotation")]
     public class InitialRotationSeed : ParticleInitializer
     {
         private Vector2 angularRotation = new Vector2(-60f, 60f);
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(8)]
         [Display("Random Seed")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public uint SeedOffset { get; set; } = 0;
 
         /// <summary>
         /// Angular rotation in degrees, positive value means clockwise

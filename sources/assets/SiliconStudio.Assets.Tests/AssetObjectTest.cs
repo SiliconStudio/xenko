@@ -82,6 +82,11 @@ namespace SiliconStudio.Assets.Tests
             return Parts.Select(it => new AssetPart(it.Id, it.BaseId, it.BasePartInstanceId));
         }
 
+        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool ContainsPart(Guid id)
         {
             return Parts.Any(t => t.Id == id);

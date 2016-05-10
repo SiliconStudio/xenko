@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Engine.Network
@@ -40,7 +41,7 @@ namespace SiliconStudio.Xenko.Engine.Network
             {
                 packetCompletionTasks.Add(query.StreamId, tcs);
             }
-            Send(query);
+            await Send(query);
             return await tcs.Task;
         }
 
@@ -95,9 +96,10 @@ namespace SiliconStudio.Xenko.Engine.Network
                     binaryReader.SerializeExtended<object>(ref obj, ArchiveMode.Deserialize, null);
 
                     // If it's a message, process it separately (StreamId)
-                    if (obj is SocketMessage)
+                    var message = obj as SocketMessage;
+                    if (message != null)
                     {
-                        var socketMessage = (SocketMessage)obj;
+                        var socketMessage = message;
                         ProcessMessage(socketMessage);
                     }
 
@@ -117,13 +119,40 @@ namespace SiliconStudio.Xenko.Engine.Network
 
                     if (handlerFound)
                     {
-                        handler.Item1(obj);
+                        try
+                        {
+                            handler.Item1(obj);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (message != null && message.StreamId != 0)
+                            {
+                                var exceptionMessage = new ExceptionMessage
+                                {
+                                    ExceptionInfo = new ExceptionInfo(ex),
+                                    StreamId = message.StreamId
+                                };
+
+                                await Send(exceptionMessage);
+                            }
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 context.Dispose();
+
+                lock (packetCompletionTasks)
+                {
+                    // Cancel all pending packets
+                    foreach (var packetCompletionTask in packetCompletionTasks)
+                    {
+                        packetCompletionTask.Value.TrySetException(e);
+                    }
+                    packetCompletionTasks.Clear();
+                }
+
                 throw;
             }
         }
@@ -131,14 +160,26 @@ namespace SiliconStudio.Xenko.Engine.Network
         void ProcessMessage(SocketMessage socketMessage)
         {
             TaskCompletionSource<SocketMessage> tcs;
+
             lock (packetCompletionTasks)
             {
                 packetCompletionTasks.TryGetValue(socketMessage.StreamId, out tcs);
                 if (tcs != null)
                     packetCompletionTasks.Remove(socketMessage.StreamId);
             }
+
             if (tcs != null)
-                tcs.TrySetResult(socketMessage);
+            {
+                var execeptionMessage = socketMessage as ExceptionMessage;
+                if (execeptionMessage != null)
+                {
+                    tcs.TrySetException(new SimpleSocketException(execeptionMessage.ExceptionInfo.ToString()));
+                }
+                else
+                {
+                    tcs.TrySetResult(socketMessage);
+                }         
+            }
         }
     }
 }

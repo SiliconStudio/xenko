@@ -11,7 +11,7 @@ using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
-
+using SiliconStudio.Quantum;
 using Expression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
             ReservedNames.Add("Type");
         }
 
-        protected ObservableNode(ObservableViewModel ownerViewModel, object index = null)
+        protected ObservableNode(ObservableViewModel ownerViewModel, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
             Owner = ownerViewModel;
@@ -104,7 +104,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
         /// </summary>
-        public object Index { get; }
+        public Index Index { get; }
 
         /// <summary>
         /// Gets a unique identifier for this observable node.
@@ -130,11 +130,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the level of depth of this node, starting from 0 for the root node.
         /// </summary>
         public int Level => Parent?.Level + 1 ?? 0;
-
-        /// <summary>
-        /// Gets whether this node has been disposed.
-        /// </summary>
-        public bool IsDisposed { get; private set; }
      
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -153,6 +148,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
+
+        internal new bool IsDestroyed => base.IsDestroyed;
 
         /// <inheritdoc/>
         [Obsolete("This event is deprecated, IContent.Changed should be used instead")] // Unless needed for virtual/combined nodes?
@@ -184,10 +181,10 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose()
+        public override void Destroy()
         {
-            EnsureNotDisposed();
-            IsDisposed = true;
+            EnsureNotDestroyed(Name);
+            base.Destroy();
         }
 
         /// <inheritdoc/>
@@ -356,14 +353,6 @@ namespace SiliconStudio.Presentation.Quantum
             if (changingProperties.Remove(propertyName))
             {
                 OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
-            }
-        }
-
-        protected void EnsureNotDisposed()
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(Name);
             }
         }
 
@@ -548,11 +537,11 @@ namespace SiliconStudio.Presentation.Quantum
                 return 1;
 
             // Then we use index, if they are set and comparable.
-            if (a.Index != null && b.Index != null)
+            if (!a.Index.IsEmpty && !b.Index.IsEmpty)
             {
-                if (a.Index.GetType() == b.Index.GetType() && a.Index is IComparable)
+                if (a.Index.Value.GetType() == b.Index.Value.GetType())
                 {
-                    return ((IComparable)a.Index).CompareTo(b.Index);
+                    return a.Index.CompareTo(b.Index); 
                 }
             }
 

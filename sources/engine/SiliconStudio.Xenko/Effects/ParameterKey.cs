@@ -176,6 +176,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        internal virtual object ReadValue(IntPtr data)
+        {
+            throw new NotSupportedException("Only implemented for ValueParameterKey");
+        }
+
         internal abstract void SerializeHash(SerializationStream stream, object value);
     }
 
@@ -275,6 +280,11 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ValueParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas) : base(ParameterKeyType.Value, name, length, metadatas)
         {
+        }
+
+        internal override object ReadValue(IntPtr data)
+        {
+            return Utilities.Read<T>(data);
         }
     }
 

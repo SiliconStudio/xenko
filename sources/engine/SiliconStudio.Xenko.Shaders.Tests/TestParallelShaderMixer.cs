@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
 
             var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix" };
 
-            var result = effectCompiler.Compile(mixinTree, parameters).WaitForResult();
+            var result = effectCompiler.Compile(mixinTree, parameters.EffectParameters, parameters).WaitForResult();
 
             Assert.IsFalse(result.CompilationLog.HasErrors);
             Assert.IsNotNull(result);

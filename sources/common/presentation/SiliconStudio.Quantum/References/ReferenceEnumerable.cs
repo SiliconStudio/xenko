@@ -16,10 +16,10 @@ namespace SiliconStudio.Quantum.References
     public sealed class ReferenceEnumerable : IReference, IEnumerable<ObjectReference>
     {
         private readonly List<ObjectReference> references = new List<ObjectReference>();
-        private readonly List<object> indices = new List<object>();
+        private readonly List<Index> indices = new List<Index>();
         private readonly Type elementType;
 
-        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, object index)
+        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, Index index)
         {
             Reference.CheckReferenceCreationSafeGuard();
             Type = enumerableType;
@@ -37,35 +37,35 @@ namespace SiliconStudio.Quantum.References
         public object ObjectValue { get; private set; }
 
         /// <inheritdoc/>
-        public Type Type { get; private set; }
+        public Type Type { get; }
 
         /// <inheritdoc/>
-        public object Index { get; private set; }
+        public Index Index { get; }
 
         /// <inheritdoc/>
         public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
 
         /// <inheritdoc/>
-        public ReferenceEnumerable AsEnumerable { get { return this; } }
+        public ReferenceEnumerable AsEnumerable => this;
 
         /// <summary>
         /// Gets whether this reference enumerates a dictionary collection.
         /// </summary>
-        public bool IsDictionary { get { return ObjectValue is IDictionary || ObjectValue.GetType().HasInterface(typeof(IDictionary<,>)); } }
+        public bool IsDictionary => ObjectValue is IDictionary || ObjectValue.GetType().HasInterface(typeof(IDictionary<,>));
 
         /// <inheritdoc/>
-        public int Count { get { return references.Count; } }
+        public int Count => references.Count;
 
         /// <summary>
         /// Gets the indices of each reference in this instance.
         /// </summary>
-        public IEnumerable<object> Indices => indices;
+        public IReadOnlyCollection<Index> Indices => indices;
 
         /// <inheritdoc/>
-        public ObjectReference this[object index] { get { return references.Single(x => Equals(x.Index, index)); } }
+        public ObjectReference this[Index index] { get { return references.Single(x => Equals(x.Index, index)); } }
 
         /// <inheritdoc/>
-        public bool HasIndex(object index)
+        public bool HasIndex(Index index)
         {
             return indices.Any(x => x.Equals(index));
         }
@@ -89,7 +89,7 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public void Refresh(object newObjectValue)
         {
-            if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", "newObjectValue");
+            if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
 
@@ -97,7 +97,7 @@ namespace SiliconStudio.Quantum.References
             references.AddRange(
                 IsDictionary
                     ? ((IEnumerable)ObjectValue).Cast<object>().Select(x => (ObjectReference)Reference.CreateReference(GetValue(x), elementType, GetKey(x)))
-                    : ((IEnumerable)ObjectValue).Cast<object>().Select((x, i) => (ObjectReference)Reference.CreateReference(x, elementType, i)));
+                    : ((IEnumerable)ObjectValue).Cast<object>().Select((x, i) => (ObjectReference)Reference.CreateReference(x, elementType, new Index(i))));
             indices.Clear();
             foreach (var reference in references)
             {
@@ -137,19 +137,19 @@ namespace SiliconStudio.Quantum.References
             return text;
         }
 
-        private static object GetKey(object keyValuePair)
+        private static Index GetKey(object keyValuePair)
         {
             var type = keyValuePair.GetType();
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(KeyValuePair<,>)) throw new ArgumentException("The given object is not a KeyValuePair.");
-            var keyProperty = type.GetProperty("Key");
-            return keyProperty.GetValue(keyValuePair);
+            var keyProperty = type.GetProperty(nameof(KeyValuePair<object, object>.Key));
+            return new Index(keyProperty.GetValue(keyValuePair));
         }
 
         private static object GetValue(object keyValuePair)
         {
             var type = keyValuePair.GetType();
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(KeyValuePair<,>)) throw new ArgumentException("The given object is not a KeyValuePair.");
-            var valueProperty = type.GetProperty("Value");
+            var valueProperty = type.GetProperty(nameof(KeyValuePair<object, object>.Value));
             return valueProperty.GetValue(keyValuePair);
         }
     }

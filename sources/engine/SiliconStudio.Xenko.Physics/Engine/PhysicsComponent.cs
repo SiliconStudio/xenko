@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
@@ -21,6 +22,8 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(3000)]
     public abstract class PhysicsComponent : ActivableEntityComponent
     {
+        protected static Logger Logger = GlobalLogger.GetLogger("PhysicsComponent");
+
         static PhysicsComponent()
         {
             // Preload proper libbulletc native library (depending on CPU type)
@@ -405,10 +408,10 @@ namespace SiliconStudio.Xenko.Engine
 
             var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this);
             DebugEntity = entity;
-            if (DebugEntity != null)
-            {
-                scene.Entities.Add(entity);
-            }
+
+            if (DebugEntity == null) return;
+
+            scene.Entities.Add(entity);
         }
 
         public void RemoveDebugEntity(Scene scene)
@@ -441,14 +444,9 @@ namespace SiliconStudio.Xenko.Engine
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
             {
-                if (scale != ColliderShape.Scaling)
+                if (ColliderShape.Scaling != scale)
                 {
                     ColliderShape.Scaling = scale;
-
-                    if (DebugEntity != null)
-                    {
-                        DebugEntity.Transform.Scale = scale;
-                    }
                 }
             }
 
@@ -473,14 +471,9 @@ namespace SiliconStudio.Xenko.Engine
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
             {
-                if (scale != ColliderShape.Scaling)
+                if (ColliderShape.Scaling != scale)
                 {
                     ColliderShape.Scaling = scale;
-
-                    if (DebugEntity != null)
-                    {
-                        DebugEntity.Transform.Scale = scale;
-                    }
                 }
             }
 
@@ -642,11 +635,19 @@ namespace SiliconStudio.Xenko.Engine
             //this is not optimal as UpdateWorldMatrix will end up being called twice this frame.. but we need to ensure that we have valid data.
             Entity.Transform.UpdateWorldMatrix();
 
-            if (ColliderShapes.Count == 0) return; //no shape no purpose
+            if (ColliderShapes.Count == 0)
+            {
+                Logger.Error($"Entity {Entity.Name} has a PhysicsComponent without any collider shape.");
+                return; //no shape no purpose
+            }
 
             if (ColliderShape == null) ComposeShape();
 
-            if (ColliderShape == null) return; //no shape no purpose
+            if (ColliderShape == null)
+            {
+                Logger.Error($"Entity {Entity.Name} has a PhysicsComponent but it failed to compose the collider shape.");
+                return; //no shape no purpose
+            }
 
             BoneIndex = -1;
 

@@ -35,6 +35,18 @@
         </Reference>
       </ItemGroup>
     </When>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+      <ItemGroup>
+        <Compile Include="System.IO.Compression.Zip\ApkExpansionSupport.cs" />
+        <Compile Include="System.IO.Compression.Zip\Compression.cs" />
+        <Compile Include="System.IO.Compression.Zip\Crc32.cs" />
+        <Compile Include="System.IO.Compression.Zip\ExpansionZipFile.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipFile.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipFileEntry.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipFileValidationHandler.cs" />
+        <Compile Include="System.IO.Compression.Zip\ZipStream.cs" />
+      </ItemGroup>
+    </When>
   </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
@@ -66,16 +78,6 @@
     <Compile Include="VirtualFileSystem.cs" />
     <Compile Include="VirtualSearchOption.cs" />
     <Compile Include="VirtualWatcherChangeTypes.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
-    <Compile Include="System.IO.Compression.Zip\ApkExpansionSupport.cs" />
-    <Compile Include="System.IO.Compression.Zip\Compression.cs" />
-    <Compile Include="System.IO.Compression.Zip\Crc32.cs" />
-    <Compile Include="System.IO.Compression.Zip\ExpansionZipFile.cs" />
-    <Compile Include="System.IO.Compression.Zip\ZipFile.cs" />
-    <Compile Include="System.IO.Compression.Zip\ZipFileEntry.cs" />
-    <Compile Include="System.IO.Compression.Zip\ZipFileValidationHandler.cs" />
-    <Compile Include="System.IO.Compression.Zip\ZipStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">

@@ -18,9 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public static partial class LightSpotGroupKeys
     {
-        public static readonly ValueParameterKey<Vector3> LightPositionWS = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> LightDirectionsWS = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> LightAngleOffsetAndInvSquareRadius = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Color3> LightColor = ParameterKeys.NewValue<Color3>();
+        public static readonly ValueParameterKey<SpotLightData> Lights = ParameterKeys.NewValue<SpotLightData>();
     }
 }

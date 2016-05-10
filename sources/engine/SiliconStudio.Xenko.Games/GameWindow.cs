@@ -89,6 +89,11 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         public event EventHandler<EventArgs> OrientationChanged;
 
+        /// <summary>
+        /// Occurs, when device full screen mode is toggled.
+        /// </summary>
+        public event EventHandler<EventArgs> FullscreenToggle;
+
         #endregion
 
         #region Public Properties
@@ -209,40 +214,34 @@ namespace SiliconStudio.Xenko.Games
         {
             IsActivated = true;
 
-            EventHandler<EventArgs> handler = Activated;
-            if (handler != null)
-            {
-                handler(source, e);
-            }
+            var handler = Activated;
+            handler?.Invoke(source, e);
         }
 
         protected void OnClientSizeChanged(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = ClientSizeChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = ClientSizeChanged;
+            handler?.Invoke(this, e);
         }
 
         protected void OnDeactivated(object source, EventArgs e)
         {
             IsActivated = false;
 
-            EventHandler<EventArgs> handler = Deactivated;
-            if (handler != null)
-            {
-                handler(source, e);
-            }
+            var handler = Deactivated;
+            handler?.Invoke(source, e);
         }
 
         protected void OnOrientationChanged(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = OrientationChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = OrientationChanged;
+            handler?.Invoke(this, e);
+        }
+
+        protected void OnFullscreenToggle(object source, EventArgs e)
+        {
+            var handler = FullscreenToggle;
+            handler?.Invoke(this, e);
         }
 
         protected abstract void SetTitle(string title);

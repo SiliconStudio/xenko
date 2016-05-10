@@ -109,7 +109,12 @@ namespace SiliconStudio.Xenko.Animations
         protected T SampleRaw(float t)
         {
             if (sortedKeys.Count <= 0)
-                return new T();
+            {
+                UpdateChanges();
+
+                if (sortedKeys.Count <= 0)
+                    return new T();
+            }
 
             var leftIndex = 0;
             while ((leftIndex < sortedKeys.Count - 1) && (sortedKeys[leftIndex + 1].Key <= t))

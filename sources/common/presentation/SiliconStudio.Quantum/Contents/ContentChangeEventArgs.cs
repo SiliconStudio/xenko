@@ -19,11 +19,11 @@ namespace SiliconStudio.Quantum.Contents
         /// Initializes a new instance of the <see cref="ContentChangeEventArgs"/> class.
         /// </summary>
         /// <param name="content">The content that has changed.</param>
-        /// <param name="index">The index in the content where the change occurred, if applicable. <c>null</c> otherwise.</param>
+        /// <param name="index">The index in the content where the change occurred.</param>
         /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="oldValue">The old value of the content.</param>
         /// <param name="newValue">The new value of the content.</param>
-        public ContentChangeEventArgs(IContent content, object index, ContentChangeType changeType, object oldValue, object newValue)
+        public ContentChangeEventArgs(IContent content, Index index, ContentChangeType changeType, object oldValue, object newValue)
         {
             Content = content;
             Index = index;
@@ -38,9 +38,9 @@ namespace SiliconStudio.Quantum.Contents
         public IContent Content { get; }
 
         /// <summary>
-        /// Gets the index where the change occurred, if applicable. This property is <c>null</c> otherwise.
+        /// Gets the index where the change occurred.
         /// </summary>
-        public object Index { get; }
+        public Index Index { get; }
 
         /// <summary>
         /// The type of change.

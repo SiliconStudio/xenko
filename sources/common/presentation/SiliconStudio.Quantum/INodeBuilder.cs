@@ -20,12 +20,6 @@ namespace SiliconStudio.Quantum
         NodeContainer NodeContainer { get; }
 
         /// <summary>
-        /// Gets the collection of structure types that represents custom primitive types. Primitive structures won't have node created for each of their members.
-        /// </summary>
-        /// <remarks>Default .NET primitive types, string and enum are always considered to be primitive type.</remarks>
-        ICollection<Type> PrimitiveTypes { get; }
-
-        /// <summary>
         /// Gets the type descriptor factory.
         /// </summary>
         /// <value>The type descriptor factory.</value>
@@ -42,14 +36,46 @@ namespace SiliconStudio.Quantum
         ICollection<INodeCommand> AvailableCommands { get; }
 
         /// <summary>
-        /// Raised when a node is about to be constructed. The construction can be cancelled by setting <see cref="NodeConstructingArgs.Discard"/> to <c>true</c>.
+        /// Raised when a node is about to be constructed.
         /// </summary>
+        [Obsolete("This event will be removed in a future release")]
         event EventHandler<NodeConstructingArgs> NodeConstructing;
 
         /// <summary>
-        /// Raised when a node has been constructed.
+        /// Registers a type as a primitive type.
         /// </summary>
-        event EventHandler<NodeConstructedArgs> NodeConstructed;
+        /// <param name="type">The type to register.</param>
+        /// <remarks>
+        /// Any type can be registered as a primitive type. The node builder won't construct nodes for members of primitive types, and won't
+        /// use reference for them even if they are not value type.
+        /// </remarks>
+        /// <seealso cref="UnregisterPrimitiveType"/>
+        /// <seealso cref="IsPrimitiveType"/>
+        void RegisterPrimitiveType(Type type);
+
+        /// <summary>
+        /// Unregisters a type as a primitive type.
+        /// </summary>
+        /// <param name="type">The type to register.</param>
+        /// <remarks>
+        /// Any type can be registered as a primitive type. The node builder won't construct nodes for members of primitive types, and won't
+        /// use reference for them even if they are not value type.
+        /// </remarks>
+        /// <seealso cref="RegisterPrimitiveType"/>
+        /// <seealso cref="IsPrimitiveType"/>
+        void UnregisterPrimitiveType(Type type);
+
+        /// <summary>
+        /// Indicates whether a type is a primitive type for this node builder.
+        /// </summary>
+        /// <param name="type">The type to register.</param>
+        /// <remarks>
+        /// Any type can be registered as a primitive type. The node builder won't construct nodes for members of primitive types, and won't
+        /// use reference for them even if they are not value type.
+        /// </remarks>
+        /// <seealso cref="RegisterPrimitiveType"/>
+        /// <seealso cref="UnregisterPrimitiveType"/>
+        bool IsPrimitiveType(Type type);
 
         /// <summary>
         /// Build the node hierarchy corresponding to the given object.

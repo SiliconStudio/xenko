@@ -30,18 +30,19 @@ namespace SiliconStudio.Xenko.ConnectionRouter
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="port">The port.</param>
-        public async Task TryConnect(string address, int port)
+        /// <param name="task">If the server is executed explicitly to run a single task</param>
+        public async Task TryConnect(string address, int port, bool task = false)
         {
             this.address = address;
             this.port = port;
 
-            var socketContext = CreateSocketContext();
+            var socketContext = CreateSocketContext(task);
 
             // Wait for a connection to be possible on adb forwarded port
             await socketContext.StartClient(address, port);
         }
 
-        private SimpleSocket CreateSocketContext()
+        private SimpleSocket CreateSocketContext(bool task)
         {
             var socketContext = new SimpleSocket();
             socketContext.Connected = (clientSocketContext) =>
@@ -50,9 +51,8 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 {
                     try
                     {
-
                         // Register service server
-                        await socketContext.WriteStream.WriteInt16Async((short)RouterMessage.ServiceProvideServer);
+                        await socketContext.WriteStream.WriteInt16Async(task ? (short)RouterMessage.TaskProvideServer : (short)RouterMessage.ServiceProvideServer);
                         await socketContext.WriteStream.WriteStringAsync(serverUrl);
                         await socketContext.WriteStream.FlushAsync();
 

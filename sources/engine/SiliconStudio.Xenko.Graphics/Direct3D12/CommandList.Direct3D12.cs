@@ -183,6 +183,11 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandList.StencilReference = stencilReference;
         }
 
+        public void SetBlendFactor(Color4 blendFactor)
+        {
+            NativeCommandList.BlendFactor = ColorHelper.ConvertToVector4(blendFactor);
+        }
+
         public void SetPipelineState(PipelineState pipelineState)
         {
             boundPipelineState = pipelineState;

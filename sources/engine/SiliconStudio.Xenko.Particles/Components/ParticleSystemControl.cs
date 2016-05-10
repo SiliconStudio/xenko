@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Particles.Components
 {
@@ -47,6 +49,18 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// </userdoc>
         [DataMember(30)]
         public StateControl Control { get; set; } = StateControl.Play;
+
+        /// <summary>
+        /// Warm-up time is the amount of time the system should spend in background pre-simulation when capturing the thumbnail
+        /// </summary>
+        /// <userdoc>
+        /// Warm-up time is the amount of time the system should spend in background pre-simulation when capturing the thumbnail
+        /// </userdoc>
+        [DataMember(40)]
+        [Display("Thumbnail Warm-up")]
+        [DataMemberRange(0, 5, 0.01, 1)]
+        [DefaultValue(0.5f)]
+        public float ThumbnailWarmupTime { get; set; } = 0.5f;
 
         /// <summary>
         /// Update the control with delta time. It will pause or restart the <see cref="ParticleSystem"/> if necessary

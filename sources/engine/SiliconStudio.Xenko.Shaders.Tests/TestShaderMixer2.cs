@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var byteCode = Compiler.Compile(mixinSource, MixinParameters);
+            var byteCode = Compiler.Compile(mixinSource, MixinParameters.EffectParameters, MixinParameters);
             Assert.IsNotNull(byteCode);
         }
 
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var byteCode = Compiler.Compile(mixinSource, MixinParameters);
+            var byteCode = Compiler.Compile(mixinSource, MixinParameters.EffectParameters, MixinParameters);
             Assert.IsNotNull(byteCode);
         }
 

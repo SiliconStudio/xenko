@@ -35,10 +35,7 @@ namespace SiliconStudio.Xenko.Audio
     {
         private readonly SoundEffect soundEffect;
 
-        internal virtual WaveFormat WaveFormat
-        {
-            get { return soundEffect.WaveFormat; }
-        }
+        internal virtual WaveFormat WaveFormat => soundEffect.WaveFormat;
 
         //prevent creation of SoundEffectInstance to the user
         internal SoundEffectInstance(SoundEffect correspSoundEffect)
@@ -69,10 +66,9 @@ namespace SiliconStudio.Xenko.Audio
 
         protected override void StopConcurrentInstances()
         {
-            if(soundEffect != null)
-                soundEffect.StopConcurrentInstances(this);
+            soundEffect?.StopConcurrentInstances(this);
         }
-        
+
         /// <summary>
         /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
         /// </summary>
@@ -208,8 +204,7 @@ namespace SiliconStudio.Xenko.Audio
 
         internal override void DestroyImpl()
         {
-            if(soundEffect != null)
-                soundEffect.UnregisterInstance(this);
+            soundEffect?.UnregisterInstance(this);
 
             PlatformSpecificDisposeImpl();
         }

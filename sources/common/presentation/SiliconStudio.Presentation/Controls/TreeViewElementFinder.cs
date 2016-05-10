@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace SiliconStudio.Presentation.Controls
@@ -32,7 +35,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public static TreeViewItem GetFirstVirtualizedItem(TreeViewItem treeViewItem)
         {
-            for (int i = 0; i < treeViewItem.Items.Count; i++)
+            for (var i = 0; i < treeViewItem.Items.Count; i++)
             {
                 var item = treeViewItem.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                 if (item != null)
@@ -44,10 +47,11 @@ namespace SiliconStudio.Presentation.Controls
 
         public static ItemsControl FindNextSibling(ItemsControl itemsControl)
         {
-            ItemsControl parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
+            var parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
             if (parentIc == null)
                 return null;
-            int index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
+
+            var index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
             return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
         }
 
@@ -59,7 +63,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <returns>Returns a TreeViewItem.</returns>
         public static TreeViewItem FindFirst(TreeView treeView, bool visibleOnly)
         {
-            for (int i = 0; i < treeView.Items.Count; i++)
+            for (var i = 0; i < treeView.Items.Count; i++)
             {
                 var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                 if (item == null) continue;
@@ -76,14 +80,11 @@ namespace SiliconStudio.Presentation.Controls
         /// <returns>Returns a TreeViewItem.</returns>
         public static TreeViewItem FindLast(TreeView treeView, bool visibleOnly)
         {
-            for (int i = treeView.Items.Count - 1; i >= 0; i--)
+            for (var i = treeView.Items.Count - 1; i >= 0; i--)
             {
                 var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
-                if (item != null)
-                {
-                    if (!visibleOnly || item.IsVisible)
-                        return item;
-                }
+                if (item == null) continue;
+                if (!visibleOnly || item.IsVisible) return item;
             }
             return null;
         }
@@ -96,14 +97,13 @@ namespace SiliconStudio.Presentation.Controls
         /// <returns>Returns an enumerable of items.</returns>
         public static IEnumerable<TreeViewItem> FindAll(TreeView treeView, bool visibleOnly)
         {
-            TreeViewItem currentItem = FindFirst(treeView, visibleOnly);
+            var currentItem = FindFirst(treeView, visibleOnly);
             while (currentItem != null)
             {
                 if (!visibleOnly || currentItem.IsVisible) yield return currentItem;
                 currentItem = FindNext(currentItem, visibleOnly);
             }
         }
-
 
         private static ItemsControl FindNextSiblingRecursive(ItemsControl itemsControl)
         {

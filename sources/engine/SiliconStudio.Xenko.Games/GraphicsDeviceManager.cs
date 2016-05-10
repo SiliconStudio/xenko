@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Games
 
         private bool isFullScreen;
 
-        private bool preferMultiSampling;
+        private MSAALevel preferredMultiSampleLevel;
 
         private PixelFormat preferredBackBufferFormat;
 
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Games
             preferredBackBufferWidth = DefaultBackBufferWidth;
             preferredBackBufferHeight = DefaultBackBufferHeight;
             preferredRefreshRate = new Rational(60, 1);
-            PreferMultiSampling = false;
+            PreferredMultiSampleLevel = MSAALevel.None;
             PreferredGraphicsProfile = new[]
                 {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
@@ -151,6 +151,7 @@ namespace SiliconStudio.Xenko.Games
         {
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             game.Window.OrientationChanged += Window_OrientationChanged;
+            game.Window.FullscreenToggle += WindowOnFullscreenToggle;
         }
 
         #endregion
@@ -245,11 +246,10 @@ namespace SiliconStudio.Xenko.Games
 
             set
             {
-                if (isFullScreen != value)
-                {
-                    isFullScreen = value;
-                    deviceSettingsChanged = true;
-                }
+                if (isFullScreen == value) return;
+
+                isFullScreen = value;
+                deviceSettingsChanged = true;
             }
         }
 
@@ -257,18 +257,18 @@ namespace SiliconStudio.Xenko.Games
         /// Gets or sets a value indicating whether [prefer multi sampling].
         /// </summary>
         /// <value><c>true</c> if [prefer multi sampling]; otherwise, <c>false</c>.</value>
-        public bool PreferMultiSampling
+        public MSAALevel PreferredMultiSampleLevel
         {
             get
             {
-                return preferMultiSampling;
+                return preferredMultiSampleLevel;
             }
 
             set
             {
-                if (preferMultiSampling != value)
+                if (preferredMultiSampleLevel != value)
                 {
-                    preferMultiSampling = value;
+                    preferredMultiSampleLevel = value;
                     deviceSettingsChanged = true;
                 }
             }
@@ -601,7 +601,12 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsDevice.Presenter = null;
                 }
 
+                //GraphicsDevice.DeviceResetting -= GraphicsDevice_DeviceResetting;
+                //GraphicsDevice.DeviceReset -= GraphicsDevice_DeviceReset;
+                //GraphicsDevice.DeviceLost -= GraphicsDevice_DeviceLost;
+
                 GraphicsDevice.Dispose();
+                GraphicsDevice.Disposing -= GraphicsDevice_Disposing;
                 GraphicsDevice = null;
             }
 
@@ -636,7 +641,7 @@ namespace SiliconStudio.Xenko.Games
                     PreferredRefreshRate =  PreferredRefreshRate,
                     PreferredFullScreenOutputIndex = PreferredFullScreenOutputIndex,
                     IsFullScreen = IsFullScreen,
-                    PreferMultiSampling = PreferMultiSampling,
+                    PreferredMultiSampleLevel = PreferredMultiSampleLevel,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
                     ColorSpace = PreferredColorSpace
@@ -738,9 +743,9 @@ namespace SiliconStudio.Xenko.Games
                         }
 
                         // Sort by MultiSampleCount
-                        if (leftParams.MultiSampleCount != rightParams.MultiSampleCount)
+                        if (leftParams.MultiSampleLevel != rightParams.MultiSampleLevel)
                         {
-                            return leftParams.MultiSampleCount <= rightParams.MultiSampleCount ? 1 : -1;
+                            return leftParams.MultiSampleLevel <= rightParams.MultiSampleLevel ? 1 : -1;
                         }
 
                         // Sort by AspectRatio
@@ -929,21 +934,21 @@ namespace SiliconStudio.Xenko.Games
         {
             if ((!isChangingDevice && ((game.Window.ClientBounds.Height != 0) || (game.Window.ClientBounds.Width != 0))) && (game.Window.CurrentOrientation != currentWindowOrientation))
             {
-                if (GraphicsDevice != null)
-                {
-                    ChangeOrCreateDevice(false);
-                }
+                Window_ClientSizeChanged(sender, e);
             }
         }
 
+        private void WindowOnFullscreenToggle(object sender, EventArgs eventArgs)
+        {
+            IsFullScreen = !IsFullScreen;
+            ApplyChanges();
+        }
 
         private void CreateDevice(GraphicsDeviceInformation newInfo)
         {
             newInfo.PresentationParameters.IsFullScreen = isFullScreen;
             newInfo.PresentationParameters.PresentationInterval = SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate;
             newInfo.DeviceCreationFlags = DeviceCreationFlags;
-
-            OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(newInfo));
 
             // this.ValidateGraphicsDeviceInformation(newInfo);
 
@@ -1008,9 +1013,14 @@ namespace SiliconStudio.Xenko.Games
                 try
                 {
                     // Notifies the game window for the new orientation
-                    game.Window.SetSupportedOrientations(SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true));
-
+                    var orientation = SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true);
+                    game.Window.SetSupportedOrientations(orientation);
+                    
                     var graphicsDeviceInformation = FindBestDevice(forceCreate);
+
+                    OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
+
+                    isFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
                     game.Window.BeginScreenDeviceChange(graphicsDeviceInformation.PresentationParameters.IsFullScreen);
                     isBeginScreenDeviceChange = true;
                     bool needToCreateNewDevice = true;
@@ -1019,7 +1029,6 @@ namespace SiliconStudio.Xenko.Games
                     // try to reset and resize it.
                     if (!forceCreate && GraphicsDevice != null)
                     {
-                        OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
                         if (CanResetDevice(graphicsDeviceInformation))
                         {
                             try

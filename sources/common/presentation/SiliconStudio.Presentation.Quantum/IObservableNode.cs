@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using SiliconStudio.Core;
 using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDisposable
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDestroyable
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.
@@ -60,9 +62,10 @@ namespace SiliconStudio.Presentation.Quantum
         object Value { get; set; }
 
         /// <summary>
-        /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
+        /// Gets or sets the index of this node, relative to its parent node when its contains a collection.
+        /// Can be <see cref="SiliconStudio.Quantum.Index.Empty"/> if this node is not in a collection.
         /// </summary>
-        object Index { get; }
+        Index Index { get; }
 
         /// <summary>
         /// Gets a unique identifier associated to this node.

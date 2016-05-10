@@ -26,9 +26,10 @@ namespace SiliconStudio.Presentation.Quantum
             typeof(CombinedObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, Index index)
             : base(ownerViewModel, index)
         {
+            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
@@ -43,7 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             foreach (var node in this.combinedNodes)
             {
-                if (node.IsDisposed)
+                if (node.IsDestroyed)
                     throw new InvalidOperationException("One of the combined node is already disposed.");
 
                 if (node.IsReadOnly)
@@ -64,7 +65,14 @@ namespace SiliconStudio.Presentation.Quantum
             IsReadOnly = isReadOnly;
             IsVisible = isVisible;
 
-            ResetInitialValues = new AnonymousCommand(ServiceProvider, () => { Owner.BeginCombinedAction(); CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.Value = x.Item2); Refresh(); Owner.EndCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path, null); });
+            ResetInitialValues = new AnonymousCommand(ServiceProvider, () =>
+            {
+                using (Owner.BeginCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path))
+                {
+                    CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.Value = x.Item2);
+                    Refresh();
+                }
+            });
         }
 
         internal void Initialize()
@@ -72,7 +80,7 @@ namespace SiliconStudio.Presentation.Quantum
             var commandGroups = new Dictionary<string, List<ModelNodeCommandWrapper>>();
             foreach (var node in combinedNodes)
             {
-                if (node.IsDisposed)
+                if (node.IsDestroyed)
                     throw new InvalidOperationException("One of the combined node is already disposed.");
 
                 foreach (var command in node.Commands)
@@ -127,7 +135,7 @@ namespace SiliconStudio.Presentation.Quantum
             CheckDynamicMemberConsistency();
         }
 
-        internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, object index)
+        internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index)
         {
             var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
             return node;
@@ -156,13 +164,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed bool HasDictionary => CombinedNodes.First().HasDictionary;
 
-        public override void Dispose()
+        /// <inheritdoc/>
+        public override void Destroy()
         {
-            foreach (var node in CombinedNodes.Where(x => !x.IsDisposed))
+            foreach (var node in CombinedNodes.Where(x => !x.IsDestroyed))
             {
-                node.Dispose();
+                node.Destroy();
             }
-            base.Dispose();
+            base.Destroy();
         }
 
         public void Refresh()
@@ -179,8 +188,8 @@ namespace SiliconStudio.Presentation.Quantum
                 {
                     ClearCommands();
 
-                    // Dispose all children and remove them
-                    Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
+                    // Destroy all children and remove them
+                    Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
                     foreach (var child in Children.Cast<ObservableNode>().ToList())
                     {
                         RemoveChild(child);
@@ -245,7 +254,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 var contentType = children.Value.First().Type;
                 var name = $"Item {currentIndex}";
-                CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, currentIndex);
+                CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, new Index(currentIndex));
                 AddChild(child);
                 child.Initialize();
                 child.DisplayName = name;
@@ -410,7 +419,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private bool refreshQueued;
 
-        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, Index index)
             : base(ownerViewModel, name, combinedNodes, index)
         {
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
@@ -453,12 +462,13 @@ namespace SiliconStudio.Presentation.Quantum
             }
             set
             {
-                Owner.BeginCombinedAction();
-                OnPropertyChanging(nameof(TypedValue));
-                CombinedNodes.ForEach(x => x.Value = value);
-                OnPropertyChanged(nameof(TypedValue));
                 var displayName = Owner.FormatCombinedUpdateMessage(this, value);
-                Owner.EndCombinedAction(displayName, Path, value);
+                using (Owner.BeginCombinedAction(displayName, Path))
+                {
+                    OnPropertyChanging(nameof(TypedValue));
+                    CombinedNodes.ForEach(x => x.Value = value);
+                    OnPropertyChanged(nameof(TypedValue));
+                }
             }
         }
 

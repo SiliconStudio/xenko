@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             var width = 400;
             var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
-            var ui = new UIComponent { VirtualResolution = new Vector3(width, width / bufferRatio, 500) };
+            var ui = new UIComponent { Resolution = new Vector3(width, width / bufferRatio, 500) };
             SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
 
             currentText = new TextBlock { Font = font, TextColor = Color.White, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center };
@@ -150,6 +150,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             entity.Transform.UseTRS = true;
             entity2.Transform.UseTRS = false;
 
+            var provider = spriteComponent.SpriteProvider as SpriteFromSheet;
             switch (currentScene)
             {
                 case DebugScenes.Orientation:
@@ -168,7 +169,8 @@ namespace SiliconStudio.Xenko.Input.Tests
                     entity.Transform.UseTRS = false;
                     spriteComponent.Enabled = true;
                     spriteComponent.Color = sceneToColor[currentScene];
-                    spriteComponent.CurrentFrame = 0;
+                    if (provider != null)
+                        provider.CurrentFrame = 0;
                     break;
                 case DebugScenes.Gyroscope:
                     entity.Transform.Scale = new Vector3(0.5f);
@@ -178,7 +180,8 @@ namespace SiliconStudio.Xenko.Input.Tests
                 case DebugScenes.Compass:
                     spriteComponent.Enabled = true;
                     spriteComponent.Color = Color.Red;
-                    spriteComponent.CurrentFrame = 0;
+                    if (provider != null)
+                        provider.CurrentFrame = 0;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

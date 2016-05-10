@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialSizeSeed")]
-    [Display("Initial Size")]
+    [Display("Size")]
     public class InitialSizeSeed : ParticleInitializer
     {
         public InitialSizeSeed()
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </userdoc>
         [DataMember(8)]
         [Display("Random Seed")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public uint SeedOffset { get; set; } = 0;
 
         /// <summary>
         /// Minimum and maximum values for the size field

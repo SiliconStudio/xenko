@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -40,6 +41,7 @@ namespace SiliconStudio.Xenko.Particles
         None = 0,
         ByDepth = 1,
         ByAge = 2,
+        ByOrder = 3,
     }
 
     /// <summary>
@@ -116,10 +118,15 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         private Vector2 particleLifetime = new Vector2(1, 1);
 
+        /// <summary>
+        /// If positive, forces particles to stay one frame more when they are about ot expire
+        /// </summary>
+        [DataMemberIgnore]
+        public int DelayParticleDeath { get; set; } = 0;
+
         // Draw location can be different than the particle position if we are using local coordinate system
-        private Vector3 drawPosition = new Vector3(0, 0, 0);
-        private Quaternion drawRotation = new Quaternion(0, 0, 0, 1);
-        private float drawScale = 1f;
+        private readonly ParticleTransform drawTransform = new ParticleTransform();
+        private readonly ParticleTransform identityTransform = new ParticleTransform();
 
         /// <summary>
         /// A list of the required particle fields for the <see cref="ParticlePool"/>
@@ -136,7 +143,24 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         internal readonly ParticleVertexBuilder VertexBuilder = new ParticleVertexBuilder();
 
+        /// <summary>
+        /// Optional name for the emitter, so that it can be referenced from other emitters
+        /// </summary>
+        /// <userdoc>
+        /// Optional name for the emitter, so that it can be referenced from other emitters
+        /// </userdoc>
+        private string emitterName;
 
+        /// <summary>
+        /// Cached parent particle system, used for notifications
+        /// </summary>
+        private ParticleSystem cachedParentSystem = null;
+
+        /// <summary>
+        /// Cached parent particle system, used for notifications
+        /// </summary>
+        internal ParticleSystem CachedParticleSystem => cachedParentSystem;
+        
         /// <summary>
         /// Default constructor. Initializes the pool and all collections contained in the <see cref="ParticleEmitter"/>
         /// </summary>
@@ -169,6 +193,9 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         public int LivingParticles => pool.LivingParticles;
 
+        [DataMemberIgnore]
+        internal ParticlePool Pool => pool;
+
         /// <summary>
         /// Maximum number of particles this <see cref="ParticleEmitter"/> can have at any given time
         /// </summary>
@@ -179,6 +206,12 @@ namespace SiliconStudio.Xenko.Particles
         internal bool DirtyParticlePool { get; set; }
 
         /// <summary>
+        /// Indicates if the emitter is allowed to emit new particles or not.
+        /// </summary>
+        [DataMemberIgnore]
+        public bool CanEmitParticles { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleEmitter"/> is enabled.
         /// </summary>
         /// <value>
@@ -187,6 +220,26 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(-10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// The emitter name is used to uniquely identify this emitter within the same particle system
+        /// </summary>
+        /// <userdoc>
+        /// The emitter name is used to uniquely identify this emitter within the same particle system
+        /// </userdoc>
+        [DataMember(1)]
+        [Display("Emitter Name")]
+        public string EmitterName
+        {
+            get { return emitterName; }
+            set
+            {
+                emitterName = value;
+
+                // The emitter's name is used for creating child-parent relations between emitters and changing it should invalidate those relations
+                cachedParentSystem?.InvalidateRelations();
+            }
+        }
 
         /// <summary>
         /// Maximum particles (if positive) overrides the maximum particle count limitation
@@ -385,6 +438,16 @@ namespace SiliconStudio.Xenko.Particles
                 return;
             }
 
+            if (SortingPolicy == EmitterSortingPolicy.ByOrder)
+            {
+                // This sorting policy doesn't check if you actually have a Order field.
+                // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
+                GetSortIndex<uint> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
+
+                ParticleSorter = new ParticleSorterCustom<uint>(pool, ParticleFields.Order, sortByOrder);
+                return;
+            }
+
             // Default - no sorting
             ParticleSorter = new ParticleSorterDefault(pool);
         }
@@ -440,6 +503,8 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void UpdatePaused(ParticleSystem parentSystem)
         {
+            cachedParentSystem = parentSystem;
+
             UpdateLocations(parentSystem);
         }
 
@@ -450,6 +515,8 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
+            cachedParentSystem = parentSystem;
+
             if (!hasBeenInitialized)
             {
                 DelayedInitialization(parentSystem);
@@ -480,12 +547,12 @@ namespace SiliconStudio.Xenko.Particles
 
             // RandomNumberGenerator creation
             {
-                UInt32 rngSeed = 0; // EmitterRandomSeedMethod.Fixed
+                uint rngSeed = 0; // EmitterRandomSeedMethod.Fixed
 
                 if (randomSeedMethod == EmitterRandomSeedMethod.Time)
                 {
                     // Stopwatch has maximum possible frequency, so rngSeeds initialized at different times will be different
-                    rngSeed = unchecked((UInt32)Stopwatch.GetTimestamp());
+                    rngSeed = unchecked((uint)Stopwatch.GetTimestamp());
                 }
                 else if (randomSeedMethod == EmitterRandomSeedMethod.Position)
                 {
@@ -495,9 +562,9 @@ namespace SiliconStudio.Xenko.Particles
                     var posY = parentSystem.Translation.Y;
                     var posZ = parentSystem.Translation.Z;
 
-                    var uintX = *((UInt32*)(&posX));
-                    var uintY = *((UInt32*)(&posY));
-                    var uintZ = *((UInt32*)(&posZ));
+                    var uintX = *((uint*)(&posX));
+                    var uintY = *((uint*)(&posY));
+                    var uintZ = *((uint*)(&posZ));
 
                     // Add some randomness to prevent glitches when positions are the same (diagonal)
                     uintX ^= (uintX >> 19);
@@ -544,41 +611,42 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem"><see cref="ParticleSystem"/> containing this emitter</param>
         private void UpdateLocations(ParticleSystem parentSystem)
         {
-            drawPosition = parentSystem.Translation;
-            drawRotation = parentSystem.Rotation;
-            drawScale = parentSystem.UniformScale;
+            drawTransform.Position = parentSystem.Translation;
+            drawTransform.Rotation = parentSystem.Rotation;
+            drawTransform.ScaleUniform = parentSystem.UniformScale;
+            drawTransform.SetParentTransform(null);
 
             if (simulationSpace == EmitterSimulationSpace.World)
             {
                 // Update sub-systems
-                initialDefaultFields.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                initialDefaultFields.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                    initializer.SetParentTRS(drawTransform, parentSystem);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                    updater.SetParentTRS(drawTransform, parentSystem);
                 }
             }
             else
             {
                 var posIdentity = new Vector3(0, 0, 0);
-                var rotIdentity = new Quaternion(0, 0, 0, 1);
+                var rotIdentity = Quaternion.Identity;
 
                 // Update sub-systems
-                initialDefaultFields.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
+                initialDefaultFields.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
+                    initializer.SetParentTRS(identityTransform, parentSystem);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
+                    updater.SetParentTRS(identityTransform, parentSystem);
                 }
             }
         }
@@ -640,18 +708,41 @@ namespace SiliconStudio.Xenko.Particles
 
                     var startingLife = particleLifetime.X + lifeStep * randSeed.GetFloat(0);
 
-                    if (*life <= 0 || (*life -= (dt / startingLife)) <= 0)
+                    if (*life <= MathUtil.ZeroTolerance)
                     {
                         particleEnumerator.RemoveCurrent(ref particle);
                     }
+                    else
+                    if ((*life -= (dt / startingLife)) <= MathUtil.ZeroTolerance)
+                    {
+                        if (DelayParticleDeath > 0)
+                        {
+                            *life = MathUtil.ZeroTolerance;
+                        }
+                        else
+                        {
+                            particleEnumerator.RemoveCurrent(ref particle);
+                        }
+                    }
+                }
+            }
+
+            // Hardcoded position and old position updates
+            // If we have to preserve the particle's old position, do it before updating the position for the first time
+            if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.OldPosition))
+            {
+                var posField = pool.GetField(ParticleFields.Position);
+                var oldField = pool.GetField(ParticleFields.OldPosition);
+
+                foreach (var particle in pool)
+                {
+                    (*((Vector3*)particle[oldField])) = (*((Vector3*)particle[posField]));
                 }
             }
 
             // Hardcoded position and velocity update
             if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
             {
-                // should this be a separate module?
-                // Position and velocity update only
                 var posField = pool.GetField(ParticleFields.Position);
                 var velField = pool.GetField(ParticleFields.Velocity);
 
@@ -765,7 +856,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Add a particle field required by some dependent module. If the module already exists in the pool, only its reference counter is increased.
         /// </summary>
         /// <param name="description"></param>
-        private void AddRequiredField(ParticleFieldDescription description)
+        internal void AddRequiredField(ParticleFieldDescription description)
         {
             int fieldReferences;
             if (requiredFields.TryGetValue(description, out fieldReferences))
@@ -789,7 +880,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Remove a particle field no longer required by a dependent module. It only gets removed from the pool if it reaches 0 reference counters.
         /// </summary>
         /// <param name="description"></param>
-        private void RemoveRequiredField(ParticleFieldDescription description)
+        internal void RemoveRequiredField(ParticleFieldDescription description)
         {
             int fieldReferences;
             if (requiredFields.TryGetValue(description, out fieldReferences))
@@ -852,13 +943,13 @@ namespace SiliconStudio.Xenko.Particles
             // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
             // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix
             var posIdentity = new Vector3(0, 0, 0);
-            var rotIdentity = new Quaternion(0, 0, 0, 1);
+            var rotIdentity = Quaternion.Identity;
             var scaleIdentity = 1f;
             if (simulationSpace == EmitterSimulationSpace.Local)
             {
-                posIdentity = drawPosition;
-                rotIdentity = drawRotation;
-                scaleIdentity = drawScale;
+                posIdentity = drawTransform.WorldPosition;
+                rotIdentity = drawTransform.WorldRotation;
+                scaleIdentity = drawTransform.WorldScale.X;
             }
 
             VertexBuilder.MapBuffer(commandList);
@@ -867,6 +958,7 @@ namespace SiliconStudio.Xenko.Particles
 
             VertexBuilder.RestartBuffer();
 
+            ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
             Material.PatchVertexBuffer(VertexBuilder, unitX, unitY, ParticleSorter);
 
             VertexBuilder.UnmapBuffer(commandList);
@@ -881,6 +973,9 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="count"></param>
         public void EmitParticles(int count)
         {
+            if (!CanEmitParticles)
+                return;
+
             particlesToSpawn += count;
         }
 
@@ -894,9 +989,9 @@ namespace SiliconStudio.Xenko.Particles
             {
                 // World -> Local
 
-                var negativeTranslation = -drawPosition;
-                var negativeScale = (drawScale > 0) ? 1f/drawScale : 1f;
-                var negativeRotation = drawRotation;
+                var negativeTranslation = -drawTransform.WorldPosition;
+                var negativeScale = (drawTransform.WorldScale.X > 0) ? 1f/ drawTransform.WorldScale.X : 1f;
+                var negativeRotation = drawTransform.WorldRotation;
                 negativeRotation.Conjugate();
 
                 if (pool.FieldExists(ParticleFields.Position))
@@ -978,9 +1073,9 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var position = particle.Get(posField);
 
-                        drawRotation.Rotate( ref position );
+                        drawTransform.WorldRotation.Rotate( ref position );
 
-                        position = position * drawScale + drawPosition;
+                        position = position * drawTransform.WorldScale.X + drawTransform.WorldPosition;
 
                         particle.Set(posField, position);
                     }
@@ -994,9 +1089,9 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var position = particle.Get(posField);
 
-                        drawRotation.Rotate(ref position);
+                        drawTransform.WorldRotation.Rotate(ref position);
 
-                        position = position * drawScale + drawPosition;
+                        position = position * drawTransform.WorldScale.X + drawTransform.WorldPosition;
 
                         particle.Set(posField, position);
                     }
@@ -1010,9 +1105,9 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var velocity = particle.Get(velField);
 
-                        drawRotation.Rotate(ref velocity);
+                        drawTransform.WorldRotation.Rotate(ref velocity);
 
-                        velocity = velocity * drawScale;
+                        velocity = velocity * drawTransform.WorldScale.X;
 
                         particle.Set(velField, velocity);
                     }
@@ -1026,7 +1121,7 @@ namespace SiliconStudio.Xenko.Particles
                     {
                         var size = particle.Get(sizeField);
 
-                        size = size * drawScale;
+                        size = size * drawTransform.WorldScale.X;
 
                         particle.Set(sizeField, size);
                     }
@@ -1039,5 +1134,25 @@ namespace SiliconStudio.Xenko.Particles
 
         #endregion
 
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public void InvalidateRelations()
+        {
+            foreach (var particleSpawner in Spawners)
+            {
+                particleSpawner.InvalidateRelations();
+            }
+
+            foreach (var initializer in Initializers)
+            {
+                initializer.InvalidateRelations();
+            }
+
+            foreach (var updater in Updaters)
+            {
+                updater.InvalidateRelations();
+            }
+        }
     }
 }

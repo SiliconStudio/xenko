@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void OnRecreate()
         {
             // Recreate presenter
-            GraphicsDevice.Presenter.OnRecreated();
+            GraphicsDevice.Presenter?.OnRecreated();
 
             bool wasSomethingRecreated = true;
             bool hasDestroyedObjects = true;
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void OnDestroyed()
         {
             // Destroy presenter first (so that its backbuffer and render target are destroyed properly before other resources)
-            GraphicsDevice.Presenter.OnDestroyed();
+            GraphicsDevice.Presenter?.OnDestroyed();
 
             foreach (var resource in GraphicsDevice.Resources)
             {

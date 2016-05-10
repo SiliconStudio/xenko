@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Input
         {
         }
 
-        protected TK Control;
+        protected TK uiControl;
 
         public sealed override void Initialize()
         {

@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
             Data = data;
         }
 
-        internal T this[<#=type#>NodeReference index]
+        public T this[<#=type#>NodeReference index]
         {
             get { return Data[index.Index]; }
             set { Data[index.Index] = value; }
@@ -52,14 +52,14 @@ namespace SiliconStudio.Xenko.Rendering
 
 	public partial struct <#=type#>NodeReference
     {
-        internal readonly int Index;
+        public readonly int Index;
 
         /// <summary>
         /// Invalid slot.
         /// </summary>
 		public static readonly <#=type#>NodeReference Invalid = new <#=type#>NodeReference(-1);
 
-        internal <#=type#>NodeReference(int index)
+        public <#=type#>NodeReference(int index)
         {
             Index = index;
         }

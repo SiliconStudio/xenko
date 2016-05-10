@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Core.MicroThreading
 {
@@ -9,10 +10,10 @@ namespace SiliconStudio.Core.MicroThreading
     /// Provides microthread-local storage of data.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MicroThreadLocal<T>
+    public class MicroThreadLocal<T> where T : class
     {
         private readonly Func<T> valueFactory;
-        private readonly Dictionary<MicroThread, T> values = new Dictionary<MicroThread, T>();
+        private readonly ConditionalWeakTable<MicroThread, T> values = new ConditionalWeakTable<MicroThread, T>();
 
         /// <summary>
         /// The value return when we are not in a micro thread. That is the value return when 'Scheduler.CurrentMicroThread==null'
@@ -81,7 +82,8 @@ namespace SiliconStudio.Core.MicroThreading
                     }
                     else
                     {
-                        values[microThread] = value;
+                        values.Remove(microThread);
+                        values.Add(microThread, value);
                     }
                 }
             }
@@ -98,7 +100,8 @@ namespace SiliconStudio.Core.MicroThreading
                     if (microThread == null)
                         return valueOutOfMicrothreadSet;
 
-                    return values.ContainsKey(microThread);
+                    T value;
+                    return values.TryGetValue(microThread, out value);
                 }
             }
         }

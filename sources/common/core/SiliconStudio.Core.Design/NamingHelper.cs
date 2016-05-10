@@ -53,7 +53,7 @@ namespace SiliconStudio.Core
             else
             {
                 var items = text.Split(new[] { '.' }, StringSplitOptions.None);
-                error = items.Where(s => !IsIdentifier(s)).Select(item => string.Format("[{0}]", item, text)).FirstOrDefault();
+                error = items.Where(s => !IsIdentifier(s)).Select(item => string.Format("[{0}]", item)).FirstOrDefault();
             }
             return error == null;
         }

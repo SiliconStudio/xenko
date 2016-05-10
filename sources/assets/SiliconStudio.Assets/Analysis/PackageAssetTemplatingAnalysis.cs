@@ -3,10 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -32,12 +36,16 @@ namespace SiliconStudio.Assets.Analysis
             session = package.Session;
             this.log = log;
             MergeModifiedAssets = true;
+            CheckAndFixInvalidBasePartInstances = true;
             RemoveUnusedBaseParts = true;
         }
 
         public bool MergeModifiedAssets { get; set; }
 
         public bool RemoveUnusedBaseParts { get; set; }
+
+
+        public bool CheckAndFixInvalidBasePartInstances { get; set; }
 
 
         public void Run()
@@ -50,6 +58,11 @@ namespace SiliconStudio.Assets.Analysis
             if (MergeModifiedAssets)
             {
                 ProcessMergeModifiedAssets();
+            }
+
+            if (CheckAndFixInvalidBasePartInstances)
+            {
+                ProcessCheckAndFixInvalidBasePartInstances();
             }
         }
 
@@ -92,6 +105,9 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
+        /// <summary>
+        /// This method is responsible to remove AssetBase in BaseParts that are no longer used by any assets.
+        /// </summary>
         private void ProcessRemoveUnusedBaseParts()
         {
             var basePartsToKeep = new HashSet<AssetBase>();
@@ -99,53 +115,101 @@ namespace SiliconStudio.Assets.Analysis
             foreach (var assetItem in package.Assets)
             {
                 var asset = assetItem.Asset as AssetComposite;
-                if (asset == null)
+                // If an asset doesn't have any base for templating, we can skip this part
+                if (asset?.BaseParts == null)
                 {
                     continue;
                 }
 
-                // If an asset doesn't have any base for templating, we can skip this part
-                if (asset.BaseParts != null)
+                basePartsToKeep.Clear();
+                partInstanceIdProcessed.Clear();
+
+                foreach (var part in asset.CollectParts())
                 {
-                    basePartsToKeep.Clear();
-                    partInstanceIdProcessed.Clear();
-
-                    foreach (var part in asset.CollectParts())
+                    if (part.BaseId.HasValue && part.BasePartInstanceId.HasValue && !partInstanceIdProcessed.Contains(part.BasePartInstanceId.Value))
                     {
-                        if (part.BaseId.HasValue && part.BasePartInstanceId.HasValue && !partInstanceIdProcessed.Contains(part.BasePartInstanceId.Value))
-                        {
-                            // Add to this map to avoid processing assets from the same BasePartInstanceId
-                            partInstanceIdProcessed.Add(part.BasePartInstanceId.Value);
+                        // Add to this map to avoid processing assets from the same BasePartInstanceId
+                        partInstanceIdProcessed.Add(part.BasePartInstanceId.Value);
 
-                            var baseId = part.BaseId.Value;
-                            foreach (var basePart in asset.BaseParts)
+                        var baseId = part.BaseId.Value;
+                        foreach (var basePart in asset.BaseParts)
+                        {
+                            var assetBase = (AssetComposite)basePart.Asset;
+                            if (assetBase.ContainsPart(baseId))
                             {
-                                var assetBase = (AssetComposite)basePart.Asset;
-                                if (assetBase.ContainsPart(baseId))
-                                {
-                                    basePartsToKeep.Add(basePart);
-                                }
+                                basePartsToKeep.Add(basePart);
                             }
                         }
                     }
+                }
 
-                    for (int i = asset.BaseParts.Count - 1; i >= 0; i--)
+                for (int i = asset.BaseParts.Count - 1; i >= 0; i--)
+                {
+                    var basePart = asset.BaseParts[i];
+                    if (!basePartsToKeep.Contains(basePart))
                     {
-                        var basePart = asset.BaseParts[i];
-                        if (!basePartsToKeep.Contains(basePart))
-                        {
-                            asset.BaseParts.RemoveAt(i);
-                        }
+                        asset.BaseParts.RemoveAt(i);
                     }
+                }
 
-                    if (asset.BaseParts.Count == 0)
+                if (asset.BaseParts.Count == 0)
+                {
+                    asset.BaseParts = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method is responsible to fix duplicated/invalid asset parts that are referencing the same baseId/basePartInstanceId while it should be unique.
+        /// (Typically, we had a problem in the GameStudio that was generating a copy of the same asset with the same baseId/basePartInstanceId, but with
+        /// different instances, while we expect to have a different basePartInstanceId for each new instances)
+        /// </summary>
+        private void ProcessCheckAndFixInvalidBasePartInstances()
+        {
+            var instances = new HashSet<BasePartInstanceKey>();
+            foreach (var assetItem in package.Assets)
+            {
+                var asset = assetItem.Asset as AssetComposite;
+                // If an asset doesn't have any base for templating, we can skip this part
+                if (asset?.BaseParts == null)
+                {
+                    continue;
+                }
+
+                foreach (var part in asset.CollectParts())
+                {
+                    if (part.BaseId.HasValue && part.BasePartInstanceId.HasValue)
                     {
-                        asset.BaseParts = null;
+                        // If a part (eg: entity) with the same BaseId+BasePartInstanceId is found, It means that we had an invalid duplicate of this
+                        // So we will create a new GUID for BasePartInstanceId and associate the part with it.
+                        var key = new BasePartInstanceKey(part.BaseId.Value, part.BasePartInstanceId.Value);
+                        if (!instances.Add(key))
+                        {
+                            // Log a warning
+                            log.Warning(package, assetItem.ToReference(), AssetMessageCode.InvalidBasePartInstance, part.Id, $"BaseId:{key.BaseId}, InstanceId: {key.BasePartInstanceId}");
+
+                            // Because it would be too complex (or not possible) to re-associate a proper BasePartInstanceId
+                            // We are creating a new BasePartInstanceId for each new duplicated
+                            asset.SetPart(part.Id, key.BaseId, Guid.NewGuid());
+                            if (!assetItem.IsDirty)
+                            {
+                                assetItem.IsDirty = true;
+                            }
+                        }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// This method is responsible to merge assets when loading. A 3-way merge of the asset is necessary because concurrent changes
+        /// can happen on assets (people working with a SCM and different branches). This method will collect all assets that are 
+        /// using asset templating (including prefabs) and will perform the merge iteratively (incremental merge from the most inherited
+        /// assets to the most derived asset)
+        /// </summary>
+        /// <param name="assetItem"></param>
+        /// <param name="beingProcessed"></param>
+        /// <returns></returns>
         private bool ProcessMergeAssetItem(AssetItem assetItem, HashSet<Guid> beingProcessed)
         {
             if (beingProcessed.Contains(assetItem.Id))
@@ -271,7 +335,7 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             // Delegates actual merge to the asset implem
-            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts);
+            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts, item.Location);
 
             if (result.HasErrors)
             {
@@ -291,8 +355,62 @@ namespace SiliconStudio.Assets.Analysis
                 item.Asset.BaseParts = existingBaseParts;
             }
 
+            // Set this variable to true at debug time to check what is the output of the merge
+            bool writeToDebug = false;
+            if (writeToDebug)
+            {
+                var writer = new MemoryStream();
+                YamlSerializer.Serialize(writer, item.Asset);
+                writer.Flush();
+                writer.Position = 0;
+                var text = Encoding.UTF8.GetString(writer.ToArray());
+                Debug.WriteLine(text);
+            }
+
             item.IsDirty = true;
             return true;
+        }
+
+        private struct BasePartInstanceKey : IEquatable<BasePartInstanceKey>
+        {
+            public BasePartInstanceKey(Guid baseId, Guid basePartInstanceId)
+            {
+                BaseId = baseId;
+                BasePartInstanceId = basePartInstanceId;
+            }
+
+            public readonly Guid BaseId;
+
+            public readonly Guid BasePartInstanceId;
+
+            public bool Equals(BasePartInstanceKey other)
+            {
+                return BaseId.Equals(other.BaseId) && BasePartInstanceId.Equals(other.BasePartInstanceId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is BasePartInstanceKey && Equals((BasePartInstanceKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (BaseId.GetHashCode() * 397) ^ BasePartInstanceId.GetHashCode();
+                }
+            }
+
+            public static bool operator ==(BasePartInstanceKey left, BasePartInstanceKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(BasePartInstanceKey left, BasePartInstanceKey right)
+            {
+                return !left.Equals(right);
+            }
         }
     }
 }

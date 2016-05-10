@@ -41,6 +41,11 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float Z { get { return (float)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
 
+        public override void ResetValue()
+        {
+            Value = Quaternion.Identity;
+        }
+
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Quaternion value)
         {
@@ -50,7 +55,7 @@ namespace SiliconStudio.Presentation.Controls
                 return;
 
             var rotationMatrix = Matrix.RotationQuaternion(value);
-            rotationMatrix.DecomposeXYZ(out decomposedRotation);
+            rotationMatrix.Decompose(out decomposedRotation.Y, out decomposedRotation.X, out decomposedRotation.Z);
             SetCurrentValue(XProperty, MathUtil.RadiansToDegrees(decomposedRotation.X));
             SetCurrentValue(YProperty, MathUtil.RadiansToDegrees(decomposedRotation.Y));
             SetCurrentValue(ZProperty, MathUtil.RadiansToDegrees(decomposedRotation.Z));

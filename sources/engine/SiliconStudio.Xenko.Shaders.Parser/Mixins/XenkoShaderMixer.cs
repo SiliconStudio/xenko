@@ -481,8 +481,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 index = (int)(indexerExpression.Index as LiteralExpression).Value;
             }
 
-            if (result is Variable && (result as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern) && !((result as Variable).Type is ArrayType))
-                mixin = CompositionsPerVariable[result as Variable][index];
+            if (result != null && result.Qualifiers.Contains(XenkoStorageQualifier.Extern) && !(result.Type is ArrayType))
+                mixin = CompositionsPerVariable[result][index];
 
             return result;
         }
@@ -557,8 +557,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     result = FindVariable(target, ref mixin);
 
                 var index = (int)(indexerExpression.Index as LiteralExpression).Value;
-                if (result is Variable && (result as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern))
-                    mixin = CompositionsPerVariable[result as Variable][index];
+                if (result != null && result.Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                    mixin = CompositionsPerVariable[result][index];
             }
         }
 

@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             try
             {
-                if (testName == null && NUnit.Framework.TestContext.CurrentContext == null)
+                if (testName == null && NUnit.Framework.TestContext.CurrentContext != null)
                 {
                     testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
                 }

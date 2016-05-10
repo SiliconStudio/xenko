@@ -21,11 +21,6 @@ namespace SiliconStudio.Presentation.Behaviors
         private Point originPoint;
         private Rectangle selectionRectangle;
         
-        static SelectionRectangleBehavior()
-        {
-            AttachOnEveryLoadedEventProperty.OverrideMetadata(typeof(SelectionRectangleBehavior), new PropertyMetadata(true));
-        }
-
         /// <summary>
         /// Resource Key for the default SelectionRectangleStyle.
         /// </summary>

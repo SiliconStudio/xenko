@@ -124,28 +124,37 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             var session = new PackageSession();
             var result = new LoggerResult();
 
-            var templateGeneratorParameters = new TemplateGeneratorParameters();
+            var templateGeneratorParameters = new SessionTemplateGeneratorParameters();
             templateGeneratorParameters.OutputDirectory = outputDirectory;
             templateGeneratorParameters.Session = session;
             templateGeneratorParameters.Name = name;
             templateGeneratorParameters.Logger = result;
             templateGeneratorParameters.Description = new TemplateDescription();
 
-            PackageUnitTestGenerator.Default.Generate(templateGeneratorParameters);
+            if (!PackageUnitTestGenerator.Default.PrepareForRun(templateGeneratorParameters))
+            {
+                Console.WriteLine(@"Error generating package: PackageUnitTestGenerator.PrepareForRun returned false");
+                return;
+            }
+            if (!PackageUnitTestGenerator.Default.Run(templateGeneratorParameters))
+            {
+                Console.WriteLine(@"Error generating package: PackageUnitTestGenerator.Run returned false");
+                return;
+            }
             if (result.HasErrors)
             {
-                Console.WriteLine("Error generating package: {0}", result.ToText());
+                Console.WriteLine($"Error generating package: {result.ToText()}");
                 return;
             }
 
-            var package = templateGeneratorParameters.Package;
+            var package = session.LocalPackages.Single();
 
             var previousCurrent = session.CurrentPackage;
             session.CurrentPackage = package;
 
             // Compute Xenko Sdk relative path
             // We are supposed to be in standard output binary folder, so Xenko root should be at ..\..
-            var xenkoPath = UDirectory.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new UDirectory(@"..\.."));
+            var xenkoPath = UPath.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new UDirectory(@"..\.."));
             var xenkoRelativePath = new UDirectory(xenkoPath)
                 .MakeRelative(outputDirectory)
                 .ToString()
@@ -524,6 +533,30 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             {
                 configurations.Add("Android", "Android");
                 needDeploy = true;
+            }
+
+            // Remove any reference of shared projects in the GlobalSections.
+            var projects = solution.GlobalSections.FirstOrDefault(s => s.Name == "SharedMSBuildProjectFiles");
+            if (projects != null)
+            {
+                List<PropertyItem> toRemove = new List<PropertyItem>();
+                foreach (var projRef in projects.Properties)
+                {
+                    // We assume here that we do not have the same project name in 2 or more locations
+                    var splitted = projRef.Name.Split('*');
+                    if (splitted.Length >= 2)
+                    {
+                        Guid guid;
+                        if (Guid.TryParse(splitted[1], out guid) && !solution.Projects.Contains(guid))
+                        {
+                            toRemove.Add(projRef);
+                        }
+                    }
+                }
+                foreach (var projRef in toRemove)
+                {
+                    projects.Properties.Remove(projRef);
+                }
             }
 
             // Update .sln for build configurations

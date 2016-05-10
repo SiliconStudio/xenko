@@ -50,6 +50,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal int BoundStencilReference;
         internal int NewStencilReference;
+        internal Color4 BoundBlendFactor;
+        internal Color4 NewBlendFactor;
 
         private bool vboDirty = true;
 
@@ -1295,6 +1297,11 @@ namespace SiliconStudio.Xenko.Graphics
         public void SetStencilReference(int stencilReference)
         {
             NewStencilReference = stencilReference;
+        }
+
+        public void SetBlendFactor(Color4 blendFactor)
+        {
+            NewBlendFactor = blendFactor;
         }
 
         private void SetViewportImpl()

@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class InputManageriOS: InputManager<iOSWindow>
     {
-        private UIWindow window;
-        private iPhoneOSGameView view;
         private CMMotionManager motionManager;
         private CLLocationManager locationManager;
         private bool locationManagerActivated;
@@ -33,18 +31,18 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Initialize(GameContext<iOSWindow> gameContext)
         {
-            view = gameContext.Control.GameView;
-            window = gameContext.Control.MainWindow;
+            uiControl = gameContext.Control;
 
             var gameController = gameContext.Control.GameViewController;
 
+            var window = uiControl.MainWindow;
             window.UserInteractionEnabled = true;
             window.MultipleTouchEnabled = true;
             gameController.TouchesBeganDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesMovedDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesEndedDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesCancelledDelegate += (touchesSet, _) => HandleTouches(touchesSet);
-            view.Resize += OnResize;
+            uiControl.GameView.Resize += OnResize;
 
             OnResize(null, EventArgs.Empty);
 
@@ -219,8 +217,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnResize(object sender, EventArgs eventArgs)
         {
-            ControlHeight = (float)view.Frame.Height;
-            ControlWidth = (float)view.Frame.Width;
+            ControlHeight = (float)uiControl.GameView.Frame.Height;
+            ControlWidth = (float)uiControl.GameView.Frame.Width;
         }
 
         private void HandleTouches(NSSet touchesSet)
@@ -232,7 +230,7 @@ namespace SiliconStudio.Xenko.Input
                 foreach (var uitouch in touches)
                 {
                     var id = uitouch.Handle.ToInt32();
-                    var position = NormalizeScreenPosition(CGPointToVector2(uitouch.LocationInView(view)));
+                    var position = NormalizeScreenPosition(CGPointToVector2(uitouch.LocationInView(uiControl.GameView)));
 
                     HandlePointerEvents(id, position, GetState(uitouch));
                 }
@@ -264,8 +262,8 @@ namespace SiliconStudio.Xenko.Input
 
         public override bool MultiTouchEnabled
         {
-            get { return view.MultipleTouchEnabled; }
-            set { view.MultipleTouchEnabled = value; }
+            get { return uiControl.GameView.MultipleTouchEnabled; }
+            set { uiControl.GameView.MultipleTouchEnabled = value; }
         }
     }
 }

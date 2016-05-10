@@ -48,14 +48,14 @@ namespace SiliconStudio.Xenko.Engine.Network
             var result = (ClientRouterMessage)await socketContext.ReadStream.ReadInt16Async();
             if (result != ClientRouterMessage.ServerStarted)
             {
-                throw new InvalidOperationException("Could not connect to server");
+                throw new SimpleSocketException("Could not connect to server");
             }
 
             var errorCode = await socketContext.ReadStream.ReadInt32Async();
             if (errorCode != 0)
             {
                 var errorMessage = await socketContext.ReadStream.ReadStringAsync();
-                throw new InvalidOperationException(errorMessage);
+                throw new SimpleSocketException(errorMessage);
             }
 
             return socketContext;
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Engine.Network
 
                     // Connection should happen within 10 seconds, otherwise consider there is no connection router trying to connect back to us
                     if (!socketContextTCS.Task.Wait(TimeSpan.FromSeconds(10)))
-                        throw new InvalidOperationException("Connection router did not connect back to our listen socket");
+                        throw new SimpleSocketException("Connection router did not connect back to our listen socket");
 
                     return socketContextTCS.Task.Result;
                 }

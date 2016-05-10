@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 

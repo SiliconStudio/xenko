@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void Jump()
         {
-            KinematicCharacter.Jump();
+            KinematicCharacter?.Jump();
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// <c>true</c> if this instance is grounded; otherwise, <c>false</c>.
         /// </value>
-        public bool IsGrounded => KinematicCharacter.OnGround();
+        public bool IsGrounded => KinematicCharacter?.OnGround() ?? false;
 
         /// <summary>
         /// Teleports the specified target position.
@@ -162,7 +162,13 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="targetPosition">The target position.</param>
         public void Teleport(Vector3 targetPosition)
         {
-            KinematicCharacter.Warp(targetPosition);
+            if (KinematicCharacter == null) return;
+
+            //we assume that the user wants to teleport in world/entity space
+            var entityPos = Entity.Transform.Position;
+            var physPos = PhysicsWorldTransform.TranslationVector;
+            var diff = physPos - entityPos;
+            KinematicCharacter.Warp(targetPosition + diff);
         }
 
         /// <summary>
@@ -171,7 +177,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="movement">The movement.</param>
         public void Move(Vector3 movement)
         {
-            KinematicCharacter.SetWalkDirection(movement);
+            KinematicCharacter?.SetWalkDirection(movement);
         }
 
         [DataMemberIgnore]

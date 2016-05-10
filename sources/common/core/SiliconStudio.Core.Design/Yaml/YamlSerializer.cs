@@ -181,6 +181,7 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">The stream to receive the YAML representation of the object.</param>
         /// <param name="instance">The instance.</param>
+        /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
         public static void Serialize(Stream stream, object instance, bool generateIds = true)
         {
             var serializer = GetYamlSerializer(generateIds);
@@ -192,12 +193,44 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">The stream to receive the YAML representation of the object.</param>
         /// <param name="instance">The instance.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="type">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
-        public static void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings)
+        /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
+        public static void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings, bool generateIds = true)
         {
             var serializer = GetYamlSerializer();
             serializer.Serialize(stream, instance, type, contextSettings);
+        }
+
+        /// <summary>
+        /// Serializes an object to a string in YAML format.
+        /// </summary>
+        /// <param name="instance">The instance.</param>
+        /// <param name="type">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
+        /// <returns>a string in YAML format</returns>
+        public static string Serialize(object instance, Type type, SerializerContextSettings contextSettings, bool generateIds = true)
+        {
+            var serializer = GetYamlSerializer(generateIds);
+            using (var stream = new MemoryStream())
+            {
+                serializer.Serialize(stream, instance, type ?? typeof(object), contextSettings);
+                stream.Flush();
+                stream.Position = 0;
+                return new StreamReader(stream).ReadToEnd();
+            }
+        }
+
+        /// <summary>
+        /// Serializes an object to a string in YAML format.
+        /// </summary>
+        /// <param name="instance">The instance.</param>
+        /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
+        /// <returns>a string in YAML format</returns>
+        public static string Serialize(object instance, bool generateIds = true)
+        {
+            return Serialize(instance, null, null, generateIds);
         }
 
         /// <summary>

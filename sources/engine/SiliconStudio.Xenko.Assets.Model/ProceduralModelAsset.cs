@@ -11,7 +11,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Model
@@ -37,14 +36,6 @@ namespace SiliconStudio.Xenko.Assets.Model
         public const string FileExtension = ".xkpromodel;.pdxpromodel";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProceduralModelAsset"/> class.
-        /// </summary>
-        public ProceduralModelAsset()
-        {
-            Type = new CubeProceduralModel();
-        }
-
-        /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
@@ -60,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         private class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -92,7 +83,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class RenameCapsuleHeight : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
@@ -105,7 +96,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class RenameDiameters : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Diameter != null)
@@ -122,7 +113,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class Standardization : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var proceduralType = asset.Type;
 
@@ -173,7 +164,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class CapsuleRadiusDefaultChange : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
                 // However since this upgrader can be reapplied, it is not a problem

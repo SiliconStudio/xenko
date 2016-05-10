@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
             staticMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Red, 0.77f), 1);
             dynamicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Green, 0.77f), 1);
             kinematicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Blue, 0.77f), 1);
-            characterMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Yellow, 0.77f), 1);
+            characterMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.LightPink, 0.77f), 1);
         }
 
         public PhysicsShapesRenderingService(IServiceRegistry registry) : base(registry)
@@ -46,16 +46,6 @@ namespace SiliconStudio.Xenko.Physics.Engine
 
             var debugEntity = new Entity();
 
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, true);
-            if (colliderEntity == null) return null;
-
-            debugEntity.AddChild(colliderEntity);
-
-            if (component.CanScaleShape)
-            {
-                debugEntity.Transform.Scale = component.ColliderShape.Scaling;
-            }
-
             var skinnedElement = component as PhysicsSkinnedComponentBase;
             if (skinnedElement != null && skinnedElement.BoneIndex != -1)
             {
@@ -64,6 +54,11 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 skinnedElement.BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
+
+                if (component.CanScaleShape)
+                {
+                    component.ColliderShape.Scaling = scale;
+                }
             }
             else
             {
@@ -72,12 +67,20 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 component.Entity.Transform.WorldMatrix.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
+
+                if (component.CanScaleShape)
+                {
+                    component.ColliderShape.Scaling = scale;
+                }
             }
+
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, true);
+            if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;
         }
 
-        private Entity CreateChildEntity(PhysicsComponent component, ColliderShape shape, bool addOffset = false)
+        private Entity CreateChildEntity(PhysicsComponent component, ColliderShape shape, bool addOffset)
         {
             if (shape == null)
                 return null;
@@ -94,13 +97,16 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         {
                             var subShape = compound[i];
                             var subEntity = CreateChildEntity(component, subShape, true);
-
-                            subEntity.Transform.UseTRS = false;
-                            entity.AddChild(subEntity);
+                            if (subEntity != null)
+                            {
+                                entity.AddChild(subEntity);
+                            }
                         }
 
                         entity.Transform.LocalMatrix = Matrix.Identity;
                         entity.Transform.UseTRS = false;
+
+                        compound.DebugEntity = entity;
 
                         return entity;
                     }
@@ -116,6 +122,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         if (rigidbodyComponent != null)
                         {
                             mat = rigidbodyComponent.IsKinematic ? kinematicMaterial : dynamicMaterial;
+                            mat = rigidbodyComponent.IsTrigger ? triggerMaterial : mat;
                         }
                         else if (component is CharacterComponent)
                         {
@@ -123,7 +130,8 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         }
                         else if (component is StaticColliderComponent)
                         {
-                            mat = staticMaterial;
+                            var staticCollider = (StaticColliderComponent)component;
+                            mat = staticCollider.IsTrigger ? triggerMaterial : staticMaterial;
                         }
 
                         MeshDraw draw;
@@ -160,19 +168,13 @@ namespace SiliconStudio.Xenko.Physics.Engine
                             }
                         };
 
-                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset) : Matrix.Identity;
+                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset * shape.Scaling) : Matrix.Identity;
 
-                        if (shape.Type == ColliderShapeTypes.ConvexHull)
-                        {
-                            var hullDesc = (ConvexHullColliderShape)shape;
+                        entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * Matrix.Scaling(shape.Scaling) * offset;
 
-                            entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * Matrix.Scaling(hullDesc.Scaling) * offset;
-                        }
-                        else
-                        {
-                            entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * offset;
-                        }
                         entity.Transform.UseTRS = false;
+
+                        shape.DebugEntity = entity;
 
                         return entity;
                     }

@@ -38,6 +38,9 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             Compile((AssetCompilerContext)context, assetItem.Location.GetDirectoryAndFileName(), assetItem.FullPath, (T)assetItem.Asset, result);
+
+            AssetItem = null;
+
             return result;
         }
 

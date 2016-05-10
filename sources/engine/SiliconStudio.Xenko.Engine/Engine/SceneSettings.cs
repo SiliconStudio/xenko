@@ -27,6 +27,17 @@ namespace SiliconStudio.Xenko.Engine
             EditorSettings = new SceneEditorSettings();
         }
 
+        protected override void Destroy()
+        {
+            if (GraphicsCompositor != null)
+            {
+                GraphicsCompositor.Dispose();
+                GraphicsCompositor = null;
+            }
+
+            base.Destroy();
+        }
+
         /// <summary>
         /// Gets or sets the graphics composer for this scene.
         /// </summary>

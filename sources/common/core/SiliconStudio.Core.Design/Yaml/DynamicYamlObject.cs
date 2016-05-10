@@ -14,11 +14,16 @@ namespace SiliconStudio.Core.Yaml
             if (obj == null)
                 return new YamlScalarNode("null");
 
+            if (obj is string)
+            {
+                return new YamlScalarNode((string)obj);
+            }
+
             if (obj is YamlNode)
                 return (YamlNode)obj;
 
             if (obj is DynamicYamlMapping)
-                return ((DynamicYamlMapping)obj).node;
+                return ((DynamicYamlMapping)obj).Node;
             if (obj is DynamicYamlArray)
                 return ((DynamicYamlArray)obj).node;
             if (obj is DynamicYamlScalar)

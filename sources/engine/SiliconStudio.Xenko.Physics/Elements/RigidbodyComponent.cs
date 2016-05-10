@@ -192,15 +192,13 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (value)
                 {
-                    if (InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity)) return;
-
+                    if (((int)InternalRigidBody.Flags & (int)BulletSharp.RigidBodyFlags.DisableWorldGravity) != 0) return;
                     // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
                     InternalRigidBody.Flags |= BulletSharp.RigidBodyFlags.DisableWorldGravity;
                 }
                 else
                 {
-                    if (!InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity)) return;
-
+                    if (((int)InternalRigidBody.Flags & (int)BulletSharp.RigidBodyFlags.DisableWorldGravity) == 0) return;
                     // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
                     InternalRigidBody.Flags ^= BulletSharp.RigidBodyFlags.DisableWorldGravity;
                 }
@@ -260,8 +258,8 @@ namespace SiliconStudio.Xenko.Physics
                 switch (value)
                 {
                     case RigidBodyTypes.Dynamic:
-                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
-                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
+                        if (((int)InternalRigidBody.CollisionFlags & (int)BulletSharp.CollisionFlags.StaticObject) != 0) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
+                        if (((int)InternalRigidBody.CollisionFlags & (int)BulletSharp.CollisionFlags.KinematicObject) != 0) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         if (InternalRigidBody != null && Simulation != null && !OverrideGravity) InternalRigidBody.Gravity = Simulation.Gravity;
                         if (InternalRigidBody != null)
                         {
@@ -273,7 +271,7 @@ namespace SiliconStudio.Xenko.Physics
                         break;
 
                     case RigidBodyTypes.Static:
-                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
+                        if (((int)InternalRigidBody.CollisionFlags & (int)BulletSharp.CollisionFlags.KinematicObject) != 0) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject;
                         if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
                         if (InternalRigidBody != null)
@@ -286,7 +284,7 @@ namespace SiliconStudio.Xenko.Physics
                         break;
 
                     case RigidBodyTypes.Kinematic:
-                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
+                        if (((int)InternalRigidBody.CollisionFlags & (int)BulletSharp.CollisionFlags.StaticObject) != 0) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.KinematicObject;
                         if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
                         if (InternalRigidBody != null)
@@ -431,7 +429,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The total torque.
         /// </value>
-        public Vector3 TotalTorque => InternalRigidBody.TotalTorque;
+        public Vector3 TotalTorque => InternalRigidBody?.TotalTorque ?? Vector3.Zero;
 
         /// <summary>
         /// Applies the impulse.
@@ -439,7 +437,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="impulse">The impulse.</param>
         public void ApplyImpulse(Vector3 impulse)
         {
-            InternalRigidBody.ApplyCentralImpulse(impulse);
+            InternalRigidBody?.ApplyCentralImpulse(impulse);
         }
 
         /// <summary>
@@ -449,7 +447,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="localOffset">The local offset.</param>
         public void ApplyImpulse(Vector3 impulse, Vector3 localOffset)
         {
-            InternalRigidBody.ApplyImpulse(impulse, localOffset);
+            InternalRigidBody?.ApplyImpulse(impulse, localOffset);
         }
 
         /// <summary>
@@ -458,7 +456,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="force">The force.</param>
         public void ApplyForce(Vector3 force)
         {
-            InternalRigidBody.ApplyCentralForce(force);
+            InternalRigidBody?.ApplyCentralForce(force);
         }
 
         /// <summary>
@@ -468,7 +466,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="localOffset">The local offset.</param>
         public void ApplyForce(Vector3 force, Vector3 localOffset)
         {
-            InternalRigidBody.ApplyForce(force, localOffset);
+            InternalRigidBody?.ApplyForce(force, localOffset);
         }
 
         /// <summary>
@@ -477,7 +475,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="torque">The torque.</param>
         public void ApplyTorque(Vector3 torque)
         {
-            InternalRigidBody.ApplyTorque(torque);
+            InternalRigidBody?.ApplyTorque(torque);
         }
 
         /// <summary>
@@ -486,7 +484,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="torque">The torque.</param>
         public void ApplyTorqueImpulse(Vector3 torque)
         {
-            InternalRigidBody.ApplyTorqueImpulse(torque);
+            InternalRigidBody?.ApplyTorqueImpulse(torque);
         }
 
         /// <summary>
@@ -494,7 +492,7 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void ClearForces()
         {
-            InternalRigidBody.ClearForces();
+            InternalRigidBody?.ClearForces();
         }
 
         /// <summary>
@@ -506,8 +504,8 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 AngularVelocity
         {
-            get { return InternalRigidBody.AngularVelocity; }
-            set { InternalRigidBody.AngularVelocity = value; }
+            get { return InternalRigidBody?.AngularVelocity ?? Vector3.Zero; }
+            set { if(InternalRigidBody != null) InternalRigidBody.AngularVelocity = value; }
         }
 
         /// <summary>
@@ -519,8 +517,8 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 LinearVelocity
         {
-            get { return InternalRigidBody.LinearVelocity; }
-            set { InternalRigidBody.LinearVelocity = value; }
+            get { return InternalRigidBody?.LinearVelocity ?? Vector3.Zero; }
+            set { if(InternalRigidBody != null) InternalRigidBody.LinearVelocity = value; }
         }
 
         /// <summary>
@@ -529,7 +527,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The total force.
         /// </value>
-        public Vector3 TotalForce => InternalRigidBody.TotalForce;
+        public Vector3 TotalForce => InternalRigidBody?.TotalForce ?? Vector3.Zero;
 
         /// <summary>
         /// Gets or sets the angular factor.
@@ -540,8 +538,8 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 AngularFactor
         {
-            get { return InternalRigidBody.AngularFactor; }
-            set { InternalRigidBody.AngularFactor = value; }
+            get { return InternalRigidBody?.AngularFactor ?? Vector3.Zero; }
+            set { if(InternalRigidBody != null) InternalRigidBody.AngularFactor = value; }
         }
 
         /// <summary>
@@ -553,8 +551,8 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 LinearFactor
         {
-            get { return InternalRigidBody.LinearFactor; }
-            set { InternalRigidBody.LinearFactor = value; }
+            get { return InternalRigidBody?.LinearFactor ?? Vector3.Zero; }
+            set { if(InternalRigidBody != null) InternalRigidBody.LinearFactor = value; }
         }
     }
 }

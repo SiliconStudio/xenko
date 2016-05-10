@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics
                         // Find matching resource bindings
                         foreach (var binding in effectReflection.ResourceBindings)
                         {
-                            if (binding.Stage == ShaderStage.None || binding.Param.Key != item.Key)
+                            if (binding.Stage == ShaderStage.None || binding.KeyInfo.Key != item.Key)
                                 continue;
 
                             List<DescriptorRange> descriptorRanges;
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
                             else
                             {
                                 DescriptorRangeType descriptorRangeType;
-                                switch (binding.Param.Class)
+                                switch (binding.Class)
                                 {
                                     case EffectParameterClass.ConstantBuffer:
                                         descriptorRangeType = DescriptorRangeType.ConstantBufferView;
@@ -283,7 +283,7 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDescription.DepthBiasClamp = description.DepthBiasClamp;
             nativeDescription.IsDepthClipEnabled = description.DepthClipEnable;
             //nativeDescription.IsScissorEnabled = description.ScissorTestEnable;
-            nativeDescription.IsMultisampleEnabled = description.MultiSampleAntiAlias;
+            nativeDescription.IsMultisampleEnabled = description.MultiSampleLevel >= MSAALevel.None;
             nativeDescription.IsAntialiasedLineEnabled = description.MultiSampleAntiAliasLine;
 
             nativeDescription.ConservativeRaster = ConservativeRasterizationMode.Off;

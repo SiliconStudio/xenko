@@ -44,9 +44,12 @@ namespace SiliconStudio.Core.Diagnostics
             Children = new List<ProfilingKey>();
             Parent = parent;
 
-            // Register ourself in parent's children.
-            parent.Children.Add(this);
-
+            // TODO: add a lock because the currently passed parent is static and might crash in the game studio where we have multiple concurrent games - this need to be reviewed.
+            lock (parent.Children)
+            {
+                // Register ourself in parent's children.
+                parent.Children.Add(this);
+            }
             Name = string.Format("{0}.{1}", Parent, name);
             Flags = flags;
 

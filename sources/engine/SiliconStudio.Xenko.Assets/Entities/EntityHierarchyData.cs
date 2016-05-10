@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
@@ -117,6 +118,63 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             RootEntities = new List<Guid>();
             Entities = new EntityCollection(this);
+        }
+
+        /// <summary>
+        /// Helper method to dump this hierarchy to a text output
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
+        public bool DumpTo(TextWriter writer)
+        {
+            bool result  = true;
+            writer.WriteLine("***************");
+            writer.WriteLine($"RootEntities [{RootEntities.Count}]");
+            writer.WriteLine("===============");
+            for (int i = 0; i < RootEntities.Count; i++)
+            {
+                var id = RootEntities[i];
+                if (!Entities.ContainsKey(id))
+                {
+                    result = false;
+                }
+                writer.WriteLine(Entities.ContainsKey(id) ? $"{id} => {Entities[id].Entity}" : $"{id} => ERROR - Entity not found in [Entities]");
+            }
+
+            writer.WriteLine("***************");
+            writer.WriteLine($"Entities [{Entities.Count}]");
+            writer.WriteLine("===============");
+            for (int i = 0; i < Entities.Count; i++)
+            {
+                var entityEntry = Entities[i];
+
+                writer.Write($"{entityEntry.Entity.Id} => {entityEntry.Entity}");
+
+                if (entityEntry.Design.BaseId != null)
+                {
+                    writer.Write($" Base: {entityEntry.Design.BaseId}");
+                }
+
+                if (entityEntry.Design.BasePartInstanceId != null)
+                {
+                    writer.Write($" BasePartInstanceId: {entityEntry.Design.BasePartInstanceId}");
+                }
+                writer.WriteLine();
+
+                foreach (var child in entityEntry.Entity.Transform.Children)
+                {
+
+                    writer.Write($"  - {child.Entity.Id} => {child.Entity.Name}");
+                    if (!Entities.ContainsKey(child.Entity.Id))
+                    {
+                        writer.Write(" <= ERROR, Entity not found in [Entities]");
+                        result = false;
+
+                    }
+                    writer.WriteLine();
+                }
+            }
+            return result;
         }
 
         [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, EntityDesign>))]
