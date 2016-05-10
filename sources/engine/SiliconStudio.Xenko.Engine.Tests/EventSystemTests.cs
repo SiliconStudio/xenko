@@ -14,6 +14,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
     [TestFixture]
     public class EventSystemTests
     {
+        /// <summary>
+        /// Make sure that events are able to be consumed immediately
+        /// </summary>
         [Test]
         public void SameFrameReceive()
         {
@@ -26,6 +29,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.False(recv.ReceiveOne());
         }
 
+        /// <summary>
+        /// Make sure that we can receive events immediately even when using await/async
+        /// </summary>
         [Test]
         public void SameFrameReceiveAsync()
         {
@@ -63,6 +69,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             game.Dispose();
         }
 
+        /// <summary>
+        /// Make sure that newly created receivers do not receive previously broadcasted events (before creation)
+        /// </summary>
         [Test]
         public void DelayedReceiverCreation()
         {
@@ -103,6 +112,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             game.Dispose();
         }
 
+        /// <summary>
+        /// Test that multiple receivers work
+        /// </summary>
         [Test]
         public void MultipleReceivers()
         {
@@ -113,11 +125,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             var broadcaster = new EventKey<int>();
 
             game.Script.AddTask(async () =>
-            {          
+            {
                 while (game.IsRunning)
                 {
-                    frameCounter++;
-                    broadcaster.Broadcast(frameCounter);
+                    broadcaster.Broadcast(++frameCounter);
                                    
                     if (frameCounter == 10)
                     {
@@ -126,7 +137,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                     await game.Script.NextFrame();
                 }
-            }, 100);
+            }, 100); //run this script after the others
 
             game.Script.AddTask(async () =>
             {
@@ -169,6 +180,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             game.Dispose();
         }
 
+        /// <summary>
+        /// Test that even if broadcast happens in another thread we receive events in the game schedluer thread
+        /// </summary>
         [Test]
         public void DifferentThreadBroadcast()
         {
@@ -176,41 +190,47 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             var frameCounter = 0;
 
-            var broadcaster = new EventKey<int>();
+            var broadcaster = new EventKey();
 
             game.Script.AddTask(async () =>
             {
                 var tests = 5;
-                var recv = new EventReceiver<int>(broadcaster);
+                var recv = new EventReceiver(broadcaster);
+
+                var threadId = Thread.CurrentThread.ManagedThreadId;
 
                 while (tests-- > 0)
                 {
-                    var frame = await recv.ReceiveAsync();
-                    Assert.AreEqual(frame, frameCounter);
+                    await recv.ReceiveAsync();
+                    Assert.AreEqual(threadId, Thread.CurrentThread.ManagedThreadId);
                 }
             });
 
             game.Script.AddTask(async () =>
             {
                 var tests = 5;
-                var recv = new EventReceiver<int>(broadcaster);
+                var recv = new EventReceiver(broadcaster);
+
+                var threadId = Thread.CurrentThread.ManagedThreadId;
 
                 while (tests-- > 0)
                 {
-                    var frame = await recv.ReceiveAsync();
-                    Assert.AreEqual(frame, frameCounter);
+                    await recv.ReceiveAsync();
+                    Assert.AreEqual(threadId, Thread.CurrentThread.ManagedThreadId);
                 }
             });
 
             game.Script.AddTask(async () =>
             {
                 var tests = 5;
-                var recv = new EventReceiver<int>(broadcaster);
+                var recv = new EventReceiver(broadcaster);
+
+                var threadId = Thread.CurrentThread.ManagedThreadId;
 
                 while (tests-- > 0)
                 {
-                    var frame = await recv.ReceiveAsync();
-                    Assert.AreEqual(frame, frameCounter);
+                    await recv.ReceiveAsync();
+                    Assert.AreEqual(threadId, Thread.CurrentThread.ManagedThreadId);
                 }
             });
 
@@ -224,7 +244,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 while (true)
                 {
                     frameCounter++;
-                    broadcaster.Broadcast(frameCounter);
+                    broadcaster.Broadcast();
                     if (frameCounter == 20)
                     {
                         game.Exit();
@@ -238,6 +258,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             game.Dispose();
         }
 
+        /// <summary>
+        /// Test buffered events and receive many in one go
+        /// </summary>
         [Test]
         public void ReceiveManyCheck()
         {
@@ -269,6 +292,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             game.Dispose();
         }
 
+        /// <summary>
+        /// Test ClearEveryFrame option flag, which clears events at end of every game frame
+        /// </summary>
         [Test]
         public void EveryFrameClear()
         {
@@ -283,11 +309,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 while (frameCount < 25)
                 {
                     evt.Broadcast();
+                    evt.Broadcast();
 
                     if (frameCount == 20)
                     {
                         var manyEvents = rcv.ReceiveMany();
-                        Assert.AreEqual(manyEvents.Count, 1);
+                        Assert.AreEqual(manyEvents.Count, 2);
                         game.Exit();
                     }
 
