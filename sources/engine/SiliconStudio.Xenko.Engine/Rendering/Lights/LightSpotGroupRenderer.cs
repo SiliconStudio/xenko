@@ -23,6 +23,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private float padding3;
     }
 
+    /// <summary>
+    /// Light renderer for <see cref="LightSpot"/>.
+    /// </summary>
     public class LightSpotGroupRenderer : LightGroupRendererDynamic
     {
         public override void Initialize(RenderContext context)

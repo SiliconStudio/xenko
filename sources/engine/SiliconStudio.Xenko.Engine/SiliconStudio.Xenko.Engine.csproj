@@ -241,6 +241,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Lights\LightGroupRendererDynamic.cs" />
+    <Compile Include="Rendering\Lights\LightShaderGroupDynamic.cs" />
     <Compile Include="Rendering\Lights\LightStructures.cs">
       <DependentUpon>LightStructures.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

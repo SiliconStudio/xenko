@@ -300,7 +300,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (!renderViewDatas.TryGetValue(view, out renderViewData) || viewFeature.Layouts.Count == 0)
                     continue;
 
-                // TODO: Skip if not coming from an effect in normal state
+                // Find a PerView layout from an effect in normal state
                 ViewResourceGroupLayout firstViewLayout = null;
                 foreach (var viewLayout in viewFeature.Layouts)
                 {
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     }
                 }
 
-                // Nothing found for this view
+                // Nothing found for this view (no effects in normal state)
                 if (firstViewLayout == null)
                     continue;
 

@@ -21,6 +21,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private float padding1;
     }
 
+    /// <summary>
+    /// Light renderer for <see cref="LightDirectional"/>.
+    /// </summary>
     public class LightDirectionalGroupRenderer : LightGroupRendererDynamic
     {
         public override void Initialize(RenderContext context)
