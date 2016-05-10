@@ -121,8 +121,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (enableDepth == DepthBufferPolicy.ReadOnly)
             {
-                if (depthStencilHasChanged)
-                    UpdateDepthStencilCache(renderContext);
+                UpdateDepthStencilCache(renderContext);
 
                 // Sets the depth and render target
                 renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencilAsRT, RenderTargets);
@@ -134,15 +133,62 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private bool depthStencilHasChanged;
-
         public Texture DepthStencilAsRT { get; private set; }
 
         public Texture DepthStencilAsSR { get; private set; }
 
+        private bool HasDepthStencilChanged(RenderDrawContext renderContext)
+        {
+            if (DepthStencil == null)
+                return false;   // It's null so we can't copy it
+
+            if (DepthStencil.IsDisposed)
+                return false;
+
+            if (DepthStencilAsSR != null)
+            {
+                if (DepthStencilAsSR.Width != DepthStencil.Width)
+                    return true;
+
+                if (DepthStencilAsSR.Height != DepthStencil.Height)
+                    return true;
+            }
+
+            if (DepthStencilAsRT != null)
+            {
+                if (DepthStencilAsRT.Width != DepthStencil.Width)
+                    return true;
+
+                if (DepthStencilAsRT.Height != DepthStencil.Height)
+                    return true;
+            }
+
+            if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
+            {
+                if (DepthStencilAsRT == null)
+                    return true;
+
+                if (DepthStencilAsSR == null || DepthStencilAsSR != DepthStencil)
+                    return true;
+            }
+            else
+            {
+                if (DepthStencilAsRT == null || DepthStencilAsRT != DepthStencil)
+                    return true;
+            }
+
+            return false;
+        }
+
         private void UpdateDepthStencilCache(RenderDrawContext renderContext)
         {
-            if (!depthStencilHasChanged)
+            if (renderContext.GraphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_10_0)
+            {
+                // TODO Copy the depth buffer
+                
+            }
+
+            if (!HasDepthStencilChanged(renderContext))
                 return;
 
             if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
@@ -158,9 +204,6 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO Create a copy of the depth stencil buffer
                 DepthStencilAsSR = null;
             }
-
-            // TODO Not doing this every frame currently results in a bug
-            // depthStencilHasChanged = false;
         }
 
         /// <summary>
@@ -410,7 +453,6 @@ namespace SiliconStudio.Xenko.Rendering
             Descriptor = descriptor;
             RenderTargets = renderTargets;
             DepthStencil = depthStencil;
-            depthStencilHasChanged = true;
             isOwner = ownsResources;
             if (renderTargets != null)
             {
