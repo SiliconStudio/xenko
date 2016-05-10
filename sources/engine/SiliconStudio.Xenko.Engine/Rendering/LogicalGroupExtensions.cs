@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
             for (int index = 0; index < logicalGroup.DescriptorEntryCount; ++index)
             {
-                var layoutEntry = resourceGroupLayout.DescriptorSetLayout.Entries[logicalGroup.DescriptorEntryStart + index];
+                var layoutEntry = resourceGroupLayout.DescriptorSetLayoutBuilder.Entries[logicalGroup.DescriptorEntryStart + index];
                 parameterCollectionLayout.LayoutParameterKeyInfos.Add(new ParameterKeyInfo(layoutEntry.Key, parameterCollectionLayout.ResourceCount++));
             }
             parameterCollectionLayout.BufferSize += logicalGroup.ConstantBufferSize;

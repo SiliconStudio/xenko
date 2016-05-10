@@ -63,9 +63,9 @@ namespace SiliconStudio.Xenko.Rendering
                     break; // group is finished, no need to scan the end
             }
 
-            for (int index = 0, slot = 0; index < DescriptorSetLayout.Entries.Length; index++)
+            for (int index = 0, slot = 0; index < DescriptorSetLayoutBuilder.Entries.Count; index++)
             {
-                var descriptorSetEntry = DescriptorSetLayout.Entries[index];
+                var descriptorSetEntry = DescriptorSetLayoutBuilder.Entries[index];
                 if (descriptorSetEntry.LogicalGroup == name)
                 {
                     // First item?

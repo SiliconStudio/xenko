@@ -718,6 +718,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             var result = new RenderSystemResourceGroupLayout
             {
+                DescriptorSetLayoutBuilder = resourceGroupDescription.DescriptorSetLayout,
                 DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                 ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
             };
@@ -762,6 +763,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 result = new FrameResourceGroupLayout
                 {
+                    DescriptorSetLayoutBuilder = resourceGroupDescription.DescriptorSetLayout,
                     DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                     ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
                     State = effectState,
@@ -803,6 +805,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 result = new ViewResourceGroupLayout
                 {
+                    DescriptorSetLayoutBuilder = resourceGroupDescription.DescriptorSetLayout,
                     DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                     ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
                     Entries = new ResourceGroupEntry[RenderSystem.Views.Count],

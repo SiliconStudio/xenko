@@ -28,6 +28,7 @@ namespace SiliconStudio.Xenko.Graphics
 
     public class ResourceGroupLayout
     {
+        public DescriptorSetLayoutBuilder DescriptorSetLayoutBuilder;
         public DescriptorSetLayout DescriptorSetLayout;
         public int ConstantBufferSize;
         public EffectConstantBufferDescription ConstantBufferReflection;
@@ -43,6 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var result = new T
             {
+                DescriptorSetLayoutBuilder = resourceGroupDescription.DescriptorSetLayout,
                 DescriptorSetLayout = DescriptorSetLayout.New(graphicsDevice, resourceGroupDescription.DescriptorSetLayout),
                 ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection,
                 Hash = resourceGroupDescription.Hash,
