@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Text;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -90,18 +91,21 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> MaxLengthPropertyKey =
             DependencyPropertyFactory.Register(nameof(MaxLengthPropertyKey), typeof(EditText), int.MaxValue, CheckStrictlyPositive, InvalidateMaxLength);
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> MaxLinesPropertyKey =
             DependencyPropertyFactory.Register(nameof(MaxLinesPropertyKey), typeof(EditText), int.MaxValue, CheckStrictlyPositive, InvalidateMaxLines);
 
         /// <summary>
         /// The key to the MaxLength dependency property.
         /// </summary>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> MinLinesPropertyKey =
             DependencyPropertyFactory.Register(nameof(MinLinesPropertyKey), typeof(EditText), 1, CheckStrictlyPositive, InvalidateMinLines);
 

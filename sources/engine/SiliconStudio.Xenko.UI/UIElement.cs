@@ -31,16 +31,19 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> DefaultWidthPropertyKey =
             DependencyPropertyFactory.Register(nameof(DefaultWidthPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> DefaultHeightPropertyKey =
             DependencyPropertyFactory.Register(nameof(DefaultHeightPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
         /// <summary>
         /// The key to the height dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> DefaultDepthPropertyKey =
             DependencyPropertyFactory.Register(nameof(DefaultDepthPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
         

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Panels
@@ -18,16 +19,19 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the Columns dependency property.
         /// </summary>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> ColumnsPropertyKey = DependencyPropertyFactory.Register(nameof(ColumnsPropertyKey), typeof(UniformGrid), 1, GridSizeValidator, InvalidateGridMeasure);
 
         /// <summary>
         /// The key to the Rows dependency property.
         /// </summary>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> RowsPropertyKey = DependencyPropertyFactory.Register(nameof(RowsPropertyKey), typeof(UniformGrid), 1, GridSizeValidator, InvalidateGridMeasure);
 
         /// <summary>
         /// The key to the Layers dependency property.
         /// </summary>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> LayersPropertyKey = DependencyPropertyFactory.Register(nameof(LayersPropertyKey), typeof(UniformGrid), 1, GridSizeValidator, InvalidateGridMeasure);
 
         /// <summary>

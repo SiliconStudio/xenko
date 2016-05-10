@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Panels
@@ -19,36 +20,42 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the Column attached dependency property. This defines the column an item is inserted into.
         /// </summary>
         /// <remarks>First column has 0 as index</remarks>
+        [DataMemberRange(0, int.MaxValue)]
         public static readonly PropertyKey<int> ColumnPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnPropertyKey), typeof(GridBase), 0, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the Row attached dependency property. This defines the row an item is inserted into.
         /// </summary>
         /// <remarks>First row has 0 as index</remarks>
+        [DataMemberRange(0, int.MaxValue)]
         public static readonly PropertyKey<int> RowPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowPropertyKey), typeof(GridBase), 0, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the Layer attached dependency property. This defines the layer an item is inserted into.
         /// </summary>
         /// <remarks>First layer has 0 as index</remarks>
+        [DataMemberRange(0, int.MaxValue)]
         public static readonly PropertyKey<int> LayerPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerPropertyKey), typeof(GridBase), 0, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the ColumnSpan attached dependency property. This defines the number of columns an item takes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> ColumnSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnSpanPropertyKey), typeof(GridBase), 1, SpanValidator, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the RowSpan attached dependency property. This defines the number of rows an item takes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> RowSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowSpanPropertyKey), typeof(GridBase), 1, SpanValidator, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the LayerSpan attached dependency property. This defines the number of layers an item takes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        [DataMemberRange(1, int.MaxValue)]
         public static readonly PropertyKey<int> LayerSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerSpanPropertyKey), typeof(GridBase), 1, SpanValidator, InvalidateParentGridMeasure);
 
         private static void InvalidateParentGridMeasure(object propertyowner, PropertyKey<int> propertykey, int propertyoldvalue)

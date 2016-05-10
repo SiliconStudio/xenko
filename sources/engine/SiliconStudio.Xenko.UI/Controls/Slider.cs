@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
@@ -51,26 +52,31 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the Minimum dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> MinimumPropertyKey = DependencyPropertyFactory.Register(nameof(MinimumPropertyKey), typeof(Slider), 0.0f, ValidateExtremum);
 
         /// <summary>
         /// The key to the Maximum dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> MaximumPropertyKey = DependencyPropertyFactory.Register(nameof(MaximumPropertyKey), typeof(Slider), 1.0f, ValidateExtremum);
 
         /// <summary>
         /// The key to the Step dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> StepPropertyKey = DependencyPropertyFactory.Register(nameof(StepPropertyKey), typeof(Slider), 0.1f);
 
         /// <summary>
         /// The key to the TickFrequency dependency property.
         /// </summary>
+        [DataMemberRange(1, float.MaxValue)]
         public static readonly PropertyKey<float> TickFrequencyPropertyKey = DependencyPropertyFactory.Register(nameof(TickFrequencyPropertyKey), typeof(Slider), 10f, TickFrequencyInvalidated);
 
         /// <summary>
         /// The key to the TickFrequency dependency property.
         /// </summary>
+        [DataMemberRange(0, float.MaxValue)]
         public static readonly PropertyKey<float> TickOffsetPropertyKey = DependencyPropertyFactory.Register(nameof(TickOffsetPropertyKey), typeof(Slider), 10f);
 
         /// <summary>
