@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -30,20 +31,37 @@ namespace SiliconStudio.Xenko.Graphics
                 //EngineVersion = new SharpVulkan.Version()
             };
 
-            var enabledLayerNames = new[]
+            var desiredLayerNames = new[]
             {
-                Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_threading"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_parameter_validation"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_device_limits"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_object_tracker"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_image"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_core_validation"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_swapchain"),
-                Marshal.StringToHGlobalAnsi("VK_LAYER_GOOGLE_unique_objects"),
-
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_api_dump"),
-                //Marshal.StringToHGlobalAnsi("VK_LAYER_LUNARG_vktrace"),
+                //"VK_LAYER_LUNARG_standard_validation",
+                "VK_LAYER_GOOGLE_threading",
+                "VK_LAYER_LUNARG_parameter_validation",
+                "VK_LAYER_LUNARG_device_limits",
+                "VK_LAYER_LUNARG_object_tracker",
+                "VK_LAYER_LUNARG_image",
+                "VK_LAYER_LUNARG_core_validation",
+                "VK_LAYER_LUNARG_swapchain",
+                "VK_LAYER_GOOGLE_unique_objects",
+                //"VK_LAYER_LUNARG_api_dump",
+                //"VK_LAYER_LUNARG_vktrace"
             };
+
+            var enabledLayerNames = new FastList<IntPtr>();
+
+            //if (false)
+            {
+                var layers = Vulkan.InstanceLayerProperties;
+
+                for (int index = 0; index < layers.Length; index++)
+                {
+                    var properties = layers[index];
+                    var namePointer = new IntPtr(Interop.Fixed(ref properties.LayerName));
+                    var name = Marshal.PtrToStringAnsi(namePointer);
+
+                    if (desiredLayerNames.Contains(Marshal.PtrToStringAnsi(namePointer)))
+                        enabledLayerNames.Add(Marshal.StringToHGlobalAnsi(name));
+                }
+            }
 
             var enabledExtensionNames = new[]
             {
@@ -63,7 +81,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             try
             {
-                fixed (void* enabledLayerNamesPointer = &enabledLayerNames[0])
                 fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
                 {
 
@@ -71,8 +88,8 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         StructureType = StructureType.InstanceCreateInfo,
                         ApplicationInfo = new IntPtr(&applicationInfo),
-                        EnabledLayerCount = (uint)enabledLayerNames.Length,
-                        EnabledLayerNames = new IntPtr(enabledLayerNamesPointer),
+                        EnabledLayerCount = (uint)enabledLayerNames.Count,
+                        EnabledLayerNames = enabledLayerNames.Count > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames.Items)) : IntPtr.Zero,
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
                     };
