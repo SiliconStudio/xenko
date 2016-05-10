@@ -11,41 +11,6 @@ using SiliconStudio.Xenko.Engine.Processors;
 namespace SiliconStudio.Xenko.Engine.Events
 {
     /// <summary>
-    /// Creates an event receiver that is used to receive events from an EventKey
-    /// </summary>
-    public class EventReceiver : EventReceiver<bool>
-    {
-        /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey key, EventReceiverOptions options = EventReceiverOptions.None) : base(key, options)
-        {
-            
-        }
-
-        /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="scheduler">The scheduler where the event is awaited</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey key, ScriptSystem scheduler, EventReceiverOptions options = EventReceiverOptions.None) : base(key, scheduler, options)
-        {
-        }
-
-        /// <summary>
-        /// Awaits a single event
-        /// </summary>
-        /// <returns></returns>
-        public new async Task ReceiveAsync()
-        {
-            await BufferBlock.ReceiveAsync();
-        }
-    }
-
-    /// <summary>
     /// Creates an event receiver that is used to receive T type events from an EventKey
     /// </summary>
     /// <typeparam name="T">The type of data the EventKey will send</typeparam>
@@ -71,12 +36,13 @@ namespace SiliconStudio.Xenko.Engine.Events
             Key = key;
 
             BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
+
             link = key.Connect(this);
 
             receivedDebugString = $"Received '{key.EventName}' ({key.EventId})";
             receivedManyDebugString = $"Received All '{key.EventName}' ({key.EventId})";
 
-            ReceiveOne(); //clear any previous event, we don't want to receive old events, as broadcast block will always have the last event avail
+            ReceiveOne(); //clear any previous event, we don't want to receive old events, as broadcast block will always send us the last avail event on connect
         }
 
         /// <summary>
@@ -115,12 +81,12 @@ namespace SiliconStudio.Xenko.Engine.Events
             cancellationTokenSource = new CancellationTokenSource();
             scheduler.AddTask(async () =>
             {
-                while(!cancellationTokenSource.IsCancellationRequested)
+                while (!cancellationTokenSource.IsCancellationRequested)
                 {
-                    //Todo this is not really optimal probably but its the only proper way with dataflow
+                    //consume all events at the end of every frame
                     IList<T> result;
                     BufferBlock.TryReceiveAll(out result);
-                        
+
                     await scheduler.NextFrame();
                 }
             }, 0xfffffff);
@@ -133,7 +99,9 @@ namespace SiliconStudio.Xenko.Engine.Events
         public async Task<T> ReceiveAsync()
         {
             var res = await BufferBlock.ReceiveAsync();
+
             Key.Logger.Debug(receivedDebugString);
+
             return res;
         }
 
@@ -158,7 +126,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             }
 
             Key.Logger.Debug(receivedDebugString);
-            
+
             return BufferBlock.Receive();
         }
 
@@ -175,6 +143,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             }
 
             Key.Logger.Debug(receivedManyDebugString);
+
             return result;
         }
 
@@ -189,6 +158,41 @@ namespace SiliconStudio.Xenko.Engine.Events
             cancellationTokenSource?.Dispose();
 
             GC.SuppressFinalize(this);
+        }
+    }
+
+    /// <summary>
+    /// Creates an event receiver that is used to receive events from an EventKey
+    /// </summary>
+    public class EventReceiver : EventReceiver<bool>
+    {
+        /// <summary>
+        /// Creates an event receiver, ready to receive broadcasts from the key
+        /// </summary>
+        /// <param name="key">The event key to listen from</param>
+        /// <param name="options">Option flags</param>
+        public EventReceiver(EventKey key, EventReceiverOptions options = EventReceiverOptions.None) : base(key, options)
+        {
+            
+        }
+
+        /// <summary>
+        /// Creates an event receiver, ready to receive broadcasts from the key
+        /// </summary>
+        /// <param name="key">The event key to listen from</param>
+        /// <param name="scheduler">The scheduler where the event is awaited</param>
+        /// <param name="options">Option flags</param>
+        public EventReceiver(EventKey key, ScriptSystem scheduler, EventReceiverOptions options = EventReceiverOptions.None) : base(key, scheduler, options)
+        {
+        }
+
+        /// <summary>
+        /// Awaits a single event
+        /// </summary>
+        /// <returns></returns>
+        public new async Task ReceiveAsync()
+        {
+            await BufferBlock.ReceiveAsync();
         }
     }
 }

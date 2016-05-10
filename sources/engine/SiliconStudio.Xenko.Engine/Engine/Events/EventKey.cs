@@ -12,6 +12,10 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
+    /// <summary>
+    /// Simple passthru scheduler to avoid the default dataflow TaskScheduler.Default usage
+    /// This also makes sure we fire events at proper required order/timing
+    /// </summary>
     internal class EventTaskScheduler : TaskScheduler
     {
         public static readonly EventTaskScheduler Scheduler = new EventTaskScheduler();
@@ -33,23 +37,8 @@ namespace SiliconStudio.Xenko.Engine.Events
     }
 
     /// <summary>
-    /// Creates a new EventKey used to broadcast events.
+    /// Used mostly for debug, to identify events
     /// </summary>
-    public class EventKey : EventKey<bool>
-    {
-        public EventKey(string category = "General", string eventName = "Event") : base(category, eventName)
-        {       
-        }
-
-        /// <summary>
-        /// Broadcasts the event to all the receivers
-        /// </summary>
-        public void Broadcast()
-        {
-            Broadcast(true);
-        }
-    }
-
     internal static class EventKeyCounter
     {
         private static long eventKeysCounter;
@@ -113,6 +102,24 @@ namespace SiliconStudio.Xenko.Engine.Events
         {
             Logger.Debug(broadcastDebug);
             broadcastBlock.Post(data);
+        }
+    }
+
+    /// <summary>
+    /// Creates a new EventKey used to broadcast events.
+    /// </summary>
+    public class EventKey : EventKey<bool>
+    {
+        public EventKey(string category = "General", string eventName = "Event") : base(category, eventName)
+        {       
+        }
+
+        /// <summary>
+        /// Broadcasts the event to all the receivers
+        /// </summary>
+        public void Broadcast()
+        {
+            Broadcast(true);
         }
     }
 }
