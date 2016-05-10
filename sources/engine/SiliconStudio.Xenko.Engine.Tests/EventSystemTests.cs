@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Xenko.Engine.Events;
 using SiliconStudio.Xenko.Graphics.Regression;
+// ReSharper disable AccessToDisposedClosure
+// ReSharper disable FunctionNeverReturns
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -24,9 +27,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             var recv = new EventReceiver(key);
 
             key.Broadcast();
-            Assert.True(recv.ReceiveOne());
+            Assert.True(recv.TryReceiveOne());
 
-            Assert.False(recv.ReceiveOne());
+            Assert.False(recv.TryReceiveOne());
         }
 
         /// <summary>
@@ -92,86 +95,18 @@ namespace SiliconStudio.Xenko.Engine.Tests
                     if (frameCount == 20)
                     {
                         rcv = new EventReceiver(evt);
-                        Assert.False(rcv.ReceiveOne());
+                        Assert.False(rcv.TryReceiveOne());
                         evt.Broadcast();
                     }
                     if (frameCount == 22)
                     {
                         Assert.NotNull(rcv);
-                        Assert.True(rcv.ReceiveOne());
+                        Assert.True(rcv.TryReceiveOne());
 
                         game.Exit();
                     }
                     await game.Script.NextFrame();
                     frameCount++;
-                }
-            });
-
-            game.Run();
-
-            game.Dispose();
-        }
-
-        /// <summary>
-        /// Test that multiple receivers work
-        /// </summary>
-        [Test]
-        public void MultipleReceivers()
-        {
-            var game = new EventSystemTestGame();
-
-            var frameCounter = 0;
-
-            var broadcaster = new EventKey<int>();
-
-            game.Script.AddTask(async () =>
-            {
-                while (game.IsRunning)
-                {
-                    broadcaster.Broadcast(++frameCounter);
-                                   
-                    if (frameCounter == 10)
-                    {
-                        game.Exit();
-                    }
-
-                    await game.Script.NextFrame();
-                }
-            }, 100); //run this script after the others
-
-            game.Script.AddTask(async () =>
-            {
-                var tests = 5;
-                var recv = new EventReceiver<int>(broadcaster);
-
-                while (tests-- > 0)
-                {
-                    var frame = await recv.ReceiveAsync();
-                    Assert.AreEqual(frame, frameCounter);
-                }
-            });
-
-            game.Script.AddTask(async () =>
-            {
-                var tests = 5;
-                var recv = new EventReceiver<int>(broadcaster);
-
-                while (tests-- > 0)
-                {
-                    var frame = await recv.ReceiveAsync();
-                    Assert.AreEqual(frame, frameCounter);
-                }
-            });
-
-            game.Script.AddTask(async () =>
-            {
-                var tests = 5;
-                var recv = new EventReceiver<int>(broadcaster);
-
-                while (tests-- > 0)
-                {
-                    var frame = await recv.ReceiveAsync();
-                    Assert.AreEqual(frame, frameCounter);
                 }
             });
 
@@ -188,6 +123,117 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             var game = new EventSystemTestGame();
 
+            var counter = 0;
+
+            var broadcaster = new EventKey();
+
+            game.Script.AddTask(async () =>
+            {
+                var recv = new EventReceiver(broadcaster, EventReceiverOptions.Buffered);
+
+                for(;;)
+                {
+                    await recv.ReceiveAsync();
+                    counter++;
+                }
+            });
+
+            game.Script.AddTask(async () =>
+            {
+                var recv = new EventReceiver(broadcaster, EventReceiverOptions.Buffered);
+
+                for (;;)
+                {
+                    await recv.ReceiveAsync();
+                    counter++;
+                }
+            });
+
+            game.Script.AddTask(async () =>
+            {
+                var recv = new EventReceiver(broadcaster, EventReceiverOptions.Buffered);
+
+                for (;;)
+                {
+                    await recv.ReceiveAsync();
+                    counter++;
+                }
+            });
+
+            var t1W = new AutoResetEvent(false);
+            var t2W = new AutoResetEvent(false);
+
+            new Thread(async () =>
+            {
+                while (!game.IsRunning)
+                {
+                    await Task.Delay(100);
+                }
+
+                var frameCounter = 0;
+
+                while (true)
+                {
+                    await Task.Delay(20);
+                    frameCounter++;
+                    broadcaster.Broadcast();
+                    if (frameCounter != 200) continue;
+                    t1W.Set();
+                    return;
+                }
+            }).Start();
+
+            new Thread(async () =>
+            {
+                while (!game.IsRunning)
+                {
+                    await Task.Delay(100);
+                }
+
+                var frameCounter = 0;
+
+                while (true)
+                {
+                    await Task.Delay(20);
+                    frameCounter++;
+                    broadcaster.Broadcast();
+                    if (frameCounter != 200) continue;
+                    t2W.Set();
+                    return;
+                }
+            }).Start();
+
+            new Thread(async () =>
+            {
+                var waitHandles = new WaitHandle[]
+                {
+                    t1W,
+                    t2W
+                };
+
+                WaitHandle.WaitAll(waitHandles);
+
+                await Task.Delay(2000);
+
+                game.Exit();
+
+                Assert.AreEqual(1200, counter);
+            }).Start();
+
+            game.Run();
+
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// Test that even if broadcast happens in another thread we receive events in the game schedluer thread
+        /// With a different syntax sugar
+        /// </summary>
+        [Test]
+        public void DifferentSyntax()
+        {
+            var game = new EventSystemTestGame();
+
             var frameCounter = 0;
 
             var broadcaster = new EventKey();
@@ -201,7 +247,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 while (tests-- > 0)
                 {
-                    await recv.ReceiveAsync();
+                    await recv;
                     Assert.AreEqual(threadId, Thread.CurrentThread.ManagedThreadId);
                 }
             });
@@ -215,7 +261,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 while (tests-- > 0)
                 {
-                    await recv.ReceiveAsync();
+                    await recv;
                     Assert.AreEqual(threadId, Thread.CurrentThread.ManagedThreadId);
                 }
             });
@@ -229,7 +275,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 while (tests-- > 0)
                 {
-                    await recv.ReceiveAsync();
+                    await recv;
                     Assert.AreEqual(threadId, Thread.CurrentThread.ManagedThreadId);
                 }
             });
@@ -278,13 +324,71 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                     if (frameCount == 20)
                     {
-                        var manyEvents = rcv.ReceiveMany();
-                        Assert.AreEqual(manyEvents.Count, 21);
+                        var collection = new List<bool>();
+                        var manyEvents = rcv.TryReceiveMany(collection);
+                        Assert.AreEqual(manyEvents, 21);
                         game.Exit();
                     }
                     await game.Script.NextFrame();
                     frameCount++;
                 }
+            });
+
+            game.Run();
+
+            game.Dispose();
+        }
+
+        /// <summary>
+        /// Test proper Task.WaitAny behavior..
+        /// </summary>
+        [Test]
+        public void ReceiveFirstCheck()
+        {
+            var game = new EventSystemTestGame();
+
+            var frameCount = 0;
+
+            var evt1 = new EventKey();
+            var evt2 = new EventKey();
+
+            game.Script.AddTask(async () =>
+            {               
+                var rcv1 = new EventReceiver(evt1);
+                var rcv2 = new EventReceiver(evt2);
+
+                for (;;)
+                {
+                    var rcv = await EventReceiver.ReceiveFirst(rcv1, rcv2);
+
+                    if (rcv == rcv1)
+                    {
+                        evt2.Broadcast(); //this is the point of this test.. see if t2 will get populated next loop
+                        await game.Script.NextFrame();
+                    }
+                    else if (rcv == rcv2)
+                    {
+                        await game.Script.NextFrame();
+                        game.Exit();
+                    }
+                }
+            });
+
+            game.Script.AddTask(async () =>
+            { 
+                while (frameCount < 30 && game.IsRunning)
+                {
+                    frameCount++;
+
+                    if (frameCount == 20)
+                    {
+                        evt1.Broadcast();
+                    }
+
+                    await game.Script.NextFrame(); 
+                }
+
+                Assert.Fail("t2 should be completed");
             });
 
             game.Run();
@@ -302,19 +406,29 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             var frameCount = 0;
 
+            var evt = new EventKey();
+
             game.Script.AddTask(async () =>
             {
-                var evt = new EventKey();
-                var rcv = new EventReceiver(evt, game.Script, EventReceiverOptions.ClearEveryFrame | EventReceiverOptions.Buffered);
                 while (frameCount < 25)
                 {
                     evt.Broadcast();
                     evt.Broadcast();
 
+                    await game.Script.NextFrame();
+                }
+            }, 10);
+
+            game.Script.AddTask(async () =>
+            {
+                var rcv = new EventReceiver(evt, game.Script, EventReceiverOptions.ClearEveryFrame | EventReceiverOptions.Buffered);
+                while (frameCount < 25)
+                {
                     if (frameCount == 20)
                     {
-                        var manyEvents = rcv.ReceiveMany();
-                        Assert.AreEqual(manyEvents.Count, 2);
+                        var collection = new List<bool>();
+                        var manyEvents = rcv.TryReceiveMany(collection);
+                        Assert.AreEqual(2, manyEvents);
                         game.Exit();
                     }
 
@@ -322,7 +436,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                     frameCount++;
                 }
-            });
+            }, -10);
 
             game.Run();
 
