@@ -1336,7 +1336,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     continue;
 
                 // Find logical group
-                var cbufferNameSplit = cbuffer.Name.Text.IndexOf('_');
+                var cbufferNameSplit = cbuffer.Name.Text.IndexOf('.');
                 if (cbufferNameSplit == -1)
                     continue;
 

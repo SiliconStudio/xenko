@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightPointGroup<int TMaxLightCount> : DirectLightGroupPerDraw, NormalStream, PositionStream4, LightUtil, LightStructures
     {
-        cbuffer PerDraw_Lighting
+        cbuffer PerDraw.Lighting
         {
             PointLightData Lights[TMaxLightCount];
         }

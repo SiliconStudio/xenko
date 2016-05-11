@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// </summary>
     class SphericalHarmonicsEnvironmentColor<int TOrder> : IComputeEnvironmentColor
     {
-        cbuffer PerView_Lighting
+        cbuffer PerView.Lighting
         {
             [Color]
             float3 SphericalColors[TOrder * TOrder];

@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class LightSkyboxShader : EnvironmentLight, MaterialPixelShadingStream, NormalStream, Transformation
     {
-        cbuffer PerView_Lighting
+        cbuffer PerView.Lighting
         {
             float4x4 SkyMatrix;
             float Intensity;

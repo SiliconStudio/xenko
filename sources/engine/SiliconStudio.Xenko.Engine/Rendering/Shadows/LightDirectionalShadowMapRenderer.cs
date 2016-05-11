@@ -539,16 +539,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 switch (shadowType & LightShadowType.FilterMask)
                 {
                     case LightShadowType.PCF3x3:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView_Lighting", 3));
+                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView.Lighting", 3));
                         break;
                     case LightShadowType.PCF5x5:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView_Lighting", 5));
+                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView.Lighting", 5));
                         break;
                     case LightShadowType.PCF7x7:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView_Lighting", 7));
+                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView.Lighting", 7));
                         break;
                     default:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", "PerView_Lighting"));
+                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", "PerView.Lighting"));
                         break;
                 }
 

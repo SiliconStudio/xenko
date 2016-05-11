@@ -9,9 +9,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// TCascadeCount: Number of cascades.
     /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
     /// </remarks>
-    internal class ShadowMapReceiverDirectional<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TDepthRangeAuto, bool TCascadeDebug> : ShadowMapReceiverBase<PerView_Lighting, TCascadeCount, TLightCount>
+    internal class ShadowMapReceiverDirectional<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TDepthRangeAuto, bool TCascadeDebug> : ShadowMapReceiverBase<PerView.Lighting, TCascadeCount, TLightCount>
     {
-        cbuffer PerView_Lighting // TODO: Use a proper cbuffer for this?
+        cbuffer PerView.Lighting // TODO: Use a proper cbuffer for this?
         {
             float CascadeDepthSplits[TCascadeCount * TLightCount];
         };

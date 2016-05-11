@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     class DirectLightGroupPerDraw : DirectLightGroup
     {
-        cbuffer PerDraw_Lighting
+        cbuffer PerDraw.Lighting
         {
             int LightCount;
         }
