@@ -17,6 +17,13 @@ namespace SiliconStudio.Presentation.Services
         Task<DialogResult> ShowModal();
 
         /// <summary>
+        /// Requests this dialog to close. This method returns immediately and does not wait for the dialog to be closed.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <remarks>This method does not guarantee that the dialog will actually close, a cancel can still occurs.</remarks>
+        void RequestClose(DialogResult result);
+
+        /// <summary>
         /// Gets or sets a data context for the modal dialog.
         /// </summary>
         object DataContext { get; set; }

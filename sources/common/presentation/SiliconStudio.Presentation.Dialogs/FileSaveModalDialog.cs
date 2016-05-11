@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -11,8 +10,8 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class FileSaveModalDialog : ModalDialogBase, IFileSaveModalDialog
     {
-        internal FileSaveModalDialog(IDispatcherService dispatcher, Window parentWindow)
-            : base(dispatcher, parentWindow)
+        internal FileSaveModalDialog(IDispatcherService dispatcher)
+            : base(dispatcher)
         {
             Dialog = new CommonSaveFileDialog();
             Filters = new List<FileDialogFilter>();

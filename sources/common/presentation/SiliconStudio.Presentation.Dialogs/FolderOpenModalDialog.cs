@@ -10,8 +10,8 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class FolderOpenModalDialog : ModalDialogBase, IFolderOpenModalDialog
     {
-        internal FolderOpenModalDialog(IDispatcherService dispatcher, Window parentWindow)
-            : base(dispatcher, parentWindow)
+        internal FolderOpenModalDialog(IDispatcherService dispatcher)
+            : base(dispatcher)
         {
             Dialog = new CommonOpenFileDialog { EnsurePathExists = true };
             OpenDlg.IsFolderPicker = true;

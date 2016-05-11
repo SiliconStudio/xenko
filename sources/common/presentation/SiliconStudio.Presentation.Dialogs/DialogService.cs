@@ -14,89 +14,88 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class DialogService : IDialogService
     {
-        private readonly IDispatcherService dispatcher;
+        protected readonly IDispatcherService Dispatcher;
+        private Action onClosedAction;
 
-        public DialogService(IDispatcherService dispatcher, string applicationName, Window parentWindow)
+        public DialogService(IDispatcherService dispatcher, string applicationName)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
-            this.dispatcher = dispatcher;
+            Dispatcher = dispatcher;
             ApplicationName = applicationName;
-            ParentWindow = parentWindow;
         }
 
-        public string ApplicationName { get; set; }
-
-        [Obsolete]
-        public Window ParentWindow { get; set; }
+        public string ApplicationName { get; }
 
         public IFileOpenModalDialog CreateFileOpenModalDialog()
         {
-            return new FileOpenModalDialog(dispatcher, ParentWindow);
+            return new FileOpenModalDialog(Dispatcher);
         }
 
         public IFolderOpenModalDialog CreateFolderOpenModalDialog()
         {
-            return new FolderOpenModalDialog(dispatcher, ParentWindow);
+            return new FolderOpenModalDialog(Dispatcher);
         }
 
         public IFileSaveModalDialog CreateFileSaveModalDialog()
         {
-            return new FileSaveModalDialog(dispatcher, ParentWindow);
+            return new FileSaveModalDialog(Dispatcher);
         }
 
         public Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.MessageBox(dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.MessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
         public Task<MessageBoxResult> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.MessageBox(dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.MessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
         public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.CheckedMessageBox(dispatcher, message, ApplicationName, isChecked, button, image, owner);
+            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, button, image, owner);
         }
 
         public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.CheckedMessageBox(dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
+            return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
         }
 
         public MessageBoxResult MessageBoxSync(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.MessageBoxSync(dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.MessageBoxSync(Dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
         public MessageBoxResult MessageBoxSync(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.MessageBoxSync(dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.MessageBoxSync(Dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
         public CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.CheckedMessageBoxSync(dispatcher, message, ApplicationName, isChecked, button, image, owner);
+            return DialogHelper.CheckedMessageBoxSync(Dispatcher, message, ApplicationName, isChecked, button, image, owner);
         }
 
         public CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.CheckedMessageBoxSync(dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
+            return DialogHelper.CheckedMessageBoxSync(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
         }
-        
-        [Obsolete("This method will be removed soon")]
-        public void CloseCurrentWindow(bool? dialogResult = null)
+
+        public void CloseMainWindow(Action onClosed)
         {
-            // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
-            if (ParentWindow.DialogResult != dialogResult)
+            var window = Application.Current.MainWindow;
+            if (window != null)
             {
-                ParentWindow.DialogResult = dialogResult;
+                onClosedAction = onClosed;
+                window.Closed -= MainWindowClosed;
+                window.Closed += MainWindowClosed;
+                window.Close();
             }
-            ParentWindow.Close();
-            if (!ParentWindow.IsLoaded)
-            {
-                ParentWindow = null;
-            }
+        }
+
+        private void MainWindowClosed(object sender, EventArgs e)
+        {
+            onClosedAction?.Invoke();
         }
     }
 }

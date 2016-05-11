@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -12,13 +11,18 @@ namespace SiliconStudio.Presentation.Dialogs
     public abstract class ModalDialogBase : IModalDialogInternal
     {
         private readonly IDispatcherService dispatcher;
-        private readonly Window parentWindow;
         protected CommonFileDialog Dialog;
 
-        protected ModalDialogBase(IDispatcherService dispatcher, Window parentWindow)
+        protected ModalDialogBase(IDispatcherService dispatcher)
         {
             this.dispatcher = dispatcher;
-            this.parentWindow = parentWindow;
+        }
+
+        /// <param name="result"></param>
+        /// <inheritdoc/>
+        public void RequestClose(DialogResult result)
+        {
+            throw new NotSupportedException("RequestClose is not supported for this dialog.");
         }
 
         /// <inheritdoc/>
@@ -31,7 +35,7 @@ namespace SiliconStudio.Presentation.Dialogs
         {
             return dispatcher.InvokeAsync(() =>
             {
-                var result = Dialog.ShowDialog(parentWindow);
+                var result = Dialog.ShowDialog();
                 switch (result)
                 {
                     case CommonFileDialogResult.None:

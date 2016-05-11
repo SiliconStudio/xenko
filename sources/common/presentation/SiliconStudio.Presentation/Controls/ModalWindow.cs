@@ -14,6 +14,12 @@ namespace SiliconStudio.Presentation.Controls
             return Result;
         }
 
+        public void RequestClose(DialogResult result)
+        {
+            Result = result;
+            Close();
+        }
+
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);

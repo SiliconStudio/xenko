@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows;
 using SiliconStudio.Presentation.Windows;
 
 namespace SiliconStudio.Presentation.Services
@@ -14,12 +13,6 @@ namespace SiliconStudio.Presentation.Services
     /// </summary>
     public interface IDialogService
     {
-        /// <summary>
-        /// Gets the parent window handle.
-        /// </summary>
-        /// <value>The parent window.</value>
-        Window ParentWindow { get; }
-
         /// <summary>
         /// Creates a modal file open dialog.
         /// </summary>
@@ -131,10 +124,9 @@ namespace SiliconStudio.Presentation.Services
         CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
-        /// Attempts to close the current window.
+        /// Attempts to close the main window of the application.
         /// </summary>
-        /// <param name="dialogResult">a nullable boolean indicating, if the current window behave like a dialog window, the result of the dialog invocation.</param>
-        [Obsolete("This method will be removed soon.")]
-        void CloseCurrentWindow(bool? dialogResult = null);
+        /// <param name="onClosed">An action to execute if the main window is successfully closed.</param>
+        void CloseMainWindow(Action onClosed);
     }
 }
