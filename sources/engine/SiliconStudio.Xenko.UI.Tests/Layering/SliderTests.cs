@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackForegroundImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.ThumbImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.MouseOverThumbImage = (SpriteFromTexture)new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.DependencyProperties.Set(Slider.TickImagePropertyKey, (SpriteFromTexture)new Sprite()));
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TickImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TickOffset = new float());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackStartingOffsets = new Vector2());
         }

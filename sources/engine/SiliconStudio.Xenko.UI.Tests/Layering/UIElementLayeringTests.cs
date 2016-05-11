@@ -145,9 +145,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.IsTrue(newElement.IsEnabled);
             Assert.AreEqual(1f, newElement.Opacity);
             Assert.AreEqual(Visibility.Visible, newElement.Visibility);
-            Assert.AreEqual(0f, newElement.DependencyProperties.Get(DefaultWidthPropertyKey));
-            Assert.AreEqual(0f, newElement.DependencyProperties.Get(DefaultHeightPropertyKey));
-            Assert.AreEqual(0f, newElement.DependencyProperties.Get(DefaultDepthPropertyKey));
+            Assert.AreEqual(0f, newElement.DefaultWidth);
+            Assert.AreEqual(0f, newElement.DefaultHeight);
+            Assert.AreEqual(0f, newElement.DefaultDepth);
             Assert.AreEqual(float.NaN, newElement.Height);
             Assert.AreEqual(float.NaN, newElement.Width);
             Assert.AreEqual(float.NaN, newElement.Depth);
@@ -176,15 +176,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.AreEqual(0.5f, Opacity);
 
             // default sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultWidthPropertyKey, -1f));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultWidthPropertyKey, float.NaN));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultWidthPropertyKey, float.PositiveInfinity));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultHeightPropertyKey, -1f));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultHeightPropertyKey, float.NaN));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultHeightPropertyKey, float.PositiveInfinity));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultDepthPropertyKey, -1f));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultDepthPropertyKey, float.NaN));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultDepthPropertyKey, float.PositiveInfinity));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultWidth = -1f);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultWidth = float.NaN);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultWidth = float.PositiveInfinity);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultHeight = -1f);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultHeight = float.NaN);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultHeight = float.PositiveInfinity);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultDepth = -1f);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultDepth = float.NaN);
+            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultDepth = float.PositiveInfinity);
 
             // sizes 
             Assert.Throws<ArgumentOutOfRangeException>(() => Width = -1f);

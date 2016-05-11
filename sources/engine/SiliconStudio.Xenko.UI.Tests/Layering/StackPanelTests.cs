@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             ResetState();
 
             // test default values
-            Assert.AreEqual(Orientation.Vertical, DependencyProperties.Get(OrientationPropertyKey));
+            Assert.AreEqual(Orientation.Vertical, Orientation);
         }
 
         /// <summary>

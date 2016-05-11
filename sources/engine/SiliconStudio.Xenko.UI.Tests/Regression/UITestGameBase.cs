@@ -138,12 +138,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UI.DefaultResourceDictionary.TryGetValue(typeof(Button), out existingStyle);
             UI.DefaultResourceDictionary[typeof(Button)] = new Style(typeof(Button), (Style)existingStyle)
             {
-                Setters =
-                {
-                    new Setter<ISpriteProvider>(Button.PressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(Button.NotPressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(Button.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One }),
-                }
+                //Setters =
+                //{
+                //    new Setter<ISpriteProvider>(Button.PressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One }),
+                //    new Setter<ISpriteProvider>(Button.NotPressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One }),
+                //    new Setter<ISpriteProvider>(Button.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One }),
+                //}
             };
 
             var editActiveTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextActive);
@@ -152,15 +152,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UI.DefaultResourceDictionary.TryGetValue(typeof(EditText), out existingStyle);
             UI.DefaultResourceDictionary[typeof(EditText)] = new Style(typeof(EditText), (Style)existingStyle)
             {
-                Setters =
-                {
-                    new Setter<Color>(EditText.TextColorPropertyKey, Color.LightGray),
-                    new Setter<Color>(EditText.SelectionColorPropertyKey, Color.FromAbgr(0x623574FF)),
-                    new Setter<Color>(EditText.CaretColorPropertyKey, Color.FromAbgr(0xF0F0F0FF)),
-                    new Setter<ISpriteProvider>(EditText.ActiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One }),
-                    new Setter<ISpriteProvider>(EditText.InactiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One }),
-                    new Setter<ISpriteProvider>(EditText.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One }),
-                }
+                //Setters =
+                //{
+                //    new Setter<Color>(EditText.TextColorPropertyKey, Color.LightGray),
+                //    new Setter<Color>(EditText.SelectionColorPropertyKey, Color.FromAbgr(0x623574FF)),
+                //    new Setter<Color>(EditText.CaretColorPropertyKey, Color.FromAbgr(0xF0F0F0FF)),
+                //    new Setter<ISpriteProvider>(EditText.ActiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One }),
+                //    new Setter<ISpriteProvider>(EditText.InactiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One }),
+                //    new Setter<ISpriteProvider>(EditText.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One }),
+                //}
             };
 
             var toggleButtonChecked = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonChecked);
@@ -169,12 +169,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UI.DefaultResourceDictionary.TryGetValue(typeof(ToggleButton), out existingStyle);
             UI.DefaultResourceDictionary[typeof(ToggleButton)] = new Style(typeof(ToggleButton), (Style)existingStyle)
             {
-                Setters =
-                {
-                    new Setter<ISpriteProvider>(ToggleButton.CheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(ToggleButton.UncheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(ToggleButton.IndeterminateImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One }),
-                }
+                //Setters =
+                //{
+                //    new Setter<ISpriteProvider>(ToggleButton.CheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One }),
+                //    new Setter<ISpriteProvider>(ToggleButton.UncheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One }),
+                //    new Setter<ISpriteProvider>(ToggleButton.IndeterminateImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One }),
+                //}
             };
 
             Window.IsMouseVisible = true;
