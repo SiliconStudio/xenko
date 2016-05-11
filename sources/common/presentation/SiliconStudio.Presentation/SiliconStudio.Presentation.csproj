@@ -161,6 +161,8 @@
     <Compile Include="ViewModel\CollectionChangeOperation.cs" />
     <Compile Include="ViewModel\PropertyChangeOperation.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
+    <Compile Include="Services\CheckedMessageBoxResult.cs" />
+    <Compile Include="Windows\DialogHelper.cs" />
     <Compile Include="Windows\HwndHelper.cs" />
     <Compile Include="Controls\ModalWindow.cs" />
     <Compile Include="Windows\WindowInfo.cs" />

@@ -684,6 +684,44 @@ namespace SiliconStudio.Presentation.Tests
             dispatcher.InvokeShutdown();
         }
 
+        [Test, RequiresSTA]
+        public async void TestModalBoxThenCloseThenModalBox()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                // Open a modal window
+                var modalWindow1 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindowOpened1 = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.InvokeAsync(() => WindowManager.ShowModal(modalWindow1));
+                await WindowManagerHelper.TaskWithTimeout(modalWindowOpened1);
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(null, modalWindow1));
+
+                // Close the modal window and open another one immediately
+                var modalWindow2 = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                //var hidden = WindowManagerHelper.NextMainWindowChanged();
+                var modalWindowOpened2 = WindowManagerHelper.NextModalWindowOpened();
+                dispatcher.Invoke(() =>
+                {
+                    modalWindow1.Close();
+                    // Since we're in the same frame the dispatcher thread didn't had the opportunity to execute the WindowHidden method of WindowManager yet.
+                    // We ensure that showing the next window does not throw.
+                    Assert.DoesNotThrow(() => WindowManager.ShowModal(modalWindow2));
+                });
+
+                // Then we verify that the second window is properly initialized
+                await WindowManagerHelper.TaskWithTimeout(modalWindowOpened2);
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(null, modalWindow2));
+
+                // Close the modal window
+                dispatcher.Invoke(() => modalWindow2.Close());
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
+
 
     }
 }

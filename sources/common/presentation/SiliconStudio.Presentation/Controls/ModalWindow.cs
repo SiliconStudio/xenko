@@ -8,15 +8,10 @@ namespace SiliconStudio.Presentation.Controls
 {
     public abstract class ModalWindow : Window, IModalDialogInternal
     {
-        public async Task<DialogResult> ShowModal()
+        public virtual async Task<DialogResult> ShowModal()
         {
             await WindowManager.ShowModal(this);
             return Result;
-        }
-
-        protected void SetResult(DialogResult result)
-        {
-            Result = result;
         }
 
         protected override void OnClosed(EventArgs e)

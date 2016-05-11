@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -11,7 +10,7 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class FolderOpenModalDialog : ModalDialogBase, IFolderOpenModalDialog
     {
-        internal FolderOpenModalDialog(Dispatcher dispatcher, Window parentWindow)
+        internal FolderOpenModalDialog(IDispatcherService dispatcher, Window parentWindow)
             : base(dispatcher, parentWindow)
         {
             Dialog = new CommonOpenFileDialog { EnsurePathExists = true };

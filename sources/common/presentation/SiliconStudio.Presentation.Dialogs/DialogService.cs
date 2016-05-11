@@ -2,9 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
-using SiliconStudio.Presentation.Resources;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.Windows;
 using MessageBoxButton = SiliconStudio.Presentation.Services.MessageBoxButton;
@@ -15,15 +14,19 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class DialogService : IDialogService
     {
-        private readonly Dispatcher dispatcher;
+        private readonly IDispatcherService dispatcher;
 
-        public DialogService(Dispatcher dispatcher, Window parentWindow)
+        public DialogService(IDispatcherService dispatcher, string applicationName, Window parentWindow)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             this.dispatcher = dispatcher;
+            ApplicationName = applicationName;
             ParentWindow = parentWindow;
         }
 
+        public string ApplicationName { get; set; }
+
+        [Obsolete]
         public Window ParentWindow { get; set; }
 
         public IFileOpenModalDialog CreateFileOpenModalDialog()
@@ -41,33 +44,47 @@ namespace SiliconStudio.Presentation.Dialogs
             return new FileSaveModalDialog(dispatcher, ParentWindow);
         }
 
-        public MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        public Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            var parentWindow = ParentWindow;
-            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
+            return DialogHelper.MessageBox(dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
-        public MessageBoxResult ShowMessageBox(string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        public Task<MessageBoxResult> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            var parentWindow = ParentWindow;
-            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, buttons, image));
+            return DialogHelper.MessageBox(dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
-        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return ShowCheckedMessageBox(message, caption, Strings.DontAskMeAgain, ref isChecked, button, image);
+            return DialogHelper.CheckedMessageBox(dispatcher, message, ApplicationName, isChecked, button, image, owner);
         }
 
-        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        public Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            var parentWindow = ParentWindow;
-            var localIsChecked = isChecked;
-            var result = dispatcher.Invoke(() =>
-                CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
-            isChecked = localIsChecked;
-            return result;
+            return DialogHelper.CheckedMessageBox(dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
         }
 
+        public MessageBoxResult MessageBoxSync(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        {
+            return DialogHelper.MessageBoxSync(dispatcher, message, ApplicationName, buttons, image, owner);
+        }
+
+        public MessageBoxResult MessageBoxSync(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        {
+            return DialogHelper.MessageBoxSync(dispatcher, message, ApplicationName, buttons, image, owner);
+        }
+
+        public CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        {
+            return DialogHelper.CheckedMessageBoxSync(dispatcher, message, ApplicationName, isChecked, button, image, owner);
+        }
+
+        public CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        {
+            return DialogHelper.CheckedMessageBoxSync(dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
+        }
+        
+        [Obsolete("This method will be removed soon")]
         public void CloseCurrentWindow(bool? dialogResult = null)
         {
             // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.

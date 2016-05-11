@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
-using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.View;
 
 namespace SiliconStudio.Presentation.Windows
@@ -86,16 +85,6 @@ namespace SiliconStudio.Presentation.Windows
             Logger.Info($"{nameof(WindowManager)} disposed");
         }
 
-        [Obsolete("This method will be removed soon")]
-        public static DialogResult ToDialogResult(bool? dialogResult)
-        {
-            if (dialogResult.HasValue)
-            {
-                return dialogResult.Value ? DialogResult.Ok : DialogResult.Cancel;
-            }
-            return DialogResult.None;
-        }
-
         public static void ShowMainWindow(Window window)
         {
             if (window == null)
@@ -126,18 +115,7 @@ namespace SiliconStudio.Presentation.Windows
             if (ModalWindowsList.Contains(windowInfo))
                 throw new InvalidOperationException("This window has already been shown as modal.");
 
-            WindowInfo owner;
-            switch (windowOwner)
-            {
-                case WindowOwner.LastModal:
-                    owner = ModalWindows.FirstOrDefault() ?? MainWindow;
-                    break;
-                case WindowOwner.MainWindow:
-                    owner = MainWindow;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
-            }
+            var owner = FindNextOwner(windowOwner);
 
             window.Owner = owner?.Window;
             window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
@@ -169,18 +147,7 @@ namespace SiliconStudio.Presentation.Windows
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
 
-            WindowInfo owner;
-            switch (windowOwner)
-            {
-                case WindowOwner.LastModal:
-                    owner = ModalWindows.FirstOrDefault() ?? MainWindow;
-                    break;
-                case WindowOwner.MainWindow:
-                    owner = MainWindow;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
-            }
+            var owner = FindNextOwner(windowOwner);
 
             window.Owner = owner?.Window;
             window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
@@ -192,6 +159,19 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
+        private static WindowInfo FindNextOwner(WindowOwner owner)
+        {
+            switch (owner)
+            {
+                case WindowOwner.LastModal:
+                    // Skip non-visible window, they might be in the process of being closed.
+                    return ModalWindows.FirstOrDefault(x => x.Hwnd == IntPtr.Zero || x.IsVisible) ?? MainWindow;
+                case WindowOwner.MainWindow:
+                    return MainWindow;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(owner), owner, null);
+            }
+        }
         private static void CheckDispatcher()
         {
             if (dispatcher.Thread != Thread.CurrentThread)
@@ -324,6 +304,11 @@ namespace SiliconStudio.Presentation.Windows
                     }
                     ModalWindowClosed?.Invoke(null, new WindowManagerEventArgs(windowInfo));
                     ModalWindowsList.RemoveAt(index);
+
+                    var nextWindow = ModalWindows.FirstOrDefault(x => x.Hwnd != IntPtr.Zero && x.IsVisible) ?? MainWindow;
+                    if (nextWindow != null && nextWindow.Hwnd != IntPtr.Zero)
+                        NativeHelper.SetActiveWindow(nextWindow.Hwnd);
+
                     Logger.Info("Modal window closed.");
                 }
             }

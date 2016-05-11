@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using SiliconStudio.Presentation.Windows;
 
@@ -38,47 +39,96 @@ namespace SiliconStudio.Presentation.Services
         IFileSaveModalDialog CreateFileSaveModalDialog();
 
         /// <summary>
-        /// Displays a modal message box.
+        /// Displays a modal message box and returns a task that completes when the message box is closed.
         /// </summary>
         /// <param name="message">The text to display as message in the message box.</param>
-        /// <param name="caption">The title of the message box</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
-        /// <summary>
-        /// Displays a modal message box.
-        /// </summary>
-        /// <param name="message">The text to display as message in the message box.</param>
-        /// <param name="caption">The title of the message box</param>
-        /// <param name="buttons">The buttons to display in the message box.</param>
-        /// <param name="image">The image to display in the message box.</param>
-        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        MessageBoxResult ShowMessageBox(string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None);
+        Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
-        /// Displays a modal message box with an additional checkbox between the message and the buttons.
+        /// Displays a modal message box and returns a task that completes when the message box is closed.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        Task<MessageBoxResult> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons,
+        /// and returns a task that completes when the message box is closed.
         /// The message displayed in the checkbox is the localized string <see cref="Resources.Strings.DontAskMeAgain"/>.
         /// </summary>
         /// <param name="message">The text to display as message in the message box.</param>
-        /// <param name="caption">The title of the message box.</param>
-        /// <param name="isChecked"></param>
+        /// <param name="isChecked">The initial status of the check box.</param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
-        /// Displays a modal message box with an additional checkbox between the message and the buttons.
+        /// Displays a modal message box with an additional checkbox between the message and the buttons,
+        /// and returns a task that completes when the message box is closed.
         /// </summary>
         /// <param name="message">The text to display as message in the message box.</param>
-        /// <param name="caption">The title of the message box.</param>
-        /// <param name="checkedMessage">The message displayed in the checkbox.</param>
-        /// <param name="isChecked"></param>
+        /// <param name="isChecked">The initial status of the check box.</param>
+        /// <param name="checkboxMessage"></param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
-        MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+        Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+
+        /// <summary>
+        /// Displays a modal message box and blocks until the user closed the message box.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        MessageBoxResult MessageBoxSync(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+
+        /// <summary>
+        /// Displays a modal message box and blocks until the user closed the message box.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        MessageBoxResult MessageBoxSync(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons,
+        /// and blocks until the user closed the message box.
+        /// The message displayed in the checkbox is the localized string <see cref="Resources.Strings.DontAskMeAgain"/>.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="isChecked">The initial status of the check box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons,
+        /// and blocks until the user closed the message box.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="isChecked">The initial status of the check box.</param>
+        /// <param name="checkboxMessage"></param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <param name="owner">The intended owner for the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
         /// Attempts to close the current window.

@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -12,11 +11,11 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public abstract class ModalDialogBase : IModalDialogInternal
     {
-        private readonly Dispatcher dispatcher;
+        private readonly IDispatcherService dispatcher;
         private readonly Window parentWindow;
         protected CommonFileDialog Dialog;
 
-        protected ModalDialogBase(Dispatcher dispatcher, Window parentWindow)
+        protected ModalDialogBase(IDispatcherService dispatcher, Window parentWindow)
         {
             this.dispatcher = dispatcher;
             this.parentWindow = parentWindow;
@@ -32,8 +31,8 @@ namespace SiliconStudio.Presentation.Dialogs
         {
             return dispatcher.InvokeAsync(() =>
             {
-                var result1 = Dialog.ShowDialog(parentWindow);
-                switch (result1)
+                var result = Dialog.ShowDialog(parentWindow);
+                switch (result)
                 {
                     case CommonFileDialogResult.None:
                         Result = DialogResult.None;
@@ -47,7 +46,7 @@ namespace SiliconStudio.Presentation.Dialogs
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-            }).Task;
+            });
         }
 
         public abstract Task<DialogResult> ShowModal();

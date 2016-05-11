@@ -68,6 +68,32 @@ namespace SiliconStudio.Presentation.View
         }
 
         /// <inheritdoc/>
+        public Task InvokeTask(Func<Task> task)
+        {
+            return InvokeTask(dispatcher, task);
+        }
+
+        /// <inheritdoc/>
+        public Task<TResult> InvokeTask<TResult>(Func<Task<TResult>> task)
+        {
+            return InvokeTask(dispatcher, task);
+        }
+
+        public static Task InvokeTask(Dispatcher dispatcher, Func<Task> task)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            dispatcher.InvokeAsync(async () => { await task(); tcs.SetResult(0); });
+            return tcs.Task;
+        }
+
+        public static Task<TResult> InvokeTask<TResult>(Dispatcher dispatcher, Func<Task<TResult>> task)
+        {
+            var tcs = new TaskCompletionSource<TResult>();
+            dispatcher.InvokeAsync(async () => tcs.SetResult(await task()));
+            return tcs.Task;
+        }
+
+        /// <inheritdoc/>
         public bool CheckAccess()
         {
             return Thread.CurrentThread == dispatcher.Thread;

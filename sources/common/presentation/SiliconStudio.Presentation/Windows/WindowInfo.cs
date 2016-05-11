@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -84,6 +85,11 @@ namespace SiliconStudio.Presentation.Windows
         }
 
         /// <summary>
+        /// Gets whether the corresponding window is currently visible
+        /// </summary>
+        public bool IsVisible => HwndHelper.HasStyleFlag(Hwnd, NativeHelper.WS_VISIBLE);
+
+        /// <summary>
         /// Gets the owner of this window.
         /// </summary>
         public WindowInfo Owner
@@ -142,6 +148,7 @@ namespace SiliconStudio.Presentation.Windows
         }
 
         internal TaskCompletionSource<int> WindowClosed { get; } = new TaskCompletionSource<int>();
+
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {

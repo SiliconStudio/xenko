@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -37,17 +39,15 @@ namespace SiliconStudio.Presentation.Windows
             set { SetValue(IsCheckedProperty, value); }
         }
 
-        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, ref bool? isChecked)
+        public static Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
-            return Show(owner, message, caption, GetButtons(button), image, checkedMessage, ref isChecked);
+            return Show(owner, message, caption, GetButtons(button), image, checkedMessage, isChecked);
         }
         
-        public static MessageBoxResult Show(Window owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, ref bool? isChecked)
+        public static async Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
             var messageBox = new CheckedMessageBox
             {
-                Owner = owner,
-                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
                 Title = caption,
                 Content = message,
                 ButtonsSource = buttons.ToList(),
@@ -56,9 +56,8 @@ namespace SiliconStudio.Presentation.Windows
             };
             SetImage(messageBox, image);
 
-            var result = (MessageBoxResult)messageBox.ShowInternal();
-            isChecked = messageBox.IsChecked;
-            return result;
+            var result = (MessageBoxResult)await messageBox.ShowInternal(owner);
+            return new CheckedMessageBoxResult(result, messageBox.IsChecked);
         }
     }
 }

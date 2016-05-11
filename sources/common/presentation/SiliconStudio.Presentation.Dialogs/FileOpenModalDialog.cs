@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -12,7 +11,7 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class FileOpenModalDialog : ModalDialogBase, IFileOpenModalDialog
     {
-        internal FileOpenModalDialog(Dispatcher dispatcher, Window parentWindow)
+        internal FileOpenModalDialog(IDispatcherService dispatcher, Window parentWindow)
             : base(dispatcher, parentWindow)
         {
             Dialog = new CommonOpenFileDialog { EnsureFileExists = true };
