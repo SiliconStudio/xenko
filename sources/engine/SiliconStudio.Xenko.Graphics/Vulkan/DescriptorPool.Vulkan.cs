@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected unsafe override void DestroyImpl()
+        protected override unsafe void DestroyImpl()
         {
             // TODO VULKAN: Defer?
             GraphicsDevice.NativeDevice.DestroyDescriptorPool(NativeDescriptorPool);

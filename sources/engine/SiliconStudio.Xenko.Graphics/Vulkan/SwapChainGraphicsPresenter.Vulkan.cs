@@ -214,6 +214,13 @@ namespace SiliconStudio.Xenko.Graphics
             base.OnDestroyed();
         }
 
+        protected override void Destroy()
+        {
+            OnDestroyed();
+
+            base.Destroy();
+        }
+
         public override void OnRecreated()
         {
             base.OnRecreated();

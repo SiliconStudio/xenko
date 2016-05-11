@@ -49,18 +49,31 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected unsafe internal override void OnDestroyed()
+        protected internal override void OnDestroyed()
         {
-            if (GraphicsDevice != null)
-            {
-                GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
-
-                GraphicsDevice.NativeDevice.DestroyBufferView(NativeBufferView);
-                GraphicsDevice.NativeDevice.DestroyBuffer(NativeBuffer);
-                GraphicsDevice.NativeDevice.FreeMemory(NativeMemory);
-            }
             base.OnDestroyed();
             DestroyImpl();
+        }
+
+        protected override unsafe void DestroyImpl()
+        {
+            GraphicsDevice.BuffersMemory -= SizeInBytes / (float)0x100000;
+
+            if (NativeBufferView != BufferView.Null)
+            {
+                GraphicsDevice.NativeDevice.DestroyBufferView(NativeBufferView);
+                NativeBuffer = SharpVulkan.Buffer.Null;
+            }
+
+            GraphicsDevice.NativeDevice.DestroyBuffer(NativeBuffer);
+
+            if (NativeMemory != DeviceMemory.Null)
+            {
+                GraphicsDevice.NativeDevice.FreeMemory(NativeMemory);
+                NativeMemory = DeviceMemory.Null;
+            }
+
+            base.DestroyImpl();
         }
 
         /// <inheritdoc/>
@@ -259,8 +272,6 @@ namespace SiliconStudio.Xenko.Graphics
             //    // TODO D3D12 release uploadResource (using a fence to know when copy is done)
             //}
         }
-
-        private static int test = 0;
 
         /// <summary>
         /// Initializes the views.

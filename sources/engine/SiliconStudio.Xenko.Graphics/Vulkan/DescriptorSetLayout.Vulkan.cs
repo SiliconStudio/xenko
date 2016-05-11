@@ -11,12 +11,12 @@ using SharpVulkan;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial class DescriptorSetLayout // TODO VULKAN API: GraphicsResource
+    public partial class DescriptorSetLayout
     {
-        internal readonly SharpVulkan.DescriptorSetLayout NativeLayout;
-        internal readonly Sampler[] ImmutableSamplers;
+        internal SharpVulkan.DescriptorSetLayout NativeLayout;
+        internal Sampler[] ImmutableSamplers;
 
-        private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
+        private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder) : base(device)
         {
             NativeLayout = CreateNativeDescriptorSetLayout(device, builder.Entries, out ImmutableSamplers);
         }
@@ -63,6 +63,20 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 return device.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
             }
+        }
+
+        protected internal override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            DestroyImpl();
+        }
+
+        protected override unsafe void DestroyImpl()
+        {
+            GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(NativeLayout);
+            NativeLayout = SharpVulkan.DescriptorSetLayout.Null;
+
+            base.DestroyImpl();
         }
     }
 }

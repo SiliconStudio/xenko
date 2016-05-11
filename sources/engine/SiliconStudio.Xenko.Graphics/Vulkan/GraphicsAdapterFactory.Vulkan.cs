@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Initializes all adapters with the specified factory.
         /// </summary>
-        internal unsafe static void InitializeInternal()
+        internal static unsafe void InitializeInternal()
         {
             staticCollector.Dispose();
 
@@ -58,7 +58,6 @@ namespace SiliconStudio.Xenko.Graphics
                     var properties = layers[index];
                     var namePointer = new IntPtr(Interop.Fixed(ref properties.LayerName));
                     var name = Marshal.PtrToStringAnsi(namePointer);
-
 
                     availableLayerNames.Add(name);
                 }

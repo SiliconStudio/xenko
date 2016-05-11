@@ -450,7 +450,7 @@ namespace SiliconStudio.Xenko.Graphics
             //NativeDepthStencilView = GetDepthStencilView(out HasStencil);
         }
 
-        protected unsafe override void DestroyImpl()
+        protected override unsafe void DestroyImpl()
         {
             if (ParentTexture != null || isNotOwningResources)
             {

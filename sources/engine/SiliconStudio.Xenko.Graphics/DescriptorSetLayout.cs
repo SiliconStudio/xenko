@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// Defines a list of descriptor layout. This is used to allocate a <see cref="DescriptorSet"/>.
     /// </summary>
-    public partial class DescriptorSetLayout
+    public partial class DescriptorSetLayout : GraphicsResourceBase
     {
         public static DescriptorSetLayout New(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
         {

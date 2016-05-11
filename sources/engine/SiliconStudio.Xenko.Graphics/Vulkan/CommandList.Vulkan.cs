@@ -65,17 +65,9 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandBuffer.Begin(ref beginInfo);
         }
 
-        public unsafe void Close()
+        public void Close()
         {
-            // End active render pass
-            CleanupRenderPass();
-
-            // Close
-            NativeCommandBuffer.End();
-
-            GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
-
-            commandBufferPool.RecycleObject(GraphicsDevice.NextFenceValue, NativeCommandBuffer);
+            End(false);
 
             // Submit
             GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
@@ -83,13 +75,24 @@ namespace SiliconStudio.Xenko.Graphics
             activePipeline = null;
         }
 
-        private unsafe long FlushInternal(bool wait)
+        private void End(bool keepDescriptorPool)
         {
+            // End active render pass
             CleanupRenderPass();
 
+            // Close
             NativeCommandBuffer.End();
 
+            // TODO VULKAN: Handle recycling based on available set coun
+            if (!keepDescriptorPool)
+                GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
+
             commandBufferPool.RecycleObject(GraphicsDevice.NextFenceValue, NativeCommandBuffer);
+        }
+
+        private unsafe long FlushInternal(bool wait)
+        {
+            End(true);
 
             var fenceValue = GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
 
@@ -1057,11 +1060,14 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected internal unsafe override void OnDestroyed()
+        protected override void Destroy()
         {
-            // TODO VULKAN: Cleanup
+            GraphicsDevice.NativeDevice.WaitIdle();
 
-            base.OnDestroyed();
+            commandBufferPool.Dispose();
+            framebufferCollector.Dispose();
+
+            base.Destroy();
         }
 
         private unsafe void EnsureRenderPass()

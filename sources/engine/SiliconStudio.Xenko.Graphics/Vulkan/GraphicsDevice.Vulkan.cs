@@ -415,9 +415,27 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void ReleaseDevice()
         {
+            // Wait for all queues to be idle
             nativeDevice.WaitIdle();
 
+            // Destroy all remaining fences
+            GetCompletedValue();
+
+            // Mark upload buffer for destruction
+            if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+            {
+                NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+                TemporaryResources.Enqueue(new BufferInfo(lastCompletedFence, nativeUploadBuffer, nativeUploadBufferMemory));
+
+                nativeUploadBuffer = SharpVulkan.Buffer.Null;
+                nativeUploadBufferMemory = DeviceMemory.Null;
+            }
+
+            // Release fenced resources
             ReleaseTemporaryResources();
+            semaphoreCollector.Dispose();
+            descriptorPools.Dispose();
+
             nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
             nativeDevice.Destroy();
         }
@@ -519,7 +537,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 
-    internal abstract class ResourcePool<T>
+    internal abstract class ResourcePool<T> : ComponentBase
     {
         protected readonly GraphicsDevice GraphicsDevice;
         private readonly Queue<KeyValuePair<long, T>> liveObjects = new Queue<KeyValuePair<long, T>>();
@@ -549,16 +567,33 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected abstract T CreateObject();
-
-        protected abstract void ResetObject(T obj);
-
         public void RecycleObject(long fenceValue, T obj)
         {
             lock (liveObjects)
             {
                 liveObjects.Enqueue(new KeyValuePair<long, T>(fenceValue, obj));
             }
+        }
+
+        protected abstract T CreateObject();
+
+        protected abstract void ResetObject(T obj);
+
+        protected virtual void DestroyObject(T obj)
+        {
+        }
+
+        protected override void Destroy()
+        {
+            lock (liveObjects)
+            { 
+                foreach (var item in liveObjects)
+                {
+                    DestroyObject(item.Value);
+                }
+            }
+
+            base.Destroy();
         }
     }
 
@@ -578,7 +613,7 @@ namespace SiliconStudio.Xenko.Graphics
             commandPool = graphicsDevice.NativeDevice.CreateCommandPool(ref commandPoolCreateInfo);
         }
 
-        protected unsafe override CommandBuffer CreateObject()
+        protected override unsafe CommandBuffer CreateObject()
         {
             // No allocator ready to be used, let's create a new one
             var commandBufferAllocationInfo = new CommandBufferAllocateInfo
@@ -594,9 +629,16 @@ namespace SiliconStudio.Xenko.Graphics
             return commandBuffer;
         }
 
-        protected unsafe override void ResetObject(CommandBuffer obj)
+        protected override void ResetObject(CommandBuffer obj)
         {
             obj.Reset(CommandBufferResetFlags.None);
+        }
+
+        protected override unsafe void Destroy()
+        {
+            base.Destroy();
+
+            GraphicsDevice.NativeDevice.DestroyCommandPool(commandPool);
         }
     }
 
@@ -615,7 +657,7 @@ namespace SiliconStudio.Xenko.Graphics
             this.heapSize = heapSize;
         }
 
-        protected unsafe override DescriptorAllocation CreateObject()
+        protected override unsafe DescriptorAllocation CreateObject()
         {
             // No allocator ready to be used, let's create a new one
             var poolSizes = new[]
@@ -636,13 +678,18 @@ namespace SiliconStudio.Xenko.Graphics
             return new DescriptorAllocation { Pool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo) };
         }
 
-        protected unsafe override void ResetObject(DescriptorAllocation obj)
+        protected override unsafe void ResetObject(DescriptorAllocation obj)
         {
             // TODO VULKAN: Resetting the pool crashes. Only when using DescriptorSetCopies to the sets though.
 
             //GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
             GraphicsDevice.NativeDevice.FreeDescriptorSets(obj.Pool, (uint)obj.Sets.Count, obj.Sets.Count > 0 ? (SharpVulkan.DescriptorSet*)Interop.Fixed(obj.Sets.Items) : null);
             obj.Sets.Clear(true);
+        }
+
+        protected override unsafe void DestroyObject(DescriptorAllocation obj)
+        {
+            GraphicsDevice.NativeDevice.DestroyDescriptorPool(obj.Pool);
         }
     }
 
@@ -671,7 +718,7 @@ namespace SiliconStudio.Xenko.Graphics
     }
 
 
-    internal abstract class TemporaryResourceCollector<T>
+    internal abstract class TemporaryResourceCollector<T> : IDisposable
     {
         protected readonly GraphicsDevice GraphicsDevice;
         private readonly Queue<KeyValuePair<long, T>> items = new Queue<KeyValuePair<long, T>>();
@@ -701,6 +748,14 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         protected abstract void ReleaseObject(T item);
+
+        public void Dispose()
+        {
+            while (items.Count > 0)
+            {
+                ReleaseObject(items.Dequeue().Value);
+            }
+        }
     }
 }
 #endif

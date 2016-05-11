@@ -267,18 +267,21 @@ namespace SiliconStudio.Xenko.Graphics
             NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
         }
 
-        protected internal override unsafe void OnDestroyed()
+        protected override unsafe void Destroy()
         {
-            GraphicsDevice.NativeDevice.DestroyRenderPass(NativeRenderPass);
-            GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
-            GraphicsDevice.NativeDevice.DestroyPipelineLayout(NativeLayout);
-
-            foreach (var nativeDescriptorSetLayout in NativeDescriptorSetLayouts)
+            if (NativePipeline != Pipeline.Null)
             {
-                GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(nativeDescriptorSetLayout);
+                GraphicsDevice.NativeDevice.DestroyRenderPass(NativeRenderPass);
+                GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
+                GraphicsDevice.NativeDevice.DestroyPipelineLayout(NativeLayout);
+
+                foreach (var nativeDescriptorSetLayout in NativeDescriptorSetLayouts)
+                {
+                    GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(nativeDescriptorSetLayout);
+                }
             }
 
-            base.OnDestroyed();
+            base.Destroy();
         }
 
         internal struct DescriptorSetInfo
