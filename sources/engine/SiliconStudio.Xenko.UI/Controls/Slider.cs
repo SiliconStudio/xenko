@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 var oldValue = Value;
 
-                this.value = Math.Min(Maximum, Math.Max(Minimum, value));
+                this.value = MathUtil.Clamp(value, Minimum, Maximum);
                 if(ShouldSnapToTicks)
                     this.value = CalculateClosestTick(this.value);
 

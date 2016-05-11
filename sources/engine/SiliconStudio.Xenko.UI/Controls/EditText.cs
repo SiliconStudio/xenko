@@ -471,6 +471,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
         [DataMember]
+        [DataMemberRange(0, float.MaxValue)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public float TextSize
@@ -487,7 +488,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
             set
             {
-                textSize = Math.Max(0, Math.Min(float.MaxValue, value));
+                textSize = MathUtil.Clamp(value, 0, float.MaxValue);
 
                 InvalidateMeasure();
             }

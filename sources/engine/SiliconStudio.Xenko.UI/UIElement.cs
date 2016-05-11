@@ -438,12 +438,13 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
         [DataMember]
+        [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(1.0f)]
         public float Opacity
         {
             get { return opacity; }
-            set { opacity = Math.Max(0, Math.Min(1, value)); }
+            set { opacity = MathUtil.Clamp(value, 0.0f, 1.0f); }
         }
 
         /// <summary>
@@ -491,6 +492,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float DefaultHeight
@@ -511,6 +513,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float DefaultWidth
@@ -531,6 +534,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float DefaultDepth
@@ -551,6 +555,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
         public float Height
@@ -571,6 +576,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
         public float Width
@@ -591,6 +597,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
         public float Depth
@@ -641,6 +648,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float MinimumWidth
@@ -661,6 +669,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float MinimumHeight
@@ -681,6 +690,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
         [DefaultValue(0.0f)]
         public float MinimumDepth
@@ -711,6 +721,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumWidth
@@ -731,6 +742,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumHeight
@@ -751,6 +763,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumDepth
