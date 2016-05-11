@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>First column has 0 as index</remarks>
         [DataMemberRange(0, int.MaxValue)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> ColumnPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnPropertyKey), typeof(GridBase), 0, InvalidateParentGridMeasure);
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>First row has 0 as index</remarks>
         [DataMemberRange(0, int.MaxValue)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> RowPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowPropertyKey), typeof(GridBase), 0, InvalidateParentGridMeasure);
 
         /// <summary>
@@ -35,6 +37,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>First layer has 0 as index</remarks>
         [DataMemberRange(0, int.MaxValue)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> LayerPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerPropertyKey), typeof(GridBase), 0, InvalidateParentGridMeasure);
 
         /// <summary>
@@ -42,6 +45,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
         [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> ColumnSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnSpanPropertyKey), typeof(GridBase), 1, SpanValidator, InvalidateParentGridMeasure);
 
         /// <summary>
@@ -49,6 +53,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
         [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> RowSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowSpanPropertyKey), typeof(GridBase), 1, SpanValidator, InvalidateParentGridMeasure);
 
         /// <summary>
@@ -56,6 +61,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
         [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<int> LayerSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerSpanPropertyKey), typeof(GridBase), 1, SpanValidator, InvalidateParentGridMeasure);
 
         private static void InvalidateParentGridMeasure(object propertyowner, PropertyKey<int> propertykey, int propertyoldvalue)

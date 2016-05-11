@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
 using System.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -14,28 +15,8 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("ContentPresenter - Name={Name}")]
     public class ContentPresenter : UIElement
     {
-        private static void ContentInvalidationCallback(object propertyOwner, PropertyKey<UIElement> propertyKey, UIElement oldContent)
-        {
-            var presenter = (ContentPresenter)propertyOwner;
-            
-            if(oldContent == presenter.Content)
-                return;
-
-            if (oldContent != null)
-                SetVisualParent(oldContent, null);
-
-            if (presenter.Content != null)
-                SetVisualParent(presenter.Content, presenter);
-
-            presenter.InvalidateMeasure();
-        }
-
-        /// <summary>
-        /// The key to the Content dependency property.
-        /// </summary>
-        public static readonly PropertyKey<UIElement> ContentPropertyKey = DependencyPropertyFactory.Register(nameof(ContentPropertyKey), typeof(ContentPresenter), default(UIElement), ContentInvalidationCallback);
-
         private Matrix contentWorldMatrix;
+        private UIElement content;
 
         public ContentPresenter()
         {
@@ -45,11 +26,27 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets content of the presenter.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [DefaultValue(null)]
         public UIElement Content
         {
-            get { return DependencyProperties.Get(ContentPropertyKey); }
-            set { DependencyProperties.Set(ContentPropertyKey, value); }
+            get { return content; }
+            set
+            {
+                if (content == value)
+                    return;
+
+                if (content != null)
+                    SetVisualParent(content, null);
+                
+                content = value;
+
+                if (content != null)
+                    SetVisualParent(content, this);
+
+                content = value;
+                InvalidateMeasure();
+            }
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)

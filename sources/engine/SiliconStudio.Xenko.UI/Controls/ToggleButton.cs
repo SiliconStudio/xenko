@@ -18,27 +18,6 @@ namespace SiliconStudio.Xenko.UI.Controls
     public class ToggleButton : ButtonBase
     {
         /// <summary>
-        /// The key to the CheckedImagePropertyKey dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> CheckedImagePropertyKey = DependencyPropertyFactory.Register(nameof(CheckedImagePropertyKey), typeof(ToggleButton), default(ISpriteProvider), OnToggleImageInvalidated);
-
-        /// <summary>
-        /// The key to the IndeterminateImagePropertyKey dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> IndeterminateImagePropertyKey = DependencyPropertyFactory.Register(nameof(IndeterminateImagePropertyKey), typeof(ToggleButton), default(ISpriteProvider), OnToggleImageInvalidated);
-
-        /// <summary>
-        /// The key to the UncheckedImagePropertyKey dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> UncheckedImagePropertyKey = DependencyPropertyFactory.Register(nameof(UncheckedImagePropertyKey), typeof(ToggleButton), default(ISpriteProvider), OnToggleImageInvalidated);
-
-        private static void OnToggleImageInvalidated(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
-        {
-            var toggle = (ToggleButton)propertyOwner;
-            toggle.OnToggleImageInvalidated();
-        }
-
-        /// <summary>
         /// Function triggered when one of the <see cref="CheckedImage"/>, <see cref="IndeterminateImage"/> and <see cref="UncheckedImage"/> images are invalidated.
         /// This function can be overridden in inherited classes.
         /// </summary>
@@ -49,6 +28,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         private bool isThreeState;
 
         private ToggleState state = ToggleState.UnChecked;
+        private ISpriteProvider checkedImage;
+        private ISpriteProvider indeterminateImage;
+        private ISpriteProvider uncheckedImage;
 
         public ToggleButton()
         {
@@ -59,31 +41,58 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when checked
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider CheckedImage
         {
-            get { return DependencyProperties.Get(CheckedImagePropertyKey); }
-            set { DependencyProperties.Set(CheckedImagePropertyKey, value); }
+            get { return checkedImage; }
+            set
+            {
+                if (checkedImage == value)
+                    return;
+
+                checkedImage = value;
+                OnToggleImageInvalidated();
+            }
         }
 
         /// <summary>
         /// Gets or sets the image that the button displays when indeterminate
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider IndeterminateImage
         {
-            get { return DependencyProperties.Get(IndeterminateImagePropertyKey); }
-            set { DependencyProperties.Set(IndeterminateImagePropertyKey, value); }
+            get { return indeterminateImage; }
+            set
+            {
+                if (checkedImage == value)
+                    return;
+
+                indeterminateImage = value;
+                OnToggleImageInvalidated();
+            }
         }
 
         /// <summary>
         /// Gets or sets the image that the button displays when unchecked
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider UncheckedImage
         {
-            get { return DependencyProperties.Get(UncheckedImagePropertyKey); }
-            set { DependencyProperties.Set(UncheckedImagePropertyKey, value); }
+            get { return uncheckedImage; }
+            set
+            {
+                if (checkedImage == value)
+                    return;
+
+                uncheckedImage = value;
+                OnToggleImageInvalidated();
+            }
         }
 
         /// <summary>
@@ -91,6 +100,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>Setting the state of the toggle button to <see cref="ToggleState.Indeterminate"/> sets <see cref="IsThreeState"/> to true.</remarks>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(ToggleState.UnChecked)]
         public ToggleState State
         {
@@ -125,6 +135,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>Setting <see cref="IsThreeState"/> to false changes the <see cref="State"/> of the toggle button if currently set to <see cref="ToggleState.Indeterminate"/></remarks>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool IsThreeState
         {

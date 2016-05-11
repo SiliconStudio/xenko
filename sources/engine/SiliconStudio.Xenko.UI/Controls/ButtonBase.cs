@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -15,11 +16,6 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("ButtonBase - Name={Name}")]
     public abstract class ButtonBase : ContentControl
     {
-        /// <summary>
-        /// The key to the ClickMode dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ClickMode> ClickModePropertyKey = DependencyPropertyFactory.Register(nameof(ClickModePropertyKey), typeof(ButtonBase), ClickMode.Release);
-        
         static ButtonBase()
         {
             EventManager.RegisterClassHandler(typeof(ButtonBase), ClickEvent, ClickClassHandler);
@@ -36,12 +32,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets when the Click event occurs.
         /// </summary>
-        [DataMemberIgnore]
-        public ClickMode ClickMode
-        {
-            get { return DependencyProperties.Get(ClickModePropertyKey); }
-            set { DependencyProperties.Set(ClickModePropertyKey, value); }
-        }
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(ClickMode.Release)]
+        public ClickMode ClickMode { get; set; } = ClickMode.Release;
 
         /// <summary>
         /// Gets a value that indicates whether the button is currently down.
@@ -66,6 +60,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             "Click",
             RoutingStrategy.Bubble,
             typeof(Button));
+
 
         protected override void OnTouchDown(TouchEventArgs args)
         {

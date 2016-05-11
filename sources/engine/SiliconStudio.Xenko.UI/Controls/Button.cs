@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -14,31 +16,14 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("Button - Name={Name}")]
     public class Button : ButtonBase
     {
-        /// <summary>
-        /// The key to the NotPressedImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> NotPressedImagePropertyKey = DependencyPropertyFactory.Register(nameof(NotPressedImagePropertyKey), typeof(Button), default(ISpriteProvider), OnAspectImageInvalidated);
-
-        /// <summary>
-        /// The key to the PressedImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> PressedImagePropertyKey = DependencyPropertyFactory.Register(nameof(PressedImagePropertyKey), typeof(Button), default(ISpriteProvider), OnAspectImageInvalidated);
-
-        /// <summary>
-        /// The key to the MouseOverImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey = DependencyPropertyFactory.Register(nameof(MouseOverImagePropertyKey), typeof(Button), default(ISpriteProvider), OnAspectImageInvalidated);
+        private ISpriteProvider pressedImage;
+        private ISpriteProvider notPressedImage;
+        private ISpriteProvider mouseOverImage;
 
         public Button()
         {
             DrawLayerNumber += 1; // (button design image)
             Padding = new Thickness(10, 5, 10, 7);
-        }
-
-        private static void OnAspectImageInvalidated(object propertyOwner, PropertyKey<ISpriteProvider> propertyKey, ISpriteProvider propertyOldValue)
-        {
-            var button = (Button)propertyOwner;
-            button.OnAspectImageInvalidated();
         }
 
         /// <summary>
@@ -50,33 +35,60 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when pressed
+        /// Gets or sets the image that the button displays when pressed.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider PressedImage
         {
-            get { return DependencyProperties.Get(PressedImagePropertyKey); }
-            set { DependencyProperties.Set(PressedImagePropertyKey, value); }
+            get { return pressedImage; }
+            set
+            {
+                if (pressedImage == value)
+                    return;
+
+                pressedImage = value;
+                OnAspectImageInvalidated();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when not pressed
+        /// Gets or sets the image that the button displays when not pressed.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider NotPressedImage
         {
-            get { return DependencyProperties.Get(NotPressedImagePropertyKey); }
-            set { DependencyProperties.Set(NotPressedImagePropertyKey, value); }
+            get { return notPressedImage; }
+            set
+            {
+                if (notPressedImage == value)
+                    return;
+
+                notPressedImage = value;
+                OnAspectImageInvalidated();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when the mouse is over it
+        /// Gets or sets the image that the button displays when the mouse is over it.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider MouseOverImage
         {
-            get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
-            set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }
+            get { return mouseOverImage; }
+            set
+            {
+                if (mouseOverImage == value)
+                    return;
+
+                mouseOverImage = value;
+                OnAspectImageInvalidated();
+            }
         }
     }
 }

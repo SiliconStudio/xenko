@@ -148,6 +148,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public StripDefinitionCollection ColumnDefinitions => stripDefinitions[0];
 
         /// <summary>
@@ -155,6 +156,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public StripDefinitionCollection RowDefinitions => stripDefinitions[1];
 
         /// <summary>
@@ -162,6 +164,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
         [DataMember]
+        [Display(category: LayoutCategory)]
         public StripDefinitionCollection LayerDefinitions => stripDefinitions[2];
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)

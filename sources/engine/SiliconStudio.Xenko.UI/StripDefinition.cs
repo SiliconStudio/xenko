@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.UI
         private float maximumSize = float.PositiveInfinity;
         private float minimumSize;
         private StripType type = StripType.Star;
-        private float sizeValue = 1;
+        private float sizeValue = 1.0f;
 
         /// <summary>
         /// The actual size of the strip in virtual pixels.

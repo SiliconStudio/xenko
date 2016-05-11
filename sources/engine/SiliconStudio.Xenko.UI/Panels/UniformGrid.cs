@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -17,71 +18,75 @@ namespace SiliconStudio.Xenko.UI.Panels
     public class UniformGrid : GridBase
     {
         /// <summary>
-        /// The key to the Columns dependency property.
-        /// </summary>
-        [DataMemberRange(1, int.MaxValue)]
-        public static readonly PropertyKey<int> ColumnsPropertyKey = DependencyPropertyFactory.Register(nameof(ColumnsPropertyKey), typeof(UniformGrid), 1, GridSizeValidator, InvalidateGridMeasure);
-
-        /// <summary>
-        /// The key to the Rows dependency property.
-        /// </summary>
-        [DataMemberRange(1, int.MaxValue)]
-        public static readonly PropertyKey<int> RowsPropertyKey = DependencyPropertyFactory.Register(nameof(RowsPropertyKey), typeof(UniformGrid), 1, GridSizeValidator, InvalidateGridMeasure);
-
-        /// <summary>
-        /// The key to the Layers dependency property.
-        /// </summary>
-        [DataMemberRange(1, int.MaxValue)]
-        public static readonly PropertyKey<int> LayersPropertyKey = DependencyPropertyFactory.Register(nameof(LayersPropertyKey), typeof(UniformGrid), 1, GridSizeValidator, InvalidateGridMeasure);
-
-        /// <summary>
         /// The final size of one cell
         /// </summary>
         private Vector3 finalForOneCell;
 
-        private static void InvalidateGridMeasure(object propertyOwner, PropertyKey<int> propertyKey, int propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
-        private static void GridSizeValidator(ref int value)
-        {
-            if (value < 1)
-                throw new ArgumentOutOfRangeException(nameof(value));
-        }
+        private int columns = 1;
+        private int rows = 1;
+        private int layers = 1;
 
         /// <summary>
         /// Gets or sets the number of Columns that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
         public int Columns
         {
-            get { return DependencyProperties.Get(ColumnsPropertyKey); }
-            set { DependencyProperties.Set(ColumnsPropertyKey, value); }
+            get { return columns; }
+            set
+            {
+                if (value < 1)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                columns = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
         /// Gets or sets the number of Rows that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
         public int Rows
         {
-            get { return DependencyProperties.Get(RowsPropertyKey); }
-            set { DependencyProperties.Set(RowsPropertyKey, value); }
+            get { return rows; }
+            set
+            {
+                if (value < 1)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                rows = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
         /// Gets or sets the number of Layers that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
         public int Layers
         {
-            get { return DependencyProperties.Get(LayersPropertyKey); }
-            set { DependencyProperties.Set(LayersPropertyKey, value); }
+            get { return layers; }
+            set
+            {
+                if (value < 1)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                layers = value;
+                InvalidateMeasure();
+            }
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)

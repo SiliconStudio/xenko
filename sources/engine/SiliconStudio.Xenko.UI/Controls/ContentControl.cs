@@ -67,8 +67,8 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if(content == value)
                     return;
 
-                if (Content != null)
-                    SetParent(Content, null);
+                if (content != null)
+                    SetParent(content, null);
 
                 content = value;
 
@@ -77,8 +77,8 @@ namespace SiliconStudio.Xenko.UI.Controls
                 else
                     ContentPresenter.Content = value;
 
-                if (Content != null)
-                    SetParent(Content, this);
+                if (content != null)
+                    SetParent(content, this);
 
                 InvalidateMeasure();
             }

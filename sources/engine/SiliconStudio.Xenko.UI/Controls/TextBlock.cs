@@ -36,6 +36,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the font of the text block
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public SpriteFont Font
         {
@@ -69,12 +70,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the text of the text block
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(0.0f)]
         public float TextSize
         {
@@ -97,6 +100,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// should automatically return to the beginning of the line when it is too big for the line width.
         /// </summary>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool WrapText
         {
@@ -117,6 +121,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
         {
@@ -137,6 +142,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the alignment of the text to display.
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(default(TextAlignment))]
         public TextAlignment TextAlignment { get; set; }
 
@@ -146,6 +152,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>When <value>true</value>, the element's text is never snapped. 
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
         [DataMember]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool DoNotSnapText { get; set; }
 

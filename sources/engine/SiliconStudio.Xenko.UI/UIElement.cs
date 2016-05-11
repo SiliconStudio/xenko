@@ -28,25 +28,6 @@ namespace SiliconStudio.Xenko.UI
     [DebuggerDisplay("UIElement: {Name}")]
     public abstract class UIElement : IUIElementUpdate, IIdentifiable
     {
-        /// <summary>
-        /// The key to the height dependency property.
-        /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
-        public static readonly PropertyKey<float> DefaultWidthPropertyKey =
-            DependencyPropertyFactory.Register(nameof(DefaultWidthPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
-        /// <summary>
-        /// The key to the height dependency property.
-        /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
-        public static readonly PropertyKey<float> DefaultHeightPropertyKey =
-            DependencyPropertyFactory.Register(nameof(DefaultHeightPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
-        /// <summary>
-        /// The key to the height dependency property.
-        /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
-        public static readonly PropertyKey<float> DefaultDepthPropertyKey =
-            DependencyPropertyFactory.Register(nameof(DefaultDepthPropertyKey), typeof(UIElement), 0f, DefaultSizeValidator, DefaultSizeInvalidation);
-        
         private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
             EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));
 
@@ -97,6 +78,9 @@ namespace SiliconStudio.Xenko.UI
         private float opacity = 1.0f;
         private bool isEnabled = true;
         private bool isHierarchyEnabled = true;
+        private float defaultWidth;
+        private float defaultHeight;
+        private float defaultDepth;
         private float width = float.NaN;
         private float height = float.NaN;
         private float depth = float.NaN;
@@ -322,12 +306,6 @@ namespace SiliconStudio.Xenko.UI
         [DataMemberIgnore]
         protected internal UIElementCollection VisualChildrenCollection { get; }
 
-        private static void DefaultSizeInvalidation(object propertyOwner, PropertyKey<float> propertyKey, float propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
         /// <summary>
         /// Invalidates the arrange state (layout) for the element. 
         /// </summary>
@@ -509,48 +487,69 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the default height of this element. This is a dependency property.
+        /// Gets or sets the default height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float DefaultHeight
         {
-            get { return DependencyProperties.Get(DefaultHeightPropertyKey); }
-            set { DependencyProperties.Set(DefaultHeightPropertyKey, value); }
+            get { return defaultHeight; }
+            set
+            {
+                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                defaultHeight = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the default width of this element. This is a dependency property.
+        /// Gets or sets the default width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float DefaultWidth
         {
-            get { return DependencyProperties.Get(DefaultWidthPropertyKey); }
-            set { DependencyProperties.Set(DefaultWidthPropertyKey, value); }
+            get { return defaultWidth; }
+            set
+            {
+                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                defaultWidth = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the default width of this element. This is a dependency property.
+        /// Gets or sets the default width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float DefaultDepth
         {
-            get { return DependencyProperties.Get(DefaultDepthPropertyKey); }
-            set { DependencyProperties.Set(DefaultDepthPropertyKey, value); }
-        }
-        
-        private static void DefaultSizeValidator(ref float size)
-        {
-            if (size < 0 || float.IsInfinity(size) || float.IsNaN(size))
-                throw new ArgumentOutOfRangeException(nameof(size));
+            get { return defaultDepth; }
+            set
+            {
+                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                defaultDepth = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
         /// Gets or sets the user suggested height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
@@ -570,7 +569,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the user suggested width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(float.NaN)]
@@ -588,7 +587,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user suggested width of this element. This is a dependency property.
+        /// Gets or sets the user suggested width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         [DataMember]
@@ -619,7 +618,6 @@ namespace SiliconStudio.Xenko.UI
                 Width = value.X;
                 Height = value.Y;
                 Depth = value.Z;
-                InvalidateMeasure();
             }
         }
 
@@ -636,8 +634,6 @@ namespace SiliconStudio.Xenko.UI
                 Height = value;
             else
                 Depth = value;
-
-            InvalidateMeasure();
         }
 
         /// <summary>
@@ -654,6 +650,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 minimumWidth = value;
                 InvalidateMeasure();
             }
@@ -673,6 +670,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 minimumHeight = value;
                 InvalidateMeasure();
             }
@@ -692,6 +690,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 minimumDepth = value;
                 InvalidateMeasure();
             }
@@ -705,7 +704,7 @@ namespace SiliconStudio.Xenko.UI
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(false)]
-        public bool ClipToBounds { get; set; }
+        public bool ClipToBounds { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the maximum width of this element.
@@ -721,6 +720,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 maximumWidth = value;
                 InvalidateMeasure();
             }
@@ -740,6 +740,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 maximumHeight = value;
                 InvalidateMeasure();
             }
@@ -759,6 +760,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 maximumDepth = value;
                 InvalidateMeasure();
             }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -16,27 +17,6 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("ScrollingText - Name={Name}")]
     public class ScrollingText : TextBlock
     {
-        /// <summary>
-        /// The key to the ScrollingSpeed dependency property.
-        /// </summary>
-        protected static readonly PropertyKey<float> ScrollingSpeedPropertyKey = DependencyPropertyFactory.Register(nameof(ScrollingSpeedPropertyKey), typeof(ScrollingText), 40f, ValidateScrollingSpeedCallback);
-
-        /// <summary>
-        /// The key to the TextWrapped dependency property.
-        /// </summary>
-        protected static readonly PropertyKey<bool> RepeatTextPropertyKey = DependencyPropertyFactory.Register(nameof(RepeatTextPropertyKey), typeof(ScrollingText), true, RepeatTextInvalidationCallback);
-
-        /// <summary>
-        /// The key to the DesiredCharacterNumber dependency property.
-        /// </summary>
-        protected static readonly PropertyKey<uint> DesiredCharacterNumberPropertyKey = DependencyPropertyFactory.Register(nameof(DesiredCharacterNumberPropertyKey), typeof(ScrollingText), (uint)10, InvalidateCharacterNumber);
-
-        private static void InvalidateCharacterNumber(object propertyOwner, PropertyKey<uint> propertyKey, uint propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
         private string textToDisplay = "";
 
         private float elementWidth;
@@ -47,6 +27,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         private int nextLetterIndex;
 
         private bool textHasBeenAppended;
+        private float scrollingSpeed = 40.0f;
+        private uint desiredCharacterNumber = 10;
+        private bool repeatText = true;
 
         /// <summary>
         /// The current offset of the text in the Ox axis.
@@ -68,43 +51,57 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the scrolling speed of the text. The unit is in virtual pixels.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided speed must be positive or null.</exception>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(40.0f)]
         public float ScrollingSpeed
         {
-            get { return DependencyProperties.Get(ScrollingSpeedPropertyKey); }
-            set { DependencyProperties.Set(ScrollingSpeedPropertyKey, value); }
+            get { return scrollingSpeed; }
+            set
+            {
+                if (value < 0.0f)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                scrollingSpeed = value;
+            }
         }
 
         /// <summary>
         /// Gets or sets the desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue((uint)10)]
         public uint DesiredCharacterNumber
         {
-            get { return DependencyProperties.Get(DesiredCharacterNumberPropertyKey); }
-            set { DependencyProperties.Set(DesiredCharacterNumberPropertyKey, value); }
+            get { return desiredCharacterNumber; }
+            set
+            {
+                if (desiredCharacterNumber == value)
+                    return;
+
+                desiredCharacterNumber = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
         /// Gets or sets the a value indicating if the text message must be repeated (wrapped) or not.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(true)]
         public bool RepeatText
         {
-            get { return DependencyProperties.Get(RepeatTextPropertyKey); }
-            set { DependencyProperties.Set(RepeatTextPropertyKey, value); }
-        }
+            get { return repeatText; }
+            set
+            {
+                if (repeatText == value)
+                    return;
 
-        private static void ValidateScrollingSpeedCallback(ref float value)
-        {
-            if (value < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        private static void RepeatTextInvalidationCallback(object propertyOwner, PropertyKey<bool> propertyKey, bool propertyOldValue)
-        {
-            var scrollingText = (ScrollingText)propertyOwner;
-            scrollingText.ResetDisplayingText();
+                repeatText = value;
+                ResetDisplayingText();
+            }
         }
 
         /// <summary>

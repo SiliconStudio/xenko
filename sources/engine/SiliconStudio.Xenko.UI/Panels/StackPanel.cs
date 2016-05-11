@@ -18,11 +18,6 @@ namespace SiliconStudio.Xenko.UI.Panels
     public class StackPanel : Panel, IScrollInfo
     {
         /// <summary>
-        /// The key to the Orientation dependency property.
-        /// </summary>
-        public static readonly PropertyKey<Orientation> OrientationPropertyKey = DependencyPropertyFactory.Register(nameof(OrientationPropertyKey), typeof(StackPanel), Orientation.Vertical, InvalidationCallback);
-
-        /// <summary>
         /// Indicate the first index of Vector3 to use to maximize depending on the stack panel orientation.
         /// </summary>
         protected static readonly int[] OrientationToMaximizeIndex1 = { 1, 0, 0 };
@@ -45,6 +40,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             };
 
         private Vector3 offset;
+        private Orientation orientation = Orientation.Vertical;
 
         /// <summary>
         /// The current scroll position of the top/left corner.
@@ -155,20 +151,23 @@ namespace SiliconStudio.Xenko.UI.Panels
             return accumulatedSize / (Children.Count - indexElement) * Children.Count;
         }
 
-        private static void InvalidationCallback(object propertyOwner, PropertyKey<Orientation> propertyKey, Orientation propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
         /// <summary>
         /// Gets or sets a value that indicates the orientation by which child elements are stacked.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(Orientation.Vertical)]
         public Orientation Orientation
         {
-            get { return DependencyProperties.Get(OrientationPropertyKey); }
-            set { DependencyProperties.Set(OrientationPropertyKey, value); }
+            get { return orientation; }
+            set
+            {
+                if (orientation == value)
+                    return;
+
+                orientation = value;
+                InvalidateMeasure();
+            }
         }
 
         protected override void OnLogicalChildRemoved(UIElement oldElement, int index)

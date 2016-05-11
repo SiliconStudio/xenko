@@ -22,12 +22,8 @@ namespace SiliconStudio.Xenko.Engine
     {
         public UIComponent()
         {
-            SnapText = true;
-            IsBillboard = true;
-            IsFullScreen = true;
             Resolution = new Vector3(1280, 720, 1000);
             Size = new Vector3(1, 1, 1);
-            ResolutionStretch = ResolutionStretch.FixedWidthAdaptableHeight;
         }
 
         /// <summary>
@@ -38,7 +34,7 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Root Element")]
         [DataMemberIgnore] // TODO this is temporary as long as we don't have an UI editor and UI data asset.
         public UIElement RootElement { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be full screen.
         /// </summary>
@@ -46,7 +42,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(20)]
         [Display("Full Screen")]
         [DefaultValue(true)]
-        public bool IsFullScreen { get; set; }
+        public bool IsFullScreen { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the virtual resolution of the UI in virtual pixels.
@@ -72,7 +68,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(40)]
         [Display("Resolution Stretch")]
         [DefaultValue(ResolutionStretch.FixedWidthAdaptableHeight)]
-        public ResolutionStretch ResolutionStretch { get; set; }
+        public ResolutionStretch ResolutionStretch { get; set; } = ResolutionStretch.FixedWidthAdaptableHeight;
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be displayed as billboard.
@@ -81,7 +77,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(50)]
         [Display("Billboard")]
         [DefaultValue(true)]
-        public bool IsBillboard { get; set; }
+        public bool IsBillboard { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the value indicating of the UI texts should be snapped to closest pixel.
@@ -90,6 +86,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(60)]
         [Display("Snap Text")]
         [DefaultValue(true)]
-        public bool SnapText { get; set; }
+        public bool SnapText { get; set; } = true;
     }
 }

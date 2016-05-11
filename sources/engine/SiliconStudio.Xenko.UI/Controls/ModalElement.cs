@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -17,11 +18,6 @@ namespace SiliconStudio.Xenko.UI.Controls
     public class ModalElement : ButtonBase
     {
         internal Color OverlayColorInternal;
-
-        /// <summary>
-        /// The key to the IsModal dependency property.
-        /// </summary>
-        protected static readonly PropertyKey<bool> IsModalPropertyKey = DependencyPropertyFactory.Register(nameof(IsModalPropertyKey), typeof(ModalElement), true);
 
         /// <summary>
         /// Occurs when the element is modal and the user click outside of the modal element.
@@ -53,6 +49,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// The color of the overlay drawn upon underneath elements.
         /// </summary>
         [DataMember]
+        [Display(category: AppearanceCategory)]
         public Color OverlayColor
         {
             get { return OverlayColorInternal; }
@@ -62,12 +59,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Determine if the control should block the input of underneath elements or not.
         /// </summary>
-        [DataMemberIgnore]
-        public bool IsModal
-        {
-            get { return DependencyProperties.Get(IsModalPropertyKey); }
-            set { DependencyProperties.Set(IsModalPropertyKey, value); }
-        }
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(true)]
+        public bool IsModal { get; set; } = true;
 
         protected override void OnTouchUp(TouchEventArgs args)
         {
