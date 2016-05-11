@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (DepthStencil.IsDisposed)
                 return false;
 
-            if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
+            if (false && renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
             {
                 if (DepthStencilAsRT == null)
                     return true;
@@ -157,6 +157,12 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 if (DepthStencilAsRT == null || DepthStencilAsRT != DepthStencil)
                     return true;
+
+                if (DepthStencilAsSR == null)
+                    return true;
+
+                if (DepthStencilAsSR.Width != DepthStencil.Width || DepthStencilAsSR.Height != DepthStencil.Height)
+                    return true;
             }
 
             return false;
@@ -164,10 +170,25 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void UpdateDepthStencilCache(RenderDrawContext renderContext)
         {
-            if (renderContext.GraphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_10_0)
+//            if (renderContext.GraphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_10_0)
             {
-                // TODO Copy the depth buffer
-                
+                if (HasDepthStencilChanged(renderContext))
+                {
+                    // Depth as a RenderTarget is the same
+                    DepthStencilAsRT = DepthStencil;
+
+                    // Depth as a ShaderResource is a copy
+                    DepthStencilAsSR?.Dispose();
+
+                    var textureDescription = DepthStencil.Description;
+                    textureDescription.Flags |= TextureFlags.ShaderResource;
+                    DepthStencilAsSR = new Texture(renderContext.GraphicsDevice);
+                    DepthStencilAsSR.InitializeFrom(textureDescription);
+                }
+
+                renderContext.CommandList.Copy(DepthStencil, DepthStencilAsSR);
+
+                return;
             }
 
             if (!HasDepthStencilChanged(renderContext))
@@ -178,13 +199,6 @@ namespace SiliconStudio.Xenko.Rendering
                 DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
 
                 DepthStencilAsSR = DepthStencil;
-            }
-            else
-            {
-                DepthStencilAsRT = DepthStencil;
-
-                // TODO Create a copy of the depth stencil buffer
-                DepthStencilAsSR = null;
             }
         }
 
