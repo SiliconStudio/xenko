@@ -145,24 +145,6 @@ namespace SiliconStudio.Xenko.Rendering
             if (DepthStencil.IsDisposed)
                 return false;
 
-            if (DepthStencilAsSR != null)
-            {
-                if (DepthStencilAsSR.Width != DepthStencil.Width)
-                    return true;
-
-                if (DepthStencilAsSR.Height != DepthStencil.Height)
-                    return true;
-            }
-
-            if (DepthStencilAsRT != null)
-            {
-                if (DepthStencilAsRT.Width != DepthStencil.Width)
-                    return true;
-
-                if (DepthStencilAsRT.Height != DepthStencil.Height)
-                    return true;
-            }
-
             if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
             {
                 if (DepthStencilAsRT == null)
