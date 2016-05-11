@@ -135,11 +135,21 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <returns></returns>
         public async Task<T> ReceiveAsync()
         {
+            var res = await BufferBlock.ReceiveAsync();
+
+            Key.Logger.Debug(receivedDebugString);
+
+            return res;
+        }
+
+        private async Task<T> ReceiveAsyncWithToken()
+        {
             T res;
 
             if (receiveCancellationTokenSource.IsCancellationRequested)
             {
                 //we were canceled previously so we actually need to recreate the cancelation source
+                receiveCancellationTokenSource.Dispose();
                 receiveCancellationTokenSource = new CancellationTokenSource();
             }
 
@@ -223,7 +233,7 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         internal override Task GetTask()
         {
-            return ReceiveAsync();
+            return ReceiveAsyncWithToken();
         }
 
         internal override void CancelReceive()
