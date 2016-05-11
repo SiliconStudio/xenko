@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Engine.Events
     /// Creates a new EventKey used to broadcast T type events.
     /// </summary>
     /// <typeparam name="T">The data type of the event you wish to send</typeparam>
-    public class EventKey<T> : IDisposable
+    public class EventKeyBase<T> : IDisposable
     {
         internal readonly Logger Logger;
         internal readonly ulong EventId = EventKeyCounter.New();
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         private readonly BroadcastBlock<T> broadcastBlock;
 
-        public EventKey(string category = "General", string eventName = "Event")
+        internal EventKeyBase(string category = "General", string eventName = "Event")
         {
             broadcastBlock = new BroadcastBlock<T>(null, new DataflowBlockOptions { TaskScheduler = EventTaskScheduler.Scheduler });
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             broadcastDebug = $"Broadcasting '{eventName}' ({EventId})";
         }
 
-        ~EventKey()
+        ~EventKeyBase()
         {
             Dispose();
         }
@@ -80,33 +80,38 @@ namespace SiliconStudio.Xenko.Engine.Events
             GC.SuppressFinalize(this);
         }
 
-        internal IDisposable Connect(EventReceiver<T> target)
+        internal IDisposable Connect(EventReceiverBase<T> target)
         {
             return broadcastBlock.LinkTo(target.BufferBlock);
-        }
-
-        internal T GetPendingValue()
-        {
-            T data;
-            broadcastBlock.TryReceive(out data);
-            return data;
         }
 
         /// <summary>
         /// Broadcasts the event data to all the receivers
         /// </summary>
         /// <param name="data"></param>
-        public void Broadcast(T data)
+        protected void InternalBroadcast(T data)
         {
             Logger.Debug(broadcastDebug);
             broadcastBlock.Post(data);
         }
     }
 
+    public sealed class EventKey<T> : EventKeyBase<T>
+    {
+        public EventKey(string category = "General", string eventName = "Event") : base(category, eventName)
+        {
+        }
+
+        public void Broadcast(T data)
+        {
+            InternalBroadcast(data);
+        }
+    }
+
     /// <summary>
     /// Creates a new EventKey used to broadcast events.
     /// </summary>
-    public class EventKey : EventKey<bool>
+    public sealed class EventKey : EventKeyBase<bool>
     {
         public EventKey(string category = "General", string eventName = "Event") : base(category, eventName)
         {       
@@ -117,7 +122,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// </summary>
         public void Broadcast()
         {
-            Broadcast(true);
+            InternalBroadcast(true);
         }
     }
 }

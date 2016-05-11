@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
@@ -56,10 +54,10 @@ namespace SiliconStudio.Xenko.Engine.Events
     }
 
     /// <summary>
-    /// Creates an event receiver that is used to receive T type events from an EventKey
+    /// Base type for EventReceiver
     /// </summary>
     /// <typeparam name="T">The type of data the EventKey will send</typeparam>
-    public class EventReceiver<T> : EventReceiverBase, IDisposable
+    public class EventReceiverBase<T> : EventReceiverBase, IDisposable
     {
         private IDisposable link;
         private string receivedDebugString;
@@ -67,7 +65,7 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         internal BufferBlock<T> BufferBlock;
 
-        public EventKey<T> Key { get; private set; }
+        public EventKeyBase<T> Key { get; private set; }
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly DataflowBlockOptions CapacityOptions = new DataflowBlockOptions
@@ -75,7 +73,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             BoundedCapacity = 1
         };
 
-        private void Init(EventKey<T> key, EventReceiverOptions options)
+        private void Init(EventKeyBase<T> key, EventReceiverOptions options)
         {
             Key = key;
 
@@ -87,7 +85,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             receivedManyDebugString = $"Received All '{key.EventName}' ({key.EventId})";
 
             T foo;
-            TryReceiveOne(out foo); //clear any previous event, we don't want to receive old events, as broadcast block will always send us the last avail event on connect
+            InternalTryReceiveOne(out foo); //clear any previous event, we don't want to receive old events, as broadcast block will always send us the last avail event on connect
         }
 
         /// <summary>
@@ -95,7 +93,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// </summary>
         /// <param name="key">The event key to listen from</param>
         /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
+        internal EventReceiverBase(EventKeyBase<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
             Init(key, options);
         }
@@ -104,7 +102,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Awaits a single event
         /// </summary>
         /// <returns></returns>
-        public async Task<T> ReceiveAsync()
+        protected async Task<T> InternalReceiveAsync()
         {
             var res = await BufferBlock.ReceiveAsync();
 
@@ -115,7 +113,7 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         public EventReceiverAwaiter<T> GetAwaiter()
         {
-            return new EventReceiverAwaiter<T>(ReceiveAsync().GetAwaiter());
+            return new EventReceiverAwaiter<T>(InternalReceiveAsync().GetAwaiter());
         }
 
         /// <summary>
@@ -127,7 +125,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Receives one event from the buffer, useful specially in Sync scripts
         /// </summary>
         /// <returns></returns>
-        public bool TryReceiveOne(out T data)
+        protected bool InternalTryReceiveOne(out T data)
         {
             if (BufferBlock.Count == 0)
             {
@@ -144,7 +142,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Receives all the events from the queue (if buffered was true during creations), useful mostly only in Sync scripts
         /// </summary>
         /// <returns></returns>
-        public int TryReceiveMany(ICollection<T> collection)
+        protected int InternalTryReceiveMany(ICollection<T> collection)
         {
             IList<T> result;
             if (!BufferBlock.TryReceiveAll(out result))
@@ -158,12 +156,15 @@ namespace SiliconStudio.Xenko.Engine.Events
             foreach (var e in result)
             {
                 count++;
-                collection.Add(e);
+                collection?.Add(e);
             }
 
             return count;
         }
 
+        /// <summary>
+        /// Clears all currently buffered events.
+        /// </summary>
         public void Reset()
         {
             //console all in one go
@@ -171,7 +172,7 @@ namespace SiliconStudio.Xenko.Engine.Events
             BufferBlock.TryReceiveAll(out result);
         }
 
-        ~EventReceiver()
+        ~EventReceiverBase()
         {
             Dispose();
         }
@@ -190,13 +191,13 @@ namespace SiliconStudio.Xenko.Engine.Events
 
         internal override Task GetTask()
         {
-            return ReceiveAsync();
+            return InternalReceiveAsync();
         }
 
         internal override bool TryReceiveOneInternal(out object obj)
         {
             T res;
-            if (!TryReceiveOne(out res))
+            if (!InternalTryReceiveOne(out res))
             {
                 obj = null;
                 return false;
@@ -208,9 +209,35 @@ namespace SiliconStudio.Xenko.Engine.Events
     }
 
     /// <summary>
+    /// Creates an event receiver that is used to receive T type events from an EventKey
+    /// </summary>
+    /// <typeparam name="T">The type of data the EventKey will send</typeparam>
+    public sealed class EventReceiver<T> : EventReceiverBase<T>
+    {
+        public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None) : base(key, options)
+        {
+        }
+
+        public Task<T> ReceiveAsync()
+        {
+            return InternalReceiveAsync();
+        }
+
+        public bool TryReceiveOne(out T data)
+        {
+            return InternalTryReceiveOne(out data);
+        }
+
+        public int TryReceiveMany(ICollection<T> collection)
+        {
+            return InternalTryReceiveMany(collection);
+        }
+    }
+
+    /// <summary>
     /// Creates an event receiver that is used to receive events from an EventKey
     /// </summary>
-    public class EventReceiver : EventReceiver<bool>
+    public sealed class EventReceiver : EventReceiverBase<bool>
     {
         /// <summary>
         /// Creates an event receiver, ready to receive broadcasts from the key
@@ -226,15 +253,20 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// Awaits a single event
         /// </summary>
         /// <returns></returns>
-        public new async Task ReceiveAsync()
+        public async Task ReceiveAsync()
         {
-            await base.ReceiveAsync();
+            await InternalReceiveAsync();
         }
 
         public bool TryReceiveOne()
         {
             bool foo;
-            return TryReceiveOne(out foo);
+            return InternalTryReceiveOne(out foo);
+        }
+
+        public int TryReceiveMany()
+        {
+            return InternalTryReceiveMany(null);
         }
 
         public static async Task<EventData> ReceiveOne(params EventReceiverBase[] events)

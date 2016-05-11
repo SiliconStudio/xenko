@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -346,8 +345,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                     if (frameCount == 20)
                     {
-                        var collection = new List<bool>();
-                        var manyEvents = rcv.TryReceiveMany(collection);
+                        var manyEvents = rcv.TryReceiveMany();
                         Assert.AreEqual(manyEvents, 21);
                         game.Exit();
                     }
@@ -442,8 +440,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 {
                     if (frameCount == 20)
                     {
-                        var collection = new List<bool>();
-                        var manyEvents = rcv.TryReceiveMany(collection);
+                        var manyEvents = rcv.TryReceiveMany();
                         Assert.AreEqual(2, manyEvents);
                         game.Exit();
                     }
