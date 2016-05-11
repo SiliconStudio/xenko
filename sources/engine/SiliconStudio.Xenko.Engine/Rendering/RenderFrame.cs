@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (DepthStencil.IsDisposed)
                 return false;
 
-            if (false && renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
+            if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_11_0)
             {
                 if (DepthStencilAsRT == null)
                     return true;
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void UpdateDepthStencilCache(RenderDrawContext renderContext)
         {
-//            if (renderContext.GraphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_10_0)
+            if (renderContext.GraphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_10_1)
             {
                 if (HasDepthStencilChanged(renderContext))
                 {
@@ -180,13 +180,25 @@ namespace SiliconStudio.Xenko.Rendering
                     // Depth as a ShaderResource is a copy
                     DepthStencilAsSR?.Dispose();
 
-                    var textureDescription = DepthStencil.Description;
-                    textureDescription.Flags |= TextureFlags.ShaderResource;
-                    DepthStencilAsSR = new Texture(renderContext.GraphicsDevice);
-                    DepthStencilAsSR.InitializeFrom(textureDescription);
+                    if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0)
+                    {
+                        var textureDescription = DepthStencil.Description;
+                        textureDescription.Flags = TextureFlags.ShaderResource;
+                        textureDescription.Format = PixelFormat.R24_UNorm_X8_Typeless;
+
+                        DepthStencilAsSR = new Texture(renderContext.GraphicsDevice);
+                        DepthStencilAsSR.InitializeFrom(textureDescription);
+                    }
+                    else
+                    {
+                        DepthStencilAsSR = null;
+                    }
                 }
 
-                renderContext.CommandList.Copy(DepthStencil, DepthStencilAsSR);
+                if (DepthStencilAsSR != null)
+                {
+                    renderContext.CommandList.Copy(DepthStencil, DepthStencilAsSR);
+                }
 
                 return;
             }
@@ -194,12 +206,9 @@ namespace SiliconStudio.Xenko.Rendering
             if (!HasDepthStencilChanged(renderContext))
                 return;
 
-            if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_1)
-            {
-                DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
+            DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
 
-                DepthStencilAsSR = DepthStencil;
-            }
+            DepthStencilAsSR = DepthStencil;
         }
 
         /// <summary>
