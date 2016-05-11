@@ -48,8 +48,6 @@ namespace SiliconStudio.Xenko.Engine.Events
     {
         internal abstract Task<bool> GetPeakTask();
 
-        internal abstract Task GetTask();
-
         internal abstract bool TryReceiveOneInternal(out object obj);
     }
 
@@ -187,11 +185,6 @@ namespace SiliconStudio.Xenko.Engine.Events
         internal override Task<bool> GetPeakTask()
         {
             return BufferBlock.OutputAvailableAsync();
-        }
-
-        internal override Task GetTask()
-        {
-            return InternalReceiveAsync();
         }
 
         internal override bool TryReceiveOneInternal(out object obj)
