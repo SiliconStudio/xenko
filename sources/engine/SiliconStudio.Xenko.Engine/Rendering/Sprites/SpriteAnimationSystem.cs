@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     }
 
                     // set the sprite frame
-                    var provider = sprite.SpriteProvider as SpriteFromSheet;
+                    var provider = sprite.SpriteProvider as IAnimatableSpriteProvider;
                     if (provider != null)
                         provider.CurrentFrame = animationInfo.SpriteIndices[sprite.CurrentIndexIndex];
 

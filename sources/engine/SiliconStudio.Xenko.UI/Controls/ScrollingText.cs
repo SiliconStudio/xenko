@@ -155,6 +155,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.Update(time);
 
+            if (!IsEnabled)
+                return;
+
             UpdateAndAdjustDisplayText(time);
         }
 
