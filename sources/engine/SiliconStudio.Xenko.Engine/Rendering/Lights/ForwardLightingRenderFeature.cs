@@ -616,26 +616,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             /// Light groups that have <see cref="LightShaderGroup.HasEffectPermutations"/>.
             /// </summary>
             public FastListStruct<LightShaderGroup> PermutationLightGroups;
-
-            public void AddEnvironmentLightGroup(LightShaderGroup lightShaderGroup)
-            {
-                // Already added?
-                // TODO More efficient checking
-                if (EnvironmentLights.Contains(lightShaderGroup))
-                    return;
-
-                EnvironmentLights.Add(lightShaderGroup);
-            }
-
-            public void AddDirectLightGroup(LightShaderGroup lightShaderGroup)
-            {
-                // Already added?
-                // TODO More efficient checking
-                if (DirectLightGroups.Contains(lightShaderGroup))
-                    return;
-
-                DirectLightGroups.Add(lightShaderGroup);
-            }
         }
 
         internal struct ActiveLightGroupRenderer

@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
         {
-            shaderEntry.AddEnvironmentLightGroup(lightShaderGroup);
+            shaderEntry.EnvironmentLights.Add(lightShaderGroup);
         }
 
         private class LightAmbientShaderGroup : LightShaderGroup

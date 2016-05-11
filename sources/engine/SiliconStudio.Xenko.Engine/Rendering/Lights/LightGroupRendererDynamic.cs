@@ -126,9 +126,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             foreach (var lightShaderGroup in lightShaderGroups)
             {
                 if (IsEnvironmentLight)
-                    shaderEntry.AddEnvironmentLightGroup(lightShaderGroup.Value);
+                    shaderEntry.EnvironmentLights.Add(lightShaderGroup.Value);
                 else
-                    shaderEntry.AddDirectLightGroup(lightShaderGroup.Value);
+                    shaderEntry.DirectLightGroups.Add(lightShaderGroup.Value);
             }
         }
 

@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             foreach (var cubemap in lightShaderGroupsPerSkybox)
             {
-                shaderEntry.AddEnvironmentLightGroup(cubemap.Value);
+                shaderEntry.EnvironmentLights.Add(cubemap.Value);
             }
         }
 

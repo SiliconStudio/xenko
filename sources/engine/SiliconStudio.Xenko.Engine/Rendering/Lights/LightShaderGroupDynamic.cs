@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             LightCurrentCount = 0;
         }
 
-        public void SetViewCount(int viewCount)
+        public virtual void SetViewCount(int viewCount)
         {
             Array.Resize(ref LightRanges, viewCount);
 
