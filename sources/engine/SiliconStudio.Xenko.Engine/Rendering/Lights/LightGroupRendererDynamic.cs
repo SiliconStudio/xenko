@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         }
 
                         // Add view and lights
-                        var allowedLightCount = lightShaderGroup.AddView(parameters.ViewIndex, processedLights.Count);
+                        var allowedLightCount = lightShaderGroup.AddView(parameters.ViewIndex, parameters.View, processedLights.Count);
                         for (int i = 0; i < allowedLightCount; ++i)
                         {
                             var light = processedLights[i];

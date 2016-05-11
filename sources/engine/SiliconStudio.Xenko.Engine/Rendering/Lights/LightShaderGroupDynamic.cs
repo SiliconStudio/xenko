@@ -59,9 +59,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// 
         /// </summary>
         /// <param name="viewIndex"></param>
+        /// <param name="renderView"></param>
         /// <param name="lightCount"></param>
         /// <returns>The number of lights accepted in <see cref="CurrentLights"/>.</returns>
-        public virtual int AddView(int viewIndex, int lightCount)
+        public virtual int AddView(int viewIndex, RenderView renderView, int lightCount)
         {
             LightRanges[viewIndex] = new LightRange(Lights.Count, Lights.Count + lightCount);
             LightCurrentCount = Math.Max(LightCurrentCount, ComputeLightCount(lightCount));

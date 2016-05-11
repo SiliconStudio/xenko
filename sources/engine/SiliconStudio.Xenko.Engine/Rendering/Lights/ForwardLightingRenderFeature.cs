@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 // Prepare shader permutations
-                PrepareLightGroups(context, viewCount, renderViewData, true, EntityGroup.Group0);
+                PrepareLightGroups(context, viewCount, view, renderViewData, true, EntityGroup.Group0);
             }
 
             // Add light shader groups using lightRenderers order to make sure we generate same shaders independently of light order
@@ -528,7 +528,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private void PrepareLightGroups(RenderDrawContext context, int renderViewCount, RenderViewLightData renderViewData, bool isShadowReceiver, EntityGroup group)
+        private void PrepareLightGroups(RenderDrawContext context, int renderViewCount, RenderView renderView, RenderViewLightData renderViewData, bool isShadowReceiver, EntityGroup group)
         {
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {
@@ -540,6 +540,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     Context = context,
                     ViewIndex = renderViewData.ViewIndex,
+                    View = renderView,
                     ViewCount = renderViewCount,
                     LightCollection = lightCollection,
                     ShadowMapRenderer = ShadowMapRenderer,

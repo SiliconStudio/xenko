@@ -74,9 +74,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
 
             /// <inheritdoc/>
-            public override int AddView(int viewIndex, int lightCount)
+            public override int AddView(int viewIndex, RenderView renderView, int lightCount)
             {
-                base.AddView(viewIndex, lightCount);
+                base.AddView(viewIndex, renderView, lightCount);
 
                 // We allow more lights than LightCurrentCount (they will be culled)
                 return lightCount;

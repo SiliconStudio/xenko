@@ -54,6 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public RenderDrawContext Context;
 
             public int ViewIndex;
+            public RenderView View;
             public int ViewCount;
 
             public LightComponentCollection LightCollection;
