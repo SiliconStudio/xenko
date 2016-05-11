@@ -46,11 +46,12 @@ namespace SiliconStudio.Xenko.Graphics
                 //"VK_LAYER_LUNARG_vktrace"
             };
 
-            var enabledLayerNames = new FastList<IntPtr>();
+            IntPtr[] enabledLayerNames = null;
 
             //if (false)
             {
                 var layers = Vulkan.InstanceLayerProperties;
+                var availableLayerNames = new HashSet<string>();
 
                 for (int index = 0; index < layers.Length; index++)
                 {
@@ -58,9 +59,13 @@ namespace SiliconStudio.Xenko.Graphics
                     var namePointer = new IntPtr(Interop.Fixed(ref properties.LayerName));
                     var name = Marshal.PtrToStringAnsi(namePointer);
 
-                    if (desiredLayerNames.Contains(Marshal.PtrToStringAnsi(namePointer)))
-                        enabledLayerNames.Add(Marshal.StringToHGlobalAnsi(name));
+
+                    availableLayerNames.Add(name);
                 }
+
+                enabledLayerNames = desiredLayerNames
+                    .Where(x => availableLayerNames.Contains(x))
+                    .Select(Marshal.StringToHGlobalAnsi).ToArray();
             }
 
             var enabledExtensionNames = new[]
@@ -83,13 +88,12 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
                 {
-
                     var insatanceCreateInfo = new InstanceCreateInfo
                     {
                         StructureType = StructureType.InstanceCreateInfo,
                         ApplicationInfo = new IntPtr(&applicationInfo),
-                        EnabledLayerCount = (uint)enabledLayerNames.Count,
-                        EnabledLayerNames = enabledLayerNames.Count > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames.Items)) : IntPtr.Zero,
+                        EnabledLayerCount = enabledLayerNames != null ? (uint)enabledLayerNames.Length : 0,
+                        EnabledLayerNames = enabledLayerNames?.Length > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames)) : IntPtr.Zero,
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
                     };

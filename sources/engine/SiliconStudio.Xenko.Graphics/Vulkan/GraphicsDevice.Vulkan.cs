@@ -215,11 +215,12 @@ namespace SiliconStudio.Xenko.Graphics
                 //"VK_LAYER_LUNARG_api_dump",
             };
 
-            var enabledLayerNames = new FastList<IntPtr>();
+            IntPtr[] enabledLayerNames = null;
 
             //if (false)
             {
                 var layers = Adapter.PhysicalDevice.DeviceLayerProperties;
+                var availableLayerNames = new HashSet<string>();
 
                 for (int index = 0; index < layers.Length; index++)
                 {
@@ -227,9 +228,12 @@ namespace SiliconStudio.Xenko.Graphics
                     var namePointer = new IntPtr(Interop.Fixed(ref properties.LayerName));
                     var name = Marshal.PtrToStringAnsi(namePointer);
 
-                    if (desiredLayerNames.Contains(Marshal.PtrToStringAnsi(namePointer)))
-                        enabledLayerNames.Add(Marshal.StringToHGlobalAnsi(name));
+                    availableLayerNames.Add(name);
                 }
+
+                enabledLayerNames = desiredLayerNames
+                    .Where(x => availableLayerNames.Contains(x))
+                    .Select(Marshal.StringToHGlobalAnsi).ToArray();
             }
 
             var enabledFeature = new PhysicalDeviceFeatures
@@ -254,8 +258,8 @@ namespace SiliconStudio.Xenko.Graphics
                         StructureType = StructureType.DeviceCreateInfo,
                         QueueCreateInfoCount = 1,
                         QueueCreateInfos = new IntPtr(&queueCreateInfo),
-                        EnabledLayerCount = (uint)enabledLayerNames.Count,
-                        EnabledLayerNames = enabledLayerNames.Count > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames.Items)) : IntPtr.Zero,
+                        EnabledLayerCount = enabledLayerNames != null ? (uint)enabledLayerNames.Length : 0,
+                        EnabledLayerNames = enabledLayerNames?.Length > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames)) : IntPtr.Zero,
                         EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer),
                         EnabledFeatures = new IntPtr(&enabledFeature)
