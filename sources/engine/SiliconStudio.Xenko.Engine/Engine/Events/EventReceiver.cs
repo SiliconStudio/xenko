@@ -33,11 +33,26 @@ namespace SiliconStudio.Xenko.Engine.Events
         }
     }
 
+    /// <summary>
+    /// When using EventReceiver.ReceiveOne, this structure is used to contain the received data
+    /// </summary>
+    public struct EventData
+    {
+        public EventReceiverBase Receiver { get; internal set; }
+
+        public object Data { get; internal set; }
+    }
+
+    /// <summary>
+    /// Base class for EventReceivers
+    /// </summary>
     public abstract class EventReceiverBase
     {
-        internal abstract void CancelReceive();
+        internal abstract Task<bool> GetPeakTask();
 
         internal abstract Task GetTask();
+
+        internal abstract bool TryReceiveOneInternal(out object obj);
     }
 
     /// <summary>
@@ -47,8 +62,6 @@ namespace SiliconStudio.Xenko.Engine.Events
     public class EventReceiver<T> : EventReceiverBase, IDisposable
     {
         private IDisposable link;
-        private readonly CancellationTokenSource cancellationTokenSource;
-        private CancellationTokenSource receiveCancellationTokenSource = new CancellationTokenSource();
         private string receivedDebugString;
         private string receivedManyDebugString;
 
@@ -84,49 +97,7 @@ namespace SiliconStudio.Xenko.Engine.Events
         /// <param name="options">Option flags</param>
         public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
         {
-            if (((options & EventReceiverOptions.ClearEveryFrame) != 0))
-            {
-                throw new InvalidOperationException("If the options ClearEveryFrame is present a valid script scheduler must be passed to the EventReceiver constructor");
-            }
-
             Init(key, options);
-        }
-
-        /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="scheduler">The scheduler where the event is awaited</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey<T> key, ScriptSystem scheduler, EventReceiverOptions options = EventReceiverOptions.None)
-        {
-            Init(key, options);
-
-            if (((options & EventReceiverOptions.ClearEveryFrame) != 0) && scheduler == null)
-            {
-                throw new InvalidOperationException("If the options ClearEveryFrame is present a valid script scheduler must be passed to the EventReceiver constructor");
-            }
-
-            var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && scheduler != null;
-            if (!clearEveryFrame) return;
-
-            cancellationTokenSource = new CancellationTokenSource();
-            scheduler.AddTask(async () =>
-            {
-                while (!cancellationTokenSource.IsCancellationRequested)
-                {
-                    //consume all events at the end of every next frame
-
-                    var toRemove = BufferBlock.Count;
-
-                    await scheduler.NextFrame();
-
-                    for (var i = 0; i < toRemove; i++)
-                    {
-                        BufferBlock.Receive();
-                    }
-                }
-            }, 0xfffffff);
         }
 
         /// <summary>
@@ -136,31 +107,6 @@ namespace SiliconStudio.Xenko.Engine.Events
         public async Task<T> ReceiveAsync()
         {
             var res = await BufferBlock.ReceiveAsync();
-
-            Key.Logger.Debug(receivedDebugString);
-
-            return res;
-        }
-
-        private async Task<T> ReceiveAsyncWithToken()
-        {
-            T res;
-
-            if (receiveCancellationTokenSource.IsCancellationRequested)
-            {
-                //we were canceled previously so we actually need to recreate the cancelation source
-                receiveCancellationTokenSource.Dispose();
-                receiveCancellationTokenSource = new CancellationTokenSource();
-            }
-
-            try
-            {
-                res = await BufferBlock.ReceiveAsync(receiveCancellationTokenSource.Token);
-            }
-            catch (TaskCanceledException)
-            {
-                return default(T);
-            }
 
             Key.Logger.Debug(receivedDebugString);
 
@@ -218,6 +164,13 @@ namespace SiliconStudio.Xenko.Engine.Events
             return count;
         }
 
+        public void Reset()
+        {
+            //console all in one go
+            IList<T> result;
+            BufferBlock.TryReceiveAll(out result);
+        }
+
         ~EventReceiver()
         {
             Dispose();
@@ -226,19 +179,31 @@ namespace SiliconStudio.Xenko.Engine.Events
         public void Dispose()
         {
             link.Dispose();
-            cancellationTokenSource?.Dispose();
 
             GC.SuppressFinalize(this);
         }
 
-        internal override Task GetTask()
+        internal override Task<bool> GetPeakTask()
         {
-            return ReceiveAsyncWithToken();
+            return BufferBlock.OutputAvailableAsync();
         }
 
-        internal override void CancelReceive()
+        internal override Task GetTask()
         {
-            receiveCancellationTokenSource.Cancel(true);
+            return ReceiveAsync();
+        }
+
+        internal override bool TryReceiveOneInternal(out object obj)
+        {
+            T res;
+            if (!TryReceiveOne(out res))
+            {
+                obj = null;
+                return false;
+            }
+
+            obj = res;
+            return true;
         }
     }
 
@@ -258,16 +223,6 @@ namespace SiliconStudio.Xenko.Engine.Events
         }
 
         /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="scheduler">The scheduler where the event is awaited</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey key, ScriptSystem scheduler, EventReceiverOptions options = EventReceiverOptions.None) : base(key, scheduler, options)
-        {
-        }
-
-        /// <summary>
         /// Awaits a single event
         /// </summary>
         /// <returns></returns>
@@ -282,32 +237,33 @@ namespace SiliconStudio.Xenko.Engine.Events
             return TryReceiveOne(out foo);
         }
 
-        public static async Task<EventReceiverBase> ReceiveFirst(params EventReceiverBase[] events)
+        public static async Task<EventData> ReceiveOne(params EventReceiverBase[] events)
         {
-            var tasks = new Task[events.Length];
-            for (var i = 0; i < events.Length; i++)
+            while (true)
             {
-                var @event = events[i];
-                tasks[i] = @event.GetTask();
-            }
-
-            await Task.WhenAny(tasks);
-
-            EventReceiverBase completed = null;
-
-            for (var i = 0; i < events.Length; i++)
-            {
-                if (tasks[i].IsCompleted)
+                var tasks = new Task[events.Length];
+                for (var i = 0; i < events.Length; i++)
                 {
-                    completed = events[i];
+                    tasks[i] = events[i].GetPeakTask();
                 }
-                else
+
+                await Task.WhenAny(tasks);
+
+                for (var i = 0; i < events.Length; i++)
                 {
-                    events[i].CancelReceive();
+                    if (!tasks[i].IsCompleted) continue;
+
+                    object data;
+                    if (!events[i].TryReceiveOneInternal(out data)) continue;
+
+                    var res = new EventData
+                    {
+                        Data = data,
+                        Receiver = events[i]
+                    };
+                    return res;
                 }
             }
-
-            return completed;
         }
     }
 }
