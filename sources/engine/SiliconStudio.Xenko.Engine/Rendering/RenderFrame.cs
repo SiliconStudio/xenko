@@ -111,106 +111,27 @@ namespace SiliconStudio.Xenko.Rendering
         /// Activates the specified render context.
         /// </summary>
         /// <param name="renderContext">The render context.</param>
-        /// <param name="enableDepth">if set to <c>DepthBufferPolicy.Enabled</c> [enable depth], if set to <c>DepthBufferPolicy.ReadOnly</c> enable testing only.</param>
+        /// <param name="enableDepth">if set to <c>true</c> [enable depth].</param>
         /// <exception cref="System.ArgumentNullException">renderContext</exception>
-        public void Activate(RenderDrawContext renderContext, DepthBufferPolicy enableDepth = DepthBufferPolicy.Enabled)
+        public void Activate(RenderDrawContext renderContext, bool enableDepth = true)
         {
             if (renderContext == null) throw new ArgumentNullException("renderContext");
 
             // TODO: Handle support for shared depth stencil buffer
 
-            if (enableDepth == DepthBufferPolicy.ReadOnly)
-            {
-                UpdateDepthStencilCache(renderContext);
-
-                // Sets the depth and render target
-                renderContext.CommandList.SetRenderTargetsAndViewport(DepthStencilAsRT, RenderTargets);
-            }
-            else
-            {
-                // Sets the depth and render target
-                renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth == DepthBufferPolicy.Enabled ? DepthStencil : null, RenderTargets);
-            }
+            renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth ? DepthStencil : null, RenderTargets);
         }
 
-        public Texture DepthStencilAsRT { get; private set; }
-
-        public Texture DepthStencilAsSR { get; private set; }
-
-        private bool HasDepthStencilChanged(RenderDrawContext renderContext)
+        public void Activate(RenderDrawContext renderContext, Texture depthStencilTexture)
         {
-            if (DepthStencil == null)
-                return false;   // It's null so we can't copy it
+            if (renderContext == null) throw new ArgumentNullException("renderContext");
 
-            if (DepthStencil.IsDisposed)
-                return false;
-
-            if (renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
-            {
-                if (DepthStencilAsRT == null)
-                    return true;
-
-                if (DepthStencilAsSR == null || DepthStencilAsSR != DepthStencil)
-                    return true;
-            }
-            else
-            {
-                if (DepthStencilAsRT == null || DepthStencilAsRT != DepthStencil)
-                    return true;
-
-                if (DepthStencilAsSR == null)
-                    return true;
-
-                if (DepthStencilAsSR.Width != DepthStencil.Width || DepthStencilAsSR.Height != DepthStencil.Height)
-                    return true;
-            }
-
-            return false;
+            renderContext.CommandList.SetRenderTargetsAndViewport(depthStencilTexture, RenderTargets);
         }
 
-        private void UpdateDepthStencilCache(RenderDrawContext renderContext)
-        {
-            if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV)
-            {
-                DepthStencilAsRT = DepthStencil;
-                DepthStencilAsSR = null;
-                return;
-            }
+        // TODO Move it somewhere? Still needs to be coupled with the current frame and depthstencil buffer
+        public BufferResolver DepthBufferResolver { get; set; }
 
-            if (renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
-            {
-                if (!HasDepthStencilChanged(renderContext))
-                    return;
-
-                DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
-
-                DepthStencilAsSR = DepthStencil;
-
-                return;
-            }
-
-            // Depth as read-only render target AND shader resource is not supported - we have to copy it
-
-            if (!HasDepthStencilChanged(renderContext))
-                return;
-
-            // Depth as a RenderTarget is the same
-            DepthStencilAsRT = DepthStencil;
-
-            // Depth as a ShaderResource is a copy
-            DepthStencilAsSR?.Dispose();
-
-            var textureDescription = DepthStencil.Description;
-            textureDescription.Flags = TextureFlags.ShaderResource;
-            textureDescription.Format = PixelFormat.R24_UNorm_X8_Typeless;
-
-            DepthStencilAsSR = Texture.New(renderContext.GraphicsDevice, textureDescription);
-
-            if (DepthStencilAsSR != null)
-            {
-                renderContext.CommandList.Copy(DepthStencil, DepthStencilAsSR);
-            }
-        }
 
         /// <summary>
         /// Gets a <see cref="RenderOutputDescription"/> that matches current depth stencil and render target formats.

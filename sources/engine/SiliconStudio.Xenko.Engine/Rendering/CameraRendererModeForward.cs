@@ -122,11 +122,27 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Resolve Depth as a texture
                 var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-                currentRenderFrame.Activate(context, DepthBufferPolicy.ReadOnly);
+
+                if (currentRenderFrame.DepthBufferResolver == null)
+                {
+                    currentRenderFrame.DepthBufferResolver = new DepthBufferResolver();
+                }
+
+                currentRenderFrame.DepthBufferResolver.Resolve(context, currentRenderFrame.DepthStencil);
+
+                currentRenderFrame.Activate(context, currentRenderFrame.DepthBufferResolver.AsRenderTarget());
             }
 
             // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
+
+            if (enableDepthAsShaderResource)
+            {
+                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+
+                // Release
+                currentRenderFrame.DepthBufferResolver?.Reset();
+            }
         }
     }
 }
