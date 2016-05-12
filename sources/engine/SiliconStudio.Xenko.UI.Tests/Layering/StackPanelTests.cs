@@ -52,10 +52,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         [Test]
         public void TestProperties()
         {
-            ResetState();
+            var stackPanel = new StackPanel();
 
             // test default values
-            Assert.AreEqual(Orientation.Vertical, Orientation);
+            Assert.AreEqual(Orientation.Vertical, stackPanel.Orientation);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
                     Assert.AreEqual(acculumatedDesiredSizeWithMargins.Z, DesiredSize.Z);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("orientation");
+                    throw new ArgumentOutOfRangeException(nameof(orientation));
             }
         }
         
@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
                         childOffsets.Z += acculumatedDesiredSizeWithMarginsList[i].Z;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("orientation");
+                        throw new ArgumentOutOfRangeException(nameof(orientation));
                 }
 
                 Utilities.AssertAreNearlyEqual(Matrix.Translation(childOffsets), Children[i].DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
@@ -287,10 +287,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         [Test]
         public void TestBasicInvalidations()
         {
-            ResetState();
+            var stackPanel = new StackPanel();
 
             // - test the properties that are supposed to invalidate the object measurement
-            UIElementLayeringTests.TestMeasureInvalidation(this, () => Orientation = Orientation.InDepth);
+            UIElementLayeringTests.TestMeasureInvalidation(stackPanel, () => stackPanel.Orientation = Orientation.InDepth);
         }
 
         /// <summary>

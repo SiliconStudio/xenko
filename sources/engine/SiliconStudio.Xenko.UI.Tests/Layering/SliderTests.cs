@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         /// Test the <see cref="Slider.MeasureOverride"/> method.
         /// </summary>
         [Test]
-        public void TestMeausureOverride()
+        public void TestMeasureOverride()
         {
             var slider = new Slider();
             var sprite = new Sprite { Region = new RectangleF(2, 3, 40, 50) };
