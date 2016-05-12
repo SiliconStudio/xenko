@@ -61,24 +61,24 @@ namespace SiliconStudio.Presentation.Dialogs
             return DialogHelper.CheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
         }
 
-        public MessageBoxResult MessageBoxSync(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public MessageBoxResult BlockingMessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.MessageBoxSync(Dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.BlockingMessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
-        public MessageBoxResult MessageBoxSync(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public MessageBoxResult BlockingMessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.MessageBoxSync(Dispatcher, message, ApplicationName, buttons, image, owner);
+            return DialogHelper.BlockingMessageBox(Dispatcher, message, ApplicationName, buttons, image, owner);
         }
 
-        public CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.CheckedMessageBoxSync(Dispatcher, message, ApplicationName, isChecked, button, image, owner);
+            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, button, image, owner);
         }
 
-        public CheckedMessageBoxResult CheckedMessageBoxSync(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public CheckedMessageBoxResult BlockingCheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
-            return DialogHelper.CheckedMessageBoxSync(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
+            return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, button, image, owner);
         }
 
         public void CloseMainWindow(Action onClosed)

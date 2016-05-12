@@ -30,22 +30,22 @@ namespace SiliconStudio.Presentation.Windows
             return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(owner, message, caption, button, image, checkboxMessage, isChecked));
         }
 
-        public static MessageBoxResult MessageBoxSync(IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static MessageBoxResult BlockingMessageBox(IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
             return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, button, image, owner));
         }
 
-        public static MessageBoxResult MessageBoxSync(IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static MessageBoxResult BlockingMessageBox(IDispatcherService dispatcher, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
             return PushFrame(dispatcher, () => MessageBox(dispatcher, message, caption, buttons, image, owner));
         }
 
-        public static CheckedMessageBoxResult CheckedMessageBoxSync(IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static CheckedMessageBoxResult BlockingCheckedMessageBox(IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
             return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, button, image, owner));
         }
 
-        public static CheckedMessageBoxResult CheckedMessageBoxSync(IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
+        public static CheckedMessageBoxResult BlockingCheckedMessageBox(IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
             return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, button, image, owner));
         }
