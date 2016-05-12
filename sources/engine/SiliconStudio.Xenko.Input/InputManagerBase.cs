@@ -468,7 +468,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="destinationRectangle">The destination viewport rectangle</param>
         /// <param name="screenCoordinates">The normalized screen coordinates</param>
         /// <returns></returns>
-        public virtual Vector2 TransformPosition(RectangleF destinationRectangle, Vector2 screenCoordinates)
+        public Vector2 TransformPosition(RectangleF destinationRectangle, Vector2 screenCoordinates)
         {
             return new Vector2((screenCoordinates.X * ControlWidth - destinationRectangle.X) / destinationRectangle.Width, (screenCoordinates.Y * ControlHeight - destinationRectangle.Y) / destinationRectangle.Height);
         }
