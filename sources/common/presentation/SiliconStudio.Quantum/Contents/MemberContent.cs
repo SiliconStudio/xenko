@@ -84,9 +84,15 @@ namespace SiliconStudio.Quantum.Contents
             {
                 // Some collection (such as sets) won't add item at the end but at an arbitrary location.
                 // Better send a null index in this case than sending a wrong value.
-                var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(Value)) : Index.Empty;
+                var value = Value;
+                var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
                 NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
-                collectionDescriptor.Add(Value, newItem);
+                collectionDescriptor.Add(value, newItem);
+                if (value.GetType().GetTypeInfo().IsValueType)
+                {
+                    var containerValue = Container.Value;
+                    Member.Set(containerValue, value);
+                }
                 UpdateReferences();
                 NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
             }
@@ -102,14 +108,20 @@ namespace SiliconStudio.Quantum.Contents
             if (collectionDescriptor != null)
             {
                 var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
+                var value = Value;
                 NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
-                if (collectionDescriptor.GetCollectionCount(Value) == itemIndex.Int || !collectionDescriptor.HasInsert)
+                if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
                 {
-                    collectionDescriptor.Add(Value, newItem);
+                    collectionDescriptor.Add(value, newItem);
                 }
                 else
                 {
-                    collectionDescriptor.Insert(Value, itemIndex.Int, newItem);
+                    collectionDescriptor.Insert(value, itemIndex.Int, newItem);
+                }
+                if (value.GetType().GetTypeInfo().IsValueType)
+                {
+                    var containerValue = Container.Value;
+                    Member.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
@@ -117,7 +129,13 @@ namespace SiliconStudio.Quantum.Contents
             else if (dictionaryDescriptor != null)
             {
                 NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
-                dictionaryDescriptor.SetValue(Value, itemIndex.Value, newItem);
+                var value = Value;
+                dictionaryDescriptor.SetValue(value, itemIndex.Value, newItem);
+                if (value.GetType().GetTypeInfo().IsValueType)
+                {
+                    var containerValue = Container.Value;
+                    Member.Set(containerValue, value);
+                }
                 UpdateReferences();
                 NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
             }
@@ -133,24 +151,30 @@ namespace SiliconStudio.Quantum.Contents
             NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, item, null);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            var value = Value;
             if (collectionDescriptor != null)
             {
                 if (collectionDescriptor.HasRemoveAt)
                 {
-                    collectionDescriptor.RemoveAt(Value, itemIndex.Int);                  
+                    collectionDescriptor.RemoveAt(value, itemIndex.Int);                  
                 }
                 else
                 {
-                    collectionDescriptor.Remove(Value, item);
+                    collectionDescriptor.Remove(value, item);
                 }               
             }
             else if (dictionaryDescriptor != null)
             {
-                dictionaryDescriptor.Remove(Value, itemIndex.Value);
+                dictionaryDescriptor.Remove(value, itemIndex.Value);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
+            if (value.GetType().GetTypeInfo().IsValueType)
+            {
+                var containerValue = Container.Value;
+                Member.Set(containerValue, value);
+            }
             UpdateReferences();
             NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, item, null);
         }
