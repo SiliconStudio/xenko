@@ -459,14 +459,12 @@ namespace SiliconStudio.Xenko.Input
         public Vector2 MouseDelta { get; private set; }
 
         protected virtual void SetMousePosition(Vector2 normalizedPosition)
-        {         
+        {
         }
 
         public virtual Vector2 TransformScreenCoordinates(RectangleF destinationRectangle, Vector2 screenCoordinates)
         {
-            screenCoordinates.X *= destinationRectangle.Width / ControlRectangle.Width;
-            screenCoordinates.Y *= destinationRectangle.Height / ControlRectangle.Height;
-            return new Vector2((screenCoordinates.X - destinationRectangle.X) / destinationRectangle.Width, (screenCoordinates.Y - destinationRectangle.Y) / destinationRectangle.Height);
+            return new Vector2((screenCoordinates.X * ControlWidth - destinationRectangle.X) / destinationRectangle.Width, (screenCoordinates.Y * ControlHeight - destinationRectangle.Y) / destinationRectangle.Height);
         }
 
         /// <summary>
