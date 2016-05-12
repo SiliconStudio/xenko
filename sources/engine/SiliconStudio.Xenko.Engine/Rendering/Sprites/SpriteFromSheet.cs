@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -10,16 +11,17 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
-    /// A sprite provider from a <see cref="Sheet"/>
+    /// A sprite provider from a <see cref="SpriteSheet"/>
     /// </summary>
     [DataContract("SpriteFromSheet")]
     [Display("Sprite Group")]
-    public class SpriteFromSheet : ISpriteProvider
+    public class SpriteFromSheet : IAnimatableSpriteProvider
     {
         /// <summary>
         /// Gets or sets the <see cref="Sheet"/> of the provider.
         /// </summary>
         /// <userdoc>The sheet that provides the sprites</userdoc>
+        [DataMember]
         [InlineProperty]
         public SpriteSheet Sheet { get; set; }
 
@@ -27,18 +29,40 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Gets or sets the current frame of the animation.
         /// </summary>
         /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
+        [DataMember]
+        [DataMemberRange(0, int.MaxValue)]
         [DefaultValue(0)]
         [Display("Default Frame")]
         public int CurrentFrame { get; set; }
 
-        public int SpritesCount => Sheet?.Sprites?.Count ?? 0;
+        /// <inheritdoc/>
+        public int SpritesCount => Sheet?.Sprites.Count ?? 0;
 
-        public Sprite GetSprite(int index)
+        /// <summary>
+        /// Creates a new instance of <see cref="SpriteFromSheet"/> with the specified <see cref="SpriteSheet"/>.
+        /// <see cref="CurrentFrame"/> is initialized according to the specified <paramref name="spriteName"/>.
+        /// </summary>
+        /// <param name="sheet"></param>
+        /// <param name="spriteName">The name of the sprite.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">sheet</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">No sprite in the sheet has the given name.</exception>
+        /// <remarks>If two sprites have the provided name then the first sprite found is used.</remarks>
+        public static SpriteFromSheet Create(SpriteSheet sheet, string spriteName)
         {
-            if (Sheet?.Sprites == null || Sheet.Sprites.Count == 0)
-                return null;
+            if (sheet == null) throw new ArgumentNullException(nameof(sheet));
 
-            return Sheet.Sprites[index % SpritesCount];
+            return new SpriteFromSheet
+            {
+                Sheet = sheet,
+                CurrentFrame = sheet.FindImageIndex(spriteName)
+            };
+        }
+
+        /// <inheritdoc/>
+        public Sprite GetSprite()
+        {
+            return SpritesCount != 0 ? Sheet.Sprites[CurrentFrame % SpritesCount] : null;
         }
     }
 }

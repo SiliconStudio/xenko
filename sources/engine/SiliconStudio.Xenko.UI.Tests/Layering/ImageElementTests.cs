@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Layering
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             // - test the properties that are supposed to invalidate the object measurement
             UIElementLayeringTests.TestMeasureInvalidation(this, () => StretchType = StretchType.None);
             UIElementLayeringTests.TestMeasureInvalidation(this, () => StretchDirection = StretchDirection.DownOnly);
-            UIElementLayeringTests.TestMeasureInvalidation(this, () => Source = source);
+            UIElementLayeringTests.TestMeasureInvalidation(this, () => Source = (SpriteFromTexture)source);
             UIElementLayeringTests.TestMeasureInvalidation(this, () => source.Region = new Rectangle(1, 2, 3, 4));
             UIElementLayeringTests.TestMeasureInvalidation(this, () => source.Orientation = ImageOrientation.Rotated90);
             UIElementLayeringTests.TestMeasureInvalidation(this, () => source.Borders = Vector4.One);
@@ -52,8 +53,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             var rand = new Random();
             var imageSize = new Vector3(100, 50, 0);
-            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = Sprite };
+            var sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = (SpriteFromTexture)sprite };
 
             // Fixed sized
             image.StretchType = StretchType.None;
@@ -106,8 +107,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public void TestMeasureOverrideInfiniteValues(StretchType stretch)
         {
             var imageSize = new Vector3(100, 50, 0);
-            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = Sprite, StretchType = stretch };
+            var sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = (SpriteFromTexture)sprite, StretchType = stretch };
             
             image.Measure(new Vector3(float.PositiveInfinity));
             Assert.AreEqual(imageSize, image.DesiredSizeWithMargins);
@@ -124,8 +125,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             var rand = new Random();
             var imageSize = new Vector3(100, 50, 0);
-            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = Sprite };
+            var sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = (SpriteFromTexture)sprite };
 
             // Fixed sized
             image.StretchType = StretchType.None;
@@ -178,8 +179,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public void TestArrangeOverrideInfiniteValues(StretchType stretch)
         {
             var imageSize = new Vector3(100, 50, 0);
-            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = Sprite, StretchType = stretch };
+            var sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = (SpriteFromTexture)sprite, StretchType = stretch };
 
             image.Arrange(new Vector3(float.PositiveInfinity), false);
             Assert.AreEqual(imageSize, image.RenderSize);
