@@ -28,6 +28,7 @@ namespace SiliconStudio.Presentation.Services
         /// Executes the given callback in the dispatcher thread. This method will run asynchronously and return immediately.
         /// </summary>
         /// <param name="callback">The callback to execute in the dispatcher thread.</param>
+        [Obsolete("Use InvokeAsync instead")]
         void BeginInvoke(Action callback);
 
         /// <summary>
@@ -44,6 +45,21 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given task.</returns>
         Task<TResult> InvokeAsync<TResult>(Func<TResult> callback);
+
+        /// <summary>
+        /// Executes the given asynchronous task in the dispatcher thread. This method will run asynchronously and return immediately.
+        /// </summary>
+        /// <param name="task">The asynchronous task to execute in the dispatcher thread.</param>
+        /// <returns>A task corresponding to the asynchronous execution of the given function.</returns>
+        Task InvokeTask(Func<Task> task);
+
+        /// <summary>
+        /// Executes the given asynchronous task in the dispatcher thread. This method will run asynchronously and return immediately.
+        /// </summary>
+        /// <typeparam name="TResult">The type of result returned by the task.</typeparam>
+        /// <param name="task">The asynchronous task to execute in the dispatcher thread.</param>
+        /// <returns>A task corresponding to the asynchronous execution of the given task.</returns>
+        Task<TResult> InvokeTask<TResult>(Func<Task<TResult>> task);
 
         /// <summary>
         /// Verifies that the current thread is the dispatcher thread.

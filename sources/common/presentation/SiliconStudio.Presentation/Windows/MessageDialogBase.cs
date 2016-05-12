@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using SiliconStudio.Presentation.Commands;
@@ -67,9 +68,9 @@ namespace SiliconStudio.Presentation.Windows
 
         protected ICommandBase ButtonCommand { get { return (ICommandBase)GetValue(ButtonCommandProperty); } private set { SetValue(ButtonCommandPropertyKey, value); } }
 
-        protected int ShowInternal()
+        protected async Task<int> ShowInternal(WindowOwner owner)
         {
-            ShowDialog();
+            await WindowManager.ShowModal(this, owner);
             return result;
         }
 

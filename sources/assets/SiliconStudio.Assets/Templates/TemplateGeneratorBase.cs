@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace SiliconStudio.Assets.Templates
 {
     /// <summary>
@@ -10,7 +12,7 @@ namespace SiliconStudio.Assets.Templates
         public abstract bool IsSupportingTemplate(TemplateDescription templateDescription);
 
         /// <inheritdoc/>
-        public abstract bool PrepareForRun(TParameters parameters);
+        public abstract Task<bool> PrepareForRun(TParameters parameters);
 
         /// <inheritdoc/>
         public abstract bool Run(TParameters parameters);

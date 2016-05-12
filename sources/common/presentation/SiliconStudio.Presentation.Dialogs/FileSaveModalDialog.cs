@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using System.Windows.Threading;
+using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -11,8 +10,8 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class FileSaveModalDialog : ModalDialogBase, IFileSaveModalDialog
     {
-        internal FileSaveModalDialog(Dispatcher dispatcher, Window parentWindow)
-            : base(dispatcher, parentWindow)
+        internal FileSaveModalDialog(IDispatcherService dispatcher)
+            : base(dispatcher)
         {
             Dialog = new CommonSaveFileDialog();
             Filters = new List<FileDialogFilter>();
@@ -36,7 +35,7 @@ namespace SiliconStudio.Presentation.Dialogs
         private CommonSaveFileDialog SaveDlg => (CommonSaveFileDialog)Dialog;
 
         /// <inheritdoc/>
-        public override DialogResult Show()
+        public override async Task<DialogResult> ShowModal()
         {
             SaveDlg.Filters.Clear();
             foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
@@ -44,9 +43,9 @@ namespace SiliconStudio.Presentation.Dialogs
                 SaveDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
             SaveDlg.AlwaysAppendDefaultExtension = true;
-            var result = InvokeDialog();
-            FilePath = result != DialogResult.Cancel ? SaveDlg.FileName : null;
-            return result;
+            await InvokeDialog();
+            FilePath = Result != DialogResult.Cancel ? SaveDlg.FileName : null;
+            return Result;
         }
     }
 }
