@@ -295,6 +295,7 @@ namespace SiliconStudio.Presentation
                     , NestDepth));
         }
 
+        // ReSharper disable once UseStringInterpolation
         private static readonly Regex AnchorInline = new Regex(string.Format(@"
                 (                           # wrap whole match in $1
                     \[
@@ -358,6 +359,7 @@ namespace SiliconStudio.Presentation
               )",
             RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
+        // ReSharper disable once UseStringInterpolation
         private static readonly Regex ImageInline = new Regex(string.Format(@"
               (                     # wrap whole match in $1
                 !\[
@@ -423,10 +425,16 @@ namespace SiliconStudio.Presentation
 
         private Inline ImageTag(string url, string altText, string title)
         {
-            var image = new Image
+            var image = new Image();
+            try
             {
-                Source = new BitmapImage(new Uri(url))
-            };
+                // Attempt to set the source of the image.
+                // Note: initialization of image downloading can fail in some cases (see System.Windows.Media.Imaging.BitmapDownload.BeginDownload).
+                image.Source = new BitmapImage(new Uri(url));
+            }
+            catch (System.IO.IOException) { }
+            catch (System.Runtime.InteropServices.ExternalException) { }
+
             if (!string.IsNullOrEmpty(title))
             {
                 image.ToolTip = Create<TextBlock, Inline>(RunSpanGamut(title));
