@@ -56,9 +56,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             var recv = new EventReceiver(key);
 
             key.Broadcast();
-            Assert.True(recv.TryReceiveOne());
+            Assert.True(recv.TryReceive());
 
-            Assert.False(recv.TryReceiveOne());
+            Assert.False(recv.TryReceive());
         }
 
         /// <summary>
@@ -122,13 +122,13 @@ namespace SiliconStudio.Xenko.Engine.Tests
                     if (frameCount == 20)
                     {
                         rcv = new EventReceiver(evt);
-                        Assert.False(rcv.TryReceiveOne());
+                        Assert.False(rcv.TryReceive());
                         evt.Broadcast();
                     }
                     if (frameCount == 22)
                     {
                         Assert.NotNull(rcv);
-                        Assert.True(rcv.TryReceiveOne());
+                        Assert.True(rcv.TryReceive());
 
                         game.Exit();
                     }
@@ -345,7 +345,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                     if (frameCount == 20)
                     {
-                        var manyEvents = rcv.TryReceiveMany();
+                        var manyEvents = rcv.TryReceiveAll();
                         Assert.AreEqual(manyEvents, 21);
                         game.Exit();
                     }
@@ -440,7 +440,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 {
                     if (frameCount == 20)
                     {
-                        var manyEvents = rcv.TryReceiveMany();
+                        var manyEvents = rcv.TryReceiveAll();
                         Assert.AreEqual(2, manyEvents);
                         game.Exit();
                     }
