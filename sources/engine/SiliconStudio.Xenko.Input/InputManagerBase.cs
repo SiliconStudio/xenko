@@ -136,22 +136,37 @@ namespace SiliconStudio.Xenko.Input
         public OrientationSensor Orientation { get; private set; }
 
         /// <summary>
-        /// The screen area where inputs are detected
+        /// The width in pixel of the control
         /// </summary>
-        internal RectangleF ControlRectangle
+        internal float ControlWidth
         {
-            get { return controlRectangle; }
+            get { return controlWidth; }
             set
             {
-                var safeRect = new RectangleF(Math.Max(value.X, 0), Math.Max(value.Y, 0), Math.Max(value.Width, 0), Math.Max(value.Height, 0));
-                controlRectangle = safeRect;
+                controlWidth = Math.Max(0, value);
 
-                if (controlRectangle.Height > 0)
-                {
-                    ScreenAspectRatio = controlRectangle.Width / controlRectangle.Height;
-                }
+                if (controlHeight > 0)
+                    ScreenAspectRatio = ControlWidth / ControlHeight;
             }
         }
+
+        private float controlWidth;
+
+        /// <summary>
+        /// The height in pixel of the control
+        /// </summary>
+        internal float ControlHeight
+        {
+            get { return controlHeight; }
+            set
+            {
+                controlHeight = Math.Max(0, value);
+
+                if (controlHeight > 0)
+                    ScreenAspectRatio = ControlWidth / ControlHeight;
+            }
+        }
+        private float controlHeight;
 
         internal float ScreenAspectRatio 
         { 
@@ -302,7 +317,7 @@ namespace SiliconStudio.Xenko.Input
 
         internal Vector2 NormalizeScreenPosition(Vector2 pixelPosition)
         {
-            return new Vector2((pixelPosition.X - ControlRectangle.X) / ControlRectangle.Width, (pixelPosition.Y - ControlRectangle.Y) / ControlRectangle.Height);
+            return new Vector2(pixelPosition.X / ControlWidth, pixelPosition.Y / ControlHeight);
         }
 
         internal void HandlePointerEvents(int pointerId, Vector2 newPosition, PointerState pState, PointerType pointerType = PointerType.Touch)
@@ -420,7 +435,6 @@ namespace SiliconStudio.Xenko.Input
         public List<KeyEvent> KeyEvents { get; private set; }
 
         private Vector2 mousePosition;
-        private RectangleF controlRectangle;
 
         /// <summary>
         /// Gets the mouse position.

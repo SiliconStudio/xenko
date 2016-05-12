@@ -246,7 +246,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void GameViewOnResize(object sender, EventArgs eventArgs)
         {
-            ControlRectangle = new RectangleF(0, 0, uiControl.Size.Width, uiControl.Size.Height);
+            ControlWidth = uiControl.Size.Width;
+            ControlHeight = uiControl.Size.Height;
         }
 
         private bool OnTouch(MotionEvent e)

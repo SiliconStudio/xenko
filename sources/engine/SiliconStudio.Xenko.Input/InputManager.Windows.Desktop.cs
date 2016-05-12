@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Runtime.InteropServices;
-using SiliconStudio.Core.Mathematics;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Diagnostics;
@@ -160,7 +159,8 @@ namespace SiliconStudio.Xenko.Input
             uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCaptureWinForms();
             uiControl.SizeChanged += UiControlOnSizeChanged;
 
-            ControlRectangle = new RectangleF(0, 0, uiControl.ClientSize.Width, uiControl.ClientSize.Height);
+            ControlWidth = uiControl.ClientSize.Width;
+            ControlHeight = uiControl.ClientSize.Height;
         }
 
         private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
@@ -178,7 +178,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void UiControlOnSizeChanged(object sender, EventArgs eventArgs)
         {
-            ControlRectangle = new RectangleF(0, 0, uiControl.ClientSize.Width, uiControl.ClientSize.Height);
+            ControlWidth = uiControl.ClientSize.Width;
+            ControlHeight = uiControl.ClientSize.Height;
         }
 
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
