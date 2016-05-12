@@ -109,6 +109,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void CreateAndInsertButton(UniformGrid grid, int c, int r)
         {
             var button = new Button();
+            ApplyButtonDefaultStyle(button);
             button.DependencyProperties.Set(GridBase.RowPropertyKey, r);
             button.DependencyProperties.Set(GridBase.ColumnPropertyKey, c);
             grid.Children.Add(button);

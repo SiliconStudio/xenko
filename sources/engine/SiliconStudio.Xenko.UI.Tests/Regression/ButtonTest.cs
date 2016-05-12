@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             button = new Button();
+            ApplyButtonDefaultStyle(button);
 
             UIComponent.RootElement = button;
         }

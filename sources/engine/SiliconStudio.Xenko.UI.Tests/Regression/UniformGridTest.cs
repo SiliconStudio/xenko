@@ -39,10 +39,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             imgElt.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);
 
             var button1 = new Button();
+            ApplyButtonDefaultStyle(button1);
             button1.DependencyProperties.Set(GridBase.RowPropertyKey, 3);
             button1.DependencyProperties.Set(GridBase.ColumnPropertyKey, 0);
 
             var button2 = new Button();
+            ApplyButtonDefaultStyle(button2);
             button2.DependencyProperties.Set(GridBase.RowPropertyKey, 3);
             button2.DependencyProperties.Set(GridBase.ColumnPropertyKey, 3);
 
@@ -53,6 +55,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
+            ApplyTextBlockDefaultStyle(text);
             text.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 2);
             text.DependencyProperties.Set(GridBase.RowPropertyKey, 0);
             text.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);

@@ -117,21 +117,30 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             stackPanel2 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             for (var i = 0; i < 1000; i++)
-                stackPanel2.Children.Add(new Button { Name = "" + i, Height = 75, Content = new TextBlock { Text = "button number " + i, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") } });
+                stackPanel2.Children.Add(CreateButton("" + i, 75, "button number " + i));
 
             stackPanel3 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true, VerticalAlignment = VerticalAlignment.Center };
             for (var i = 0; i < 103; i++)
-                stackPanel3.Children.Add(new Button { Name = "" + i, Height = 50 + 500 * random.NextFloat(), Content = new TextBlock { Text = "random button number " + i, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") } });
+                stackPanel3.Children.Add(CreateButton("" + i, 50 + 500 * random.NextFloat(), "random button number " + i));
 
             stackPanel4 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             for (var i = 0; i < 5; i++)
-                stackPanel4.Children.Add(new Button { Name = "" + i, Height = i * 30, Content = new TextBlock { Text = "random button number " + i, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") } });
+                stackPanel4.Children.Add(CreateButton("" + i, i * 30, "random button number "));
 
             currentStackPanel = stackPanel1;
 
             scrollViewer = new ScrollViewer { Name = "sv", Content = currentStackPanel, ScrollMode = ScrollingMode.Vertical };
 
             UIComponent.RootElement = scrollViewer;
+        }
+
+        private Button CreateButton(string name, float height, string text)
+        {
+            var textBlock = new TextBlock { Text = text, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
+            ApplyTextBlockDefaultStyle(textBlock);
+            var button = new Button { Name = name, Height = height, Content = textBlock };
+            ApplyButtonDefaultStyle(button);
+            return button;
         }
 
         protected override void Update(GameTime gameTime)

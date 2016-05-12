@@ -45,17 +45,25 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             buttonLeftTop2 = new Button { Padding = new Thickness(50, 50, 0, 50) };
             buttonLeftTop1 = new Button { Padding = new Thickness(50, 50, 0, 50), Content = buttonLeftTop2 };
             buttonLeftTop0 = new Button { Padding = new Thickness(50, 50, 0, 50), Content = buttonLeftTop1};
+            ApplyButtonDefaultStyle(buttonLeftTop2);
+            ApplyButtonDefaultStyle(buttonLeftTop1);
+            ApplyButtonDefaultStyle(buttonLeftTop0);
 
             var bottomGrid = new UniformGrid { Rows = 1, Columns = 2 };
             bottomButton = new Button { Content = bottomGrid };
+            ApplyButtonDefaultStyle(bottomButton);
             bottomButton.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
             bottomButton.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 2);
 
             buttonBottomLeft1 = new Button { Margin = new Thickness(50, 50, 0, 50) };
             buttonBottomLeft0 = new Button { Margin = new Thickness(50, 0, 0, 100), Content = buttonBottomLeft1 };
+            ApplyButtonDefaultStyle(buttonBottomLeft1);
+            ApplyButtonDefaultStyle(buttonBottomLeft0);
 
             bottonBottomRight1 = new Button { Margin = new Thickness(0, 0, 50, 100) };
             buttomBottonRight0 = new Button { Margin = new Thickness(0, 0, 50, 50), Content = bottonBottomRight1 };
+            ApplyButtonDefaultStyle(bottonBottomRight1);
+            ApplyButtonDefaultStyle(buttomBottonRight0);
             buttomBottonRight0.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);
 
             bottomGrid.Children.Add(buttonBottomLeft0);

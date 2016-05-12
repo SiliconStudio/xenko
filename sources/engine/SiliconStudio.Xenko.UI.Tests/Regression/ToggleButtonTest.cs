@@ -35,6 +35,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
+            ApplyToggleButtonBlockDefaultStyle(toggle);
 
             UIComponent.RootElement = toggle;
         }
