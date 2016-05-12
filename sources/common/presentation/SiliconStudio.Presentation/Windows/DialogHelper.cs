@@ -10,8 +10,6 @@ namespace SiliconStudio.Presentation.Windows
 {
     public static class DialogHelper
     {
-        public static string DefaultTitle { get; set; } = "Application";
-
         public static Task<MessageBoxResult> MessageBox(IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal)
         {
             return dispatcher.InvokeTask(() => Windows.MessageBox.Show(owner, message, caption, button, image));
