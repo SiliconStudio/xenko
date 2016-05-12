@@ -263,6 +263,9 @@ namespace SiliconStudio.Presentation.Windows
                         {
                             childModal.Owner = windowInfo;
                             windowInfo.IsDisabled = true;
+                            // We're placing another window on top of us, let's activate it so it comes to the foreground!
+                            if (childModal.Hwnd != IntPtr.Zero)
+                                NativeHelper.SetActiveWindow(childModal.Hwnd);
                         }
                         if (parentModal != null)
                         {
