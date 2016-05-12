@@ -242,9 +242,21 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Lights\LightGroupRendererDynamic.cs" />
+    <Compile Include="Rendering\Lights\LightDirectional1.cs">
+      <DependentUpon>LightDirectional.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Lights\LightSpot1.cs">
+      <DependentUpon>LightSpot.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Lights\LightShaderGroupDynamic.cs" />
-    <Compile Include="Rendering\Lights\LightStructures.cs">
-      <DependentUpon>LightStructures.xksl</DependentUpon>
+    <Compile Include="Rendering\Lights\LightPoint1.cs">
+      <DependentUpon>LightPoint.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -376,9 +388,17 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>DirectLightGroupPerView.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Lights\LightStructures.xksl">
+    <None Include="Rendering\Lights\LightDirectional.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>LightStructures.cs</LastGenOutput>
+      <LastGenOutput>LightDirectional1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Lights\LightSpot.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightSpot1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Lights\LightPoint.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightPoint1.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

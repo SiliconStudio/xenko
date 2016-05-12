@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a group of spot lights
     /// </summary>
-    class LightSpotGroup<int TMaxLightCount> : DirectLightGroupPerDraw, NormalStream, PositionStream4, LightUtil, LightStructures
+    class LightSpotGroup<int TMaxLightCount> : DirectLightGroupPerDraw, LightSpot
     {
         cbuffer PerDraw.Lighting
         {
@@ -22,23 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         override void PrepareDirectLightCore(int lightIndex)
         {
-            float3 lightVector = Lights[lightIndex].PositionWS - streams.PositionWS;
-            float lightVectorLength = length(lightVector);
-            float3 lightVectorNorm = lightVector / lightVectorLength;
-
-            float3 lightAngleOffsetAndInvSquareRadius = Lights[lightIndex].AngleOffsetAndInvSquareRadius;
-            float2 lightAngleAndOffset = lightAngleOffsetAndInvSquareRadius.xy;
-            float lightInvSquareRadius = lightAngleOffsetAndInvSquareRadius.z;
-
-            // TODO: Add support for disk based Directional light
-            float3 lightDirection = -Lights[lightIndex].DirectionWS;
-
-            float attenuation = 1;
-            attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
-            attenuation *= GetAngleAttenuation(lightVectorNorm, lightDirection, lightAngleAndOffset.x, lightAngleAndOffset.y);
-
-            streams.lightColor = Lights[lightIndex].Color * attenuation;
-            streams.lightDirectionWS = lightDirection;
+            ProcessLight(Lights[lightIndex]);
         }
     };
 }

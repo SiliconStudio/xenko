@@ -21,6 +21,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <summary>
+        /// One-time initialization before the light loop.
+        /// </summary>
+        void PrepareDirectLights()
+        {
+        }
+
+        /// <summary>
         /// Compute the light color/direction for the specified index within this group
         /// </summary>
         void PrepareDirectLight(int lightIndex)
