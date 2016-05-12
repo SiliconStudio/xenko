@@ -1451,6 +1451,7 @@ namespace SiliconStudio.Shaders.Convertor
                                         break;
                                     case "Texture2DArray":
                                     case "Texture2DArrayDMS":
+                                    case "Texture3D":
                                         dimP = "xyz";
                                         mipLevel = "w";
                                         break;
