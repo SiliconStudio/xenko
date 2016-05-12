@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The screen area where inputs are detected
         /// </summary>
-        public RectangleF ControlRectangle
+        internal RectangleF ControlRectangle
         {
             get { return controlRectangle; }
             set
@@ -446,6 +446,13 @@ namespace SiliconStudio.Xenko.Input
 
         protected virtual void SetMousePosition(Vector2 normalizedPosition)
         {         
+        }
+
+        public virtual Vector2 TransformScreenCoordinates(RectangleF destinationRectangle, Vector2 screenCoordinates)
+        {
+            screenCoordinates.X *= destinationRectangle.Width / ControlRectangle.Width;
+            screenCoordinates.Y *= destinationRectangle.Height / ControlRectangle.Height;
+            return new Vector2((screenCoordinates.X - destinationRectangle.X) / destinationRectangle.Width, (screenCoordinates.Y - destinationRectangle.Y) / destinationRectangle.Height);
         }
 
         /// <summary>
