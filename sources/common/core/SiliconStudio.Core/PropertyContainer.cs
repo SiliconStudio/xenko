@@ -170,9 +170,9 @@ namespace SiliconStudio.Core
         {
             var removed = false;
 
+            var previousValue = Get(propertyKey);
             if (PropertyUpdated != null || propertyKey.PropertyUpdateCallback != null)
             {
-                var previousValue = Get(propertyKey);
 
                 if (properties != null)
                     removed = properties.Remove(propertyKey);
@@ -189,6 +189,8 @@ namespace SiliconStudio.Core
                 if (properties != null)
                     removed = properties.Remove(propertyKey);
             }
+
+            propertyKey.ObjectInvalidationMetadata?.Invalidate(Owner, propertyKey, previousValue);
 
             return removed;
         }
@@ -603,7 +605,7 @@ namespace SiliconStudio.Core
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Remove(KeyValuePair<PropertyKey, object> item)
         {
-            return ((IDictionary<PropertyKey, object>)properties).Remove(item);
+            return Remove(item.Key);
         }
         
         internal abstract class ValueHolder
