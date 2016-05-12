@@ -196,6 +196,27 @@ namespace SiliconStudio.Xenko.Assets
 
             solutionPlatforms.Add(windowsPhonePlatform);
 
+            // Linux
+            var linuxPlatform = new SolutionPlatform()
+            {
+                Name = PlatformType.Linux.ToString(),
+                IsAvailable = true,
+                Alias = "Any CPU",
+                Type = PlatformType.Linux,
+            };
+            linuxPlatform.PlatformsPart.Add(new SolutionPlatformPart("Any CPU") { InheritConfigurations = true });
+            linuxPlatform.PlatformsPart.Add(new SolutionPlatformPart("Mixed Platforms") { Alias = "Any CPU" });
+            linuxPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_LINUX");
+            linuxPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
+            linuxPlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
+
+            foreach (var part in linuxPlatform.PlatformsPart)
+            {
+                part.Configurations.Clear();
+                part.Configurations.AddRange(linuxPlatform.Configurations);
+            }
+            solutionPlatforms.Add(linuxPlatform);
+
             // Android
             var androidPlatform = new SolutionPlatform()
             {
