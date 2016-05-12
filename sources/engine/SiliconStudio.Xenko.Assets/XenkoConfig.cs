@@ -215,7 +215,8 @@ namespace SiliconStudio.Xenko.Assets
                 part.Configurations.Clear();
                 part.Configurations.AddRange(linuxPlatform.Configurations);
             }
-            solutionPlatforms.Add(linuxPlatform);
+// Following is commented until we have full fledge support (templates and other needed stuff)
+//            solutionPlatforms.Add(linuxPlatform);
 
             // Android
             var androidPlatform = new SolutionPlatform()
