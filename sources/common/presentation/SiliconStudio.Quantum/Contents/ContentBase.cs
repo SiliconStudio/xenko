@@ -144,7 +144,7 @@ namespace SiliconStudio.Quantum.Contents
                 return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(Value)).Select(x => new Index(x));
             }
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(Value).Cast<Index>();
+            return dictionaryDescriptor?.GetKeys(Value).Cast<object>().Select(x => new Index(x));
         }
     }
 }
