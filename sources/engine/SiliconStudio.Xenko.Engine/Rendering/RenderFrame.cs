@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (DepthStencil.IsDisposed)
                 return false;
 
-            if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_11_0)
+            if (renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
             {
                 if (DepthStencilAsRT == null)
                     return true;
@@ -170,45 +170,46 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void UpdateDepthStencilCache(RenderDrawContext renderContext)
         {
-            if (renderContext.GraphicsDevice.Features.CurrentProfile <= GraphicsProfile.Level_10_1)
+            if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV)
             {
-                if (HasDepthStencilChanged(renderContext))
-                {
-                    // Depth as a RenderTarget is the same
-                    DepthStencilAsRT = DepthStencil;
+                DepthStencilAsRT = DepthStencil;
+                DepthStencilAsSR = null;
+                return;
+            }
 
-                    // Depth as a ShaderResource is a copy
-                    DepthStencilAsSR?.Dispose();
+            if (renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
+            {
+                if (!HasDepthStencilChanged(renderContext))
+                    return;
 
-                    if (renderContext.GraphicsDevice.Features.CurrentProfile >= GraphicsProfile.Level_10_0)
-                    {
-                        var textureDescription = DepthStencil.Description;
-                        textureDescription.Flags = TextureFlags.ShaderResource;
-                        textureDescription.Format = PixelFormat.R24_UNorm_X8_Typeless;
+                DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
 
-                        DepthStencilAsSR = new Texture(renderContext.GraphicsDevice);
-                        DepthStencilAsSR.InitializeFrom(textureDescription);
-                    }
-                    else
-                    {
-                        DepthStencilAsSR = null;
-                    }
-                }
-
-                if (DepthStencilAsSR != null)
-                {
-                    renderContext.CommandList.Copy(DepthStencil, DepthStencilAsSR);
-                }
+                DepthStencilAsSR = DepthStencil;
 
                 return;
             }
 
+            // Depth as read-only render target AND shader resource is not supported - we have to copy it
+
             if (!HasDepthStencilChanged(renderContext))
                 return;
 
-            DepthStencilAsRT = DepthStencil.ToDepthStencilReadOnlyTexture();
+            // Depth as a RenderTarget is the same
+            DepthStencilAsRT = DepthStencil;
 
-            DepthStencilAsSR = DepthStencil;
+            // Depth as a ShaderResource is a copy
+            DepthStencilAsSR?.Dispose();
+
+            var textureDescription = DepthStencil.Description;
+            textureDescription.Flags = TextureFlags.ShaderResource;
+            textureDescription.Format = PixelFormat.R24_UNorm_X8_Typeless;
+
+            DepthStencilAsSR = Texture.New(renderContext.GraphicsDevice, textureDescription);
+
+            if (DepthStencilAsSR != null)
+            {
+                renderContext.CommandList.Copy(DepthStencil, DepthStencilAsSR);
+            }
         }
 
         /// <summary>
