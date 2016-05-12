@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -217,6 +218,17 @@ namespace SiliconStudio.Presentation.Windows
             if (windowInfo == null)
             {
                 windowInfo = new WindowInfo(hwnd);
+
+                // Since Visual Studio 2015 Update 2, a adorner window can be injected by the debugger that will be considered modal. We have to discard it.
+                if (Debugger.IsAttached)
+                {
+                    if (windowInfo.Window?.GetType().FullName.StartsWith("Microsoft.XamlDiagnostics.WpfTap") ?? false)
+                    {
+                        Logger.Debug($"Discarding Visual Studio WpfTap diagnostics window ({hwnd})");
+                        return;
+                    }
+                }
+
                 AllWindowsList.Add(windowInfo);
             }
             windowInfo.IsShown = true;

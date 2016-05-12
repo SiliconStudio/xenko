@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 
 namespace SiliconStudio.Presentation.Extensions
@@ -13,6 +14,9 @@ namespace SiliconStudio.Presentation.Extensions
 
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr processId);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
