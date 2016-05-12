@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private bool shouldSnapToTicks;
 
-        private Orientation orientation;
+        private Orientation orientation = Orientation.Horizontal;
         private float tickFrequency = 10.0f;
         private float minimum;
         private float maximum = 1.0f;
@@ -64,6 +64,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     trackBackgroundImage.GetSprite().SizeChanged -= OnSizeChanged;
 
                 trackBackgroundImage = value;
+                InvalidateMeasure();
 
                 if (trackBackgroundImage != null)
                     trackBackgroundImage.GetSprite().SizeChanged += OnSizeChanged;
@@ -148,7 +149,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [DefaultValue(0.1f)]
-        public float Step { get; set; } = 0.01f;
+        public float Step { get; set; } = 0.1f;
 
         /// <summary>
         /// Gets or sets the current value of the slider.
@@ -180,6 +181,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DataMember]
         [DataMemberRange(1, float.MaxValue)]
         [Display(category: AppearanceCategory)]
+        [DefaultValue(10.0f)]
         public float TickFrequency
         {
             get { return tickFrequency; }
@@ -246,7 +248,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         [DataMember]
         [Display(category: LayoutCategory)]
-        [DefaultValue(default(Orientation))]
+        [DefaultValue(Orientation.Horizontal)]
         public Orientation Orientation
         {
             get { return orientation; }

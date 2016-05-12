@@ -137,9 +137,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         private readonly GameBase game;
 
         private Func<char, bool> characterFilterPredicate;
-        private int minLines;
-        private int maxLines;
-        private int maxLength;
+        private int minLines = 1;
+        private int maxLines = int.MaxValue;
+        private int maxLength = int.MaxValue;
         private SpriteFont font;
         private bool isReadOnly;
 
@@ -219,6 +219,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         [DataMember]
         [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
         public bool IsReadOnly
         {
             get { return isReadOnly; }
@@ -599,10 +600,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DefaultValue("")]
         public string Text
         {
-            get
-            {
-                return text;
-            }
+            get { return text; }
             set
             {
                 if (value == null)
