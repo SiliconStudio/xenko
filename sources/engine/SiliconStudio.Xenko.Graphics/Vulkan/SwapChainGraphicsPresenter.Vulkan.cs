@@ -59,9 +59,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
             PresentInterval = presentationParameters.PresentationInterval;
 
-            // Initialize the swap chain
-            swapChain = CreateSwapChain();
+            backbuffer = new Texture(device);
 
+            CreateSurface();
+
+            // Initialize the swap chain
+            CreateSwapChain();
         }
 
         public override Texture BackBuffer
@@ -197,41 +200,37 @@ namespace SiliconStudio.Xenko.Graphics
             base.OnNameChanged();
         }
 
-        public override unsafe void OnDestroyed()
+        public override void OnDestroyed()
         {
-            backbuffer.Dispose();
-            backbuffer = null;
-
-            foreach (var swapchainImage in swapchainImages)
-            {
-                GraphicsDevice.NativeDevice.DestroyImageView(swapchainImage.NativeColorAttachmentView);
-            }
-            swapchainImages = null;
-
-            GraphicsDevice.NativeDevice.DestroySwapchain(swapChain);
-            swapChain = Swapchain.Null;
+            DestroySwapchain();
 
             base.OnDestroyed();
         }
 
-        protected override void Destroy()
+        protected override unsafe void Destroy()
         {
             OnDestroyed();
+
+            GraphicsAdapterFactory.NativeInstance.DestroySurface(surface);
+            surface = Surface.Null;
 
             base.Destroy();
         }
 
         public override void OnRecreated()
         {
+            // TODO VULKAN: Violent driver crashes when recreating device and swapchain
+            throw new NotImplementedException();
+
             base.OnRecreated();
 
             // Recreate swap chain
-            swapChain = CreateSwapChain();
+            CreateSwapChain();
         }
 
         protected override void ResizeBackBuffer(int width, int height, PixelFormat format)
         {
-            throw new NotImplementedException();
+            CreateSwapChain();
         }
 
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
@@ -248,11 +247,28 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 
-        private unsafe Swapchain CreateSwapChain()
+        private unsafe void DestroySwapchain()
+        {
+            if (swapChain == Swapchain.Null)
+                return;
+
+            GraphicsDevice.NativeDevice.WaitIdle();
+
+            backbuffer.OnDestroyed();
+
+            foreach (var swapchainImage in swapchainImages)
+            {
+                GraphicsDevice.NativeDevice.DestroyImageView(swapchainImage.NativeColorAttachmentView);
+            }
+            swapchainImages = null;
+
+            GraphicsDevice.NativeDevice.DestroySwapchain(swapChain);
+            swapChain = Swapchain.Null;
+        }
+
+        private unsafe void CreateSwapChain()
         {
             Description.BackBufferFormat = PixelFormat.B8G8R8A8_UNorm_SRgb;
-
-            CreateSurface();
 
             // Queue
             // TODO VULKAN: Queue family is needed when creating the Device, so here we can just do a sanity check?
@@ -328,14 +344,15 @@ namespace SiliconStudio.Xenko.Graphics
                 CompositeAlpha = CompositeAlphaFlags.Opaque,
                 MinImageCount = desiredImageCount,
                 PreTransform = preTransform,
-                // OldSwapchain = 
+                OldSwapchain = swapChain,
                 Clipped = true
             };
-            swapChain = GraphicsDevice.NativeDevice.CreateSwapchain(ref swapchainCreateInfo);
+            var newSwapChain = GraphicsDevice.NativeDevice.CreateSwapchain(ref swapchainCreateInfo);
 
+            DestroySwapchain();
+
+            swapChain = newSwapChain;
             CreateBackBuffers();
-
-            return swapChain;
         }
 
         private unsafe void CreateSurface()
@@ -400,7 +417,7 @@ namespace SiliconStudio.Xenko.Graphics
                 MultiSampleLevel = MSAALevel.None,
                 Usage = GraphicsResourceUsage.Default
             };
-            backbuffer = new Texture(GraphicsDevice).InitializeWithoutResources(backBufferDescription);
+            backbuffer.InitializeWithoutResources(backBufferDescription);
 
             var createInfo = new ImageViewCreateInfo
             {

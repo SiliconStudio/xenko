@@ -13,12 +13,20 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class DescriptorSetLayout
     {
+        private readonly DescriptorSetLayoutBuilder builder;
+
         internal SharpVulkan.DescriptorSetLayout NativeLayout;
         internal Sampler[] ImmutableSamplers;
 
         private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder) : base(device)
         {
-            NativeLayout = CreateNativeDescriptorSetLayout(device, builder.Entries, out ImmutableSamplers);
+            this.builder = builder;
+            Recreate();
+        }
+
+        private void Recreate()
+        {
+            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, builder.Entries, out ImmutableSamplers);
         }
 
         internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries, out Sampler[] immutableSamplers)
@@ -63,6 +71,12 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 return device.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
             }
+        }
+
+        protected internal override bool OnRecreate()
+        {
+            Recreate();
+            return true;
         }
 
         protected internal override void OnDestroyed()

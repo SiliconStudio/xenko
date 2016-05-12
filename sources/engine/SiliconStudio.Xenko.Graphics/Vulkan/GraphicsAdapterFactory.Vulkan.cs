@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Graphics
                 //"VK_LAYER_LUNARG_vktrace"
             };
 
-            IntPtr[] enabledLayerNames = null;
+            IntPtr[] enabledLayerNames = new IntPtr[0];
 
             //if (false)
             {

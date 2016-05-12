@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class CommandList
     {
-        private readonly CommandBufferPool commandBufferPool;
+        private CommandBufferPool commandBufferPool;
         internal CommandBuffer NativeCommandBuffer;
 
         private RenderPass activeRenderPass;
@@ -28,12 +28,17 @@ namespace SiliconStudio.Xenko.Graphics
         private int framebufferAttachmentCount;
         private bool framebufferDirty = true;
         private Framebuffer activeFramebuffer;
-        private readonly FramebufferCollector framebufferCollector;
+        private FramebufferCollector framebufferCollector;
 
         private HeapPool.DescriptorAllocation descriptorPool;
         private SharpVulkan.DescriptorSet descriptorSet;
 
         public CommandList(GraphicsDevice device) : base(device)
+        {
+            Recreate();
+        }
+
+        private void Recreate()
         {
             commandBufferPool = new CommandBufferPool(GraphicsDevice);
 
@@ -1060,14 +1065,26 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void Destroy()
+        protected internal override bool OnRecreate()
+        {
+            Recreate();
+            return true;
+        }
+
+        protected internal override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            DestroyImpl();
+        }
+
+        protected override void DestroyImpl()
         {
             GraphicsDevice.NativeDevice.WaitIdle();
 
             commandBufferPool.Dispose();
             framebufferCollector.Dispose();
 
-            base.Destroy();
+            base.DestroyImpl();
         }
 
         private unsafe void EnsureRenderPass()

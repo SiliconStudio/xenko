@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override unsafe void OnDestroyed()
+        protected internal override void OnDestroyed()
         {
             base.OnDestroyed();
             DestroyImpl();

@@ -22,6 +22,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int[] ResourceGroupMapping;
         internal int ResourceGroupCount;
         internal Sampler[] ImmutableSamplers;
+        internal PipelineStateDescription Description;
 
         // State exposed by the CommandList
         private static readonly DynamicState[] dynamicStates =
@@ -32,27 +33,33 @@ namespace SiliconStudio.Xenko.Graphics
             DynamicState.StencilReference,
         };
 
-        internal unsafe PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
+        internal PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
         {
-            if (pipelineStateDescription.RootSignature == null)
+            Description = pipelineStateDescription;
+            Recreate();
+        }
+
+        private unsafe void Recreate()
+        {
+            if (Description.RootSignature == null)
                 return;
 
-            CreateRenderPass(pipelineStateDescription);
+            CreateRenderPass(Description);
 
-            CreatePipelineLayout(pipelineStateDescription);
+            CreatePipelineLayout(Description);
 
             // Create shader stages
             Dictionary<int, string> inputAttributeNames;
-            var stages = CreateShaderStages(pipelineStateDescription, out inputAttributeNames);
+            var stages = CreateShaderStages(Description, out inputAttributeNames);
 
-            var inputAttributes = new VertexInputAttributeDescription[pipelineStateDescription.InputElements.Length];
+            var inputAttributes = new VertexInputAttributeDescription[Description.InputElements.Length];
             int inputAttributeCount = 0;
             var inputBindings = new VertexInputBindingDescription[inputAttributes.Length];
             int inputBindingCount = 0;
 
             for (int inputElementIndex = 0; inputElementIndex < inputAttributes.Length; inputElementIndex++)
             {
-                var inputElement = pipelineStateDescription.InputElements[inputElementIndex];
+                var inputElement = Description.InputElements[inputElementIndex];
                 var slotIndex = inputElement.InputSlot;
 
                 if (inputElement.InstanceDataStepRate > 1)
@@ -91,7 +98,7 @@ namespace SiliconStudio.Xenko.Graphics
             var inputAssemblyState = new PipelineInputAssemblyStateCreateInfo
             {
                 StructureType = StructureType.PipelineInputAssemblyStateCreateInfo,
-                Topology = VulkanConvertExtensions.ConvertPrimitiveType(pipelineStateDescription.PrimitiveType),
+                Topology = VulkanConvertExtensions.ConvertPrimitiveType(Description.PrimitiveType),
                 PrimitiveRestartEnable = true,
             };
 
@@ -99,13 +106,13 @@ namespace SiliconStudio.Xenko.Graphics
             var multisampleState = new PipelineMultisampleStateCreateInfo();
             var tessellationState = new PipelineTessellationStateCreateInfo();
 
-            var rasterizationState = CreateRasterizationState(pipelineStateDescription.RasterizerState);
+            var rasterizationState = CreateRasterizationState(Description.RasterizerState);
 
-            var depthStencilState = CreateDepthStencilState(pipelineStateDescription);
+            var depthStencilState = CreateDepthStencilState(Description);
 
-            var description = pipelineStateDescription.BlendState;
+            var description = Description.BlendState;
 
-            var renderTargetCount = pipelineStateDescription.Output.RenderTargetCount;
+            var renderTargetCount = Description.Output.RenderTargetCount;
             var colorBlendAttachments = new PipelineColorBlendAttachmentState[renderTargetCount];
 
             var renderTargetBlendState = &description.RenderTarget0;
@@ -177,7 +184,7 @@ namespace SiliconStudio.Xenko.Graphics
                     RenderPass = NativeRenderPass,
                     Subpass = 0,
                 };
-                NativePipeline = graphicsDevice.NativeDevice.CreateGraphicsPipelines(PipelineCache.Null, 1, &createInfo);
+                NativePipeline = GraphicsDevice.NativeDevice.CreateGraphicsPipelines(PipelineCache.Null, 1, &createInfo);
             }
 
             // Cleanup shader modules
@@ -185,6 +192,12 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsDevice.NativeDevice.DestroyShaderModule(stage.Module);
             }
+        }
+
+        protected internal override bool OnRecreate()
+        {
+            Recreate();
+            return true;
         }
 
         private unsafe void CreateRenderPass(PipelineStateDescription pipelineStateDescription)
@@ -267,7 +280,13 @@ namespace SiliconStudio.Xenko.Graphics
             NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
         }
 
-        protected override unsafe void Destroy()
+        protected internal override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            DestroyImpl();
+        }
+
+        protected override unsafe void DestroyImpl()
         {
             if (NativePipeline != Pipeline.Null)
             {
@@ -281,7 +300,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            base.Destroy();
+            base.DestroyImpl();
         }
 
         internal struct DescriptorSetInfo

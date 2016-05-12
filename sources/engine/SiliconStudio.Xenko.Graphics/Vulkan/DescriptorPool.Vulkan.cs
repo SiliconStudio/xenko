@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
         //internal DescriptorHeap SrvHeap;
         //internal DescriptorHeap SamplerHeap;
 
+        private readonly DescriptorTypeCount[] counts;
         internal int Offset;
         internal int Count;
 
@@ -23,7 +24,13 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.NativeDevice.ResetDescriptorPool(NativeDescriptorPool, DescriptorPoolResetFlags.None);
         }
 
-        private unsafe DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts) : base(graphicsDevice)
+        private DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts) : base(graphicsDevice)
+        {
+            this.counts = counts;
+            Recreate();
+        }
+
+        private unsafe void Recreate()
         {
             // For now, we put everything together so let's compute total count
             Count = counts.Length;
@@ -51,6 +58,18 @@ namespace SiliconStudio.Xenko.Graphics
 
                 NativeDescriptorPool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
             }
+        }
+
+        protected internal override bool OnRecreate()
+        {
+            Recreate();
+            return true;
+        }
+
+        protected internal override void OnDestroyed()
+        {
+            base.OnDestroyed();
+            DestroyImpl();
         }
 
         protected override unsafe void DestroyImpl()

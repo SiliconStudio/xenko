@@ -6,16 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Vulkan;
+        internal GraphicsProfile RequestedProfile;
 
         private bool simulateReset = false;
         private string rendererName;
@@ -183,6 +186,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
 
+            RequestedProfile = graphicsProfiles.Last();
+
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {
                 // TODO VULKAN debug layer
@@ -215,7 +220,7 @@ namespace SiliconStudio.Xenko.Graphics
                 //"VK_LAYER_LUNARG_api_dump",
             };
 
-            IntPtr[] enabledLayerNames = null;
+            IntPtr[] enabledLayerNames = new IntPtr[0];
 
             //if (false)
             {
