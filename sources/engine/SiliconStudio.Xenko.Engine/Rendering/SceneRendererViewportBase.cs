@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <userdoc>The aspect ratio used if Add Letterbox/Pillarbox is checked.</userdoc>
         [DataMember(130)]
         [DefaultValue(CameraComponent.DefaultAspectRatio)]
-        public float FixedAspectRatio { get; set; }
+        public float FixedAspectRatio { get; set; } = CameraComponent.DefaultAspectRatio;
 
         /// <summary>
         /// Gets or sets a value wether to edit the Viewport to add letterboxes or pillarboxes
