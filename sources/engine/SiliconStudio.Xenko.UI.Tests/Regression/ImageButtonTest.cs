@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -27,8 +28,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             imageButton = new ImageButton
             {
-                PressedImage = new Sprite(Content.Load<Texture>("ImageButtonPressed")),
-                NotPressedImage = new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
+                PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed")),
+                NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
             };
 
             UIComponent.RootElement = imageButton;

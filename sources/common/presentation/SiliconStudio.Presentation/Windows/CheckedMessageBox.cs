@@ -19,13 +19,13 @@ namespace SiliconStudio.Presentation.Windows
         /// Identifies the <see cref="CheckedMessage"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CheckedMessageProperty =
-            DependencyProperty.Register("CheckedMessage", typeof(string), typeof(CheckedMessageBox));
+            DependencyProperty.Register(nameof(CheckedMessage), typeof(string), typeof(CheckedMessageBox));
 
         /// <summary>
         /// Identifies the <see cref="IsCheckedProperty"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsCheckedProperty =
-            DependencyProperty.Register("IsChecked", typeof(bool?), typeof(CheckedMessageBox));
+            DependencyProperty.Register(nameof(IsChecked), typeof(bool?), typeof(CheckedMessageBox));
 
         public string CheckedMessage
         {
@@ -46,15 +46,17 @@ namespace SiliconStudio.Presentation.Windows
         
         public static async Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
+            var buttonList = buttons.ToList();
             var messageBox = new CheckedMessageBox
             {
                 Title = caption,
                 Content = message,
-                ButtonsSource = buttons.ToList(),
+                ButtonsSource = buttonList,
                 CheckedMessage = checkedMessage,
                 IsChecked = isChecked,
             };
             SetImage(messageBox, image);
+            SetKeyBindings(messageBox, buttonList);
 
             var result = (MessageBoxResult)await messageBox.ShowInternal(owner);
             return new CheckedMessageBoxResult(result, messageBox.IsChecked);

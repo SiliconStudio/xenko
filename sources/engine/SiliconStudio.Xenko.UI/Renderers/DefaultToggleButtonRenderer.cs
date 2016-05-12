@@ -27,22 +27,22 @@ namespace SiliconStudio.Xenko.UI.Renderers
             var color = toggleButton.RenderOpacity * Color.White;
 
             var image = GetToggleStateImage(toggleButton);
-            if (image == null || image.Texture == null)
+            if (image?.Texture == null)
                 return;
             
             Batch.DrawImage(image.Texture, ref toggleButton.WorldMatrixInternal, ref image.RegionInternal, ref toggleButton.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
 
-        private Sprite GetToggleStateImage(ToggleButton toggleButton)
+        private static Sprite GetToggleStateImage(ToggleButton toggleButton)
         {
             switch (toggleButton.State)
             {
                 case ToggleState.Checked:
-                    return toggleButton.CheckedImage;
+                    return toggleButton.CheckedImage?.GetSprite();
                 case ToggleState.Indeterminate:
-                    return toggleButton.IndeterminateImage;
+                    return toggleButton.IndeterminateImage.GetSprite();
                 case ToggleState.UnChecked:
-                    return toggleButton.UncheckedImage;
+                    return toggleButton.UncheckedImage.GetSprite();
                 default:
                     throw new ArgumentOutOfRangeException();
             }

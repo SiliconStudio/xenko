@@ -10,6 +10,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -36,7 +37,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Script.Add(camera);
 
             UIRoot.Transform.Rotation = Quaternion.RotationX(MathUtil.Pi / 3f);
-            UIComponent.RootElement = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv"))};
             UIComponent.IsFullScreen = false;
             UIComponent.IsBillboard = false;
             UIComponent.Resolution = new Vector3(200, 200, 100);

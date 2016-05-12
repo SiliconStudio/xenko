@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -27,7 +28,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var sprite = new Sprite(Content.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
+            var sprite = (SpriteFromTexture)new Sprite(Content.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
 
             var bi1 = new ImageElement { Source = sprite, Height = 150 };
             var bi2 = new ImageElement { Source = sprite, Height = 300 };
@@ -52,18 +53,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawSmallerElement()
         {
-            if(stackPanel != null)
-                stackPanel.ScrolllToElement(0);
+            stackPanel?.ScrolllToElement(0);
         }
+
         public void DrawRealSizeElement()
         {
-            if (stackPanel != null)
-                stackPanel.ScrolllToElement(1);
+            stackPanel?.ScrolllToElement(1);
         }
+
         public void DrawBiggerElement()
         {
-            if (stackPanel != null)
-                stackPanel.ScrolllToElement(2);
+            stackPanel?.ScrolllToElement(2);
         }
 
         [Test]

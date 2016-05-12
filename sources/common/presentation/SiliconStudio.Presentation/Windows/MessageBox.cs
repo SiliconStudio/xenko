@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using SiliconStudio.Presentation.Resources;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -17,6 +18,12 @@ namespace SiliconStudio.Presentation.Windows
     
     public class MessageBox : MessageDialogBase
     {
+        /// <summary>
+        /// Identifies the <see cref="Image"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ImageProperty =
+            DependencyProperty.Register(nameof(Image), typeof(ImageSource), typeof(MessageBox));
+
         protected MessageBox()
         {
         }
@@ -27,12 +34,6 @@ namespace SiliconStudio.Presentation.Windows
 
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => Clipboard.SetDataObject(Content ?? string.Empty, true)));
         }
-
-        /// <summary>
-        /// Identifies the <see cref="Image"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ImageProperty =
-            DependencyProperty.Register("Image", typeof(ImageSource), typeof(MessageBox));
 
         public ImageSource Image
         {
@@ -62,6 +63,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             Result = (int)MessageBoxResult.No,
             Content = "No",
+            Key = KeyGestures.ButtonNo,
         };
 
         /// <summary>
@@ -88,9 +90,10 @@ namespace SiliconStudio.Presentation.Windows
             IsDefault = true,
             Result = (int)MessageBoxResult.Yes,
             Content = "Yes",
+            Key = KeyGestures.ButtonYes,
         };
 
-        public static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
+        internal static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
         {
             ICollection<DialogButtonInfo> buttons;
             switch (button)
@@ -118,7 +121,7 @@ namespace SiliconStudio.Presentation.Windows
             return buttons;
         }
 
-        public static void SetImage(MessageBox messageBox, MessageBoxImage image)
+        internal static void SetImage(MessageBox messageBox, MessageBoxImage image)
         {
             string imageKey;
             switch (image)
@@ -173,14 +176,33 @@ namespace SiliconStudio.Presentation.Windows
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         public static async Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
         {
+            var buttonList = buttons.ToList();
             var messageBox = new MessageBox
             {
                 Title = caption,
                 Content = message,
-                ButtonsSource = buttons.ToList(),
+                ButtonsSource = buttonList,
             };
             SetImage(messageBox, image);
+            SetKeyBindings(messageBox, buttonList);
             return (MessageBoxResult)await messageBox.ShowInternal(owner);
+        }
+
+        internal static void SetKeyBindings(MessageBox messageBox, IEnumerable<DialogButtonInfo> buttons)
+        {
+            foreach (var button in buttons)
+            {
+                Key key;
+                if (!Enum.TryParse(button.Key, out key))
+                    continue;
+
+                var binding = new KeyBinding(messageBox.ButtonCommand, key, ModifierKeys.Alt)
+                {
+                    CommandParameter = button.Result,
+                    Modifiers = ModifierKeys.None, // because KeyBinding doesn't allow it in the constructor!
+                };
+                messageBox.InputBindings.Add(binding);
+            }
         }
     }
 }

@@ -222,10 +222,9 @@ namespace SiliconStudio.Xenko.Audio
 
         private void OnSoundControllerListChanged(object o, AudioEmitterComponent.ControllerCollectionChangedEventArgs args)
         {
-            AssociatedData associatedData = null;
-            Internal.Refactor.ThrowNotImplementedException(null);
-            //if (!ComponentDatas.TryGetValue(args.Entity, out associatedData))
-            //    return;
+            AssociatedData associatedData;
+            if (!ComponentDatas.TryGetValue(args.EmitterComponent, out associatedData))
+                return;
 
             // A new SoundEffect have been associated to the AudioEmitterComponenent or an old SoundEffect have been deleted.
             // We need to create/destroy the corresponding SoundEffectInstances.

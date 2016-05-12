@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         private const int ScreenWidth = 512;
         private const int ScreenHeight = 256;
 
-        public List<Entity> rotatedSprites = new List<Entity>();
+        private readonly List<Entity> rotatedSprites = new List<Entity>();
 
         public SpriteRotationTests()
         {
@@ -30,14 +30,13 @@ namespace SiliconStudio.Xenko.Engine.Tests
             GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         }
 
-        private Entity CreateSpriteEntity(SpriteSheet sheet, string frameName)
+        private static Entity CreateSpriteEntity(SpriteSheet sheet, string frameName)
         {
             return new Entity(frameName)
             {
                 new SpriteComponent
                 {
-                    SpriteProvider = new SpriteFromSheet { Sheet = sheet },
-                    CurrentFrame = sheet.FindImageIndex(frameName)
+                    SpriteProvider = SpriteFromSheet.Create(sheet, frameName)
                 }
             };
         }
