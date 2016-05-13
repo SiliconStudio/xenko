@@ -132,10 +132,9 @@ namespace SiliconStudio.Xenko.Rendering
                     foreach (var viewLayout in viewFeature.Layouts)
                     {
                         var resourceGroup = viewLayout.Entries[MainRenderView.Index].Resources;
-                        resourceGroup.DescriptorSet.SetShaderResourceView(slot, depthStencilSRV);
+                        var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalGroup);
 
-                        // TODO: ParticleMaterial should set this up
-                        materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, currentRenderFrame.DepthBufferResolver?.AsShaderResourceView());
+                        resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.SlotStart, depthStencilSRV);
                     }
                 }
 
