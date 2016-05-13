@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
@@ -42,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
         }
 
-        public virtual void SetViewCount(int viewCount)
+        public virtual void SetViews(FastList<RenderView> views)
         {
             
         }
@@ -53,11 +54,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             public RenderDrawContext Context;
 
+            // Information about the view
             public int ViewIndex;
             public RenderView View;
-            public int ViewCount;
+            public FastList<RenderView> Views;
 
             public LightComponentCollection LightCollection;
+            public Type LightType;
+            
+            // Light range to process in LightCollection
+            public int LightStart;
+            public int LightEnd;
 
             public ShadowMapRenderer ShadowMapRenderer;
 

@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void ProcessLights(ProcessLightsParameters parameters)
         {
-            for (int lightIndex = 0; lightIndex < parameters.LightCollection.Count; lightIndex++)
+            for (int lightIndex = parameters.LightStart; lightIndex < parameters.LightEnd; lightIndex++)
             {
                 // For now, we allow only one cubemap at once
                 var light = parameters.LightCollection[lightIndex];

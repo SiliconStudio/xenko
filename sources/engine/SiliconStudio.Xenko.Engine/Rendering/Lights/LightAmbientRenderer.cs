@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -14,16 +15,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public class LightAmbientRenderer : LightGroupRendererBase
     {
-        private readonly ShaderMixinSource mixin;
-        private LightAmbientShaderGroup lightShaderGroup;
+        private LightAmbientShaderGroup lightShaderGroup = new LightAmbientShaderGroup();
 
         public LightAmbientRenderer()
         {
-            mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("LightSimpleAmbient"));
             IsEnvironmentLight = true;
-
-            lightShaderGroup = new LightAmbientShaderGroup(mixin);
         }
 
         public override void Reset()
@@ -33,20 +29,21 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             lightShaderGroup.Reset();
         }
 
-        public override void SetViewCount(int viewCount)
+        public override void SetViews(FastList<RenderView> views)
         {
-            base.SetViewCount(viewCount);
+            base.SetViews(views);
 
             // Make sure array is big enough for all render views
-            Array.Resize(ref lightShaderGroup.AmbientColor, viewCount);
+            Array.Resize(ref lightShaderGroup.AmbientColor, views.Count);
         }
 
         public override void ProcessLights(ProcessLightsParameters parameters)
         {
             // Sum contribution from all lights
             var ambientColor = new Color3();
-            foreach (var light in parameters.LightCollection)
+            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
             {
+                var light = parameters.LightCollection[index];
                 ambientColor += light.Color;
             }
 
@@ -64,8 +61,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             internal Color3[] AmbientColor;
 
             private ValueParameterKey<Color3> ambientLightKey;
-            public LightAmbientShaderGroup(ShaderMixinSource mixin)
-                : base(mixin)
+            public LightAmbientShaderGroup()
+                : base(new ShaderClassSource("LightSimpleAmbient"))
             {
             }
 

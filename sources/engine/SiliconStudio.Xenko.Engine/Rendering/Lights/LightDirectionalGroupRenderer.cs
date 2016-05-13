@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)
         {
-            return new DirectionalLightShaderGroup(context, shadowGroup);
+            return new DirectionalLightShaderGroup(shadowGroup);
         }
 
         class DirectionalLightShaderGroup : LightShaderGroupDynamic
@@ -41,8 +41,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             private ValueParameterKey<DirectionalLightData> lightsKey;
             private FastListStruct<DirectionalLightData> lightsData = new FastListStruct<DirectionalLightData>(8);
 
-            public DirectionalLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroupData)
-                : base(context, shadowGroupData)
+            public DirectionalLightShaderGroup(ILightShadowMapShaderGroupData shadowGroupData)
+                : base(shadowGroupData)
             {
             }
 
