@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Audio
         public static SoundEffect Load(AudioEngine engine, Stream stream)
         {
             if(engine == null)
-                throw new ArgumentNullException("engine");
+                throw new ArgumentNullException(nameof(engine));
 
             var newSdEff = new SoundEffect();
             newSdEff.AttachEngine(engine);
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Audio
         internal void Load(Stream stream)
         {
             if (stream == null)
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             if (AudioEngine.IsDisposed)
                 throw new ObjectDisposedException("Audio Engine");
@@ -113,6 +113,13 @@ namespace SiliconStudio.Xenko.Audio
 
             // register the sound to the AudioEngine so that it will be properly freed if AudioEngine is disposed before this.
             AudioEngine.RegisterSound(this);
+
+            //create a default instance only when actually we load, previously we were creating this on demand which would result sometimes in useless creations and bugs within the editor         
+            DefaultInstance = CreateInstance();
+            //copy back values we might have set before default instance creation
+            DefaultInstance.Pan = defaultPan;
+            DefaultInstance.Volume = defaultVolume;
+            DefaultInstance.IsLooped = defaultIsLooped;        
 
             Interlocked.Increment(ref soundEffectCreationCount);
         }
@@ -194,11 +201,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         // Create an underlying Instance to avoid re-writing Interface functions.
-        private SoundEffectInstance DefaultInstance
-        {
-            get { return defaultInstance ?? (defaultInstance = CreateInstance()); }
-        }
-        private SoundEffectInstance defaultInstance;
+        private SoundEffectInstance DefaultInstance { get; set; }
 
         // for serialization
         internal SoundEffect()
@@ -207,32 +210,68 @@ namespace SiliconStudio.Xenko.Audio
 
         #region Interface Implementation using underlying SoundEffectInstance
 
+        private float defaultPan; //0
+
         public float Pan
         {
-            get { return DefaultInstance.Pan; }
-            set { DefaultInstance.Pan = value; }
+            get
+            {
+                return DefaultInstance?.Pan ?? defaultPan;
+            }
+            set
+            {
+                defaultPan = value;
+
+                if (DefaultInstance != null)
+                {
+                    DefaultInstance.Pan = defaultPan;
+                }
+            }
         }
+
+        private float defaultVolume = 1.0f;
         
         public float Volume
         {
-            get { return DefaultInstance.Volume; }
-            set { DefaultInstance.Volume = value; }
+            get
+            {
+                return DefaultInstance?.Volume ?? defaultVolume;
+            }
+            set
+            {
+                defaultVolume = value;
+
+                if (DefaultInstance != null)
+                {
+                    DefaultInstance.Volume = defaultVolume;
+                }
+            }
         }
+
+        private bool defaultIsLooped; //false
+
+        public bool IsLooped
+        {
+            get
+            {
+                return DefaultInstance?.IsLooped ?? defaultIsLooped;
+            }
+            set
+            {
+                defaultIsLooped = value;
+
+                if (DefaultInstance != null)
+                {
+                    DefaultInstance.IsLooped = defaultIsLooped;
+                }               
+            }
+        }
+
+        public SoundPlayState PlayState => DefaultInstance?.PlayState ?? SoundPlayState.Stopped;
 
         public void Apply3D(AudioListener listener, AudioEmitter emitter)
         {
             DefaultInstance.Apply3D(listener, emitter);
-        }
-
-        public SoundPlayState PlayState
-        {
-            get { return DefaultInstance.PlayState; }
-        }
-
-        public bool IsLooped
-        {
-            get { return DefaultInstance.IsLooped; }
-            set { DefaultInstance.IsLooped = value; }
         }
 
         public void Play()

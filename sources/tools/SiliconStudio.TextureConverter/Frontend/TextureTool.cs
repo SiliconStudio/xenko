@@ -820,6 +820,7 @@ namespace SiliconStudio.TextureConverter
         /// </summary>
         /// <param name="texture">The texture</param>
         /// <param name="pixel">The coordinate of the pixel</param>
+        /// <exception cref="ArgumentNullException"><paramref name="texture"/> is null</exception>
         public unsafe Color PickColor(TexImage texture, Int2 pixel)
         {
             if (texture == null) throw new ArgumentNullException(nameof(texture));
@@ -849,6 +850,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="pixel">The coordinate of the pixel specifying the sprite</param>
         /// <param name="separatorColor">The separator color that delimit the sprites. If null the <see cref="Color.Transparent"/> color is used</param>
         /// <param name="separatorMask">The mask specifying which bits of the color should be checked. The bits are ordered as AABBGGRR.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="texture"/> is null</exception>
         /// <returns></returns>
         public unsafe Rectangle FindSpriteRegion(TexImage texture, Int2 pixel, Color? separatorColor = null, uint separatorMask = 0xff000000)
         {
