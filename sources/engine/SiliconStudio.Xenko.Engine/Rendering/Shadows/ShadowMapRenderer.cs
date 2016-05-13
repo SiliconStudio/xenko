@@ -105,6 +105,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
+                // Check of there is any shadow receivers at all
+                if (CurrentView.MinimumDistance >= CurrentView.MaximumDistance)
+                {
+                    continue;
+                }
+
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);
 

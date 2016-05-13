@@ -21,8 +21,8 @@ namespace SiliconStudio.Xenko.Audio
         {
         }
 
-        internal AudioEngineState EngineState { get { return AudioEngine.State; } }
-        
+        internal AudioEngineState EngineState => AudioEngine.State;
+
         #region Disposing Utilities
         
         internal void CheckNotDisposed()
