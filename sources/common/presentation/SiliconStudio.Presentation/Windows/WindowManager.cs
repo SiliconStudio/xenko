@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,8 +17,19 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public class WindowManager : IDisposable
     {
+        // TODO: this list should be completely external
+        private static readonly string[] DebugWindowTypeNames =
+        {
+            // WPF adorners introduced in Visual Studio 2015 Update 2
+            "Microsoft.XamlDiagnostics.WpfTap",
+            // WPF Inspector
+            "ChristianMoser.WpfInspector",
+            // TODO: add snoop
+        };
+
         private static readonly List<WindowInfo> ModalWindowsList = new List<WindowInfo>();
         private static readonly HashSet<WindowInfo> AllWindowsList = new HashSet<WindowInfo>();
+
         // This must remains a field to prevent garbage collection!
         private static NativeHelper.WinEventDelegate winEventProc;
         private static IntPtr hook;
@@ -222,6 +232,14 @@ namespace SiliconStudio.Presentation.Windows
                 // Since Visual Studio 2015 Update 2, a adorner window can be injected by the debugger that will be considered modal. We have to discard it.
                 if (Debugger.IsAttached)
                 {
+                    foreach (var debugWindowTypeName in DebugWindowTypeNames)
+                    {
+                        if (windowInfo.Window?.GetType().FullName.StartsWith(debugWindowTypeName) ?? false)
+                        {
+                            Logger.Debug($"Discarding debug/diagnostics window '{windowInfo.Window.GetType().FullName}' ({hwnd})");
+                            return;
+                        }
+                    }
                     if (windowInfo.Window?.GetType().FullName.StartsWith("Microsoft.XamlDiagnostics.WpfTap") ?? false)
                     {
                         Logger.Debug($"Discarding Visual Studio WpfTap diagnostics window ({hwnd})");
