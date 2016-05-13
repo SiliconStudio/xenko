@@ -377,7 +377,12 @@ namespace SiliconStudio.Xenko.Graphics
             var surfaceCreateInfo = new Win32SurfaceCreateInfo
             {
                 StructureType = StructureType.Win32SurfaceCreateInfo,
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                 InstanceHandle = Process.GetCurrentProcess().Handle,
+#else
+                // To implement for CoreCLR, currently passing a NULL pointer seems to work
+                InstanceHandle = IntPtr.Zero,
+#endif
                 WindowHandle = control.Handle,
             };
             surface = GraphicsAdapterFactory.Instance.CreateWin32Surface(surfaceCreateInfo);
