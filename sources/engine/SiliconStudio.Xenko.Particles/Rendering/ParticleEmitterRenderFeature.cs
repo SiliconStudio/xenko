@@ -157,10 +157,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // TODO: ParticleMaterial should set this up
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
-
-                // TODO: ParticleMaterial should set this up
-                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-                materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, currentRenderFrame.DepthBufferResolver?.AsShaderResourceView());
             }
 
             base.Prepare(context);

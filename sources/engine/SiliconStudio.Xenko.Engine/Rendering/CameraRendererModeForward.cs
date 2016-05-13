@@ -122,6 +122,23 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Resolve Depth as a texture
                 var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+                var depthStencilSRV = context.RenderContext.Resolver.ResolveDepthBuffer(currentRenderFrame.DepthStencil);
+
+                foreach (var renderFeature in RenderSystem.RenderFeatures)
+                {
+                    var viewFeature = MainRenderView.Features[renderFeature.Index];
+
+                    // Copy ViewProjection to PerFrame cbuffer
+                    foreach (var viewLayout in viewFeature.Layouts)
+                    {
+                        var resourceGroup = viewLayout.Entries[MainRenderView.Index].Resources;
+                        resourceGroup.DescriptorSet.SetShaderResourceView(slot, depthStencilSRV);
+
+                        // TODO: ParticleMaterial should set this up
+                        materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, currentRenderFrame.DepthBufferResolver?.AsShaderResourceView());
+                    }
+                }
+
 
                 if (currentRenderFrame.DepthBufferResolver == null)
                 {
@@ -139,6 +156,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (enableDepthAsShaderResource)
             {
                 var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+                context.RenderContext.Resolver.ReleaseDepthBuffer(depthStencilSRV);
 
                 // Release
                 currentRenderFrame.DepthBufferResolver?.Reset(context);
