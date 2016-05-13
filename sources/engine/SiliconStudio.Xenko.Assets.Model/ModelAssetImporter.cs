@@ -55,11 +55,9 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>();
 
-            var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>() ||
-                                      isImportingModel;
+            var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>();
 
-            var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>() ||
-                                     isImportingMaterial;
+            var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>();
 
             // 1. Textures
             if (isImportingTexture)
@@ -89,16 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             // 5. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
-
-                // 5. Entity (currently disabled)
-                //if (isImportingEntity)
-                //{
-                //    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
-                //
-                //    // Apply EntityAnalysis 
-                //    EntityAnalysis.UpdateEntityReferences(((PrefabAsset)entityAssetItem.Asset).Hierarchy);
-                //}
+                ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
             }
 
             return rawAssetReferences;
