@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI
@@ -49,6 +50,7 @@ namespace SiliconStudio.Xenko.UI
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative.</exception>
         /// <exception cref="InvalidOperationException">The provided value is smaller than <see cref="MinimumSize"/></exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumSize
         {
@@ -73,6 +75,7 @@ namespace SiliconStudio.Xenko.UI
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative or infinity.</exception>
         /// <exception cref="InvalidOperationException">The provided value is bigger than <see cref="MaximumSize"/></exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [DefaultValue(0)]
         public float MinimumSize
         {
@@ -116,6 +119,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The size must be finite positive value.</exception>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [DefaultValue(1.0f)]
         public float SizeValue
         {

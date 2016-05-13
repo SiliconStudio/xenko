@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.UI
 {
@@ -130,6 +131,7 @@ namespace SiliconStudio.Xenko.UI
         ///  The Back side of the bounding rectangle.
         /// </summary>
         [DataMember(5)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Back;
 
@@ -137,6 +139,7 @@ namespace SiliconStudio.Xenko.UI
         ///  The bottom side of the bounding rectangle.
         /// </summary>
         [DataMember(4)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Bottom;
 
@@ -144,6 +147,7 @@ namespace SiliconStudio.Xenko.UI
         ///  The front side of the bounding rectangle.
         /// </summary>
         [DataMember(2)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Front;
 
@@ -151,6 +155,7 @@ namespace SiliconStudio.Xenko.UI
         ///  The left side of the bounding rectangle.
         /// </summary>
         [DataMember(0)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Left;
 
@@ -158,6 +163,7 @@ namespace SiliconStudio.Xenko.UI
         ///  The right side of the bounding rectangle.
         /// </summary>
         [DataMember(3)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Right;
 
@@ -165,6 +171,7 @@ namespace SiliconStudio.Xenko.UI
         ///  The upper side of the bounding rectangle.
         /// </summary>
         [DataMember(1)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Top;
 
