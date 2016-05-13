@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
@@ -18,6 +19,18 @@ namespace SiliconStudio.Xenko.Input
 
         protected InputManager(IServiceRegistry registry) : base(registry)
         {
+        }
+
+        /// <summary>
+        /// Helper method to transform mouse and pointer event positions to sub rectangles
+        /// </summary>
+        /// <param name="fromSize">the size of the source rectangle</param>
+        /// <param name="destinationRectangle">The destination viewport rectangle</param>
+        /// <param name="screenCoordinates">The normalized screen coordinates</param>
+        /// <returns></returns>
+        public static Vector2 TransformPosition(Size2F fromSize, RectangleF destinationRectangle, Vector2 screenCoordinates)
+        {
+            return new Vector2((screenCoordinates.X * fromSize.Width - destinationRectangle.X) / destinationRectangle.Width, (screenCoordinates.Y * fromSize.Height - destinationRectangle.Y) / destinationRectangle.Height);
         }
     }
 

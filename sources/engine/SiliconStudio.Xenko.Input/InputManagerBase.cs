@@ -460,19 +460,7 @@ namespace SiliconStudio.Xenko.Input
 
         protected virtual void SetMousePosition(Vector2 normalizedPosition)
         {
-        }
-
-        /// <summary>
-        /// Helper method to transform mouse and pointer event positions to sub rectangles
-        /// </summary>
-        /// <param name="fromSize">the size of the source rectangle</param>
-        /// <param name="destinationRectangle">The destination viewport rectangle</param>
-        /// <param name="screenCoordinates">The normalized screen coordinates</param>
-        /// <returns></returns>
-        public static Vector2 TransformPosition(Size2F fromSize, RectangleF destinationRectangle, Vector2 screenCoordinates)
-        {
-            return new Vector2((screenCoordinates.X * fromSize.Width - destinationRectangle.X) / destinationRectangle.Width, (screenCoordinates.Y * fromSize.Height - destinationRectangle.Y) / destinationRectangle.Height);
-        }
+        } 
 
         /// <summary>
         /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
