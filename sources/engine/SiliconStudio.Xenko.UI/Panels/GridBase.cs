@@ -103,6 +103,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                 element.DependencyProperties.Get(RowPropertyKey),
                 element.DependencyProperties.Get(LayerPropertyKey));
         }
+
         /// <summary>
         /// Get an element span values as an <see cref="Vector3"/>.
         /// </summary>
