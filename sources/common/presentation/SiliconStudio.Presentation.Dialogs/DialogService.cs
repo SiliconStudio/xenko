@@ -15,42 +15,43 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class DialogService : IDialogService
     {
-        private readonly Dispatcher dispatcher;
-
         public DialogService(Dispatcher dispatcher, Window parentWindow)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
-            this.dispatcher = dispatcher;
+
+            Dispatcher = dispatcher;
             ParentWindow = parentWindow;
         }
 
         public Window ParentWindow { get; set; }
 
+        protected Dispatcher Dispatcher { get; }
+
         public IFileOpenModalDialog CreateFileOpenModalDialog()
         {
-            return new FileOpenModalDialog(dispatcher, ParentWindow);
+            return new FileOpenModalDialog(Dispatcher, ParentWindow);
         }
 
         public IFolderOpenModalDialog CreateFolderOpenModalDialog()
         {
-            return new FolderOpenModalDialog(dispatcher, ParentWindow);
+            return new FolderOpenModalDialog(Dispatcher, ParentWindow);
         }
 
         public IFileSaveModalDialog CreateFileSaveModalDialog()
         {
-            return new FileSaveModalDialog(dispatcher, ParentWindow);
+            return new FileSaveModalDialog(Dispatcher, ParentWindow);
         }
 
         public MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
             var parentWindow = ParentWindow;
-            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
+            return Dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
         }
 
         public MessageBoxResult ShowMessageBox(string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
         {
             var parentWindow = ParentWindow;
-            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, buttons, image));
+            return Dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, buttons, image));
         }
 
         public MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
@@ -62,7 +63,7 @@ namespace SiliconStudio.Presentation.Dialogs
         {
             var parentWindow = ParentWindow;
             var localIsChecked = isChecked;
-            var result = dispatcher.Invoke(() =>
+            var result = Dispatcher.Invoke(() =>
                 CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
             isChecked = localIsChecked;
             return result;
