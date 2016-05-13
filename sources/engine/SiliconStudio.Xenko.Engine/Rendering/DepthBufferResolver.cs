@@ -7,27 +7,28 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
+    /// <summary>
+    /// Resolves a DepthRenderTarget from one render pass to be used as an input to another render pass
+    /// </summary>
     public class DepthBufferResolver : BufferResolver
     {
-        ///// <summary>
-        ///// Property key to access the Current <see cref="DepthBufferResolver"/> from <see cref="RenderContext.Tags"/>.
-        ///// </summary>
-        //public static readonly PropertyKey<DepthBufferResolver> Current = new PropertyKey<DepthBufferResolver>("DepthBufferResolver.Current", typeof(DepthBufferResolver));
-
         private Texture depthStencilAsRT;
 
         private Texture depthStencilAsSR;
 
+        /// <inheritdoc/>
         public override Texture AsRenderTarget()
         {
             return depthStencilAsRT;
         }
 
+        /// <inheritdoc/>
         public override Texture AsShaderResourceView()
         {
             return depthStencilAsSR;
         }
 
+        /// <inheritdoc/>
         public override void Resolve(RenderDrawContext renderContext, Texture texture)
         {
             if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV)
@@ -58,13 +59,18 @@ namespace SiliconStudio.Xenko.Rendering
             depthStencilAsRT = texture;
 
             // Depth as a ShaderResource is a copy
-            depthStencilAsSR?.Dispose();
+            if (depthStencilAsSR != null)
+            {
+                renderContext.RenderContext.Allocator.ReleaseReference(depthStencilAsSR);
+                depthStencilAsSR = null;
+            }
 
             var textureDescription = texture.Description;
             textureDescription.Flags = TextureFlags.ShaderResource;
             textureDescription.Format = PixelFormat.R24_UNorm_X8_Typeless;
 
-            depthStencilAsSR = Texture.New(renderContext.GraphicsDevice, textureDescription);
+            // We want this texture to persist, so we don't release it immediately after we used it
+            depthStencilAsSR = renderContext.RenderContext.Allocator.GetTemporaryTexture2D(textureDescription);
 
             if (depthStencilAsSR != null)
             {
@@ -102,5 +108,12 @@ namespace SiliconStudio.Xenko.Rendering
 
             return false;
         }
+
+        /// <inheritdoc/>
+        public override void Reset(RenderDrawContext renderContext)
+        {
+
+        }
+
     }
 }

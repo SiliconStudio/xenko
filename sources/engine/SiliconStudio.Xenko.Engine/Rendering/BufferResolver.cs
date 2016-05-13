@@ -32,7 +32,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns><c>null</c> if unavailable, the resource view as a shader resource if available</returns>
         public abstract Texture AsShaderResourceView();
 
-        public void Reset()
+        /// <summary>
+        /// Resets any temporary resource used bu the resolver
+        /// </summary>
+        /// <param name="renderContext">The current <see cref="RenderDrawContext"/></param>
+        public virtual void Reset(RenderDrawContext renderContext)
         {
             
         }

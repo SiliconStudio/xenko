@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
 
                 // Release
-                currentRenderFrame.DepthBufferResolver?.Reset();
+                currentRenderFrame.DepthBufferResolver?.Reset(context);
             }
         }
     }
