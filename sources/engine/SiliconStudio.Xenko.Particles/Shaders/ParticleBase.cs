@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ParticleBaseKeys
     {
-        public static readonly ObjectParameterKey<Texture> TextureDepth = ParameterKeys.NewObject<Texture>();
         public static readonly ValueParameterKey<Vector4> ColorScale = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<float> AlphaAdditive = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> ZOffset = ParameterKeys.NewValue<float>();

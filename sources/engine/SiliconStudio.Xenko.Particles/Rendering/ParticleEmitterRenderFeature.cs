@@ -157,6 +157,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // TODO: ParticleMaterial should set this up
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
+
+                //materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, null);
             }
 
             base.Prepare(context);
@@ -312,11 +314,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 commandList.SetPipelineState(renderEffect.PipelineState);
                 commandList.SetDescriptorSets(0, descriptorSets);
-
-                if (renderEffect.Effect.HasParameter(ParticleBaseKeys.TextureDepth))
-                {
-                    
-                }
 
                 commandList.DrawIndexed(vertexBuilder.LivingQuads * vertexBuilder.IndicesPerQuad, vertexBuilder.ResourceContext.IndexBufferPosition);
             }

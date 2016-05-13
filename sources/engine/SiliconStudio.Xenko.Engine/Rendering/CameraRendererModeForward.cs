@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
@@ -130,33 +131,45 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | main stage]
             RenderSystem.Draw(context, MainRenderView, MainRenderStage);
 
+            Texture depthStencilSRV = null;
             if (enableDepthAsShaderResource)
             {
                 // Resolve Depth as a texture
                 var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-                var depthStencilSRV = context.RenderContext.Resolver.ResolveDepthBuffer(currentRenderFrame.DepthStencil);
+                // depthStencilSRV = context.RenderContext.Resolver.ResolveDepthBuffer(currentRenderFrame.DepthStencil);
 
-                foreach (var renderFeature in RenderSystem.RenderFeatures)
-                {
-                    var viewFeature = MainRenderView.Features[renderFeature.Index];
-
-                    // Copy ViewProjection to PerFrame cbuffer
-                    foreach (var viewLayout in viewFeature.Layouts)
-                    {
-                        var resourceGroup = viewLayout.Entries[MainRenderView.Index].Resources;
-                        var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalGroup);
-
-                        resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.SlotStart, depthStencilSRV);
-                    }
-                }
-
-
+                // Temp ->
                 if (currentRenderFrame.DepthBufferResolver == null)
                 {
                     currentRenderFrame.DepthBufferResolver = new DepthBufferResolver();
                 }
 
                 currentRenderFrame.DepthBufferResolver.Resolve(context, currentRenderFrame.DepthStencil);
+                depthStencilSRV = currentRenderFrame.DepthBufferResolver.AsShaderResourceView();
+                // <- Temp
+
+                foreach (var renderFeature in RenderSystem.RenderFeatures)
+                {
+                    if (!(renderFeature is RootEffectRenderFeature))
+                        continue;
+
+                    var depthLogicalKey = ((RootEffectRenderFeature)renderFeature).CreateViewLogicalGroup("Depth");
+                    var viewFeature = MainRenderView.Features[renderFeature.Index];
+
+                    // Copy ViewProjection to PerFrame cbuffer
+                    foreach (var viewLayout in viewFeature.Layouts)
+                    {
+                        var resourceGroup = viewLayout.Entries[MainRenderView.Index].Resources;
+
+                        var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalKey);
+                        if (depthLogicalGroup.Hash == ObjectId.Empty)
+                            continue;
+
+                        // Might to use ProcessLogicalGroup if more than 1 Recource
+                        resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
+                    }
+                }
+
 
                 currentRenderFrame.Activate(context, currentRenderFrame.DepthBufferResolver.AsRenderTarget());
             }
@@ -164,10 +177,10 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
 
-            if (enableDepthAsShaderResource)
+            if (depthStencilSRV != null && enableDepthAsShaderResource)
             {
                 var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-                context.RenderContext.Resolver.ReleaseDepthBuffer(depthStencilSRV);
+                // context.RenderContext.Resolver.ReleaseDepthBuffer(depthStencilSRV);
 
                 // Release
                 currentRenderFrame.DepthBufferResolver?.Reset(context);

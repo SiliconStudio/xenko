@@ -15,16 +15,8 @@
 # define UsesSoftEdge false
 #endif
 
-class ParticleBase : ShaderBase, Texturing, ParticleUtilities
+class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
 {
-    // -------------------------------------
-    // Resources
-    // -------------------------------------
-    rgroup PerMaterial
-    {
-        stage Texture2D TextureDepth;
-    }
-
     // -------------------------------------
     // streams
     // -------------------------------------
@@ -118,7 +110,7 @@ class ParticleBase : ShaderBase, Texturing, ParticleUtilities
 
             // Convert to linear depth for proper edge smoothing
             float linearZOwn = -streams.ZDepth;
-            float linearZOpaque = GetLinearDepth(TextureDepth.Sample(Texturing.PointSampler, screenCoords).r);
+            float linearZOpaque = GetLinearDepth(DepthStencil.Sample(Texturing.PointSampler, screenCoords).r);
 
             //  Get the positive difference
             var depthDistance = linearZOpaque - linearZOwn;
