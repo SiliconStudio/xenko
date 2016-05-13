@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Presentation.ViewModel;
 
 namespace SiliconStudio.Presentation.Windows
@@ -13,6 +14,7 @@ namespace SiliconStudio.Presentation.Windows
         private bool isCancel;
         private bool isDefault;
         private int result;
+        private string key = string.Empty;
 
         /// <summary>
         /// The content of this button.
@@ -40,6 +42,15 @@ namespace SiliconStudio.Presentation.Windows
         {
             get { return isDefault; }
             set { SetValue(ref isDefault, value); }
+        }
+
+        /// <summary>
+        /// The gesture associated with this button.
+        /// </summary>
+        public string Key
+        {
+            get { return key; }
+            set { SetValue(ref key, value); }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -86,12 +86,24 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 renderer.Reset();
             }
 
+            var shadowPipelinePlugin = RenderSystem.PipelinePlugins.GetPlugin<ShadowPipelinePlugin>();
+
             foreach (var renderViewData in renderViewLightDatas)
             {
                 renderViewData.Value.LightComponentsWithShadows.Clear();
 
+                // Collect shadows only if enabled on this view
+                if (!shadowPipelinePlugin.RenderViewsWithShadows.Contains(renderViewData.Key))
+                    continue;
+
                 // Gets the current camera
                 CurrentView = renderViewData.Key;
+
+                // Check of there is any shadow receivers at all
+                if (CurrentView.MinimumDistance >= CurrentView.MaximumDistance)
+                {
+                    continue;
+                }
 
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);
@@ -111,6 +123,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;
+
+                    // Could we allocate shadow map? if not, skip
+                    if (shadowMapTexture.Atlas == null)
+                        continue;
+
                     shadowMapTexture.Renderer.Collect(RenderSystem.RenderContextOld, this, shadowMapTexture);
                     for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
@@ -185,24 +202,30 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Allocate a new atlas texture
             if (currentAtlas == null)
             {
-                // TODO: handle FilterType texture creation here
-                // TODO: This does not work for Omni lights
-
-                var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, shadowMapRenderStage.Output.DepthStencilFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-                currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
-                atlases.Add(currentAtlas);
-
-                for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
+                // For now, our policy is to allow only one shadow map, esp. because we can have only one shadow texture per lighting group
+                // TODO: Group by DirectLightGroups, so that we can have different atlas per lighting group
+                // TODO: Allow multiple textures per LightingGroup (using array of Texture?)
+                if (atlases.Count == 0)
                 {
-                    var rect = Rectangle.Empty;
-                    currentAtlas.Insert(size, size, ref rect);
-                    lightShadowMapTexture.SetRectangle(i, rect);
+                    // TODO: handle FilterType texture creation here
+                    // TODO: This does not work for Omni lights
+
+                    var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, shadowMapRenderStage.Output.DepthStencilFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                    currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
+                    atlases.Add(currentAtlas);
+
+                    for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
+                    {
+                        var rect = Rectangle.Empty;
+                        currentAtlas.Insert(size, size, ref rect);
+                        lightShadowMapTexture.SetRectangle(i, rect);
+                    }
                 }
             }
 
             // Make sure the atlas cleared (will be clear just once)
-            lightShadowMapTexture.TextureId = (byte)currentAtlas.Id;
             lightShadowMapTexture.Atlas = currentAtlas;
+            lightShadowMapTexture.TextureId = (byte)(currentAtlas?.Id ?? 0);
         }
 
         private void CollectShadowMaps(RenderView renderView, ForwardLightingRenderFeature.RenderViewLightData renderViewLightData)

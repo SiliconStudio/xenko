@@ -7,26 +7,20 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// The base interface for all classes providing a sequence of sprites.
+    /// The base interface for all classes providing sprites.
     /// </summary>
     [InlineProperty]
     public interface ISpriteProvider
     {
         /// <summary>
-        /// Gets or sets the current frame of the animation.
-        /// </summary>
-        int CurrentFrame { get; set; }
-
-        /// <summary>
-        /// Gets the number of sprites available in the sequence.
+        /// Gets the number of sprites available in the provider.
         /// </summary>
         int SpritesCount { get; }
 
         /// <summary>
-        /// Get the sprite located at <paramref name="index"/> in the sprite sequence.
+        /// Get a sprite from the provider.
         /// </summary>
-        /// <param name="index"></param>
         /// <returns></returns>
-        Sprite GetSprite(int index);
+        Sprite GetSprite();
     }
 }

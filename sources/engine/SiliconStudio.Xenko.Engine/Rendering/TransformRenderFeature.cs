@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Rendering
                     perViewCamera->FarClipPlane = view.FarClipPlane;
                     perViewCamera->ZProjection = CameraKeys.ZProjectionACalculate(view.NearClipPlane, view.FarClipPlane);
                     perViewCamera->ViewSize = view.ViewSize;
-                    perViewCamera->AspectRatio = view.ViewSize.X / Math.Min(view.ViewSize.Y, 1.0f);
+                    perViewCamera->AspectRatio = view.ViewSize.X / Math.Max(view.ViewSize.Y, 1.0f);
                 }
             }
 

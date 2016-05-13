@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -78,23 +77,18 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets or sets the current frame of the animation.
+        /// Gets the current frame of the animation.
         /// </summary>
         [DataMemberIgnore]
-        [Obsolete("Use SpriteProvider.CurrentFrame instead.")]
-        public int CurrentFrame
-        {
-            get { return SpriteProvider.CurrentFrame; }
-            set { SpriteProvider.CurrentFrame = value; }
-        }
+        public int CurrentFrame => (SpriteProvider as SpriteFromSheet)?.CurrentFrame ?? 0;
 
         /// <summary>
         /// Gets the current sprite.
         /// </summary>
         [DataMemberIgnore]
-        public Sprite CurrentSprite => SpriteProvider?.GetSprite(SpriteProvider.CurrentFrame);
+        public Sprite CurrentSprite => SpriteProvider?.GetSprite();
 
-        private readonly static Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
+        private static readonly Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
 
         [DataMemberIgnore]
         internal double AnimationTime;

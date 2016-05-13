@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             var resolution = (Vector3)UIComponent.Resolution;
 
             var canvas = new Canvas();
-            var imgElt = new ImageElement { Name = "UV image", Source = new Sprite(Content.Load<Texture>("uv")), Width = resolution.X / 5, Height = resolution.Y / 5, StretchType = StretchType.Fill };
+            var imgElt = new ImageElement { Name = "UV image", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), Width = resolution.X / 5, Height = resolution.Y / 5, StretchType = StretchType.Fill };
             imgElt.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             imgElt.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(resolution.X / 10, resolution.Y / 10, 0));
             imgElt.DependencyProperties.Set(Panel.ZIndexPropertyKey, -1);
@@ -57,19 +58,19 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             button1.Content = textOnly;
 
             var button2 = new Button { Name = "Button2", Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5) };
-            var imageContent = new ImageElement { Name = "Image Button2", Source = new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 50 };
+            var imageContent = new ImageElement { Name = "Image Button2", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 50 };
             button2.Content = imageContent;
 
             var button3 = new Button { Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5) };
             var stackContent = new StackPanel { Orientation = Orientation.Horizontal };
-            var stackImage = new ImageElement { Name = "Image stack panel", Source = new Sprite(Content.Load<Texture>("uv")), MaximumHeight = 50 };
+            var stackImage = new ImageElement { Name = "Image stack panel", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), MaximumHeight = 50 };
             var stackText = new TextBlock { Text = "button text", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), Margin = Thickness.UniformRectangle(5) };
             stackContent.Children.Add(stackImage);
             stackContent.Children.Add(stackText);
             button3.Content = stackContent;
 
             var button4 = new Button { Margin = Thickness.UniformRectangle(5), HorizontalAlignment = HorizontalAlignment.Right, Padding = Thickness.UniformRectangle(5) };
-            var imageContent2 = new ImageElement { Name = "button 4 uv image", Source = new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 40, Opacity = 0.5f };
+            var imageContent2 = new ImageElement { Name = "button 4 uv image", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 40, Opacity = 0.5f };
             button4.Content = imageContent2;
 
             var button5 = new Button { Margin = Thickness.UniformRectangle(5), HorizontalAlignment = HorizontalAlignment.Left, Padding = Thickness.UniformRectangle(5) };
@@ -81,8 +82,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Height = 50,
                 Margin = Thickness.UniformRectangle(5),
                 HorizontalAlignment = HorizontalAlignment.Center,
-                PressedImage = new Sprite(Content.Load<Texture>("ImageButtonPressed")),
-                NotPressedImage = new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
+                PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed")),
+                NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
             };
 
             toggle = new ToggleButton

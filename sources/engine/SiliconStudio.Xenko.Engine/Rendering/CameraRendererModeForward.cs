@@ -61,12 +61,24 @@ namespace SiliconStudio.Xenko.Rendering
                     ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
                 }
 
-                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                // Mark this view as requiring shadows
+                var shadowPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                shadowPipelinePlugin.RenderViewsWithShadows.Add(MainRenderView);
+
                 meshPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<MeshPipelinePlugin>();
             }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
             MainRenderView.RenderStages.Add(TransparentRenderStage);
+        }
+
+        protected override void Unload()
+        {
+            // This view don't need shadows anymore
+            var shadowPipelinePlugin = RenderSystem.PipelinePlugins.GetPlugin<ShadowPipelinePlugin>();
+            shadowPipelinePlugin?.RenderViewsWithShadows.Remove(MainRenderView);
+
+            base.Unload();
         }
 
         protected override void DrawCore(RenderDrawContext context)

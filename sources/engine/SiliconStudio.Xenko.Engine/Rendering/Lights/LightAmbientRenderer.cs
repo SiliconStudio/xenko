@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -14,54 +15,70 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     public class LightAmbientRenderer : LightGroupRendererBase
     {
         private readonly ShaderMixinSource mixin;
+        private LightAmbientShaderGroup lightShaderGroup;
 
         public LightAmbientRenderer()
         {
             mixin = new ShaderMixinSource();
             mixin.Mixins.Add(new ShaderClassSource("LightSimpleAmbient"));
-            LightMaxCount = 4;
             IsEnvironmentLight = true;
+
+            lightShaderGroup = new LightAmbientShaderGroup(mixin);
         }
 
-        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        public override void Reset()
         {
-            return new LightAmbientShaderGroup(mixin, compositionName);
+            base.Reset();
+
+            lightShaderGroup.Reset();
         }
 
-        private class LightAmbientShaderGroup : LightShaderGroupAndDataPool<LightAmbientShaderGroupData>
+        public override void SetViewCount(int viewCount)
         {
-            internal readonly ValueParameterKey<Color3> AmbientLightKey;
-            public LightAmbientShaderGroup(ShaderMixinSource mixin, string compositionName)
-                : base(mixin, compositionName, null)
-            {
-                AmbientLightKey = LightSimpleAmbientKeys.AmbientLight.ComposeWith(compositionName);
-            }
+            base.SetViewCount(viewCount);
 
-            protected override LightAmbientShaderGroupData CreateData()
-            {
-                return new LightAmbientShaderGroupData(this);
-            }
+            // Make sure array is big enough for all render views
+            Array.Resize(ref lightShaderGroup.AmbientColor, viewCount);
         }
 
-        private class LightAmbientShaderGroupData : LightShaderGroupData
+        public override void ProcessLights(ProcessLightsParameters parameters)
         {
-            private readonly ValueParameterKey<Color3> ambientLightKey;
-            private Color3 color;
-
-            public LightAmbientShaderGroupData(LightAmbientShaderGroup group)
-                : base(null)
+            // Sum contribution from all lights
+            var ambientColor = new Color3();
+            foreach (var light in parameters.LightCollection)
             {
-                ambientLightKey = group.AmbientLightKey;
+                ambientColor += light.Color;
             }
 
-            protected override void AddLightInternal(LightComponent light)
+            // Store ambient sum for this view
+            lightShaderGroup.AmbientColor[parameters.ViewIndex] = ambientColor;
+        }
+
+        public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
+        {
+            shaderEntry.EnvironmentLights.Add(lightShaderGroup);
+        }
+
+        private class LightAmbientShaderGroup : LightShaderGroup
+        {
+            internal Color3[] AmbientColor;
+
+            private ValueParameterKey<Color3> ambientLightKey;
+            public LightAmbientShaderGroup(ShaderMixinSource mixin)
+                : base(mixin)
             {
-                color = light.Color;
             }
 
-            protected override void ApplyParametersInternal(RenderDrawContext context, ParameterCollection parameters)
+            public override void UpdateLayout(string compositionName)
             {
-                parameters.Set(ambientLightKey, color);
+                ambientLightKey = LightSimpleAmbientKeys.AmbientLight.ComposeWith(compositionName);
+            }
+
+            public override void ApplyViewParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+            {
+                base.ApplyViewParameters(context, viewIndex, parameters);
+
+                parameters.Set(ambientLightKey, AmbientColor[viewIndex]);
             }
         }
     }
