@@ -129,9 +129,6 @@ namespace SiliconStudio.Xenko.Rendering
             renderContext.CommandList.SetRenderTargetsAndViewport(depthStencilTexture, RenderTargets);
         }
 
-        // TODO Move it somewhere? Still needs to be coupled with the current frame and depthstencil buffer
-        public ResourceResolver DepthBufferResolver { get; set; }
-
 
         /// <summary>
         /// Gets a <see cref="RenderOutputDescription"/> that matches current depth stencil and render target formats.

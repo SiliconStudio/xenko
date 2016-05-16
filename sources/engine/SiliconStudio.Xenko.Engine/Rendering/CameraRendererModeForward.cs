@@ -140,13 +140,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Free the depth texture since we won't need it anymore
             if (depthStencilSRV != null)
             {
-                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-                currentRenderFrame.DepthBufferResolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
-
-                // context.RenderContext.Resolver.ReleaseDepthBuffer(depthStencilSRV);
-
-                // Release
-                //  currentRenderFrame.DepthBufferResolver?.Reset(context);
+                context.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
             }
         }
 
@@ -155,21 +149,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (!enableDepthAsShaderResource)
                 return null;
 
-            Texture depthStencilSRV = null;
-
-            // Resolve Depth as a texture
             var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-            // depthStencilSRV = context.RenderContext.Resolver.ResolveDepthBuffer(currentRenderFrame.DepthStencil);
-
-            // Temp ->
-            if (currentRenderFrame.DepthBufferResolver == null)
-            {
-                currentRenderFrame.DepthBufferResolver = new ResourceResolver();
-            }
-
-            currentRenderFrame.DepthBufferResolver.renderContext = context;
-            depthStencilSRV = currentRenderFrame.DepthBufferResolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
-            // <- Temp
+            var depthStencilSRV = context.Resolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
 
             foreach (var renderFeature in RenderSystem.RenderFeatures)
             {
@@ -188,13 +169,12 @@ namespace SiliconStudio.Xenko.Rendering
                     if (depthLogicalGroup.Hash == ObjectId.Empty)
                         continue;
 
-                    // Might to use ProcessLogicalGroup if more than 1 Recource
+                    // Might want to use ProcessLogicalGroup if more than 1 Recource
                     resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
                 }
             }
 
-
-            currentRenderFrame.Activate(context, currentRenderFrame.DepthBufferResolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil));
+            currentRenderFrame.Activate(context, context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil));
 
             return depthStencilSRV;
         }

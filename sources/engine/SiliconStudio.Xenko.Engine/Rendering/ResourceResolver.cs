@@ -1,37 +1,45 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Resolves a DepthRenderTarget from one render pass to be used as an input to another render pass
+    /// Resolves a render target from one render pass to be used as an input resource to another render pass
     /// </summary>
     public class ResourceResolver
     {
-        public RenderDrawContext renderContext { get; set; }
+        private readonly RenderDrawContext renderContext;
 
         /// <summary>
-        /// DONE
+        /// Constructor
         /// </summary>
-        /// <param name="texture"></param>
-        /// <returns></returns>
+        /// <param name="context"><see cref="RenderDrawContext"/> to which this resolver belongs</param>
+        public ResourceResolver(RenderDrawContext context)
+        {
+            renderContext = context;
+        }
+
+        /// <summary>
+        /// Returns a texture view which should be used as DepthStencil render target while SRV is also used
+        /// </summary>
+        /// <param name="texture">The depthStencil texture originally used for render target</param>
+        /// <returns>The texture view which should be used as DepthStencil render target while SRV is also used</returns>
         public Texture GetDepthStencilAsRenderTarget(Texture texture)
         {
             if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV || !renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
                 return texture;
 
+            // TODO Use renderContext.RenderContext.Allocator
             return texture.ToDepthStencilReadOnlyTexture();
         }
 
         /// <summary>
-        /// DONE
+        /// Returns a texture view which should be used as DepthStencil Shader Resource View. Can be <c>null</c> if not supported
         /// </summary>
-        /// <param name="texture"></param>
-        /// <returns></returns>
+        /// <param name="texture">The depthStencil texture originally used for render target</param>
+        /// <returns>The texture view which should be used as DepthStencil SRV. Can be <c>null</c> if not supported</returns>
         public Texture GetDepthStenctilAsShaderResource(Texture texture)
         {
             if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV)
@@ -43,20 +51,24 @@ namespace SiliconStudio.Xenko.Rendering
             return GetDepthStenctilAsShaderResource_Copy(texture);
         }
 
+        /// <summary>
+        /// Frees previously acquired SRV texture. Should be called when the view is no longer needed
+        /// </summary>
+        /// <param name="depthAsSR">The previously acquired SRV texture</param>
         public void ReleaseDepthStenctilAsShaderResource(Texture depthAsSR)
         {
             // If no resources were allocated in the first place there is nothing to release
-            if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV || renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
+            if (depthAsSR == null || !renderContext.GraphicsDevice.Features.HasDepthAsSRV || renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
                 return;
 
             renderContext.RenderContext.Allocator.ReleaseReference(depthAsSR);
         }
 
         /// <summary>
-        /// DONE
+        /// Gets a texture view which can be used to copy the depth buffer
         /// </summary>
-        /// <param name="texture"></param>
-        /// <returns></returns>
+        /// <param name="texture">The depthStencil texture originally used for render target</param>
+        /// <returns>A texture view which can be used to copy the depth buffer</returns>
         private Texture GetDepthStenctilAsShaderResource_Copy(Texture texture)
         {
             var textureDescription = texture.Description;
@@ -66,6 +78,11 @@ namespace SiliconStudio.Xenko.Rendering
             return renderContext.RenderContext.Allocator.GetTemporaryTexture2D(textureDescription);
         }
 
+        /// <summary>
+        /// Resolves the depth render target so it can be used as a shader resource view. Should only be called once per frame and acquired with <see cref="GetDepthStenctilAsShaderResource"/> after that
+        /// </summary>
+        /// <param name="texture">The depthStencil texture originally used for render target</param>
+        /// <returns>The texture view which should be used as DepthStencil render target while SRV is also used</returns>
         public Texture ResolveDepthStencil(Texture texture)
         {
             if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV)
