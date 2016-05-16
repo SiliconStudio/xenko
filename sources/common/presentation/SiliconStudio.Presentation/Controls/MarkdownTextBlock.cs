@@ -16,14 +16,32 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private const string MessageContainerPartName = "PART_MessageContainer";
 
+        /// <summary>
+        /// Identifies the <see cref="ImageBaseUrl"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ImageBaseUrlProperty =
+            DependencyProperty.Register(nameof(ImageBaseUrl), typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(ImageBaseUrlChanged));
+        /// <summary>
+        /// Identifies the <see cref="HyperlinkCommand"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty HyperlinkCommandProperty =
-            DependencyProperty.Register("HyperlinkCommand", typeof(ICommand), typeof(MarkdownTextBlock), new PropertyMetadata(HyperlinkCommandChanged));
-
+            DependencyProperty.Register(nameof(HyperlinkCommand), typeof(ICommand), typeof(MarkdownTextBlock), new PropertyMetadata(HyperlinkCommandChanged));
+        /// <summary>
+        /// Identifies the <see cref="Markdown"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty MarkdownProperty =
-            DependencyProperty.Register("Markdown", typeof(XamlMarkdown), typeof(MarkdownTextBlock), new PropertyMetadata(MarkdownChanged));
-
+            DependencyProperty.Register(nameof(Markdown), typeof(XamlMarkdown), typeof(MarkdownTextBlock), new PropertyMetadata(MarkdownChanged));
+        /// <summary>
+        /// Identifies the <see cref="Text"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(TextChanged));
+            DependencyProperty.Register(nameof(Text), typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(TextChanged));
+
+        public string ImageBaseUrl
+        {
+            get { return (string)GetValue(ImageBaseUrlProperty); }
+            set { SetValue(ImageBaseUrlProperty, value); }
+        }
 
         public ICommand HyperlinkCommand
         {
@@ -75,6 +93,18 @@ namespace SiliconStudio.Presentation.Controls
             ResetMessage();
         }
 
+        private static void ImageBaseUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as MarkdownTextBlock;
+            if (control == null) throw new ArgumentNullException(nameof(control));
+
+            if (e.NewValue != null)
+            {
+                control.GetMarkdown().ImageBaseUrl = (string)e.NewValue;
+            }
+            control.ResetMessage();
+        }
+
         private static void HyperlinkCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as MarkdownTextBlock;
@@ -92,12 +122,9 @@ namespace SiliconStudio.Presentation.Controls
             var control = d as MarkdownTextBlock;
             if (control == null) throw new ArgumentNullException(nameof(control));
 
-            if (e.OldValue != null)
-            {
-                ((XamlMarkdown)e.OldValue).HyperlinkCommand = null;
-            }
             if (e.NewValue != null)
             {
+                ((XamlMarkdown)e.NewValue).ImageBaseUrl = control.ImageBaseUrl;
                 ((XamlMarkdown)e.NewValue).HyperlinkCommand = control.HyperlinkCommand;
             }
             control.ResetMessage();
