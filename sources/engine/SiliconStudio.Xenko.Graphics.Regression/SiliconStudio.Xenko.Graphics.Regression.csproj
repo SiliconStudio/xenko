@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Regression</AssemblyName>
-    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS;Linux</XenkoBuildTags>
+    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS;Linux;Windows10</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
