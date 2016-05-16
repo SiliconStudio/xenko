@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
@@ -114,6 +113,10 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Xenko.Refactor", "..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.shproj", "{B33E576F-2279-4BFC-A438-D9B84343B56B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SiliconStudio.Xenko.Shared", "SiliconStudio.Xenko.Shared", "{1AC70118-C90F-4EC6-9D8B-C628BDF900F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Regression", "..\sources\engine\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj", "{D002FEB1-00A6-4AB1-A83F-1F253465E64D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Linux", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Linux.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -512,6 +515,54 @@ Global
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Win32.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|Win32.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|Win32.Build.0 = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|Win32.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Testing|Win32.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Win32.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Win32.Build.0 = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Win32.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Win32.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -538,5 +589,7 @@ Global
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 		{B33E576F-2279-4BFC-A438-D9B84343B56B} = {1AC70118-C90F-4EC6-9D8B-C628BDF900F7}
 		{1AC70118-C90F-4EC6-9D8B-C628BDF900F7} = {4C142567-C42B-40F5-B092-798882190209}
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal
