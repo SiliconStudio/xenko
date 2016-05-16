@@ -25,13 +25,17 @@ namespace SiliconStudio.Xenko.Rendering
         /// Returns a texture view which should be used as DepthStencil render target while SRV is also used
         /// </summary>
         /// <param name="texture">The depthStencil texture originally used for render target</param>
+        /// <param name="readOnlyCached">The cached view for the texture resource</param>
         /// <returns>The texture view which should be used as DepthStencil render target while SRV is also used</returns>
-        public Texture GetDepthStencilAsRenderTarget(Texture texture)
+        public Texture GetDepthStencilAsRenderTarget(Texture texture, Texture readOnlyCached)
         {
             if (!renderContext.GraphicsDevice.Features.HasDepthAsSRV || !renderContext.GraphicsDevice.Features.HasDepthAsReadOnlyRT)
                 return texture;
 
-            // TODO Use renderContext.RenderContext.Allocator
+            // Check if changed
+            if (readOnlyCached != null && readOnlyCached.ParentTexture == texture)
+                return readOnlyCached;
+
             return texture.ToDepthStencilReadOnlyTexture();
         }
 

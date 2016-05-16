@@ -18,6 +18,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private MeshPipelinePlugin meshPipelinePlugin;
 
+        private Texture depthStencilROCached;
+
         // TODO This should be exposed to the user at some point
         private bool enableDepthAsShaderResource = true;
 
@@ -174,7 +176,8 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
-            currentRenderFrame.Activate(context, context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil));
+            depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
+            currentRenderFrame.Activate(context, depthStencilROCached);
 
             return depthStencilSRV;
         }
