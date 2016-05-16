@@ -160,16 +160,19 @@ namespace SiliconStudio.Xenko.Assets.Model
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
                 foreach (var material in entityInfo.Materials)
                 {
+                    var modelMaterial = new ModelMaterial
+                    {
+                        Name = material.Key,
+                        MaterialInstance = new MaterialInstance()
+                    };
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
                     {
-                        var modelMaterial = new ModelMaterial
-                        {
-                            Name = material.Key,
-                            MaterialInstance = new MaterialInstance() { Material = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location) }
-                        };
-                        asset.Materials.Add(AttachId(modelMaterial));
+                        var reference = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location);
+                        modelMaterial.MaterialInstance.Material = reference;
                     }
+                    //todo Instead of null material add a default xenko material
+                    asset.Materials.Add(AttachId(modelMaterial));
                 }
                 //handle the case where during import we imported no materials at all
                 //todo Instead of null material add a default xenko material
