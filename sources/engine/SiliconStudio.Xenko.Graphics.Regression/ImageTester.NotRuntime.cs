@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             try
             {
                 ImageComparisonServer = new TcpClient();
-                ImageComparisonServer.Connect(XenkoImageServerHost, XenkoImageServerPort);
+                ImageComparisonServer.ConnectAsync(XenkoImageServerHost, XenkoImageServerPort).Wait();
 
                 // Send initial parameters
                 var networkStream = ImageComparisonServer.GetStream();
@@ -49,7 +49,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     var binaryWriter = new BinaryWriter(networkStream);
                     binaryWriter.Write((int)ImageServerMessageType.ConnectionFinished);
 
+#if _NET_CORECLR
+                    ImageComparisonServer.Dispose();
+#else
                     ImageComparisonServer.Close();
+#endif
+
                 }
                 catch (Exception)
                 {
