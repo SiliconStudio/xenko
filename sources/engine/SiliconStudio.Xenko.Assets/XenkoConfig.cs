@@ -221,8 +221,7 @@ namespace SiliconStudio.Xenko.Assets
             linuxPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_LINUX");
             linuxPlatform.Configurations.Add(coreClrRelease);
             linuxPlatform.Configurations.Add(coreClrDebug);
-// Following is commented until we have full fledge support (templates and other needed stuff)
-//            solutionPlatforms.Add(linuxPlatform);
+            solutionPlatforms.Add(linuxPlatform);
 
             // Android
             var androidPlatform = new SolutionPlatform()
