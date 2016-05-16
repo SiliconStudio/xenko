@@ -903,7 +903,7 @@ namespace SiliconStudio.Xenko.Input
             {
             }
 
-            public override float GetValue(InputManagerBase manager)
+            public override float GetValue(InputManager manager)
             {
                 var index = Id & TypeIdMask;
                 return manager.IsKeyDown((Keys)index) ? 1.0f : 0.0f;

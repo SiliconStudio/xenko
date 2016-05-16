@@ -12,6 +12,6 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="manager">The manager.</param>
         /// <returns>System.Single.</returns>
-        float GetValue(InputManagerBase manager);
+        float GetValue(InputManager manager);
     }
 }
