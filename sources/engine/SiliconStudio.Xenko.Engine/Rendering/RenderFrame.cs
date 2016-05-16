@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         // TODO Move it somewhere? Still needs to be coupled with the current frame and depthstencil buffer
-        public BufferResolver DepthBufferResolver { get; set; }
+        public ResourceResolver DepthBufferResolver { get; set; }
 
 
         /// <summary>

@@ -193,8 +193,14 @@ namespace SiliconStudio.Xenko.Rendering
 
         public LogicalGroupReference CreateViewLogicalGroup(string logicalGroup)
         {
-            // TODO Check existing slots - also for all other methods
-            // viewLogicalGroups
+            // TODO  also for all other methods
+
+            // Check existing slots
+            for (int i = 0; i < viewLogicalGroups.Count; i++)
+            {
+                if (viewLogicalGroups[i].Variable.Equals(logicalGroup))
+                    return new LogicalGroupReference(i);
+            }
 
             // Need a new slot
             var slotReference = new LogicalGroupReference(viewLogicalGroups.Count);
