@@ -16,6 +16,8 @@ namespace SiliconStudio.Xenko.Input
 {
     public abstract partial class InputManager : GameSystemBase
     {
+        protected const float G = 9.81f; //this is used in some mobile platform for accelerometer stuff
+
         /// <summary>
         /// Does InputManager support raw input? By default true.
         /// </summary>

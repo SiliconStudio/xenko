@@ -16,9 +16,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Input
 {
     internal class InputManageriOS: InputManager<iOSWindow>
-    {
-		protected const float G = 9.81f;
-		
+    {		
         private CMMotionManager motionManager;
         private CLLocationManager locationManager;
         private bool locationManagerActivated;
