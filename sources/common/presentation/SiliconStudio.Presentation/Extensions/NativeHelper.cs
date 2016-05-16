@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 
 namespace SiliconStudio.Presentation.Extensions
@@ -13,6 +14,9 @@ namespace SiliconStudio.Presentation.Extensions
 
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr processId);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -53,6 +57,9 @@ namespace SiliconStudio.Presentation.Extensions
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int mCmdShow);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowCmd uCmd);
+
         [DllImport("user32.dll")]
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);
 
@@ -61,6 +68,15 @@ namespace SiliconStudio.Presentation.Extensions
 
         [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         public static extern bool DestroyWindow(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+
+        [DllImport("user32.dll")]
+        public static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
+        [DllImport("user32.dll", ExactSpelling = true)]
+        public static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestorFlags flags);
 
         public static IntPtr SetWindowLong(HandleRef hwnd, WindowLongType index, IntPtr wndProcPtr)
         {
@@ -71,17 +87,26 @@ namespace SiliconStudio.Presentation.Extensions
             return SetWindowLongPtr64(hwnd, index, wndProcPtr);
         }
 
-        [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
-        public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
-
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
+        [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
+
         [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetActiveWindow();
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetProcessHandleFromHwnd(IntPtr hWnd);
 
         #endregion Methods
 
@@ -145,6 +170,35 @@ namespace SiliconStudio.Presentation.Extensions
             Id = (-12)
         }
 
+        public enum GetWindowCmd : uint
+        {
+            GW_HWNDFIRST = 0,
+            GW_HWNDLAST = 1,
+            GW_HWNDNEXT = 2,
+            GW_HWNDPREV = 3,
+            GW_OWNER = 4,
+            GW_CHILD = 5,
+            GW_ENABLEDPOPUP = 6
+        }
+
+        public enum GetAncestorFlags
+        {
+            /// <summary>
+            /// Retrieves the parent window. This does not include the owner, as it does with the GetParent function.
+            /// </summary>
+            GetParent = 1,
+            /// <summary>
+            /// Retrieves the root window by walking the chain of parent windows.
+            /// </summary>
+            GetRoot = 2,
+            /// <summary>
+            /// Retrieves the owned root window by walking the chain of parent and owner windows returned by GetParent.
+            /// </summary>
+            GetRootOwner = 3
+        }
+
+        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
         #endregion Structures
 
         #region Constants
@@ -174,6 +228,7 @@ namespace SiliconStudio.Presentation.Extensions
         public const int GWL_HINSTANCE = unchecked((int)0xFFFFFFFA);
         public const int GWL_ID = unchecked((int)0xFFFFFFF4);
         public const int GWL_STYLE = unchecked((int)0xFFFFFFF0);
+        public const int GWL_HWNDPARENT = unchecked((int)0xFFFFFFF8);
         public const int GWL_USERDATA = unchecked((int)0xFFFFFFEB);
         public const int GWL_WNDPROC = unchecked((int)0xFFFFFFFC);
 
@@ -454,6 +509,13 @@ namespace SiliconStudio.Presentation.Extensions
         public const int WM_XBUTTONDBLCLK = 0x020D;
         public const int WM_XBUTTONDOWN = 0x020B;
         public const int WM_XBUTTONUP = 0x020C;
+
+        public const uint EVENT_OBJECT_SHOW = 0x8002;
+        public const uint EVENT_OBJECT_HIDE = 0x8003;
+        public const uint EVENT_OBJECT_PARENTCHANGE = 0x800F;
+
+        public const uint WINEVENT_INCONTEXT = 4;
+        public const uint WINEVENT_OUTOFCONTEXT = 0;
         // ReSharper restore InconsistentNaming
 
         #endregion Constants
