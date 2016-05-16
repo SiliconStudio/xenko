@@ -1,0 +1,35 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    // TODO: We use ClusterSize2 otherwise we have a conflict with LightPointSpotGroup.ClusterSize (XenkoMessageCode.ErrorVariableNameConflict)
+    class LightClustered<int ClusterSize2> : ShaderBase, ShaderBaseStream, Camera
+    {
+        stage stream uint2 lightData;
+        stage stream int lightIndex;
+
+        rgroup PerView.Lighting
+        {
+            stage Texture3D<uint2> LightClusters;
+            stage Buffer<uint> LightIndices;
+        }
+
+        cbuffer PerView.Lighting
+        {
+            stage float ClusterDepthScale;
+            stage float ClusterDepthBias;
+        }
+
+        void PrepareLightData()
+        {
+            float projectedDepth = streams.ShadingPosition.z;
+            float depth = ZProjection.y / (projectedDepth - ZProjection.x);
+            //float depth = streams.ShaderBaseStream.ShadingPosition.w;
+
+            int2 shadingPosition = int2(streams.ShadingPosition.xy);
+            int slice = int(max(log2(depth * ClusterDepthScale + ClusterDepthBias), 0));
+            streams.lightData = LightClusters.Load(int4(shadingPosition / ClusterSize2, slice, 0));
+            streams.lightIndex = streams.lightData.x;
+        }
+    };
+}

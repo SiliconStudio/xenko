@@ -245,7 +245,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Lights\LightClusteredSpotGroup.cs">
+      <DependentUpon>LightClusteredSpotGroup.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Lights\LightGroupRendererDynamic.cs" />
+    <Compile Include="Rendering\Lights\LightClustered.cs">
+      <DependentUpon>LightClustered.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Lights\LightDirectional1.cs">
       <DependentUpon>LightDirectional.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -265,6 +277,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Lights\LightClusteredPointGroup.cs">
+      <DependentUpon>LightClusteredPointGroup.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Lights\LightClusteredPointGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\LogicalGroup.cs" />
     <Compile Include="Rendering\LogicalGroupReference.cs" />
@@ -392,6 +411,14 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>DirectLightGroupPerView.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Lights\LightClustered.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightClustered.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Lights\LightClusteredSpotGroup.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightClusteredSpotGroup.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Lights\LightDirectional.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightDirectional1.cs</LastGenOutput>
@@ -407,6 +434,10 @@
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Lights\LightClusteredPointGroup.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightClusteredPointGroup.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
