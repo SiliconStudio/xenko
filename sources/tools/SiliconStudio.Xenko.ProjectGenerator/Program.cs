@@ -529,7 +529,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                     break;
 
                 case PlatformType.iOS:
-                    configurations.Add(platform, platform);
+                    configurations.Add("iPhone", "iPhone");
                     configurations.Add("iPhoneSimulator", "iPhoneSimulator");
                     needDeploy = true;
                     break;
