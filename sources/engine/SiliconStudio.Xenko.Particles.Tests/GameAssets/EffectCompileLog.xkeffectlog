@@ -87,3 +87,11 @@ UsedParameters:
             color2: !ShaderClassSource
                 ClassName: ComputeColorConstantColorLink
                 GenericArguments: [ParticleBase.EmissiveValue]
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: true
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorConstantColorLink
+        GenericArguments: [ParticleBase.EmissiveValue]
