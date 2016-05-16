@@ -41,6 +41,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
@@ -48,6 +49,22 @@ namespace SiliconStudio.Presentation
 {
     public sealed class XamlMarkdown : DependencyObject
     {
+        /// <summary>
+        /// Identifies the <see cref="ImageBaseUrl"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ImageBaseUrlProperty =
+            DependencyProperty.Register(nameof(ImageBaseUrl), typeof(string), typeof(XamlMarkdown), new PropertyMetadata(null));
+        /// <summary>
+        /// Identifies the <see cref="HyperlinkCommand"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty HyperlinkCommandProperty =
+            DependencyProperty.Register(nameof(HyperlinkCommand), typeof(ICommand), typeof(XamlMarkdown), new PropertyMetadata(null));
+        /// <summary>
+        /// Identifies the <see cref="StrictBoldItalic"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty StrictBoldItalicProperty =
+            DependencyProperty.Register(nameof(StrictBoldItalic), typeof(bool), typeof(XamlMarkdown), new PropertyMetadata(false));
+
         /// <summary>
         /// maximum nested depth of [] and () supported by the transform; implementation detail
         /// </summary>
@@ -127,14 +144,20 @@ namespace SiliconStudio.Presentation
         /// </summary>
         public static ComponentResourceKey ImageStyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(ImageStyleKey));
 
+        public string ImageBaseUrl { get { return (string)GetValue(ImageBaseUrlProperty); } set { SetValue(ImageBaseUrlProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the command used to open hyperlinks.
+        /// </summary>
+        /// <remarks> The command should support a parameter of type <see cref="string"/>.</remarks>
+        public ICommand HyperlinkCommand { get { return (ICommand)GetValue(HyperlinkCommandProperty); } set { SetValue(HyperlinkCommandProperty, value); } }
+
         /// <summary>
         /// when true, bold and italic require non-word characters on either side  
         /// WARNING: this is a significant deviation from the markdown spec
         /// </summary>
         /// 
-        public bool StrictBoldItalic { get; set; }
-
-        public ICommand HyperlinkCommand { get; set; }
+        public bool StrictBoldItalic { get { return (bool)GetValue(StrictBoldItalicProperty); } set { SetValue(StrictBoldItalicProperty, value); } }
 
         private Style CodeStyle => codeStyle ?? (codeStyle = TryFindStyle(CodeStyleKey));
 
@@ -428,12 +451,23 @@ namespace SiliconStudio.Presentation
             var image = new Image();
             try
             {
+                if (!(Uri.IsWellFormedUriString(url, UriKind.Absolute) || System.IO.Path.IsPathRooted(url)))
+                {
+                    // Make relative URL absolute
+                    url = System.IO.Path.Combine(ImageBaseUrl ?? string.Empty, url);
+                }
                 // Attempt to set the source of the image.
                 // Note: initialization of image downloading can fail in some cases (see System.Windows.Media.Imaging.BitmapDownload.BeginDownload).
-                image.Source = new BitmapImage(new Uri(url));
+                image.Source = new BitmapImage(new Uri(url, UriKind.RelativeOrAbsolute));
             }
-            catch (System.IO.IOException) { }
-            catch (System.Runtime.InteropServices.ExternalException) { }
+            catch (System.IO.IOException)
+            {
+                return new Run($"Error when loading {url}") { Foreground = Brushes.Red };
+            }
+            catch (System.Runtime.InteropServices.ExternalException)
+            {
+                return new Run($"Error when loading {url}") { Foreground = Brushes.Red };
+            }
 
             if (!string.IsNullOrEmpty(title))
             {
