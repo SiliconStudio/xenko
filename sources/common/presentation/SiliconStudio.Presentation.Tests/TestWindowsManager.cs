@@ -722,6 +722,50 @@ namespace SiliconStudio.Presentation.Tests
             dispatcher.InvokeShutdown();
         }
 
+        [Test, RequiresSTA]
+        public async void TestMainWindowThenModalBoxClosedBeforeShown()
+        {
+            LoggerResult loggerResult;
+            const string messageBoxName = nameof(TestMainWindowThenModalBox);
+            var dispatcher = await WindowManagerHelper.CreateUIThread();
+            using (WindowManagerHelper.InitWindowManager(dispatcher, out loggerResult))
+            {
+                var window = dispatcher.Invoke(() => new StandardWindow());
 
+                // Open the main window
+                var shown = WindowManagerHelper.NextMainWindowChanged(window);
+                dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                await WindowManagerHelper.TaskWithTimeout(shown);
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window));
+
+                // Open a modal window and close it before it has a chance to be shown
+                var modalWindow = dispatcher.Invoke(() => new StandardWindow { Title = messageBoxName });
+                var modalWindowOpened = WindowManagerHelper.NextModalWindowOpened(modalWindow);
+                var modalWindowClosed = WindowManagerHelper.NextModalWindowClosed(modalWindow);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManager.ShowModal(modalWindow);
+                    modalWindow.Close();
+                });
+
+                await WindowManagerHelper.TaskWithTimeout(modalWindowClosed);
+                // The window never shown, this task should not be completed.
+                Assert.False(modalWindowOpened.IsCompleted);
+                dispatcher.Invoke(() => WindowManagerHelper.AssertWindowsStatus(window));
+
+                // Close the main window
+                var mainWindow = WindowManager.MainWindow;
+                var hidden = WindowManagerHelper.NextMainWindowChanged(null);
+                dispatcher.Invoke(() => window.Close());
+                await WindowManagerHelper.TaskWithTimeout(hidden);
+                dispatcher.Invoke(() =>
+                {
+                    WindowManagerHelper.AssertWindowClosed(mainWindow);
+                    WindowManagerHelper.AssertWindowsStatus(null);
+                });
+            }
+            Assert.AreEqual(false, loggerResult.HasErrors);
+            dispatcher.InvokeShutdown();
+        }
     }
 }

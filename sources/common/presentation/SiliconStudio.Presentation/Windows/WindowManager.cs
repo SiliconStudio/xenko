@@ -130,6 +130,8 @@ namespace SiliconStudio.Presentation.Windows
 
             window.Owner = owner?.Window;
             window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+
+            // Set the owner now so the window can be recognized as modal when shown
             if (owner != null)
             {
                 owner.IsDisabled = true;
@@ -148,6 +150,10 @@ namespace SiliconStudio.Presentation.Windows
                 default:
                     throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
             }
+
+            // Update the hwnd on load in case the window is closed before being shown
+            // We will receive EVENT_OBJECT_HIDE but not EVENT_OBJECT_SHOW in this case.
+            window.Loaded += (sender, e) => windowInfo.ForceUpdateHwnd();
 
             Logger.Info($"Modal window showing. ({window})");
             window.Show();

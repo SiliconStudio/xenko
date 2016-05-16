@@ -64,8 +64,7 @@ namespace SiliconStudio.Presentation.Windows
             internal set
             {
                 isShown = value;
-                if (Window != null)
-                    hwnd = ToHwnd(Window);
+                ForceUpdateHwnd();
             }
         }
 
@@ -166,6 +165,12 @@ namespace SiliconStudio.Presentation.Windows
                 hashCode = (hashCode*397) ^ (Window?.GetHashCode() ?? 0);
                 return hashCode;
             }
+        }
+
+        internal void ForceUpdateHwnd()
+        {
+            if (Window != null)
+                hwnd = ToHwnd(Window);
         }
 
         /// <inheritdoc/>
