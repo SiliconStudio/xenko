@@ -507,33 +507,37 @@ namespace SiliconStudio.Xenko.ProjectGenerator
         {
             var configurations = new Dictionary<string, string>();
             bool needDeploy = false;
+            PlatformType requestedPlatform;
+            if (!PlatformType.TryParse(platform, out requestedPlatform))
+            {
+                throw new ArgumentOutOfRangeException(nameof(platform), "Invalid platform specified");
+            }
 
-            if (platform == "WindowsPhone")
+            switch (requestedPlatform)
             {
-                configurations.Add("WindowsPhone", "WindowsPhone");
-                needDeploy = true;
+                case PlatformType.WindowsPhone:
+                case PlatformType.WindowsStore:
+                case PlatformType.Android:
+                case PlatformType.Linux:
+                    configurations.Add(platform, platform);
+                    needDeploy = true;
+                    break;
+
+                case PlatformType.Windows10:
+                    configurations.Add(platform, "Any CPU");
+                    needDeploy = true;
+                    break;
+
+                case PlatformType.iOS:
+                    configurations.Add(platform, platform);
+                    configurations.Add("iPhoneSimulator", "iPhoneSimulator");
+                    needDeploy = true;
+                    break;
+
+                default:
+                    throw new InvalidOperationException("Unknown platform " + requestedPlatform);
             }
-            else if (platform == "WindowsStore")
-            {
-                configurations.Add("WindowsStore", "WindowsStore");
-                needDeploy = true;
-            }
-            else if (platform == "Windows10")
-            {
-                configurations.Add("Windows10", "Any CPU");
-                needDeploy = true;
-            }
-            else if (platform == "iOS")
-            {
-                configurations.Add("iPhone", "iPhone");
-                configurations.Add("iPhoneSimulator", "iPhoneSimulator");
-                needDeploy = true;
-            }
-            else if (platform == "Android")
-            {
-                configurations.Add("Android", "Android");
-                needDeploy = true;
-            }
+
 
             // Remove any reference of shared projects in the GlobalSections.
             var projects = solution.GlobalSections.FirstOrDefault(s => s.Name == "SharedMSBuildProjectFiles");
