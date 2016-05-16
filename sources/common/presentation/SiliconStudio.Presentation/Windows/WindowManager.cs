@@ -108,7 +108,7 @@ namespace SiliconStudio.Presentation.Windows
                 Logger.Error(message);
                 throw new InvalidOperationException(message);
             }
-            Logger.Info("Main window showing.");
+            Logger.Info($"Main window showing. ({window})");
 
             MainWindow = new WindowInfo(window);
             AllWindowsList.Add(MainWindow);
@@ -149,6 +149,7 @@ namespace SiliconStudio.Presentation.Windows
                     throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
             }
 
+            Logger.Info($"Modal window showing. ({window})");
             window.Show();
             return windowInfo.WindowClosed.Task;
         }
@@ -166,7 +167,7 @@ namespace SiliconStudio.Presentation.Windows
             var windowInfo = new WindowInfo(window);
             AllWindowsList.Add(windowInfo);
 
-            Logger.Info("Non-modal window showing.");
+            Logger.Info($"Non-modal window showing. ({window})");
             window.Show();
         }
 
@@ -240,11 +241,6 @@ namespace SiliconStudio.Presentation.Windows
                             return;
                         }
                     }
-                    if (windowInfo.Window?.GetType().FullName.StartsWith("Microsoft.XamlDiagnostics.WpfTap") ?? false)
-                    {
-                        Logger.Debug($"Discarding Visual Studio WpfTap diagnostics window ({hwnd})");
-                        return;
-                    }
                 }
 
                 AllWindowsList.Add(windowInfo);
@@ -270,7 +266,7 @@ namespace SiliconStudio.Presentation.Windows
                             lastModal.IsDisabled = true;
                         }
                         ModalWindowsList.Add(windowInfo);
-                        Logger.Info("Modal window shown. (standalone)");
+                        Logger.Info($"Modal window shown. (standalone) ({hwnd})");
                     }
                     else
                     {
@@ -289,7 +285,7 @@ namespace SiliconStudio.Presentation.Windows
                         {
                             parentModal.IsDisabled = true;
                         }
-                        Logger.Info("Modal window shown. (with WindowManager)");
+                        Logger.Info($"Modal window shown. (with WindowManager) ({hwnd})");
                     }
                     ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(MainWindow));
                 }
@@ -314,7 +310,7 @@ namespace SiliconStudio.Presentation.Windows
 
             if (MainWindow != null && MainWindow.Equals(windowInfo))
             {
-                Logger.Info("Main window closed.");
+                Logger.Info($"Main window closed. ({hwnd})");
                 MainWindow = null;
                 MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(MainWindow));
             }
@@ -342,7 +338,7 @@ namespace SiliconStudio.Presentation.Windows
                     if (nextWindow != null && nextWindow.Hwnd != IntPtr.Zero)
                         NativeHelper.SetActiveWindow(nextWindow.Hwnd);
 
-                    Logger.Info("Modal window closed.");
+                    Logger.Info($"Modal window closed. ({hwnd})");
                 }
             }
         }
