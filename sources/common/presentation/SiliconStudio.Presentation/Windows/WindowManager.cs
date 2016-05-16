@@ -287,7 +287,7 @@ namespace SiliconStudio.Presentation.Windows
                         }
                         Logger.Info($"Modal window shown. (with WindowManager) ({hwnd})");
                     }
-                    ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(MainWindow));
+                    ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(windowInfo));
                 }
             }
         }
