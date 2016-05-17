@@ -863,7 +863,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>Inherited classes are in charge of overriding this method to return their children.</remarks>
         [DataMemberIgnore]
-        public IEnumerable<UIElement> VisualChildren => VisualChildrenCollection;
+        public IReadOnlyList<UIElement> VisualChildren => VisualChildrenCollection;
 
         /// <summary>
         /// The list of the children of the element that can be hit by the user.
