@@ -131,13 +131,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ConstantBufferOffsetReference CreateFrameCBufferOffsetSlot(string variable)
         {
-            // Check existing slots
-            for (int i = 0; i < frameCBufferOffsetSlots.Count; i++)
-            {
-                if (frameCBufferOffsetSlots[i].Variable.Equals(variable))
-                    return new ConstantBufferOffsetReference(i);
-            }
-
             // TODO: Handle duplicates, and allow removal
             var slotReference = new ConstantBufferOffsetReference(frameCBufferOffsetSlots.Count);
             frameCBufferOffsetSlots.Add(new NamedSlotDefinition(variable));
@@ -159,13 +152,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ConstantBufferOffsetReference CreateViewCBufferOffsetSlot(string variable)
         {
-            // Check existing slots
-            for (int i = 0; i < viewCBufferOffsetSlots.Count; i++)
-            {
-                if (viewCBufferOffsetSlots[i].Variable.Equals(variable))
-                    return new ConstantBufferOffsetReference(i);
-            }
-
             // TODO: Handle duplicates
             var slotReference = new ConstantBufferOffsetReference(-1);
             for (int index = 0; index < viewCBufferOffsetSlots.Count; index++)
@@ -263,13 +249,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ConstantBufferOffsetReference CreateDrawCBufferOffsetSlot(string variable)
         {
-            // Check existing slots
-            for (int i = 0; i < drawCBufferOffsetSlots.Count; i++)
-            {
-                if (drawCBufferOffsetSlots[i].Variable.Equals(variable))
-                    return new ConstantBufferOffsetReference(i);
-            }
-
             // TODO: Handle duplicates, and allow removal
             var slotReference = new ConstantBufferOffsetReference(drawCBufferOffsetSlots.Count);
             drawCBufferOffsetSlots.Add(new NamedSlotDefinition(variable));
