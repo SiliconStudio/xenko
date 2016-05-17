@@ -156,7 +156,6 @@
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
-    <Compile Include="Rendering\BufferResolver.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\Pipeline.cs" />
