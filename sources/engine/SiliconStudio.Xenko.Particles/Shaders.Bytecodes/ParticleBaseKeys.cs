@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public static readonly PermutationParameterKey<ShaderSource> BaseColor = ParameterKeys.NewPermutation<ShaderSource>();
 
-        public static readonly PermutationParameterKey<bool> UsesSoftEdge = ParameterKeys.NewPermutation<bool>(false);
+        public static readonly PermutationParameterKey<uint> UsesSoftEdge = ParameterKeys.NewPermutation<uint>(0);
 
         //public static readonly ParameterKey<ShaderSource> BaseIntensity = ParameterKeys.New<ShaderSource>();
 

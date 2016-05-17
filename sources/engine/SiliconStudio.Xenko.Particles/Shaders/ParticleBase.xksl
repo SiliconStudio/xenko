@@ -1,18 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-// TODO Move these definitions into a more base class
-#ifndef True
-# define True true
-#endif
-
-// TODO Move these definitions into a more base class
-#ifndef False
-# define False false
-#endif
-
 #ifndef UsesSoftEdge
-# define UsesSoftEdge false
+# define UsesSoftEdge 0
 #endif
 
 class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
@@ -94,7 +84,7 @@ class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
     {
         float4 colorTarget = Shading();
 
-        if (UsesSoftEdge)
+        if (UsesSoftEdge > 0)
         {
             float screenWidth  = ViewFrustum.x;
             float screenHeight = ViewFrustum.y;

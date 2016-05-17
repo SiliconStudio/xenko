@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.ValidateEffect(context, ref effectValidator);
 
-            effectValidator.ValidateParameter(ParticleBaseKeys.UsesSoftEdge, (SoftEdgeDistance > 0));
+            effectValidator.ValidateParameter(ParticleBaseKeys.UsesSoftEdge, (SoftEdgeDistance > 0) ? 1u : 0u);
         }
 
         public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)
