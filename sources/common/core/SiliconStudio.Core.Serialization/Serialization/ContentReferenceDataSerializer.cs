@@ -119,20 +119,20 @@ namespace SiliconStudio.Core.Serialization
 
     public sealed class ContentReferenceDataSerializer<T> : DataSerializer<ContentReference<T>> where T : class
     {
-        public override void Serialize(ref ContentReference<T> contentReference, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref ContentReference<T> reference, ArchiveMode mode, SerializationStream stream)
         {
             var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
             if (contentSerializerContext != null)
             {
                 if (mode == ArchiveMode.Serialize)
                 {
-                    int index = contentSerializerContext.AddContentReference(contentReference);
+                    int index = contentSerializerContext.AddContentReference(reference);
                     stream.Write(index);
                 }
                 else
                 {
                     int index = stream.ReadInt32();
-                    contentReference = contentSerializerContext.GetContentReference<T>(index);
+                    reference = contentSerializerContext.GetContentReference<T>(index);
                 }
             }
             else
@@ -142,7 +142,7 @@ namespace SiliconStudio.Core.Serialization
                 {
                     {
                         // This case will happen when serializing build engine command hashes: we still want Location to still be written
-                        stream.Write(contentReference.Location);
+                        stream.Write(reference.Location);
                     }
                 }
                 else

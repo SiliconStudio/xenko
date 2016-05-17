@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         public Rendering.Model PreviewModel { get; set; }
 
         /// <inheritdoc/>
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
             if (Skeleton != null)
             {

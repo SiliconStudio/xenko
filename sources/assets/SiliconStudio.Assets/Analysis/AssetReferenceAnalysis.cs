@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
     /// This analysis provides a method for visiting asset and file references 
-    /// (<see cref="IContentReference" /> or <see cref="UFile" /> or <see cref="UDirectory" />)
+    /// (<see cref="IReference" /> or <see cref="UFile" /> or <see cref="UDirectory" />)
     /// </summary>
     public class AssetReferenceAnalysis
     {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Gets all references (subclass of <see cref="IContentReference" /> and <see cref="UFile" />) from the specified asset
+        /// Gets all references (subclass of <see cref="IReference" /> and <see cref="UFile" />) from the specified asset
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>A list of references.</returns>

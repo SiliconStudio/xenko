@@ -5,7 +5,7 @@ using System;
 namespace SiliconStudio.Core.Serialization
 {
     [Obsolete("This class is deprecated will be removed in the future. Use AttachedReference instead.")]
-    public abstract class ContentReference : ITypedContentReference, IEquatable<ContentReference>
+    public abstract class ContentReference : ITypedReference, IEquatable<ContentReference>
     {
         internal const int NullIdentifier = -1;
 

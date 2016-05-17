@@ -13,22 +13,22 @@ namespace SiliconStudio.Assets.Diagnostics
     /// </summary>
     public static class AssetLoggerExtensions
     {
-        public static void Error(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, params object[] arguments)
+        public static void Error(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, params object[] arguments)
         {
-            Error(logger, package, assetReference, code, (IEnumerable<IContentReference>)null, arguments);
+            Error(logger, package, assetReference, code, (IEnumerable<IReference>)null, arguments);
         }
 
-        public static void Error(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IEnumerable<IContentReference> relatedGuids, params object[] arguments)
+        public static void Error(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IEnumerable<IReference> relatedGuids, params object[] arguments)
         {
             Error(logger, package, assetReference, code, relatedGuids, (Exception)null, arguments);
         }
 
-        public static void Error(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IContentReference[] relatedGuids, Exception exception = null)
+        public static void Error(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IReference[] relatedGuids, Exception exception = null)
         {
-            Error(logger, package, assetReference, code, (IEnumerable<IContentReference>)relatedGuids, exception);
+            Error(logger, package, assetReference, code, (IEnumerable<IReference>)relatedGuids, exception);
         }
 
-        public static void Error(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IEnumerable<IContentReference> relatedGuids, Exception exception = null)
+        public static void Error(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IEnumerable<IReference> relatedGuids, Exception exception = null)
         {
             var logMessage = new AssetLogMessage(package, assetReference, LogMessageType.Error, code) { Exception = exception };
             if (relatedGuids != null)
@@ -38,12 +38,12 @@ namespace SiliconStudio.Assets.Diagnostics
             logger.Log(logMessage);
         }
 
-        public static void Error(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, Exception exception, params object[] arguments)
+        public static void Error(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, Exception exception, params object[] arguments)
         {
             Error(logger, package, assetReference, code, null, exception, arguments);
         }
 
-        public static void Error(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IEnumerable<IContentReference> relatedGuids, Exception exception, params object[] arguments)
+        public static void Error(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IEnumerable<IReference> relatedGuids, Exception exception, params object[] arguments)
         {
             var logMessage = new AssetLogMessage(package, assetReference, LogMessageType.Error, code, arguments) { Exception = exception };
             if (relatedGuids != null)
@@ -53,12 +53,12 @@ namespace SiliconStudio.Assets.Diagnostics
             logger.Log(logMessage);
         }
 
-        public static void Warning(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IContentReference[] relatedGuids)
+        public static void Warning(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IReference[] relatedGuids)
         {
-            Warning(logger, package, assetReference, code, (IEnumerable<IContentReference>)null);
+            Warning(logger, package, assetReference, code, (IEnumerable<IReference>)null);
         }
 
-        public static void Warning(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IEnumerable<IContentReference> relatedGuids)
+        public static void Warning(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IEnumerable<IReference> relatedGuids)
         {
             var logMessage = new AssetLogMessage(package, assetReference, LogMessageType.Warning, code);
             if (relatedGuids != null)
@@ -68,12 +68,12 @@ namespace SiliconStudio.Assets.Diagnostics
             logger.Log(logMessage);
         }
 
-        public static void Warning(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, params object[] arguments)
+        public static void Warning(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, params object[] arguments)
         {
             Warning(logger, package, assetReference, code, null, arguments);
         }
 
-        public static void Warning(this ILogger logger, Package package, IContentReference assetReference, AssetMessageCode code, IEnumerable<IContentReference> relatedGuids, params object[] arguments)
+        public static void Warning(this ILogger logger, Package package, IReference assetReference, AssetMessageCode code, IEnumerable<IReference> relatedGuids, params object[] arguments)
         {
             var logMessage = new AssetLogMessage(package, assetReference, LogMessageType.Warning, code, arguments);
             if (relatedGuids != null)

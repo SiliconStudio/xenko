@@ -51,21 +51,21 @@ namespace SiliconStudio.Core.Serialization.Contents
             generatedUrlPrefix = Url + "/gen/";
         }
 
-        public int AddContentReference(ContentReference contentReference)
+        public int AddContentReference(ContentReference reference)
         {
-            if (contentReference == null)
+            if (reference == null)
                 return ChunkReference.NullIdentifier;
 
             // TODO: This behavior should be controllable
-            if (contentReference.State != ContentReferenceState.NeverLoad && contentReference.ObjectValue != null)
+            if (reference.State != ContentReferenceState.NeverLoad && reference.ObjectValue != null)
             {
                 // Auto-generate URL if necessary
-                BuildUrl(contentReference);
-                //Executor.ProcessObject(this, contentReference.Type, contentReference);
-                ContentReferences.Add(contentReference);
+                BuildUrl(reference);
+                //Executor.ProcessObject(this, reference.Type, reference);
+                ContentReferences.Add(reference);
             }
 
-            return AddChunkReference(contentReference.Location, contentReference.Type);
+            return AddChunkReference(reference.Location, reference.Type);
         }
 
         public ContentReference<T> GetContentReference<T>(int index) where T : class
@@ -106,10 +106,10 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
 
-        public void BuildUrl(ContentReference contentReference)
+        public void BuildUrl(ContentReference reference)
         {
-            var content = contentReference.ObjectValue;
-            string url = contentReference.Location;
+            var content = reference.ObjectValue;
+            string url = reference.Location;
 
             if (content == null)
                 return;
@@ -120,7 +120,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 // Already registered?
                 if (ContentManager.TryGetAssetUrl(content, out url))
                 {
-                    contentReference.Location = url;
+                    reference.Location = url;
                     return;
                 }
 
@@ -135,12 +135,12 @@ namespace SiliconStudio.Core.Serialization.Contents
                 objectsPerType.TryGetValue(contentType, out currentCount);
                 objectsPerType[contentType] = ++currentCount;
 
-                contentReference.Location = string.Format("{0}{1}_{2}", generatedUrlPrefix, content.GetType().Name, currentCount);
+                reference.Location = string.Format("{0}{1}_{2}", generatedUrlPrefix, content.GetType().Name, currentCount);
             }
 
             // Register it
-            //if (contentReference.Location != null)
-            //    ContentManager.RegisterAsset(contentReference.Location, contentReference.ObjectValue, serializationType, false);
+            //if (reference.Location != null)
+            //    ContentManager.RegisterAsset(reference.Location, reference.ObjectValue, serializationType, false);
         }
 
         public void SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)

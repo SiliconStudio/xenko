@@ -491,7 +491,7 @@ namespace SiliconStudio.Assets
             var referencesToUpdate = AssetReferenceAnalysis.Visit(asset);
             foreach (var assetReferenceLink in referencesToUpdate)
             {
-                var refToUpdate = assetReferenceLink.Reference as IContentReference;
+                var refToUpdate = assetReferenceLink.Reference as IReference;
                 if (refToUpdate == null || refToUpdate.Id == Guid.Empty || !idRemapping.ContainsKey(refToUpdate.Id))
                 {
                     continue;
@@ -913,7 +913,7 @@ namespace SiliconStudio.Assets
                 var referencesToUpdate = AssetReferenceAnalysis.Visit(referencingAsset.Item.Asset);
                 foreach (var assetReferenceLink in referencesToUpdate)
                 {
-                    var refToUpdate = assetReferenceLink.Reference as IContentReference;
+                    var refToUpdate = assetReferenceLink.Reference as IReference;
                     if (refToUpdate != null && refToUpdate.Id == item.Id)
                     {
                         assetReferenceLink.UpdateReference(item.Id, newLocation);
@@ -1043,7 +1043,7 @@ namespace SiliconStudio.Assets
         /// But we still need to be able to match these assets with some existing assets.
         /// In order to detect these references, we are previewing a merge between the <see cref="AssetImport"/> and the asset
         /// in the current session. In the differences between them, we are handling specially differences for 
-        /// <see cref="IContentReference"/> as we expect them to be remapped by the importing process. 
+        /// <see cref="IReference"/> as we expect them to be remapped by the importing process. 
         /// 
         /// For example, suppose a package contains a model A from a specified FBX file that is referencing assets B1 and B2. 
         /// When we are trying to import the same model A, it will first create A' that will reference B1' and B2'.
@@ -1175,7 +1175,7 @@ namespace SiliconStudio.Assets
 
         private static bool IsContentReference(Diff3Node node)
         {
-            if (typeof(IContentReference).IsAssignableFrom(node.InstanceType))
+            if (typeof(IReference).IsAssignableFrom(node.InstanceType))
                 return true;
 
             // If the new asset version is a reference, we can try to merge it
@@ -1185,14 +1185,14 @@ namespace SiliconStudio.Assets
             return false;
         }
 
-        private static IContentReference GetContentReference(object instance)
+        private static IReference GetContentReference(object instance)
         {
             if (instance == null)
             {
                 return null;
             }
 
-            var contentReference = instance as IContentReference;
+            var contentReference = instance as IReference;
             if (contentReference != null)
             {
                 return contentReference;

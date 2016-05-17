@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
                     foreach (var materialAssetReferenceLink in materialAssetReferences)
                     {
-                        var materialAssetReference = materialAssetReferenceLink.Reference as IContentReference;
+                        var materialAssetReference = materialAssetReferenceLink.Reference as IReference;
                         if (materialAssetReference == null)
                             continue;
 

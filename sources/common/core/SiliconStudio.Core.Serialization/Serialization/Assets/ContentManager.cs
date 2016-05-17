@@ -390,7 +390,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 if (assetReference != null)
                 {
-                    // TODO: Currently ReferenceSerializer creates a ContentReference, so we will go through DeserializeObject later to add the reference
+                    // TODO: Currently ReferenceSerializer creates a reference, so we will go through DeserializeObject later to add the reference
                     // This should be unified at some point
                     return assetReference;
                 }
@@ -675,7 +675,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 LoadedAssetReferences[obj] = assetReference;
 
-                // TODO: Currently here so that ContentReference.ObjectValue later keeps its Url.
+                // TODO: Currently here so that reference.ObjectValue later keeps its Url.
                 // Need some reorganization?
                 AttachedReferenceManager.SetUrl(obj, assetReference.Url);
             }
