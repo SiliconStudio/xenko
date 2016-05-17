@@ -490,14 +490,12 @@ namespace SiliconStudio.Core.Serialization.Assets
                     {
                         // Create AssetReference
                         assetReference = new AssetReference(url, parentAssetReference == null);
-                        contentSerializerContext.AssetReference = assetReference;
                         result = obj ?? serializer.Construct(contentSerializerContext);
                         SetAssetObject(assetReference, result);
                     }
                     else
                     {
                         result = assetReference.Object;
-                        contentSerializerContext.AssetReference = assetReference;
                     }
 
                     assetReference.Deserialized = true;
@@ -528,8 +526,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                     //AssetReference childReference;
 
-                    if (settings.ContentFilter != null)
-                        settings.ContentFilter(contentReference, ref shouldBeLoaded);
+                    settings.ContentFilter?.Invoke(contentReference, ref shouldBeLoaded);
 
                     if (shouldBeLoaded)
                     {
@@ -619,7 +616,6 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             var assetReference = new AssetReference(url, publicReference);
-            contentSerializerContext.AssetReference = assetReference;
             SetAssetObject(assetReference, obj);
 
             // Process content references

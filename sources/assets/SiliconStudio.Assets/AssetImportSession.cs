@@ -541,7 +541,7 @@ namespace SiliconStudio.Assets
                             }
                             else
                             {
-                                newReference = AttachedReferenceManager.CreateSerializableVersion(asset2Instance.GetType(), realItem.Id, realItem.Location);
+                                newReference = AttachedReferenceManager.CreateProxyObject(asset2Instance.GetType(), realItem.Id, realItem.Location);
                             }
                             node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
                         }

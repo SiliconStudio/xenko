@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// </summary>
     public sealed class AssetManagerLoaderSettings
     {
-        public delegate void ContentFilterDelegate(ITypedReference reference, ref bool shouldBeLoaded);
+        public delegate void ContentFilterDelegate(ILoadableReference reference, ref bool shouldBeLoaded);
 
         /// <summary>
         /// Gets the default loader settings.
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         public static ContentFilterDelegate NewContentFilterByType(params Type[] types)
         {
             // We could convert to HashSet, but usually not worth it for small sets
-            return (ITypedReference contentReference, ref bool shouldBeLoaded) =>
+            return (ILoadableReference contentReference, ref bool shouldBeLoaded) =>
             {
                 if (!types.Contains(contentReference.Type))
                     shouldBeLoaded = false;
