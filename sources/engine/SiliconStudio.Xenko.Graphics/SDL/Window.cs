@@ -18,8 +18,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         static Window()
         {
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
-                // Disable effect of doing Alt+F4
-            SDL.SDL_SetHint(SDL.SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4, "1");
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             // Set our OpenGL version. It has to be done before any SDL window creation
             // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
