@@ -6,5 +6,5 @@ Scope: Asset
 Description: An empty Sprite Studio model.
 Group: Sprite Studio
 Order: -100
-Icon: .xktpl\SpriteStudioModel.png
+Icon: ..\.xktpl\SpriteStudioModel.png
 DefaultOutputName: SpriteStudioModel
