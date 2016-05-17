@@ -101,7 +101,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Linux", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Linux.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles", "..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj", "{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}"
 EndProject
@@ -324,14 +324,18 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Linux.ActiveCfg = Release|Linux
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Linux.Build.0 = Release|Linux
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Linux.Deploy.0 = Release|Linux
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Linux.ActiveCfg = Release|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Linux.Build.0 = Release|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Linux.Build.0 = Debug|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Linux.ActiveCfg = Release|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Linux.Build.0 = Release|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.ActiveCfg = Release|Any CPU
-		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Linux.ActiveCfg = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Linux.Build.0 = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Linux.Deploy.0 = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Linux.ActiveCfg = Debug|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Linux.Build.0 = Debug|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|Linux.Deploy.0 = Debug|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Linux.ActiveCfg = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Linux.Build.0 = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|Linux.Deploy.0 = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.ActiveCfg = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.Build.0 = Release|Linux
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.Deploy.0 = Release|Linux
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Linux.ActiveCfg = Release|Linux
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Linux.Build.0 = Release|Linux
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Linux.Deploy.0 = Release|Linux
