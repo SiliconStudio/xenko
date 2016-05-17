@@ -2,7 +2,7 @@
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.UsesSoftEdge: false
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorConstantColorLink
         GenericArguments: [ParticleBase.EmissiveValue]
@@ -10,7 +10,7 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.UsesSoftEdge: false
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorFromStream
         GenericArguments: [COLOR0, rgba]
@@ -53,7 +53,7 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.UsesSoftEdge: false
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderMixinSource
         Mixins:
             -   ClassName: ComputeColorMultiply
@@ -68,7 +68,7 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.UsesSoftEdge: false
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorTextureScaledOffsetDynamicSampler
         GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
@@ -76,7 +76,7 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.UsesSoftEdge: false
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderMixinSource
         Mixins:
             -   ClassName: ComputeColorDarken3ds
@@ -91,7 +91,7 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.UsesSoftEdge: true
+    ParticleBase.UsesSoftEdge: 1
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorConstantColorLink
         GenericArguments: [ParticleBase.EmissiveValue]
