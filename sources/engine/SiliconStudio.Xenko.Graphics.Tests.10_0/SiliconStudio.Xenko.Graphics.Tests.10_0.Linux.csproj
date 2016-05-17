@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Linux</Platform>
     <ProjectGuid>{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Tests.10_0</AssemblyName>
@@ -27,13 +27,14 @@
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Graphics.Tests.10_0.xkpkg</SiliconStudioCurrentPackagePath>
+    <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
+    <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Linux' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
-    <OutputPath>..\..\..\Bin\Linux-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Linux\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,7 +44,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
-    <OutputPath>..\..\..\Bin\Linux-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Linux\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -52,6 +52,7 @@
     <StartupObject>SiliconStudio.Xenko.Engine.NextGen.NextGenTest1</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -173,9 +174,6 @@
       <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
     </None>
     <None Include="SiliconStudio.Xenko.Graphics.Tests.10_0.xkpkg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
