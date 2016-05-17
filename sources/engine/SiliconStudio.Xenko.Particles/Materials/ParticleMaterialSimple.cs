@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -34,6 +35,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
         [Display("Alpha-Add")]
+        [DefaultValue(0)]
         public float AlphaAdditive { get; set; }
 
         /// <summary>
@@ -44,6 +46,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(30)]
         [Display("Z Offset")]
+        [DefaultValue(0)]
         public float ZOffset { get; set; } = 0f;
 
         /// <summary>
@@ -54,6 +57,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(35)]
         [Display("Soft Edge")]
+        [DefaultValue(0)]
         public float SoftEdgeDistance { get; set; } = 0f;
 
         /// <summary>
@@ -64,6 +68,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(40)]
         [Display("Culling")]
+        [DefaultValue(ParticleMaterialCulling.CullNone)]
         public ParticleMaterialCulling FaceCulling { get; set; }
 
         /// <summary>
