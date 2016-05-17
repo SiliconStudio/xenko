@@ -56,34 +56,15 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
-                Window focusedWindow = WindowWithFocus;
-                if (focusedWindow != null)
-                {
-                    int x, y;
-                        // Get the coordinate of the mouse in the focused window
-                    SDL.SDL_GetMouseState(out x, out y);
-                    Point windowPos = focusedWindow.Location;
-                        // Use the focused window coordinate to compute the screen coordinate of the mouse.
-                    return new Point(windowPos.X + x, windowPos.Y + y);
-                }
-                else
-                {
-                    throw new NotSupportedException("Cannot query a mouse position without any windows!");
-                }
+                int x, y;
+                SDL.SDL_GetGlobalMouseState(out x, out y);
+                return new Point(x, y);
             }
             set
             {
-                Window focusedWindow = WindowWithFocus;
-                if (focusedWindow != null)
-                {
-                    Point windowPos = WindowWithFocus.Location;
-                        // Use the focused window coordinate to compute the local coordinate of the mouse.
-                    SDL.SDL_WarpMouseInWindow(WindowWithFocus.SdlHandle, value.X - windowPos.X, value.Y - windowPos.Y);
-                }
-                else
-                {
-                    throw new NotSupportedException("Cannot set mouse position without any windows!");
-                }
+                int err = SDL.SDL_WarpMouseGlobal(value.X, value.Y);
+                if (err != 0)
+                    throw new NotSupportedException("Current platform doesn't let you set the position of the mouse cursor.");
             }
         }
 
