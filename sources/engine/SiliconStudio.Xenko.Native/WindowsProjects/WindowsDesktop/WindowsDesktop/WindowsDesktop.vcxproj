@@ -72,9 +72,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</OutDir>
-    <OutDir Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutDir)-$(SiliconStudioBuildDirExtension)\</OutDir>
-    <OutDir Condition="'$(Platform)' == 'Win32'">$(OutDir)x86\</OutDir>
-    <OutDir Condition="'$(Platform)' == 'x64'">$(OutDir)x64\</OutDir>
+    <OutDir Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutDir)-$(SiliconStudioBuildDirExtension)</OutDir>
+    <OutDir Condition="'$(Platform)' == 'Win32'">$(OutDir)\x86\</OutDir>
+    <OutDir Condition="'$(Platform)' == 'x64'">$(OutDir)\x64\</OutDir>
     <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
