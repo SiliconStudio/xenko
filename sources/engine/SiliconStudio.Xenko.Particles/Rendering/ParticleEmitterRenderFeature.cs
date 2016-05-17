@@ -12,6 +12,19 @@ using SiliconStudio.Xenko.Rendering.Materials;
 namespace SiliconStudio.Xenko.Particles.Rendering
 {
     /// <summary>
+    /// Should be identical to the cbuffer PerView in ParticleUtilities.xksl
+    /// </summary>
+    struct ParticleUtilitiesPerView
+    {
+        public Matrix ViewMatrix;
+        public Matrix ProjectionMatrix;
+        public Matrix ViewProjectionMatrix;
+
+        // .x - Width, .y - Height, .z - Near, .w - Far
+        public Vector4 ViewFrustum;
+    }
+
+    /// <summary>
     /// Renders <see cref="RenderParticleEmitter"/>.
     /// </summary>
     public class ParticleEmitterRenderFeature : RootEffectRenderFeature
@@ -20,13 +33,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
-        private ConstantBufferOffsetReference viewProjectionMatrix;
-
-        private ConstantBufferOffsetReference viewMatrix;
-
-        private ConstantBufferOffsetReference projectionMatrix;
-
-        private ConstantBufferOffsetReference viewFrustum;
+        private ConstantBufferOffsetReference perViewCBufferOffset;
 
         // Material alive during this frame
         private readonly Dictionary<ParticleMaterial, ParticleMaterialInfo> allMaterialInfos = new Dictionary<ParticleMaterial, ParticleMaterialInfo>();
@@ -50,13 +57,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
             renderEffectKey = RenderEffectKey;
 
-            viewProjectionMatrix = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewProjectionMatrix.Name);
-
-            viewMatrix = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewMatrix.Name);
-
-            projectionMatrix = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ProjectionMatrix.Name);
-
-            viewFrustum = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewFrustum.Name);
+            // The offset starts with the first element in the buffer
+            perViewCBufferOffset = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewMatrix.Name);
 
             perMaterialDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }
@@ -114,12 +116,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                     // TODO: Iterate PermuatationParameters automatically?
                     material.ValidateEffect(RenderSystem.RenderContextOld, ref renderEffect.EffectValidator);
-
-
-                    //// TODO Validate Depth texture here
-                    //PrepareDepthStencilRO(context);
-                    //renderEffect.EffectValidator.ValidateParameter(ParticleBaseKeys.TextureDepth, DepthStencilRO);
-
                 }
             }
         }
@@ -157,8 +153,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // TODO: ParticleMaterial should set this up
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
-
-                //materialInfo?.Material.Parameters.Set(ParticleBaseKeys.TextureDepth, null);
             }
 
             base.Prepare(context);
@@ -205,36 +199,15 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                     var resourceGroup = viewLayout.Entries[view.Index].Resources;
                     var mappedCB = resourceGroup.ConstantBuffer.Data;
 
-                    // ViewProjection matrix
-                    var viewProjectionOffset = viewLayout.GetConstantBufferOffset(this.viewProjectionMatrix);
-                    if (viewProjectionOffset != -1)
+                    // PerView constant buffer
+                    var perViewOffset = viewLayout.GetConstantBufferOffset(this.perViewCBufferOffset);
+                    if (perViewOffset != -1)
                     {
-                        var perView = (Matrix*)((byte*)mappedCB + viewProjectionOffset);
-                        *perView = view.ViewProjection;
-                    }
-
-                    // View matrix
-                    var viewOffset = viewLayout.GetConstantBufferOffset(this.viewMatrix);
-                    if (viewOffset != -1)
-                    {
-                        var perView = (Matrix*)((byte*)mappedCB + viewOffset);
-                        *perView = view.View;
-                    }
-
-                    // Projection matrix
-                    var projectionOffset = viewLayout.GetConstantBufferOffset(this.projectionMatrix);
-                    if (projectionOffset != -1)
-                    {
-                        var perView = (Matrix*)((byte*)mappedCB + projectionOffset);
-                        *perView = view.Projection;
-                    }
-
-                    // View Frustum
-                    var frustumOffset = viewLayout.GetConstantBufferOffset(this.viewFrustum);
-                    if (frustumOffset != -1)
-                    {
-                        var perView = (Vector4*)((byte*)mappedCB + frustumOffset);
-                        *perView = new Vector4(view.ViewSize.X, view.ViewSize.Y, view.NearClipPlane, view.FarClipPlane);                        
+                        var perView = (ParticleUtilitiesPerView*)((byte*)mappedCB + perViewOffset);
+                        perView->ViewMatrix     = view.View;
+                        perView->ProjectionMatrix = view.Projection;
+                        perView->ViewProjectionMatrix = view.ViewProjection;
+                        perView->ViewFrustum = new Vector4(view.ViewSize.X, view.ViewSize.Y, view.NearClipPlane, view.FarClipPlane);
                     }
                 }
             }
