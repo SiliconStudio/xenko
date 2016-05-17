@@ -70,25 +70,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</OutDir>
+    <OutDir Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutDir)-$(SiliconStudioBuildDirExtension)\</OutDir>
+    <OutDir Condition="'$(Platform)' == 'Win32'">$(OutDir)x86\</OutDir>
+    <OutDir Condition="'$(Platform)' == 'x64'">$(OutDir)x64\</OutDir>
+    <TargetName>libxenkonative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x86\</OutDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x64\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x86\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <TargetName>libxenkonative</TargetName>
-    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)\x64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
