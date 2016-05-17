@@ -24,21 +24,10 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         public Sprite GetSprite(int index)
         {
-            if (Sheet == null || Sheet.Sprites == null || Sheet.Sprites.Count == 0)
-                return null;
-
-            return Sheet.Sprites[index % SpritesCount];
+            var count = SpritesCount;
+            return count > 0 ? Sheet.Sprites[(index % count + count) % count] : null; // in case of a negative index, it will cycle around
         }
 
-        public int SpritesCount
-        {
-            get
-            {
-                if (Sheet != null && Sheet.Sprites != null)
-                    return Sheet.Sprites.Count;
-
-                return 0;
-            }
-        }
+        public int SpritesCount => Sheet?.Sprites.Count ?? 0;
     }
 }
