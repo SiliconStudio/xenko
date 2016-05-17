@@ -37,6 +37,8 @@ namespace SiliconStudio.Xenko.Graphics
         private const ActiveUniformType FloatMat3x2 = ActiveUniformType.FloatMat3x2;
 #endif
 
+        internal int ProgramId;
+
         const string VertexShaderDepthClamp = @"
 out float _edc_z;
 void main()
@@ -114,11 +116,23 @@ void main()
             CreateShaders();
         }
 
+        protected override void DestroyImpl()
+        {
+            using (GraphicsDevice.UseOpenGLCreationContext())
+            {
+                GL.DeleteProgram(ProgramId);
+            }
+
+            ProgramId = 0;
+
+            base.DestroyImpl();
+        }
+
         private void CreateShaders()
         {
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                resourceId = GL.CreateProgram();
+                ProgramId = GL.CreateProgram();
 
                 // Attach shaders
                 foreach (var shader in effectBytecode.Stages)
@@ -172,23 +186,23 @@ void main()
                         throw new InvalidOperationException("Error while compiling GLSL shader. [{0}]".ToFormat(glErrorMessage));
                     }
 
-                    GL.AttachShader(resourceId, shaderId);
+                    GL.AttachShader(ProgramId, shaderId);
                 }
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Mark program as retrievable (necessary for later GL.GetProgramBinary).
-                GL.ProgramParameter(resourceId, ProgramParameterName.ProgramBinaryRetrievableHint, 1);
+                GL.ProgramParameter(ProgramId, ProgramParameterName.ProgramBinaryRetrievableHint, 1);
 #endif
 
                 // Link OpenGL program
-                GL.LinkProgram(resourceId);
+                GL.LinkProgram(ProgramId);
 
                 // Check link results
                 int linkStatus;
-                GL.GetProgram(resourceId, GetProgramParameterName.LinkStatus, out linkStatus);
+                GL.GetProgram(ProgramId, GetProgramParameterName.LinkStatus, out linkStatus);
                 if (linkStatus != 1)
                 {
-                    var infoLog = GL.GetProgramInfoLog(resourceId);
+                    var infoLog = GL.GetProgramInfoLog(ProgramId);
                     throw new InvalidOperationException("Error while linking GLSL shaders.\n" + infoLog);
                 }
 
@@ -196,17 +210,17 @@ void main()
                 {
                     // Build attributes list for shader signature
                     int activeAttribCount;
-                    GL.GetProgram(resourceId, GetProgramParameterName.ActiveAttributes, out activeAttribCount);
+                    GL.GetProgram(ProgramId, GetProgramParameterName.ActiveAttributes, out activeAttribCount);
 
                     for (int activeAttribIndex = 0; activeAttribIndex < activeAttribCount; ++activeAttribIndex)
                     {
                         int size;
                         ActiveAttribType type;
-                        var attribName = GL.GetActiveAttrib(resourceId, activeAttribIndex, out size, out type);
+                        var attribName = GL.GetActiveAttrib(ProgramId, activeAttribIndex, out size, out type);
 #if SILICONSTUDIO_PLATFORM_ANDROID
-                        var attribIndex = GL.GetAttribLocation(resourceId, new StringBuilder(attribName));
+                        var attribIndex = GL.GetAttribLocation(ProgramId, new StringBuilder(attribName));
 #else
-                        var attribIndex = GL.GetAttribLocation(resourceId, attribName);
+                        var attribIndex = GL.GetAttribLocation(ProgramId, attribName);
 #endif
                         Attributes.Add(attribName, attribIndex);
                     }
@@ -240,10 +254,10 @@ void main()
         {
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                GL.DeleteProgram(resourceId);
+                GL.DeleteProgram(ProgramId);
             }
 
-            resourceId = 0;
+            ProgramId = 0;
 
             base.Destroy();
         }
@@ -257,10 +271,10 @@ void main()
         {
             int currentProgram;
             GL.GetInteger(GetPName.CurrentProgram, out currentProgram);
-            GL.UseProgram(resourceId);
+            GL.UseProgram(ProgramId);
 
             int uniformBlockCount;
-            GL.GetProgram(resourceId, XkActiveUniformBlocks, out uniformBlockCount);
+            GL.GetProgram(ProgramId, XkActiveUniformBlocks, out uniformBlockCount);
 
             var validConstantBuffers = new bool[effectReflection.ConstantBuffers.Count];
             for (int uniformBlockIndex = 0; uniformBlockIndex < uniformBlockCount; ++uniformBlockIndex)
@@ -270,10 +284,10 @@ void main()
                 const int sbCapacity = 128;
                 int length;
                 var sb = new StringBuilder(sbCapacity);
-                GL.GetActiveUniformBlockName(resourceId, uniformBlockIndex, sbCapacity, out length, sb);
+                GL.GetActiveUniformBlockName(ProgramId, uniformBlockIndex, sbCapacity, out length, sb);
                 var constantBufferName = sb.ToString();
 #else
-                var constantBufferName = GL.GetActiveUniformBlockName(resourceId, uniformBlockIndex);
+                var constantBufferName = GL.GetActiveUniformBlockName(ProgramId, uniformBlockIndex);
 #endif
 
                 var constantBufferDescriptionIndex = effectReflection.ConstantBuffers.FindIndex(x => x.Name == constantBufferName);
@@ -292,32 +306,32 @@ void main()
                 var constantBufferDescription = effectReflection.ConstantBuffers[constantBufferDescriptionIndex];
                 var constantBuffer = effectReflection.ResourceBindings[constantBufferIndex];
 
-                GL.GetActiveUniformBlock(resourceId, uniformBlockIndex, ActiveUniformBlockParameter.UniformBlockDataSize, out constantBufferDescription.Size);
+                GL.GetActiveUniformBlock(ProgramId, uniformBlockIndex, ActiveUniformBlockParameter.UniformBlockDataSize, out constantBufferDescription.Size);
                 
                 int uniformCount;
-                GL.GetActiveUniformBlock(resourceId, uniformBlockIndex, ActiveUniformBlockParameter.UniformBlockActiveUniforms, out uniformCount);
+                GL.GetActiveUniformBlock(ProgramId, uniformBlockIndex, ActiveUniformBlockParameter.UniformBlockActiveUniforms, out uniformCount);
 
                 // set the binding
-                GL.UniformBlockBinding(resourceId, uniformBlockIndex, uniformBlockIndex);
+                GL.UniformBlockBinding(ProgramId, uniformBlockIndex, uniformBlockIndex);
 
                 // Read uniforms desc
                 var uniformIndices = new int[uniformCount];
                 var uniformOffsets = new int[uniformCount];
                 var uniformTypes = new int[uniformCount];
                 var uniformNames = new string[uniformCount];
-                GL.GetActiveUniformBlock(resourceId, uniformBlockIndex, ActiveUniformBlockParameter.UniformBlockActiveUniformIndices, uniformIndices);
-                GL.GetActiveUniforms(resourceId, uniformIndices.Length, uniformIndices, ActiveUniformParameter.UniformOffset, uniformOffsets);
-                GL.GetActiveUniforms(resourceId, uniformIndices.Length, uniformIndices, ActiveUniformParameter.UniformType, uniformTypes);
+                GL.GetActiveUniformBlock(ProgramId, uniformBlockIndex, ActiveUniformBlockParameter.UniformBlockActiveUniformIndices, uniformIndices);
+                GL.GetActiveUniforms(ProgramId, uniformIndices.Length, uniformIndices, ActiveUniformParameter.UniformOffset, uniformOffsets);
+                GL.GetActiveUniforms(ProgramId, uniformIndices.Length, uniformIndices, ActiveUniformParameter.UniformType, uniformTypes);
                 
                 for (int uniformIndex = 0; uniformIndex < uniformIndices.Length; ++uniformIndex)
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     int size;
                     ActiveUniformType aut;
-                    GL.GetActiveUniform(resourceId, uniformIndices[uniformIndex], sbCapacity, out length, out size, out aut, sb);
+                    GL.GetActiveUniform(ProgramId, uniformIndices[uniformIndex], sbCapacity, out length, out size, out aut, sb);
                     uniformNames[uniformIndex] = sb.ToString();
 #else
-                    uniformNames[uniformIndex] = GL.GetActiveUniformName(resourceId, uniformIndices[uniformIndex]);
+                    uniformNames[uniformIndex] = GL.GetActiveUniformName(ProgramId, uniformIndices[uniformIndex]);
 #endif
                 }
 
@@ -406,10 +420,10 @@ void main()
                 Reflection.ResourceBindings.Add(noSampler);
 
                 int activeUniformCount;
-                GL.GetProgram(resourceId, GetProgramParameterName.ActiveUniforms, out activeUniformCount);
+                GL.GetProgram(ProgramId, GetProgramParameterName.ActiveUniforms, out activeUniformCount);
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 var uniformTypes = new int[activeUniformCount];
-                GL.GetActiveUniforms(resourceId, activeUniformCount, Enumerable.Range(0, activeUniformCount).ToArray(), ActiveUniformParameter.UniformType, uniformTypes);
+                GL.GetActiveUniforms(ProgramId, activeUniformCount, Enumerable.Range(0, activeUniformCount).ToArray(), ActiveUniformParameter.UniformType, uniformTypes);
 #endif
 
                 int textureUnitCount = 0;
@@ -421,12 +435,12 @@ void main()
                 {
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     var uniformType = (ActiveUniformType)uniformTypes[activeUniformIndex];
-                    var uniformName = GL.GetActiveUniformName(resourceId, activeUniformIndex);
+                    var uniformName = GL.GetActiveUniformName(ProgramId, activeUniformIndex);
 #else
                     ActiveUniformType uniformType;
                     int uniformCount;
                     int length;
-                    GL.GetActiveUniform(resourceId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
+                    GL.GetActiveUniform(ProgramId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
                     var uniformName = sb.ToString();
 
                     //this is a special OpenglES case , it is declared as built in uniform, and the driver will take care of it, we just need to ignore it here
@@ -485,12 +499,24 @@ void main()
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         case ActiveUniformType.Sampler1D:
                         case ActiveUniformType.Sampler1DShadow:
+                        case ActiveUniformType.IntSampler1D:
+                        case ActiveUniformType.UnsignedIntSampler1D:
+
+                        case ActiveUniformType.SamplerBuffer:
+                        case ActiveUniformType.UnsignedIntSamplerBuffer:
+                        case ActiveUniformType.IntSamplerBuffer:
 #endif
                         case ActiveUniformType.Sampler2D:
+                        case ActiveUniformType.Sampler2DShadow:
                         case ActiveUniformType.Sampler3D: // TODO: remove Texture3D that is not available in OpenGL ES 2
                         case ActiveUniformType.SamplerCube:
-                        case ActiveUniformType.Sampler2DShadow:
-                            var uniformIndex = GL.GetUniformLocation(resourceId, uniformName);
+                        case ActiveUniformType.IntSampler2D:
+                        case ActiveUniformType.IntSampler3D:
+                        case ActiveUniformType.IntSamplerCube:
+                        case ActiveUniformType.UnsignedIntSampler2D:
+                        case ActiveUniformType.UnsignedIntSampler3D:
+                        case ActiveUniformType.UnsignedIntSamplerCube:
+                            var uniformIndex = GL.GetUniformLocation(ProgramId, uniformName);
 
                             // Temporary way to scan which texture and sampler created this texture_sampler variable (to fix with new HLSL2GLSL converter)
 
@@ -723,7 +749,7 @@ void main()
                 CompareSize = uniformSize + (uniformSize + 15)/16*16 * (uniformCount - 1),
                 ConstantBufferSlot = constantBuffer.SlotStart,
                 Offset = offset,
-                UniformIndex = GL.GetUniformLocation(resourceId, uniformName)
+                UniformIndex = GL.GetUniformLocation(ProgramId, uniformName)
             });
         }
 #endif
