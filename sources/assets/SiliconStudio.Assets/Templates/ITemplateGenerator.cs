@@ -1,5 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Threading.Tasks;
+
 namespace SiliconStudio.Assets.Templates
 {
     public delegate bool RunGeneratorDelegate();
@@ -30,8 +33,8 @@ namespace SiliconStudio.Assets.Templates
         /// <remarks>This method should be used to verify that the parameters are correct, and to ask user for additional
         /// information before running the template.
         /// </remarks>
-        /// <returns><c>True</c> if the preparation was successful, <c>false</c> otherwise.</returns>
-        bool PrepareForRun(TParameters parameters);
+        /// <returns>A task completing when the preparation is finished, with the result <c>True</c> if the preparation was successful, <c>false</c> otherwise.</returns>
+        Task<bool> PrepareForRun(TParameters parameters);
 
         /// <summary>
         /// Runs the generator with the given parameter.

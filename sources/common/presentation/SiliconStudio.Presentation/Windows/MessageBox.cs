@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -92,45 +93,6 @@ namespace SiliconStudio.Presentation.Windows
             Key = KeyGestures.ButtonYes,
         };
 
-        /// <summary>
-        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
-        /// </summary>
-        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
-        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
-        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
-        /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
-        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
-        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
-        {
-            return Show(owner, message, caption, GetButtons(button), image);
-        }
-
-        /// <summary>
-        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
-        /// </summary>
-        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
-        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
-        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
-        /// <param name="buttons">A n enumeration of <see cref="DialogButtonInfo"/> that specifies buttons to display</param>
-        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
-        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static MessageBoxResult Show(Window owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
-        {
-            var buttonList = buttons.ToList();
-            var messageBox = new MessageBox
-            {
-                Owner = owner,
-                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
-                Title = caption,
-                Content = message,
-                ButtonsSource = buttonList,
-            };
-            SetImage(messageBox, image);
-            SetKeyBindings(messageBox, buttonList);
-            return (MessageBoxResult)messageBox.ShowInternal();
-        }
-
         internal static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
         {
             ICollection<DialogButtonInfo> buttons;
@@ -187,6 +149,43 @@ namespace SiliconStudio.Presentation.Windows
                     throw new ArgumentOutOfRangeException(nameof(image), image, null);
             }
             messageBox.Image = imageKey != null ? (ImageSource)messageBox.TryFindResource(imageKey) : null;
+        }
+
+        /// <summary>
+        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
+        /// </summary>
+        /// <param name="owner">The intended owner window of the message box.</param>
+        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
+        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
+        /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
+        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
+        public static Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        {
+            return Show(owner, message, caption, GetButtons(button), image);
+        }
+
+        /// <summary>
+        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
+        /// </summary>
+        /// <param name="owner">The intended owner window of the message box.</param>
+        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
+        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
+        /// <param name="buttons">A n enumeration of <see cref="DialogButtonInfo"/> that specifies buttons to display</param>
+        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
+        public static async Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        {
+            var buttonList = buttons.ToList();
+            var messageBox = new MessageBox
+            {
+                Title = caption,
+                Content = message,
+                ButtonsSource = buttonList,
+            };
+            SetImage(messageBox, image);
+            SetKeyBindings(messageBox, buttonList);
+            return (MessageBoxResult)await messageBox.ShowInternal(owner);
         }
 
         internal static void SetKeyBindings(MessageBox messageBox, IEnumerable<DialogButtonInfo> buttons)

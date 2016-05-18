@@ -95,7 +95,6 @@ namespace SiliconStudio.Assets.Templates
             Namespace = parameters.Namespace;
             OutputDirectory = parameters.OutputDirectory;
             Description = parameters.Description;
-            WindowHandle = parameters.WindowHandle;
             Logger = parameters.Logger;
             parameters.Tags.CopyTo(ref Tags);
         }
@@ -122,12 +121,6 @@ namespace SiliconStudio.Assets.Templates
         /// The actual template description.
         /// </summary>
         public TemplateDescription Description { get; set; }
-
-        /// <summary>
-        /// Gets or sets the window handle.
-        /// </summary>
-        /// <value>The window handle.</value>
-        public IntPtr WindowHandle { get; set; }
 
         /// <summary>
         /// Gets or sets the logger.

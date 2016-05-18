@@ -247,7 +247,14 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                                 var platformTarget = platform;
                                 if (profile.Platform != PlatformType.Shared)
                                 {
-                                    platformTarget = platformsUsedBySession.First(plat => plat.Type == profile.Platform);
+                                    platformTarget = platformsUsedBySession.FirstOrDefault(plat => plat.Type == profile.Platform);
+                                    if (platformTarget == null)
+                                    {
+                                        // This should not happen as we control our platforms, but when we develop a new one
+                                        // we might get it and it is better to cleary state why we are failing.
+                                        log.Error("Project contains an unsupported platform " + profile.Platform);
+                                        throw new InvalidOperationException("Unsupported platform " + profile.Platform);
+                                    }
                                 }
 
                                 bool isPartOfBuild = platformTarget == platform;
