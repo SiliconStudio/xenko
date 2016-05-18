@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Events;
 using SiliconStudio.Xenko.UI.Panels;
@@ -29,7 +30,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private TextBlock modalButton2Text;
 
-        private SpriteSheet Sprites;
+        private SpriteSheet sprites;
 
         public ModalElementTest()
         {
@@ -40,9 +41,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            Sprites = Content.Load<SpriteSheet>("UIImages");
+            sprites = Content.Load<SpriteSheet>("UIImages");
 
-            var lifeBar = new ImageElement { Source = Sprites["Logo"], HorizontalAlignment = HorizontalAlignment.Center };
+            var lifeBar = new ImageElement { Source = SpriteFromSheet.Create(sprites, "Logo"), HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
 
             var quitGameButton = new Button
@@ -120,7 +121,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             base.SpecificDrawBeforeUI(context, renderFrame);
 
-            context.GraphicsContext.DrawTexture(Sprites["GameScreen"].Texture);
+            context.GraphicsContext.DrawTexture(sprites["GameScreen"].Texture);
         }
 
         protected override void Update(GameTime gameTime)

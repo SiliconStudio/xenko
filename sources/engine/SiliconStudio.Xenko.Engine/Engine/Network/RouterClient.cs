@@ -79,11 +79,17 @@ namespace SiliconStudio.Xenko.Engine.Network
 
                 try
                 {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_10 || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+                    var serverAddress = "127.0.0.1";
+#else
+                    var serverAddress = Environment.GetEnvironmentVariable("XenkoConnectionRouterRemoteIP") ?? "127.0.0.1";
+#endif
+
                     // If connecting as a client, try once, otherwise try to listen multiple time (in case port is shared)
                     switch (ConnectionMode)
                     {
                         case RouterConnectionMode.Connect:
-                            socketContext.StartClient("127.0.0.1", DefaultPort).Wait();
+                            socketContext.StartClient(serverAddress, DefaultPort).Wait();
                             break;
                         case RouterConnectionMode.Listen:
                             socketContext.StartServer(DefaultListenPort, true, 10).Wait();
@@ -92,7 +98,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                             bool clientException = false;
                             try
                             {
-                                socketContext.StartClient("127.0.0.1", DefaultPort).Wait();
+                                socketContext.StartClient(serverAddress, DefaultPort).Wait();
                             }
                             catch (Exception) // Ideally we should filter SocketException, but not available on some platforms (maybe it should be wrapped in a type available on all paltforms?)
                             {

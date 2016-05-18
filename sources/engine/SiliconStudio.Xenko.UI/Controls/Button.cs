@@ -3,7 +3,7 @@
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -16,17 +16,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the NotPressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> NotPressedImagePropertyKey = new PropertyKey<Sprite>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> NotPressedImagePropertyKey = new PropertyKey<ISpriteProvider>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the PressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> PressedImagePropertyKey = new PropertyKey<Sprite>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> PressedImagePropertyKey = new PropertyKey<ISpriteProvider>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey = new PropertyKey<ISpriteProvider>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
 
         public Button()
         {
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             Padding = new Thickness(10, 5, 10, 7);
         }
 
-        private static void OnAspectImageInvalidated(object propertyOwner, PropertyKey<Sprite> propertyKey, Sprite propertyOldValue)
+        private static void OnAspectImageInvalidated(object propertyOwner, PropertyKey<ISpriteProvider> propertyKey, ISpriteProvider propertyOldValue)
         {
             var button = (Button)propertyOwner;
             button.OnAspectImageInvalidated();
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when pressed
         /// </summary>
-        public Sprite PressedImage
+        public ISpriteProvider PressedImage
         {
             get { return DependencyProperties.Get(PressedImagePropertyKey); }
             set { DependencyProperties.Set(PressedImagePropertyKey, value); }
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when not pressed
         /// </summary>
-        public Sprite NotPressedImage
+        public ISpriteProvider NotPressedImage
         {
             get { return DependencyProperties.Get(NotPressedImagePropertyKey); }
             set { DependencyProperties.Set(NotPressedImagePropertyKey, value); }
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
-        public Sprite MouseOverImage
+        public ISpriteProvider MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }

@@ -1,36 +1,58 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Windows;
-using System.Windows.Threading;
+
+using System;
+using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Dialogs
 {
-    public abstract class ModalDialogBase : IModalDialog
+    public abstract class ModalDialogBase : IModalDialogInternal
     {
-        private readonly Dispatcher dispatcher;
-        private readonly Window parentWindow;
+        private readonly IDispatcherService dispatcher;
         protected CommonFileDialog Dialog;
 
-        protected ModalDialogBase(Dispatcher dispatcher, Window parentWindow)
+        protected ModalDialogBase(IDispatcherService dispatcher)
         {
             this.dispatcher = dispatcher;
-            this.parentWindow = parentWindow;
+        }
+
+        /// <param name="result"></param>
+        /// <inheritdoc/>
+        public void RequestClose(DialogResult result)
+        {
+            throw new NotSupportedException("RequestClose is not supported for this dialog.");
         }
 
         /// <inheritdoc/>
         public object DataContext { get; set; }
 
-        protected DialogResult InvokeDialog()
+        /// <inheritdoc/>
+        public DialogResult Result { get; set; }
+
+        protected Task InvokeDialog()
         {
-            if (dispatcher.CheckAccess())
+            return dispatcher.InvokeAsync(() =>
             {
-                return (DialogResult)Dialog.ShowDialog(parentWindow);
-            }
-            return dispatcher.Invoke(() => (DialogResult)Dialog.ShowDialog(parentWindow));
+                var result = Dialog.ShowDialog();
+                switch (result)
+                {
+                    case CommonFileDialogResult.None:
+                        Result = DialogResult.None;
+                        break;
+                    case CommonFileDialogResult.Ok:
+                        Result = DialogResult.Ok;
+                        break;
+                    case CommonFileDialogResult.Cancel:
+                        Result = DialogResult.Cancel;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            });
         }
 
-        public abstract DialogResult Show();
+        public abstract Task<DialogResult> ShowModal();
     }
 }

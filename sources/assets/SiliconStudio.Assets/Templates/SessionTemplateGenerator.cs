@@ -1,9 +1,10 @@
+using System.Threading.Tasks;
+
 namespace SiliconStudio.Assets.Templates
 {
     /// <summary>
-    /// An implementation of <see cref="ITemplateGenerator"/> that will save the session and update the assembly references
-    /// in the <see cref="AfterRun"/> method. An <see cref="AfterSave"/> protected method is provided to do additional work
-    /// after saving.
+    /// An implementation of <see cref="ITemplateGenerator"/> that will save the session and update the assembly references.
+    /// An <see cref="AfterSave"/> protected method is provided to do additional work after saving.
     /// </summary>
     public abstract class SessionTemplateGenerator : TemplateGeneratorBase<SessionTemplateGeneratorParameters>
     {
@@ -19,7 +20,7 @@ namespace SiliconStudio.Assets.Templates
             // TODO: Better tracking of ProjectReferences (added, removed, etc...)
             parameters.Session.UpdateAssemblyReferences(parameters.Logger);
 
-            return AfterSave(parameters);
+            return AfterSave(parameters).Result;
         }
 
         /// <summary>
@@ -38,9 +39,9 @@ namespace SiliconStudio.Assets.Templates
         /// </summary>
         /// <param name="parameters">The parameters for the template generator.</param>
         /// <returns>True if the method succeeded, False otherwise.</returns>
-        protected virtual bool AfterSave(SessionTemplateGeneratorParameters parameters)
+        protected virtual Task<bool> AfterSave(SessionTemplateGeneratorParameters parameters)
         {
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

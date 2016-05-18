@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -104,10 +105,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var random = new Random(0);
 
-            var Sprites = Content.Load<SpriteSheet>("UIImages");
-            var img1 = new ImageElement { Source = new Sprite(Content.Load<Texture>("uv")) };
-            var img2 = new ImageElement { Source = Sprites["GameScreenLeft"] };
-            var img3 = new ImageElement { Source = Sprites["GameScreenRight"] };
+            var sprites = Content.Load<SpriteSheet>("UIImages");
+            var img1 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")) };
+            var img2 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "GameScreenLeft") };
+            var img3 = new ImageElement { Source = SpriteFromSheet.Create(sprites, "GameScreenRight") };
 
             stackPanel1 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             stackPanel1.Children.Add(img1);

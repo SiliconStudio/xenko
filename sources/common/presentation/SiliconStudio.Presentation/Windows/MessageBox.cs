@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using SiliconStudio.Presentation.Resources;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -16,6 +18,12 @@ namespace SiliconStudio.Presentation.Windows
     
     public class MessageBox : MessageDialogBase
     {
+        /// <summary>
+        /// Identifies the <see cref="Image"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ImageProperty =
+            DependencyProperty.Register(nameof(Image), typeof(ImageSource), typeof(MessageBox));
+
         protected MessageBox()
         {
         }
@@ -26,12 +34,6 @@ namespace SiliconStudio.Presentation.Windows
 
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => Clipboard.SetDataObject(Content ?? string.Empty, true)));
         }
-
-        /// <summary>
-        /// Identifies the <see cref="Image"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ImageProperty =
-            DependencyProperty.Register("Image", typeof(ImageSource), typeof(MessageBox));
 
         public ImageSource Image
         {
@@ -61,6 +63,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             Result = (int)MessageBoxResult.No,
             Content = "No",
+            Key = KeyGestures.ButtonNo,
         };
 
         /// <summary>
@@ -87,9 +90,10 @@ namespace SiliconStudio.Presentation.Windows
             IsDefault = true,
             Result = (int)MessageBoxResult.Yes,
             Content = "Yes",
+            Key = KeyGestures.ButtonYes,
         };
 
-        public static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
+        internal static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
         {
             ICollection<DialogButtonInfo> buttons;
             switch (button)
@@ -117,7 +121,7 @@ namespace SiliconStudio.Presentation.Windows
             return buttons;
         }
 
-        public static void SetImage(MessageBox messageBox, MessageBoxImage image)
+        internal static void SetImage(MessageBox messageBox, MessageBoxImage image)
         {
             string imageKey;
             switch (image)
@@ -150,13 +154,13 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
         /// </summary>
-        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
+        /// <param name="owner">The intended owner window of the message box.</param>
         /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
         /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
         /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
         /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        public static Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
             return Show(owner, message, caption, GetButtons(button), image);
         }
@@ -164,24 +168,41 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
         /// </summary>
-        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
+        /// <param name="owner">The intended owner window of the message box.</param>
         /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
         /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
         /// <param name="buttons">A n enumeration of <see cref="DialogButtonInfo"/> that specifies buttons to display</param>
         /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static MessageBoxResult Show(Window owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        public static async Task<MessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
         {
+            var buttonList = buttons.ToList();
             var messageBox = new MessageBox
             {
-                Owner = owner,
-                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
                 Title = caption,
                 Content = message,
-                ButtonsSource = buttons.ToList(),
+                ButtonsSource = buttonList,
             };
             SetImage(messageBox, image);
-            return (MessageBoxResult)messageBox.ShowInternal();
+            SetKeyBindings(messageBox, buttonList);
+            return (MessageBoxResult)await messageBox.ShowInternal(owner);
+        }
+
+        internal static void SetKeyBindings(MessageBox messageBox, IEnumerable<DialogButtonInfo> buttons)
+        {
+            foreach (var button in buttons)
+            {
+                Key key;
+                if (!Enum.TryParse(button.Key, out key))
+                    continue;
+
+                var binding = new KeyBinding(messageBox.ButtonCommand, key, ModifierKeys.Alt)
+                {
+                    CommandParameter = button.Result,
+                    Modifiers = ModifierKeys.None, // because KeyBinding doesn't allow it in the constructor!
+                };
+                messageBox.InputBindings.Add(binding);
+            }
         }
     }
 }

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 
@@ -28,7 +29,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override void Invoke(object parameter)
         {
-            using (var transaction = ActionService.CreateTransaction())
+            using (var transaction = ActionService?.CreateTransaction())
             {
                 commands.First().NodeCommand.StartCombinedInvoke();
                 foreach (var command in commands)
@@ -36,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum
                     command.Invoke(parameter);
                 }
                 commands.First().NodeCommand.EndCombinedInvoke();
-                ActionService.SetName(transaction, ActionName);
+                ActionService?.SetName(transaction, ActionName);
             }
         }
     }

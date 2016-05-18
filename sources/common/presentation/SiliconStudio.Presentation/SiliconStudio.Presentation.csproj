@@ -42,7 +42,13 @@
     <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
+    <Compile Include="Resources\KeyGestures.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KeyGestures.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\DummyTransaction.cs" />
+    <Compile Include="Services\IModalDialogInternal.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
     <Compile Include="Services\UndoRedoService.cs" />
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
@@ -160,6 +166,12 @@
     <Compile Include="ViewModel\CollectionChangeOperation.cs" />
     <Compile Include="ViewModel\PropertyChangeOperation.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
+    <Compile Include="Services\CheckedMessageBoxResult.cs" />
+    <Compile Include="Windows\DialogHelper.cs" />
+    <Compile Include="Windows\HwndHelper.cs" />
+    <Compile Include="Controls\ModalWindow.cs" />
+    <Compile Include="Windows\WindowInfo.cs" />
+    <Compile Include="Windows\WindowOwner.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
     <Compile Include="MarkupExtensions\IntExtension.cs" />
@@ -302,6 +314,8 @@
     <Compile Include="Windows\DialogButtonInfo.cs" />
     <Compile Include="Windows\MessageBox.cs" />
     <Compile Include="Windows\MessageDialogBase.cs" />
+    <Compile Include="Windows\WindowManager.cs" />
+    <Compile Include="View\WindowManagerEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\ExpressionDark\Theme.xaml">
@@ -358,6 +372,10 @@
     <Resource Include="Resources\Images\gear--pencil.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\KeyGestures.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>KeyGestures.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

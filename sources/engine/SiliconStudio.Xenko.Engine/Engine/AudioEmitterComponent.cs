@@ -75,14 +75,20 @@ namespace SiliconStudio.Xenko.Engine
             public AudioEmitterSoundController Controller;
 
             /// <summary>
+            /// The AudioEmitterComponent itself
+            /// </summary>
+            public AudioEmitterComponent EmitterComponent;
+
+            /// <summary>
             /// Action indication if the controller has been added or removed.
             /// </summary>
             public NotifyCollectionChangedAction Action;
 
-            public ControllerCollectionChangedEventArgs(Entity entity, AudioEmitterSoundController controller, NotifyCollectionChangedAction action)
+            public ControllerCollectionChangedEventArgs(Entity entity, AudioEmitterSoundController controller, AudioEmitterComponent component, NotifyCollectionChangedAction action)
             {
                 Entity = entity;
                 Controller = controller;
+                EmitterComponent = component;
                 Action = action;
             }
         }
@@ -107,7 +113,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffect == null)
             {
-                throw new ArgumentNullException("soundEffect");
+                throw new ArgumentNullException(nameof(soundEffect));
             }
             if (!SoundEffectToController.ContainsKey(soundEffect))
             {
@@ -129,7 +135,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffect == null)
             {
-                throw new ArgumentNullException("soundEffect");
+                throw new ArgumentNullException(nameof(soundEffect));
             }
             if (soundEffect.WaveFormat.Channels > 1)
             {
@@ -141,8 +147,7 @@ namespace SiliconStudio.Xenko.Engine
 
             var newController = new AudioEmitterSoundController(this, soundEffect);
             SoundEffectToController[soundEffect] = newController;
-            if(ControllerCollectionChanged != null)
-                ControllerCollectionChanged.Invoke(this, new ControllerCollectionChangedEventArgs(Entity, newController, NotifyCollectionChangedAction.Add ));
+            ControllerCollectionChanged?.Invoke(this, new ControllerCollectionChangedEventArgs(Entity, newController, this, NotifyCollectionChangedAction.Add ));
         }
 
         /// <summary>
@@ -157,7 +162,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffects == null)
             {
-                throw new ArgumentNullException("soundEffects");
+                throw new ArgumentNullException(nameof(soundEffects));
             }
 
             foreach (var soundEffect in soundEffects)
@@ -177,7 +182,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffect == null)
             {
-                throw new ArgumentNullException("soundEffect");
+                throw new ArgumentNullException(nameof(soundEffect));
             }
             if (!SoundEffectToController.ContainsKey(soundEffect))
             {
@@ -186,8 +191,7 @@ namespace SiliconStudio.Xenko.Engine
 
             var oldController = SoundEffectToController[soundEffect];
             SoundEffectToController.Remove(soundEffect);
-            if (ControllerCollectionChanged != null)
-                ControllerCollectionChanged.Invoke(this, new ControllerCollectionChangedEventArgs(Entity, oldController, NotifyCollectionChangedAction.Remove));
+            ControllerCollectionChanged?.Invoke(this, new ControllerCollectionChangedEventArgs(Entity, oldController, this, NotifyCollectionChangedAction.Remove));
         }
 
         /// <summary>
@@ -201,7 +205,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (soundEffects == null)
             {
-                throw new ArgumentNullException("soundEffects");
+                throw new ArgumentNullException(nameof(soundEffects));
             }
 
             foreach (var soundEffect in soundEffects)

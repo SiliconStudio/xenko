@@ -349,6 +349,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.Update(time);
 
+            if (!IsEnabled)
+                return;
+
             var elapsedSeconds = (float)time.Elapsed.TotalSeconds;
             if (elapsedSeconds < MathUtil.ZeroTolerance)
                 return;

@@ -56,7 +56,7 @@ namespace SiliconStudio.Presentation.Quantum
                 DisplayName = provider();
         }
 
-        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
+        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
             var observableChild = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
             nodeAssociatedData?.ForEach(x => observableChild.AddAssociatedData(x.Key, x.Value));

@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         private float currentTime;
 
         private readonly List<Entity> rotatingSprites = new List<Entity>();
-        private List<Entity> entities = new List<Entity>();
+        private readonly List<Entity> entities = new List<Entity>();
         private Entity animatedBall;
 
         private const int ScreenWidth = 1024;
@@ -36,8 +36,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 new SpriteComponent
                 {
-                    SpriteProvider = new SpriteFromSheet { Sheet = sheet },
-                    CurrentFrame = sheet.FindImageIndex(frameName)
+                    SpriteProvider = SpriteFromSheet.Create(sheet, frameName)
                 }
             };
 
@@ -139,7 +138,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private void UpdateSprites(float time)
         {
-            animatedBall.Get<SpriteComponent>().CurrentFrame = (int)(time * 60);
+            var provider = animatedBall.Get<SpriteComponent>().SpriteProvider as SpriteFromSheet;
+            if (provider != null)
+                provider.CurrentFrame = (int)(time * 60);
 
             foreach (var entity in rotatingSprites)
             {

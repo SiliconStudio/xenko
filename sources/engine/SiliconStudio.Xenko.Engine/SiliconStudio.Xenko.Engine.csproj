@@ -119,8 +119,11 @@
     <Compile Include="Engine\EntityComponentCollection.cs" />
     <Compile Include="Engine\EntityProcessorCollection.cs" />
     <Compile Include="Engine\Events\EventKey.cs" />
+    <Compile Include="Engine\Events\EventKeyBase.cs" />
     <Compile Include="Engine\Events\EventReceiver.cs" />
+    <Compile Include="Engine\Events\EventReceiverBase.cs" />
     <Compile Include="Engine\Events\EventReceiverOptions.cs" />
+    <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
@@ -334,6 +337,7 @@
     <Compile Include="Rendering\SortKey.cs" />
     <Compile Include="Rendering\SortMode.cs" />
     <Compile Include="Rendering\SortModeDistance.cs" />
+    <Compile Include="Rendering\Sprites\IAnimatableSpriteProvider.cs" />
     <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
@@ -2441,6 +2445,7 @@
     </Compile>
     <Compile Include="Rendering\Shaders\TransformationKeys.cs" />
     <Compile Include="Engine\SyncScript.cs" />
+    <Compile Include="Starter\iOSXenkoView.cs" />
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
     <Compile Include="Updater\BlittableHelper.cs" />
     <Compile Include="Updater\CompiledUpdate.cs" />

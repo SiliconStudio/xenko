@@ -34,10 +34,10 @@ namespace SiliconStudio.Xenko.UI.Renderers
             var sliderRatio = slider.Value / (slider.Maximum - slider.Minimum);
             var trackOffsets = new Vector2(slider.TrackStartingOffsets[axis], slider.TrackStartingOffsets[axisPrime]);
             var fullGaugeSize = slider.RenderSizeInternal[axis] - trackOffsets.X - trackOffsets.Y;
-            var trackIdealSize = slider.TrackBackgroundImage != null ? new Vector2?(slider.TrackBackgroundImage.SizeInPixels) : null;
-            
+
+            var image = slider.TrackBackgroundImage?.GetSprite();
+            var trackIdealSize = image != null ? new Vector2?(image.SizeInPixels) : null;
             // draws the track background
-            var image = slider.TrackBackgroundImage;
             if (image != null)
             {
                 var imageAxis = (int)image.Orientation;
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             }
             
             // draw the track foreground
-            image = slider.TrackForegroundImage;
+            image = slider.TrackForegroundImage?.GetSprite();
             if (image != null)
             {
                 var imageAxis = (int)image.Orientation;
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             }
 
             // draws the ticks
-            image = slider.TickImage;
+            image = slider.TickImage?.GetSprite();
             if (slider.AreTicksDisplayed && image != null)
             {
                 var imageAxis = (int)image.Orientation;
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             }
 
             //draws the thumb
-            image = slider.MouseOverState == MouseOverState.MouseOverElement ? slider.MouseOverThumbImage : slider.ThumbImage;
+            image = (slider.MouseOverState == MouseOverState.MouseOverElement ? slider.MouseOverThumbImage : slider.ThumbImage)?.GetSprite();
             if (image != null)
             {
                 var imageAxis = (int)image.Orientation;
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             }
         }
 
-        private float GetAdjustedTranslation(float value, bool shouldRotate)
+        private static float GetAdjustedTranslation(float value, bool shouldRotate)
         {
             return !shouldRotate ? value : -value;
         }

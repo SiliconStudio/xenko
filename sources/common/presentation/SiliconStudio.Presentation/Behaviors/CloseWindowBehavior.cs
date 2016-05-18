@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="DialogResult"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DialogResultProperty = DependencyProperty.Register("DialogResult", typeof(bool?), typeof(CloseWindowBehavior<T>));
+        public static readonly DependencyProperty DialogResultProperty = DependencyProperty.Register("DialogResult", typeof(DialogResult), typeof(CloseWindowBehavior<T>));
 
         /// <summary>
         /// Identifies the <see cref="Command"/> dependency property.
@@ -32,7 +33,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Gets or sets the value to set to the <see cref="Window.DialogResult"/> property of the window the associated button is contained in.
         /// </summary>
-        public bool? DialogResult { get { return (bool?)GetValue(DialogResultProperty); } set { SetValue(DialogResultProperty, value); } }
+        public DialogResult DialogResult { get { return (DialogResult)GetValue(DialogResultProperty); } set { SetValue(DialogResultProperty, value); } }
 
         /// <summary>
         /// Gets or sets the command to execute before closing the window.
@@ -98,30 +99,78 @@ namespace SiliconStudio.Presentation.Behaviors
             if (window == null) throw new InvalidOperationException("The button attached to this behavior is not in a window");
 
             bool dialogResultUpdated = false;
-            // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
-            if (IsModal(window))
+            bool processed = false;
+            var modal = window as IModalDialogInternal;
+
+            if (modal != null)
             {
-                if (DialogResult != window.DialogResult)
-                {
-                    // Setting DialogResult to a non-null value will close the window, we don't want to invoke Close after that.
-                    window.DialogResult = DialogResult;
-                    dialogResultUpdated = true;
-                }
-            }
-            else if (DialogResult != null)
-            {
-                throw new InvalidOperationException("The DialogResult can be set by a CloseWindowBehavior only if the window is modal");
+                modal.Result = DialogResult;
+                processed = true;
             }
 
-            if (DialogResult == null || !dialogResultUpdated)
+            // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
+            if (WpfModalHelper.IsModal(window))
+            {
+                if (DialogResult != WpfModalHelper.ToDialogResult(window.DialogResult))
+                {
+                    // Setting DialogResult to a non-null value will close the window, we don't want to invoke Close after that.
+                    window.DialogResult = WpfModalHelper.ToDialogResult(DialogResult);
+                    dialogResultUpdated = true;
+                }
+                processed = true;
+            }
+
+            if (DialogResult != DialogResult.None && !processed)
+            {
+                throw new InvalidOperationException("The DialogResult can be set by a CloseWindowBehavior only if the window has been shown with ShowDialog or implements IModalDialogInternal");
+            }
+
+            if (window.DialogResult == null || !dialogResultUpdated)
             {
                 window.Close();
             }
         }
+    }
 
-        private static bool IsModal(Window window)
+    internal static class WpfModalHelper
+    {
+        private static readonly FieldInfo ShowingAsDialog;
+        private const string FieldName = "_showingAsDialog";
+
+        static WpfModalHelper()
         {
-            return (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
+            ShowingAsDialog = typeof(Window).GetField(FieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (ShowingAsDialog == null)
+                throw new MissingFieldException(nameof(Window), FieldName);
+        }
+
+        public static bool IsModal(Window window)
+        {
+            return (bool)ShowingAsDialog.GetValue(window);
+        }
+
+        public static DialogResult ToDialogResult(bool? dialogResult)
+        {
+            if (dialogResult.HasValue)
+            {
+                return dialogResult.Value ? DialogResult.Ok : DialogResult.Cancel;
+            }
+            return DialogResult.None;
+        }
+
+        public static bool? ToDialogResult(DialogResult dialogResult)
+        {
+            switch (dialogResult)
+            {
+                case DialogResult.None:
+                    return null;
+                case DialogResult.Ok:
+                    return true;
+                case DialogResult.Cancel:
+                    return false;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dialogResult), dialogResult, null);
+            }
         }
     }
 }

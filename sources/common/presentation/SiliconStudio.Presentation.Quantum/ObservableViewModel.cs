@@ -25,7 +25,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
     public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
 
-    public class ObservableViewModel : DispatcherViewModel, IDisposable
+    public class ObservableViewModel : DispatcherViewModel
     {
         public const string DefaultLoggerName = "Quantum";
         public const string HasChildPrefix = "HasChild_";
@@ -69,10 +69,10 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public override void Destroy()
         {
-            RootNode.Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
-            RootNode.Dispose();
+            RootNode.Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
+            RootNode.Destroy();
         }
 
         public static ObservableViewModel Create(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider)

@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -17,13 +19,13 @@ namespace SiliconStudio.Presentation.Windows
         /// Identifies the <see cref="CheckedMessage"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CheckedMessageProperty =
-            DependencyProperty.Register("CheckedMessage", typeof(string), typeof(CheckedMessageBox));
+            DependencyProperty.Register(nameof(CheckedMessage), typeof(string), typeof(CheckedMessageBox));
 
         /// <summary>
         /// Identifies the <see cref="IsCheckedProperty"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsCheckedProperty =
-            DependencyProperty.Register("IsChecked", typeof(bool?), typeof(CheckedMessageBox));
+            DependencyProperty.Register(nameof(IsChecked), typeof(bool?), typeof(CheckedMessageBox));
 
         public string CheckedMessage
         {
@@ -37,28 +39,27 @@ namespace SiliconStudio.Presentation.Windows
             set { SetValue(IsCheckedProperty, value); }
         }
 
-        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, ref bool? isChecked)
+        public static Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
-            return Show(owner, message, caption, GetButtons(button), image, checkedMessage, ref isChecked);
+            return Show(owner, message, caption, GetButtons(button), image, checkedMessage, isChecked);
         }
         
-        public static MessageBoxResult Show(Window owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, ref bool? isChecked)
+        public static async Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
+            var buttonList = buttons.ToList();
             var messageBox = new CheckedMessageBox
             {
-                Owner = owner,
-                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
                 Title = caption,
                 Content = message,
-                ButtonsSource = buttons.ToList(),
+                ButtonsSource = buttonList,
                 CheckedMessage = checkedMessage,
                 IsChecked = isChecked,
             };
             SetImage(messageBox, image);
+            SetKeyBindings(messageBox, buttonList);
 
-            var result = (MessageBoxResult)messageBox.ShowInternal();
-            isChecked = messageBox.IsChecked;
-            return result;
+            var result = (MessageBoxResult)await messageBox.ShowInternal(owner);
+            return new CheckedMessageBoxResult(result, messageBox.IsChecked);
         }
     }
 }

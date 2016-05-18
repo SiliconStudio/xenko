@@ -10,13 +10,7 @@ namespace SiliconStudio.Xenko.Audio
 {
     public partial class SoundBase
     {
-        internal MasteringVoice MasterVoice 
-        {
-            get
-            {
-                return AudioEngine.MasteringVoice;
-            }
-        }
+        internal MasteringVoice MasterVoice => AudioEngine.MasteringVoice;
 
         /// <summary>
         /// Create the audio engine to the sound base instance.
@@ -27,12 +21,14 @@ namespace SiliconStudio.Xenko.Audio
         internal void AttachEngine(AudioEngine engine)
         {
             if (engine == null)
-                throw new ArgumentNullException("engine");
+            {
+                throw new ArgumentNullException(nameof(engine));
+            }
 
-            AudioEngineWindows e = engine as AudioEngineWindows;
+            var e = engine as AudioEngineWindows;
             if (e == null)
             {
-                throw new ArgumentException("Invalid type, expected AudioEngineWindows", "enging");
+                throw new ArgumentException(@"Invalid type, expected AudioEngineWindows", nameof(engine));
                 
             }
             AudioEngine = e;
