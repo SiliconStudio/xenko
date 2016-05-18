@@ -8,7 +8,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -66,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <userdoc>If checked and the viewport will be modified to fit the aspect ratio of Default Back Buffer Width and Default Back Buffer Height and letterboxes/pillarboxes might be added.</userdoc>
         [Display("Add Letterbox/Pillarbox")]
         [DataMember(140)]
-        public bool AddLetterboxPillarbox = false;
+        public bool ForceAspectRatio = false;
 
         public override void Collect(RenderContext context)
         {
@@ -77,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering
             var output = GetOutput(context);
 
             // Setup the viewport
-            if (!AddLetterboxPillarbox)
+            if (!ForceAspectRatio)
             {
 
                 if (IsViewportInPercentage)
