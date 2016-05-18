@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace SiliconStudio.Core.Extensions
             if (source == null)
                 return true;
 
-            IEnumerator enumerator = source.GetEnumerator();
+            var enumerator = source.GetEnumerator();
             if (enumerator == null)
                 throw new ArgumentException("Invalid 'source' IEnumerable.");
 
@@ -47,7 +48,7 @@ namespace SiliconStudio.Core.Extensions
         /// <remarks>This extension method do not yield. It acts just like a foreach statement.</remarks>
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            foreach (T item in source)
+            foreach (var item in source)
                 action(item);
         }
 
@@ -60,8 +61,8 @@ namespace SiliconStudio.Core.Extensions
         /// <returns>The index of the first element matching.</returns>
         public static int IndexOf<T>(this IEnumerable<T> source, Func<T, bool> predicate)
         {
-            int index = 0;
-            foreach (T item in source)
+            var index = 0;
+            foreach (var item in source)
             {
                 if (predicate(item))
                     return index;
@@ -83,16 +84,16 @@ namespace SiliconStudio.Core.Extensions
             if (list != null)
             {
                 // Faster search for lists.
-                for (int i = list.Count - 1; i >= 0; --i)
+                for (var i = list.Count - 1; i >= 0; --i)
                 {
                     if (predicate(list[i]))
                         return i;
                 }
                 return -1;
             }
-            int index = 0;
-            int lastIndex = -1;
-            foreach (T item in source)
+            var index = 0;
+            var lastIndex = -1;
+            foreach (var item in source)
             {
                 if (predicate(item))
                     lastIndex = index;
@@ -106,6 +107,7 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
+        /// <returns>An enumeration of all items in <paramref name="source"/> that are not <c>null</c>.</returns>
         public static IEnumerable<T> NotNull<T>(this IEnumerable<T> source) where T : class
         {
             return source.Where(x => x != null);
@@ -116,7 +118,7 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The linked list.</param>
-        /// <returns></returns>
+        /// <returns>An enumeration of the linked list nodes.</returns>
         internal static IEnumerable<LinkedListNode<T>> EnumerateNodes<T>(this LinkedList<T> list)
         {
             var node = list.First;
