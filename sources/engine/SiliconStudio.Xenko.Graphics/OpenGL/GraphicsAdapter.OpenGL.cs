@@ -23,8 +23,7 @@ namespace SiliconStudio.Xenko.Graphics
             outputs = new [] { new GraphicsOutput() };
 
             // set default values
-            int versionMajor = 1;
-            int versionMinor = 0;
+            int detectedVersion = 100;
 
             // get real values
             // using glGetIntegerv(GL_MAJOR_VERSION / GL_MINOR_VERSION) only works on opengl (es) > 3.0
@@ -37,6 +36,7 @@ namespace SiliconStudio.Xenko.Graphics
                 //   - on OpenGL ES, "OpenGL ES <profile> <major>.<minor>"
                 for (var i = 0; i < splitVersion.Length - 1; ++i)
                 {
+                    int versionMajor, versionMinor;
                     if (int.TryParse(splitVersion[i], out versionMajor))
                     {
                         // Note: minor version might have stuff concat, take only until not digits
@@ -44,12 +44,14 @@ namespace SiliconStudio.Xenko.Graphics
                         versionMinorString = new string(versionMinorString.TakeWhile(c => char.IsDigit(c)).ToArray());
 
                         int.TryParse(versionMinorString, out versionMinor);
+
+                        detectedVersion = versionMajor * 100 + versionMinor * 10;
                         break;
                     }
                 }
             }
 
-            supportedGraphicsProfile = OpenGLUtils.GetFeatureLevel(versionMajor, versionMinor);
+            supportedGraphicsProfile = OpenGLUtils.GetFeatureLevel(detectedVersion);
         }
 
         public bool IsProfileSupported(GraphicsProfile graphicsProfile)
