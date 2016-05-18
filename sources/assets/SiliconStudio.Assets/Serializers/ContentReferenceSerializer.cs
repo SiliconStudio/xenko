@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets.Serializers
         {
             var attachedReference = AttachedReferenceManager.GetAttachedReference(objectContext.Instance);
             if (attachedReference == null)
-                throw new YamlException(string.Format("Unable to extract asset reference from object [{0}]", objectContext.Instance));
+                throw new YamlException($"Unable to extract asset reference from object [{objectContext.Instance}]");
 
             var referenceId = IdentifiableHelper.GetId(objectContext.Instance);
             return $"{referenceId}/{attachedReference.Id}:{attachedReference.Url}";

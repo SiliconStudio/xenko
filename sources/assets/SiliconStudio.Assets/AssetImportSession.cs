@@ -1179,27 +1179,12 @@ namespace SiliconStudio.Assets
                 return true;
 
             // If the new asset version is a reference, we can try to merge it
-            if (node.Asset2Node != null && node.Asset2Node.Instance != null)
-                return AttachedReferenceManager.GetAttachedReference(node.Asset2Node.Instance) != null;
-
-            return false;
+            return AttachedReferenceManager.GetAttachedReference(node.Asset2Node?.Instance) != null;
         }
 
         private static IContentReference GetContentReference(object instance)
         {
-            if (instance == null)
-            {
-                return null;
-            }
-
-            var contentReference = instance as IContentReference;
-            if (contentReference != null)
-            {
-                return contentReference;
-            }
-
-            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
-            return attachedReference;
+            return instance as IContentReference ?? AttachedReferenceManager.GetAttachedReference(instance);
         }
 
         private Diff3ChangeType MergeImportPolicy(Diff3Node node)

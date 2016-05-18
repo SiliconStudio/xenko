@@ -41,12 +41,15 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Gets the object reference info of a given object.
+        /// Gets the reference info of attached to a given object, if it exists.
         /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <returns></returns>
+        /// <param name="obj">The object for which to get the attached reference. Can be null, in this case this method returns null.</param>
+        /// <returns>The <see cref="AttachedReference"/> attached to the given object if available, <c>null</c> otherwise.</returns>
         public static AttachedReference GetAttachedReference(object obj)
         {
+            if (obj == null)
+                return null;
+
             AttachedReference attachedReference;
             attachedReferences.TryGetValue(obj, out attachedReference);
             return attachedReference;
