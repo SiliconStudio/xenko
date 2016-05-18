@@ -85,7 +85,23 @@ namespace SiliconStudio.Shaders.Convertor
             if (ExtraHeaders != null)
                 WriteLine(ExtraHeaders);
 
-            base.Visit(shader);
+            if (shader == null)
+            {
+                // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
+                // TODO: support that directly in HlslToGlslConvertor?
+                if (pipelineStage == PipelineStage.Pixel && shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion >= 300)
+                {
+                    WriteLine("out float fragmentdepth; void main(){ fragmentdepth = gl_FragCoord.z; }");
+                }
+                else
+                {
+                    throw new NotSupportedException($"Can't output empty {pipelineStage} shader for platform {shaderPlatform} version {shaderVersion}.");
+                }
+            }
+            else
+            {
+                base.Visit(shader);
+            }
         }
 
         /// <inheritdoc/>

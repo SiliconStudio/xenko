@@ -154,19 +154,20 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             if (shaderBytecodeResult.HasErrors)
                 return null;
 
-            string shaderString = null;
+            Shader glslShader;
 
-            // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
-            if (entryPoint == null && stage == ShaderStage.Pixel && shaderPlatform == GlslShaderPlatform.OpenGLES)
+            // null entry point means no shader. In that case, we return a default function in HlslToGlslWriter
+            // TODO: support that directly in HlslToGlslConvertor?
+            if (entryPoint == null)
             {
-                shaderString = "out float fragmentdepth; void main(){ fragmentdepth = gl_FragCoord.z; }";
+                glslShader = null;
             }
             else
             {
                 // Convert from HLSL to GLSL
                 // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
                 var glslConvertor = new ShaderConverter(shaderPlatform, shaderVersion);
-                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
+                glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
 
                 if (glslShader == null || shaderBytecodeResult.HasErrors)
                     return null;
@@ -234,19 +235,20 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     }
                 }
 
-                // Output the result
-                var glslShaderWriter = new HlslToGlslWriter(shaderPlatform, shaderVersion, pipelineStage);
-
-                if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 320)
-                {
-                    glslShaderWriter.ExtraHeaders = "#define texelFetchBufferPlaceholder";
-                }
-
-                // Write shader
-                glslShaderWriter.Visit(glslShader);
-
-                shaderString = glslShaderWriter.Text;
             }
+
+            // Output the result
+            var glslShaderWriter = new HlslToGlslWriter(shaderPlatform, shaderVersion, pipelineStage);
+
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 320)
+            {
+                glslShaderWriter.ExtraHeaders = "#define texelFetchBufferPlaceholder";
+            }
+
+            // Write shader
+            glslShaderWriter.Visit(glslShader);
+
+            var shaderString = glslShaderWriter.Text;
 
             // Build shader source
             var glslShaderCode = new StringBuilder();
