@@ -59,17 +59,11 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         internal const TextureFlags TextureFlagsCustomResourceId = (TextureFlags)0x1000;
 
-        internal int TextureId;
-
         internal SamplerState BoundSamplerState;
         internal int PixelBufferFrame;
         private int pixelBufferObjectId;
         private int stencilId;
 
-        internal PixelInternalFormat InternalFormat { get; set; }
-        internal PixelFormatGl FormatGl { get; set; }
-        internal PixelType Type { get; set; }
-        internal TextureTarget Target { get; set; }
         internal int DepthPitch { get; set; }
         internal int RowPitch { get; set; }
         internal bool IsDepthBuffer { get; private set; }
@@ -128,10 +122,10 @@ namespace SiliconStudio.Xenko.Graphics
                 TextureId = ParentTexture.TextureId;
 
                 // copy parameters
-                InternalFormat = ParentTexture.InternalFormat;
-                FormatGl = ParentTexture.FormatGl;
-                Type = ParentTexture.Type;
-                Target = ParentTexture.Target;
+                TextureInternalFormat = ParentTexture.TextureInternalFormat;
+                TextureFormat = ParentTexture.TextureFormat;
+                TextureType = ParentTexture.TextureType;
+                TextureTarget = ParentTexture.TextureTarget;
                 DepthPitch = ParentTexture.DepthPitch;
                 RowPitch = ParentTexture.RowPitch;
                 IsDepthBuffer = ParentTexture.IsDepthBuffer;
@@ -148,17 +142,17 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     case TextureDimension.Texture1D:
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                        Target = TextureTarget.Texture1D;
+                        TextureTarget = TextureTarget.Texture1D;
                         break;
 #endif
                     case TextureDimension.Texture2D:
-                        Target = TextureTarget.Texture2D;
+                        TextureTarget = TextureTarget.Texture2D;
                         break;
                     case TextureDimension.Texture3D:
-                        Target = TextureTarget.Texture3D;
+                        TextureTarget = TextureTarget.Texture3D;
                         break;
                     case TextureDimension.TextureCube:
-                        Target = TextureTarget.TextureCubeMap;
+                        TextureTarget = TextureTarget.TextureCubeMap;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -171,9 +165,9 @@ namespace SiliconStudio.Xenko.Graphics
                 bool compressed;
                 OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref textureDescription.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
 
-                InternalFormat = internalFormat;
-                FormatGl = format;
-                Type = type;
+                TextureInternalFormat = internalFormat;
+                TextureFormat = format;
+                TextureType = type;
                 DepthPitch = Description.Width * Description.Height * pixelSize;
                 RowPitch = Description.Width * pixelSize;
 
@@ -224,24 +218,24 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     GL.GenTextures(1, out TextureId);
-                    GL.BindTexture(Target, TextureId);
+                    GL.BindTexture(TextureTarget, TextureId);
 
                     IsRenderbuffer = false;
 
                     // No filtering on depth buffer
                     if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) != TextureFlags.None)
                     {
-                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                        GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                        GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
                         BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
                     }
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     else if (Description.MipLevels <= 1)
                     {
-                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                     }
 #endif
 
@@ -249,14 +243,14 @@ namespace SiliconStudio.Xenko.Graphics
                     if (!GraphicsDevice.IsOpenGLES2)
 #endif
                     {
-                        GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
-                        GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureBaseLevel, 0);
+                        GL.TexParameter(TextureTarget, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
                     }
 
                     if (Description.MipLevels == 0)
                         throw new NotImplementedException();
 
-                    var setSize = TextureSetSize(Target);
+                    var setSize = TextureSetSize(TextureTarget);
 
                     for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
                     {
@@ -276,7 +270,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                             if (setSize == 2)
                             {
-                                var dataSetTarget = GetTextureTargetForDataSet2D(Target, arrayIndex);
+                                var dataSetTarget = GetTextureTargetForDataSet2D(TextureTarget, arrayIndex);
                                 if (compressed)
                                 {
                                     GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat2D)internalFormat,
@@ -289,8 +283,8 @@ namespace SiliconStudio.Xenko.Graphics
                             }
                             else if (setSize == 3)
                             {
-                                var dataSetTarget = GetTextureTargetForDataSet3D(Target);
-                                var depth = Target == TextureTarget.Texture2DArray ? Description.Depth : CalculateMipSize(Description.Depth, i); // no depth mipmaps in Texture2DArray
+                                var dataSetTarget = GetTextureTargetForDataSet3D(TextureTarget);
+                                var depth = TextureTarget == TextureTarget.Texture2DArray ? Description.Depth : CalculateMipSize(Description.Depth, i); // no depth mipmaps in Texture2DArray
                                 if (compressed)
                                 {
                                     GL.CompressedTexImage3D(dataSetTarget, i, (CompressedInternalFormat3D)internalFormat,
@@ -319,11 +313,11 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
                         }
                     }
-                    GL.BindTexture(Target, 0);
+                    GL.BindTexture(TextureTarget, 0);
                     if (openglContext.CommandList != null)
                     {
                         // If we messed up with some states of a command list, mark dirty states
-                        openglContext.CommandList.boundTextures[openglContext.CommandList.activeTexture] = null;
+                        openglContext.CommandList.boundShaderResourceViews[openglContext.CommandList.activeTexture] = null;
                     }
 
                     InitializePixelBufferObject();

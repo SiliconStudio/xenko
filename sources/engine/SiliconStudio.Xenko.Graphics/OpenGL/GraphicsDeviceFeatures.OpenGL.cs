@@ -74,6 +74,12 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
             deviceRoot.HasTextureRG = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_texture_rg");
 
+            // Either 3.2+, or 3.1+ with GL_EXT_texture_buffer
+            // TODO: For now we don't have proper ES3 bindings on Android (and possibly iOS)
+            deviceRoot.HasTextureBuffers = false;
+            //deviceRoot.HasTextureBuffers = (deviceRoot.version >= 320)
+            //                            || (deviceRoot.version >= 310 && SupportedExtensions.Contains("GL_EXT_texture_buffer"));
+
             HasSRgb = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_sRGB");
 
             // Compute shaders available in OpenGL ES 3.1
@@ -86,6 +92,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasVAO = true;
 
             deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
+            deviceRoot.HasTextureBuffers = true;
 
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.version >= 430;

@@ -1324,11 +1324,6 @@ namespace SiliconStudio.Shaders.Convertor
                     return methodInvocationExpression;
                 }
                 var targetVariableType = targetVariable.Type.ResolveType();
-                if (targetVariableType.IsBuiltIn && targetVariableType.Name.Text.StartsWith("Buffer"))
-                {
-                    parserResult.Error("Unable to convert Buffer<> variable access [{0}]. Features not supported in GLSL", methodInvocationExpression.Span, methodInvocationExpression);
-                    return methodInvocationExpression;
-                }
                 methodDeclaration = memberReferenceExpression.TypeInference.Declaration as MethodDeclaration;
 
                 switch (memberReferenceExpression.Member)
@@ -1446,6 +1441,10 @@ namespace SiliconStudio.Shaders.Convertor
                                 methodInvocationExpression.Arguments[2] = temp;
                             }
 
+                            // For OpenGL ES, texelFetch on Buffer might not be available, so we use a #define to easily convert it to a Texture instead
+                            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 320 && isLoad && targetVariableType.Name.Text == "Buffer" && methodName == "texelFetch")
+                                methodName = "texelFetchBuffer";
+
                             methodInvocationExpression.Target = new VariableReferenceExpression(methodName);
 
                             if (isLoad)
@@ -1459,6 +1458,10 @@ namespace SiliconStudio.Shaders.Convertor
 
                                 switch (targetVariableType.Name.Text)
                                 {
+                                    case "Buffer":
+                                        dimP = "x";
+                                        mipLevel = string.Empty;
+                                        break;
                                     case "Texture1D":
                                         dimP = "x";
                                         mipLevel = "y";
@@ -1482,20 +1485,25 @@ namespace SiliconStudio.Shaders.Convertor
 
                                 if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300) // ES2
                                 {
-                                    methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
+                                    if (mipLevel.Length > 0)
+                                        methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1].DeepClone()), mipLevel)));
+
                                     methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
                                         BinaryOperator.Divide,
-                                        new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP),
+                                        new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), dimP),
                                         NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
                                 }
                                 else
                                 {
-                                    methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Int, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
-                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Int, dimP.Length), new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP));
-                                }
-                            }
+                                    if (mipLevel.Length > 0)
+                                        methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Int, new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1].DeepClone()), mipLevel)));
 
-                            methodInvocationExpression.Target = new VariableReferenceExpression(methodName);
+                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Int, dimP.Length), new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), dimP));
+                                }
+
+                                // D3D returns an object of type T, but OpenGL returns an object of type gvec4
+                                methodInvocationExpression = NewCast(methodInvocationExpression.TypeInference.TargetType, methodInvocationExpression);
+                            }
 
                             // TODO: Check how many components are required
                             // methodInvocationExpression.Arguments[1] = new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), "xy");

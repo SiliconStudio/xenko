@@ -174,6 +174,15 @@ void main()
                         }
                     }
 
+                    // On OpenGL ES 3.1 and before, texture buffers are likely not supported so we have a fallback using textures
+                    shaderSource = shaderSource.Replace("#define texelFetchBufferPlaceholder",
+                        GraphicsDevice.HasTextureBuffers
+                            ? "#define texelFetchBuffer(sampler, P) texelFetch(sampler, P)"
+                            : ("#define samplerBuffer sampler2D\n"
+                            + "#define isamplerBuffer isampler2D\n"
+                            + "#define usamplerBuffer usampler2D\n"
+                            + "#define texelFetchBuffer(sampler, P) texelFetch(sampler, ivec2((P) & 0xFFF, (P) >> 12), 0)\n"));
+
                     var shaderId = GL.CreateShader(shaderStage);
                     GL.ShaderSource(shaderId, shaderSource);
                     GL.CompileShader(shaderId);

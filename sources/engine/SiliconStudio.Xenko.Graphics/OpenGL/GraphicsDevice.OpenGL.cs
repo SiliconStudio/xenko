@@ -108,6 +108,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal bool HasDepthClamp;
 
+        internal bool HasTextureBuffers;
+
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal bool HasDepth24;
         internal bool HasPackedDepthStencilExtension;
