@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -31,11 +32,11 @@ namespace SiliconStudio.Presentation.Quantum
 
         public INodeCommand NodeCommand { get; }
 
-        public override void Invoke(object parameter)
+        public override async Task Invoke(object parameter)
         {
             using (var transaction = ActionService.CreateTransaction())
             {
-                NodeCommand.Execute(node.Content, index, parameter);
+                await NodeCommand.Execute(node.Content, index, parameter);
                 ActionService.SetName(transaction, ActionName);
             }
         }
