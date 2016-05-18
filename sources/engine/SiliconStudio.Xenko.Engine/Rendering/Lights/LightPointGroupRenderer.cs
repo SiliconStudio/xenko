@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)
         {
-            return new PointLightShaderGroup(context, shadowGroup);
+            return new PointLightShaderGroup(shadowGroup);
         }
 
         class PointLightShaderGroup : LightShaderGroupDynamic
@@ -39,8 +39,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             private ValueParameterKey<PointLightData> lightsKey;
             private FastListStruct<PointLightData> lightsData = new FastListStruct<PointLightData>(8);
 
-            public PointLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroupData)
-                : base(context, shadowGroupData)
+            public PointLightShaderGroup(ILightShadowMapShaderGroupData shadowGroupData)
+                : base(shadowGroupData)
             {
             }
 

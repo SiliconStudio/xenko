@@ -11,12 +11,26 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public abstract class LightGroupRendererDynamic : LightGroupRendererBase
     {
+        private readonly ShadowComparer shadowComparer = new ShadowComparer();
+
         private readonly Dictionary<LightGroupKey, LightShaderGroupDynamic> lightShaderGroupPool = new Dictionary<LightGroupKey, LightShaderGroupDynamic>();
         private readonly FastList<LightShaderGroupEntry> lightShaderGroups = new FastList<LightShaderGroupEntry>();
 
         private FastListStruct<LightDynamicEntry> processedLights = new FastListStruct<LightDynamicEntry>(8);
 
         public abstract LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup);
+
+        /// <summary>
+        /// Next light renderer we can send our unprocessed lights to.
+        /// </summary>
+        public LightGroupRendererBase NonShadowRenderer { get; set; }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            NonShadowRenderer?.Initialize(context);
+        }
 
         public override void Reset()
         {
@@ -28,16 +42,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 lightShaderGroup.Value.Reset();
             }
+
+            NonShadowRenderer?.Reset();
         }
 
-        public override void SetViewCount(int viewCount)
+        public override void SetViews(FastList<RenderView> views)
         {
-            base.SetViewCount(viewCount);
+            base.SetViews(views);
 
             foreach (var lightShaderGroup in lightShaderGroupPool)
             {
-                lightShaderGroup.Value.SetViewCount(viewCount);
+                lightShaderGroup.Value.SetViews(views);
             }
+
+            NonShadowRenderer?.SetViews(views);
         }
 
         public override void ProcessLights(ProcessLightsParameters parameters)
@@ -48,14 +66,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             ILightShadowMapRenderer currentShadowRenderer = null;
             LightShadowType currentShadowType = 0;
 
-            for (int index = 0; index <= parameters.LightCollection.Count; index++)
+            // Start by filtering/sorting what can be processed
+            shadowComparer.ShadowMapTexturesPerLight = parameters.ShadowMapTexturesPerLight;
+            parameters.LightCollection.Sort(parameters.LightStart, parameters.LightEnd - parameters.LightStart, shadowComparer);
+
+            for (int index = parameters.LightStart; index <= parameters.LightEnd; index++)
             {
                 LightShadowType nextShadowType = 0;
                 ILightShadowMapRenderer nextShadowRenderer = null;
 
                 LightShadowMapTexture nextShadowTexture = null;
                 LightComponent nextLight = null;
-                if (index < parameters.LightCollection.Count)
+                if (index < parameters.LightEnd)
                 {
                     nextLight = parameters.LightCollection[index];
 
@@ -69,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // Flush current group
-                if (index == parameters.LightCollection.Count || currentShadowType != nextShadowType || currentShadowRenderer != nextShadowRenderer)
+                if (index == parameters.LightEnd || currentShadowType != nextShadowType || currentShadowRenderer != nextShadowRenderer)
                 {
                     if (processedLights.Count > 0)
                     {
@@ -84,7 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                             }
 
                             lightShaderGroup = CreateLightShaderGroup(parameters.Context, shadowGroupData);
-                            lightShaderGroup.SetViewCount(parameters.ViewCount);
+                            lightShaderGroup.SetViews(parameters.Views);
 
                             lightShaderGroupPool.Add(lightGroupKey, lightShaderGroup);
                         }
@@ -113,9 +135,21 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     currentShadowRenderer = nextShadowRenderer;
                 }
 
-                if (index < parameters.LightCollection.Count)
+                if (index < parameters.LightEnd)
+                {
+                    // Do we need to process non shadowing lights or defer it to something else?
+                    if (nextShadowTexture == null && NonShadowRenderer != null)
+                    {
+                        parameters.LightStart = index;
+                        NonShadowRenderer.ProcessLights(parameters);
+                        break;
+                    }
+
                     processedLights.Add(new LightDynamicEntry(nextLight, nextShadowTexture));
+                }
             }
+
+            processedLights.Clear();
         }
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
@@ -130,6 +164,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 else
                     shaderEntry.DirectLightGroups.Add(lightShaderGroup.Value);
             }
+
+            NonShadowRenderer?.UpdateShaderPermutationEntry(shaderEntry);
         }
 
         class LightShaderGroupComparer : Comparer<LightShaderGroupEntry>
@@ -213,6 +249,25 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public override string ToString()
             {
                 return $"Lights with shadow type [{ShadowType}]";
+            }
+        }
+
+        class ShadowComparer : IComparer<LightComponent>
+        {
+            public Dictionary<LightComponent, LightShadowMapTexture> ShadowMapTexturesPerLight;
+
+            public int Compare(LightComponent x, LightComponent y)
+            {
+                LightShadowMapTexture shadowX, shadowY;
+
+                ShadowMapTexturesPerLight.TryGetValue(x, out shadowX);
+                ShadowMapTexturesPerLight.TryGetValue(y, out shadowY);
+
+                var shadowTypeX = shadowX?.ShadowType ?? 0;
+                var shadowTypeY = shadowY?.ShadowType ?? 0;
+
+                // Decreasing order so that non shadowed lights are last
+                return shadowTypeY.CompareTo(shadowTypeX);
             }
         }
     }

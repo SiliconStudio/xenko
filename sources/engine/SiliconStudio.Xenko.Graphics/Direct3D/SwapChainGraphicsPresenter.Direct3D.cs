@@ -173,20 +173,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void Destroy()
-        {
-            base.Destroy();
-            DestroyImpl();
-        }
-
-        public override void OnDestroyed()
-        {
-            DestroyImpl();
-
-            base.OnDestroyed();
-        }
-
-        private void DestroyImpl()
+        protected override void DestroyImpl()
         {
             // Manually update back buffer texture
             backBuffer.OnDestroyed();

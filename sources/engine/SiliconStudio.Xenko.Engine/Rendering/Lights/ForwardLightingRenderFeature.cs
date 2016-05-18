@@ -73,6 +73,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas;
 
+        private readonly FastList<RenderView> renderViews = new FastList<RenderView>();
+
         private readonly Dictionary<ShaderSourceCollection, ShaderSourceCollection> shaderSourcesReadonlyCache = new Dictionary<ShaderSourceCollection, ShaderSourceCollection>();
 
         private LogicalGroupReference viewLightingKey;
@@ -169,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var shadowMapEffectSlot = ShadowMapRenderStage != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(ShadowMapRenderStage) : EffectPermutationSlot.Invalid;
 
             // Counter number of RenderView to process
-            var viewCount = 0;
+            renderViews.Clear();
             foreach (var view in RenderSystem.Views)
             {
                 // TODO: Use another mechanism to filter light-indepepndent views (such as shadow casting views)
@@ -180,14 +182,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (!renderViewDatas.TryGetValue(view, out renderViewData))
                     continue;
 
-                renderViewData.ViewIndex = viewCount++;
+                renderViewData.ViewIndex = renderViews.Count;
+                renderViews.Add(view);
             }
 
             // Cleanup light renderers
             foreach (var lightRenderer in lightRenderers)
             {
                 lightRenderer.Value.Reset();
-                lightRenderer.Value.SetViewCount(viewCount);
+                lightRenderer.Value.SetViews(renderViews);
             }
 
             // Cleanup shader group data
@@ -205,7 +208,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 // Prepare shader permutations
-                PrepareLightGroups(context, viewCount, view, renderViewData, true, EntityGroup.Group0);
+                PrepareLightGroups(context, renderViews, view, renderViewData, ShadowMapRenderer, EntityGroup.Group0);
             }
 
             // Add light shader groups using lightRenderers order to make sure we generate same shaders independently of light order
@@ -528,7 +531,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private void PrepareLightGroups(RenderDrawContext context, int renderViewCount, RenderView renderView, RenderViewLightData renderViewData, bool isShadowReceiver, EntityGroup group)
+        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, ShadowMapRenderer shadowMapRenderer, EntityGroup group)
         {
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {
@@ -541,9 +544,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     Context = context,
                     ViewIndex = renderViewData.ViewIndex,
                     View = renderView,
-                    ViewCount = renderViewCount,
+                    Views = renderViews,
                     LightCollection = lightCollection,
-                    ShadowMapRenderer = ShadowMapRenderer,
+                    LightType = activeRenderer.LightGroup.LightType,
+                    LightStart = 0,
+                    LightEnd = lightCollection.Count,
+                    ShadowMapRenderer = shadowMapRenderer,
                     ShadowMapTexturesPerLight = renderViewData.LightComponentsWithShadows,
                 };
 
@@ -577,7 +583,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var type = light.Type.GetType();
             if (!lightGroups.TryGetValue(type, out lightGroup))
             {
-                lightGroup = new LightComponentCollectionGroup();
+                lightGroup = new LightComponentCollectionGroup(type);
                 lightGroups.Add(type, lightGroup);
             }
             return lightGroup;
@@ -603,6 +609,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 EnvironmentLights.Clear();
                 EnvironmentLightShaders.Clear();
+
+                PermutationLightGroups.Clear();
             }
 
             public FastListStruct<LightShaderGroup> DirectLightGroups;

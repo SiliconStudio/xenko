@@ -18,8 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         protected LightRange[] LightRanges;
 
-        public RenderDrawContext Context { get; }
-
         /// <summary>
         /// List of lights selected for this rendering.
         /// </summary>
@@ -31,9 +29,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public int LightLastCount { get; private set; }
 
-        protected LightShaderGroupDynamic(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)
+        protected LightShaderGroupDynamic(ILightShadowMapShaderGroupData shadowGroup)
         {
-            Context = context;
             ShadowGroup = shadowGroup;
         }
 
@@ -46,12 +43,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             LightCurrentCount = 0;
         }
 
-        public virtual void SetViewCount(int viewCount)
+        public virtual void SetViews(FastList<RenderView> views)
         {
-            Array.Resize(ref LightRanges, viewCount);
+            Array.Resize(ref LightRanges, views.Count);
 
             // Reset ranges
-            for (var i = 0; i < viewCount; ++i)
+            for (var i = 0; i < views.Count; ++i)
                 LightRanges[i] = new LightRange(0, 0);
         }
 

@@ -59,10 +59,12 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         internal const TextureFlags TextureFlagsCustomResourceId = (TextureFlags)0x1000;
 
+        internal int TextureId;
+
         internal SamplerState BoundSamplerState;
         internal int PixelBufferFrame;
         private int pixelBufferObjectId;
-        private int resourceIdStencil;
+        private int stencilId;
 
         internal PixelInternalFormat InternalFormat { get; set; }
         internal PixelFormatGl FormatGl { get; set; }
@@ -79,9 +81,9 @@ namespace SiliconStudio.Xenko.Graphics
             get { return pixelBufferObjectId; }
         }
 
-        internal int ResourceIdStencil
+        internal int StencilId
         {
-            get { return resourceIdStencil; }
+            get { return stencilId; }
         }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -123,7 +125,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (ParentTexture != null)
             {
-                resourceId = ParentTexture.ResourceId;
+                TextureId = ParentTexture.TextureId;
 
                 // copy parameters
                 InternalFormat = ParentTexture.InternalFormat;
@@ -136,11 +138,11 @@ namespace SiliconStudio.Xenko.Graphics
                 HasStencil = ParentTexture.HasStencil;
                 IsRenderbuffer = ParentTexture.IsRenderbuffer;
 
-                resourceIdStencil = ParentTexture.ResourceIdStencil;
+                stencilId = ParentTexture.StencilId;
                 pixelBufferObjectId = ParentTexture.PixelBufferObjectId;
             }
 
-            if (resourceId == 0)
+            if (TextureId == 0)
             {
                 switch (Dimension)
                 {
@@ -198,21 +200,21 @@ namespace SiliconStudio.Xenko.Graphics
                         RenderbufferStorage depth, stencil;
                         ConvertDepthFormat(GraphicsDevice, Description.Format, out depth, out stencil);
 
-                        GL.GenRenderbuffers(1, out resourceId);
-                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceId);
+                        GL.GenRenderbuffers(1, out TextureId);
+                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, TextureId);
                         GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, depth, Width, Height);
 
                         if (stencil != 0)
                         {
                             // separate stencil
-                            GL.GenRenderbuffers(1, out resourceIdStencil);
-                            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceIdStencil);
+                            GL.GenRenderbuffers(1, out stencilId);
+                            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, stencilId);
                             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
                         }
                         else if (HasStencil)
                         {
                             // depth+stencil in a single texture
-                            resourceIdStencil = resourceId;
+                            stencilId = TextureId;
                         }
 
                         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
@@ -221,8 +223,8 @@ namespace SiliconStudio.Xenko.Graphics
                         return;
                     }
 
-                    GL.GenTextures(1, out resourceId);
-                    GL.BindTexture(Target, resourceId);
+                    GL.GenTextures(1, out TextureId);
+                    GL.BindTexture(Target, TextureId);
 
                     IsRenderbuffer = false;
 
@@ -344,25 +346,25 @@ namespace SiliconStudio.Xenko.Graphics
 
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                if (resourceId != 0)
+                if (TextureId != 0)
                 {
                     if (IsRenderbuffer)
-                        GL.DeleteRenderbuffers(1, ref resourceId);
+                        GL.DeleteRenderbuffers(1, ref TextureId);
                     else
-                        GL.DeleteTextures(1, ref resourceId);
+                        GL.DeleteTextures(1, ref TextureId);
 
                     GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
                 }
 
-                if (resourceIdStencil != 0)
-                    GL.DeleteRenderbuffers(1, ref resourceIdStencil);
+                if (stencilId != 0)
+                    GL.DeleteRenderbuffers(1, ref stencilId);
 
                 if (pixelBufferObjectId != 0)
                     GL.DeleteBuffers(1, ref pixelBufferObjectId);
             }
 
-            resourceId = 0;
-            resourceIdStencil = 0;
+            TextureId = 0;
+            stencilId = 0;
             pixelBufferObjectId = 0;
 
             base.DestroyImpl();

@@ -18,6 +18,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Buffer
     {
+        internal int BufferId;
+
         internal BufferTarget bufferTarget;
         internal BufferUsageHint bufferUsageHint;
 
@@ -126,7 +128,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected override void Destroy()
+        protected override void DestroyImpl()
         {
             if (StagingData != IntPtr.Zero)
             {
@@ -136,17 +138,17 @@ namespace SiliconStudio.Xenko.Graphics
 
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                GL.DeleteBuffers(1, ref resourceId);
+                GL.DeleteBuffers(1, ref BufferId);
             }
 
-            resourceId = 0;
+            BufferId = 0;
 
             if (GraphicsDevice != null)
             {
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
             }
 
-            base.Destroy();
+            base.DestroyImpl();
         }
 
         protected void Init(IntPtr dataPointer)
@@ -181,15 +183,15 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new ArgumentOutOfRangeException("description.Usage");
             }
 
-            using (var creationContext = GraphicsDevice.UseOpenGLCreationContext())
+            using (var openglContext = GraphicsDevice.UseOpenGLCreationContext())
             {
                 // If we're on main context, unbind VAO before binding context.
                 // It will be bound again on next draw.
                 //if (!creationContext.UseDeviceCreationContext)
                 //    GraphicsDevice.UnbindVertexArrayObject();
 
-                GL.GenBuffers(1, out resourceId);
-                GL.BindBuffer(bufferTarget, resourceId);
+                GL.GenBuffers(1, out BufferId);
+                GL.BindBuffer(bufferTarget, BufferId);
                 GL.BufferData(bufferTarget, (IntPtr)Description.SizeInBytes, dataPointer, bufferUsageHint);
                 GL.BindBuffer(bufferTarget, 0);
             }
