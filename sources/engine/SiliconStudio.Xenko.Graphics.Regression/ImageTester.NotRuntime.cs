@@ -5,13 +5,14 @@
 
 using System;
 using System.IO;
-using System.Net.Sockets;
+using System.Threading.Tasks;
+using Sockets.Plugin;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public static partial class ImageTester
     {
-        private static TcpClient ImageComparisonServer;
+        private static TcpSocketClient ImageComparisonServer;
 
         public static bool Connect()
         {
@@ -20,11 +21,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             try
             {
-                ImageComparisonServer = new TcpClient();
-                ImageComparisonServer.ConnectAsync(XenkoImageServerHost, XenkoImageServerPort).Wait();
+                ImageComparisonServer = new TcpSocketClient();
+                var t = Task.Run(async () => await ImageComparisonServer.ConnectAsync(XenkoImageServerHost, XenkoImageServerPort));
+                t.Wait();
 
                 // Send initial parameters
-                var networkStream = ImageComparisonServer.GetStream();
+                var networkStream = ImageComparisonServer.WriteStream;
                 var binaryWriter = new BinaryWriter(networkStream);
                 ImageTestResultConnection.Write(binaryWriter);
 
@@ -45,16 +47,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 try
                 {
                     // Properly sends a message notifying we want to close the connection
-                    var networkStream = ImageComparisonServer.GetStream();
+                    var networkStream = ImageComparisonServer.WriteStream;
                     var binaryWriter = new BinaryWriter(networkStream);
                     binaryWriter.Write((int)ImageServerMessageType.ConnectionFinished);
 
-#if _NET_CORECLR
                     ImageComparisonServer.Dispose();
-#else
-                    ImageComparisonServer.Close();
-#endif
-
                 }
                 catch (Exception)
                 {
@@ -63,7 +60,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
         }
 
-        public static bool RequestImageComparisonStatus(string testName = null)
+        public static bool RequestImageComparisonStatus(string testName)
         {
             if (!Connect())
                 throw new InvalidOperationException("Could not connect to image comparer server");
@@ -75,19 +72,18 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
                 }
 
-                var networkStream = ImageComparisonServer.GetStream();
-                var binaryWriter = new BinaryWriter(networkStream);
-                var binaryReader = new BinaryReader(networkStream);
+                var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
+                var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
 
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.RequestImageComparisonStatus);
-                binaryWriter.Write(testName);
+                binaryWriter.Write(testName ?? "Unable to fetch test name");
 
                 return binaryReader.ReadBoolean();
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
         }
 
@@ -108,9 +104,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 }
 
 
-                var networkStream = ImageComparisonServer.GetStream();
-                var binaryWriter = new BinaryWriter(networkStream);
-                var binaryReader = new BinaryReader(networkStream);
+                var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
+                var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
 
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.SendImage);
@@ -122,7 +117,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
         }
     }
