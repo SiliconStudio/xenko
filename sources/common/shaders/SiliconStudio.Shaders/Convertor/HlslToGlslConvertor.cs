@@ -1483,6 +1483,11 @@ namespace SiliconStudio.Shaders.Convertor
                                         break;
                                 }
 
+                                bool isES2 = shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300;
+                                
+                                // Note: older GL versions don't allow scalar swizzle, so let's avoid them
+                                var coordExpr = dimP == "x" ? NewCast(new VectorType(isES2 ? ScalarType.Float : ScalarType.Int, dimP.Length), methodInvocationExpression.Arguments[1]) : new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), dimP);
+
                                 if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300) // ES2
                                 {
                                     if (mipLevel.Length > 0)
@@ -1490,7 +1495,7 @@ namespace SiliconStudio.Shaders.Convertor
 
                                     methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
                                         BinaryOperator.Divide,
-                                        new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), dimP),
+                                        coordExpr,
                                         NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
                                 }
                                 else
@@ -1498,11 +1503,11 @@ namespace SiliconStudio.Shaders.Convertor
                                     if (mipLevel.Length > 0)
                                         methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Int, new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1].DeepClone()), mipLevel)));
 
-                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Int, dimP.Length), new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), dimP));
+                                    methodInvocationExpression.Arguments[1] = coordExpr;
                                 }
 
                                 // D3D returns an object of type T, but OpenGL returns an object of type gvec4
-                                methodInvocationExpression = NewCast(methodInvocationExpression.TypeInference.TargetType, methodInvocationExpression);
+                                methodInvocationExpression = (MethodInvocationExpression)NewCast(methodInvocationExpression.TypeInference.TargetType, methodInvocationExpression);
                             }
 
                             // TODO: Check how many components are required
@@ -4386,9 +4391,14 @@ namespace SiliconStudio.Shaders.Convertor
             return members;
         }
 
-        private static MethodInvocationExpression NewCast(TypeBase type, params Expression[] expressions)
+        private static Expression NewCast(TypeBase type, Expression expression)
         {
-            return new MethodInvocationExpression(new TypeReferenceExpression(type), expressions);
+            if (type != expression.TypeInference.TargetType)
+            {
+                return new MethodInvocationExpression(new TypeReferenceExpression(type), expression);
+            }
+
+            return expression;
         }
 
         private void ApplyStd140Layout()
