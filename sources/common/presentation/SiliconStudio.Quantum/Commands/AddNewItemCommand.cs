@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
@@ -16,7 +17,7 @@ namespace SiliconStudio.Quantum.Commands
     /// or an exception will be thrown if T could not be determinated or has no parameterless constructor.
     /// </summary>
     /// <remarks>No parameter is required when invoking this command.</remarks>
-    public class AddNewItemCommand : NodeCommandBase
+    public class AddNewItemCommand : SyncNodeCommandBase
     {
         public const string CommandName = "AddNewItem";
 
@@ -44,7 +45,7 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any() || elementType == typeof(string));
         }
 
-        public override void Execute(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
             var value = content.Retrieve();
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
