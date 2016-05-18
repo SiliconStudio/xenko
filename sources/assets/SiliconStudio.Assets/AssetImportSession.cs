@@ -53,6 +53,7 @@ namespace SiliconStudio.Assets
     ///  importSession.Import();
     /// </code>
     /// </remarks>
+    [Obsolete("This class will be removed soon")]
     public sealed class AssetImportSession
     {
         private readonly PackageSession session;
@@ -221,36 +222,6 @@ namespace SiliconStudio.Assets
             }
 
             return RegisterImporter(file, package, directory, importer);
-        }
-
-        /// <summary>
-        /// Determines whether the specified asset is supporting re-import.
-        /// </summary>
-        /// <param name="assetItem">The asset item.</param>
-        /// <returns><c>true</c> if the specified asset is supporting re-import; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">assetItem</exception>
-        public bool IsExistingAssetForReImportSupported(AssetItem assetItem)
-        {
-            if (assetItem == null) throw new ArgumentNullException("assetItem");
-            if (assetItem.Package == null) return false;
-            if (assetItem.Package.Session != session) return false;
-
-            var asset = assetItem.Asset as AssetImportTracked;
-            if (asset == null) return false;
-            if (asset.Base == null) return false;
-            if (asset.Source == null) return false;
-
-            var baseAsset = asset.Base.Asset as AssetImportTracked;
-            if (baseAsset == null) return false;
-
-            if (baseAsset.ImporterId.HasValue)
-            {
-                var importer = AssetRegistry.FindImporterById(baseAsset.ImporterId.Value);
-                if (importer == null)
-                    return false;
-            }
-
-            return true;
         }
 
         /// <summary>
