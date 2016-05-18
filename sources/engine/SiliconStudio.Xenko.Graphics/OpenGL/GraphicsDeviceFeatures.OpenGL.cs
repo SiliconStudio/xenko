@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            var isOpenGLES3 = deviceRoot.currentVersionMajor >= 3;
+            var isOpenGLES3 = deviceRoot.currentVersion >= 300;
 
             deviceRoot.HasDepth24 = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_depth24");
             deviceRoot.HasPackedDepthStencilExtension = SupportedExtensions.Contains("GL_OES_packed_depth_stencil");
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Graphics
             HasSRgb = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_sRGB");
 
             // Compute shaders available in OpenGL ES 3.1
-            HasComputeShaders = isOpenGLES3 && deviceRoot.currentVersionMinor >= 1;
+            HasComputeShaders = isOpenGLES3 && deviceRoot.currentVersion >= 1;
             HasDoublePrecision = false;
             
             // TODO: from 3.1: draw indirect, separate shader object
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
 
             // Compute shaders available in OpenGL 4.3
-            HasComputeShaders = deviceRoot.versionMajor >= 4 && deviceRoot.versionMinor >= 3;
+            HasComputeShaders = deviceRoot.version >= 430;
             HasDoublePrecision = SupportedExtensions.Contains("GL_ARB_vertex_attrib_64bit");
 
             // TODO: from 4.0: tessellation, draw indirect
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Find shader model based on OpenGL version (might need to check extensions more carefully)
             RequestedProfile = deviceRoot.requestedGraphicsProfile;
-            CurrentProfile = OpenGLUtils.GetFeatureLevel(deviceRoot.currentVersionMajor, deviceRoot.currentVersionMinor);
+            CurrentProfile = OpenGLUtils.GetFeatureLevel(deviceRoot.currentVersion);
         }
     }
 }
