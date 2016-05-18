@@ -1507,7 +1507,9 @@ namespace SiliconStudio.Shaders.Convertor
                                 }
 
                                 // D3D returns an object of type T, but OpenGL returns an object of type gvec4
-                                methodInvocationExpression = (MethodInvocationExpression)NewCast(methodInvocationExpression.TypeInference.TargetType, methodInvocationExpression);
+                                var expectedResultType = methodInvocationExpression.TypeInference.TargetType;
+                                methodInvocationExpression.TypeInference.TargetType = new VectorType((ScalarType)TypeBase.GetBaseType(expectedResultType), 4);
+                                methodInvocationExpression = (MethodInvocationExpression)NewCast(expectedResultType, methodInvocationExpression);
                             }
 
                             // TODO: Check how many components are required
@@ -4395,7 +4397,9 @@ namespace SiliconStudio.Shaders.Convertor
         {
             if (type != expression.TypeInference.TargetType)
             {
-                return new MethodInvocationExpression(new TypeReferenceExpression(type), expression);
+                var result = new MethodInvocationExpression(new TypeReferenceExpression(type), expression);
+                result.TypeInference.TargetType = type;
+                return result;
             }
 
             return expression;
