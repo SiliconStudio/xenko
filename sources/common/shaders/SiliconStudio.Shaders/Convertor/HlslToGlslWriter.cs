@@ -4,15 +4,20 @@ using System;
 using System.Globalization;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
+using SiliconStudio.Shaders.Writer.Hlsl;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier;
 
-namespace SiliconStudio.Shaders.Writer.Hlsl
+namespace SiliconStudio.Shaders.Convertor
 {
     /// <summary>
     /// A writer for a shader.
     /// </summary>
     public class HlslToGlslWriter : HlslWriter
     {
+        private readonly GlslShaderPlatform shaderPlatform;
+        private readonly int shaderVersion;
+        private readonly PipelineStage pipelineStage;
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -21,19 +26,67 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// <param name="useNodeStack">
         /// if set to <c>true</c> [use node stack].
         /// </param>
-        public HlslToGlslWriter(bool useNodeStack = false)
+        public HlslToGlslWriter(GlslShaderPlatform shaderPlatform, int shaderVersion, PipelineStage pipelineStage, bool useNodeStack = false)
             : base(useNodeStack)
         {
-            GenerateUniformBlocks = true;
+            this.shaderPlatform = shaderPlatform;
+            this.shaderVersion = shaderVersion;
+            this.pipelineStage = pipelineStage;
+
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES)
+            {
+                TrimFloatSuffix = true;
+
+                GenerateUniformBlocks = shaderVersion >= 300;
+                SupportsTextureBuffer = shaderVersion >= 320;
+            }
         }
 
         #endregion
 
-        public bool GenerateUniformBlocks { get; set; }
+        public bool GenerateUniformBlocks { get; set; } = true;
 
-        public bool TrimFloatSuffix { get; set; }
+        public bool TrimFloatSuffix { get; set; } = false;
+
+        public bool SupportsTextureBuffer { get; set; } = true;
+
+        public string ExtraHeaders { get; set; }
 
         #region Public Methods
+
+        /// <inheritdoc/>
+        [Visit]
+        public override void Visit(Shader shader)
+        {
+            // #version
+            Write("#version ");
+            Write(shaderVersion.ToString());
+
+            // ES3+ expects "es" at the end of #version
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion >= 300)
+                Write(" es");
+
+            WriteLine();
+            WriteLine();
+
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES && pipelineStage == PipelineStage.Pixel)
+            {
+                // ES requires default precision in PS
+                WriteLine("precision highp float;");
+                WriteLine();
+            }
+
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 320 && SupportsTextureBuffer)
+            {
+                // In ES 3.1 and previous, we use texelFetchBuffer in case it needs to be remapped into something else by user
+                WriteLine("#define texelFetchBuffer(sampler, P) texelFetch(sampler, P)");
+            }
+
+            if (ExtraHeaders != null)
+                WriteLine(ExtraHeaders);
+
+            base.Visit(shader);
+        }
 
         /// <inheritdoc/>
         [Visit]

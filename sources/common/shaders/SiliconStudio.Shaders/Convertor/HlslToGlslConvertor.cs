@@ -20,8 +20,6 @@ using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Shaders.Convertor
 {
-
-
     /// <summary>
     /// HLSL to GLSL conversion requires several steps:
     /// - Replace input/output structure access by varying variables.
@@ -46,21 +44,17 @@ namespace SiliconStudio.Shaders.Convertor
 
         private readonly bool[] allocatedRegistersForUniforms = new bool[256];
 
-        private readonly Dictionary<string, string> builtinGeometryInputs;
+        private readonly Dictionary<string, string> builtinInputs;
 
-        private readonly Dictionary<string, string> builtinGeometryOutputs;
-
-        private readonly Dictionary<string, string> builtinPixelInputs;
-
-        private readonly Dictionary<string, string> builtinPixelOutputs;
-
-        private readonly Dictionary<string, string> builtinVertexInputs;
-
-        private readonly Dictionary<string, string> builtinVertexOutputs;
+        private readonly Dictionary<string, string> builtinOutputs;
 
         private readonly Dictionary<string, TypeBase> builtinGlslTypes;
 
         private readonly List<Variable> declarationListToRemove = new List<Variable>();
+
+        private readonly GlslShaderPlatform shaderPlatform;
+
+        private readonly int shaderVersion;
 
         private readonly string entryPointName;
 
@@ -98,7 +92,7 @@ namespace SiliconStudio.Shaders.Convertor
 
         private GlobalUniformVisitor globalUniformVisitor;
 
-        private bool isPixelShaderOutputFragDataMuliType = false;
+        private bool needCustomFragData = true;
 
         private int breakIndex = 0;
 
@@ -113,63 +107,83 @@ namespace SiliconStudio.Shaders.Convertor
         /// <param name="pipelineStage">The pipeline stage.</param>
         /// <param name="shaderModel">The shader model.</param>
         /// <param name="useBuiltinSemantic">if set to <c>true</c> [use builtin semantic].</param>
-        public HlslToGlslConvertor(string entryPointName, PipelineStage pipelineStage, ShaderModel shaderModel, bool useBuiltinSemantic = true)
+        public HlslToGlslConvertor(GlslShaderPlatform shaderPlatform, int shaderVersion, string entryPointName, PipelineStage pipelineStage, ShaderModel shaderModel, bool useBuiltinSemantic = true)
             : base(true, true)
         {
+            bool isOpenGLES2 = shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300;
+
+            this.shaderPlatform = shaderPlatform;
+            this.shaderVersion = shaderVersion;
             this.entryPointName = entryPointName;
             this.pipelineStage = pipelineStage;
             this.shaderModel = shaderModel;
             this.VariableLayouts = new Dictionary<string, VariableLayoutRule>();
             this.ConstantBufferLayouts = new Dictionary<string, ConstantBufferLayoutRule>();
             this.MapRules = new Dictionary<string, MapRule>();
-            this.KeepConstantBuffer = true;
+            this.KeepConstantBuffer = !isOpenGLES2;
+            this.TextureFunctionsCompatibilityProfile = isOpenGLES2;
+            this.KeepNonUniformArrayInitializers = shaderPlatform != GlslShaderPlatform.OpenGLES;
 
             if (useBuiltinSemantic)
             {
-                builtinVertexInputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase) { { "SV_VertexID", "gl_VertexID" }, { "SV_InstanceID", "gl_InstanceID" }, };
+                builtinInputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+                builtinOutputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 
-                builtinVertexOutputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-                builtinGeometryInputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-                builtinGeometryOutputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-                builtinPixelInputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-                builtinPixelOutputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+                // Don't use gl_FragData exception on ES2
+                if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300)
+                    needCustomFragData = false;
 
                 // Register defaults Semantics with ShaderModel
-                if (shaderModel < ShaderModel.Model40)
+                switch (pipelineStage)
                 {
-                    builtinVertexOutputs.Add("POSITION", "gl_Position");
-                    builtinVertexOutputs.Add("PSIZE", "gl_PointSize");
-
-                    builtinGeometryInputs.Add("PSIZE", "gl_PointSize");
-
-                    builtinGeometryOutputs.Add("PSIZE", "gl_PointSize");
-
-                    builtinPixelInputs.Add("VPOS", "gl_FragCoord");
-                    builtinPixelInputs.Add("VFACE", gl_FrontFacing);
-                    builtinPixelInputs.Add("POSITION", "gl_FragCoord");
-
-                    builtinPixelOutputs.Add("DEPTH", "gl_FragDepth");
-                    builtinPixelOutputs.Add("COLOR", "gl_FragData[]");
-                }
-                else
-                {
-                    builtinVertexOutputs.Add("SV_Position", "gl_Position");
-                    builtinVertexOutputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
-
-                    builtinGeometryInputs.Add("SV_POSITION", "gl_Position");
-                    builtinGeometryInputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
-                    builtinGeometryInputs.Add("SV_PrimitiveID", "gl_PrimitiveIDIn");
-
-                    builtinGeometryOutputs.Add("SV_POSITION", "gl_Position");
-                    builtinGeometryOutputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
-                    builtinGeometryOutputs.Add("SV_RenderTargetArrayIndex", "gl_Layer");
-
-                    builtinPixelInputs.Add("SV_Position", "gl_FragCoord");
-                    builtinPixelInputs.Add("SV_IsFrontFace", "gl_FrontFacing");
-                    builtinPixelInputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
-
-                    builtinPixelOutputs.Add("SV_Depth", "gl_FragDepth");
-                    builtinPixelOutputs.Add("SV_Target", "gl_FragData[]");
+                    case PipelineStage.Vertex:
+                        builtinInputs.Add("SV_VertexID", "gl_VertexID");
+                        builtinInputs.Add("SV_InstanceID", "gl_InstanceID");
+                        if (shaderModel < ShaderModel.Model40)
+                        {
+                            builtinOutputs.Add("POSITION", "gl_Position");
+                            builtinOutputs.Add("PSIZE", "gl_PointSize");
+                        }
+                        else
+                        {
+                            builtinOutputs.Add("SV_Position", "gl_Position");
+                            builtinOutputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
+                        }
+                        break;
+                    case PipelineStage.Geometry:
+                        if (shaderModel < ShaderModel.Model40)
+                        {
+                            builtinInputs.Add("PSIZE", "gl_PointSize");
+                            builtinOutputs.Add("PSIZE", "gl_PointSize");
+                        }
+                        else
+                        {
+                            builtinInputs.Add("SV_POSITION", "gl_Position");
+                            builtinInputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
+                            builtinInputs.Add("SV_PrimitiveID", "gl_PrimitiveIDIn");
+                            builtinOutputs.Add("SV_POSITION", "gl_Position");
+                            builtinOutputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
+                            builtinOutputs.Add("SV_RenderTargetArrayIndex", "gl_Layer");
+                        }
+                        break;
+                    case PipelineStage.Pixel:
+                        if (shaderModel < ShaderModel.Model40)
+                        {
+                            builtinInputs.Add("VPOS", "gl_FragCoord");
+                            builtinInputs.Add("VFACE", gl_FrontFacing);
+                            builtinInputs.Add("POSITION", "gl_FragCoord");
+                            builtinOutputs.Add("DEPTH", "gl_FragDepth");
+                            builtinOutputs.Add("COLOR", "gl_FragData[]");
+                        }
+                        else
+                        {
+                            builtinInputs.Add("SV_Position", "gl_FragCoord");
+                            builtinInputs.Add("SV_IsFrontFace", "gl_FrontFacing");
+                            builtinInputs.Add("SV_ClipDistance", "gl_ClipDistance[]");
+                            builtinOutputs.Add("SV_Depth", "gl_FragDepth");
+                            builtinOutputs.Add("SV_Target", "gl_FragData[]");
+                        }
+                        break;
                 }
 
                 builtinGlslTypes = new Dictionary<string, TypeBase>(StringComparer.CurrentCultureIgnoreCase) 
@@ -178,7 +192,7 @@ namespace SiliconStudio.Shaders.Convertor
                    { "gl_FragCoord", VectorType.Float4},
                    { "gl_FragDepth", ScalarType.Float}, 
                    { "gl_FragColor", VectorType.Float4}, 
-                   { "gl_FragData", VectorType.Float4}, 
+                   { "gl_FragData", VectorType.Float4}, // array
                    { "gl_FrontFacing", ScalarType.Bool}, 
                    { "gl_InstanceID", ScalarType.Int },
                    { "gl_InvocationID", ScalarType.Int},
@@ -220,12 +234,12 @@ namespace SiliconStudio.Shaders.Convertor
         /// <summary>
         /// Gets or sets a value indicating wether Z projection coordinates will be remapped from [0;1] to [-1;1] at end of vertex shader.
         /// </summary>
-        public bool ViewFrustumRemap { get; set; }
+        public bool ViewFrustumRemap { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating wether Y projection will be inverted at end of vertex shader.
         /// </summary>
-        public bool FlipRenderTarget { get; set; }
+        public bool FlipRenderTarget { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is point sprite shader.
@@ -241,7 +255,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// <value>
         /// <c>true</c> if [no fix for mul for matrix]; otherwise, <c>false</c>.
         /// </value>
-        public bool NoSwapForBinaryMatrixOperation { get; set; }
+        public bool NoSwapForBinaryMatrixOperation { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether [no implicit layout].
@@ -345,15 +359,14 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         public bool KeepNonUniformArrayInitializers { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the shader should be converted to ES2 target.
-        /// </summary>
-        public bool IsOpenGLES2 { get; set; }
+        public GlslShaderPlatform Platform { get; set; }
+
+        public int PlatformVersion { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to unroll the loops with the [unroll] annotation.
         /// </summary>
-        public bool UnrollForLoops { get; set; }
+        public bool UnrollForLoops { get; set; } = true;
 
         #endregion
 
@@ -470,6 +483,11 @@ namespace SiliconStudio.Shaders.Convertor
             declarations.AddRange(shader.Declarations.OfType<MethodDeclaration>());
             shader.Declarations = declarations;
 
+            // Add std140 layout
+            ApplyStd140Layout();
+
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300)
+                FixupVaryingES2();
         }
 
         #endregion
@@ -682,7 +700,7 @@ namespace SiliconStudio.Shaders.Convertor
                         countDifferentType++;
                 }
 
-                isPixelShaderOutputFragDataMuliType = countDifferentType > 0;
+                needCustomFragData |= countDifferentType > 0;
             }
         }
 
@@ -1384,7 +1402,7 @@ namespace SiliconStudio.Shaders.Convertor
 
                             if (isLoad)
                             {
-                                if (IsOpenGLES2)
+                                if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300) // ES2
                                     methodName += "Lod";
                                 else
                                     methodName = "texelFetch";
@@ -1428,6 +1446,8 @@ namespace SiliconStudio.Shaders.Convertor
                                 methodInvocationExpression.Arguments[2] = temp;
                             }
 
+                            methodInvocationExpression.Target = new VariableReferenceExpression(methodName);
+
                             if (isLoad)
                             {
                                 // Since Texture.Load works with integer coordinates, need to convert texture.Load(coords, [offset]) to:
@@ -1455,9 +1475,12 @@ namespace SiliconStudio.Shaders.Convertor
                                         dimP = "xyz";
                                         mipLevel = "w";
                                         break;
+                                    default:
+                                        parserResult.Error("Unable to process texture coordinates for type [{0}] when processing expression [{1}]", methodInvocationExpression.Span, targetVariableType.Name.Text,  methodInvocationExpression);
+                                        break;
                                 }
 
-                                if (IsOpenGLES2)
+                                if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300) // ES2
                                 {
                                     methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
                                     methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
@@ -3701,7 +3724,7 @@ namespace SiliconStudio.Shaders.Convertor
 
             bool addGlslGlobalVariable = CultureInfo.InvariantCulture.CompareInfo.Compare(variableName, "gl_Position", CompareOptions.IgnoreCase) == 0 && defaultType != type;
 
-            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(variableName, "gl_fragdata", CompareOptions.IgnoreCase) && isPixelShaderOutputFragDataMuliType)
+            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(variableName, "gl_fragdata", CompareOptions.IgnoreCase) && needCustomFragData)
             {
                 // IF varName is null, this is a semantic from a returned function, so use a generic out_gl_fragdata name
                 // otherwise, use the original variable name.
@@ -3950,19 +3973,7 @@ namespace SiliconStudio.Shaders.Convertor
             var semanticName = rawSemantic.Name.Text;
             var semantic = ParseSemantic(semanticName);
 
-            Dictionary<string, string> semanticMapping = null;
-            switch (pipelineStage)
-            {
-                case PipelineStage.Vertex:
-                    semanticMapping = isInput ? builtinVertexInputs : builtinVertexOutputs;
-                    break;
-                case PipelineStage.Geometry:
-                    semanticMapping = isInput ? builtinGeometryInputs : builtinGeometryOutputs;
-                    break;
-                case PipelineStage.Pixel:
-                    semanticMapping = isInput ? builtinPixelInputs : builtinPixelOutputs;
-                    break;
-            }
+            var semanticMapping = isInput ? builtinInputs : builtinOutputs;
 
             semanticGl = null;
             
@@ -4367,9 +4378,44 @@ namespace SiliconStudio.Shaders.Convertor
             return members;
         }
 
-        private static Expression NewCast(TypeBase type, params Expression[] expressions)
+        private static MethodInvocationExpression NewCast(TypeBase type, params Expression[] expressions)
         {
             return new MethodInvocationExpression(new TypeReferenceExpression(type), expressions);
+        }
+
+        private void ApplyStd140Layout()
+        {
+            foreach (var constantBuffer in shader.Declarations.OfType<ConstantBuffer>())
+            {
+                var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
+                if (layoutQualifier == null)
+                {
+                    layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                    constantBuffer.Qualifiers |= layoutQualifier;
+                }
+                layoutQualifier.Layouts.Add(new LayoutKeyValue("std140"));
+            }
+        }
+
+        private void FixupVaryingES2()
+        {
+            foreach (var variable in shader.Declarations.OfType<Variable>())
+            {
+                if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                {
+                    variable.Qualifiers.Values.Remove(ParameterQualifier.In);
+                    // "in" becomes "attribute" in VS, "varying" in other stages
+                    variable.Qualifiers.Values.Add(
+                        pipelineStage == PipelineStage.Vertex
+                            ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
+                            : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                }
+                if (variable.Qualifiers.Contains(ParameterQualifier.Out))
+                {
+                    variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
+                    variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                }
+            }
         }
 
         private class StructMemberReference

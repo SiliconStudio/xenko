@@ -55,21 +55,36 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns></returns>
         public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, EffectCompilerParameters effectParameters, EffectReflection reflection, string sourceFilename = null)
         {
-            var isOpenGLES = effectParameters.Platform == GraphicsPlatform.OpenGLES;
-            var isOpenGLES3 = effectParameters.Profile >= GraphicsProfile.Level_10_0;
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 
-            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, reflection, sourceFilename);
+            GlslShaderPlatform shaderPlatform;
+            int shaderVersion;
+
+            switch (effectParameters.Platform)
+            {
+                case GraphicsPlatform.OpenGL:
+                    shaderPlatform = GlslShaderPlatform.OpenGL;
+                    shaderVersion = 420;
+                    break;
+                case GraphicsPlatform.OpenGLES:
+                    shaderPlatform = GlslShaderPlatform.OpenGLES;
+                    shaderVersion = effectParameters.Profile >= GraphicsProfile.Level_10_0 ? 300 : 100;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("effectParameters.Platform");
+            }
+
+            var shader = Compile(shaderSource, entryPoint, stage, shaderPlatform, shaderVersion, shaderBytecodeResult, reflection, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
 
-            if (isOpenGLES)
+            if (effectParameters.Platform == GraphicsPlatform.OpenGLES)
             {
                 // store both ES 2 and ES 3 on OpenGL ES platforms
                 var shaderBytecodes = new ShaderLevelBytecode();
-                if (isOpenGLES3)
+                if (effectParameters.Profile >= GraphicsProfile.Level_10_0)
                 {
                     shaderBytecodes.DataES3 = shader;
                     shaderBytecodes.DataES2 = null;
@@ -77,7 +92,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, reflection, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, GlslShaderPlatform.OpenGLES, 300, shaderBytecodeResult, reflection, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -105,9 +120,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, GlslShaderPlatform shaderPlatform, int shaderVersion, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, string sourceFilename = null)
         {
-            if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
 
             PipelineStage pipelineStage = PipelineStage.None;
@@ -140,10 +155,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 return null;
 
             string shaderString = null;
-            var generateUniformBlocks = isOpenGLES && isOpenGLES3;
 
             // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
-            if (entryPoint == null && stage == ShaderStage.Pixel && isOpenGLES)
+            if (entryPoint == null && stage == ShaderStage.Pixel && shaderPlatform == GlslShaderPlatform.OpenGLES)
             {
                 shaderString = "out float fragmentdepth; void main(){ fragmentdepth = gl_FragCoord.z; }";
             }
@@ -151,30 +165,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             {
                 // Convert from HLSL to GLSL
                 // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
-                var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
+                var glslConvertor = new ShaderConverter(shaderPlatform, shaderVersion);
                 var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
 
                 if (glslShader == null || shaderBytecodeResult.HasErrors)
                     return null;
-
-                // Add std140 layout
-                foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
-                {
-                    if (isOpenGLES3) // TODO: for OpenGL too?
-                    {
-                        var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
-                        if (layoutQualifier == null)
-                        {
-                            layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
-                            constantBuffer.Qualifiers |= layoutQualifier;
-                        }
-                        layoutQualifier.Layouts.Add(new LayoutKeyValue("std140"));
-                    }
-                    else
-                    {
-                        constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
-                    }
-                }
 
                 foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                 {
@@ -240,34 +235,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 }
 
                 // Output the result
-                var glslShaderWriter = new HlslToGlslWriter();
+                var glslShaderWriter = new HlslToGlslWriter(shaderPlatform, shaderVersion, pipelineStage);
 
-                if (isOpenGLES)
+                if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 320)
                 {
-                    glslShaderWriter.TrimFloatSuffix = true;
-
-                    glslShaderWriter.GenerateUniformBlocks = generateUniformBlocks;
-
-                    if (!isOpenGLES3)
-                    {
-                        foreach (var variable in glslShader.Declarations.OfType<Variable>())
-                        {
-                            if (variable.Qualifiers.Contains(ParameterQualifier.In))
-                            {
-                                variable.Qualifiers.Values.Remove(ParameterQualifier.In);
-                                // "in" becomes "attribute" in VS, "varying" in other stages
-                                variable.Qualifiers.Values.Add(
-                                    pipelineStage == PipelineStage.Vertex
-                                        ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
-                                        : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
-                            }
-                            if (variable.Qualifiers.Contains(ParameterQualifier.Out))
-                            {
-                                variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
-                                variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
-                            }
-                        }
-                    }
+                    glslShaderWriter.ExtraHeaders = "#define texelFetchBufferPlaceholder";
                 }
 
                 // Write shader
@@ -280,33 +252,31 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             var glslShaderCode = new StringBuilder();
 
             // Append some header depending on target
-            if (isOpenGLES)
-            {
-                if (isOpenGLES3)
-                    glslShaderCode
-                        .AppendLine("#version 300 es") // TODO: 310 version?
-                        .AppendLine();
-
-                if (pipelineStage == PipelineStage.Pixel)
-                    glslShaderCode
-                        .AppendLine("precision highp float;")
-                        .AppendLine();
-            }
-            else
-            {
-                glslShaderCode
-                    .AppendLine("#version 420")
-                    .AppendLine();
-            }
-
-            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel && renderTargetCount > 0)
-            {
-                // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
-                glslShaderCode
-                    .AppendLine("#define gl_FragData _glesFragData")
-                    .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
-                    .AppendLine();
-            }
+            //if (isOpenGLES)
+            //{
+            //    if (isOpenGLES3)
+            //    {
+            //        glslShaderCode
+            //            .AppendLine("#version 300 es") // TODO: 310 version?
+            //            .AppendLine();
+            //    }
+            //
+            //    if (pipelineStage == PipelineStage.Pixel)
+            //        glslShaderCode
+            //            .AppendLine("precision highp float;")
+            //            .AppendLine();
+            //}
+            //else
+            //{
+            //    glslShaderCode
+            //        .AppendLine("#version 420")
+            //        .AppendLine()
+            //        .AppendLine("#define samplerBuffer sampler2D")
+            //        .AppendLine("#define isamplerBuffer isampler2D")
+            //        .AppendLine("#define usamplerBuffer usampler2D")
+            //        .AppendLine("#define texelFetchBuffer(sampler, P) texelFetch(sampler, ivec2((P) & 0xFFF, (P) >> 12), 0)");
+            //        //.AppendLine("#define texelFetchBuffer(sampler, P) texelFetch(sampler, P)");
+            //}
 
             glslShaderCode.Append(shaderString);
 
@@ -316,7 +286,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             // optimize shader
             try
             {
-                var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
+                var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, shaderPlatform, shaderVersion, pipelineStage == PipelineStage.Vertex);
                 if (!String.IsNullOrEmpty(optShaderSource))
                     realShaderSource = optShaderSource;
             }
@@ -436,15 +406,15 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
-        private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, bool openGLES, bool es30, bool vertex)
+        private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, GlslShaderPlatform shaderPlatform, int shaderVersion, bool vertex)
 	    {
             lock (GlslOptimizerLock)
             {
                 IntPtr ctx = IntPtr.Zero;
                 var inputShader = baseShader;
-                if (openGLES)
+                if (shaderPlatform == GlslShaderPlatform.OpenGLES)
                 {
-                    if (es30)
+                    if (shaderVersion >= 300)
                         ctx = glslopt_initialize(2); // kGlslTargetOpenGLES30
                     else
                         ctx = glslopt_initialize(1); // kGlslTargetOpenGLES20
