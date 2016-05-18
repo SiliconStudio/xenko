@@ -133,11 +133,17 @@ namespace SiliconStudio.Core.Transactions
 
                 // Ignore the transaction if it is empty
                 if (transaction.IsEmpty)
+                {
+                    TransactionInProgress = transactionsInProgress.Count > 0;
                     return;
+                }
 
                 // If this transaction has no effect, discard it.
                 if (transaction.Operations.All(x => !x.HasEffect))
+                {
+                    TransactionInProgress = transactionsInProgress.Count > 0;
                     return;
+                }
 
                 // If we're not the last transaction, consider this transaction as an operation of its parent transaction
                 if (transactionsInProgress.Count > 0)
