@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     }
 
     [TestFixture]
-    public class EventSystemTests : GameTestBase
+    public class EventSystemTests
     {
         /// <summary>
         /// Make sure that events are able to be consumed immediately
