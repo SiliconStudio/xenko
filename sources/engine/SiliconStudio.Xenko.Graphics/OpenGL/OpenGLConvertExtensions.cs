@@ -435,6 +435,12 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.HalfFloat;
                     pixelSize = 8;
                     break;
+                case PixelFormat.R32_SInt:
+                    internalFormat = PixelInternalFormat.R32i;
+                    format = PixelFormatGl.RedInteger;
+                    type = PixelType.Int;
+                    pixelSize = 4;
+                    break;
                 case PixelFormat.R32_UInt:
                     internalFormat = PixelInternalFormat.R32ui;
                     format = PixelFormatGl.RedInteger;
@@ -447,17 +453,53 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.Float;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R32G32_SInt:
+                    internalFormat = PixelInternalFormat.Rg32i;
+                    format = PixelFormatGl.RgInteger;
+                    type = PixelType.Int;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R32G32_UInt:
+                    internalFormat = PixelInternalFormat.Rg32ui;
+                    format = PixelFormatGl.RgInteger;
+                    type = PixelType.UnsignedInt;
+                    pixelSize = 8;
+                    break;
                 case PixelFormat.R32G32_Float:
                     internalFormat = PixelInternalFormat.Rg32f;
                     format = PixelFormatGl.Rg;
                     type = PixelType.Float;
                     pixelSize = 8;
                     break;
+                case PixelFormat.R32G32B32_SInt:
+                    internalFormat = PixelInternalFormat.Rgb32i;
+                    format = PixelFormatGl.RgbInteger;
+                    type = PixelType.Int;
+                    pixelSize = 12;
+                    break;
+                case PixelFormat.R32G32B32_UInt:
+                    internalFormat = PixelInternalFormat.Rgb32ui;
+                    format = PixelFormatGl.RgbInteger;
+                    type = PixelType.UnsignedInt;
+                    pixelSize = 12;
+                    break;
                 case PixelFormat.R32G32B32_Float:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormatGl.Rgb;
                     type = PixelType.Float;
                     pixelSize = 12;
+                    break;
+                case PixelFormat.R32G32B32A32_SInt:
+                    internalFormat = PixelInternalFormat.Rgba32i;
+                    format = PixelFormatGl.RgbaInteger;
+                    type = PixelType.Int;
+                    pixelSize = 16;
+                    break;
+                case PixelFormat.R32G32B32A32_UInt:
+                    internalFormat = PixelInternalFormat.Rgba32ui;
+                    format = PixelFormatGl.RgbaInteger;
+                    type = PixelType.UnsignedInt;
+                    pixelSize = 16;
                     break;
                 case PixelFormat.R32G32B32A32_Float:
                     internalFormat = PixelInternalFormat.Rgba32f;
