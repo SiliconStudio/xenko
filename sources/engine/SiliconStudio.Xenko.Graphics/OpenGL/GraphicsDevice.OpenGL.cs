@@ -98,8 +98,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
         internal GraphicsProfile requestedGraphicsProfile;
-        internal int versionMajor, versionMinor; // queried version
-        internal int currentVersionMajor, currentVersionMinor; // glGetVersion
+        internal int version; // queried version
+        internal int currentVersion; // glGetVersion
         internal Texture WindowProvidedRenderTexture;
 
         internal bool HasVAO;
@@ -675,8 +675,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // set default values
-            versionMajor = 1;
-            versionMinor = 0;
+            version = 100;
 
             requestedGraphicsProfile = GraphicsProfile.Level_9_1;
 
@@ -691,17 +690,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Find back OpenGL version from requested version
-            OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
+            OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out version);
 
             // check what is actually created
-            if (!OpenGLUtils.GetCurrentGLVersion(out currentVersionMajor, out currentVersionMinor))
+            if (!OpenGLUtils.GetCurrentGLVersion(out currentVersion))
             {
-                currentVersionMajor = versionMajor;
-                currentVersionMinor = versionMinor;
+                currentVersion = version;
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            IsOpenGLES2 = (currentVersionMajor < 3);
+            IsOpenGLES2 = version < 300;
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
@@ -752,7 +750,7 @@ namespace SiliconStudio.Xenko.Graphics
                     deviceCreationContext.Dispose();
                     deviceCreationWindowInfo.Dispose();
                 }
-                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, currentVersionMajor);
+                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, currentVersion / 100);
                 deviceCreationContext = OpenTK.Graphics.GraphicsContext.CreateDummyContext(androidAsyncDeviceCreationContext.Context);
                 deviceCreationWindowInfo = OpenTK.Platform.Utilities.CreateDummyWindowInfo();
             }
@@ -765,20 +763,20 @@ namespace SiliconStudio.Xenko.Graphics
 
             var asyncContext = new OpenGLES.EAGLContext(IsOpenGLES2 ? OpenGLES.EAGLRenderingAPI.OpenGLES2 : OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
             OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
-            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, versionMajor, versionMinor, creationFlags);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, version / 100, (version % 100) / 10, creationFlags);
             deviceCreationWindowInfo = windowInfo;
             gameWindow.MakeCurrent();
 #else
 #if SILICONSTUDIO_XENKO_UI_SDL
             // Because OpenTK really wants a Sdl2GraphicsContext and not a dummy one, we will create
             // a new one using the dummy one and invalidate the dummy one.
-            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, versionMajor, versionMinor, creationFlags);
+            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, version / 100, (version % 100) / 10, creationFlags);
             gameWindow.DummyGLContext.Dispose();
 #else
             graphicsContext = gameWindow.Context;
 #endif
             deviceCreationWindowInfo = windowInfo;
-            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, version / 100, (version % 100) / 10, creationFlags);
 
             OpenTK.Graphics.GraphicsContext.CurrentContext.MakeCurrent(null);
 #endif
