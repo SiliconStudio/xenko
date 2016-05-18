@@ -609,6 +609,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 EnvironmentLights.Clear();
                 EnvironmentLightShaders.Clear();
+
+                PermutationLightGroups.Clear();
             }
 
             public FastListStruct<LightShaderGroup> DirectLightGroups;
