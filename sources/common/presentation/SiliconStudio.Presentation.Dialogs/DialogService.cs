@@ -14,17 +14,19 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class DialogService : IDialogService
     {
-        protected readonly IDispatcherService Dispatcher;
         private Action onClosedAction;
 
         public DialogService(IDispatcherService dispatcher, string applicationName)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+
             Dispatcher = dispatcher;
             ApplicationName = applicationName;
         }
 
         public string ApplicationName { get; }
+
+        protected IDispatcherService Dispatcher { get; }
 
         public IFileOpenModalDialog CreateFileOpenModalDialog()
         {

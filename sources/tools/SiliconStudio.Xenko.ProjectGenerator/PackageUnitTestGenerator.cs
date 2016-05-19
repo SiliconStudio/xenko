@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
 
-            return true;
+            return Task.FromResult(true);
         }
 
         public sealed override bool Run(SessionTemplateGeneratorParameters parameters)

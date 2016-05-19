@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
@@ -9,7 +10,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : NodeCommandBase
+    public class AddPrimitiveKeyCommand : SyncNodeCommandBase
     {
         public const string CommandName = "AddPrimitiveKey";
 
@@ -35,7 +36,7 @@ namespace SiliconStudio.Quantum.Commands
             return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(new Type[0]) != null;
         }
 
-        public override void Execute(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
             var value = content.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());

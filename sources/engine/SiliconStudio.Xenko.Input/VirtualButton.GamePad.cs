@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Input
             public readonly static GamePad RightTrigger = new GamePad("GamePad.RightTrigger", VirtualButtonType.GamePad, 21);
 
 
-            public override float GetValue(InputManagerBase manager)
+            public override float GetValue(InputManager manager)
             {
                 var state = manager.GetGamePad(PadIndex);
 

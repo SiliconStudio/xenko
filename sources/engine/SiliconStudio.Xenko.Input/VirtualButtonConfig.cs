@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public virtual float GetValue(InputManagerBase inputManager, object name)
+        public virtual float GetValue(InputManager inputManager, object name)
         {
             float value = 0.0f;
             List<VirtualButtonBinding> bindingsPerName;
