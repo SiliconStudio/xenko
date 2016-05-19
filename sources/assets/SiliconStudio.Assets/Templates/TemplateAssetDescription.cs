@@ -30,7 +30,7 @@ namespace SiliconStudio.Assets.Templates
             var assetType = GetAssetType();
             foreach (var importer in AssetRegistry.RegisteredImporters)
             {
-                if (importer.GetDefaultParameters(false).SelectedOutputTypes.ContainsKey(assetType))
+                if (importer.RootAssetTypes.Contains(assetType))
                 {
                     allExtensions.Add(importer.SupportedFileExtensions);
                 }

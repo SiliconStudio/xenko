@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.Controls
     /// user clicks outside of it or presses Escape.
     /// </summary>
     /// <remarks>
-    /// This window will capture mouse. When handling mouse event, <see cref="IsMouseOverWindow"/> can be used to check whether the mouse event
+    /// This window will capture mouse. When handling mouse events, <see cref="IsMouseOverWindow"/> can be used to check whether the mouse event
     /// occurred inside the window.
     /// </remarks>
     public abstract class PopupModalWindow : ModalWindow

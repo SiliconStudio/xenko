@@ -14,36 +14,14 @@ namespace SiliconStudio.Xenko.Assets.Textures
         // Supported file extensions for this importer
         public const string FileExtensions = ".dds,.jpg,.jpeg,.png,.gif,.bmp,.tga,.psd,.tif,.tiff";
 
-        private static readonly Guid uid = new Guid("a60986f3-a594-4278-bd9d-68ea172f0558");
-        public override Guid Id
-        {
-            get
-            {
-                return uid;
-            }
-        }
+        private static readonly Guid Uid = new Guid("a60986f3-a594-4278-bd9d-68ea172f0558");
+        public override Guid Id => Uid;
 
-        public override string Description
-        {
-            get
-            {
-                return "Texture importer for creating Texture assets";
-            }
-        }
+        public override string Description => "Texture importer for creating Texture assets";
 
-        public override string SupportedFileExtensions
-        {
-            get
-            {
-                return FileExtensions;
-            }
-        }
+        public override string SupportedFileExtensions => FileExtensions;
 
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
-        {
-            return new AssetImporterParameters(supportedTypes);
-        }
-        private static readonly Type[] supportedTypes = { typeof(TextureAsset) };
+        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(TextureAsset); } }
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
         {

@@ -26,11 +26,24 @@ namespace SiliconStudio.Xenko.Assets.Model
     {
         private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(SkeletonAsset), typeof(AnimationAsset) };
 
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
+        public override IEnumerable<Type> RootAssetTypes
         {
-            return new AssetImporterParameters(supportedTypes);
+            get
+            {
+                yield return typeof(ModelAsset);
+                yield return typeof(AnimationAsset);
+                yield return typeof(SkeletonAsset);
+            }
         }
 
+        public override IEnumerable<Type> AdditionalAssetTypes
+        {
+            get
+            {
+                yield return typeof(MaterialAsset);
+                yield return typeof(TextureAsset);
+            }
+        }
         /// <summary>
         /// Get the entity information.
         /// </summary>

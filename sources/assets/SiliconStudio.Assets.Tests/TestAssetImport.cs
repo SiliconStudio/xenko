@@ -194,34 +194,16 @@ namespace SiliconStudio.Assets.Tests
         private int value = 0;
 
         private static readonly Guid uid = new Guid("9bf31c9a-270f-427e-b76c-b16efd5c9004");
-        public override Guid Id
-        {
-            get
-            {
-                return uid;
-            }
-        }
 
-        public override string Description
-        {
-            get
-            {
-                return "CustomImporter";
-            }
-        }
+        public override Guid Id => uid;
 
-        public override string SupportedFileExtensions
-        {
-            get
-            {
-                return FileExtensions;
-            }
-        }
+        public override string Description => "CustomImporter";
 
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
-        {
-            return new AssetImporterParameters(typeof(AssetImportObjectTest), typeof(AssetObjectTestSub));
-        }
+        public override string SupportedFileExtensions => FileExtensions;
+
+        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(AssetImportObjectTest); } }
+
+        public override IEnumerable<Type> AdditionalAssetTypes { get { yield return typeof(AssetObjectTestSub); } }
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
         {
