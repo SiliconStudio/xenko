@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Xenko.Assets.Sprite;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
@@ -21,7 +22,14 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
         public override string SupportedFileExtensions => FileExtensions;
 
-        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(TextureAsset); } }
+        public override IEnumerable<Type> RootAssetTypes
+        {
+            get
+            {
+                yield return typeof(TextureAsset);
+                yield return typeof(SpriteSheetAsset); // TODO: this is temporary, until we can make the asset templates ask compilers instead of importer which type they support
+            }
+        }
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
         {

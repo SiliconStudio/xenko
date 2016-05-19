@@ -12,20 +12,15 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Materials;
-using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Importer.Common;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(SkeletonAsset), typeof(AnimationAsset) };
-
         public override IEnumerable<Type> RootAssetTypes
         {
             get
