@@ -164,7 +164,7 @@ namespace SiliconStudio.Core.IO
         {
             get
             {
-                return FullPath == string.Empty || (HasDirectory && !IsFile);
+                return FullPath == string.Empty || ((HasDrive || HasDirectory) && !IsFile);
             }
         }
 

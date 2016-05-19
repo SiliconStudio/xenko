@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private float caretWith;
         private float caretFrequency;
-        private bool caretHided;
+        private bool caretHidden;
         private float accumulatedTime;
 
         private bool synchronousCharacterGeneration;
@@ -453,20 +453,23 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the value indicating if the blinking caret is currently visible or not.
         /// </summary>
-        public bool IsCaretVisible { get { return IsSelectionActive && !caretHided; } }
+        public bool IsCaretVisible { get { return IsSelectionActive && !caretHidden; } }
         
         /// <summary>
         /// Reset the caret blinking to initial state (visible).
         /// </summary>
         public void ResetCaretBlinking()
         {
-            caretHided = false;
+            caretHidden = false;
             accumulatedTime = 0f;
         }
 
         protected override void Update(GameTime time)
         {
             base.Update(time);
+
+            if (!IsEnabled)
+                return;
 
             if (IsSelectionActive)
             {
@@ -475,7 +478,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 while (accumulatedTime > displayTime)
                 {
                     accumulatedTime -= displayTime;
-                    caretHided = !caretHided;
+                    caretHidden = !caretHidden;
                 }
             }
             else

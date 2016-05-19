@@ -196,6 +196,17 @@ namespace SiliconStudio.Xenko.Assets
 
             solutionPlatforms.Add(windowsPhonePlatform);
 
+            // Linux
+            var linuxPlatform = new SolutionPlatform()
+            {
+                Name = PlatformType.Linux.ToString(),
+                IsAvailable = true,
+                Type = PlatformType.Linux,
+            };
+            linuxPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_LINUX");
+// Following is commented until we have full fledge support (templates and other needed stuff)
+//            solutionPlatforms.Add(linuxPlatform);
+
             // Android
             var androidPlatform = new SolutionPlatform()
             {

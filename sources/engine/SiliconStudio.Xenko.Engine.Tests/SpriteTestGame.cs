@@ -94,7 +94,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private void SetSpriteImage(SpriteSheet sprite)
         {
-            spriteComponent.SpriteProvider = new SpriteFromSheet { Sheet = sprite };
+            // Keep the current frame when changing sprite provider
+            var currentFrame = spriteComponent.CurrentFrame;
+            spriteComponent.SpriteProvider = new SpriteFromSheet { Sheet = sprite, CurrentFrame = currentFrame };
         }
 
         protected override void Update(GameTime time)
@@ -129,9 +131,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private void UpdateBall(float totalSeconds)
         {
-            const float RotationSpeed = (float)Math.PI / 2;
+            const float rotationSpeed = (float)Math.PI / 2;
 
-            var deltaRotation = RotationSpeed * totalSeconds;
+            var deltaRotation = rotationSpeed * totalSeconds;
 
             transformComponent.RotationEulerXYZ = new Vector3(0,0, transformComponent.RotationEulerXYZ.Z + deltaRotation);
 

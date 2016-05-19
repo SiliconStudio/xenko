@@ -11,16 +11,17 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
-    /// A sprite provider from a <see cref="Sheet"/>
+    /// A sprite provider from a <see cref="SpriteSheet"/>
     /// </summary>
     [DataContract("SpriteFromSheet")]
     [Display("Sprite Group")]
-    public class SpriteFromSheet : ISpriteProvider
+    public class SpriteFromSheet : IAnimatableSpriteProvider
     {
         /// <summary>
         /// Gets or sets the <see cref="Sheet"/> of the provider.
         /// </summary>
         /// <userdoc>The sheet that provides the sprites</userdoc>
+        [DataMember]
         [InlineProperty]
         public SpriteSheet Sheet { get; set; }
 
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Gets or sets the current frame of the animation.
         /// </summary>
         /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
+        [DataMember]
         [DefaultValue(0)]
         [Display("Default Frame")]
         public int CurrentFrame { get; set; }
@@ -59,7 +61,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// <inheritdoc/>
         public Sprite GetSprite()
         {
-            return SpritesCount != 0 ? Sheet.Sprites[CurrentFrame % SpritesCount] : null;
+            var count = SpritesCount;
+            return count > 0 ? Sheet.Sprites[(CurrentFrame % count + count) % count] : null; // in case of a negative index, it will cycle around
         }
     }
 }

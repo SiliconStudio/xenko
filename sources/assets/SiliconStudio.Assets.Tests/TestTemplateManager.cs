@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Assets.Templates;
 
@@ -45,10 +46,10 @@ namespace SiliconStudio.Assets.Tests
             return true;
         }
 
-        public override bool PrepareForRun(SessionTemplateGeneratorParameters parameters)
+        public override Task<bool> PrepareForRun(SessionTemplateGeneratorParameters parameters)
         {
             // Nothing to do in the tests
-            return true;
+            return Task.FromResult(true);
         }
 
         public override bool Run(SessionTemplateGeneratorParameters parameters)

@@ -3,16 +3,90 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace SiliconStudio.Xenko.Engine.Events
 {
+    public struct EventReceiverAwaiter<T> : INotifyCompletion
+    {
+        private TaskAwaiter<T> task;
+
+        public EventReceiverAwaiter(TaskAwaiter<T> task)
+        {
+            this.task = task;
+        }
+
+        public void OnCompleted(Action continuation)
+        {
+            task.OnCompleted(continuation);
+        }
+
+        public bool IsCompleted => task.IsCompleted;
+
+        public T GetResult()
+        {
+            return task.GetResult();
+        }
+    }
+
+    /// <summary>
+    /// When using EventReceiver.ReceiveOne, this structure is used to contain the received data
+    /// </summary>
+    public struct EventData
+    {
+        public EventReceiverBase Receiver { get; internal set; }
+
+        public object Data { get; internal set; }
+    }
+
+    /// <summary>
+    /// Creates an event receiver that is used to receive T type events from an EventKey
+    /// </summary>
+    /// <typeparam name="T">The type of data the EventKey will send</typeparam>
+    public sealed class EventReceiver<T> : EventReceiverBase<T>
+    {
+        /// <summary>
+        /// Creates an event receiver, ready to receive broadcasts from the key
+        /// </summary>
+        /// <param name="key">The event key to listen from</param>
+        /// <param name="options">Option flags</param>
+        public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None) : base(key, options)
+        {
+        }
+
+        /// <summary>
+        /// Awaits a single event
+        /// </summary>
+        /// <returns></returns>
+        public Task<T> ReceiveAsync()
+        {
+            return InternalReceiveAsync();
+        }
+
+        /// <summary>
+        /// Receives one event from the buffer, useful specially in Sync scripts
+        /// </summary>
+        /// <returns></returns>
+        public bool TryReceive(out T data)
+        {
+            return InternalTryReceive(out data);
+        }
+
+        /// <summary>
+        /// Receives all the events from the queue (if buffered was true during creations), useful mostly only in Sync scripts
+        /// </summary>
+        /// <returns></returns>
+        public int TryReceiveAll(ICollection<T> collection)
+        {
+            return InternalTryReceiveAll(collection);
+        }
+    }
+
     /// <summary>
     /// Creates an event receiver that is used to receive events from an EventKey
     /// </summary>
-    public class EventReceiver : EventReceiver<byte>
+    public sealed class EventReceiver : EventReceiverBase<bool>
     {
         /// <summary>
         /// Creates an event receiver, ready to receive broadcasts from the key
@@ -25,126 +99,65 @@ namespace SiliconStudio.Xenko.Engine.Events
         }
 
         /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="attachedScript">The script from where this receiver is created, useful if we have the ClearEveryFrame option set</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None) : base(key, attachedScript, options)
-        {
-        }
-
-        /// <summary>
         /// Awaits a single event
         /// </summary>
         /// <returns></returns>
-        public new async Task ReceiveAsync()
+        public async Task ReceiveAsync()
         {
-            await BufferBlock.ReceiveAsync();
-        }
-    }
-
-    /// <summary>
-    /// Creates an event receiver that is used to receive T type events from an EventKey
-    /// </summary>
-    /// <typeparam name="T">The type of data the EventKey will send</typeparam>
-    public class EventReceiver<T> : IDisposable
-    {
-        private readonly IDisposable link;
-        private readonly ScriptComponent attachedScript;
-        private readonly CancellationTokenSource cancellationTokenSource;
-        internal readonly BufferBlock<T> BufferBlock;
-
-        // ReSharper disable once StaticMemberInGenericType
-        private static readonly DataflowBlockOptions CapacityOptions = new DataflowBlockOptions
-        {
-            BoundedCapacity = 1
-        };
-
-        /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey<T> key, EventReceiverOptions options = EventReceiverOptions.None)
-        {
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
-            link = key.Connect(this);
-        }
-
-        /// <summary>
-        /// Creates an event receiver, ready to receive broadcasts from the key
-        /// </summary>
-        /// <param name="key">The event key to listen from</param>
-        /// <param name="attachedScript">The script from where this receiver is created, useful if we have the ClearEveryFrame option set</param>
-        /// <param name="options">Option flags</param>
-        public EventReceiver(EventKey<T> key, ScriptComponent attachedScript, EventReceiverOptions options = EventReceiverOptions.None)
-        {
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
-            link = key.Connect(this);
-
-            this.attachedScript = attachedScript;
-            var clearEveryFrame = ((options & EventReceiverOptions.ClearEveryFrame) != 0) && attachedScript != null;
-            if (!clearEveryFrame) return;
-
-            cancellationTokenSource = new CancellationTokenSource();
-            attachedScript.Script.AddTask(async () =>
-            {
-                while(!cancellationTokenSource.IsCancellationRequested)
-                {
-                    //Todo this is not really optimal probably but its the only proper way with dataflow
-                    IList<T> result;
-                    BufferBlock.TryReceiveAll(out result);
-                        
-                    await this.attachedScript.Script.NextFrame();
-                }
-            }, attachedScript.Priority + 1);
-        }
-
-        /// <summary>
-        /// Awaits a single event
-        /// </summary>
-        /// <returns></returns>
-        public async Task<T> ReceiveAsync()
-        {
-            return await BufferBlock.ReceiveAsync();
-        }
-
-        /// <summary>
-        /// Checks if there is any event waiting to be received, useful in Sync scripts
-        /// </summary>
-        /// <returns></returns>
-        public bool HasEvents()
-        {
-            return BufferBlock.Count > 0;
+            await InternalReceiveAsync();
         }
 
         /// <summary>
         /// Receives one event from the buffer, useful specially in Sync scripts
         /// </summary>
         /// <returns></returns>
-        public T ReceiveOne()
+        public bool TryReceive()
         {
-            return !HasEvents() ? default(T) : BufferBlock.Receive();
+            bool foo;
+            return InternalTryReceive(out foo);
         }
 
         /// <summary>
         /// Receives all the events from the queue (if buffered was true during creations), useful mostly only in Sync scripts
         /// </summary>
         /// <returns></returns>
-        public IList<T> ReceiveMany()
+        public int TryReceiveAll()
         {
-            IList<T> result;
-            return !BufferBlock.TryReceiveAll(out result) ? null : result;
+            return InternalTryReceiveAll(null);
         }
 
         /// <summary>
-        /// Removes the link between this receiver and the broadcaster
+        /// Combines multiple receivers in one call and tries to receive the first available events among all the passed receivers
         /// </summary>
-        public void Dispose()
+        /// <param name="events">The events you want to listen to</param>
+        /// <returns></returns>
+        public static async Task<EventData> ReceiveOne(params EventReceiverBase[] events)
         {
-            link.Dispose();
-            cancellationTokenSource.Cancel();
-        }     
+            while (true)
+            {
+                var tasks = new Task[events.Length];
+                for (var i = 0; i < events.Length; i++)
+                {
+                    tasks[i] = events[i].GetPeakTask();
+                }
+
+                await Task.WhenAny(tasks);
+
+                for (var i = 0; i < events.Length; i++)
+                {
+                    if (!tasks[i].IsCompleted) continue;
+
+                    object data;
+                    if (!events[i].TryReceiveOneInternal(out data)) continue;
+
+                    var res = new EventData
+                    {
+                        Data = data,
+                        Receiver = events[i]
+                    };
+                    return res;
+                }
+            }
+        }
     }
 }

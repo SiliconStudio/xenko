@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -92,6 +92,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Gets the current camera
                 CurrentView = renderViewData.Key;
+
+                // Check of there is any shadow receivers at all
+                if (CurrentView.MinimumDistance >= CurrentView.MaximumDistance)
+                {
+                    continue;
+                }
 
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);

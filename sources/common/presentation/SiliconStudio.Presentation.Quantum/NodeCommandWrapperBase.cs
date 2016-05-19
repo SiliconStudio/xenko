@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Threading.Tasks;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
@@ -41,12 +43,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the action stack.
         /// </summary>
-        protected IUndoRedoService ActionService => serviceProvider.Get<IUndoRedoService>();
+        protected IUndoRedoService ActionService => serviceProvider.TryGet<IUndoRedoService>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
-            Invoke(parameter);
+            Invoke(parameter).Forget();
         }
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="parameter">The command parameter.</param>
         /// <returns>A task that completes when the command has finished.</returns>
-        public abstract void Invoke(object parameter);
+        public abstract Task Invoke(object parameter);
 
         /// <inheritdoc/>
         public override string ToString()
