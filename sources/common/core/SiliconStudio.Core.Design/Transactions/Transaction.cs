@@ -53,8 +53,9 @@ namespace SiliconStudio.Core.Transactions
             if (isCompleted)
                 throw new TransactionException("This transaction has already been completed.");
 
-            if (synchronizationContext != SynchronizationContext.Current)
-                throw new TransactionException("This transaction is being completed in a different synchronization context.");
+            // Disabling synchronization context check: when we await for dispatcher task we always resume in a different SC so it makes it difficult to enforce this rule.
+            //if (synchronizationContext != SynchronizationContext.Current)
+            //    throw new TransactionException("This transaction is being completed in a different synchronization context.");
 
             TryMergeOperations();
             transactionStack.CompleteTransaction(this);
@@ -70,12 +71,13 @@ namespace SiliconStudio.Core.Transactions
         /// <remarks>This method should be invoked by <seealso cref="TransactionStack"/> only.</remarks>
         internal void PushOperation(Operation operation)
         {
-            if (synchronizationContext != SynchronizationContext.Current)
-                throw new TransactionException("An operation is being pushed in a different synchronization context.");
+            // Disabling synchronization context check: when we await for dispatcher task we always resume in a different SC so it makes it difficult to enforce this rule.
+            //if (synchronizationContext != SynchronizationContext.Current)
+            //    throw new TransactionException("An operation is being pushed in a different synchronization context.");
 
-            var transaction = operation as Transaction;
-            if (transaction != null && transaction.synchronizationContext != synchronizationContext)
-                throw new TransactionException("An operation is being pushed in a different synchronization context.");
+            //var transaction = operation as Transaction;
+            //if (transaction != null && transaction.synchronizationContext != synchronizationContext)
+            //    throw new TransactionException("An operation is being pushed in a different synchronization context.");
 
             operations.Add(operation);
         }
