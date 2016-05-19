@@ -60,10 +60,10 @@ namespace SiliconStudio.Xenko.Rendering
         public float FixedAspectRatio { get; set; } = CameraComponent.DefaultAspectRatio;
 
         /// <summary>
-        /// Gets or sets a value wether to edit the Viewport to add letterboxes or pillarboxes
+        /// Gets or sets a value wether to edit the Viewport to force the aspect ratio and add letterboxes or pillarboxes where needed
         /// </summary>
         /// <userdoc>If checked and the viewport will be modified to fit the aspect ratio of Default Back Buffer Width and Default Back Buffer Height and letterboxes/pillarboxes might be added.</userdoc>
-        [Display("Add Letterbox/Pillarbox")]
+        [Display("Force aspect ratio")]
         [DataMember(140)]
         public bool ForceAspectRatio = false;
 
