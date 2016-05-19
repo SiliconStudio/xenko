@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = scrollingText.RenderOpacity * scrollingText.TextColor,
                 DepthBias = context.DepthBias + 1,
                 FontScale = element.LayoutingContext.RealVirtualResolutionRatio,
-                FontSize = scrollingText.TextSize,
+                FontSize = scrollingText.ActualTextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !scrollingText.DoNotSnapText,
                 Matrix = textWorldMatrix,

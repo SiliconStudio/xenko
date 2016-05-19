@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = textBlock.RenderOpacity * textBlock.TextColor,
                 DepthBias = context.DepthBias,
                 FontScale = element.LayoutingContext.RealVirtualResolutionRatio,
-                FontSize = textBlock.TextSize,
+                FontSize = textBlock.ActualTextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !textBlock.DoNotSnapText,
                 Matrix = textBlock.WorldMatrixInternal,
