@@ -5,13 +5,14 @@
 
 using System;
 using System.IO;
-using System.Net.Sockets;
+using System.Threading.Tasks;
+using Sockets.Plugin;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public static partial class ImageTester
     {
-        private static TcpClient ImageComparisonServer;
+        private static TcpSocketClient ImageComparisonServer;
 
         public static bool Connect()
         {
@@ -20,11 +21,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             try
             {
-                ImageComparisonServer = new TcpClient();
-                ImageComparisonServer.Connect(XenkoImageServerHost, XenkoImageServerPort);
+                ImageComparisonServer = new TcpSocketClient();
+                var t = Task.Run(async () => await ImageComparisonServer.ConnectAsync(XenkoImageServerHost, XenkoImageServerPort));
+                t.Wait();
 
                 // Send initial parameters
-                var networkStream = ImageComparisonServer.GetStream();
+                var networkStream = ImageComparisonServer.WriteStream;
                 var binaryWriter = new BinaryWriter(networkStream);
                 ImageTestResultConnection.Write(binaryWriter);
 
@@ -45,11 +47,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 try
                 {
                     // Properly sends a message notifying we want to close the connection
-                    var networkStream = ImageComparisonServer.GetStream();
+                    var networkStream = ImageComparisonServer.WriteStream;
                     var binaryWriter = new BinaryWriter(networkStream);
                     binaryWriter.Write((int)ImageServerMessageType.ConnectionFinished);
 
-                    ImageComparisonServer.Close();
+                    ImageComparisonServer.Dispose();
                 }
                 catch (Exception)
                 {
@@ -70,9 +72,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
                 }
 
-                var networkStream = ImageComparisonServer.GetStream();
-                var binaryWriter = new BinaryWriter(networkStream);
-                var binaryReader = new BinaryReader(networkStream);
+                var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
+                var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
 
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.RequestImageComparisonStatus);
@@ -102,10 +103,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     testResultImage.TestName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
                 }
 
-
-                var networkStream = ImageComparisonServer.GetStream();
-                var binaryWriter = new BinaryWriter(networkStream);
-                var binaryReader = new BinaryReader(networkStream);
+                var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
+                var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
 
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.SendImage);
