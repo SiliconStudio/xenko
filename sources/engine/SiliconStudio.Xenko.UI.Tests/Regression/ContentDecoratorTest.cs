@@ -53,11 +53,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             base.Update(gameTime);
 
             if (Input.IsKeyPressed(Keys.Left))
-                textBlock.TextSize = 3 * textBlock.TextSize / 4;
+                textBlock.TextSize = 3 * textBlock.ActualTextSize / 4;
             if (Input.IsKeyPressed(Keys.Right))
-                textBlock.TextSize = 4 * textBlock.TextSize / 3;
+                textBlock.TextSize = 4 * textBlock.ActualTextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = textBlock.Font.Size;
+                textBlock.TextSize = null;
         }
 
         protected override void RegisterTests()

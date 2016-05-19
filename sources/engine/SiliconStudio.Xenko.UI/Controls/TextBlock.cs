@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
@@ -28,9 +27,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         private string wrappedText;
 
         /// <summary>
+        /// Returns the actual size of the text in virtual pixels unit.
+        /// </summary>
+        /// <remarks>If <see cref="TextSize"/> is <c>null</c>, returns the default size of the <see cref="Font"/>.</remarks>
+        /// <seealso cref="TextSize"/>
+        /// <seealso cref="SpriteFont.Size"/>
+        public float ActualTextSize => TextSize ?? Font?.Size ?? 0;
+
+        /// <summary>
         /// Returns the text to display during the draw call.
         /// </summary>
-        public virtual string TextToDisplay => WrapText? wrappedText: Text;
+        public virtual string TextToDisplay => WrapText ? wrappedText : Text;
 
         /// <summary>
         /// Gets or sets the font of the text block
@@ -72,22 +79,20 @@ namespace SiliconStudio.Xenko.UI.Controls
         public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
-        /// Gets or sets the size of the text in virtual pixels unit
+        /// Gets or sets the size of the text in virtual pixels unit.
         /// </summary>
+        /// <remarks>If the value set is <c>null</c>, the default size of the <see cref="Font"/> will be used instead.</remarks>
+        /// <seealso cref="ActualTextSize"/>
+        /// <seealso cref="SpriteFont.Size"/>
         [DataMember]
-        [DefaultValue(0.0f)]
-        public float TextSize
+        [DefaultValue(null)]
+        public float? TextSize
         {
-            get
-            {
-                if (textSize.HasValue)
-                    return textSize.Value;
-
-                return Font?.Size ?? 0;
-            }
+            get { return textSize; }
             set
             {
-                textSize = Math.Max(0, Math.Min(float.MaxValue, value));
+                if (value.HasValue) value = MathUtil.Clamp(value.Value, 0, float.MaxValue);
+                textSize = value;
                 InvalidateMeasure();
             }
         }
@@ -103,7 +108,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return wrapText; }
             set
             {
-                if(wrapText == value)
+                if (wrapText == value)
                     return;
 
                 wrapText = value;
@@ -123,7 +128,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return synchronousCharacterGeneration; }
             set
             {
-                if(synchronousCharacterGeneration == value)
+                if (synchronousCharacterGeneration == value)
                     return;
 
                 synchronousCharacterGeneration = value;
@@ -209,11 +214,11 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
-            var measureFontSize = new Vector2(sizeRatio.Y * TextSize); // we don't want letters non-uniform ratio
+            var measureFontSize = new Vector2(sizeRatio.Y * ActualTextSize); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(ref textToMeasure, ref measureFontSize);
 
             // force pre-generation if synchronous generation is required
-            if(SynchronousCharacterGeneration)
+            if (SynchronousCharacterGeneration)
                 Font.PreGenerateGlyphs(ref textToMeasure, ref measureFontSize);
 
             if (Font.IsDynamic)
@@ -224,7 +229,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
 
             return realSize;
-        } 
+        }
 
         private void UpdateWrappedText(Vector3 availableSpace)
         {
@@ -238,7 +243,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 float lineCurrentSize;
                 var indexNextCharacter = 0;
                 var indexOfLastSpace = -1;
-                
+
                 while (true)
                 {
                     lineCurrentSize = CalculateTextSize(currentLine).X;
@@ -280,12 +285,12 @@ namespace SiliconStudio.Xenko.UI.Controls
                 else // at least one white space in the line
                 {
                     // remove all extra characters until last space (included)
-                    if(indexNextCharacter > indexOfLastSpace)
+                    if (indexNextCharacter > indexOfLastSpace)
                         currentLine.Remove(indexOfLastSpace, indexNextCharacter - indexOfLastSpace);
                     indexOfNewLine += indexOfLastSpace + 1;
                 }
 
-            AppendLine:
+                AppendLine:
 
                 // add the next line to the current text
                 currentLine.Append('\n');
