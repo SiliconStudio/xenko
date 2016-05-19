@@ -65,12 +65,17 @@ namespace SiliconStudio.Assets.Templates
 
     public class AssetTemplateGeneratorParameters : PackageTemplateGeneratorParameters
     {
-        public AssetTemplateGeneratorParameters(UDirectory targetLocation)
+        public AssetTemplateGeneratorParameters(UDirectory targetLocation, IEnumerable<UFile> sourceFiles = null)
         {
             TargetLocation = targetLocation;
+            SourceFiles = new List<UFile>();
+            if (sourceFiles != null)
+                SourceFiles.AddRange(sourceFiles);
         }
 
         public UDirectory TargetLocation { get; }
+
+        public List<UFile> SourceFiles { get; }
 
         protected override void ValidateParameters()
         {
