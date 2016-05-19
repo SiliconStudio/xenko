@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Input
             return combination;
         }
 
-        public virtual float GetValue(InputManagerBase manager)
+        public virtual float GetValue(InputManager manager)
         {
             float value = 0.0f;
             foreach (var virtualButton in Items)

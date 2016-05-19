@@ -83,32 +83,32 @@ namespace SiliconStudio.Xenko.Input
         protected override void SetMousePosition(Vector2 normalizedPosition)
         {
             Cursor.Position = new Point(
-                (int)(uiControl.ClientRectangle.Width * normalizedPosition.X),
-                (int)(uiControl.ClientRectangle.Height * normalizedPosition.Y));
+                (int)(UiControl.ClientRectangle.Width * normalizedPosition.X),
+                (int)(UiControl.ClientRectangle.Height * normalizedPosition.Y));
         }
 
         private void InitializeFromContext(GameContext<Window> context, bool isOpenGL)
         {
-            uiControl = context.Control;
+            UiControl = context.Control;
 
             _pointerClock.Restart();
 
-            uiControl.KeyDownActions += e => OnKeyEvent(e, false);
-            uiControl.KeyUpActions += e => OnKeyEvent(e, true);
-            uiControl.FocusGainedActions += e => OnUiControlGotFocus();
-            uiControl.FocusLostActions += e => OnUiControlLostFocus();
-            uiControl.MouseMoveActions += OnMouseMoveEvent;
-            uiControl.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Down); };
-            uiControl.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Up);
-            uiControl.MouseWheelActions += e =>
+            UiControl.KeyDownActions += e => OnKeyEvent(e, false);
+            UiControl.KeyUpActions += e => OnKeyEvent(e, true);
+            UiControl.FocusGainedActions += e => OnUiControlGotFocus();
+            UiControl.FocusLostActions += e => OnUiControlLostFocus();
+            UiControl.MouseMoveActions += OnMouseMoveEvent;
+            UiControl.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Down); };
+            UiControl.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Up);
+            UiControl.MouseWheelActions += e =>
             {
                 Point pos = Cursor.Position;
                 OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, InputEventType.Wheel, Math.Max(e.x, e.y));
             };
-            uiControl.ResizeEndActions += UiWindowOnSizeChanged;
+            UiControl.ResizeEndActions += UiWindowOnSizeChanged;
 
-            ControlWidth = uiControl.ClientSize.Width;
-            ControlHeight = uiControl.ClientSize.Height;
+            ControlWidth = UiControl.ClientSize.Width;
+            ControlHeight = UiControl.ClientSize.Height;
         }
 
         private void OnKeyEvent(SDL.SDL_KeyboardEvent e, bool isKeyUp)
@@ -126,14 +126,14 @@ namespace SiliconStudio.Xenko.Input
 
         private void UiWindowOnSizeChanged(SDL.SDL_WindowEvent eventArgs)
         {
-            ControlWidth = uiControl.ClientSize.Width;
-            ControlHeight = uiControl.ClientSize.Height;
+            ControlWidth = UiControl.ClientSize.Width;
+            ControlHeight = UiControl.ClientSize.Height;
         }
 
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the Window boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !uiControl.ClientRectangle.Contains(Cursor.Position))
+            if (type == InputEventType.Wheel && !UiControl.ClientRectangle.Contains(Cursor.Position))
                 return;
 
             // the mouse events series has been interrupted because out of the window.
