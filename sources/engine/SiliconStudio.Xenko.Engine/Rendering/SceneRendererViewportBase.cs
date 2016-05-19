@@ -63,9 +63,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets a value wether to edit the Viewport to force the aspect ratio and add letterboxes or pillarboxes where needed
         /// </summary>
         /// <userdoc>If checked and the viewport will be modified to fit the aspect ratio of Default Back Buffer Width and Default Back Buffer Height and letterboxes/pillarboxes might be added.</userdoc>
-        [Display("Force aspect ratio")]
         [DataMember(140)]
-        public bool ForceAspectRatio = false;
+        public bool ForceAspectRatio { get; set; }
 
         public override void Collect(RenderContext context)
         {
