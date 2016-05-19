@@ -24,7 +24,8 @@ namespace SiliconStudio.Presentation.Windows
             "Microsoft.XamlDiagnostics.WpfTap",
             // WPF Inspector
             "ChristianMoser.WpfInspector",
-            // TODO: add snoop
+            // Snoop
+            "Snoop.SnoopUI",
         };
 
         private static readonly List<WindowInfo> ModalWindowsList = new List<WindowInfo>();
@@ -117,7 +118,7 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
-        public static Task ShowModal(Window window, WindowOwner windowOwner = WindowOwner.LastModal)
+        public static Task ShowModal(Window window, WindowOwner windowOwner = WindowOwner.LastModal, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -129,7 +130,7 @@ namespace SiliconStudio.Presentation.Windows
             var owner = FindNextOwner(windowOwner);
 
             window.Owner = owner?.Window;
-            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            SetStartupLocation(window, owner, position);
 
             // Set the owner now so the window can be recognized as modal when shown
             if (owner != null)
@@ -160,7 +161,7 @@ namespace SiliconStudio.Presentation.Windows
             return windowInfo.WindowClosed.Task;
         }
 
-        public static void ShowNonModal(Window window, WindowOwner windowOwner = WindowOwner.MainWindow)
+        public static void ShowNonModal(Window window, WindowOwner windowOwner = WindowOwner.MainWindow, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -168,13 +169,49 @@ namespace SiliconStudio.Presentation.Windows
             var owner = FindNextOwner(windowOwner);
 
             window.Owner = owner?.Window;
-            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            SetStartupLocation(window, owner, position);
 
             var windowInfo = new WindowInfo(window);
             AllWindowsList.Add(windowInfo);
 
             Logger.Info($"Non-modal window showing. ({window})");
             window.Show();
+        }
+
+        private static void SetStartupLocation(Window window, WindowInfo owner, WindowInitialPosition position)
+        {
+            switch (position)
+            {
+                case WindowInitialPosition.CenterOwner:
+                    window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+                    break;
+                case WindowInitialPosition.CenterScreen:
+                    window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    break;
+                case WindowInitialPosition.MouseCursor:
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Loaded += PositionWindowToMouseCursor;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(position), position, null);
+            }
+        }
+
+        private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
+        {
+            var window = (Window)sender;
+            NativeHelper.POINT mousePosition;
+            NativeHelper.GetCursorPos(out mousePosition);
+            var monitor = WindowHelper.GetMonitorInfo(WindowInfo.ToHwnd(window));
+            if (monitor != null)
+            {
+                bool expandRight = monitor.rcWork.Right > mousePosition.X + window.ActualWidth;
+                bool expandBottom = monitor.rcWork.Bottom > mousePosition.Y + window.ActualHeight;
+                window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
+                window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
+            }
+
+            window.Loaded -= PositionWindowToMouseCursor;
         }
 
         private static WindowInfo FindNextOwner(WindowOwner owner)
@@ -190,6 +227,7 @@ namespace SiliconStudio.Presentation.Windows
                     throw new ArgumentOutOfRangeException(nameof(owner), owner, null);
             }
         }
+
         private static void CheckDispatcher()
         {
             if (dispatcher.Thread != Thread.CurrentThread)
@@ -236,7 +274,6 @@ namespace SiliconStudio.Presentation.Windows
             {
                 windowInfo = new WindowInfo(hwnd);
 
-                // Since Visual Studio 2015 Update 2, a adorner window can be injected by the debugger that will be considered modal. We have to discard it.
                 if (Debugger.IsAttached)
                 {
                     foreach (var debugWindowTypeName in DebugWindowTypeNames)

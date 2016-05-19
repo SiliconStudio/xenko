@@ -203,7 +203,7 @@ namespace SiliconStudio.Presentation.Windows
             return Equals(Hwnd, other);
         }
 
-        private static IntPtr ToHwnd(Window window)
+        internal static IntPtr ToHwnd(Window window)
         {
             return window != null ? new WindowInteropHelper(window).Handle : IntPtr.Zero;
         }
