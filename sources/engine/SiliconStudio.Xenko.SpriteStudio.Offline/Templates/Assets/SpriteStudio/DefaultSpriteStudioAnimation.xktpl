@@ -8,3 +8,4 @@ Group: Sprite Studio
 Order: -80
 Icon: ..\.xktpl\SpriteStudioAnimation.png
 DefaultOutputName: SpriteStudioModel
+ImportSource: True
