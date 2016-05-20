@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.UI;
@@ -14,6 +15,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// </summary>
     [DataContract("UIAsset")]
     [AssetDescription(FileExtension)]
+    [AssetCompiler(typeof(UIAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI")]
     public sealed class UIAsset : Asset

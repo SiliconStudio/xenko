@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.UI
     [CategoryOrder(30, LayoutCategory, Expand = ExpandRule.Auto)]
     [CategoryOrder(100, MiscCategory, Expand = ExpandRule.Auto)]
     [DebuggerDisplay("UIElement: {Name}")]
-    public abstract class UIElement : IUIElementUpdate, IIdentifiable
+    public class UIElement : IUIElementUpdate, IIdentifiable // FIXME: should (and used to) be abstract. Temporary changed to make UIAsset assignable to UIComponent in the editor.
     {
         private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
             EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));

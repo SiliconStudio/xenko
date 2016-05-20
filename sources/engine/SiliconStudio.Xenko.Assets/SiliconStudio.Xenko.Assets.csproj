@@ -245,6 +245,7 @@
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
     <Compile Include="Textures\TextureSettings.cs" />
     <Compile Include="UI\UIAsset.cs" />
+    <Compile Include="UI\UIAssetCompiler.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
     <Compile Include="RenderingMode.cs" />
     <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
