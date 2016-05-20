@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         private static TcpSocketClient ImageComparisonServer;
 
-        private static bool Connect()
+        public static bool Connect()
         {
             if (ImageComparisonServer != null)
                 return true;
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
         }
 
-        private static void Disconnect()
+        public static void Disconnect()
         {
             if (ImageComparisonServer != null)
             {
