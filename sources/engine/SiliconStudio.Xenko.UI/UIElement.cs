@@ -434,7 +434,7 @@ namespace SiliconStudio.Xenko.UI
         public bool IsCollapsed => Visibility == Visibility.Collapsed;
 
         /// <summary>
-        /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI). This is a dependency property.
+        /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI).
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
         [DataMember]
@@ -448,7 +448,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user interface (UI) visibility of this element. This is a dependency property.
+        /// Gets or sets the user interface (UI) visibility of this element.
         /// </summary>
         [DataMember]
         [Display(category: AppearanceCategory)]
@@ -644,7 +644,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the minimum width of this element. This is a dependency property.
+        /// Gets or sets the minimum width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
@@ -665,7 +665,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the minimum height of this element. This is a dependency property.
+        /// Gets or sets the minimum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
@@ -686,7 +686,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the minimum height of this element. This is a dependency property.
+        /// Gets or sets the minimum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
@@ -708,7 +708,7 @@ namespace SiliconStudio.Xenko.UI
 
         /// <summary>
         /// Gets or sets a value indicating whether to clip the content of this element (or content coming from the child elements of this element) 
-        /// to fit into the size of the containing element. This is a dependency property.
+        /// to fit into the size of the containing element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
@@ -828,7 +828,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the name of this element. This is a dependency property.
+        /// Gets or sets the name of this element.
         /// </summary>
         [DataMember]
         [Display(category: MiscCategory)]
@@ -847,13 +847,13 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets the logical parent of this element. This is a dependency property.
+        /// Gets the logical parent of this element.
         /// </summary>
         [DataMemberIgnore]
         public UIElement Parent { get; protected set; }
 
         /// <summary>
-        /// Gets the visual parent of this element. This is a dependency property.
+        /// Gets the visual parent of this element.
         /// </summary>
         [DataMemberIgnore]
         public UIElement VisualParent { get; protected set; }
