@@ -9,7 +9,6 @@ using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 using OpenGLES;
-using OpenTK;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Xenko.Games;
@@ -64,7 +63,7 @@ namespace SiliconStudio.Xenko.Starter
             }
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBuffer);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, RenderbufferTarget.Renderbuffer, frameBuffer);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, RenderbufferTarget.Renderbuffer, frameBuffer);
         }
 
         [Export("layerClass")]
@@ -104,7 +103,7 @@ namespace SiliconStudio.Xenko.Starter
         [Export("drawFrame")]
         void DrawFrame()
         {
-            OnRenderFrame(new FrameEventArgs());
+            OnRenderFrame(new OpenTK.FrameEventArgs());
         }
     }
 }

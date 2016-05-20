@@ -12,29 +12,13 @@ using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
-#else
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
-#endif
 using DebugSourceExternal = OpenTK.Graphics.ES30.All;
 #else
 using OpenTK.Graphics.OpenGL;
 using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
-#endif
-
-// TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.PixelInternalFormat;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget;
-#else
-using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.TextureComponentCount;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget2d;
-#endif
-#else
-using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.OpenGL.PixelInternalFormat;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
+using TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
+using TextureTarget3d = OpenTK.Graphics.OpenGL.TextureTarget;
 #endif
 
 namespace SiliconStudio.Xenko.Graphics
@@ -662,12 +646,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (GraphicsDevice.IsOpenGLES2)
                 throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
 #endif
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-            // On Mobile platform we have to use PrimitiveType and not BeginMode for the API call, thus the #ifdef
-            GL.DrawArraysInstanced((OpenTK.Graphics.ES30.PrimitiveType)newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
-#else
             GL.DrawArraysInstanced(newPipelineState.PrimitiveType, startVertexLocation, vertexCountPerInstance, instanceCount);
-#endif
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
@@ -705,18 +684,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void BeginProfile(Color profileColor, string name)
         {
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
             if (GraphicsDevice.ProfileEnabled)
                 GL.PushDebugGroup(DebugSourceExternal.DebugSourceApplication, 1, -1, name);
-#endif
         }
 
         public void EndProfile()
         {
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
             if (GraphicsDevice.ProfileEnabled)
                 GL.PopDebugGroup();
-#endif
         }
 
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
@@ -1384,10 +1359,10 @@ namespace SiliconStudio.Xenko.Graphics
                             break;
 #endif
                         case TextureTarget.Texture2D:
-                            GL.TexSubImage2D(GraphicsDevice.TextureTargetTexture2D, 0, 0, 0, texture.Width, texture.Height, texture.TextureFormat, texture.TextureType, IntPtr.Zero);
+                            GL.TexSubImage2D(TextureTarget2d.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.TextureFormat, texture.TextureType, IntPtr.Zero);
                             break;
                         case TextureTarget.Texture3D:
-                            GL.TexSubImage3D(GraphicsDevice.TextureTargetTexture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.TextureFormat, texture.TextureType, IntPtr.Zero);
+                            GL.TexSubImage3D(TextureTarget3d.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.TextureFormat, texture.TextureType, IntPtr.Zero);
                             break;
                         default:
                             throw new NotSupportedException("Invalid texture target: " + texture.TextureTarget);
@@ -1484,7 +1459,7 @@ namespace SiliconStudio.Xenko.Graphics
                 else
                 {
                     GL.BindBuffer(buffer.BufferTarget, buffer.BufferId);
-                    GL.BufferData(buffer.BufferTarget, (IntPtr)buffer.Description.SizeInBytes, databox.DataPointer, buffer.BufferUsageHint);
+                    GL.BufferData(buffer.BufferTarget, buffer.Description.SizeInBytes, databox.DataPointer, buffer.BufferUsageHint);
                 }
             }
             else
@@ -1508,14 +1483,14 @@ namespace SiliconStudio.Xenko.Graphics
                     {
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         case TextureTarget.Texture1D:
-                            GL.TexImage1D(TextureTarget.Texture1D, subResourceIndex, (PixelInternalFormat_TextureComponentCount)texture.TextureInternalFormat, desc.Width, 0, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                            GL.TexImage1D(TextureTarget.Texture1D, subResourceIndex, texture.TextureInternalFormat, desc.Width, 0, texture.TextureFormat, texture.TextureType, databox.DataPointer);
                             break;
 #endif
                         case TextureTarget.Texture2D:
-                            GL.TexImage2D(GraphicsDevice.TextureTargetTexture2D, subResourceIndex, (PixelInternalFormat_TextureComponentCount)texture.TextureInternalFormat, desc.Width, desc.Height, 0, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                            GL.TexImage2D(TextureTarget2d.Texture2D, subResourceIndex, texture.TextureInternalFormat, desc.Width, desc.Height, 0, texture.TextureFormat, texture.TextureType, databox.DataPointer);
                             break;
                         case TextureTarget.Texture3D:
-                            GL.TexImage3D(GraphicsDevice.TextureTargetTexture3D, subResourceIndex, texture.TextureInternalFormat, desc.Width, desc.Height, desc.Depth, 0, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                            GL.TexImage3D(TextureTarget3d.Texture3D, subResourceIndex, texture.TextureInternalFormat, desc.Width, desc.Height, desc.Depth, 0, texture.TextureFormat, texture.TextureType, databox.DataPointer);
                             break;
                         default:
                             Internal.Refactor.ThrowNotImplementedException("UpdateSubresource not implemented for texture target " + texture.TextureTarget);
@@ -1586,7 +1561,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Update the texture region
                 GL.BindTexture(texture.TextureTarget, texture.TextureId);
-                GL.TexSubImage2D((TextureTarget_TextureTarget2d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, width, height, texture.TextureFormat, texture.TextureType, databox.DataPointer);
+                GL.TexSubImage2D((TextureTarget2d)texture.TextureTarget, subResourceIndex, region.Left, region.Top, width, height, texture.TextureFormat, texture.TextureType, databox.DataPointer);
                 boundShaderResourceViews[0] = null; // bound active texture 0 has changed
 
                 // reset the Unpack Alignment
