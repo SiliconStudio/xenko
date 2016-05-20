@@ -792,7 +792,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             base.OnTouchLeave(args);
 
             IsUserScrollingViewer = false;
-            VisualContent.PreventChildrenFromBeingHit = false;
         }
 
         protected override void OnPreviewTouchMove(TouchEventArgs args)
@@ -812,7 +811,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 IsUserScrollingViewer = true;
                 lastFrameTranslation = accumulatedTranslation;
-                VisualContent.PreventChildrenFromBeingHit = true;
             }
 
             if (IsUserScrollingViewer)
@@ -853,7 +851,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
 
             IsUserScrollingViewer = false;
-            VisualContent.PreventChildrenFromBeingHit = false;
         }
 
         /// <summary>

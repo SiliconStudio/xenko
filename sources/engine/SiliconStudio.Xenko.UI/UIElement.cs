@@ -67,8 +67,7 @@ namespace SiliconStudio.Xenko.UI
         protected const string BehaviorCategory = "Behavior";
         protected const string LayoutCategory = "Layout";
         protected const string MiscCategory = "Misc";
-
-        internal bool HierarchyDisablePicking;
+        
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
         protected internal Thickness MarginInternal = Thickness.UniformCuboid(0f);
@@ -140,6 +139,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// A unique ID defining the UI element.
         /// </summary>
+        /// <userdoc>A unique ID defining the UI element.</userdoc>
         [DataMember]
         [Display(Browsable = false)]
         public Guid Id { get; set; }
@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.UI
         /// List of the dependency properties attached to the object.
         /// </summary>
         [DataMember]
-        [Display(category: MiscCategory)]
+        [Display(Browsable = false)]
         public PropertyContainer DependencyProperties;
 
         /// <summary>
@@ -209,6 +209,7 @@ namespace SiliconStudio.Xenko.UI
         /// This value has to be modified by the user when he redefines the default element renderer,
         /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
         /// </summary>
+        /// <userdoc>The number of layers used to draw this element.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(1)]
@@ -388,22 +389,16 @@ namespace SiliconStudio.Xenko.UI
         /// Indicate if the UIElement can be hit by the user. 
         /// If this property is true, the UI system performs hit test on the UIElement.
         /// </summary>
+        /// <userdoc>True if the UI system should perform hit test on this element, False otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool CanBeHitByUser { get; set; }
 
         /// <summary>
-        /// This property can be set to <value>true</value> to disable all touch events on the element's children.
-        /// </summary>
-        [DataMember]
-        [Display(category: BehaviorCategory)]
-        [DefaultValue(false)]
-        public bool PreventChildrenFromBeingHit { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
         /// </summary>
+        /// <userdoc>True if this element is enabled, False otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(true)]
@@ -437,6 +432,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI).
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
+        /// <userdoc>Opacity factor applied to this element when rendered in the user interface (UI).</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
         [Display(category: AppearanceCategory)]
@@ -450,6 +446,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the user interface (UI) visibility of this element.
         /// </summary>
+        /// <userdoc>Visibility of this element.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(Visibility.Visible)]
@@ -491,6 +488,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the default height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <userdoc>Default height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -512,6 +510,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the default width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <userdoc>Default width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -533,6 +532,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the default width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <userdoc>Default depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -554,6 +554,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the user suggested height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -575,6 +576,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the user suggested width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -596,6 +598,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the user suggested width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -644,9 +647,32 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
+        /// Gets or sets the minimum height of this element.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Minimum height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float MinimumHeight
+        {
+            get { return minimumHeight; }
+            set
+            {
+                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                minimumHeight = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the minimum width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Minimum width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -668,27 +694,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the minimum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
-        [DefaultValue(0.0f)]
-        public float MinimumHeight
-        {
-            get { return minimumHeight; }
-            set
-            {
-                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                minimumHeight = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum height of this element.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Minimum depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -717,9 +723,32 @@ namespace SiliconStudio.Xenko.UI
         public bool ClipToBounds { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets the maximum height of this element.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <userdoc>Maximum height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
+        public float MaximumHeight
+        {
+            get { return maximumHeight; }
+            set
+            {
+                if (value < 0 || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                maximumHeight = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the maximum width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <userdoc>Maximum width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
         [Display(category: LayoutCategory)]
@@ -741,27 +770,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the maximum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
-        [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory)]
-        [DefaultValue(float.PositiveInfinity)]
-        public float MaximumHeight
-        {
-            get { return maximumHeight; }
-            set
-            {
-                if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maximumHeight = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum height of this element.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <userdoc>Maximum depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
         [Display(category: LayoutCategory)]
@@ -780,8 +789,9 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the vertical alignment of this element.
+        /// Gets or sets the horizontal alignment of this element.
         /// </summary>
+        /// <userdoc>Horizontal alignment of this element.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(HorizontalAlignment.Stretch)]
@@ -798,6 +808,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the vertical alignment of this element.
         /// </summary>
+        /// <userdoc>Vertical alignment of this element.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(VerticalAlignment.Stretch)]
@@ -814,6 +825,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the depth alignment of this element.
         /// </summary>
+        /// <userdoc>Depth alignment of this element.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(DepthAlignment.Center)]
@@ -830,6 +842,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the name of this element.
         /// </summary>
+        /// <userdoc>Name of this element.</userdoc>
         [DataMember]
         [Display(category: MiscCategory)]
         [DefaultValue(null)]
@@ -873,6 +886,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the margins of this element.
         /// </summary>
+        /// <userdoc>Layout margin of this element.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         public Thickness Margin
@@ -889,6 +903,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the LocalMatrix of this element.
         /// </summary>
         /// <remarks>The local transform is not taken is account during the layering. The transformation is purely for rendering effects.</remarks>
+        /// <userdoc>Local matrix of this element.</userdoc>
         [DataMember]
         [Display(Browsable = false)]
         public Matrix LocalMatrix
@@ -941,6 +956,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The background color of the element.
         /// </summary>
+        /// <userdoc>Color used for the background surface of this element.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color BackgroundColor { get; set; }
@@ -1275,18 +1291,15 @@ namespace SiliconStudio.Xenko.UI
             var parent = VisualParent;
             var parentRenderOpacity = 1f;
             var parentIsHierarchyEnabled = true;
-            var parentHierarchyDisablePicking = false;
 
             if (parent != null)
             {
                 parentRenderOpacity = parent.RenderOpacity;
                 parentIsHierarchyEnabled = parent.IsHierarchyEnabled;
-                parentHierarchyDisablePicking = parent.HierarchyDisablePicking;
             }
 
             RenderOpacity = parentRenderOpacity * Opacity;
             isHierarchyEnabled = parentIsHierarchyEnabled && isEnabled;
-            HierarchyDisablePicking = parentHierarchyDisablePicking || PreventChildrenFromBeingHit;
             DepthBias = elementBias;
 
             var currentElementDepthBias = DepthBias + DrawLayerNumber;
