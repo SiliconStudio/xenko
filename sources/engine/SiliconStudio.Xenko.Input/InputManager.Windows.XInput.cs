@@ -5,11 +5,10 @@ using System;
 using System.Collections.Generic;
 
 using SharpDX.XInput;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManagerBase
+    public partial class InputManager
     {
         /// <summary>
         /// Internal GamePad factory handling XInput gamepads.

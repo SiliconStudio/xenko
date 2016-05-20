@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         private readonly ViewParameters viewParameters = new ViewParameters();
 
         private Vector2 viewportTargetRatio;
+        private Vector2 viewportOffset;
 
         public override Type SupportedRenderObjectType => typeof(RenderUIElement);
 
@@ -125,9 +126,12 @@ namespace SiliconStudio.Xenko.Rendering.UI
             renderingContext.Time = drawTime;
             renderingContext.RenderTarget = currentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
+            var viewport = context.CommandList.Viewport;
+
             // cache the ratio between viewport and target.
-            var viewportSize = context.CommandList.Viewport.Size;
+            var viewportSize = viewport.Size;
             viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
+            viewportOffset = new Vector2(viewport.X/ viewport.Width, viewport.Y/ viewport.Height);
 
             // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
             CompactPointerEvents();
@@ -157,19 +161,18 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // calculate the size of the virtual resolution depending on target size (UI canvas)
                 var virtualResolution = uiComponent.Resolution;
-                var targetSize = new Vector2(renderingContext.RenderTarget.Width, renderingContext.RenderTarget.Height);
+                
                 if (uiComponent.IsFullScreen)
                 {
+                    //var targetSize = viewportSize;
+                    var targetSize = new Vector2(renderingContext.RenderTarget.Width, renderingContext.RenderTarget.Height);
+
                     // update the virtual resolution of the renderer
                     if (uiComponent.ResolutionStretch == ResolutionStretch.FixedWidthAdaptableHeight)
                         virtualResolution.Y = virtualResolution.X * targetSize.Y / targetSize.X;
                     if (uiComponent.ResolutionStretch == ResolutionStretch.FixedHeightAdaptableWidth)
                         virtualResolution.X = virtualResolution.Y * targetSize.X / targetSize.Y;
-                }
 
-                // Update the view parameters
-                if (uiComponent.IsFullScreen)
-                {
                     viewParameters.Update(uiComponent.Entity, virtualResolution);
                 }
                 else
@@ -208,7 +211,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 var virtualHeight = new Vector4(0, virtualResolution.Y / 2, 0, 1);
                 var transformedVirtualWidth = Vector4.Zero;
                 var transformedVirtualHeight = Vector4.Zero;
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.ViewProjectionMatrix[0 + i] + viewParameters.ViewProjectionMatrix[12 + i];
                     transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.ViewProjectionMatrix[4 + i] + viewParameters.ViewProjectionMatrix[12 + i];
@@ -244,7 +247,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
-                context.CommandList.SetRenderTargetAndViewport(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
@@ -261,7 +264,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             ClearPointerEvents();
 
             // revert the depth stencil buffer to the default value 
-            context.CommandList.SetRenderTargetsAndViewport(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
+            context.CommandList.SetRenderTargets(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
 
             // Release scroped texture
             if (scopedDepthBuffer != null)
@@ -401,8 +404,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     case PointerState.Down:
                         touchEvent.Action = TouchAction.Down;
-                        if (currentTouchedElement != null)
-                            currentTouchedElement.RaiseTouchDownEvent(touchEvent);
+                        currentTouchedElement?.RaiseTouchDownEvent(touchEvent);
                         break;
 
                     case PointerState.Up:
@@ -413,16 +415,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
                             ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
 
                         // trigger the up event
-                        if (currentTouchedElement != null)
-                            currentTouchedElement.RaiseTouchUpEvent(touchEvent);
+                        currentTouchedElement?.RaiseTouchUpEvent(touchEvent);
                         break;
 
                     case PointerState.Move:
                         touchEvent.Action = TouchAction.Move;
 
                         // first notify the move event (even if the touched element changed in between it is still coherent in one of its parents)
-                        if (currentTouchedElement != null)
-                            currentTouchedElement.RaiseTouchMoveEvent(touchEvent);
+                        currentTouchedElement?.RaiseTouchMoveEvent(touchEvent);
 
                         // then generate enter/leave events if we passed from an element to another
                         if (currentTouchedElement != lastTouchedElement)
@@ -555,7 +555,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         private UIElement GetElementAtScreenPosition(UIElement rootElement, Vector2 position, ref Vector3 intersectionPoint)
         {
             // here we use a trick to take into the calculation the viewport => we multiply the screen position by the viewport ratio (easier than modifying the view matrix)
-            var positionForHitTest = Vector2.Demodulate(position, viewportTargetRatio) - new Vector2(0.5f);
+            var positionForHitTest = (Vector2.Demodulate(position, viewportTargetRatio) - viewportOffset) - new Vector2(0.5f);
 
             // calculate the ray corresponding to the click
             var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));

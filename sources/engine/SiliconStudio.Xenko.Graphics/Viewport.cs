@@ -171,9 +171,9 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                if ( Width != 0 && Height != 0)
+                if (Width != 0 && Height != 0)
                 {
-                    return ((float) Width)/Height;
+                    return Width/Height;
                 }
                 return 0f;
             }
@@ -182,6 +182,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Gets the size of the viewport (Width, Height).
         /// </summary>
-        public Vector2 Size { get {  return new Vector2(Width, Height); } }
+        public Vector2 Size => new Vector2(Width, Height);
     }
 }

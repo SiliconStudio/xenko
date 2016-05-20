@@ -125,8 +125,8 @@ namespace SiliconStudio.Xenko.Input
             return virtualButton;
         }
 
-        public abstract float GetValue(InputManagerBase manager);
-
+        public abstract float GetValue(InputManager manager);
+ 
         private static void EnsureInitialize()
         {
             lock (mapIp)
