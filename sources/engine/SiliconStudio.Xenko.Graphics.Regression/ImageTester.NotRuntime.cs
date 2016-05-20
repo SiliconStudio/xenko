@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
         }
 
-        public static bool RequestImageComparisonStatus(string testName = null)
+        public static bool RequestImageComparisonStatus(string testName)
         {
             if (!Connect())
                 throw new InvalidOperationException("Could not connect to image comparer server");
@@ -77,13 +77,13 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.RequestImageComparisonStatus);
-                binaryWriter.Write(testName);
+                binaryWriter.Write(testName ?? "Unable to get test name");
 
                 return binaryReader.ReadBoolean();
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
         }
 
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
         }
     }
