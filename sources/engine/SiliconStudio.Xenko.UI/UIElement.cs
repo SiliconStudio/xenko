@@ -148,7 +148,6 @@ namespace SiliconStudio.Xenko.UI
         /// List of the dependency properties attached to the object.
         /// </summary>
         [DataMember]
-        [Display(Browsable = false)]
         public PropertyContainer DependencyProperties;
 
         /// <summary>
