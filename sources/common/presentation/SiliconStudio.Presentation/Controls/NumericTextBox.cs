@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Globalization;
 using System.Reflection;
@@ -86,57 +87,57 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, true, UpdateSourceTrigger.Explicit));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, true, UpdateSourceTrigger.Explicit));
 
         /// <summary>
         /// Identifies the <see cref="DecimalPlaces"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DecimalPlacesProperty = DependencyProperty.Register("DecimalPlaces", typeof(int), typeof(NumericTextBox), new FrameworkPropertyMetadata(-1, OnDecimalPlacesPropertyChanged));
+        public static readonly DependencyProperty DecimalPlacesProperty = DependencyProperty.Register(nameof(DecimalPlaces), typeof(int), typeof(NumericTextBox), new FrameworkPropertyMetadata(-1, OnDecimalPlacesPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="Minimum"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register("Minimum", typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(double.MinValue, OnMinimumPropertyChanged));
+        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(double.MinValue, OnMinimumPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="Maximum"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register("Maximum", typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(double.MaxValue, OnMaximumPropertyChanged));
+        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(NumericTextBox), new FrameworkPropertyMetadata(double.MaxValue, OnMaximumPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ValueRatio"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValueRatioProperty = DependencyProperty.Register("ValueRatio", typeof(double), typeof(NumericTextBox), new PropertyMetadata(default(double), ValueRatioChanged));
+        public static readonly DependencyProperty ValueRatioProperty = DependencyProperty.Register(nameof(ValueRatio), typeof(double), typeof(NumericTextBox), new PropertyMetadata(default(double), ValueRatioChanged));
 
         /// <summary>
         /// Identifies the <see cref="LargeChange"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LargeChangeProperty = DependencyProperty.Register("LargeChange", typeof(double), typeof(NumericTextBox), new PropertyMetadata(10.0));
+        public static readonly DependencyProperty LargeChangeProperty = DependencyProperty.Register(nameof(LargeChange), typeof(double), typeof(NumericTextBox), new PropertyMetadata(10.0));
 
         /// <summary>
         /// Identifies the <see cref="SmallChange"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SmallChangeProperty = DependencyProperty.Register("SmallChange", typeof(double), typeof(NumericTextBox), new PropertyMetadata(1.0));
+        public static readonly DependencyProperty SmallChangeProperty = DependencyProperty.Register(nameof(SmallChange), typeof(double), typeof(NumericTextBox), new PropertyMetadata(1.0));
 
         /// <summary>
         /// Identifies the <see cref="DisplayUpDownButtons"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DisplayUpDownButtonsProperty = DependencyProperty.Register("DisplayUpDownButtons", typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
+        public static readonly DependencyProperty DisplayUpDownButtonsProperty = DependencyProperty.Register(nameof(DisplayUpDownButtons), typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
 
         /// <summary>
         /// Identifies the <see cref="AllowMouseDrag"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AllowMouseDragProperty = DependencyProperty.Register("AllowMouseDrag", typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
+        public static readonly DependencyProperty AllowMouseDragProperty = DependencyProperty.Register(nameof(AllowMouseDrag), typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
 
         /// <summary>
         /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MouseValidationTriggerProperty = DependencyProperty.Register("MouseValidationTrigger", typeof(MouseValidationTrigger), typeof(NumericTextBox), new PropertyMetadata(MouseValidationTrigger.OnMouseUp));
+        public static readonly DependencyProperty MouseValidationTriggerProperty = DependencyProperty.Register(nameof(MouseValidationTrigger), typeof(MouseValidationTrigger), typeof(NumericTextBox), new PropertyMetadata(MouseValidationTrigger.OnMouseUp));
 
         /// <summary>
         /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DragCursorProperty = DependencyProperty.Register("DragCursor", typeof(Cursor), typeof(NumericTextBox), new PropertyMetadata(Cursors.ScrollAll));
+        public static readonly DependencyProperty DragCursorProperty = DependencyProperty.Register(nameof(DragCursor), typeof(Cursor), typeof(NumericTextBox), new PropertyMetadata(Cursors.ScrollAll));
         
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
@@ -156,27 +157,27 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Increases the current value with the value of the <see cref="LargeChange"/> property.
         /// </summary>
-        public static RoutedCommand LargeIncreaseCommand { get; private set; }
+        public static RoutedCommand LargeIncreaseCommand { get; }
 
         /// <summary>
         /// Increases the current value with the value of the <see cref="SmallChange"/> property.
         /// </summary>
-        public static RoutedCommand SmallIncreaseCommand { get; private set; }
+        public static RoutedCommand SmallIncreaseCommand { get; }
 
         /// <summary>
         /// Decreases the current value with the value of the <see cref="LargeChange"/> property.
         /// </summary>
-        public static RoutedCommand LargeDecreaseCommand { get; private set; }
+        public static RoutedCommand LargeDecreaseCommand { get; }
 
         /// <summary>
         /// Decreases the current value with the value of the <see cref="SmallChange"/> property.
         /// </summary>
-        public static RoutedCommand SmallDecreaseCommand { get; private set; }
+        public static RoutedCommand SmallDecreaseCommand { get; }
 
         /// <summary>
         /// Resets the current value to zero.
         /// </summary>
-        public static RoutedCommand ResetValueCommand { get; private set; }
+        public static RoutedCommand ResetValueCommand { get; }
 
         static NumericTextBox()
         {
@@ -355,9 +356,9 @@ namespace SiliconStudio.Presentation.Controls
                     var handler = DragCompleted;
                     if (handler != null)
                     {
-                        Point position = Mouse.GetPosition(this);
-                        double dx = Math.Abs(position.X - mouseDownPosition.X);
-                        double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                        var position = Mouse.GetPosition(this);
+                        var dx = Math.Abs(position.X - mouseDownPosition.X);
+                        var dy = Math.Abs(position.Y - mouseDownPosition.Y);
                         handler(this, new DragCompletedEventArgs(dx, dy, true));
                     }
 
@@ -388,8 +389,7 @@ namespace SiliconStudio.Presentation.Controls
                 {
                     adorner = new DragDirectionAdorner(this, contentHost.ActualWidth);
                     var adornerLayer = AdornerLayer.GetAdornerLayer(this);
-                    if (adornerLayer != null)
-                        adornerLayer.Add(adorner);
+                    adornerLayer?.Add(adorner);
                 }
 
                 mouseDownPosition = e.GetPosition(this);
@@ -405,12 +405,12 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnPreviewMouseMove(e);
 
-            Point position = e.GetPosition(this);
+            var position = e.GetPosition(this);
 
             if (AllowMouseDrag && dragState == DragState.Starting && e.LeftButton == MouseButtonState.Pressed)
             {
-                double dx = Math.Abs(position.X - mouseDownPosition.X);
-                double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                var dx = Math.Abs(position.X - mouseDownPosition.X);
+                var dy = Math.Abs(position.Y - mouseDownPosition.Y);
                 dragOrientation = dx >= dy ? Orientation.Horizontal : Orientation.Vertical;
 
                 if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
@@ -422,16 +422,11 @@ namespace SiliconStudio.Presentation.Controls
                     mouseDownPosition = position;
                     mouseMoveDelta = 0;
                     dragState = DragState.Dragging;
-                    
+
                     e.MouseDevice.Capture(this);
-                    var handler = DragStarted;
-                    if (handler != null)
-                    {
-                        handler(this, new DragStartedEventArgs(mouseDownPosition.X, mouseDownPosition.Y));
-                    }
+                    DragStarted?.Invoke(this, new DragStartedEventArgs(mouseDownPosition.X, mouseDownPosition.Y));
                     SelectAll();
-                    if (adorner != null)
-                        adorner.SetOrientation(dragOrientation);
+                    adorner?.SetOrientation(dragOrientation);
                 }
             }
 
@@ -473,7 +468,7 @@ namespace SiliconStudio.Presentation.Controls
                 }
             }
             else if (dragState == DragState.Dragging && AllowMouseDrag)
-            {                
+            {
                 if (adorner != null)
                 {
                     var adornerLayer = AdornerLayer.GetAdornerLayer(this);
@@ -488,9 +483,9 @@ namespace SiliconStudio.Presentation.Controls
                 var handler = DragCompleted;
                 if (handler != null)
                 {
-                    Point position = e.GetPosition(this);
-                    double dx = Math.Abs(position.X - mouseDownPosition.X);
-                    double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                    var position = e.GetPosition(this);
+                    var dx = Math.Abs(position.X - mouseDownPosition.X);
+                    var dy = Math.Abs(position.Y - mouseDownPosition.Y);
                     handler(this, new DragCompletedEventArgs(dx, dy, false));
                 }
             }
@@ -501,9 +496,8 @@ namespace SiliconStudio.Presentation.Controls
 
         protected sealed override void OnCancelled()
         {
-            BindingExpression expression = GetBindingExpression(ValueProperty);
-            if (expression != null)
-                expression.UpdateTarget();
+            var expression = GetBindingExpression(ValueProperty);
+            expression?.UpdateTarget();
 
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
@@ -523,9 +517,8 @@ namespace SiliconStudio.Presentation.Controls
             }
             SetCurrentValue(ValueProperty, value);
 
-            BindingExpression expression = GetBindingExpression(ValueProperty);
-            if (expression != null)
-                expression.UpdateSource();
+            var expression = GetBindingExpression(ValueProperty);
+            expression?.UpdateSource();
         }
 
         /// <inheritdoc/>
@@ -556,8 +549,8 @@ namespace SiliconStudio.Presentation.Controls
 
         protected string FormatValue(double value)
         {
-            int decimalPlaces = DecimalPlaces;
-            double coercedValue = decimalPlaces < 0 ? value : Math.Round(value, decimalPlaces);
+            var decimalPlaces = DecimalPlaces;
+            var coercedValue = decimalPlaces < 0 ? value : Math.Round(value, decimalPlaces);
             return coercedValue.ToString(CultureInfo.InvariantCulture);
         }
 
@@ -637,7 +630,7 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnMinimumPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var numericInput = (NumericTextBox)sender;
-            bool needValidation = false;
+            var needValidation = false;
             if (numericInput.Maximum < numericInput.Minimum)
             {
                 numericInput.SetCurrentValue(MaximumProperty, numericInput.Minimum);
@@ -663,7 +656,7 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnMaximumPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var numericInput = (NumericTextBox)sender;
-            bool needValidation = false;
+            var needValidation = false;
             if (numericInput.Minimum > numericInput.Maximum)
             {
                 numericInput.SetCurrentValue(MinimumProperty, numericInput.Maximum);
@@ -736,7 +729,7 @@ namespace SiliconStudio.Presentation.Controls
             var metadata = e.Property.GetMetadata(d);
             if (!Equals(e.NewValue, metadata.DefaultValue))
             {
-                var message = string.Format("The value of the property '{0}' cannot be different from the value '{1}'", e.Property.Name, metadata.DefaultValue);
+                var message = $"The value of the property '{e.Property.Name}' cannot be different from the value '{metadata.DefaultValue}'";
                 throw new InvalidOperationException(message);
             }
         }
@@ -750,8 +743,8 @@ namespace SiliconStudio.Presentation.Controls
             static DragDirectionAdorner()
             {
                 var asmName = Assembly.GetExecutingAssembly().GetName().Name;
-                CursorHorizontalImageSource = ImageExtensions.ImageSourceFromFile(string.Format("pack://application:,,,/{0};component/Resources/Images/cursor_west_east.png", asmName));
-                CursorVerticalImageSource = ImageExtensions.ImageSourceFromFile(string.Format("pack://application:,,,/{0};component/Resources/Images/cursor_north_south.png", asmName));
+                CursorHorizontalImageSource = ImageExtensions.ImageSourceFromFile($"pack://application:,,,/{asmName};component/Resources/Images/cursor_west_east.png");
+                CursorVerticalImageSource = ImageExtensions.ImageSourceFromFile($"pack://application:,,,/{asmName};component/Resources/Images/cursor_north_south.png");
             }
 
             private Orientation dragOrientation;
@@ -779,8 +772,8 @@ namespace SiliconStudio.Presentation.Controls
 
                 VisualEdgeMode = EdgeMode.Aliased;
                 var source = dragOrientation == Orientation.Horizontal ? CursorHorizontalImageSource : CursorVerticalImageSource;
-                double left = Math.Round(contentWidth - source.Width);
-                double top = Math.Round((AdornedElement.RenderSize.Height - source.Height) * 0.5);
+                var left = Math.Round(contentWidth - source.Width);
+                var top = Math.Round((AdornedElement.RenderSize.Height - source.Height) * 0.5);
                 drawingContext.DrawImage(source, new Rect(new Point(left, top), new Size(source.Width, source.Height)));
             }
         }
