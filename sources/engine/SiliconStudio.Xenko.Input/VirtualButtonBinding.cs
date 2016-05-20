@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the value for a particular binding.
         /// </summary>
         /// <returns>Value of the binding</returns>
-        public virtual float GetValue(InputManagerBase manager)
+        public virtual float GetValue(InputManager manager)
         {
             return Button != null ? Button.GetValue(manager) : 0.0f;
         }

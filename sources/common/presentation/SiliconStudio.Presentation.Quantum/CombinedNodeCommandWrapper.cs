@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
@@ -27,14 +28,14 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override CombineMode CombineMode => CombineMode.DoNotCombine;
 
-        public override void Invoke(object parameter)
+        public override async Task Invoke(object parameter)
         {
             using (var transaction = ActionService?.CreateTransaction())
             {
                 commands.First().NodeCommand.StartCombinedInvoke();
                 foreach (var command in commands)
                 {
-                    command.Invoke(parameter);
+                    await command.Invoke(parameter);
                 }
                 commands.First().NodeCommand.EndCombinedInvoke();
                 ActionService?.SetName(transaction, ActionName);
