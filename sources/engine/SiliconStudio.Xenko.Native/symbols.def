@@ -1,3 +1,5 @@
 LIBRARY libxenkonative.dll
 EXPORTS
 UpdateBufferValuesFromElementInfo
+XenkoOvrStartup
+XenkoOvrShutdown

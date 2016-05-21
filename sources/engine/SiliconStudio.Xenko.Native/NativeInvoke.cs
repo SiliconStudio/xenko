@@ -30,5 +30,29 @@ namespace SiliconStudio.Xenko.Native
 #endif
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+
+        internal static class OculusOvr
+        {
+            static OculusOvr()
+            {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+                NativeLibrary.PreloadLibrary(Library + ".dll");
+#else
+            NativeLibrary.PreloadLibrary(Library + ".so");
+#endif
+            }
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrStartup", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern bool Startup();
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrShutdown", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern void Shutdown();
+        }
     }
 }

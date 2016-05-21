@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: NeutralResourcesLanguage("en")]
 
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine")]
