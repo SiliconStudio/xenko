@@ -48,13 +48,6 @@ typedef ovrBool (*ovr_SetFloatArrayPtr) (ovrSession session, const char* propert
 typedef const char* (*ovr_GetStringPtr) (ovrSession session, const char* propertyName, const char* defaultVal);
 typedef ovrBool (*ovr_SetStringPtr) (ovrSession session, const char* propertyName, const char* value);
 
-#define FAILURE_CHECK(___x) if(OVR_FAILURE(___x)) \
-{ \
-	ovrErrorInfo __errInfo; \
-	ovr_GetLastErrorInfoFunc(&__errInfo); \
-	printf("OculusOVR-ERROR(%d): %s\n", __errInfo.Result, __errInfo.ErrorString); \
-}
-
 extern "C" {
 
 	void* __libOvr = nullptr;
@@ -112,7 +105,6 @@ extern "C" {
 			if (!__libOvr) __libOvr = LoadDynamicLibrary("x64/LibOVR");
 			if (!__libOvr)
 			{
-				printf("Failed to load LibOVR.dll\n");
 				return false;
 			}
 
@@ -198,12 +190,9 @@ extern "C" {
 			if (!ovr_GetStringFunc) { printf("Failed to get ovr_GetString\n"); return false; }
 			ovr_SetStringFunc = (ovr_SetStringPtr)GetSymbolAddress(__libOvr, "ovr_SetString");
 			if (!ovr_SetStringFunc) { printf("Failed to get ovr_SetString\n"); return false; }
-
 		}
 
 		ovrResult result = ovr_InitializeFunc(nullptr);
-
-		FAILURE_CHECK(result);
 
 		return OVR_SUCCESS(result);
 	}
@@ -216,6 +205,34 @@ extern "C" {
 
 		FreeDynamicLibrary(__libOvr);
 		__libOvr = nullptr;
+	}
+
+	int XenkoOvrGetError(char* errorString)
+	{
+		ovrErrorInfo errInfo;
+		ovr_GetLastErrorInfoFunc(&errInfo);
+		strcpy(errorString, errInfo.ErrorString);
+		return errInfo.Result;
+	}
+
+	bool XenkoOvrCreateSession(ovrSession sessionOut, char* luidOut)
+	{
+		ovrGraphicsLuid luid;
+		ovrResult result = ovr_CreateFunc(&sessionOut, &luid);
+
+		bool success = OVR_SUCCESS(result);
+		if(success)
+		{
+			sprintf(luidOut, "%l", *((int64_t*)luid.Reserved));
+			return true;
+		}
+
+		return false;
+	}
+
+	void XenkoOvrDestroySession(ovrSession session)
+	{
+		ovr_DestroyFunc(session);
 	}
 
 }

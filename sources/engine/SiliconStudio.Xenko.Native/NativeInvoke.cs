@@ -53,6 +53,33 @@ namespace SiliconStudio.Xenko.Native
 #endif
             [DllImport(Library, EntryPoint = "XenkoOvrShutdown", CallingConvention = CallingConvention.Cdecl)]
             internal static extern void Shutdown();
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrCreateSession", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern bool Create(IntPtr outSessionPtr, IntPtr adapterLuidStr);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrDestroySession", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern void Destroy(IntPtr outSessionPtr);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrGetError", CallingConvention = CallingConvention.Cdecl)]
+            private static extern int GetError(IntPtr errorString);
+
+            internal static unsafe string GetError()
+            {
+                var buffer = stackalloc char[256];
+                var errorCStr = new IntPtr(buffer);
+                var error = GetError(errorCStr);
+                var errorStr = Marshal.PtrToStringAnsi(errorCStr);
+                return $"OculusOVR-Error({error}): {errorStr}";
+            }
         }
     }
 }

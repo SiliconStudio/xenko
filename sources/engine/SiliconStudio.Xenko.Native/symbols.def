@@ -3,3 +3,6 @@ EXPORTS
 UpdateBufferValuesFromElementInfo
 XenkoOvrStartup
 XenkoOvrShutdown
+XenkoOvrGetError
+XenkoOvrCreateSession
+XenkoOvrDestroySession
