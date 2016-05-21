@@ -84,5 +84,10 @@ namespace SiliconStudio.Xenko.Games
         /// Gets or sets the colorspace.
         /// </summary>
         public ColorSpace ColorSpace;
+
+        /// <summary>
+        /// If populated the engine will try to initialize the device with the same unique id
+        /// </summary>
+        public string RequiredAdapterUid;
     }
 }

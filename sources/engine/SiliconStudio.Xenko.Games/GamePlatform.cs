@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -265,7 +266,8 @@ namespace SiliconStudio.Xenko.Games
             foreach (var graphicsAdapter in GraphicsAdapterFactory.Adapters)
             {
                 // Skip adapeters that don't have graphics output
-                if (graphicsAdapter.Outputs.Length == 0)
+                if (graphicsAdapter.Outputs.Length == 0 
+                    || (!preferredParameters.RequiredAdapterUid.IsNullOrEmpty() && graphicsAdapter.AdapterUid != preferredParameters.RequiredAdapterUid))
                 {
                     continue;
                 }

@@ -204,6 +204,11 @@ namespace SiliconStudio.Xenko.Games
         public DeviceCreationFlags DeviceCreationFlags { get; set; }
 
         /// <summary>
+        /// If populated the engine will try to initialize the device with the same unique id
+        /// </summary>
+        public string RequiredAdapterUid { get; set; }
+
+        /// <summary>
         /// Gets or sets the default color space.
         /// </summary>
         /// <value>The default color space.</value>
@@ -644,7 +649,8 @@ namespace SiliconStudio.Xenko.Games
                     PreferredMultiSampleLevel = PreferredMultiSampleLevel,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
-                    ColorSpace = PreferredColorSpace
+                    ColorSpace = PreferredColorSpace,
+                    RequiredAdapterUid = RequiredAdapterUid
             };
 
             // Remap to Srgb backbuffer if necessary
@@ -683,7 +689,7 @@ namespace SiliconStudio.Xenko.Games
             GraphicsProfile availableGraphicsProfile;
             if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
             {
-                throw new InvalidOperationException(string.Format("Graphics profiles [{0}] are not supported by the device. The highest available profile is [{1}].", string.Join(", ", preferredParameters.PreferredGraphicsProfile), availableGraphicsProfile));
+                throw new InvalidOperationException($"Graphics profiles [{string.Join(", ", preferredParameters.PreferredGraphicsProfile)}] are not supported by the device. The highest available profile is [{availableGraphicsProfile}].");
             }
 
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
