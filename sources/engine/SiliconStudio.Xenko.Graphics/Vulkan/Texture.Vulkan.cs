@@ -307,7 +307,7 @@ namespace SiliconStudio.Xenko.Graphics
                         SourceAccessMask = AccessFlags.None,
                         DestinationAccessMask = AccessFlags.TransferWrite
                     };
-                    commandBuffer.PipelineBarrier(PipelineStageFlags.None, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &initialBarrier);
+                    commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &initialBarrier);
 
                     var copies = new BufferImageCopy[dataBoxes.Length];
                     for (int i = 0; i < copies.Length; i++)
