@@ -184,6 +184,7 @@
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
     <Compile Include="Serializers\YamlForwardLogger.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
+    <Compile Include="SourceFileMemberAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
     <Compile Include="Templates\SessionTemplateGenerator.cs" />
     <Compile Include="Templates\TemplateAssetDescription.cs" />

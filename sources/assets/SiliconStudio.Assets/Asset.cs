@@ -7,6 +7,7 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
@@ -75,6 +76,11 @@ namespace SiliconStudio.Assets
         [Display(Browsable = false)]
         [DefaultValue(null)]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
+
+        [DataMember(-500, DataMemberMode.Assign)]
+        [Display(Browsable = false)]
+        [DefaultValue(null)]
+        public Dictionary<UFile, ObjectId> SourceHashes;
 
         /// <summary>
         /// Gets or sets the base.

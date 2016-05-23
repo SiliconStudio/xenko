@@ -799,6 +799,14 @@ namespace SiliconStudio.Assets.Analysis
             IEnumerable<IContentLink> GetDependencies(AssetItem item);
         }
 
+        private void OnAssetChanged(AssetItem obj, bool oldValue, bool newValue)
+        {
+            // Make sure we clone the item here only if it is necessary
+            // Cloning the AssetItem is mandatory in order to make sure
+            // the asset item won't change
+            AssetChanged?.Invoke(obj.Clone(true), oldValue, newValue);
+        }
+
         /// <summary>
         /// Visitor that collect all asset references.
         /// </summary>
@@ -811,7 +819,7 @@ namespace SiliconStudio.Assets.Analysis
                 dependencies = new AssetDependencies(item);
 
                 Visit(item.Asset);
-                
+
                 // composition inheritances
                 if (item.Asset.BaseParts != null)
                 {
@@ -841,7 +849,7 @@ namespace SiliconStudio.Assets.Analysis
                     if (isBase && ((AssetBase)reference).IsRootImport)
                         return;
 
-                    dependencies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance: 0) | ContentLinkType.Reference);
+                    dependencies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance : 0) | ContentLinkType.Reference);
                 }
                 else
                 {
@@ -859,14 +867,6 @@ namespace SiliconStudio.Assets.Analysis
 
                 base.VisitObjectMember(container, containerDescriptor, member, value);
             }
-        }
-
-        private void OnAssetChanged(AssetItem obj, bool oldValue, bool newValue)
-        {
-            // Make sure we clone the item here only if it is necessary
-            // Cloning the AssetItem is mandatory in order to make sure
-            // the asset item won't change
-            AssetChanged?.Invoke(obj.Clone(true), oldValue, newValue);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace SiliconStudio.Assets
         /// </userdoc>
         [DataMember(-50)]
         [DefaultValue(null)]
+        [SourceFileMember(true)]
         public UFile Source { get; set; } = new UFile("");
 
         /// <summary>

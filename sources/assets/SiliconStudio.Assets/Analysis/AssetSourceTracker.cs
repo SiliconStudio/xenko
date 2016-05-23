@@ -4,8 +4,10 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Analysis
@@ -33,15 +35,13 @@ namespace SiliconStudio.Assets.Analysis
         // Objects used to track directories
         internal DirectoryWatcher DirectoryWatcher;
         private readonly Dictionary<Package, string> packagePathsTracked = new Dictionary<Package, string>();
-        private readonly Dictionary<Guid, HashSet<UFile>> mapAssetToInputDependencies = new Dictionary<Guid, HashSet<UFile>>();
+        private readonly Dictionary<Guid, Dictionary<UFile, bool>> mapAssetToInputDependencies = new Dictionary<Guid, Dictionary<UFile, bool>>();
         private readonly Dictionary<string, HashSet<Guid>> mapInputDependencyToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<Guid, ObjectId> mapAssetsToSource = new Dictionary<Guid, ObjectId>();
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
         private readonly List<FileEvent> fileEventsWorkingCopy = new List<FileEvent>();
         private readonly ManualResetEvent threadWatcherEvent;
         private readonly List<AssetFileChangedEvent> currentAssetFileChangedEvents = new List<AssetFileChangedEvent>();
         private readonly CancellationTokenSource tokenSourceForImportHash;
-        private readonly List<AssetFileChangedEvent> sourceImportFileChangedEventsToAdd = new List<AssetFileChangedEvent>();
         private Thread fileEventThreadHandler;
         private int trackingSleepTime;
         private bool isDisposed;
@@ -213,25 +213,22 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        /// <summary>
-        /// Finds the asset items by their input/import file.
-        /// </summary>
-        /// <param name="importFile">The import file.</param>
-        /// <returns>A list of assets that are imported from the specified import file.</returns>
-        /// <exception cref="System.ArgumentNullException">importFile</exception>
-        public HashSet<Guid> FindAssetIdsByInput(string importFile)
-        {
-            if (importFile == null) throw new ArgumentNullException(nameof(importFile));
-            lock (Initialize())
-            {
-                HashSet<Guid> assets;
-                if (mapInputDependencyToAssets.TryGetValue(importFile, out assets))
-                {
-                    return new HashSet<Guid>(assets);
-                }
-                return new HashSet<Guid>();
-            }
-        }
+        //public struct SourceFileChange
+        //{
+        //    public SourceFileChange(Guid assetId, UFile sourceFile)
+        //    {
+        //        AssetId = assetId;
+        //        SourceFile = sourceFile;
+        //    }
+
+        //    Guid AssetId;
+        //    UFile SourceFile;
+        //}
+
+        //public Task<object> SourceFileChanged()
+        //{
+
+        //}
 
         /// <summary>
         /// Finds the asset items by their input/import file.
@@ -239,17 +236,18 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="importFile">The import file.</param>
         /// <returns>A list of assets that are imported from the specified import file.</returns>
         /// <exception cref="System.ArgumentNullException">importFile</exception>
+        [Obsolete]
         public HashSet<AssetItem> FindAssetItemsByInput(string importFile)
         {
-            if (importFile == null) throw new ArgumentNullException(nameof(importFile));
+            //if (importFile == null) throw new ArgumentNullException(nameof(importFile));
             lock (Initialize())
             {
-                var ids = FindAssetIdsByInput(importFile);
+                //var ids = FindAssetIdsByInput(importFile);
                 var items = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
-                foreach (var id in ids)
-                {
-                    items.Add(TrackedAssets[id].Clone(true));
-                }
+                //foreach (var id in ids)
+                //{
+                //    items.Add(TrackedAssets[id].Clone(true));
+                //}
                 return items;
             }
         }
@@ -402,6 +400,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 if (TrackedAssets.ContainsKey(assetId))
                     return;
+
 
                 // TODO provide an optimized version of TrackAsset method
                 // taking directly a well known asset (loaded from a Package...etc.)
@@ -571,70 +570,52 @@ namespace SiliconStudio.Assets.Analysis
 
         private void UpdateAssetImportPathsTracked(AssetItem assetItem, bool isTracking)
         {
-            // Only handle AssetImport
-            var assetImport = assetItem.Asset as AssetImport;
-            if (assetImport == null)
-            {
-                return;
-            }
-
+            Dictionary<UFile, bool> oldSourceFiles;
             if (isTracking)
             {
-                // Currently an AssetImport is linked only to a single entry, but it could have probably have multiple input dependencies in the future
-                var newInputPathDependencies = new HashSet<UFile>();
-                var pathToSourceRawAsset = assetImport.Source;
-                if (string.IsNullOrEmpty(pathToSourceRawAsset))
-                {
-                    return;
-                }
-                if (!pathToSourceRawAsset.IsAbsolute)
-                {
-                    pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
-                }
+                var collector = new SourceFilesCollector();
+                var newSourceFiles = collector.GetSourceFiles(assetItem);
+                //newSourceFiles.Add(pathToSourceRawAsset);
 
-                newInputPathDependencies.Add(pathToSourceRawAsset);
-
-                HashSet<UFile> inputPaths;
-                if (mapAssetToInputDependencies.TryGetValue(assetItem.Id, out inputPaths))
+                if (mapAssetToInputDependencies.TryGetValue(assetItem.Id, out oldSourceFiles))
                 {
                     // Untrack previous paths
-                    foreach (var inputPath in inputPaths)
+                    foreach (var sourceFile in oldSourceFiles.Keys)
                     {
-                        if (!newInputPathDependencies.Contains(inputPath))
+                        if (!newSourceFiles.ContainsKey(sourceFile))
                         {
-                            UnTrackAssetImportInput(assetItem, inputPath);
+                            UnTrackAssetImportInput(assetItem, sourceFile);
                         }
                     }
 
                     // Track new paths
-                    foreach (var inputPath in newInputPathDependencies)
+                    foreach (var sourceFile in newSourceFiles.Keys)
                     {
-                        if (!inputPaths.Contains(inputPath))
+                        if (!oldSourceFiles.ContainsKey(sourceFile))
                         {
-                            TrackAssetImportInput(assetItem, inputPath);
+                            TrackAssetImportInput(assetItem, sourceFile);
                         }
                     }
                 }
                 else
                 {
                     // Track new paths
-                    foreach (var inputPath in newInputPathDependencies)
+                    foreach (var sourceFile in newSourceFiles.Keys)
                     {
-                        TrackAssetImportInput(assetItem, inputPath);
+                        TrackAssetImportInput(assetItem, sourceFile);
                     }
                 }
 
-                mapAssetToInputDependencies[assetItem.Id] = newInputPathDependencies;
+                mapAssetToInputDependencies[assetItem.Id] = newSourceFiles;
             }
             else
             {
-                HashSet<UFile> inputPaths;
-                if (mapAssetToInputDependencies.TryGetValue(assetItem.Id, out inputPaths))
+                if (mapAssetToInputDependencies.TryGetValue(assetItem.Id, out oldSourceFiles))
                 {
                     mapAssetToInputDependencies.Remove(assetItem.Id);
-                    foreach (var inputPath in inputPaths)
+                    foreach (var sourceFile in oldSourceFiles.Keys)
                     {
-                        UnTrackAssetImportInput(assetItem, inputPath);
+                        UnTrackAssetImportInput(assetItem, sourceFile);
                     }
                 }
             }
@@ -736,12 +717,8 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         private void RunChangeWatcher()
         {
-            // Only check every minute
-            while (true)
+            while (!threadWatcherEvent.WaitOne(TrackingSleepTime))
             {
-                if (threadWatcherEvent.WaitOne(TrackingSleepTime))
-                    break;
-
                 // Use a working copy in order to limit the locking
                 fileEventsWorkingCopy.Clear();
                 lock (fileEvents)
@@ -874,36 +851,30 @@ namespace SiliconStudio.Assets.Analysis
             {
                 HashSet<Guid> items;
                 if (!mapInputDependencyToAssets.TryGetValue(sourceFile, out items))
-                {
                     return;
-                }
+
+                var sourceImportFileChangedEventsToAdd = new List<AssetFileChangedEvent>();
                 foreach (var itemId in items)
                 {
                     AssetItem assetItem;
+                    var sourceFiles = mapAssetToInputDependencies[itemId];
                     TrackedAssets.TryGetValue(itemId, out assetItem);
                     if (assetItem == null)
-                    {
                         continue;
-                    }
 
                     bool shouldNotifyChange;
-                    var assetImport = assetItem.Asset as AssetImportTracked;
+                    if (!sourceFiles.TryGetValue(sourceFile, out shouldNotifyChange))
+                        continue;
 
-                    if (assetImport != null)
-                    {
-                        shouldNotifyChange = assetImport.Base != null && assetImport.Base.IsRootImport && assetImport.SourceHash != hash;
-                    }
-                    else
-                    {
-                        ObjectId previousHash;
-                        shouldNotifyChange = !mapAssetsToSource.TryGetValue(assetItem.Id, out previousHash) || previousHash != hash;
-                        mapAssetsToSource[assetItem.Id] = hash;
-                    }
+                    var oldHash = ObjectId.Empty;
+                    assetItem.Asset.SourceHashes?.TryGetValue(sourceFile, out oldHash);
+
+                    shouldNotifyChange = oldHash != hash;
 
                     if (shouldNotifyChange)
                     {
                         // If the hash is empty, the source file has been deleted
-                        var changeType = (hash == ObjectId.Empty) ? AssetFileChangedType.SourceDeleted : AssetFileChangedType.SourceUpdated;
+                        var changeType = hash == ObjectId.Empty ? AssetFileChangedType.SourceDeleted : AssetFileChangedType.SourceUpdated;
 
                         // Transmit the hash in the event as well, so that we can check again if the asset has not been updated during the async round-trip
                         // (it happens when re-importing multiple assets at once).
@@ -916,6 +887,51 @@ namespace SiliconStudio.Assets.Analysis
                     currentAssetFileChangedEvents.AddRange(sourceImportFileChangedEventsToAdd);
                 }
                 sourceImportFileChangedEventsToAdd.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Visitor that collect all asset references.
+        /// </summary>
+        private class SourceFilesCollector : AssetVisitorBase
+        {
+            private Dictionary<UFile, bool> sourceFileMembers;
+
+            public Dictionary<UFile, bool> GetSourceFiles(AssetItem item)
+            {
+                sourceFileMembers = new Dictionary<UFile, bool>();
+
+                Visit(item.Asset);
+
+                return sourceFileMembers;
+            }
+
+            public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
+            {
+                // Don't visit base parts as they are visited at the top level.
+                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BasePartsProperty))
+                {
+                    return;
+                }
+
+                if (member.Type == typeof(UFile) && value != null)
+                {
+                    var file = (UFile)value;
+                    var attribute = member.GetCustomAttributes<SourceFileMemberAttribute>(true).SingleOrDefault();
+                    if (attribute != null)
+                    {
+                        if (!sourceFileMembers.ContainsKey(file))
+                        {
+                            sourceFileMembers.Add(file, attribute.UpdateAssetIfChanged);
+                        }
+                        else if (attribute.UpdateAssetIfChanged)
+                        {
+                            // If the file has already been collected, just update whether it should update the asset when changed
+                            sourceFileMembers[file] = true;
+                        }
+                    }
+                }
+                base.VisitObjectMember(container, containerDescriptor, member, value);
             }
         }
     }
