@@ -129,7 +129,7 @@ namespace SiliconStudio.Shaders.Convertor
                 builtinInputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
                 builtinOutputs = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 
-                // Don't use gl_FragData exception on ES2
+                // Don't use gl_FragData except on ES2
                 if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300)
                     needCustomFragData = false;
 
@@ -3739,7 +3739,8 @@ namespace SiliconStudio.Shaders.Convertor
 
             bool addGlslGlobalVariable = CultureInfo.InvariantCulture.CompareInfo.Compare(variableName, "gl_Position", CompareOptions.IgnoreCase) == 0 && defaultType != type;
 
-            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(variableName, "gl_fragdata", CompareOptions.IgnoreCase) && needCustomFragData)
+            bool isFragData = CultureInfo.InvariantCulture.CompareInfo.IsPrefix(variableName, "gl_fragdata", CompareOptions.IgnoreCase);
+            if (isFragData && needCustomFragData)
             {
                 // IF varName is null, this is a semantic from a returned function, so use a generic out_gl_fragdata name
                 // otherwise, use the original variable name.
@@ -3763,6 +3764,12 @@ namespace SiliconStudio.Shaders.Convertor
                     else
                     {
                         variable.Qualifiers |= Ast.ParameterQualifier.Out;
+
+                        if (isFragData && needCustomFragData)
+                        {
+                            // Write location on outputs in case of MRT
+                            variable.Qualifiers |= new LayoutQualifier { Layouts = { new LayoutKeyValue("location", semanticIndex) } };
+                        }
                     }
                 }
 
