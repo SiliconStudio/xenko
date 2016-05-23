@@ -175,6 +175,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="FixedAspectRatioTests.cs" />
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

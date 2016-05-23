@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         {
             lock (inputManager.KeyboardInputEvents)
             {
-                inputManager.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Down });
+                inputManager.KeyboardInputEvents.Add(new InputManager.KeyboardInputEvent { Key = key, Type = InputManager.InputEventType.Down });
             }
         }
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         {
             lock (inputManager.KeyboardInputEvents)
             {
-                inputManager.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Up });
+                inputManager.KeyboardInputEvents.Add(new InputManager.KeyboardInputEvent { Key = key, Type = InputManager.InputEventType.Up });
             }
         }
 

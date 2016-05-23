@@ -83,8 +83,8 @@ namespace SiliconStudio.Xenko.Input
 
         protected override void SetMousePosition(Vector2 normalizedPosition)
         {
-            var newPos = uiControl.PointToScreen(
-                new System.Drawing.Point((int)(uiControl.ClientRectangle.Width*normalizedPosition.X), (int)(uiControl.ClientRectangle.Height*normalizedPosition.Y)));
+            var newPos = UiControl.PointToScreen(
+                new System.Drawing.Point((int)(UiControl.ClientRectangle.Width*normalizedPosition.X), (int)(UiControl.ClientRectangle.Height*normalizedPosition.Y)));
             Cursor.Position = newPos;
         }
 
@@ -134,33 +134,33 @@ namespace SiliconStudio.Xenko.Input
 
         private void InitializeFromWindowsForms(GameContext<Control> uiContext)
         {
-            uiControl = uiContext.Control;
+            UiControl = uiContext.Control;
 
             pointerClock.Restart();
 
             if (UseRawInput)
             {
-                BindRawInputKeyboard(uiControl);
+                BindRawInputKeyboard(UiControl);
             }
             else
             {
-                defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
+                defaultWndProc = Win32Native.GetWindowLong(UiControl.Handle, Win32Native.WindowLongType.WndProc);
                 // This is needed to prevent garbage collection of the delegate.
                 inputWndProc = WndProc;
                 var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
-                Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
+                Win32Native.SetWindowLong(UiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
             }
-            uiControl.GotFocus += (_, e) => OnUiControlGotFocus();
-            uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
-            uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
-            uiControl.MouseDown += (_, e) => { uiControl.Focus(); OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down); };
-            uiControl.MouseUp += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Up);
-            uiControl.MouseWheel += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), MouseButton.Middle, InputEventType.Wheel, e.Delta);
-            uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCaptureWinForms();
-            uiControl.SizeChanged += UiControlOnSizeChanged;
+            UiControl.GotFocus += (_, e) => OnUiControlGotFocus();
+            UiControl.LostFocus += (_, e) => OnUiControlLostFocus();
+            UiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
+            UiControl.MouseDown += (_, e) => { UiControl.Focus(); OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down); };
+            UiControl.MouseUp += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Up);
+            UiControl.MouseWheel += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), MouseButton.Middle, InputEventType.Wheel, e.Delta);
+            UiControl.MouseCaptureChanged += (_, e) => OnLostMouseCaptureWinForms();
+            UiControl.SizeChanged += UiControlOnSizeChanged;
 
-            ControlWidth = uiControl.ClientSize.Width;
-            ControlHeight = uiControl.ClientSize.Height;
+            ControlWidth = UiControl.ClientSize.Width;
+            ControlHeight = UiControl.ClientSize.Height;
         }
 
         private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
@@ -178,14 +178,14 @@ namespace SiliconStudio.Xenko.Input
 
         private void UiControlOnSizeChanged(object sender, EventArgs eventArgs)
         {
-            ControlWidth = uiControl.ClientSize.Width;
-            ControlHeight = uiControl.ClientSize.Height;
+            ControlWidth = UiControl.ClientSize.Width;
+            ControlHeight = UiControl.ClientSize.Height;
         }
 
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !uiControl.ClientRectangle.Contains(uiControl.PointToClient(Control.MousePosition)))
+            if (type == InputEventType.Wheel && !UiControl.ClientRectangle.Contains(UiControl.PointToClient(Control.MousePosition)))
                 return;
 
             // the mouse events series has been interrupted because out of the window.
@@ -240,7 +240,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 var buttonId = (int)button;
                 if (MouseButtonCurrentlyDown[buttonId])
-                    uiControl.Capture = true;
+                    UiControl.Capture = true;
             }
         }
 

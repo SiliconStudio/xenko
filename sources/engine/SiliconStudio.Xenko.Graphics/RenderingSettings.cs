@@ -13,24 +13,24 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The default value for the orientation.
         /// </summary>
-        Default = 0,
+        Default = DisplayOrientation.Default,
 
         /// <summary>
         /// Displays in landscape mode to the left.
         /// </summary>
         [Display("Landscape Left")]
-        LandscapeLeft = 1,
+        LandscapeLeft = DisplayOrientation.LandscapeLeft,
 
         /// <summary>
         /// Displays in landscape mode to the right.
         /// </summary>
         [Display("Landscape Right")]
-        LandscapeRight = 2,
+        LandscapeRight = DisplayOrientation.LandscapeRight,
 
         /// <summary>
         /// Displays in portrait mode.
         /// </summary>
-        Portrait = 4
+        Portrait = DisplayOrientation.Portrait
     }
 
     public enum PreferredGraphicsPlatform
@@ -84,6 +84,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// </userdoc>
         [DataMember(10)]
         public int DefaultBackBufferHeight = 720;
+
+        /// <summary>
+        /// Gets or sets a value that if true will make sure that the aspect ratio of screen is kept.
+        /// </summary>
+        /// <userdoc>
+        /// If true, adapt the ratio of the back buffer so that it fits the screen ratio.
+        /// </userdoc>
+        [DataMember(15)]
+        public bool AdaptBackBufferToScreen = false;
 
         /// <summary>
         /// Gets or sets the default graphics profile.

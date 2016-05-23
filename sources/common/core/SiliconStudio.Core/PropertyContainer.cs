@@ -182,7 +182,7 @@ namespace SiliconStudio.Core
             return properties != null && properties.ContainsKey(key);
         }
 
-        public void Add(PropertyKey key, object value)
+        void IDictionary<PropertyKey, object>.Add(PropertyKey key, object value)
         {
             SetObject(key, value, true);
         }
@@ -630,7 +630,7 @@ namespace SiliconStudio.Core
 
         void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
         {
-            Add(item.Key, item.Value);
+            ((IDictionary<PropertyKey, object>)this).Add(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Contains(KeyValuePair<PropertyKey, object> item)

@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RemoveItemCommand : NodeCommandBase
+    public class RemoveItemCommand : SyncNodeCommandBase
     {
         public const string CommandName = "RemoveItem";
 
@@ -39,7 +40,7 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null;
         }
 
-        public override void Execute(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
             var item = content.Retrieve(index);
             content.Remove(item, index);

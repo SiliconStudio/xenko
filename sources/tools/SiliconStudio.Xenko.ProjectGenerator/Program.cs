@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             templateGeneratorParameters.Logger = result;
             templateGeneratorParameters.Description = new TemplateDescription();
 
-            if (!PackageUnitTestGenerator.Default.PrepareForRun(templateGeneratorParameters))
+            if (!PackageUnitTestGenerator.Default.PrepareForRun(templateGeneratorParameters).Result)
             {
                 Console.WriteLine(@"Error generating package: PackageUnitTestGenerator.PrepareForRun returned false");
                 return;

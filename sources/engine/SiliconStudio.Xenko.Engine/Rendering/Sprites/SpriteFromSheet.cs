@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// </summary>
         /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
         [DataMember]
-        [DataMemberRange(0, int.MaxValue)]
         [DefaultValue(0)]
         [Display("Default Frame")]
         public int CurrentFrame { get; set; }
@@ -62,7 +61,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// <inheritdoc/>
         public Sprite GetSprite()
         {
-            return SpritesCount != 0 ? Sheet.Sprites[CurrentFrame % SpritesCount] : null;
+            var count = SpritesCount;
+            return count > 0 ? Sheet.Sprites[(CurrentFrame % count + count) % count] : null; // in case of a negative index, it will cycle around
         }
     }
 }

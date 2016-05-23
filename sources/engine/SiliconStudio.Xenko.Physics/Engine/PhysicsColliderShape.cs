@@ -35,6 +35,11 @@ namespace SiliconStudio.Xenko.Physics
         
         internal static ColliderShape Compose(IReadOnlyList<IAssetColliderShapeDesc> descs)
         {
+            if (descs == null)
+            {
+                return null;
+            }
+
             ColliderShape res = null;
 
             if (descs.Count == 1) //single shape case

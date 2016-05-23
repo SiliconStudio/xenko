@@ -6,6 +6,7 @@ set STARTTIME=%TIME%
 set __SkipTestBuild=true
 set __BuildType=Debug
 set __BuildVerbosity=m
+set __ContinueOnError=false
 
 :Arg_Loop
 rem This does not check for duplicate arguments, the last one will take precedence
@@ -14,22 +15,26 @@ if /i "%1" == "/?" goto Usage
 if /i "%1" == "debug" (set __BuildType=Debug && shift && goto Arg_loop)
 if /i "%1" == "release" (set __BuildType=Release && shift && goto Arg_loop)
 if /i "%1" == "tests" (set __SkipTestBuild=false && shift && goto Arg_loop)
+if /i "%1" == "continueonerror" (set __ContinueOnError=true && shift && goto Arg_loop)
 if /i "%1" == "verbosity:q" (set __BuildVerbosity=q && shift && goto Arg_loop)
 if /i "%1" == "verbosity:m" (set __BuildVerbosity=m && shift && goto Arg_loop)
 if /i "%1" == "verbosity:n" (set __BuildVerbosity=n && shift && goto Arg_loop)
 if /i "%1" == "verbosity:d" (set __BuildVerbosity=d && shift && goto Arg_loop)
+rem No space after %2 as it would add a space at the end of __SelectedProject
+if /i "%1" == "project" (if "%2" == "" (goto Usage) else (set __SelectedProject=%2&& shift && shift && goto Arg_loop))
 echo.
 echo Invalid command line argument: %1
 echo.
 goto Usage
 
 :Usage
-echo compile.bat [/? ^| debug ^| release ^| tests ^| verbosity:[q^|m^|n^|d]
+echo compile.bat [/? ^| debug ^| release ^| tests ^| verbosity:[q^|m^|n^|d] ^| project Project.sln
 echo.
 echo   debug   : Build debug version
 echo   release : Build release version
 echo   tests   : Build tests
 echo verbosity : Verbosity level [q]uiet, [m]inimal, [n]ormal or [d]iagnostic. Default is [m]inimal
+echo   project : Chosen project
 echo.
 
 goto exit
@@ -46,60 +51,60 @@ set __OldSkipTestBuild=%__SkipTestBuild%
 set __SkipTestBuild=false
 call :compile
 set __SkipTestBuild=%__OldSkipTestBuild%
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Direct3D.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Direct3D.SDL.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Direct3D.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.OpenGL.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.OpenGL.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Android.sln
 set _platform_target=Android
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.iOS.sln
 set _platform_target=iPhone
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.WindowsPhone.sln
 set _platform_target=WindowsPhone
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.WindowsStore.sln
 set _platform_target=WindowsStore
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Windows10.sln
 set _platform_target=Windows10
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
 
 goto exit
 
@@ -109,12 +114,19 @@ rem "_platform_target" is the platform being targeted
 :compile
 set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="%_platform_target%" /p:SiliconStudioPackageBuild=%__SkipTestBuild% %Project%
 
+rem Skip Compilation if __SelectedProject was set and does not match what was requested
+if "%__SelectedProject%" NEQ "" (
+    if "%__SelectedProject%" NEQ "%Project%" (
+        goto :eof
+    )
+)
+
 echo Compiling using command line %XXMSBUILD% %_option%
 echo.
 
 rem Launch the build and checkling for an error
 %XXMSBUILD%  %_option%
-if %ERRORLEVEL% != 0 (
+if %ERRORLEVEL% NEQ 0 (
     echo Error while compiling project: %Project%
     echo Command line was: %XXMSBUILD% %_option%
     exit /b 1

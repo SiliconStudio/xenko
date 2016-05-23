@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// A reference to the input system that can be used to check the status of the other keys.
         /// </summary>
-        public InputManagerBase Input { get; internal set; }
+        public InputManager Input { get; internal set; }
     }
 }
