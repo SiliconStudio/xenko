@@ -130,7 +130,6 @@
     <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetFactory.cs" />
     <Compile Include="IAssetUpgrader.cs" />
-    <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />

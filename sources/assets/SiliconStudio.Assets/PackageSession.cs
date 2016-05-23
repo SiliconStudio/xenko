@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// A session for editing a package.
     /// </summary>
-    public sealed class PackageSession : IDisposable, IDirtyable
+    public sealed class PackageSession : IDisposable
     {
         private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
