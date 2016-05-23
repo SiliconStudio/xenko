@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// </summary>
     [DataContract(nameof(ImageButton))]
     [DebuggerDisplay("ImageButton - Name={Name}")]
+    [Obsolete]
     public class ImageButton : Button
     {
         private readonly ImageElement contentImageElement = new ImageElement();
