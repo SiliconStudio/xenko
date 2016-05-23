@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             InterpretKey(args.Key, args.Input);
         }
 
-        private void InterpretKey(Keys key, InputManagerBase input)
+        private void InterpretKey(Keys key, InputManager input)
         {
             // delete and back space have same behavior when there is a selection 
             if (SelectionLength > 0 && (key == Keys.Delete || key == Keys.Back))

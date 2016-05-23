@@ -44,10 +44,10 @@ namespace SiliconStudio.Xenko.Input
         public override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
             var viewListener = new ViewListener(this);
-            uiControl = gameContext.Control;
-            uiControl.SetOnTouchListener(viewListener);
-            uiControl.SetOnKeyListener(viewListener);
-            uiControl.Resize += GameViewOnResize;
+            UiControl = gameContext.Control;
+            UiControl.SetOnTouchListener(viewListener);
+            UiControl.SetOnKeyListener(viewListener);
+            UiControl.Resize += GameViewOnResize;
 
             GameViewOnResize(null, EventArgs.Empty);
 
@@ -246,8 +246,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void GameViewOnResize(object sender, EventArgs eventArgs)
         {
-            ControlWidth = uiControl.Size.Width;
-            ControlHeight = uiControl.Size.Height;
+            ControlWidth = UiControl.Size.Width;
+            ControlHeight = UiControl.Size.Height;
         }
 
         private bool OnTouch(MotionEvent e)

@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Input
             /// </summary>
             public static readonly Mouse PositionY = new Mouse("Mouse.PositionY", VirtualButtonType.Mouse, 6, true);
 
-            public override float GetValue(InputManagerBase manager)
+            public override float GetValue(InputManager manager)
             {
                 int index = (Id & TypeIdMask);
                 if (index < 5)

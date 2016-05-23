@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.UI
 
         internal ResourceDictionary DefaultResourceDictionary { get; private set; }
 
-        private InputManagerBase input;
+        private InputManager input;
 
         public UISystem(IServiceRegistry registry)
             : base(registry)

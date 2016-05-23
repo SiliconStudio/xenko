@@ -12,25 +12,33 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Materials;
-using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Importer.Common;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(SkeletonAsset), typeof(AnimationAsset) };
-
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
+        public override IEnumerable<Type> RootAssetTypes
         {
-            return new AssetImporterParameters(supportedTypes);
+            get
+            {
+                yield return typeof(ModelAsset);
+                yield return typeof(AnimationAsset);
+                yield return typeof(SkeletonAsset);
+            }
         }
 
+        public override IEnumerable<Type> AdditionalAssetTypes
+        {
+            get
+            {
+                yield return typeof(MaterialAsset);
+                yield return typeof(TextureAsset);
+            }
+        }
         /// <summary>
         /// Get the entity information.
         /// </summary>
@@ -55,11 +63,9 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>();
 
-            var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>() ||
-                                      isImportingModel;
+            var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>();
 
-            var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>() ||
-                                     isImportingMaterial;
+            var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>();
 
             // 1. Textures
             if (isImportingTexture)
@@ -89,16 +95,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             // 5. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
-
-                // 5. Entity (currently disabled)
-                //if (isImportingEntity)
-                //{
-                //    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
-                //
-                //    // Apply EntityAnalysis 
-                //    EntityAnalysis.UpdateEntityReferences(((PrefabAsset)entityAssetItem.Asset).Hierarchy);
-                //}
+                ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
             }
 
             return rawAssetReferences;
@@ -171,16 +168,19 @@ namespace SiliconStudio.Xenko.Assets.Model
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
                 foreach (var material in entityInfo.Materials)
                 {
+                    var modelMaterial = new ModelMaterial
+                    {
+                        Name = material.Key,
+                        MaterialInstance = new MaterialInstance()
+                    };
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
                     {
-                        var modelMaterial = new ModelMaterial
-                        {
-                            Name = material.Key,
-                            MaterialInstance = new MaterialInstance() { Material = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location) }
-                        };
-                        asset.Materials.Add(AttachId(modelMaterial));
+                        var reference = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location);
+                        modelMaterial.MaterialInstance.Material = reference;
                     }
+                    //todo Instead of null material add a default xenko material
+                    asset.Materials.Add(AttachId(modelMaterial));
                 }
                 //handle the case where during import we imported no materials at all
                 //todo Instead of null material add a default xenko material

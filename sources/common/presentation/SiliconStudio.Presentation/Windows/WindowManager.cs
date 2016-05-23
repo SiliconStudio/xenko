@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,8 +17,20 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public class WindowManager : IDisposable
     {
+        // TODO: this list should be completely external
+        private static readonly string[] DebugWindowTypeNames =
+        {
+            // WPF adorners introduced in Visual Studio 2015 Update 2
+            "Microsoft.XamlDiagnostics.WpfTap",
+            // WPF Inspector
+            "ChristianMoser.WpfInspector",
+            // Snoop
+            "Snoop.SnoopUI",
+        };
+
         private static readonly List<WindowInfo> ModalWindowsList = new List<WindowInfo>();
         private static readonly HashSet<WindowInfo> AllWindowsList = new HashSet<WindowInfo>();
+
         // This must remains a field to prevent garbage collection!
         private static NativeHelper.WinEventDelegate winEventProc;
         private static IntPtr hook;
@@ -98,7 +109,7 @@ namespace SiliconStudio.Presentation.Windows
                 Logger.Error(message);
                 throw new InvalidOperationException(message);
             }
-            Logger.Info("Main window showing.");
+            Logger.Info($"Main window showing. ({window})");
 
             MainWindow = new WindowInfo(window);
             AllWindowsList.Add(MainWindow);
@@ -107,7 +118,7 @@ namespace SiliconStudio.Presentation.Windows
             window.Show();
         }
 
-        public static Task ShowModal(Window window, WindowOwner windowOwner = WindowOwner.LastModal)
+        public static Task ShowModal(Window window, WindowOwner windowOwner = WindowOwner.LastModal, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -119,7 +130,9 @@ namespace SiliconStudio.Presentation.Windows
             var owner = FindNextOwner(windowOwner);
 
             window.Owner = owner?.Window;
-            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            SetStartupLocation(window, owner, position);
+
+            // Set the owner now so the window can be recognized as modal when shown
             if (owner != null)
             {
                 owner.IsDisabled = true;
@@ -139,11 +152,16 @@ namespace SiliconStudio.Presentation.Windows
                     throw new ArgumentOutOfRangeException(nameof(windowOwner), windowOwner, null);
             }
 
+            // Update the hwnd on load in case the window is closed before being shown
+            // We will receive EVENT_OBJECT_HIDE but not EVENT_OBJECT_SHOW in this case.
+            window.Loaded += (sender, e) => windowInfo.ForceUpdateHwnd();
+
+            Logger.Info($"Modal window showing. ({window})");
             window.Show();
             return windowInfo.WindowClosed.Task;
         }
 
-        public static void ShowNonModal(Window window, WindowOwner windowOwner = WindowOwner.MainWindow)
+        public static void ShowNonModal(Window window, WindowOwner windowOwner = WindowOwner.MainWindow, WindowInitialPosition position = WindowInitialPosition.CenterOwner)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             CheckDispatcher();
@@ -151,13 +169,49 @@ namespace SiliconStudio.Presentation.Windows
             var owner = FindNextOwner(windowOwner);
 
             window.Owner = owner?.Window;
-            window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            SetStartupLocation(window, owner, position);
 
             var windowInfo = new WindowInfo(window);
             AllWindowsList.Add(windowInfo);
 
-            Logger.Info("Non-modal window showing.");
+            Logger.Info($"Non-modal window showing. ({window})");
             window.Show();
+        }
+
+        private static void SetStartupLocation(Window window, WindowInfo owner, WindowInitialPosition position)
+        {
+            switch (position)
+            {
+                case WindowInitialPosition.CenterOwner:
+                    window.WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+                    break;
+                case WindowInitialPosition.CenterScreen:
+                    window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    break;
+                case WindowInitialPosition.MouseCursor:
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Loaded += PositionWindowToMouseCursor;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(position), position, null);
+            }
+        }
+
+        private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
+        {
+            var window = (Window)sender;
+            NativeHelper.POINT mousePosition;
+            NativeHelper.GetCursorPos(out mousePosition);
+            var monitor = WindowHelper.GetMonitorInfo(WindowInfo.ToHwnd(window));
+            if (monitor != null)
+            {
+                bool expandRight = monitor.rcWork.Right > mousePosition.X + window.ActualWidth;
+                bool expandBottom = monitor.rcWork.Bottom > mousePosition.Y + window.ActualHeight;
+                window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
+                window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
+            }
+
+            window.Loaded -= PositionWindowToMouseCursor;
         }
 
         private static WindowInfo FindNextOwner(WindowOwner owner)
@@ -173,6 +227,7 @@ namespace SiliconStudio.Presentation.Windows
                     throw new ArgumentOutOfRangeException(nameof(owner), owner, null);
             }
         }
+
         private static void CheckDispatcher()
         {
             if (dispatcher.Thread != Thread.CurrentThread)
@@ -219,13 +274,15 @@ namespace SiliconStudio.Presentation.Windows
             {
                 windowInfo = new WindowInfo(hwnd);
 
-                // Since Visual Studio 2015 Update 2, a adorner window can be injected by the debugger that will be considered modal. We have to discard it.
                 if (Debugger.IsAttached)
                 {
-                    if (windowInfo.Window?.GetType().FullName.StartsWith("Microsoft.XamlDiagnostics.WpfTap") ?? false)
+                    foreach (var debugWindowTypeName in DebugWindowTypeNames)
                     {
-                        Logger.Debug($"Discarding Visual Studio WpfTap diagnostics window ({hwnd})");
-                        return;
+                        if (windowInfo.Window?.GetType().FullName.StartsWith(debugWindowTypeName) ?? false)
+                        {
+                            Logger.Debug($"Discarding debug/diagnostics window '{windowInfo.Window.GetType().FullName}' ({hwnd})");
+                            return;
+                        }
                     }
                 }
 
@@ -252,7 +309,7 @@ namespace SiliconStudio.Presentation.Windows
                             lastModal.IsDisabled = true;
                         }
                         ModalWindowsList.Add(windowInfo);
-                        Logger.Info("Modal window shown. (standalone)");
+                        Logger.Info($"Modal window shown. (standalone) ({hwnd})");
                     }
                     else
                     {
@@ -263,14 +320,17 @@ namespace SiliconStudio.Presentation.Windows
                         {
                             childModal.Owner = windowInfo;
                             windowInfo.IsDisabled = true;
+                            // We're placing another window on top of us, let's activate it so it comes to the foreground!
+                            if (childModal.Hwnd != IntPtr.Zero)
+                                NativeHelper.SetActiveWindow(childModal.Hwnd);
                         }
                         if (parentModal != null)
                         {
                             parentModal.IsDisabled = true;
                         }
-                        Logger.Info("Modal window shown. (with WindowManager)");
+                        Logger.Info($"Modal window shown. (with WindowManager) ({hwnd})");
                     }
-                    ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(MainWindow));
+                    ModalWindowOpened?.Invoke(null, new WindowManagerEventArgs(windowInfo));
                 }
             }
         }
@@ -293,7 +353,7 @@ namespace SiliconStudio.Presentation.Windows
 
             if (MainWindow != null && MainWindow.Equals(windowInfo))
             {
-                Logger.Info("Main window closed.");
+                Logger.Info($"Main window closed. ({hwnd})");
                 MainWindow = null;
                 MainWindowChanged?.Invoke(null, new WindowManagerEventArgs(MainWindow));
             }
@@ -321,7 +381,7 @@ namespace SiliconStudio.Presentation.Windows
                     if (nextWindow != null && nextWindow.Hwnd != IntPtr.Zero)
                         NativeHelper.SetActiveWindow(nextWindow.Hwnd);
 
-                    Logger.Info("Modal window closed.");
+                    Logger.Info($"Modal window closed. ({hwnd})");
                 }
             }
         }
