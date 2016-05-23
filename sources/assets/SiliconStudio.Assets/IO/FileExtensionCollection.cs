@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SiliconStudio.Assets.IO
 {
@@ -58,6 +59,18 @@ namespace SiliconStudio.Assets.IO
         /// </summary>
         public string ConcatenatedExtensions { get; }
 
+        /// <summary>
+        /// Indicates whether the given extension matches any of the extension in this collection.
+        /// </summary>
+        /// <param name="extension">The extension to match. Can contain wildcards.</param>
+        /// <returns>True if the given extension matches, false otherwise.</returns>
+        public bool Contains(string extension)
+        {
+            var normalized = NormalizeExtension(extension);
+            var pattern = new Regex(normalized.Replace(".", "[.]").Replace("*", ".*"));
+            return SingleExtensions.Any(x => pattern.IsMatch(x) || new Regex(x.Replace(".", "[.]").Replace("*", ".*")).IsMatch(normalized));
+        }
+
         private static List<string> SplitExtensions(string extensions)
         {
             return extensions.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(NormalizeExtension).ToList();
@@ -71,13 +84,13 @@ namespace SiliconStudio.Assets.IO
             if (extension.Contains(";") || extension.Contains(","))
                 throw new ArgumentException("Expecting a single extension");
 
-            if (extension.Any(x => Path.GetInvalidFileNameChars().Contains(x)))
-                throw new ArgumentException("Extension contains invalid characters");
-
             if (extension.StartsWith("*."))
             {
                 extension = extension.Substring(1);
             }
+            if (extension.Any(x => x != '*' & Path.GetInvalidFileNameChars().Contains(x)))
+                throw new ArgumentException("Extension contains invalid characters");
+
             if (!extension.StartsWith("."))
             {
                 extension = $".{extension}";

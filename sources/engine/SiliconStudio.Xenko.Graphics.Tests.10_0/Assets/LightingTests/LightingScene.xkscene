@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 1.6.0-beta03}
+SerializedVersion: {Xenko: 1.7.0-beta02}
 Tags: []
 Hierarchy:
     ~Id: 293e4498-0657-40a4-93c1-3c7e7acdb544
@@ -21,6 +21,8 @@ Hierarchy:
         - 36819535-1828-4623-b229-22987ad0d5a0
         - eab78ae2-ab62-439c-811b-bc51957bf109
         - 8967ed06-9b29-45d0-a52b-a3020bb70355
+        - c719333c-2c49-4db4-ae4b-7b1dddaeb6eb
+        - f72ac81c-ef07-4575-9a6d-6e16c676225c
     Entities:
         -   Entity:
                 Id: 121144a7-d914-42cf-851e-3aac370c336f
@@ -325,6 +327,26 @@ Hierarchy:
                         Intensity: 2.0
             Design: {}
         -   Entity:
+                Id: c719333c-2c49-4db4-ae4b-7b1dddaeb6eb
+                Name: Skybox
+                Components:
+                    - !TransformComponent
+                        ~Id: 3b7d5216-1501-49c9-a7b4-19b7a9778d21
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
+                        Enabled: false
+                        Type: !LightSkybox
+                            ~Id: 893707e6-b073-4abe-806e-f77af7933191
+                    - !SkyboxComponent
+                        ~Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
+                        Enabled: false
+                        Skybox: d3c9ed63-1678-40c2-98d9-b7963b773751/bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+            Design: {}
+        -   Entity:
                 Id: d6126c1f-087c-4cbe-892c-f28f634ee998
                 Name: SpotLightShadow
                 Components:
@@ -379,6 +401,26 @@ Hierarchy:
                                     ~Id: 734fc906-e789-48ff-913b-4ec3d3d3fbd3
                                 BiasParameters:
                                     ~Id: c3fb2b98-c43d-474e-afa0-a10c2823396b
+            Design: {}
+        -   Entity:
+                Id: f72ac81c-ef07-4575-9a6d-6e16c676225c
+                Name: SkyboxRotated
+                Components:
+                    - !TransformComponent
+                        ~Id: 3b7d5216-1501-49c9-a7b4-19b7a9778d21
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: -4.371139E-08, X: 1.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
+                        Enabled: false
+                        Type: !LightSkybox
+                            ~Id: 893707e6-b073-4abe-806e-f77af7933191
+                    - !SkyboxComponent
+                        ~Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
+                        Enabled: false
+                        Skybox: d3c9ed63-1678-40c2-98d9-b7963b773751/bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
             Design: {}
 SceneSettings:
     ~Id: 62ecd57f-a6ab-4a48-b39b-7c5e038e141a

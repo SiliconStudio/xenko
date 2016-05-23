@@ -161,13 +161,6 @@ namespace SiliconStudio.Xenko.Graphics
             base.DestroyImpl();
         }
 
-        /// <inheritdoc/>
-        protected internal override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
         private void OnRecreateImpl()
         {
             // Dependency: wait for underlying texture to be recreated

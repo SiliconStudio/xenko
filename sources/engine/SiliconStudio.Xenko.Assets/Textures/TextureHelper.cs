@@ -256,6 +256,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                         case PlatformType.WindowsPhone:
                         case PlatformType.WindowsStore:
                         case PlatformType.Windows10:
+                        case PlatformType.Linux:
                             switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:
@@ -354,11 +355,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                                     break;
                             }
                             break;
-                        case PlatformType.Linux:
-                                // OpenGL on Linux
-                                // TODO: Need to handle OpenGL Desktop compression
-                                outputFormat = parameters.IsSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
-                                break;
+
                         default:
                             throw new NotSupportedException("Platform " + parameters.Platform + " is not supported by TextureTool");
                     }

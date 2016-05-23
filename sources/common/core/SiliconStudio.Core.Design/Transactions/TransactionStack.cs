@@ -131,6 +131,9 @@ namespace SiliconStudio.Core.Transactions
                 if (transaction != transactionsInProgress.Pop())
                     throw new TransactionException("The transaction being completed is not that last created transaction.");
 
+                // Check if we're completing the last transaction
+                TransactionInProgress = transactionsInProgress.Count > 0;
+
                 // Ignore the transaction if it is empty
                 if (transaction.IsEmpty)
                     return;
@@ -140,15 +143,12 @@ namespace SiliconStudio.Core.Transactions
                     return;
 
                 // If we're not the last transaction, consider this transaction as an operation of its parent transaction
-                if (transactionsInProgress.Count > 0)
+                if (TransactionInProgress)
                 {
                     // Avoid useless nested transaction if we have a single operation inside.
                     PushOperation(transaction.Operations.Count == 1 ? transaction.Operations.Single() : transaction);
                     return;
                 }
-
-                // We're completing the last transaction
-                TransactionInProgress = false;
 
                 // Remove transactions that will be overwritten by this one
                 if (currentPosition < transactions.Count)

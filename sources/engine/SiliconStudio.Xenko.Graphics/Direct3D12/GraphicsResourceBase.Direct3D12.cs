@@ -58,6 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         protected internal virtual void OnDestroyed()
         {
+            DestroyImpl();
         }
 
         /// <summary>

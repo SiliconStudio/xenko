@@ -28,8 +28,11 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/ProjectExecutable.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/ProjectLibrary.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core/UpdatePlatforms.xktpl
-    - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts
-      Group: Scripts
+    - Path: sources/data/XenkoPackage/Templates/Core
+      Group: Core
+      Exclude: "**/*.psd;**/*.md"
+    - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/
+      Group: Assets
       Files:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Animations/DefaultAdditiveAnimation.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Animations/DefaultAnimation.xktpl
@@ -40,7 +43,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultRawAsset.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultRenderFrame.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultSkybox.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/DefaultProceduralModel.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/DefaultModel.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCapsule.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCone.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCube.xktpl
@@ -50,7 +53,6 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralSphere.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralTeapot.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralTorus.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/DefaultColliderShape.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeBox.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeCapsule.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeConvexHull.xktpl
@@ -73,11 +75,11 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/StaticSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultTexture.xktpl
-        - sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/DefaultSpriteStudioAnimation.xktpl
-        - sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/DefaultSpriteStudioModel.xktpl
-    - Path: sources/data/images/NewGame
-      Group: Core
-      Exclude: "**/*.psd;**/*.md"
+    - Path: sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets
+      Group: Assets
+      Files:
+        - sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets/SpriteStudio/DefaultSpriteStudioAnimation.xktpl
+        - sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets/SpriteStudio/DefaultSpriteStudioModel.xktpl
     - Path: samples
       Group: Samples
       Exclude: "**/Testing/**;**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"

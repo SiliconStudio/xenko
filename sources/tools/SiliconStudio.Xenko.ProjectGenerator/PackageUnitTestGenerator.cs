@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core.IO;
@@ -23,12 +24,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             return templateDescription.Id == TemplateId;
         }
 
-        public override bool PrepareForRun(SessionTemplateGeneratorParameters parameters)
+        public override Task<bool> PrepareForRun(SessionTemplateGeneratorParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
 
-            return true;
+            return Task.FromResult(true);
         }
 
         public sealed override bool Run(SessionTemplateGeneratorParameters parameters)

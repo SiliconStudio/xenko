@@ -65,6 +65,18 @@ namespace SiliconStudio.Assets.Templates
 
     public class AssetTemplateGeneratorParameters : PackageTemplateGeneratorParameters
     {
+        public AssetTemplateGeneratorParameters(UDirectory targetLocation, IEnumerable<UFile> sourceFiles = null)
+        {
+            TargetLocation = targetLocation;
+            SourceFiles = new List<UFile>();
+            if (sourceFiles != null)
+                SourceFiles.AddRange(sourceFiles);
+        }
+
+        public UDirectory TargetLocation { get; }
+
+        public List<UFile> SourceFiles { get; }
+
         protected override void ValidateParameters()
         {
             base.ValidateParameters();
@@ -95,7 +107,6 @@ namespace SiliconStudio.Assets.Templates
             Namespace = parameters.Namespace;
             OutputDirectory = parameters.OutputDirectory;
             Description = parameters.Description;
-            WindowHandle = parameters.WindowHandle;
             Logger = parameters.Logger;
             parameters.Tags.CopyTo(ref Tags);
         }
@@ -122,12 +133,6 @@ namespace SiliconStudio.Assets.Templates
         /// The actual template description.
         /// </summary>
         public TemplateDescription Description { get; set; }
-
-        /// <summary>
-        /// Gets or sets the window handle.
-        /// </summary>
-        /// <value>The window handle.</value>
-        public IntPtr WindowHandle { get; set; }
 
         /// <summary>
         /// Gets or sets the logger.

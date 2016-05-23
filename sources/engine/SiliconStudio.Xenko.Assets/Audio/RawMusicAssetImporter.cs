@@ -13,36 +13,14 @@ namespace SiliconStudio.Xenko.Assets.Audio
         // Supported file extensions for this importer
         public const string FileExtensions = ".mp3,.wav";
 
-        private static readonly Guid uid = new Guid("5adcb5b0-7011-4d28-9741-23ec7c3df617");
-        public override Guid Id
-        {
-            get
-            {
-                return uid;
-            }
-        }
+        private static readonly Guid Uid = new Guid("5adcb5b0-7011-4d28-9741-23ec7c3df617");
+        public override Guid Id => Uid;
 
-        public override string Description
-        {
-            get
-            {
-                return "Music importer for creating SoundMusic assets";
-            }
-        }
+        public override string Description => "Music importer for creating SoundMusic assets";
 
-        public override string SupportedFileExtensions
-        {
-            get
-            {
-                return FileExtensions;
-            }
-        }
+        public override string SupportedFileExtensions => FileExtensions;
 
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
-        {
-            return new AssetImporterParameters(supportedTypes);
-        }
-        private static readonly Type[] supportedTypes = { typeof(SoundMusicAsset) };
+        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(SoundMusicAsset); } }
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
         {

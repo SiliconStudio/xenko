@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// TCascadeCountBase: Number of cascades.
     /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
     /// </remarks>
-    internal class ShadowMapReceiverBase<int TCascadeCountBase, int TLightCountBase> : MaterialPixelShadingStream, ShadowMapGroup, ShadowMapFilterBase, PositionStream4
+    internal class ShadowMapReceiverBase<MemberName PerLighting, int TCascadeCountBase, int TLightCountBase> : MaterialPixelShadingStream, ShadowMapGroup<PerLighting>, ShadowMapFilterBase<PerLighting>, PositionStream4
     {
         cbuffer PerLighting // TODO: Use a proper cbuffer for this?
         {

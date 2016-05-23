@@ -122,7 +122,12 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //Scene.Entities.Add(ambientLight);
 
             var directionalLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = true } }, Intensity = 1 }, };
+            directionalLight.Transform.Rotation = Quaternion.RotationY(MathUtil.PiOverTwo * 0.2f);
             Scene.Entities.Add(directionalLight);
+
+            var pointLight1 = new Entity { new LightComponent() { Type = new LightPoint { Color = new ColorRgbProvider(Color.Red), Radius = 100.0f, Shadow = { Enabled = false } }, Intensity = 1.0f } };
+            pointLight1.Transform.Position.X = 5.0f;
+            Scene.Entities.Add(pointLight1);
 
             //var directionalLight2 = new Entity { new LightComponent { Type = new LightSpot { Range = 25, Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = false } }, Intensity = 20 }, };
             //directionalLight2.Transform.Position = Vector3.UnitX * 40;

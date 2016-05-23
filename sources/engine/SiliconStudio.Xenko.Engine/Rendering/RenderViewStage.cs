@@ -30,5 +30,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return new RenderViewStage(renderStage);
         }
+
+        public override string ToString()
+        {
+            return $"{RenderStage}: {RenderNodes.Count} node(s)";
+        }
     }
 }

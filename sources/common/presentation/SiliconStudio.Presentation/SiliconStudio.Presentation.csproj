@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
+    <Compile Include="Controls\PopupModalWindow.cs" />
     <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
     <Compile Include="Dirtiables\DirtiableSnapshot.cs" />
@@ -48,6 +49,7 @@
       <DependentUpon>KeyGestures.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\DummyTransaction.cs" />
+    <Compile Include="Services\IModalDialogInternal.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
     <Compile Include="Services\UndoRedoService.cs" />
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
@@ -165,6 +167,13 @@
     <Compile Include="ViewModel\CollectionChangeOperation.cs" />
     <Compile Include="ViewModel\PropertyChangeOperation.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
+    <Compile Include="Services\CheckedMessageBoxResult.cs" />
+    <Compile Include="Windows\DialogHelper.cs" />
+    <Compile Include="Windows\HwndHelper.cs" />
+    <Compile Include="Controls\ModalWindow.cs" />
+    <Compile Include="Windows\WindowInfo.cs" />
+    <Compile Include="Windows\WindowInitialPosition.cs" />
+    <Compile Include="Windows\WindowOwner.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
     <Compile Include="MarkupExtensions\IntExtension.cs" />
@@ -307,6 +316,8 @@
     <Compile Include="Windows\DialogButtonInfo.cs" />
     <Compile Include="Windows\MessageBox.cs" />
     <Compile Include="Windows\MessageDialogBase.cs" />
+    <Compile Include="Windows\WindowManager.cs" />
+    <Compile Include="View\WindowManagerEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\ExpressionDark\Theme.xaml">
