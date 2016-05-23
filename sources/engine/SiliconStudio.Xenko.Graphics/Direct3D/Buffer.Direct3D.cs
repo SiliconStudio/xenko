@@ -60,14 +60,14 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
+        protected override void DestroyImpl()
         {
             if (GraphicsDevice != null)
             {
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
             }
-            base.OnDestroyed();
-            DestroyImpl();
+
+            base.DestroyImpl();
         }
 
         /// <inheritdoc/>

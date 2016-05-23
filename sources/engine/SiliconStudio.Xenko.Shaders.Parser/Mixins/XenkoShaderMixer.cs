@@ -1323,7 +1323,41 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             MergeSameSemanticVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
             MergeReferenceVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
-            var usefulVars = mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(KeepVariableInCBuffer);
+
+            // Order variables by cbuffer/rgroup (which still include logical group)
+            var variables = mainModuleMixin.ClassReferences.VariablesReferences.OrderBy(x => ((ConstantBuffer)x.Key.GetTag(XenkoTags.ConstantBuffer))?.Name.Text).ToList();
+
+            // Recreate cbuffer with proper logical groups
+            var constantBuffers = new List<ConstantBuffer>();
+            foreach (var variable in variables)
+            {
+                var cbuffer = (ConstantBuffer)variable.Key.GetTag(XenkoTags.ConstantBuffer);
+                if (cbuffer == null)
+                    continue;
+
+                // Find logical group
+                var cbufferNameSplit = cbuffer.Name.Text.IndexOf('.');
+                if (cbufferNameSplit == -1)
+                    continue;
+
+                var cbufferName = cbuffer.Name.Text.Substring(0, cbufferNameSplit);
+                var cbufferLogicalGroupName = cbufferNameSplit != -1 ? cbuffer.Name.Text.Substring(cbufferNameSplit + 1) : null;
+
+                // Find or create a matching cbuffer
+                var realCBuffer = constantBuffers.FirstOrDefault(x => x.Name.Text == cbufferName && x.Type == cbuffer.Type);
+                if (realCBuffer == null)
+                {
+                    // First time, let's create it
+                    realCBuffer = new ConstantBuffer { Name = cbufferName, Type = cbuffer.Type };
+                    constantBuffers.Add(realCBuffer);
+                }
+
+                // Set cbuffer and logical groups
+                variable.Key.SetTag(XenkoTags.ConstantBuffer, realCBuffer);
+                variable.Key.SetTag(XenkoTags.LogicalGroup, cbufferLogicalGroupName);
+            }
+
+            var usefulVars = variables.Select(x => x.Key).Where(KeepVariableInCBuffer);
             var varList = usefulVars.Where(x => x.ContainsTag(XenkoTags.ConstantBuffer)).ToList();
             var groupedVarList = varList.GroupBy(x =>
             {
@@ -1349,7 +1383,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
 
             // add textures, samplers etc.
-            MixedShader.Members.AddRange(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(IsOutOfCBufferVariable));
+            MixedShader.Members.AddRange(variables.Select(x => x.Key).Where(IsOutOfCBufferVariable));
         }
 
 

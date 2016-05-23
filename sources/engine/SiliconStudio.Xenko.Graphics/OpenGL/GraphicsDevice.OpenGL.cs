@@ -98,8 +98,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
         internal GraphicsProfile requestedGraphicsProfile;
-        internal int versionMajor, versionMinor; // queried version
-        internal int currentVersionMajor, currentVersionMinor; // glGetVersion
+        internal int version; // queried version
+        internal int currentVersion; // glGetVersion
         internal Texture WindowProvidedRenderTexture;
 
         internal bool HasVAO;
@@ -107,6 +107,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasDXT;
 
         internal bool HasDepthClamp;
+
+        internal bool HasTextureBuffers;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal bool HasDepth24;
@@ -507,9 +509,9 @@ namespace SiliconStudio.Xenko.Graphics
                             lastRenderTargetIndex = i;
                             // TODO: enable color render buffers when Texture creates one for other types than depth/stencil.
                             //if (renderTargets[i].IsRenderbuffer)
-                            //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, RenderbufferTarget.Renderbuffer, renderTargets[i].ResourceId);
+                            //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, RenderbufferTarget.Renderbuffer, renderTargets[i].TextureId);
                             //else
-                                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTargetTexture2D, renderTargets[i].ResourceId, 0);
+                                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTargetTexture2D, renderTargets[i].TextureId, 0);
                         }
                     }
                 }
@@ -535,7 +537,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (depthStencilBuffer != null)
                 {
-                    bool useSharedAttachment = depthStencilBuffer.ResourceIdStencil == depthStencilBuffer.ResourceId;
+                    bool useSharedAttachment = depthStencilBuffer.StencilId == depthStencilBuffer.TextureId;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (IsOpenGLES2)  // FramebufferAttachment.DepthStencilAttachment is not supported in ES 2
                         useSharedAttachment = false;
@@ -545,27 +547,27 @@ namespace SiliconStudio.Xenko.Graphics
                     if (depthStencilBuffer.IsRenderbuffer)
                     {
                         // Bind depth-only or packed depth-stencil buffer
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
+                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.TextureId);
 
                         // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
                         if (depthStencilBuffer.HasStencil && !useSharedAttachment)
-                            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceIdStencil);
+                            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.StencilId);
                     }
                     else
                     {
                         // Bind depth-only or packed depth-stencil buffer
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTargetTexture2D, depthStencilBuffer.ResourceId, 0);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTargetTexture2D, depthStencilBuffer.TextureId, 0);
 
                         // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
                         if (depthStencilBuffer.HasStencil && !useSharedAttachment)
-                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTargetTexture2D, depthStencilBuffer.ResourceIdStencil, 0);
+                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTargetTexture2D, depthStencilBuffer.StencilId, 0);
                     }
                 }
 
                 var framebufferStatus = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
                 if (framebufferStatus != FramebufferErrorCode.FramebufferComplete)
                 {
-                    throw new InvalidOperationException(string.Format("FBO is incomplete: RT {0} Depth {1} (error: {2})", renderTargets != null && renderTargets.Length > 0 ? renderTargets[0].ResourceId : 0, depthStencilBuffer != null ? depthStencilBuffer.ResourceId : 0, framebufferStatus));
+                    throw new InvalidOperationException(string.Format("FBO is incomplete: RT {0} Depth {1} (error: {2})", renderTargets != null && renderTargets.Length > 0 ? renderTargets[0].TextureId : 0, depthStencilBuffer != null ? depthStencilBuffer.TextureId : 0, framebufferStatus));
                 }
 
                 existingFBOs.Add(new GraphicsDevice.FBOKey(depthStencilBuffer, renderTargets != null ? renderTargets.ToArray() : null), framebufferId);
@@ -675,8 +677,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // set default values
-            versionMajor = 1;
-            versionMinor = 0;
+            version = 100;
 
             requestedGraphicsProfile = GraphicsProfile.Level_9_1;
 
@@ -691,17 +692,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Find back OpenGL version from requested version
-            OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
+            OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out version);
 
             // check what is actually created
-            if (!OpenGLUtils.GetCurrentGLVersion(out currentVersionMajor, out currentVersionMinor))
+            if (!OpenGLUtils.GetCurrentGLVersion(out currentVersion))
             {
-                currentVersionMajor = versionMajor;
-                currentVersionMinor = versionMinor;
+                currentVersion = version;
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            IsOpenGLES2 = (currentVersionMajor < 3);
+            IsOpenGLES2 = version < 300;
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
@@ -752,7 +752,7 @@ namespace SiliconStudio.Xenko.Graphics
                     deviceCreationContext.Dispose();
                     deviceCreationWindowInfo.Dispose();
                 }
-                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, currentVersionMajor);
+                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, currentVersion / 100);
                 deviceCreationContext = OpenTK.Graphics.GraphicsContext.CreateDummyContext(androidAsyncDeviceCreationContext.Context);
                 deviceCreationWindowInfo = OpenTK.Platform.Utilities.CreateDummyWindowInfo();
             }
@@ -765,20 +765,20 @@ namespace SiliconStudio.Xenko.Graphics
 
             var asyncContext = new OpenGLES.EAGLContext(IsOpenGLES2 ? OpenGLES.EAGLRenderingAPI.OpenGLES2 : OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
             OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
-            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, versionMajor, versionMinor, creationFlags);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, version / 100, (version % 100) / 10, creationFlags);
             deviceCreationWindowInfo = windowInfo;
             gameWindow.MakeCurrent();
 #else
 #if SILICONSTUDIO_XENKO_UI_SDL
             // Because OpenTK really wants a Sdl2GraphicsContext and not a dummy one, we will create
             // a new one using the dummy one and invalidate the dummy one.
-            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, versionMajor, versionMinor, creationFlags);
+            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, version / 100, (version % 100) / 10, creationFlags);
             gameWindow.DummyGLContext.Dispose();
 #else
             graphicsContext = gameWindow.Context;
 #endif
             deviceCreationWindowInfo = windowInfo;
-            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, version / 100, (version % 100) / 10, creationFlags);
 
             OpenTK.Graphics.GraphicsContext.CurrentContext.MakeCurrent(null);
 #endif
@@ -903,7 +903,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     int renderTargetTextureId;
                     GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-                    WindowProvidedRenderTexture.resourceId = renderTargetTextureId;
+                    WindowProvidedRenderTexture.TextureId = renderTargetTextureId;
                 }
             }
 
