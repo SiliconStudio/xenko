@@ -515,6 +515,9 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             switch (requestedPlatform)
             {
+                case PlatformType.Windows:
+                        // Nothing to do here.
+                    break;
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
                 case PlatformType.Android:
