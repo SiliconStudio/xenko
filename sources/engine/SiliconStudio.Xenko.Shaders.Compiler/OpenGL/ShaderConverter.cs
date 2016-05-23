@@ -144,11 +144,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     //KeepNonUniformArrayInitializers = !isOpenGLES,
 
                     UseBindingLayout = false,
-                    UseLocationLayout = isVulkan,
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
-                    ViewFrustumRemap = !isVulkan,
-                    KeepSamplers = isVulkan,
                     CombinedSamplers = new List<string>(),//reflection.ResourceBindings.Join(reflection.SamplerStates, data => data.Param.KeyName, binding => binding.KeyName, (data, binding) => data.Param.RawName).ToList(),
                     InputAttributeNames = inputAttributeNames
                 };

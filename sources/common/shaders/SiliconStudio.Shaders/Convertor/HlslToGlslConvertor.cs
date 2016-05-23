@@ -111,6 +111,7 @@ namespace SiliconStudio.Shaders.Convertor
             : base(true, true)
         {
             bool isOpenGLES2 = shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300;
+            bool isVulkan = shaderPlatform == GlslShaderPlatform.Vulkan;
 
             this.shaderPlatform = shaderPlatform;
             this.shaderVersion = shaderVersion;
@@ -123,6 +124,9 @@ namespace SiliconStudio.Shaders.Convertor
             this.KeepConstantBuffer = !isOpenGLES2;
             this.TextureFunctionsCompatibilityProfile = isOpenGLES2;
             this.KeepNonUniformArrayInitializers = shaderPlatform != GlslShaderPlatform.OpenGLES;
+            this.ViewFrustumRemap = !isVulkan;
+            this.KeepSamplers = isVulkan;
+            this.UseLocationLayout = isVulkan;
 
             if (useBuiltinSemantic)
             {
