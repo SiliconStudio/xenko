@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -17,95 +19,105 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private float padding0;
     }
 
-    public class LightPointGroupRenderer : LightGroupRendererBase
+    /// <summary>
+    /// Light renderer for <see cref="LightPoint"/>.
+    /// </summary>
+    public class LightPointGroupRenderer : LightGroupRendererDynamic
     {
-        private const int StaticLightMaxCount = 8;
-
-        private static readonly ShaderClassSource DynamicDirectionalGroupShaderSource = new ShaderClassSource("LightPointGroup", StaticLightMaxCount);
-
-        public LightPointGroupRenderer()
-        {
-            LightMaxCount = StaticLightMaxCount;
-            CanHaveShadows = true;
-        }
-
         public override void Initialize(RenderContext context)
         {
-            var isLowProfile = context.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0;
-            LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
-            AllocateLightMaxCount = !isLowProfile;
         }
 
-        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        public override LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)
         {
-            var mixin = new ShaderMixinSource();
-            if (AllocateLightMaxCount)
-            {
-                mixin.Mixins.Add(DynamicDirectionalGroupShaderSource);
-            }
-            else
-            {
-                if (lightMaxCount == 0) lightMaxCount = 1; //todo verify this.. this is just an hot fix 
-                mixin.Mixins.Add(new ShaderClassSource("LightPointGroup", lightMaxCount));
-                mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", lightMaxCount));
-            }
-
-            if (shadowGroup != null)
-            {
-                shadowGroup.ApplyShader(mixin);
-            }
-
-            return new SpotLightShaderGroup(mixin, compositionName, shadowGroup);
+            return new PointLightShaderGroup(shadowGroup);
         }
 
-        class SpotLightShaderGroup : LightShaderGroupAndDataPool<SpotLightShaderGroupData>
+        class PointLightShaderGroup : LightShaderGroupDynamic
         {
-            internal readonly ValueParameterKey<int> CountKey;
-            internal readonly ValueParameterKey<PointLightData> LightsKey;
+            private ValueParameterKey<int> countKey;
+            private ValueParameterKey<PointLightData> lightsKey;
+            private FastListStruct<PointLightData> lightsData = new FastListStruct<PointLightData>(8);
 
-            public SpotLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
-                : base(mixin, compositionName, shadowGroupData)
-            {
-                CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
-                LightsKey = LightPointGroupKeys.Lights.ComposeWith(compositionName);
-            }
-
-            protected override SpotLightShaderGroupData CreateData()
-            {
-                return new SpotLightShaderGroupData(this, ShadowGroup);
-            }
-        }
-
-        class SpotLightShaderGroupData : LightShaderGroupData
-        {
-            private readonly ValueParameterKey<int> countKey;
-            private readonly ValueParameterKey<PointLightData> lightsKey;
-            private readonly PointLightData[] lights;
-
-            public SpotLightShaderGroupData(SpotLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
+            public PointLightShaderGroup(ILightShadowMapShaderGroupData shadowGroupData)
                 : base(shadowGroupData)
             {
-                countKey = group.CountKey;
-                lightsKey = group.LightsKey;
-
-                lights = new PointLightData[StaticLightMaxCount];
             }
 
-            protected override void AddLightInternal(LightComponent light)
+            public override void UpdateLayout(string compositionName)
             {
-                var pointLight = (LightPoint)light.Type;
-                lights[Count] = new PointLightData
+                base.UpdateLayout(compositionName);
+
+                countKey = DirectLightGroupPerDrawKeys.LightCount.ComposeWith(compositionName);
+                lightsKey = LightPointGroupKeys.Lights.ComposeWith(compositionName);
+            }
+
+            protected override void UpdateLightCount()
+            {
+                base.UpdateLightCount();
+
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("LightPointGroup", LightCurrentCount));
+                // Old fixed path kept in case we need it again later
+                //mixin.Mixins.Add(new ShaderClassSource("LightPointGroup", LightCurrentCount));
+                //mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", LightCurrentCount));
+                ShadowGroup?.ApplyShader(mixin);
+
+                ShaderSource = mixin;
+            }
+
+            /// <inheritdoc/>
+            protected override int ComputeLightCount(int lightCount)
+            {
+                // TODO: Some way to override this
+                return 8;
+            }
+
+            /// <inheritdoc/>
+            public override int AddView(int viewIndex, RenderView renderView, int lightCount)
+            {
+                base.AddView(viewIndex, renderView, lightCount);
+
+                // We allow more lights than LightCurrentCount (they will be culled)
+                return lightCount;
+            }
+
+            public override void ApplyDrawParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters, ref BoundingBoxExt boundingBox)
+            {
+                CurrentLights.Clear();
+                var lightRange = LightRanges[viewIndex];
+                for (int i = lightRange.Start; i < lightRange.End; ++i)
+                    CurrentLights.Add(Lights[i]);
+
+                base.ApplyDrawParameters(context, viewIndex, parameters, ref boundingBox);
+
+                // TODO: Since we cull per object, we could maintain a higher number of allowed light than the shader support (i.e. 4 lights active per object even though the scene has many more of them)
+                // TODO: Octree structure to select best lights quicker
+                var boundingBox2 = (BoundingBox)boundingBox;
+                foreach (var lightEntry in CurrentLights)
                 {
-                    PositionWS = light.Position,
-                    InvSquareRadius = pointLight.InvSquareRadius,
-                    Color = light.Color,
-                };
-            }
+                    var light = lightEntry.Light;
 
-            protected override void ApplyParametersInternal(RenderDrawContext context, ParameterCollection parameters)
-            {
-                parameters.Set(countKey, Count);
-                parameters.Set(lightsKey, Count, ref lights[0]);
+                    if (light.BoundingBox.Intersects(ref boundingBox2))
+                    {
+                        var pointLight = (LightPoint)light.Type;
+                        lightsData.Add(new PointLightData
+                        {
+                            PositionWS = light.Position,
+                            InvSquareRadius = pointLight.InvSquareRadius,
+                            Color = light.Color,
+                        });
+
+                        // Did we reach max number of simultaneous lights?
+                        // TODO: Still collect everything but sort by importance and remove the rest?
+                        if (lightsData.Count >= LightCurrentCount)
+                            break;
+                    }
+                }
+
+                parameters.Set(countKey, lightsData.Count);
+                parameters.Set(lightsKey, lightsData.Count, ref lightsData.Items[0]);
+                lightsData.Clear();
             }
         }
     }

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Defines shadow filtering method.
     /// </summary>
-    class ShadowMapFilterBase : ShadowMapCommon, Texturing
+    class ShadowMapFilterBase<MemberName PerLighting> : ShadowMapCommon<PerLighting>, Texturing
     {
         /// <summary>
         /// Calculate the shadow factor based the position and shadow map distance.

@@ -37,9 +37,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public bool DirectionalLightShadowOneCascadePCF { get; set; }
 
+        public bool Skybox { get; set; }
+
+        public bool SkyboxRotated { get; set; }
+
         public LightingTests()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 
@@ -75,6 +79,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             SceneSystem.SceneInstance.First(x => x.Name == nameof(DirectionalLightShadowOneCascade2)).Get<LightComponent>().Enabled = DirectionalLightShadowOneCascade2;
             SceneSystem.SceneInstance.First(x => x.Name == nameof(DirectionalLightShadowFourCascades)).Get<LightComponent>().Enabled = DirectionalLightShadowFourCascades;
             SceneSystem.SceneInstance.First(x => x.Name == nameof(DirectionalLightShadowOneCascadePCF)).Get<LightComponent>().Enabled = DirectionalLightShadowOneCascadePCF;
+            SceneSystem.SceneInstance.First(x => x.Name == nameof(Skybox)).Get<LightComponent>().Enabled = Skybox;
+            SceneSystem.SceneInstance.First(x => x.Name == nameof(SkyboxRotated)).Get<LightComponent>().Enabled = SkyboxRotated;
         }
 
         protected override void RegisterTests()
@@ -150,5 +156,24 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             RunGameTest(new LightingTests { DirectionalLightShadowFourCascades = true });
         }
+
+        [Test]
+        public void SceneSkybox()
+        {
+            RunGameTest(new LightingTests { Skybox = true });
+        }
+
+        [Test]
+        public void SceneSkyboxRotated()
+        {
+            RunGameTest(new LightingTests { SkyboxRotated = true });
+        }
+
+        [Test]
+        public void SceneSkyboxMultiple()
+        {
+            RunGameTest(new LightingTests { Skybox = true, SkyboxRotated = true });
+        }
+
     }
 }

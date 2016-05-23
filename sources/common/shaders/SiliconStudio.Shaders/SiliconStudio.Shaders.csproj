@@ -40,6 +40,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Convertor\BreakContinueVisitor.cs" />
+    <Compile Include="Convertor\GlslShaderPlatform.cs" />
     <Compile Include="Convertor\SamplerTextureKey.cs" />
     <Compile Include="Properties\Resources.cs">
       <AutoGen>True</AutoGen>
@@ -222,7 +223,7 @@
     <Compile Include="Visitor\SearchVisitor.cs" />
     <Compile Include="Visitor\ShaderVisitor.cs" />
     <Compile Include="Visitor\VisitorBase.cs" />
-    <Compile Include="Writer\Hlsl\HlslToGlslWriter.cs" />
+    <Compile Include="Convertor\HlslToGlslWriter.cs" />
     <Compile Include="Writer\Hlsl\HlslWriter.cs" />
     <Compile Include="Writer\ShaderWriter.cs" />
     <Compile Include="Analysis\CastAnalysis.cs" />
@@ -252,7 +253,7 @@
   <ItemGroup>
     <Content Include="Properties\Resources.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-	  <LastGenOutput>Resources.cs</LastGenOutput>
+      <LastGenOutput>Resources.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>

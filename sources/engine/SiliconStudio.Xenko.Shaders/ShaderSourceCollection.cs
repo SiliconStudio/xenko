@@ -16,7 +16,13 @@ namespace SiliconStudio.Xenko.Shaders
 
         public override int GetHashCode()
         {
-            return Utilities.GetHashCode(this);
+            unchecked
+            {
+                int hashCode = 0;
+                foreach (var current in this)
+                    hashCode = (hashCode*397) ^ (current?.GetHashCode() ?? 0);
+                return hashCode;
+            }
         }
 
         public override bool Equals(object obj)

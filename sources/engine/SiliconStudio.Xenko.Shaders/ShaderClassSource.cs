@@ -126,7 +126,14 @@ namespace SiliconStudio.Xenko.Shaders
         {
             unchecked
             {
-                return ((ClassName != null ? ClassName.GetHashCode() : 0) * 397) ^ Utilities.GetHashCode(GenericArguments);
+                int hashCode = ClassName?.GetHashCode() ?? 0;
+                if (GenericArguments != null)
+                {
+                    foreach (var current in GenericArguments)
+                        hashCode = (hashCode * 397) ^ (current?.GetHashCode() ?? 0);
+                }
+
+                return hashCode;
             }
         }
 

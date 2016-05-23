@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -19,9 +20,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         void ApplyShader(ShaderMixinSource mixin);
 
-        void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData);
+        void UpdateLayout(string compositionName);
+        void UpdateLightCount(int lightLastCount, int lightCurrentCount);
 
-        void ApplyParameters(RenderDrawContext context, ParameterCollection parameters);
+        void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights);
+
+        void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox);
     }
 
     [Flags]

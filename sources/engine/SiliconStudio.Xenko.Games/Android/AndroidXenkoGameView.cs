@@ -102,19 +102,18 @@ namespace SiliconStudio.Xenko.Games.Android
 
                 PlatformConfigurations.RendererName = GL.GetString(StringName.Renderer);
 
-                int versionMajor, versionMinor;
-                if (!OpenGLUtils.GetCurrentGLVersion(out versionMajor, out versionMinor))
+                int version;
+                if (!OpenGLUtils.GetCurrentGLVersion(out version))
                 {
-                    versionMajor = 2;
-                    versionMinor = 0;
+                    version = 200;
                 }
 
                 context.MakeCurrent(null);
                 window.DestroySurface();
 
-                if (versionMajor == 3)
+                if (version >= 300)
                 {
-                    return (versionMinor >= 1) ? GLVersion.ES31 : GLVersion.ES3;
+                    return (version >= 310) ? GLVersion.ES31 : GLVersion.ES3;
                 }
                 return GLVersion.ES2;
             }

@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Grammar
     [Language("hotei2", "5.0", "Xenko2 hlsl grammar")]
     public partial class XenkoGrammar : HlslGrammar
     {
+        protected readonly NonTerminal constant_buffer_name = T("constant_buffer_name", CreateConstantBufferNameAst);
         protected readonly NonTerminal semantic_type = T("semantic_type", CreateSemanticTypeAst);
         protected readonly NonTerminal link_type = T("link_type", CreateLinkTypeAst);
         protected readonly NonTerminal member_name = T("member_name", CreateStreamNameAst);
@@ -86,6 +87,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Grammar
 
             // Add inheritance qualifiers
             storage_qualifier.Rule |= Keyword("override") | Keyword("abstract") | Keyword("stream") | Keyword("patchstream") | Keyword("stage") | Keyword("clone") | Keyword("compose") | Keyword("internal");
+
+            // cbuffer can have . in their names (logical groups)
+            constant_buffer_name.Rule = MakePlusRule(constant_buffer_name, ToTerm("."), identifier_raw);
+            constant_buffer_resource.Rule = attribute_qualifier_pre + constant_buffer_resource_type + constant_buffer_name.Opt() + register.Opt() + "{" + declaration.ListOpt() + "}" + semi_opt;
 
             // override Hlsl class
             class_specifier.AstNodeCreator = CreateShaderClassSpecifierAst;
