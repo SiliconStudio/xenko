@@ -245,9 +245,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters)
         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_VULKAN
-            compilerParameters.Platform = GraphicsPlatform.Vulkan;
-#endif
             // Compile shader
             var isXkfx = ShaderMixinManager.Contains(effectName);
 
