@@ -9,9 +9,8 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A <see cref="Button"/> whose <see cref="ContentControl.Content"/> are the <see cref="Button.PressedImage"/> and <see cref="Button.NotPressedImage"/>.
     /// </summary>
-    [DataContract(nameof(ImageButton))]
     [DebuggerDisplay("ImageButton - Name={Name}")]
-    [Obsolete]
+    [Obsolete("Use Button with SizeToContent set to false.")]
     public class ImageButton : Button
     {
         private readonly ImageElement contentImageElement = new ImageElement();
