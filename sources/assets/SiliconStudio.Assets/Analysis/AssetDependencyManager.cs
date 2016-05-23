@@ -39,7 +39,7 @@ namespace SiliconStudio.Assets.Analysis
         /// Occurs when a asset changed. This event is called in the critical section of the dependency manager,
         /// meaning that dependencies can be safely computed via <see cref="ComputeDependencies"/> method from this callback.
         /// </summary>
-        public event Action<AssetItem> AssetChanged;
+        public event DirtyFlagChangedDelegate<AssetItem> AssetChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetDependencyManager" /> class.
@@ -663,7 +663,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void Session_AssetDirtyChanged(Asset asset)
+        private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
             // Don't update assets while saving
             // This is to avoid updating the dependency manager when saving an asset
@@ -682,7 +682,7 @@ namespace SiliconStudio.Assets.Analysis
                     UpdateAssetDependencies(dependencies);
 
                     // Notify an asset changed
-                    OnAssetChanged(dependencies.Item);
+                    OnAssetChanged(dependencies.Item, oldValue, newValue);
                 }
             }
 
@@ -884,12 +884,12 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void OnAssetChanged(AssetItem obj)
+        private void OnAssetChanged(AssetItem obj, bool oldValue, bool newValue)
         {
             // Make sure we clone the item here only if it is necessary
             // Cloning the AssetItem is mandatory in order to make sure
             // the asset item won't change
-            AssetChanged?.Invoke(obj.Clone(true));
+            AssetChanged?.Invoke(obj.Clone(true), oldValue, newValue);
         }
     }
 }

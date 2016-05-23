@@ -653,7 +653,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void Session_AssetDirtyChanged(Asset asset)
+        private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
             // Don't update assets while saving
             // This is to avoid updating the dependency manager when saving an asset

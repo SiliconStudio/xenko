@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets
         private Package currentPackage;
         private AssetDependencyManager dependencies;
 
-        public event Action<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageSession"/> class.
@@ -972,10 +972,9 @@ namespace SiliconStudio.Assets
             IsDirty = true;
         }
 
-        private void OnAssetDirtyChanged(Asset asset)
+        private void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            Action<Asset> handler = AssetDirtyChanged;
-            if (handler != null) handler(asset);
+            AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
 
         private static Package PreLoadPackage(PackageSession session, ILogger log, string filePath, bool isSystemPackage, PackageCollection loadedPackages, PackageLoadParameters loadParameters)

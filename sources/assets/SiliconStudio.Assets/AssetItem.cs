@@ -261,17 +261,15 @@ namespace SiliconStudio.Assets
                     ModifiedTime = DateTime.Now;
                 }
 
+                var oldValue = isDirty;
                 isDirty = value;
-                if (Package != null)
-                {
-                    Package.OnAssetDirtyChanged(asset);
-                }
+                Package?.OnAssetDirtyChanged(asset, oldValue, value);
             }
         }
 
         public override string ToString()
         {
-            return string.Format("{0}{1} => {2}", string.Format("[{0}] ", Asset.GetType().Name), location, Id);
+            return $"[{Asset.GetType().Name}] {location} => {Id}";
         }
 
         /// <summary>

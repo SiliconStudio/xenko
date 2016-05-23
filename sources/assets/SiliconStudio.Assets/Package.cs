@@ -68,7 +68,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Occurs when an asset dirty changed occured.
         /// </summary>
-        public event Action<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Package"/> class.
@@ -187,8 +187,9 @@ namespace SiliconStudio.Assets
             }
             set
             {
+                var oldValue = isDirty;
                 isDirty = value;
-                OnAssetDirtyChanged(this);
+                OnAssetDirtyChanged(this, oldValue, value);
             }
         }
 
@@ -381,9 +382,10 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal void OnAssetDirtyChanged(Asset asset)
+        internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            AssetDirtyChanged?.Invoke(asset);
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
+            AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
 
         /// <summary>
