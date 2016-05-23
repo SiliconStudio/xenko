@@ -103,7 +103,12 @@ namespace SiliconStudio.Xenko.Graphics
             };
 
             // TODO VULKAN: Tessellation and multisampling
-            var multisampleState = new PipelineMultisampleStateCreateInfo();
+            var multisampleState = new PipelineMultisampleStateCreateInfo
+            {
+                StructureType = StructureType.PipelineMultisampleStateCreateInfo,
+                RasterizationSamples = SampleCountFlags.Sample1
+            };
+
             var tessellationState = new PipelineTessellationStateCreateInfo();
 
             var rasterizationState = CreateRasterizationState(Description.RasterizerState);
@@ -176,7 +181,7 @@ namespace SiliconStudio.Xenko.Graphics
                     VertexInputState = new IntPtr(&vertexInputState),
                     InputAssemblyState = new IntPtr(&inputAssemblyState),
                     RasterizationState = new IntPtr(&rasterizationState),
-                    //MultisampleState = new IntPtr(&multisampleState),
+                    MultisampleState = new IntPtr(&multisampleState),
                     DepthStencilState = new IntPtr(&depthStencilState),
                     ColorBlendState = new IntPtr(&colorBlendState),
                     DynamicState = new IntPtr(&dynamicState),
