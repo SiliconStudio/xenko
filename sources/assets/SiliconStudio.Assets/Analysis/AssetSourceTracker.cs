@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using SiliconStudio.Assets.Visitors;
@@ -34,7 +33,6 @@ namespace SiliconStudio.Assets.Analysis
 
         // Objects used to track directories
         internal DirectoryWatcher DirectoryWatcher;
-        private readonly Dictionary<Package, string> packagePathsTracked = new Dictionary<Package, string>();
         private readonly Dictionary<Guid, Dictionary<UFile, bool>> mapAssetToInputDependencies = new Dictionary<Guid, Dictionary<UFile, bool>>();
         private readonly Dictionary<string, HashSet<Guid>> mapInputDependencyToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
@@ -47,9 +45,7 @@ namespace SiliconStudio.Assets.Analysis
         private bool isDisposed;
         private bool isDisposing;
         private bool isTrackingPaused;
-        private bool isSessionSaving;
         private bool isInitialized;
-        private readonly HashSet<string> assetsBeingSaved = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private readonly AssetFileChangedEventSquasher assetFileChangedEventSquasher = new AssetFileChangedEventSquasher();
 
         /// <summary>
@@ -213,23 +209,6 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        //public struct SourceFileChange
-        //{
-        //    public SourceFileChange(Guid assetId, UFile sourceFile)
-        //    {
-        //        AssetId = assetId;
-        //        SourceFile = sourceFile;
-        //    }
-
-        //    Guid AssetId;
-        //    UFile SourceFile;
-        //}
-
-        //public Task<object> SourceFileChanged()
-        //{
-
-        //}
-
         /// <summary>
         /// Finds the asset items by their input/import file.
         /// </summary>
@@ -287,47 +266,6 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// This methods is called when a session is about to being saved.
-        /// </summary>
-        public void BeginSavingSession()
-        {
-            isSessionSaving = true;
-        }
-
-        /// <summary>
-        /// Adds the file being save during session save.
-        /// </summary>
-        /// <param name="file">The file.</param>
-        /// <exception cref="System.ArgumentNullException">file</exception>
-        internal void AddFileBeingSaveDuringSessionSave(UFile file)
-        {
-            if (file == null) throw new ArgumentNullException(nameof(file));
-            if (!isSessionSaving) throw new InvalidOperationException("Cannot call this method outside a BeginSavingSession/EndSavingSession");
-
-            lock (Initialize())
-            {
-                assetsBeingSaved.Add(file);
-            }
-        }
-
-        /// <summary>
-        /// This methods is called when a session has been saved.
-        /// </summary>
-        public void EndSavingSession()
-        {
-            isSessionSaving = false;
-
-            // After saving, we must double-check that all packages are tracked correctly
-            lock (Initialize())
-            {
-                foreach (var package in Packages)
-                {
-                    UpdatePackagePathTracked(package, true);
-                }
-            }
-        }
-
-        /// <summary>
         /// This method is called when a package needs to be tracked
         /// </summary>
         /// <param name="package">The package to track.</param>
@@ -353,7 +291,6 @@ namespace SiliconStudio.Assets.Analysis
                 }
 
                 package.Assets.CollectionChanged += Assets_CollectionChanged;
-                UpdatePackagePathTracked(package, true);
             }
         }
 
@@ -376,7 +313,6 @@ namespace SiliconStudio.Assets.Analysis
                 }
 
                 Packages.Remove(package);
-                UpdatePackagePathTracked(package, false);
             }
         }
 
@@ -400,7 +336,6 @@ namespace SiliconStudio.Assets.Analysis
             {
                 if (TrackedAssets.ContainsKey(assetId))
                     return;
-
 
                 // TODO provide an optimized version of TrackAsset method
                 // taking directly a well known asset (loaded from a Package...etc.)
@@ -448,74 +383,6 @@ namespace SiliconStudio.Assets.Analysis
 
                 // Track asset import paths
                 UpdateAssetImportPathsTracked(assetItem, false);
-            }
-        }
-
-        private void UpdatePackagePathTracked(Package package, bool isTracking)
-        {
-            // Don't try to track system package
-            if (package.IsSystem)
-            {
-                return;
-            }
-
-            lock (ThisLock)
-            {
-                if (isTracking)
-                {
-                    string previousLocation;
-                    packagePathsTracked.TryGetValue(package, out previousLocation);
-
-                    string newLocation = package.RootDirectory;
-                    bool trackNewLocation = newLocation != null && Directory.Exists(newLocation);
-                    if (previousLocation != null)
-                    {
-                        bool unTrackPreviousLocation = false;
-                        // If the package has no longer any directory, we have to only remove it from previous tracked
-                        if (package.RootDirectory == null)
-                        {
-                            unTrackPreviousLocation = true;
-                            trackNewLocation = false;
-                        }
-                        else
-                        {
-                            newLocation = package.RootDirectory;
-                            if (string.Compare(previousLocation, newLocation, StringComparison.OrdinalIgnoreCase) != 0)
-                            {
-                                unTrackPreviousLocation = true;
-                            }
-                            else
-                            {
-                                // Nothing to do, previous location is the same
-                                trackNewLocation = false;
-                            }
-                        }
-
-                        // Untrack the previous location if different
-                        if (unTrackPreviousLocation)
-                        {
-                            packagePathsTracked.Remove(package);
-                            DirectoryWatcher?.UnTrack(previousLocation);
-                        }
-                    }
-
-                    if (trackNewLocation)
-                    {
-                        // Track the location
-                        packagePathsTracked[package] = newLocation;
-                        DirectoryWatcher?.Track(newLocation);
-                    }
-                }
-                else
-                {
-                    string previousLocation;
-                    if (packagePathsTracked.TryGetValue(package, out previousLocation))
-                    {
-                        // Untrack the previous location
-                        DirectoryWatcher?.UnTrack(previousLocation);
-                        packagePathsTracked.Remove(package);
-                    }
-                }
             }
         }
 
@@ -647,14 +514,6 @@ namespace SiliconStudio.Assets.Analysis
                         assetItem.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
                         UpdateAssetImportPathsTracked(assetItem, true);
                     }
-                    else
-                    {
-                        var package = asset as Package;
-                        if (package != null)
-                        {
-                            UpdatePackagePathTracked(package, true);
-                        }
-                    }
                 }
             }
         }
@@ -730,110 +589,18 @@ namespace SiliconStudio.Assets.Analysis
                 if (fileEventsWorkingCopy.Count == 0 || isTrackingPaused)
                     continue;
 
-                var assetEvents = new List<AssetFileChangedEvent>();
-
                 // If this an asset belonging to a package
                 lock (ThisLock)
                 {
-                    var packages = Packages;
-
                     // File event
                     foreach (var fileEvent in fileEventsWorkingCopy)
                     {
                         var file = new UFile(fileEvent.FullPath);
-
-                        // When the session is being saved, we should not process events are they are false-positive alerts
-                        // So we just skip the file
-                        if (assetsBeingSaved.Contains(file.FullPath))
-                        {
-                            continue;
-                        }
-
-                        // 1) Check if this is related to imported assets
-                        // Asset imports are handled slightly differently as we need to compute the
-                        // hash of the source file
                         if (mapInputDependencyToAssets.ContainsKey(file.FullPath))
                         {
                             // Prepare the hash of the import file in advance for later re-import
                             FileVersionManager.Instance.ComputeFileHashAsync(file.FullPath, SourceImportFileHashCallback, tokenSourceForImportHash.Token);
-                            continue;
                         }
-
-                        // 2) else check that the file is a supported extension
-                        if (!AssetRegistry.IsAssetFileExtension(file.GetFileExtension()))
-                        {
-                            continue;
-                        }
-
-                        // Find the parent package of the file that has been updated
-                        UDirectory parentPackagePath = null;
-                        Package parentPackage = null;
-                        foreach (var package in packages)
-                        {
-                            var rootDirectory = package.RootDirectory;
-                            if (rootDirectory == null)
-                                continue;
-
-                            if (rootDirectory.Contains(file) && (parentPackagePath == null || parentPackagePath.FullPath.Length < rootDirectory.FullPath.Length))
-                            {
-                                parentPackagePath = rootDirectory;
-                                parentPackage = package;
-                            }
-                        }
-
-                        // If we found a parent package, create an associated asset event
-                        if (parentPackage != null)
-                        {
-                            var relativeLocation = file.MakeRelative(parentPackagePath);
-
-                            var item = parentPackage.Assets.Find(relativeLocation);
-                            AssetFileChangedEvent evt = null;
-                            switch (fileEvent.ChangeType)
-                            {
-                                case FileEventChangeType.Created:
-                                    evt = new AssetFileChangedEvent(parentPackage, AssetFileChangedType.Added, relativeLocation);
-                                    break;
-                                case FileEventChangeType.Deleted:
-                                    evt = new AssetFileChangedEvent(parentPackage, AssetFileChangedType.Deleted, relativeLocation);
-                                    break;
-                                case FileEventChangeType.Changed:
-                                    evt = new AssetFileChangedEvent(parentPackage, AssetFileChangedType.Updated, relativeLocation);
-                                    break;
-                            }
-                            if (evt != null)
-                            {
-                                if (item != null)
-                                {
-                                    evt.AssetId = item.Id;
-                                }
-                                assetEvents.Add(evt);
-                            }
-                        }
-                    }
-
-
-                    // After all events have been processed, we 
-                    // remove the file assetBeingSaved
-                    foreach (var fileEvent in fileEventsWorkingCopy)
-                    {
-                        var file = new UFile(fileEvent.FullPath);
-
-                        // When the session is being saved, we should not process events are they are false-positive alerts
-                        // So we just skip the file
-                        if (assetsBeingSaved.Remove(file))
-                        {
-                            if (assetsBeingSaved.Count == 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-
-                    // If we have any new events, copy them back
-                    if (assetEvents.Count > 0 && !isTrackingPaused)
-                    {
-                        currentAssetFileChangedEvents.AddRange(assetEvents);
                     }
                 }
             }
