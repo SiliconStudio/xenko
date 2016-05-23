@@ -103,6 +103,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Linux", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Linux.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.Linux", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.Linux.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles", "..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj", "{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
@@ -336,6 +338,18 @@ Global
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.ActiveCfg = Release|Linux
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.Build.0 = Release|Linux
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|Linux.Deploy.0 = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|Linux.ActiveCfg = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|Linux.Build.0 = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|Linux.Deploy.0 = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|Linux.ActiveCfg = Debug|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|Linux.Build.0 = Debug|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|Linux.Deploy.0 = Debug|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|Linux.ActiveCfg = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|Linux.Build.0 = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|Linux.Deploy.0 = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|Linux.ActiveCfg = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|Linux.Build.0 = Release|Linux
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|Linux.Deploy.0 = Release|Linux
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Linux.ActiveCfg = Release|Linux
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Linux.Build.0 = Release|Linux
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|Linux.Deploy.0 = Release|Linux
@@ -395,6 +409,7 @@ Global
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {4C142567-C42B-40F5-B092-798882190209}
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7} = {4C142567-C42B-40F5-B092-798882190209}
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
