@@ -954,7 +954,7 @@ namespace SiliconStudio.Assets
                                 RegisterAssetPerInput(assetImport.Source, assetItem);
 
                                 // Add assets from session
-                                foreach (var existingAssetItem in session.DependencyManager.FindAssetItemsByInput(assetImport.Source))
+                                foreach (var existingAssetItem in session.DependencyManager.SourceTracker.FindAssetItemsByInput(assetImport.Source))
                                 {
                                     // Filter and only take current root imports
                                     if (existingAssetItem.Asset.Base == null || !existingAssetItem.Asset.Base.IsRootImport)

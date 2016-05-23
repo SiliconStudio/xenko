@@ -55,6 +55,7 @@
     <Compile Include="Analysis\AssetInheritanceSearchOptions.cs" />
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
+    <Compile Include="Analysis\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />
     <Compile Include="Analysis\ContentLinkType.cs" />
