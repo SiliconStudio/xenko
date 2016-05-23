@@ -655,28 +655,24 @@ namespace SiliconStudio.Assets.Analysis
 
         private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            // Don't update assets while saving
-            // This is to avoid updating the dependency manager when saving an asset
-            // TODO: We should handle assets modification while saving differently
-            if (isSessionSaving)
+            // Don't update the source tracker while saving (setting dirty flag to false)
+            if (newValue)
             {
-                return;
-            }
-
-            lock (ThisLock)
-            {
-                AssetItem assetItem;
-                if (TrackedAssets.TryGetValue(asset.Id, out assetItem))
+                lock (ThisLock)
                 {
-                    assetItem.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
-                    UpdateAssetImportPathsTracked(assetItem, true);
-                }
-                else
-                {
-                    var package = asset as Package;
-                    if (package != null)
+                    AssetItem assetItem;
+                    if (TrackedAssets.TryGetValue(asset.Id, out assetItem))
                     {
-                        UpdatePackagePathTracked(package, true);
+                        assetItem.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
+                        UpdateAssetImportPathsTracked(assetItem, true);
+                    }
+                    else
+                    {
+                        var package = asset as Package;
+                        if (package != null)
+                        {
+                            UpdatePackagePathTracked(package, true);
+                        }
                     }
                 }
             }

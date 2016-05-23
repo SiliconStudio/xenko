@@ -560,7 +560,7 @@ namespace SiliconStudio.Assets
                     // all notification events
                     if (dependencies != null)
                     {
-                        dependencies.BeginSavingSession();
+                        dependencies.SourceTracker.BeginSavingSession();
                     }
 
                     // Return immediately if there is any error
@@ -752,7 +752,7 @@ namespace SiliconStudio.Assets
                 {
                     if (dependencies != null)
                     {
-                        dependencies.EndSavingSession();
+                        dependencies.SourceTracker.EndSavingSession();
                     }
 
                     // Once all packages and assets have been saved, we can save the solution (as we need to have fullpath to
