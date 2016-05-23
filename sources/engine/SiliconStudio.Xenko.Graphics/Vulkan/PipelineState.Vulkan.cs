@@ -311,8 +311,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal struct DescriptorSetInfo
         {
             public int Index;
-            public int BindingOffset;
-            public int BindingCount;
+            public KeyValuePair<int, int>[] Bindings;
         }
 
         internal DescriptorSetInfo[] DescriptorSetMapping;
@@ -338,12 +337,21 @@ namespace SiliconStudio.Xenko.Graphics
                 var layoutIndex = resourceGroups[i] == null ? 0 : layouts.FindIndex(x => x.Name == resourceGroupName);
                 if (layoutIndex != -1)
                 {
+                    var usedLayoutEntries = layouts[layoutIndex].Layout.Entries
+                        .Select((x, binding) => new { Binding = binding, IsUsed = x.IsUsed })
+                        .Where(x => x.IsUsed).Select(x => x.Binding).ToArray();
+
+                    var bindingOffset = layoutEntries.Count;
                     DescriptorSetMapping[layoutIndex] = new DescriptorSetInfo
                     {
                         Index = 0,
-                        BindingOffset = layoutEntries.Count,
-                        BindingCount = layouts[layoutIndex].Layout.Entries.Count
+                        Bindings = new KeyValuePair<int, int>[usedLayoutEntries.Length]
                     };
+
+                    for (int j = 0; j < usedLayoutEntries.Length; j++)
+                    {
+                        DescriptorSetMapping[layoutIndex].Bindings[j] = new KeyValuePair<int, int>(usedLayoutEntries[j], bindingOffset + usedLayoutEntries[j]);
+                    }
 
                     layoutEntries.AddRange(layouts[layoutIndex].Layout.Entries);
                 }

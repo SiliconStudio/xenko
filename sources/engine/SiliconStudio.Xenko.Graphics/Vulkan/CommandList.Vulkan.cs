@@ -261,10 +261,12 @@ namespace SiliconStudio.Xenko.Graphics
 
                     if (setInfo.Index >= 0)
                     {
-                        for (int j = 0; j < setInfo.BindingCount; j++)
+                        for (int j = 0; j < setInfo.Bindings.Length; j++)
                         {
-                            var destinationBinding = setInfo.BindingOffset + j;
-                            var immutableSampler = activePipeline.ImmutableSamplers[destinationBinding];
+                            var sourceBinding = setInfo.Bindings[j].Key;
+                            var destinationBinding = setInfo.Bindings[j].Value;
+
+                            var immutableSampler = activePipeline.ImmutableSamplers[j];
 
                             // TODO VULKAN: Why do we need to update bindings that are just an immutable sampler?
                             if (immutableSampler != Sampler.Null)
@@ -287,7 +289,7 @@ namespace SiliconStudio.Xenko.Graphics
                                 {
                                     StructureType = StructureType.CopyDescriptorSet,
                                     SourceSet = boundDescriptorSets[i],
-                                    SourceBinding = (uint)j,
+                                    SourceBinding = (uint)sourceBinding,
                                     SourceArrayElement = 0,
                                     DestinationSet = localDescriptorSet,
                                     DestinationBinding = (uint)destinationBinding,

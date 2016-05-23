@@ -34,13 +34,17 @@ namespace SiliconStudio.Xenko.Graphics
             var bindings = new DescriptorSetLayoutBinding[entries.Count];
             immutableSamplers = new Sampler[entries.Count];
 
+            int usedBindingCount = 0;
+
             fixed (Sampler* immutableSamplersPointer = &immutableSamplers[0])
             {
                 for (int i = 0; i < entries.Count; i++)
                 {
                     var entry = entries[i];
+                    if (!entry.IsUsed)
+                        continue;
 
-                    bindings[i] = new DescriptorSetLayoutBinding
+                    bindings[usedBindingCount] = new DescriptorSetLayoutBinding
                     {
                         DescriptorType = VulkanConvertExtensions.ConvertDescriptorType(entry.Class),
                         StageFlags = ShaderStageFlags.All, // TODO VULKAN: Filter?
@@ -57,17 +61,19 @@ namespace SiliconStudio.Xenko.Graphics
                         }
 
                         // Remember this, so we can choose the right DescriptorType in DescriptorSet.SetShaderResourceView
-                        immutableSamplers[i] = entry.ImmutableSampler.NativeSampler;
+                        immutableSamplers[usedBindingCount] = entry.ImmutableSampler.NativeSampler;
                         //bindings[i].DescriptorType = DescriptorType.CombinedImageSampler;
-                        bindings[i].ImmutableSamplers = new IntPtr(immutableSamplersPointer + i);
+                        bindings[usedBindingCount].ImmutableSamplers = new IntPtr(immutableSamplersPointer + usedBindingCount);
                     }
+
+                    usedBindingCount++;
                 }
 
                 var createInfo = new DescriptorSetLayoutCreateInfo
                 {
                     StructureType = StructureType.DescriptorSetLayoutCreateInfo,
-                    BindingCount = (uint)bindings.Length,
-                    Bindings = bindings.Length > 0 ? new IntPtr(Interop.Fixed(bindings)) : IntPtr.Zero
+                    BindingCount = (uint)usedBindingCount,
+                    Bindings = usedBindingCount > 0 ? new IntPtr(Interop.Fixed(bindings)) : IntPtr.Zero
                 };
                 return device.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
             }
