@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("Button - Name={Name}")]
     public class Button : ButtonBase
     {
-        private StretchType imageStretchType = StretchType.None;
+        private StretchType imageStretchType = StretchType.Uniform;
         private StretchDirection imageStretchDirection = StretchDirection.Both;
         private ISpriteProvider pressedImage;
         private ISpriteProvider notPressedImage;
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
         [DataMember]
         [Display(category: LayoutCategory)]
-        [DefaultValue(StretchType.None)]
+        [DefaultValue(StretchType.Uniform)]
         public StretchType ImageStretchType
         {
             get { return imageStretchType; }
