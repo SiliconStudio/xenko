@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             try
             {
                 var commandArgs = p.Parse(args);
-                if (showHelp)
+                if (showHelp || commandArgs.Count == 0)
                 {
                     p.WriteOptionDescriptions(Console.Out);
                     return 0;
@@ -98,6 +98,9 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(templateFolder, @"Xenko.UnitTests\Xenko.UnitTests.ttproj")),
                             projectName);
                         break;
+
+                    default:
+                        throw new OptionException("Unknown option", commandArgs[0]);
                 }
             }
             catch (Exception e)
