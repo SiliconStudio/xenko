@@ -98,7 +98,7 @@ namespace SiliconStudio
                 if (line != null)
                 {
                     var res = line.Split(whitespace);
-                    if (res.Length == 2)
+                    if (res.Length == 2 && res[1] == "device")
                     {
                         AndroidDeviceDescription device;
                         device.Serial = res[0];
