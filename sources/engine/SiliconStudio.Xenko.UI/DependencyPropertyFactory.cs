@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 
@@ -133,7 +134,7 @@ namespace SiliconStudio.Xenko.UI
             if (ownerType == null) throw new ArgumentNullException(nameof(ownerType));
             if (metadatas == null) throw new ArgumentNullException(nameof(metadatas));
 
-            if (!typeof(UIElement).IsAssignableFrom(ownerType))
+            if (!typeof(UIElement).GetTypeInfo().IsAssignableFrom(ownerType.GetTypeInfo()))
                 throw new ArgumentException($"{ownerType.FullName} must be a subclass of {nameof(UIElement)}", nameof(ownerType));
         }
 
