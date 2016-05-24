@@ -1,7 +1,5 @@
 ﻿!ProjectTemplate
 Files:
-  - {Source: $ProjectName$.Shared.shproj.t4, Target: $ProjectName$.Shared.shproj, IsTemplate: true}
-  - {Source: $ProjectName$.Shared.projitems.t4, Target: $ProjectName$.Shared.projitems, IsTemplate: true}
   - {Source: $ProjectName$.Shared.targets.t4, Target: $ProjectName$.Shared.targets, IsTemplate: true}
   - {Source: $ProjectName$.Windows.csproj.t4, Target: $ProjectName$.Windows.csproj, IsTemplate: true}
   - {Source: $ProjectName$.WindowsPhone.csproj.t4, Target: $ProjectName$.WindowsPhone.csproj, IsTemplate: true}

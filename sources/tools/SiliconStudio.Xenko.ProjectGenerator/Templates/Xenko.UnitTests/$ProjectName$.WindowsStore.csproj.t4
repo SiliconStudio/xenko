@@ -29,6 +29,8 @@
 <#@ include file="..\Common.PropertyGroups.targets.t4" #>
   <ItemGroup>
     <None Include="readme.md" />
+    <Compile Include="TestClass1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->

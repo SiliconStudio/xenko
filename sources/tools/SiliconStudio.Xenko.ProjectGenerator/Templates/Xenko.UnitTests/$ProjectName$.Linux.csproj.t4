@@ -26,6 +26,8 @@
 <#@ include file="..\Common.PropertyGroups.targets.t4" #>
   <ItemGroup>
     <None Include="readme.md" />
+    <Compile Include="TestClass1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 <#@ include file="..\Common.Imports.targets.t4" #>

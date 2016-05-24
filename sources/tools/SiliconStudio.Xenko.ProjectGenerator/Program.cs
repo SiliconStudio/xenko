@@ -129,9 +129,8 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             // When generating over an existing set of files, retrieve the existing IDs
             // for better incrementality
-            Guid projectGuid, sharedGuid, assetId;
+            Guid projectGuid, assetId;
             GetExistingGuid(outputDirectory, name + ".Windows.csproj", out projectGuid);
-            GetExistingGuid(outputDirectory, name + ".Shared.shproj", out sharedGuid);
             GetExistingAssetId(outputDirectory, name + ".xkpkg", out assetId);
 
             var session = new PackageSession();
@@ -179,7 +178,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             options["Package"] = package;
             options["Platforms"] = new List<SolutionPlatform>(AssetRegistry.SupportedPlatforms);
             options["XenkoSdkRelativeDir"] = xenkoRelativePath;
-            options["SharedProjectGuid"] = sharedGuid;
 
             // Generate project template
             result = projectTemplate.Generate(outputDirectory, name, projectGuid, options);
