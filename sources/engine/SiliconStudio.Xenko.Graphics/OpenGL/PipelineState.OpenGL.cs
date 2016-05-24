@@ -196,9 +196,12 @@ namespace SiliconStudio.Xenko.Graphics
                 // Should we remove it from the cache?
                 lock (lockObject)
                 {
-                    var newRefCount = counter[value] - 1;
-                    counter[value] = newRefCount;
-                    if (newRefCount == 0)
+                    int refCount;
+                    if (!counter.TryGetValue(value, out refCount))
+                        return;
+
+                    counter[value] = --refCount;
+                    if (refCount == 0)
                     {
                         counter.Remove(value);
                         reverse.Remove(value);
@@ -208,6 +211,22 @@ namespace SiliconStudio.Xenko.Graphics
                             storage.Remove(key);
                         }
                     }
+                }
+            }
+
+            public void Dispose()
+            {
+                lock (lockObject)
+                {
+                    // Release everything
+                    foreach (var entry in reverse)
+                    {
+                        entry.Key.Release();
+                    }
+
+                    reverse.Clear();
+                    storage.Clear();
+                    counter.Clear();
                 }
             }
         }
@@ -231,6 +250,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             public void Dispose()
             {
+                EffectProgramCache.Dispose();
+                VertexAttribsCache.Dispose();
             }
         }
     }

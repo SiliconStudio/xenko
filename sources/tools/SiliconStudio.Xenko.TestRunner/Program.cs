@@ -175,15 +175,17 @@ namespace SiliconStudio.Xenko.TestRunner
                             break;
                         }
                         case TestRunnerMessageType.SessionSuccess:
+                            testFailed = false;
+                            break;
                         case TestRunnerMessageType.SessionFailure:
+                            testFailed = true;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 } while (messageType != TestRunnerMessageType.SessionFailure && messageType != TestRunnerMessageType.SessionSuccess);
 
-                //Read failure flag
-                testFailed = binaryReader.ReadBoolean();
+                // Mark test session as finished
                 testFinished = true;
 
                 //Read output
