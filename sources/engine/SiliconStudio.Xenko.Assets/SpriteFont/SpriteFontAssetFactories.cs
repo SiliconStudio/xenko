@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 FontName = "Arial",
                 IsDynamic = false,
+                IsScalable = false,
                 CharacterRegions = { new CharacterRegion(' ', (char)127) }
             };
         }
@@ -27,7 +28,27 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontName = "Arial",
-                IsDynamic = true
+                IsDynamic = true,
+                IsScalable = false,
+            };
+        }
+
+        public override SpriteFontAsset New()
+        {
+            return Create();
+        }
+    }
+
+    public class ScalableSpriteFontFactory : AssetFactory<SpriteFontAsset>
+    {
+        public static SpriteFontAsset Create()
+        {
+            return new SpriteFontAsset
+            {
+                FontName = "Arial",
+                IsDynamic = false,
+                IsScalable = true,
+                CharacterRegions = { new CharacterRegion(' ', (char)127) }
             };
         }
 
