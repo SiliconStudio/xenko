@@ -54,6 +54,7 @@
     <Compile Include="DependencyPropertyFactory.cs" />
     <Compile Include="DependencyPropertyKeyMetadata.cs" />
     <Compile Include="Engine\UIComponent.cs" />
+    <Compile Include="ImageSizeHelper.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
     <Compile Include="KeyEventArgs.cs" />

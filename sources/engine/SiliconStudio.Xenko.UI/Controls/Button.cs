@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -16,22 +18,67 @@ namespace SiliconStudio.Xenko.UI.Controls
     [DebuggerDisplay("Button - Name={Name}")]
     public class Button : ButtonBase
     {
+        private StretchType imageStretchType = StretchType.Uniform;
+        private StretchDirection imageStretchDirection = StretchDirection.Both;
         private ISpriteProvider pressedImage;
         private ISpriteProvider notPressedImage;
         private ISpriteProvider mouseOverImage;
+        private bool sizeToContent = true;
 
         public Button()
         {
             DrawLayerNumber += 1; // (button design image)
             Padding = new Thickness(10, 5, 10, 7);
+
+            MouseOverStateChanged += (sender, args) => InvalidateButtonImage();
+        }
+
+        /// <inheritdoc/>
+        public override bool IsPressed
+        {
+            get { return base.IsPressed; }
+            protected set
+            {
+                if (value == IsPressed)
+                    return;
+
+                base.IsPressed = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Function triggered when one of the <see cref="PressedImage"/> and <see cref="NotPressedImage"/> images are invalidated.
-        /// This function can be overridden in inherited classes.
+        /// Gets or sets a value that describes how the button image should be stretched to fill the destination rectangle.
         /// </summary>
-        protected virtual void OnAspectImageInvalidated()
+        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchType.Uniform)]
+        public StretchType ImageStretchType
         {
+            get { return imageStretchType; }
+            set
+            {
+                imageStretchType = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates how the button image is scaled.
+        /// </summary>
+        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchDirection.Both)]
+        public StretchDirection ImageStretchDirection
+        {
+            get { return imageStretchDirection; }
+            set
+            {
+                imageStretchDirection = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
@@ -89,6 +136,59 @@ namespace SiliconStudio.Xenko.UI.Controls
                 mouseOverImage = value;
                 OnAspectImageInvalidated();
             }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the size depends on the Content. The default is <c>true</c>.
+        /// </summary>
+        /// <userdoc>True if this button's size depends of its content, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(true)]
+        public bool SizeToContent
+        {
+            get { return sizeToContent; }
+            set
+            {
+                if (sizeToContent == value)
+                    return;
+
+                sizeToContent = value;
+                InvalidateMeasure();
+            }
+        }
+
+        internal Sprite ButtonImage => (IsPressed ? PressedImage : MouseOverState == MouseOverState.MouseOverElement ? MouseOverImage : NotPressedImage)?.GetSprite();
+
+        /// <inheritdoc/>
+        protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
+        {
+            return sizeToContent
+                ? base.ArrangeOverride(finalSizeWithoutMargins)
+                : ImageSizeHelper.CalculateImageSizeFromAvailable(ButtonImage, finalSizeWithoutMargins, ImageStretchType, ImageStretchDirection, false);
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
+        {
+            return sizeToContent
+                ? base.MeasureOverride(availableSizeWithoutMargins)
+                : ImageSizeHelper.CalculateImageSizeFromAvailable(ButtonImage, availableSizeWithoutMargins, ImageStretchType, ImageStretchDirection, true);
+        }
+
+        /// <summary>
+        /// Function triggered when one of the <see cref="PressedImage"/> and <see cref="NotPressedImage"/> images are invalidated.
+        /// This function can be overridden in inherited classes.
+        /// </summary>
+        protected virtual void OnAspectImageInvalidated()
+        {
+            InvalidateButtonImage();
+        }
+        
+        private void InvalidateButtonImage()
+        {
+            if (!sizeToContent)
+                InvalidateMeasure();
         }
     }
 }

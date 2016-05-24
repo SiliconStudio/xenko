@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     /// <summary>
     /// A class that contains test functions for layering of the <see cref="ImageButton"/> class.
     /// </summary>
-    [TestFixture]
+    [TestFixture(Ignore = true, IgnoreReason = "ImageButton is deprecated")]
     [System.ComponentModel.Description("Tests for ImageButton layering")]
     public class ImageButtonTests : ImageButton
     {

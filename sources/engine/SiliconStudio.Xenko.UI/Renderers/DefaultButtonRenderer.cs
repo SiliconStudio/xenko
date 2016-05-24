@@ -23,13 +23,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
             var button = (Button)element;
             var color = button.RenderOpacity * Color.White;
-
-            var provider = button.IsPressed ? button.PressedImage : button.MouseOverState == MouseOverState.MouseOverElement ? button.MouseOverImage : button.NotPressedImage;
-            var image = provider?.GetSprite();
+            
+            var image = button.ButtonImage;
             if(image?.Texture == null)
                 return;
 
-            Batch.DrawImage(image.Texture, ref button.WorldMatrixInternal, ref image.RegionInternal, ref button.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+            Batch.DrawImage(image.Texture, ref element.WorldMatrixInternal, ref image.RegionInternal, ref element.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
     }
 }

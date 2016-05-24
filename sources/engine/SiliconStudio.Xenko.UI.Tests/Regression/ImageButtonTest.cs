@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     /// </summary>
     public class ImageButtonTest : UITestGameBase
     {
-        private ImageButton imageButton;
+        private Button button;
 
         public ImageButtonTest()
         {
@@ -26,13 +26,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            imageButton = new ImageButton
+            button = new Button
             {
                 PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed")),
                 NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
+                Content = null,
+                SizeToContent = false
             };
 
-            UIComponent.RootElement = imageButton;
+            UIComponent.RootElement = button;
         }
 
         protected override void RegisterTests()
@@ -45,7 +47,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest1()
         {
-            imageButton.RaiseTouchDownEvent(new TouchEventArgs());
+            button.RaiseTouchDownEvent(new TouchEventArgs());
         }
 
         [Test]

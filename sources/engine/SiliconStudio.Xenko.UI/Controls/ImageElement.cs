@@ -84,21 +84,12 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {
-            return CalculateImageSizeFromAvailable(finalSizeWithoutMargins, false);
+            return ImageSizeHelper.CalculateImageSizeFromAvailable(sprite, finalSizeWithoutMargins, StretchType, StretchDirection, false);
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
-            var desiredSize = CalculateImageSizeFromAvailable(availableSizeWithoutMargins, true);
-            
-            if (sprite == null || !sprite.HasBorders)
-                return desiredSize;
-
-            var borderSum = new Vector2(sprite.BordersInternal.X + sprite.BordersInternal.Z, sprite.BordersInternal.Y + sprite.BordersInternal.W);
-            if(sprite.Orientation == ImageOrientation.Rotated90)
-                Utilities.Swap(ref borderSum.X, ref borderSum.Y);
-
-            return new Vector3(Math.Max(desiredSize.X, borderSum.X), Math.Max(desiredSize.Y, borderSum.Y), desiredSize.Z);
+            return ImageSizeHelper.CalculateImageSizeFromAvailable(sprite, availableSizeWithoutMargins, StretchType, StretchDirection, true);
         }
 
         protected override void Update(GameTime time)
@@ -108,76 +99,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 OnSpriteChanged(currentSprite);
             }
-        }
-
-        private Vector3 CalculateImageSizeFromAvailable(Vector3 availableSizeWithoutMargins, bool isMeasuring)
-        {
-            if (sprite == null) // no associated image -> no region needed
-                return Vector3.Zero;
-
-            var idealSize = sprite.SizeInPixels;
-            if (idealSize.X <= 0 || idealSize.Y <= 0) // image size null or invalid -> no region needed
-                return Vector3.Zero;
-
-            if (float.IsInfinity(availableSizeWithoutMargins.X) && float.IsInfinity(availableSizeWithoutMargins.Y)) // unconstrained available size -> take the best size for the image: the image size
-                return new Vector3(idealSize, 0);
-
-            // initialize the desired size with maximum available size
-            var desiredSize = availableSizeWithoutMargins;
-
-            // compute the desired image ratios
-            var desiredScale = new Vector2(desiredSize.X / idealSize.X, desiredSize.Y / idealSize.Y);
-
-            // when the size along a given axis is free take the same ratio as the constrained axis.
-            if (float.IsInfinity(desiredScale.X))
-                desiredScale.X = desiredScale.Y;
-            if (float.IsInfinity(desiredScale.Y))
-                desiredScale.Y = desiredScale.X;
-            
-            // adjust the scales depending on the type of stretch to apply
-            switch (StretchType)
-            {
-                case StretchType.None:
-                    desiredScale = Vector2.One;
-                    break;
-                case StretchType.Uniform:
-                    desiredScale.X = desiredScale.Y = Math.Min(desiredScale.X, desiredScale.Y);
-                    break;
-                case StretchType.UniformToFill:
-                    desiredScale.X = desiredScale.Y = Math.Max(desiredScale.X, desiredScale.Y);
-                    break;
-                case StretchType.FillOnStretch:
-                    // if we are only measuring we prefer keeping the image resolution than using all the available space.
-                    if (isMeasuring)
-                        desiredScale.X = desiredScale.Y = Math.Min(desiredScale.X, desiredScale.Y); 
-                    break;
-                case StretchType.Fill:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            // adjust the scales depending on the stretch directions
-            switch (StretchDirection)
-            {
-                case StretchDirection.Both:
-                    break;
-                case StretchDirection.DownOnly:
-                    desiredScale.X = Math.Min(desiredScale.X, 1);
-                    desiredScale.Y = Math.Min(desiredScale.Y, 1);
-                    break;
-                case StretchDirection.UpOnly:
-                    desiredScale.X = Math.Max(1, desiredScale.X);
-                    desiredScale.Y = Math.Max(1, desiredScale.Y);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            // update the desired size based on the desired scales
-            desiredSize = new Vector3(idealSize.X * desiredScale.X, idealSize.Y * desiredScale.Y, 0f);
-
-            return desiredSize;
         }
 
         private void InvalidateMeasure(object sender, EventArgs eventArgs)
