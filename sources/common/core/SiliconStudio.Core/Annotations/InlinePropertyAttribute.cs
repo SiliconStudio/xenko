@@ -12,5 +12,9 @@ namespace SiliconStudio.Core.Annotations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class | AttributeTargets.Interface)]
     public sealed class InlinePropertyAttribute : Attribute
     {
+        /// <summary>
+        /// Gets or sets whether to expand the inline property in the UI. The default is <see cref="ExpandRule.Never"/>.
+        /// </summary>
+        public ExpandRule Expand { get; set; } = ExpandRule.Never;
     }
 }
