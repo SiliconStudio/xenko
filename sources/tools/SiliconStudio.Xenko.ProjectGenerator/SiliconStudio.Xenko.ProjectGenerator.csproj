@@ -22,6 +22,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Mono.Options">
       <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
     </Reference>
@@ -98,6 +99,9 @@
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.iOS.csproj.t4">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.projitems.t4" />
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.shproj.t4" />
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.targets.t4" />
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Windows.csproj.t4">
       <SubType>Designer</SubType>
     </None>
@@ -114,6 +118,7 @@
     <None Include="Templates\Xenko.UnitTests\Info.plist.t4" />
     <None Include="Templates\Xenko.UnitTests\PackageWindowsPhone.appxmanifest.t4" />
     <None Include="Templates\Xenko.UnitTests\PackageWindowsStore.appxmanifest.t4" />
+    <None Include="Templates\Xenko.UnitTests\readme.md.t4" />
     <None Include="Templates\Xenko.UnitTests\Xenko.UnitTests.ttproj" />
     <None Include="Templates\Xenko.UnitTests\Properties\AndroidManifest.xml.t4">
       <SubType>Designer</SubType>

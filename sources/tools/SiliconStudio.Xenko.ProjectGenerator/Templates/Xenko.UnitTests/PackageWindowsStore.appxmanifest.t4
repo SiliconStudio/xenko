@@ -1,6 +1,6 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
 <# var identityGuid = System.Guid.NewGuid(); #>
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
 
   <Identity Name="<#= identityGuid.ToString().ToLowerInvariant() #>"

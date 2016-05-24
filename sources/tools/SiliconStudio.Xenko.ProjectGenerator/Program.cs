@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using Mono.Options;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
@@ -21,6 +23,7 @@ using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.ProjectTemplating;
+using Project = SiliconStudio.Core.VisualStudio.Project;
 
 namespace SiliconStudio.Xenko.ProjectGenerator
 {
@@ -124,6 +127,13 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             var options = new Dictionary<string, object>();
 
+            // When generating over an existing set of files, retrieve the existing IDs
+            // for better incrementality
+            Guid projectGuid, sharedGuid, assetId;
+            GetExistingGuid(outputDirectory, name + ".Windows.csproj", out projectGuid);
+            GetExistingGuid(outputDirectory, name + ".Shared.shproj", out sharedGuid);
+            GetExistingAssetId(outputDirectory, name + ".xkpkg", out assetId);
+
             var session = new PackageSession();
             var result = new LoggerResult();
 
@@ -133,6 +143,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             templateGeneratorParameters.Name = name;
             templateGeneratorParameters.Logger = result;
             templateGeneratorParameters.Description = new TemplateDescription();
+            templateGeneratorParameters.Id = assetId;
 
             if (!PackageUnitTestGenerator.Default.PrepareForRun(templateGeneratorParameters).Result)
             {
@@ -168,9 +179,9 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             options["Package"] = package;
             options["Platforms"] = new List<SolutionPlatform>(AssetRegistry.SupportedPlatforms);
             options["XenkoSdkRelativeDir"] = xenkoRelativePath;
+            options["SharedProjectGuid"] = sharedGuid;
 
             // Generate project template
-            var projectGuid = Guid.NewGuid();
             result = projectTemplate.Generate(outputDirectory, name, projectGuid, options);
             if (result.HasErrors)
             {
@@ -220,6 +231,49 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             {
                 Console.WriteLine("Error saving package: {0}", result.ToText());
                 return;
+            }
+        }
+
+        private static void GetExistingAssetId(string outputDirectory, string name, out Guid guid)
+        {
+            guid = Guid.NewGuid();
+
+            try
+            {
+                using (var stream = new FileStream(Path.Combine(outputDirectory, name), FileMode.Open, FileAccess.Read))
+                {
+                    bool b;
+                    var asset = AssetSerializer.Default.Load(stream, null, null, out b) as Asset;
+                    if (asset != null)
+                    {
+                        guid = asset.Id;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore exception
+            }
+        }
+
+        private static void GetExistingGuid(string outputDirectory, string name, out Guid guid)
+        {
+            // Initialize to new Guid.
+            guid = Guid.NewGuid();
+
+            try
+            {
+                Microsoft.Build.Evaluation.Project p = new Microsoft.Build.Evaluation.Project(Path.Combine(outputDirectory, name));
+
+                var property = p.Properties.Where((prop => prop.Name == "ProjectGuid")).FirstOrDefault();
+                if (property != null)
+                {
+                    Guid.TryParse(property.EvaluatedValue, out guid);
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore exception
             }
         }
 
