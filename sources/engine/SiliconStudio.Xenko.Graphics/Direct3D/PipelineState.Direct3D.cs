@@ -51,6 +51,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // States
             blendState = pipelineStateCache.BlendStateCache.Instantiate(pipelineStateDescription.BlendState);
+
             this.sampleMask = pipelineStateDescription.SampleMask;
             rasterizerState = pipelineStateCache.RasterizerStateCache.Instantiate(pipelineStateDescription.RasterizerState);
             depthStencilState = pipelineStateCache.DepthStencilStateCache.Instantiate(pipelineStateDescription.DepthStencilState);
@@ -236,6 +237,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Used for quick removal
             private readonly Dictionary<TValue, TKey> reverse = new Dictionary<TValue, TKey>();
 
+            private readonly Dictionary<TValue, int> counter = new Dictionary<TValue, int>();
+
             private readonly Func<TSource, TKey> computeKey;
             private readonly Func<TSource, TValue> computeValue;
 
@@ -256,10 +259,11 @@ namespace SiliconStudio.Xenko.Graphics
                         value = computeValue(source);
                         storage.Add(key, value);
                         reverse.Add(value, key);
+                        counter.Add(value, 1);
                     }
                     else
                     {
-                        value.AddReference();
+                        counter[value] = counter[value] + 1;
                     }
 
                     return value;
@@ -271,9 +275,14 @@ namespace SiliconStudio.Xenko.Graphics
                 // Should we remove it from the cache?
                 lock (lockObject)
                 {
-                    int newRefCount = value.Release();
-                    if (newRefCount == 0)
+                    int refCount;
+                    if (!counter.TryGetValue(value, out refCount))
+                        return;
+
+                    counter[value] = --refCount;
+                    if (refCount == 0)
                     {
+                        counter.Remove(value);
                         reverse.Remove(value);
                         TKey key;
                         if (reverse.TryGetValue(value, out key))
@@ -291,11 +300,12 @@ namespace SiliconStudio.Xenko.Graphics
                     // Release everything
                     foreach (var entry in reverse)
                     {
-                        while (entry.Key.Release() > 0) {}
+                        entry.Key.Release();
                     }
 
                     reverse.Clear();
                     storage.Clear();
+                    counter.Clear();
                 }
             }
         }
