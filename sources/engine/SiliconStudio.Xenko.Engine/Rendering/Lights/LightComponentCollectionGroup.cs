@@ -57,8 +57,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <summary>
         /// Initializes a new instance of the <see cref="LightComponentCollectionGroup"/> class.
         /// </summary>
-        internal LightComponentCollectionGroup()
+        internal LightComponentCollectionGroup(Type lightType)
         {
+            LightType = lightType;
             lightCollectionPool = new PoolListStruct<LightComponentCollection>(32, LightComponentCollectionFactory);
             groupMasks = new uint[32 * 2];
             allLights = new List<LightComponent>(128);
@@ -131,6 +132,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 return lightCollectionPool.Count;
             }
         }
+
+        /// <summary>
+        /// Gets the light type this collection contains.
+        /// </summary>
+        public Type LightType { get; }
 
         internal unsafe void Clear()
         {

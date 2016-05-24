@@ -17,17 +17,17 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
     /// </summary>
     internal class ShaderConverter
     {
-        private bool isOpenGLES;
-
-        private bool isOpenGLES3;
+        private GlslShaderPlatform shaderPlatform;
+        private int shaderVersion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderConverter"/> class.
         /// </summary>
-        public ShaderConverter(bool isOpenGLES, bool isOpenGLES3)
+        public ShaderConverter(GlslShaderPlatform shaderPlatform, int shaderVersion)
         {
-            this.isOpenGLES = isOpenGLES;
-            this.isOpenGLES3 = isOpenGLES3;
+            this.shaderPlatform = shaderPlatform;
+            this.shaderVersion = shaderVersion;
+
             Log = Console.Out;
             IsVerboseLog = true;
             Macros = new List<ShaderMacro>();
@@ -129,20 +129,21 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         {
             try
             {
-                var convertor = new HlslToGlslConvertor(hlslEntryPoint, stage, ShaderModel.Model40) // TODO HARDCODED VALUE to change
+                var convertor = new HlslToGlslConvertor(shaderPlatform, shaderVersion, hlslEntryPoint, stage, ShaderModel.Model40) // TODO HARDCODED VALUE to change
                 {
-                    KeepConstantBuffer = !isOpenGLES || isOpenGLES3,
-                    TextureFunctionsCompatibilityProfile = isOpenGLES && !isOpenGLES3,
-                    NoSwapForBinaryMatrixOperation = true,
+                    // Those settings are now default values
+                    //NoSwapForBinaryMatrixOperation = true,
+                    //UnrollForLoops = true,
+                    //ViewFrustumRemap = true,
+                    //FlipRenderTarget = true,
+                    //KeepConstantBuffer = !isOpenGLES || isOpenGLES3,
+                    //TextureFunctionsCompatibilityProfile = isOpenGLES && !isOpenGLES3,
+                    //KeepNonUniformArrayInitializers = !isOpenGLES,
+
                     UseBindingLayout = false,
                     UseLocationLayout = false,
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
-                    ViewFrustumRemap = true,
-                    FlipRenderTarget = true,
-                    KeepNonUniformArrayInitializers = !isOpenGLES,
-                    IsOpenGLES2 = isOpenGLES && !isOpenGLES3,
-                    UnrollForLoops = true,
                 };
                 convertor.Run(result);
 

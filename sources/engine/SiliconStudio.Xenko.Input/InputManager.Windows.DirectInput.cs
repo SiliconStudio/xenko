@@ -13,12 +13,12 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManagerBase
+    public partial class InputManager
     {
         [DllImport(Core.NativeLibrary.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool IsXInputDevice(ref Guid guid);
 
-        static InputManagerBase()
+        static InputManager()
         {
             Core.NativeLibrary.PreloadLibrary(Core.NativeLibrary.LibraryName);
         }

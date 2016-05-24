@@ -20,37 +20,10 @@ namespace SiliconStudio.Xenko.Rendering
 {
     internal static partial class ShaderMixins
     {
-        internal partial class XenkoForwardShadingEffect  : IShaderMixinBuilder
+        internal partial class XenkoLighting  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "XenkoEffectBase");
-                var extensionPixelStageSurfaceShaders = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
-                if (extensionPixelStageSurfaceShaders != null)
-                {
-                    context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
-
-                    {
-                        var __mixinToCompose__ = (extensionPixelStageSurfaceShaders);
-                        var __subMixin = new ShaderMixinSource();
-                        context.PushComposition(mixin, "materialPixelStage", __subMixin);
-                        context.Mixin(__subMixin, __mixinToCompose__);
-                        context.PopComposition();
-                    }
-
-                    {
-                        var __mixinToCompose__ = context.GetParam(MaterialKeys.PixelStageStreamInitializer);
-                        var __subMixin = new ShaderMixinSource();
-                        context.PushComposition(mixin, "streamInitializerPixelStage", __subMixin);
-                        context.Mixin(__subMixin, __mixinToCompose__);
-                        context.PopComposition();
-                    }
-                    var extensionPixelStageSurfaceFilter = context.GetParam(MaterialKeys.PixelStageSurfaceFilter);
-                    if (extensionPixelStageSurfaceFilter != null)
-                    {
-                        context.Mixin(mixin, (extensionPixelStageSurfaceFilter));
-                    }
-                }
                 var directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
                 if (directLightGroups != null)
                 {
@@ -83,6 +56,50 @@ namespace SiliconStudio.Xenko.Rendering
                         }
                     }
                 }
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("XenkoLighting", new XenkoLighting());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class XenkoForwardShadingEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "XenkoEffectBase");
+                var extensionPixelStageSurfaceShaders = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
+                if (extensionPixelStageSurfaceShaders != null)
+                {
+                    context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
+
+                    {
+                        var __mixinToCompose__ = (extensionPixelStageSurfaceShaders);
+                        var __subMixin = new ShaderMixinSource();
+                        context.PushComposition(mixin, "materialPixelStage", __subMixin);
+                        context.Mixin(__subMixin, __mixinToCompose__);
+                        context.PopComposition();
+                    }
+
+                    {
+                        var __mixinToCompose__ = context.GetParam(MaterialKeys.PixelStageStreamInitializer);
+                        var __subMixin = new ShaderMixinSource();
+                        context.PushComposition(mixin, "streamInitializerPixelStage", __subMixin);
+                        context.Mixin(__subMixin, __mixinToCompose__);
+                        context.PopComposition();
+                    }
+                    var extensionPixelStageSurfaceFilter = context.GetParam(MaterialKeys.PixelStageSurfaceFilter);
+                    if (extensionPixelStageSurfaceFilter != null)
+                    {
+                        context.Mixin(mixin, (extensionPixelStageSurfaceFilter));
+                    }
+                }
+                context.Mixin(mixin, "XenkoLighting");
                 if (context.ChildEffectName == "ShadowMapCaster")
                 {
                     context.Mixin(mixin, "ShadowMapCaster");

@@ -10,11 +10,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     {
         private const string FileExtensions = ".ssae";
 
-        private static readonly Type[] SupportedTypes = { typeof(SpriteStudioModelAsset), typeof(SpriteStudioAnimationAsset) };
-
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
+        public override IEnumerable<Type> RootAssetTypes
         {
-            return new AssetImporterParameters(SupportedTypes);
+            get
+            {
+                yield return typeof(SpriteStudioModelAsset);
+                yield return typeof(SpriteStudioAnimationAsset);
+            }
         }
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)

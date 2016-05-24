@@ -37,76 +37,70 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
             }
         }
 
-        public static void GetGLVersion(GraphicsProfile graphicsProfile, out int major, out int minor)
+        public static void GetGLVersion(GraphicsProfile graphicsProfile, out int version)
         {
             switch (graphicsProfile)
             {
                 case GraphicsProfile.Level_9_1:
                 case GraphicsProfile.Level_9_2:
                 case GraphicsProfile.Level_9_3:
-                    major = 2;
-                    minor = 0;
+                    version = 200;
                     return;
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
-                    major = 3;
-                    minor = 0;
+                    version = 300;
                     return;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
                 case GraphicsProfile.Level_11_2:
-                    major = 3;
-                    minor = 1;
+                    version = 310;
                     return;
                 default:
                     throw new ArgumentOutOfRangeException("graphicsProfile");
             }
         }
 
-        public static GraphicsProfile GetFeatureLevel(int major, int minor)
+        public static GraphicsProfile GetFeatureLevel(int version)
         {
-            if (major >= 3)
+            if (version >= 300)
             {
-                if (minor >= 1)
+                if (version >= 310)
                     return GraphicsProfile.Level_11_0; // missing tessellation and geometry shaders
                 return GraphicsProfile.Level_10_0;
             }
             return GraphicsProfile.Level_9_3;
         }
 #else
-        public static void GetGLVersion(GraphicsProfile graphicsProfile, out int major, out int minor)
+        public static void GetGLVersion(GraphicsProfile graphicsProfile, out int version)
         {
             switch (graphicsProfile)
             {
                 case GraphicsProfile.Level_9_1:
                 case GraphicsProfile.Level_9_2:
                 case GraphicsProfile.Level_9_3:
-                    major = 3;
-                    minor = 3;
+                    version = 330;
                     return;
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
-                    major = 4;
-                    minor = 1;
+                    version = 410;
                     return;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
                 case GraphicsProfile.Level_11_2:
-                    major = 4;
-                    minor = 4;
+                    version = 440;
                     return;
                 default:
                     throw new ArgumentOutOfRangeException("graphicsProfile");
             }
         }
 
-        public static GraphicsProfile GetFeatureLevel(int major, int minor)
+        public static GraphicsProfile GetFeatureLevel(int version)
         {
-            if (major >= 4)
+            if (version >= 400)
             {
-                if (minor >= 4)
+                if (version >= 440)
                     return GraphicsProfile.Level_11_0;
-                if (minor >= 1)
+                if (version >= 410)
                     return GraphicsProfile.Level_10_0;
             }
             return GraphicsProfile.Level_9_1;
@@ -136,10 +130,14 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
 
         private readonly static Regex MatchOpenGLVersion = new Regex(@"OpenGL\s+ES\s+([0-9\.]+)");
 
-        public static bool GetCurrentGLVersion(out int versionMajor, out int versionMinor)
+        /// <summary>
+        /// Gets current GL version.
+        /// </summary>
+        /// <param name="version">OpenGL version encoded as major * 100 + minor * 10.</param>
+        /// <returns></returns>
+        public static bool GetCurrentGLVersion(out int version)
         {
-            versionMajor = 0;
-            versionMinor = 0;
+            version = 0;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             var versionVendorText = GL.GetString(StringName.Version);
@@ -150,6 +148,8 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
             var versionText = match.Groups[1].Value;
             var dotIndex = versionText.IndexOf(".");
 
+            int versionMajor = 0;
+            int versionMinor = 0;
             if (!int.TryParse(dotIndex != -1 ? versionText.Substring(0, dotIndex) : versionText, out versionMajor))
             {
                 return false;
@@ -157,12 +157,22 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
 
             if (dotIndex == -1)
             {
+                version = versionMajor * 100;
                 return true;
             }
-            return int.TryParse(versionText.Substring(dotIndex + 1), out versionMinor);
+            if (!int.TryParse(versionText.Substring(dotIndex + 1), out versionMinor))
+                return false;
+
+            version = versionMajor * 100 + versionMinor * 10;
+            return true;
 #else
+            int versionMajor = 0;
+            int versionMinor = 0;
+
             GL.GetInteger(GetPName.MajorVersion, out versionMajor);
             GL.GetInteger(GetPName.MinorVersion, out versionMinor);
+
+            version = versionMajor * 100 + versionMinor * 10;
             return true;
 #endif
         }

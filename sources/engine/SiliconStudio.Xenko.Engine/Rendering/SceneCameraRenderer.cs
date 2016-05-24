@@ -98,6 +98,9 @@ namespace SiliconStudio.Xenko.Rendering
             // Gets the current camera state from the slot
             var camera = context.GetCameraFromSlot(Camera);
 
+            //TODO camera can be null but we still push it as null... review me please.
+            //TODO this is needed or if we have no camera we don't render anything e.g. UI only
+
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
             using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
@@ -116,6 +119,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Gets the current camera state from the slot
             var camera = context.RenderContext.GetCameraFromSlot(Camera);
+
+            //TODO camera can be null but we still push it as null... review me please.
+            //TODO this is needed or if we have no camera we don't render anything e.g. UI only
 
             // Draw this camera.
             using (context.RenderContext.PushTagAndRestore(Current, this))

@@ -27,13 +27,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
-        /// <inheritdoc/>
         protected internal override bool OnRecreate()
         {
             base.OnRecreate();

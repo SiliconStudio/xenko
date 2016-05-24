@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 if (string.IsNullOrEmpty(assetFriendlyName))
                 {
                     var referenceAsset = AttachedReferenceManager.GetAttachedReference(runtimeAsset);
-                    assetFriendlyName = string.Format("{0}:{1}", referenceAsset.Id, referenceAsset.Url);
+                    assetFriendlyName = $"{referenceAsset.Id}:{referenceAsset.Url}";
                 }
 
                 return assetFriendlyName;

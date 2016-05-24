@@ -21,6 +21,11 @@ namespace SiliconStudio.Presentation.Behaviors
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object), typeof(OnEventSetPropertyBehavior));
 
         /// <summary>
+        /// Identifies the <see cref="Target"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty TargetProperty = DependencyProperty.Register("Target", typeof(DependencyObject), typeof(OnEventSetPropertyBehavior));
+
+        /// <summary>
         /// Gets or sets the <see cref="DependencyProperty"/> to set when the event is raised.
         /// </summary>
         public DependencyProperty Property { get { return (DependencyProperty)GetValue(PropertyProperty); } set { SetValue(PropertyProperty, value); } }
@@ -30,10 +35,17 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         public object Value { get { return GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
 
+        /// <summary>
+        /// Gets or sets the target control to set the dependency property.
+        /// If null, it will be set on the control hosting this behavior.
+        /// </summary>
+        public DependencyObject Target { get { return (DependencyObject)GetValue(TargetProperty); } set { SetValue(TargetProperty, value); } }
+
         /// <inheritdoc/>
         protected override void OnEvent()
         {
-            AssociatedObject.SetCurrentValue(Property, Value);
+            var target = Target ?? AssociatedObject;
+            target.SetCurrentValue(Property, Value);
         }
     }
 }

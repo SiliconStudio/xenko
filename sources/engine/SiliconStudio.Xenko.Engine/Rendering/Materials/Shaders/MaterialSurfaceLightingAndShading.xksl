@@ -27,6 +27,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             float3 directLightingContribution = 0;
             foreach(var lightGroup in directLightGroups)
             {
+                lightGroup.PrepareDirectLights();
+
                 const int maxLightCount = lightGroup.GetMaxLightCount();
                 int count = lightGroup.GetLightCount();
                 

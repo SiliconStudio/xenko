@@ -46,8 +46,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             //TODO string comparison ...?
             var isPicking = renderViewStage.RenderStage.Name == "Picking";
 
-            var device = RenderSystem.GraphicsDevice;
-
             bool hasBegin = false;
             for (var index = startIndex; index < endIndex; index++)
             {

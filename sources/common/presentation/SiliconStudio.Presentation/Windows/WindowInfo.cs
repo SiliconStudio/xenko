@@ -64,8 +64,7 @@ namespace SiliconStudio.Presentation.Windows
             internal set
             {
                 isShown = value;
-                if (Window != null)
-                    hwnd = ToHwnd(Window);
+                ForceUpdateHwnd();
             }
         }
 
@@ -168,6 +167,12 @@ namespace SiliconStudio.Presentation.Windows
             }
         }
 
+        internal void ForceUpdateHwnd()
+        {
+            if (Window != null)
+                hwnd = ToHwnd(Window);
+        }
+
         /// <inheritdoc/>
         public static bool operator ==(WindowInfo left, WindowInfo right)
         {
@@ -198,7 +203,7 @@ namespace SiliconStudio.Presentation.Windows
             return Equals(Hwnd, other);
         }
 
-        private static IntPtr ToHwnd(Window window)
+        internal static IntPtr ToHwnd(Window window)
         {
             return window != null ? new WindowInteropHelper(window).Handle : IntPtr.Zero;
         }

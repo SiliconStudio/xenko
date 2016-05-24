@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
+    <Compile Include="Controls\PopupModalWindow.cs" />
     <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
     <Compile Include="Dirtiables\DirtiableSnapshot.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Windows\HwndHelper.cs" />
     <Compile Include="Controls\ModalWindow.cs" />
     <Compile Include="Windows\WindowInfo.cs" />
+    <Compile Include="Windows\WindowInitialPosition.cs" />
     <Compile Include="Windows\WindowOwner.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />

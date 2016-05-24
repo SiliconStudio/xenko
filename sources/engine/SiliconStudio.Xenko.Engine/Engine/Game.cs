@@ -237,10 +237,41 @@ namespace SiliconStudio.Xenko.Engine
                     {
                         deviceManager.PreferredGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
                     }
+
                     if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
                     if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
+
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
+                }
+            }
+        }
+
+        private void ConfirmRenderingSettings()
+        {
+            var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+            if (renderingSettings == null) return;
+
+            var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+
+            deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+
+            //if our device height is actually smaller then requested we use the device one
+            deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Math.Min(renderingSettings.DefaultBackBufferHeight, Window.ClientBounds.Height);
+            //if our device width is actually smaller then requested we use the device one
+            deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Math.Min(renderingSettings.DefaultBackBufferWidth, Window.ClientBounds.Width);
+
+            if (renderingSettings.AdaptBackBufferToScreen)
+            {
+                var deviceAr = Window.ClientBounds.Width / (float)Window.ClientBounds.Height;
+
+                if (renderingSettings.DefaultBackBufferHeight > renderingSettings.DefaultBackBufferWidth)
+                {
+                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
+                }
+                else
+                { 
+                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
                 }
             }
         }
@@ -249,17 +280,10 @@ namespace SiliconStudio.Xenko.Engine
         {
             base.Initialize();
 
-            //now we probably are capable of detecting the gpu so we try again settings
+            //now we probably are capable of detecting the gpu/cpu/etc so we confirm rendering settings
             if (AutoLoadDefaultSettings)
             {
-                var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
-                if (renderingSettings != null)
-                {
-                    var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
-                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
-                }
+                ConfirmRenderingSettings();
             }
 
             // ---------------------------------------------------------

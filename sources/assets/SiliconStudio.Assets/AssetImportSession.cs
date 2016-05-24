@@ -53,6 +53,7 @@ namespace SiliconStudio.Assets
     ///  importSession.Import();
     /// </code>
     /// </remarks>
+    [Obsolete("This class will be removed soon")]
     public sealed class AssetImportSession
     {
         private readonly PackageSession session;
@@ -221,36 +222,6 @@ namespace SiliconStudio.Assets
             }
 
             return RegisterImporter(file, package, directory, importer);
-        }
-
-        /// <summary>
-        /// Determines whether the specified asset is supporting re-import.
-        /// </summary>
-        /// <param name="assetItem">The asset item.</param>
-        /// <returns><c>true</c> if the specified asset is supporting re-import; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">assetItem</exception>
-        public bool IsExistingAssetForReImportSupported(AssetItem assetItem)
-        {
-            if (assetItem == null) throw new ArgumentNullException("assetItem");
-            if (assetItem.Package == null) return false;
-            if (assetItem.Package.Session != session) return false;
-
-            var asset = assetItem.Asset as AssetImportTracked;
-            if (asset == null) return false;
-            if (asset.Base == null) return false;
-            if (asset.Source == null) return false;
-
-            var baseAsset = asset.Base.Asset as AssetImportTracked;
-            if (baseAsset == null) return false;
-
-            if (baseAsset.ImporterId.HasValue)
-            {
-                var importer = AssetRegistry.FindImporterById(baseAsset.ImporterId.Value);
-                if (importer == null)
-                    return false;
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -1179,27 +1150,12 @@ namespace SiliconStudio.Assets
                 return true;
 
             // If the new asset version is a reference, we can try to merge it
-            if (node.Asset2Node != null && node.Asset2Node.Instance != null)
-                return AttachedReferenceManager.GetAttachedReference(node.Asset2Node.Instance) != null;
-
-            return false;
+            return AttachedReferenceManager.GetAttachedReference(node.Asset2Node?.Instance) != null;
         }
 
         private static IContentReference GetContentReference(object instance)
         {
-            if (instance == null)
-            {
-                return null;
-            }
-
-            var contentReference = instance as IContentReference;
-            if (contentReference != null)
-            {
-                return contentReference;
-            }
-
-            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
-            return attachedReference;
+            return instance as IContentReference ?? AttachedReferenceManager.GetAttachedReference(instance);
         }
 
         private Diff3ChangeType MergeImportPolicy(Diff3Node node)

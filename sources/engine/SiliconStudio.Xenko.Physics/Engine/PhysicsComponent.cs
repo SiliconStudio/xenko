@@ -688,6 +688,7 @@ namespace SiliconStudio.Xenko.Engine
         protected virtual void OnDetach()
         {
             if (NativeCollisionObject == null) return;
+
             NativeCollisionObject.Dispose();
             NativeCollisionObject = null;
         }
