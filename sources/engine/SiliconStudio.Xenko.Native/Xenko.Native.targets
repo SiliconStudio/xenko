@@ -10,7 +10,7 @@
     <SiliconStudioXenkoNativeObjFiles>$(SiliconStudioXenkoNativeObjFiles) %(CFiles.Filename).o</SiliconStudioXenkoNativeObjFiles>   
     <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)..\Bin\$(SiliconStudioBuildDirectory)</SiliconStudioXenkoSdkBinDir>
     <SiliconStudioXenkoNativeAndroidGCC>-nostdlib -lstdc++ -lc -lm</SiliconStudioXenkoNativeAndroidGCC>
-    <SiliconStudioXenkoNativeClang>-fno-ms-extensions -nobuiltininc -nostdinc++ -Wall -Wno-macro-redefined -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -I&quot;$(XenkoDependenciesDir)\NativePath\standard&quot;</SiliconStudioXenkoNativeClang>
+    <SiliconStudioXenkoNativeClang>-Wall -Wno-macro-redefined -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -I&quot;$(XenkoDependenciesDir)\NativePath\standard&quot;</SiliconStudioXenkoNativeClang>
   </PropertyGroup>
 
   <Choose>
@@ -31,10 +31,10 @@
   </PropertyGroup>
 
   <Target Name="CompileNativeClang_Windows" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows'" BeforeTargets="Build">
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot;  -fms-extensions -DWIN_EXPORT -target i686-pc-windows-msvc" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -fno-ms-extensions -nobuiltininc -nostdinc++ $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot;  -fms-extensions -DWIN_EXPORT -target i686-pc-windows-msvc" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
     
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot;  -fms-extensions -DWIN_EXPORT -target x86_64-pc-windows-msvc" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -fno-ms-extensions -nobuiltininc -nostdinc++ $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot;  -fms-extensions -DWIN_EXPORT -target x86_64-pc-windows-msvc" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
   </Target>
 
