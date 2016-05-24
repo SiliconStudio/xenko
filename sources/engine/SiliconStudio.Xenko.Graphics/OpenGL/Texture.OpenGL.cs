@@ -328,7 +328,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (StagingData != IntPtr.Zero)
@@ -361,7 +361,7 @@ namespace SiliconStudio.Xenko.Graphics
             stencilId = 0;
             pixelBufferObjectId = 0;
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         private static void ConvertDepthFormat(GraphicsDevice graphicsDevice, PixelFormat requestedFormat, out RenderbufferStorage depthFormat, out RenderbufferStorage stencilFormat)

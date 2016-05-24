@@ -83,12 +83,12 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             ReleaseComObject(ref shaderResourceView);
             ReleaseComObject(ref unorderedAccessView);
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
     }
 }

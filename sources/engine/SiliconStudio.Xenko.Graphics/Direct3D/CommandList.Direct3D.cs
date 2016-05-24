@@ -51,11 +51,11 @@ namespace SiliconStudio.Xenko.Graphics
         internal SharpDX.Direct3D11.DeviceContext NativeDeviceContext => nativeDeviceContext;
 
         /// <inheritdoc/>
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             Utilities.Dispose(ref nativeDeviceProfiler);
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         public void Reset()

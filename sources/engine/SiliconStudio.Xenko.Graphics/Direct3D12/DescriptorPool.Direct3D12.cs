@@ -54,8 +54,12 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
+            ReleaseComObject(ref SrvHeap);
+            ReleaseComObject(ref SamplerHeap);
+
+            base.OnDestroyed();
         }
     }
 }
