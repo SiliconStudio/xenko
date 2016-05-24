@@ -105,6 +105,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (iUnknownObject != null)
             {
                 var refCountResult = iUnknownObject.Release();
+                Debug.Assert(refCountResult >= 0);
                 comObject = null;
             }
         }
