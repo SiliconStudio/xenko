@@ -22,13 +22,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
             base.RenderColor(element, context);
 
             var button = (Button)element;
-            var color = button.RenderOpacity * Color.White;
-            
-            var image = button.ButtonImage;
-            if(image?.Texture == null)
+            var sprite = button.ButtonImage;
+            if (sprite?.Texture == null)
                 return;
 
-            Batch.DrawImage(image.Texture, ref element.WorldMatrixInternal, ref image.RegionInternal, ref element.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+            var color = element.RenderOpacity * Color.White;
+            Batch.DrawImage(sprite.Texture, ref element.WorldMatrixInternal, ref sprite.RegionInternal, ref element.RenderSizeInternal, ref sprite.BordersInternal, ref color, context.DepthBias, sprite.Orientation);
         }
     }
 }
