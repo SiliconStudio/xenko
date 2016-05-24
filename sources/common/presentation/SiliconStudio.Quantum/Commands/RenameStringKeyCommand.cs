@@ -7,7 +7,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RenameStringKeyCommand : NodeCommandBase
+    public class RenameStringKeyCommand : SyncNodeCommandBase
     {
         /// <inheritdoc/>
         public override string Name => "RenameStringKey";
@@ -29,7 +29,7 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        public override void Execute(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
             var oldName = index;
             var newName = new Index(parameter);

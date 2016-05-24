@@ -102,7 +102,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitArrayItem(array, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
                 var assetBase = item as AssetBase;
-                var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(item);
                 if (assetReference != null)
                 {
                     AddLink(item,
@@ -164,7 +164,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitCollectionItem(collection, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
                 var assetBase = item as AssetBase;
-                var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(item);
 
                 // We cannot set links if we do not have indexer accessor
                 if (!descriptor.HasIndexerAccessors)
@@ -226,7 +226,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitDictionaryKeyValue(dictionaryObj, descriptor, key, keyDescriptor, value, valueDescriptor);
                 var assetReference = value as AssetReference;
                 var assetBase = value as AssetBase;
-                var attachedReference = value != null ? AttachedReferenceManager.GetAttachedReference(value) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(value);
                 if (assetReference != null)
                 {
                     AddLink(assetReference,
@@ -288,7 +288,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitObjectMember(container, containerDescriptor, member, value);
                 var assetReference = value as AssetReference;
                 var assetBase = value as AssetBase;
-                var attachedReference = value != null ? AttachedReferenceManager.GetAttachedReference(value) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(value);
                 if (assetReference != null)
                 {
                     AddLink(assetReference,

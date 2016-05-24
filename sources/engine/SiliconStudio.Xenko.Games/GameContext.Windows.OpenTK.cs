@@ -59,26 +59,24 @@ namespace SiliconStudio.Xenko.Games
 
             if (control == null)
             {
-                int versionMajor, versionMinor;
+                int version;
                 if (RequestedGraphicsProfile == null || RequestedGraphicsProfile.Length == 0)
                 {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    versionMajor = 3;
-                    versionMinor = 0;
+                    version = 300;
 #else
                     // PC: 4.3 is commonly available (= compute shaders)
                     // MacOS X: 4.1 maximum
-                    versionMajor = 4;
-                    versionMinor = 1;
+                    version = 410;
 #endif
-                    Control = TryGameWindow(requestedWidth, requestedHeight, graphicMode, versionMajor, versionMinor, creationFlags);
+                    Control = TryGameWindow(requestedWidth, requestedHeight, graphicMode, version / 100, (version % 100) / 10, creationFlags);
                 }
                 else
                 {
                     foreach (var profile in RequestedGraphicsProfile)
                     {
-                        OpenGLUtils.GetGLVersion(profile, out versionMajor, out versionMinor);
-                        var gameWindow = TryGameWindow(requestedWidth, requestedHeight, graphicMode, versionMajor, versionMinor, creationFlags);
+                        OpenGLUtils.GetGLVersion(profile, out version);
+                        var gameWindow = TryGameWindow(requestedWidth, requestedHeight, graphicMode, version / 100, (version % 100) / 10, creationFlags);
                         if (gameWindow != null)
                         {
                             Control = gameWindow;

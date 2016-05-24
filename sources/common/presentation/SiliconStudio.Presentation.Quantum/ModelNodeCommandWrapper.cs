@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Core.Transactions;
+using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Quantum
         
         public INodeCommand NodeCommand { get; }
 
-        public override void Invoke(object parameter)
+        public override async Task Invoke(object parameter)
         {
             using (var transaction = ActionService?.CreateTransaction())
             {
@@ -37,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (modelNode == null)
                     throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-                NodeCommand.Execute(modelNode.Content, index, parameter);
+                await NodeCommand.Execute(modelNode.Content, index, parameter);
                 ActionService?.SetName(transaction, ActionName);
             }
         }

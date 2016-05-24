@@ -45,22 +45,16 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                 AssetItem defaultScene = null;
 
                 // If game settings is found, try to find default scene inside
-                if (gameSettingsAssetItem != null)
+                var defaultSceneRuntime = ((GameSettingsAsset)gameSettingsAssetItem?.Asset)?.DefaultScene;
+                var defaultSceneReference = AttachedReferenceManager.GetAttachedReference(defaultSceneRuntime);
+                if (defaultSceneReference != null)
                 {
-                    var defaultSceneRuntime = ((GameSettingsAsset)gameSettingsAssetItem.Asset).DefaultScene;
-                    if (defaultSceneRuntime != null)
-                    {
-                        var defaultSceneReference = AttachedReferenceManager.GetAttachedReference(defaultSceneRuntime);
-                        if (defaultSceneReference != null)
-                        {
-                            // Find it either by Url or Id
-                            defaultScene = package.Assets.Find(defaultSceneReference.Id) ?? package.Assets.Find(defaultSceneReference.Url);
+                    // Find it either by Url or Id
+                    defaultScene = package.Assets.Find(defaultSceneReference.Id) ?? package.Assets.Find(defaultSceneReference.Url);
 
-                            // Check it is actually a scene asset
-                            if (defaultScene != null && !(defaultScene.Asset is SceneAsset))
-                                defaultScene = null;
-                        }
-                    }
+                    // Check it is actually a scene asset
+                    if (defaultScene != null && !(defaultScene.Asset is SceneAsset))
+                        defaultScene = null;
                 }
 
                 // Find or create default scene

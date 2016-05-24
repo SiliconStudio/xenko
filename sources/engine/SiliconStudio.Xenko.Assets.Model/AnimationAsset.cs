@@ -74,13 +74,10 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
-            if (Skeleton != null)
+            var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
+            if (reference != null)
             {
-                var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
-                if (reference != null)
-                {
-                    yield return new AssetReference<Asset>(reference.Id, reference.Url);
-                }
+                yield return new AssetReference<Asset>(reference.Id, reference.Url);
             }
         }
     }

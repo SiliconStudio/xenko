@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Defines the structures for shadow mapping.
     /// </summary>
-    class ShadowMapGroup : ShadowGroup, ShadowMapCommon
+    class ShadowMapGroup<MemberName PerLighting> : ShadowGroup, ShadowMapCommon<PerLighting>
     {
     };
 }

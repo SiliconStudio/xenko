@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,27 +40,136 @@ namespace SiliconStudio.Presentation.Tests
         public static async Task TaskWithTimeout(Task task)
         {
             await Task.WhenAny(task, Timeout);
+            if (task.Exception != null)
+                ExceptionDispatchInfo.Capture(task.Exception.InnerException).Throw();
+
             Assert.True(task.IsCompleted, "Test timed out");
         }
 
-        public static Task NextMainWindowChanged()
+        public static Task NextMainWindowChanged(Window newMainWindow)
         {
             var tcs = new TaskCompletionSource<int>();
-            WindowManager.MainWindowChanged += (s, e) => { tcs?.SetResult(0); tcs = null; };
+            WindowManager.MainWindowChanged += (s, e) =>
+            {
+                if (tcs == null)
+                    return;
+
+                try
+                {
+                    Assert.AreEqual(newMainWindow, e.Window?.Window);
+                    tcs?.SetResult(0);
+                }
+                catch (AssertionException ex)
+                {
+                    tcs.SetException(ex);
+                }
+                finally
+                {
+                    tcs = null;
+                }
+            };
             return tcs.Task;
         }
 
-        public static Task NextModalWindowOpened()
+        public static Task NextMessageBoxOpened()
         {
             var tcs = new TaskCompletionSource<int>();
-            WindowManager.ModalWindowOpened += (s, e) => { tcs?.SetResult(0); tcs = null; };
+            WindowManager.ModalWindowOpened += (s, e) =>
+            {
+                if (tcs == null)
+                    return;
+
+                try
+                {
+                    Assert.IsNotNull(e.Window);
+                    Assert.IsNull(e.Window.Window);
+                    tcs?.SetResult(0);
+                }
+                catch (AssertionException ex)
+                {
+                    tcs.SetException(ex);
+                }
+                finally
+                {
+                    tcs = null;
+                }
+            };
             return tcs.Task;
         }
 
-        public static Task NextModalWindowClosed()
+        public static Task NextMessageBoxClosed()
         {
             var tcs = new TaskCompletionSource<int>();
-            WindowManager.ModalWindowClosed += (s, e) => { tcs?.SetResult(0); tcs = null; };
+            WindowManager.ModalWindowClosed += (s, e) =>
+            {
+                if (tcs == null)
+                    return;
+
+                try
+                {
+                    Assert.IsNotNull(e.Window);
+                    Assert.IsNull(e.Window.Window);
+                    tcs?.SetResult(0);
+                }
+                catch (AssertionException ex)
+                {
+                    tcs.SetException(ex);
+                }
+                finally
+                {
+                    tcs = null;
+                }
+            };
+            return tcs.Task;
+        }
+
+        public static Task NextModalWindowOpened(Window modalWindow)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            WindowManager.ModalWindowOpened += (s, e) =>
+            {
+                if (tcs == null)
+                    return;
+
+                try
+                {
+                    Assert.AreEqual(modalWindow, e.Window?.Window);
+                    tcs?.SetResult(0);
+                }
+                catch (AssertionException ex)
+                {
+                    tcs.SetException(ex);
+                }
+                finally
+                {
+                    tcs = null;
+                }
+            };
+            return tcs.Task;
+        }
+
+        public static Task NextModalWindowClosed(Window modalWindow)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            WindowManager.ModalWindowClosed += (s, e) =>
+            {
+                if (tcs == null)
+                    return;
+
+                try
+                {
+                    Assert.AreEqual(modalWindow, e.Window?.Window);
+                    tcs?.SetResult(0);
+                }
+                catch (AssertionException ex)
+                {
+                    tcs.SetException(ex);
+                }
+                finally
+                {
+                    tcs = null;
+                }
+            };
             return tcs.Task;
         }
 
