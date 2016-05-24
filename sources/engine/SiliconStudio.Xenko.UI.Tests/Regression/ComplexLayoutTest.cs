@@ -84,13 +84,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             ApplyTextBlockDefaultStyle(textOnly2);
             button5.Content = textOnly2;
 
-            var button6 = new ImageButton
+            var button6 = new Button
             {
                 Height = 50,
                 Margin = Thickness.UniformRectangle(5),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed")),
                 NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
+                SizeToContent = false,
             };
 
             var toggleButtonText = new TextBlock { Text = "Toggle button test", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
