@@ -233,6 +233,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Shaders\SDFFont.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SDFFont.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Shaders\UIEffect.cs">
       <DependentUpon>UIEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -567,6 +573,10 @@
     <None Include="Shaders\BackgroundEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SDFFont.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SDFFont.cs</LastGenOutput>
     </None>
     <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

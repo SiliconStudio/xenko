@@ -4,14 +4,12 @@
 namespace SiliconStudio.Xenko.Rendering
 {
 
-class ParticleComputeColorShader : ParticleBase
+class ParticleComputeColorShader : ParticleBase, SDFFont
 {
     // -------------------------------------
     // streams
     // -------------------------------------
     compose ComputeColor  baseColor;
-
-    //compose ComputeColor  baseIntensity;
 
     // Shading of the sprite
     stage override float4 Shading()
@@ -19,13 +17,18 @@ class ParticleComputeColorShader : ParticleBase
         // -----------------------------------------------
         // Base particle color
         // -----------------------------------------------        
-        float4 finalColor = base.Shading() * baseColor.Compute();
-//        finalColor.x = 1;
-//        finalColor.a = 0.1;
 
-        //// -----------------------------------------------
-        //// Color intensity------------------------------
-        //finalColor.rgb *= baseIntensity.Compute().rrr;
+        // ORIGINAL
+        // float4 finalColor = base.Shading() * baseColor.Compute();
+
+        // TEST ->
+        float4 finalColor = baseColor.Compute();
+
+        float4 letterColor = base.Shading();
+        letterColor.xyz *= 3;
+
+        finalColor = FontColor(finalColor, letterColor, float4(0, 1, 1, 1), 10);
+        // <- TEST
 
         return finalColor;
     }

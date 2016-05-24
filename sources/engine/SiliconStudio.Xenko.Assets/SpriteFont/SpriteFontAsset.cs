@@ -85,6 +85,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(50)]
         [Display(null, "Font")]
         public bool IsDynamic { get; set; }
+        // TODO: Change to Static, Dynamic, Scalable enum
 
         /// <summary>
         /// Gets or sets the fallback character used when asked to render a character that is not

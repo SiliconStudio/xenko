@@ -1,0 +1,33 @@
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+class SDFFont : Texturing
+{
+
+    // Gets the median of 3 values
+    float median(float r, float g, float b)
+    {
+        return max(min(r, g), min(max(r, g), b));
+    }
+
+    // Retrieves the pixel's color sampled from a signed distance field font texture, with font color, border and shadows
+    stage float4 FontColor(float4 sampledColor, float4 textColor, float4 borderColor, float borderThickness)
+    {
+        // Detect opacity
+        float sigDist = median(sampledColor.r, sampledColor.g, sampledColor.b) - 0.5;
+        float centralLine = sigDist/fwidth(sigDist) + 0.5;
+        float opacity = smoothstep(0, 1, centralLine);
+
+        // Detect edge
+        if (borderThickness > 0)
+        {
+            float width = (fwidth(streams.TexCoord)) * borderThickness;
+            float border = smoothstep(0, 1, sigDist / width);
+            textColor = lerp(borderColor, textColor, border);
+        }
+
+        sampledColor = lerp(float4(0,0,0,0), textColor, opacity);
+
+        return sampledColor;
+    }
+};
