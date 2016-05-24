@@ -159,8 +159,21 @@ if %ENDTIME% LSS %STARTTIME% set set /A DURATION=%STARTTIME%-%ENDTIME%
 
 set /A DURATION=%DURATION%/1000
 
+if %DURATION% GT 60 (
+    set /A MINUTES=%DURATION% / 60
+    rem Get rid of the part after the .
+    for /f "tokens=1,2 delims=." %%a  in ("%MINUTES%") do set MINUTES=%%a
+    set /A DURATION=%DURATION%%%60
+) else (
+    set /A MINUTES=0
+)
+
 rem outputing
-echo Duration is      : %DURATION% seconds
+if %MINUTES% NEQ 0 (
+    echo Duration is      : %MINUTES% minutes and %DURATION% seconds
+) else (
+    echo Duration is      : %DURATION% seconds
+)
 
 endlocal
 

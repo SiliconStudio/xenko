@@ -84,7 +84,7 @@ namespace SiliconStudio.Assets
         /// <typeparam name="T">Type of the asset</typeparam>
         /// <param name="filePath">The file path.</param>
         /// <param name="log">The logger.</param>
-        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occured (rename/remap).</param>
+        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occurred (rename/remap).</param>
         /// <returns>An instance of Asset not a valid asset asset object file.</returns>
         public static T Load<T>(string filePath, ILogger log, out bool aliasOccurred)
         {
@@ -108,7 +108,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="log">The logger.</param>
-        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occured (rename/remap).</param>
+        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occurred (rename/remap).</param>
         /// <returns>An instance of Asset not a valid asset asset object file.</returns>
         public static object Load(string filePath, ILogger log, out bool aliasOccurred)
         {
@@ -139,7 +139,7 @@ namespace SiliconStudio.Assets
         /// <param name="stream">The stream.</param>
         /// <param name="assetFileExtension">The asset file extension expected when loading the asset (use to find a <see cref="IAssetSerializer" /> with <see cref="IAssetSerializerFactory" />).</param>
         /// <param name="log">The logger.</param>
-        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occured (rename/remap).</param>
+        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occurred (rename/remap).</param>
         /// <returns>An instance of Asset not a valid asset asset object file.</returns>
         /// <exception cref="System.ArgumentNullException">assetFileExtension</exception>
         /// <exception cref="System.InvalidOperationException">Unable to find a serializer for [{0}].ToFormat(assetFileExtension)</exception>

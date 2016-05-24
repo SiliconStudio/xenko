@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 await recv.ReceiveAsync();
 
-                Assert.AreEqual(currentFrame, frameCounter);
+                Assert.AreNotEqual(currentFrame, frameCounter);
 
                 test.Exit();
             });
@@ -188,64 +188,87 @@ namespace SiliconStudio.Xenko.Engine.Tests
             var t1W = new AutoResetEvent(false);
             var t2W = new AutoResetEvent(false);
 
+            Exception threadException = null;
+
             new Thread(async () =>
             {
-                while (!game.IsRunning)
+                try
                 {
-                    await Task.Delay(100);
+                    while (!game.IsRunning)
+                    {
+                        await Task.Delay(100);
+                    }
+
+                    var frameCounter = 0;
+
+                    while (true)
+                    {
+                        await Task.Delay(20);
+                        frameCounter++;
+                        broadcaster.Broadcast();
+                        if (frameCounter != 200) continue;
+                        t1W.Set();
+                        return;
+                    }
                 }
-
-                var frameCounter = 0;
-
-                while (true)
+                catch (Exception e)
                 {
-                    await Task.Delay(20);
-                    frameCounter++;
-                    broadcaster.Broadcast();
-                    if (frameCounter != 200) continue;
-                    t1W.Set();
-                    return;
+                    threadException = e;
                 }
             }).Start();
 
             new Thread(async () =>
             {
-                while (!game.IsRunning)
+                try
                 {
-                    await Task.Delay(100);
+                    while (!game.IsRunning)
+                    {
+                        await Task.Delay(100);
+                    }
+
+                    var frameCounter = 0;
+
+                    while (true)
+                    {
+                        await Task.Delay(20);
+                        frameCounter++;
+                        broadcaster.Broadcast();
+                        if (frameCounter != 200) continue;
+                        t2W.Set();
+                        return;
+                    }
                 }
-
-                var frameCounter = 0;
-
-                while (true)
+                catch (Exception e)
                 {
-                    await Task.Delay(20);
-                    frameCounter++;
-                    broadcaster.Broadcast();
-                    if (frameCounter != 200) continue;
-                    t2W.Set();
-                    return;
+                    threadException = e;
                 }
             }).Start();
 
             new Thread(async () =>
             {
-                var waitHandles = new WaitHandle[]
+                try
                 {
-                    t1W,
-                    t2W
-                };
+                    var waitHandles = new WaitHandle[]
+                    {
+                        t1W,
+                        t2W
+                    };
 
-                WaitHandle.WaitAll(waitHandles);
+                    WaitHandle.WaitAll(waitHandles);
 
-                await Task.Delay(2000);
+                    await Task.Delay(2000);
 
-                game.Exit();
-
-                Assert.AreEqual(1200, counter);
+                    game.Exit();
+                }
+                catch (Exception e)
+                {
+                    threadException = e;
+                }
             }).Start();
 
             game.Run();
+            Assert.IsNull(threadException);
+            Assert.AreEqual(1200, counter);
         }
 
         /// <summary>
