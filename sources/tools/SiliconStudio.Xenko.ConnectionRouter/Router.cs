@@ -214,7 +214,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var xenkoSdkDir = RouterHelper.FindXenkoSdkDir(xenkoVersion);
                     if (xenkoSdkDir == null)
                     {
-                        Log.Error("{0} action URL {1} references a Xenko version which is not installed", RouterMessage.ClientRequestServer, url);
+                        Log.Error("{0} action URL [{1}] references a Xenko version which is not installed", RouterMessage.ClientRequestServer, url);
                         throw new InvalidOperationException();
                     }
 
@@ -247,9 +247,9 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 service.SendLock.Release();
             }
 
-            // Should answer within 2 sec
-            var ct = new CancellationTokenSource(2000);
-            ct.Token.Register(() => serverSocketTcs.TrySetException(new TimeoutException("Server could not connect back in time")));
+            // Should answer within 4 sec
+            var ct = new CancellationTokenSource(4000);
+            ct.Token.Register(() => serverSocketTcs.TrySetException(new TimeoutException($"{RouterMessage.ServiceRequestServer} action URL [{url}] could not connect back in time")));
 
             // Wait for such a server to be available
             return await serverSocketTcs.Task;
