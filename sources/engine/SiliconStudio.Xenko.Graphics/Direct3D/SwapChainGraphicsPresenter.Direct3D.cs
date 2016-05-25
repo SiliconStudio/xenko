@@ -27,6 +27,7 @@ using System.Reflection;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
+using SiliconStudio.Core.Collections;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using BackBufferResourceType = SharpDX.Direct3D11.Texture2D;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
@@ -203,6 +204,9 @@ namespace SiliconStudio.Xenko.Graphics
             // Manually update back buffer texture
             backBuffer.OnDestroyed();
 
+            // Manually update all children textures
+            var fastList = DestroyChildrenTextures(backBuffer);
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var swapChainPanel = Description.DeviceWindowHandle.NativeHandle as Windows.UI.Xaml.Controls.SwapChainPanel;
             if (swapChainPanel != null)
@@ -228,6 +232,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Put it in our back buffer texture
             backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
+
+            foreach (var texture in fastList)
+            {
+                texture.InitializeFrom(backBuffer, texture.ViewDescription);
+            }
         }
 
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
@@ -239,10 +248,38 @@ namespace SiliconStudio.Xenko.Graphics
             // Manually update the texture
             DepthStencilBuffer.OnDestroyed();
 
+            // Manually update all children textures
+            var fastList = DestroyChildrenTextures(DepthStencilBuffer);
+
             // Put it in our back buffer texture
             DepthStencilBuffer.InitializeFrom(newTextureDescrition);
+
+            foreach (var texture in fastList)
+            {
+                texture.InitializeFrom(DepthStencilBuffer, texture.ViewDescription);
+            }
         }
 
+        /// <summary>
+        /// Calls <see cref="Texture.OnDestroyed"/> for all children of the specified texture
+        /// </summary>
+        /// <param name="parentTexture">Specified parent texture</param>
+        /// <returns>A list of the children textures which were destroyed</returns>
+        private FastList<Texture> DestroyChildrenTextures(Texture parentTexture)
+        {
+            var fastList = new FastList<Texture>();
+            foreach (var resource in GraphicsDevice.Resources)
+            {
+                var texture = resource as Texture;
+                if (texture != null && texture.ParentTexture == parentTexture)
+                {
+                    texture.OnDestroyed();
+                    fastList.Add(texture);
+                }
+            }
+
+            return fastList;
+        }
 
         private SwapChain CreateSwapChain()
         {

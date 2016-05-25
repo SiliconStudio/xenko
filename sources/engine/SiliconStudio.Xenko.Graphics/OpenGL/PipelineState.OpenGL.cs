@@ -221,7 +221,8 @@ namespace SiliconStudio.Xenko.Graphics
                     // Release everything
                     foreach (var entry in reverse)
                     {
-                        entry.Key.Release();
+                        var graphicsResource = entry.Key as IReferencable;
+                        graphicsResource?.Release();
                     }
 
                     reverse.Clear();

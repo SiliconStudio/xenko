@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsDevice = RenderContext.GraphicsDevice;
             GraphicsContext = graphicsContext;
             CommandList = graphicsContext.CommandList;
+            Resolver = new ResourceResolver(this);
         }
 
         /// <summary>
@@ -46,6 +47,8 @@ namespace SiliconStudio.Xenko.Rendering
         public GraphicsContext GraphicsContext { get; private set; }
 
         public GraphicsDevice GraphicsDevice { get; private set; }
+
+        public ResourceResolver Resolver { get; private set; }
 
         /// <summary>
         /// Locks the command list until <see cref="IDisposable.Dispose()"/> is called on the returned value type.

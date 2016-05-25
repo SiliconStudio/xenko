@@ -85,7 +85,11 @@ namespace SiliconStudio.Xenko.Graphics
             // Compute shaders available in OpenGL ES 3.1
             HasComputeShaders = isOpenGLES3 && deviceRoot.currentVersion >= 1;
             HasDoublePrecision = false;
-            
+
+            HasDepthAsSRV = isOpenGLES3;
+            HasDepthAsReadOnlyRT = isOpenGLES3;
+          
+
             // TODO: from 3.1: draw indirect, separate shader object
             // TODO: check tessellation & geometry shaders: GL_ANDROID_extension_pack_es31a
 #else
@@ -97,6 +101,9 @@ namespace SiliconStudio.Xenko.Graphics
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.version >= 430;
             HasDoublePrecision = SupportedExtensions.Contains("GL_ARB_vertex_attrib_64bit");
+
+            HasDepthAsSRV = deviceRoot.versionMajor >= 3;
+            HasDepthAsReadOnlyRT = deviceRoot.versionMajor >= 3;
 
             // TODO: from 4.0: tessellation, draw indirect
             // TODO: from 4.1: separate shader object
