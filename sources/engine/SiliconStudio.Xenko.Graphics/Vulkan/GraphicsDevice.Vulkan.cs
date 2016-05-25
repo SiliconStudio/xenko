@@ -647,14 +647,8 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 
-    internal class HeapPool : ResourcePool<HeapPool.DescriptorAllocation>
+    internal class HeapPool : ResourcePool<SharpVulkan.DescriptorPool>
     {
-        public class DescriptorAllocation
-        {
-            public SharpVulkan.DescriptorPool Pool;
-            public FastList<SharpVulkan.DescriptorSet> Sets = new FastList<SharpVulkan.DescriptorSet>(); 
-        };
-
         private readonly uint heapSize;
 
         public HeapPool(GraphicsDevice graphicsDevice, uint heapSize) : base(graphicsDevice)
@@ -662,7 +656,7 @@ namespace SiliconStudio.Xenko.Graphics
             this.heapSize = heapSize;
         }
 
-        protected override unsafe DescriptorAllocation CreateObject()
+        protected override unsafe SharpVulkan.DescriptorPool CreateObject()
         {
             // No allocator ready to be used, let's create a new one
             var poolSizes = new[]
@@ -678,26 +672,19 @@ namespace SiliconStudio.Xenko.Graphics
                 PoolSizeCount = (uint)poolSizes.Length,
                 PoolSizes = new IntPtr(Interop.Fixed(poolSizes)),
                 MaxSets = heapSize,
-                Flags = DescriptorPoolCreateFlags.FreeDescriptorSet,
+                //Flags = DescriptorPoolCreateFlags.FreeDescriptorSet,
             };
-            return new DescriptorAllocation { Pool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo) };
+            return GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
         }
 
-        protected override unsafe void ResetObject(DescriptorAllocation obj)
+        protected override unsafe void ResetObject(SharpVulkan.DescriptorPool obj)
         {
-            // TODO VULKAN: Resetting the pool crashes. Only when using DescriptorSetCopies to the sets though.
-
-            //GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
-            if (obj.Sets.Count > 0)
-            {
-                GraphicsDevice.NativeDevice.FreeDescriptorSets(obj.Pool, (uint)obj.Sets.Count, (SharpVulkan.DescriptorSet*)Interop.Fixed(obj.Sets.Items));
-                obj.Sets.Clear(true);
-            }
+            GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
         }
 
-        protected override unsafe void DestroyObject(DescriptorAllocation obj)
+        protected override unsafe void DestroyObject(SharpVulkan.DescriptorPool obj)
         {
-            GraphicsDevice.NativeDevice.DestroyDescriptorPool(obj.Pool);
+            GraphicsDevice.NativeDevice.DestroyDescriptorPool(obj);
         }
     }
 

@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Graphics
         private Framebuffer activeFramebuffer;
         private FramebufferCollector framebufferCollector;
 
-        private HeapPool.DescriptorAllocation descriptorPool;
+        private SharpVulkan.DescriptorPool descriptorPool;
         private SharpVulkan.DescriptorSet descriptorSet;
 
         public CommandList(GraphicsDevice device) : base(device)
@@ -238,14 +238,13 @@ namespace SiliconStudio.Xenko.Graphics
             var allocateInfo = new DescriptorSetAllocateInfo
             {
                 StructureType = StructureType.DescriptorSetAllocateInfo,
-                DescriptorPool = descriptorPool.Pool,
+                DescriptorPool = descriptorPool,
                 DescriptorSetCount = 1, //(uint)activePipeline.NativeDescriptorSetLayouts.Length,
                 SetLayouts = new IntPtr(Interop.Fixed(activePipeline.NativeDescriptorSetLayouts))
             };
 
             SharpVulkan.DescriptorSet localDescriptorSet;
             GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &localDescriptorSet);
-            descriptorPool.Sets.Add(localDescriptorSet);
             this.descriptorSet = localDescriptorSet;
             
             writes.Clear(true);
