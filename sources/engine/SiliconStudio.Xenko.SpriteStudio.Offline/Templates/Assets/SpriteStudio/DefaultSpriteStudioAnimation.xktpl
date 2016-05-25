@@ -6,5 +6,6 @@ Scope: Asset
 Description: An empty Sprite Studio animation.
 Group: Sprite Studio
 Order: -80
-Icon: .xktpl\SpriteStudioAnimation.png
+Icon: ..\.xktpl\SpriteStudioAnimation.png
 DefaultOutputName: SpriteStudioModel
+ImportSource: True

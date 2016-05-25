@@ -80,6 +80,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                     {
                         var aabb = emitter.RenderParticleSystem.ParticleSystemComponent.ParticleSystem.GetAABB();
                         emitter.BoundingBox = new BoundingBoxExt(aabb.Minimum, aabb.Maximum);
+                        emitter.StateSortKey = ((uint) emitter.ParticleEmitter.DrawPriority) << 16;     // Maybe include the RenderStage precision as well
                         emitter.RenderGroup = renderSystem.ParticleSystemComponent.Entity.Group;
                     }
                 }

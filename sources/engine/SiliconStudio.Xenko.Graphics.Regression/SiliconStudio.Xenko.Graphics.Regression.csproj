@@ -52,7 +52,7 @@
       <ItemGroup>
         <Reference Include="Xamarin.Android.NUnitLite" />
       </ItemGroup>
-      <ItemGroup >
+      <ItemGroup>
         <Compile Include="AndroidGameTestActivity.cs" />
         <Compile Include="AndrRunner\Activities\CreditsActivity.cs" />
         <Compile Include="AndrRunner\Activities\RunnerActivity.cs" />
@@ -140,7 +140,6 @@
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
     <Compile Include="GameTestBase.cs" />
-    <Compile Include="ImageTester.NotRuntime.cs" />
     <Compile Include="ImageTester.cs" />
     <Compile Include="iOSDeviceType.cs" />
     <Compile Include="iOSGameTestControler.cs" />
@@ -151,6 +150,7 @@
     <Compile Include="RegressionHelpers.cs" />
     <Compile Include="NUnitLite\TextUI.cs" />
     <Compile Include="TestGraphicsDeviceManager.cs" />
+    <Compile Include="TestRunnerMessageType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
@@ -205,7 +205,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageTester.Runtime.cs" />
     <None Include="Scripts\RunAndroidTest.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -114,7 +114,8 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     var textureType = textureVariable.Type.ResolveType();
 
-                    if (textureType is TextureType || (textureType.IsBuiltIn && CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase)))
+                    if (textureType is TextureType || (textureType.IsBuiltIn && CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase))
+                        || (textureType.IsBuiltIn && textureType.Name.Text.StartsWith("Buffer")))
                     {
                         switch (memberRef.Member)
                         {
@@ -351,7 +352,24 @@ namespace SiliconStudio.Shaders.Convertor
             var samplerKey = new SamplerTextureKey(sampler, texture);
             if (!samplerMapping.TryGetValue(samplerKey, out glslSampler))
             {
-                var samplerTypeName = texture.Type.ResolveType().Name.Text.Replace("Texture", "sampler");
+                var samplerType = texture.Type.ResolveType();
+                var samplerTypeName = samplerType.Name.Text;
+
+                if (samplerTypeName.StartsWith("Texture"))
+                    samplerTypeName = "sampler" + samplerTypeName.Substring("Texture".Length);
+                else if (samplerTypeName.StartsWith("Buffer"))
+                    samplerTypeName = "samplerBuffer";
+
+                // TODO: How do we support this on OpenGL ES 2.0? Cast to int/uint on Load()/Sample()?
+                var genericSamplerType = samplerType as IGenerics;
+                if (genericSamplerType != null && genericSamplerType.GenericArguments.Count == 1)
+                {
+                    var genericArgument = genericSamplerType.GenericArguments[0].ResolveType();
+                    if (TypeBase.GetBaseType(genericArgument) == ScalarType.UInt)
+                        samplerTypeName = "u" + samplerTypeName;
+                    else if (TypeBase.GetBaseType(genericArgument) == ScalarType.Int)
+                        samplerTypeName = "i" + samplerTypeName;
+                }
 
                 // Handle comparison samplers
                 if (needsComparison)

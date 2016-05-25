@@ -50,11 +50,20 @@ namespace SiliconStudio.Assets.Templates
         /// <summary>
         /// Finds all template descriptions.
         /// </summary>
-        /// <returns>IEnumerable&lt;TemplateGeneratorDescription&gt;.</returns>
+        /// <returns>A sequence containing all registered template descriptions.</returns>
         public static IEnumerable<TemplateDescription> FindTemplates()
         {
             // TODO this will not work if the same package has different versions
             return PackageStore.Instance.GetInstalledPackages().SelectMany(package => package.Templates).OrderBy(tpl => tpl.Order).ThenBy(tpl => tpl.Name);
+        }
+
+        /// <summary>
+        /// Finds template descriptions that match the given scope.
+        /// </summary>
+        /// <returns>A sequence containing all registered template descriptions that match the given scope.</returns>
+        public static IEnumerable<TemplateDescription> FindTemplates(TemplateScope scope)
+        {
+            return FindTemplates().Where(x => x.Scope == scope);
         }
 
         /// <summary>

@@ -174,7 +174,7 @@ namespace SiliconStudio.Assets.Visitors
         private static bool AcceptMember(IMemberDescriptor member)
         {
             // Skip some properties that are not using when visiting
-            if ((typeof(AssetImport).IsAssignableFrom(member.DeclaringType) && (member.Name == "ImporterId" || member.Name == "SourceHash"))
+            if ((typeof(AssetImport).IsAssignableFrom(member.DeclaringType) && (member.Name == nameof(AssetImport.ImporterId) || member.Name == nameof(AssetImportTracked.SourceHash)))
                 || typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BaseProperty || member.Name == Asset.BasePartsProperty || member.Name == "Id"))
             {
                 return false;

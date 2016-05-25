@@ -455,6 +455,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             InitializeFromImpl(textureDatas);
+ 
 
             return this;
         }

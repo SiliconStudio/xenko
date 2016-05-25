@@ -15,7 +15,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
@@ -67,7 +66,7 @@ namespace SiliconStudio.Assets
         private readonly Lazy<PackageUserSettings> settings;
 
         /// <summary>
-        /// Occurs when an asset dirty changed occured.
+        /// Occurs when an asset dirty changed occurred.
         /// </summary>
         public event Action<Asset> AssetDirtyChanged;
 
@@ -1334,48 +1333,6 @@ namespace SiliconStudio.Assets
                 {
                     list.Add(new PackageLoadingAssetFile(codePath, parentDir, realFullPath));
                 }
-            }
-        }
-
-        /// <summary>
-        /// Fixes asset import that were imported by the previous method. Add a AssetImport.SourceHash and ImporterId
-        /// </summary>
-        /// <param name="item">The item.</param>
-        private static void FixAssetImport(AssetItem item)
-        {
-            // TODO: this whole method is a temporary migration. This should be removed in the next version
-
-            var assetImport = item.Asset as AssetImport;
-            if (assetImport == null || assetImport.Source == null)
-            {
-                return;
-            }
-
-            // If the asset has a source but no import base, then we are going to simulate an original import
-            if (assetImport.Base == null)
-            {
-                var assetImportBase = (AssetImport)AssetCloner.Clone(assetImport);
-                assetImportBase.SetAsRootImport();
-                // We removed SetDefaults, but I guess we can remove this whole method?
-                //assetImportBase.SetDefaults();
-
-                // Setup default importer
-                if (!String.IsNullOrEmpty(assetImport.Source.GetFileExtension()))
-                {
-                    var importerId = AssetRegistry.FindImporterForFile(assetImport.Source).FirstOrDefault();
-                    if (importerId != null)
-                    {
-                        assetImport.ImporterId = importerId.Id;
-                    }
-                }
-                var assetImportTracked = assetImport as AssetImportTracked;
-                if (assetImportTracked != null)
-                {
-                    assetImportTracked.SourceHash = ObjectId.Empty;
-                }
-
-                assetImport.Base = new AssetBase(assetImportBase);
-                item.IsDirty = true;
             }
         }
 
