@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// </summary>
     [DataContract(nameof(ContentPresenter))]
     [DebuggerDisplay("ContentPresenter - Name={Name}")]
+    [Obsolete("This class has no effect and shouldn't be used. Consider one of the classes that inherit from ContentControl.")]
     public class ContentPresenter : UIElement
     {
         private Matrix contentWorldMatrix;
@@ -38,7 +40,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
                 if (content != null)
                     SetVisualParent(content, null);
-                
+
                 content = value;
 
                 if (content != null)

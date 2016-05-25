@@ -20,38 +20,12 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private UIElement visualContent;
 
-        private ContentPresenter contentPresenter;
-
         /// <summary>
         /// The key to the ContentArrangeMatrix dependency property.
         /// </summary>
         protected static readonly PropertyKey<Matrix> ContentArrangeMatrixPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ContentArrangeMatrixPropertyKey), typeof(ContentControl), Matrix.Identity);
 
         private Matrix contentWorldMatrix;
-
-        protected override void OnNameChanged()
-        {
-            base.OnNameChanged();
-
-            if(ContentPresenter != null)
-                ContentPresenter.Name = "of '" + Name + "'";
-        }
-
-        /// <summary>
-        /// Gets or sets the presenter of the <see cref="ContentControl"/>'s presenter.
-        /// </summary>
-        protected ContentPresenter ContentPresenter
-        {
-            get { return contentPresenter; }
-            set
-            {
-                if (value == contentPresenter)
-                    return;
-
-                VisualContent = value;
-                contentPresenter = value;
-            }
-        }
 
         /// <summary>
         /// Gets or sets the content of a ContentControl.
@@ -64,18 +38,14 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return content; }
             set
             {
-                if(content == value)
+                if (content == value)
                     return;
 
                 if (content != null)
                     SetParent(content, null);
 
                 content = value;
-
-                if (contentPresenter == null)
-                    VisualContent = content;
-                else
-                    ContentPresenter.Content = value;
+                VisualContent = content;
 
                 if (content != null)
                     SetParent(content, this);
@@ -136,7 +106,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 VisualContent.Arrange(childSizeWithoutPadding, IsCollapsed);
 
                 // compute the rendering offsets of the child element wrt the parent origin (0,0,0)
-                var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Front) - finalSizeWithoutMargins/2;
+                var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Front) - finalSizeWithoutMargins / 2;
 
                 // set the arrange matrix of the child.
                 VisualContent.DependencyProperties.Set(ContentArrangeMatrixPropertyKey, Matrix.Translation(childOffsets));
