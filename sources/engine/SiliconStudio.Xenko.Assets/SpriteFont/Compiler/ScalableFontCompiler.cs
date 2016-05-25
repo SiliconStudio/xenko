@@ -109,9 +109,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             var glyphs = ImportFont(fontAsset, out lineSpacing, out baseLine);
 
-            // Optimize.
-            foreach (Glyph glyph in glyphs)
-                GlyphCropper.Crop(glyph);
+            // TODO Check before optimization
+            //// Optimize.
+            //foreach (Glyph glyph in glyphs)
+            //    GlyphCropper.Crop(glyph);
 
             Bitmap bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
 
@@ -153,8 +154,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             var sourceExtension = (Path.GetExtension(options.Source) ?? "").ToLowerInvariant();
             var bitmapFileExtensions = new List<string> { ".bmp", ".png", ".gif" };
             var importFromBitmap = bitmapFileExtensions.Contains(sourceExtension);
+            if (importFromBitmap)
+            {
+                throw new Exception("SDF Font from image is not supported!");
+            }
 
-            importer = importFromBitmap ? (IFontImporter)new BitmapImporter() : new TrueTypeImporter();
+            //importer = importFromBitmap ? (IFontImporter)new BitmapImporter() : new TrueTypeImporter();
+
+            importer = new SDFImporter();
 
             // create the list of character to import
             var characters = GetCharactersToImport(options);
@@ -173,35 +180,39 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             {
                 throw new Exception("Font does not contain any glyphs.");
             }
-            if (!importFromBitmap && options.AntiAlias != FontAntiAliasMode.ClearType)
-            {
-                foreach (var glyph in importer.Glyphs)
-                    BitmapUtils.ConvertGreyToAlpha(glyph.Bitmap, glyph.Subrect);
-            }
+
+            // The resulting image must be RGB texture
+            //if (!importFromBitmap && options.AntiAlias != FontAntiAliasMode.ClearType)
+            //{
+            //    foreach (var glyph in importer.Glyphs)
+            //        BitmapUtils.ConvertGreyToAlpha(glyph.Bitmap, glyph.Subrect);
+            //}
 
             // Sort the glyphs
             glyphs.Sort((left, right) => left.Character.CompareTo(right.Character));
 
 
             // Check that the default character is part of the glyphs
-            if (options.DefaultCharacter != 0)
+            if (!DefaultCharacterExists(options.DefaultCharacter, glyphs))
             {
-                bool defaultCharacterFound = false;
-                foreach (var glyph in glyphs)
-                {
-                    if (glyph.Character == options.DefaultCharacter)
-                    {
-                        defaultCharacterFound = true;
-                        break;
-                    }
-                }
-                if (!defaultCharacterFound)
-                {
-                    throw new InvalidOperationException("The specified DefaultCharacter is not part of this font.");
-                }
+                throw new InvalidOperationException("The specified DefaultCharacter is not part of this font.");
             }
 
             return glyphs.ToArray();
+        }
+
+        private static bool DefaultCharacterExists(char defaultCharacter, List<Glyph> glyphs)
+        {
+            if (defaultCharacter == 0)
+                return true;
+
+            foreach (var glyph in glyphs)
+            {
+                if (glyph.Character == defaultCharacter)
+                    return true;
+            }
+
+            return false;
         }
 
         public static List<char> GetCharactersToImport(SpriteFontAsset asset)

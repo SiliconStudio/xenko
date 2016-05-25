@@ -236,6 +236,7 @@
     <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\ScalableFontCompiler.cs" />
+    <Compile Include="SpriteFont\Compiler\SDFImporter.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
