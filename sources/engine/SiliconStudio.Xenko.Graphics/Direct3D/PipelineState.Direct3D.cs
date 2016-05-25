@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             var pipelineStateCache = GetPipelineStateCache();
 
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             inputLayout?.Dispose();
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         private void CreateInputLayout(InputElementDescription[] inputElements)
@@ -289,6 +289,8 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             storage.Remove(key);
                         }
+
+                        value.Release();
                     }
                 }
             }

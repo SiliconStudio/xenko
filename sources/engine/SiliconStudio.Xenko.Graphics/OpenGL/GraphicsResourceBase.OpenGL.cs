@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc/>
         protected internal virtual void OnDestroyed()
         {
-            DestroyImpl();
         }
 
         /// <summary>
@@ -29,10 +28,6 @@ namespace SiliconStudio.Xenko.Graphics
         protected internal virtual bool OnRecreate()
         {
             return false;
-        }
-
-        protected virtual void DestroyImpl()
-        {
         }
     }
 }

@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDepthStencilView = GetDepthStencilView(out HasStencil);           
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             // If it was a View, do not release reference
             if (ParentTexture != null)
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics
             ReleaseComObject(ref renderTargetView);
             ReleaseComObject(ref depthStencilView);
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         private void OnRecreateImpl()

@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             // Manually update back buffer texture
             backBuffer.OnDestroyed();
@@ -181,6 +181,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             swapChain.Dispose();
             swapChain = null;
+
+            base.OnDestroyed();
         }
 
         public override void OnRecreated()

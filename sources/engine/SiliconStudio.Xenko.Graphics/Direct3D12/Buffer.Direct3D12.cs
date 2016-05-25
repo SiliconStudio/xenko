@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             if (GraphicsDevice != null)
             {

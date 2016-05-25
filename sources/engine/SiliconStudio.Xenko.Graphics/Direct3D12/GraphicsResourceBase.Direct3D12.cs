@@ -40,12 +40,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected virtual void DestroyImpl()
-        {
-            ReleaseComObject(ref nativeDeviceChild);
-            NativeResource = null;
-        }
-
         /// <summary>
         /// Associates the private data to the device child, useful to get the name in PIX debugger.
         /// </summary>
@@ -58,7 +52,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         protected internal virtual void OnDestroyed()
         {
-            DestroyImpl();
+            ReleaseComObject(ref nativeDeviceChild);
+            NativeResource = null;
         }
 
         /// <summary>

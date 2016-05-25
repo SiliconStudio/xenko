@@ -102,8 +102,8 @@ namespace SiliconStudio.Xenko.Graphics
             HasComputeShaders = deviceRoot.version >= 430;
             HasDoublePrecision = SupportedExtensions.Contains("GL_ARB_vertex_attrib_64bit");
 
-            HasDepthAsSRV = deviceRoot.versionMajor >= 3;
-            HasDepthAsReadOnlyRT = deviceRoot.versionMajor >= 3;
+            HasDepthAsSRV = deviceRoot.version >= 300;
+            HasDepthAsReadOnlyRT = deviceRoot.version >= 300;
 
             // TODO: from 4.0: tessellation, draw indirect
             // TODO: from 4.1: separate shader object

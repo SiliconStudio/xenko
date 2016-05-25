@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             if (StagingData != IntPtr.Zero)
             {
@@ -157,7 +157,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
             }
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         protected void Init(IntPtr dataPointer)

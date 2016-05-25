@@ -116,7 +116,7 @@ void main()
             CreateShaders();
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
@@ -125,7 +125,7 @@ void main()
 
             ProgramId = 0;
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         private void CreateShaders()

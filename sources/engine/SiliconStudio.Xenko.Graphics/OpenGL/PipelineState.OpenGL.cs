@@ -98,16 +98,16 @@ namespace SiliconStudio.Xenko.Graphics
                 DepthStencilState.Apply(commandList);
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
-            base.DestroyImpl();
-
             var pipelineStateCache = GetPipelineStateCache();
 
             if (EffectProgram != null)
                 pipelineStateCache.EffectProgramCache.Release(EffectProgram);
             if (VertexAttribs != null)
                 pipelineStateCache.VertexAttribsCache.Release(VertexAttribs);
+
+            base.OnDestroyed();
         }
 
         struct VertexAttribsKey
@@ -210,6 +210,9 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             storage.Remove(key);
                         }
+
+                        var graphicsResource = value as IReferencable;
+                        graphicsResource?.Release();
                     }
                 }
             }
