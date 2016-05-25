@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// </summary>
     [DataContract(nameof(Panel))]
     [DebuggerDisplay("Panel - Name={Name}")]
+    [Display(category: PanelCategory)]
     public abstract class Panel : UIElement, IScrollAnchorInfo
     {
         /// <summary>

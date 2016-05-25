@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// </summary>
     [DataContract(nameof(EditText))]
     [DebuggerDisplay("EditText - Name={Name}")]
+    [Display(category: InputCategory)]
     public partial class EditText : Control
     {
         private float? textSize;

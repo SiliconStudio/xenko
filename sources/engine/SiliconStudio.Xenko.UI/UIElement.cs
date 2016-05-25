@@ -63,6 +63,10 @@ namespace SiliconStudio.Xenko.UI
 
         private static readonly Queue<List<RoutedEventHandlerInfo>> RoutedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
 
+        // Categories of UI element classes
+        protected const string InputCategory = "Input";
+        protected const string PanelCategory = "Panel";
+        // Categories of UI element properties
         protected const string AppearanceCategory = "Appearance";
         protected const string BehaviorCategory = "Behavior";
         protected const string LayoutCategory = "Layout";

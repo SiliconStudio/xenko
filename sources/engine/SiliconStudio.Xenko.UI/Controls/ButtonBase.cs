@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// </summary>
     [DataContract(nameof(ButtonBase))]
     [DebuggerDisplay("ButtonBase - Name={Name}")]
+    [Display(category: InputCategory)]
     public abstract class ButtonBase : ContentControl
     {
         static ButtonBase()

@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// </summary>
     [DataContract(nameof(ModalElement))]
     [DebuggerDisplay("ModalElement - Name={Name}")]
+    [Display(category: null)]
     public class ModalElement : ButtonBase
     {
         internal Color OverlayColorInternal;
