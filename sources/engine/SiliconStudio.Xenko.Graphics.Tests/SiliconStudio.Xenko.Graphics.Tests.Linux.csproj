@@ -65,6 +65,9 @@
     <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SiliconStudio.Tests.Application</StartupObject>
+  </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>SiliconStudio.Xenko.Graphics.Tests</Import_RootNamespace>
   </PropertyGroup>

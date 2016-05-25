@@ -101,6 +101,9 @@
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386, x86_64</MtouchArch>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SiliconStudio.Tests.Application</StartupObject>
+  </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>SiliconStudio.Xenko.Graphics.Tests</Import_RootNamespace>
   </PropertyGroup>
