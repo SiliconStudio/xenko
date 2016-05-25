@@ -99,8 +99,6 @@
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.iOS.csproj.t4">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.projitems.t4" />
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.shproj.t4" />
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.targets.t4" />
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Windows.csproj.t4">
       <SubType>Designer</SubType>
