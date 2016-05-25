@@ -446,12 +446,6 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        // Notifies the source tracker that a package with the specified path is being saved
-                        if (session != null && session.HasDependencyManager)
-                        {
-                            session.DependencyManager.SourceTracker.AddFileBeingSaveDuringSessionSave(FullPath);
-                        }
-
                         AssetSerializer.Save(FullPath, this);
 
                         // Move the package if the path has changed
@@ -556,12 +550,6 @@ namespace SiliconStudio.Assets
                                         project.AddItem("Compile", codeFile.ToWindowsPath());
                                     }                                
                                 }
-                            }
-
-                            // Notifies the source tracker that an asset with the specified path is being saved
-                            if (session != null && session.HasDependencyManager)
-                            {
-                                session.DependencyManager.SourceTracker.AddFileBeingSaveDuringSessionSave(assetPath);
                             }
 
                             // Inject a copy of the base into the current asset when saving

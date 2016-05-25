@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -63,6 +64,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
+        // TODO: this could be moved directly in PackageSession since it is quite independent - need to find when to initialize it, tho
         public AssetSourceTracker SourceTracker { get; }
 
         /// <summary>

@@ -16,13 +16,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("PregeneratedSpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-alpha01", typeof(SourceMembersUpgrader))]
     [Display(105, "Sprite Font (Precompiled)")]
     [CategoryOrder(10, "Font Data")]
     [CategoryOrder(20, "Font Properties")]
     [CategoryOrder(30, "Font Characters")]
-    public class PrecompiledSpriteFontAsset : Asset
+    public class PrecompiledSpriteFontAsset : AssetImport // TODO: temporary inherits from AssetImport
     {
         /// <summary>
         /// The default file extension used by the <see cref="PrecompiledSpriteFontAsset"/>.
@@ -52,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         /// <userdoc>The sprite font asset that has been used to generate this precompiled font.</userdoc>
         [DataMember(0)]
-        public AssetReference<SpriteFontAsset> Source;
+        public AssetReference<SpriteFontAsset> OriginalFont;
 
         /// <summary>
         /// The file containing the font data.
@@ -60,6 +61,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <userdoc>The image file containing the extracted font data.</userdoc>
         [Display("Font data image", "Font Data")]
         [DataMember(10)]
+        [SourceFileMember(false)]
         public UFile FontDataFile;
 
         /// <summary>
@@ -140,6 +142,18 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 {
                     asset.IsPremultiplied = !(bool)asset.IsNotPremultiplied;
                     asset.IsNotPremultiplied = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+
+        class SourceMembersUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.Source != null)
+                {
+                    asset.OriginalFont = asset.Source;
+                    asset.Source = DynamicYamlEmpty.Default;
                 }
             }
         }

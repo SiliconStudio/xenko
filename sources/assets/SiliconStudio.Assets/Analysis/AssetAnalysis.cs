@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Assets.Diagnostics;
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
@@ -18,8 +19,8 @@ namespace SiliconStudio.Assets.Analysis
     {
         public static LoggerResult Run(IEnumerable<AssetItem> items, AssetAnalysisParameters parameters)
         {
-            if (items == null) throw new ArgumentNullException("items");
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (items == null) throw new ArgumentNullException(nameof(items));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             var result = new LoggerResult();
             Run(items, result, parameters);
@@ -28,9 +29,9 @@ namespace SiliconStudio.Assets.Analysis
 
         public static void Run(IEnumerable<AssetItem> items, ILogger log, AssetAnalysisParameters parameters)
         {
-            if (items == null) throw new ArgumentNullException("items");
-            if (log == null) throw new ArgumentNullException("log");
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (items == null) throw new ArgumentNullException(nameof(items));
+            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             foreach (var assetItem in items)
             {
@@ -48,9 +49,9 @@ namespace SiliconStudio.Assets.Analysis
 
         public static void Run(AssetItem assetItem, ILogger log, AssetAnalysisParameters parameters)
         {
-            if (assetItem == null) throw new ArgumentNullException("assetItem");
-            if (log == null) throw new ArgumentNullException("log");
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
+            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             if (assetItem.Package == null)
             {
@@ -95,6 +96,8 @@ namespace SiliconStudio.Assets.Analysis
             {
                 // Find where this asset item was previously stored (in a different package for example)
                 CommonAnalysis.UpdatePaths(assetItem, assetReferences.Where(link => link.Reference is UPath), parameters);
+                // Source hashes are not processed by analysis, we need to manually indicate them to update
+                SourceHashesHelper.UpdateUPaths(assetItem.Id, assetItem.FullPath.GetParent(), parameters.ConvertUPathTo);
             }
         }
 

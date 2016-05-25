@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     [AssetCompiler(typeof(SpriteStudioModelAssetCompiler))] // The compiler used to transform this asset to RangeValues
     [AssetDescription(".xkss4s;.pdxss4s")] // A description used to display in the asset editor
     [Display("Sprite Studio Sheet")]
-    public class SpriteStudioModelAsset : AssetImportTracked
+    public class SpriteStudioModelAsset : AssetImport
     {
         [DataMember(1)]
         [Display(Browsable = false)]

@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public sealed class ModelAsset : AssetImportTracked, IModelAsset, IAssetCompileTimeDependencies
+    public sealed class ModelAsset : AssetImport, IModelAsset, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.

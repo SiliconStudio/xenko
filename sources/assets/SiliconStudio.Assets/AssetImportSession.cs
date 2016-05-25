@@ -235,33 +235,34 @@ namespace SiliconStudio.Assets
             if (assetItem.Package == null) throw new ArgumentException("AssetItem is not attached to a package");
             if (assetItem.Package.Session != session) throw new ArgumentException("AssetItem is not attached to the same session of this importItem");
 
-            var asset = assetItem.Asset as AssetImportTracked;
-            if (asset == null) throw new ArgumentException("The asset is not an existing importable asset");
-            if (asset.Base == null) throw new ArgumentException("The asset to importItem must have a base to reimport");
-            if (asset.Source == null) throw new ArgumentException("The asset to importItem has no source/location to an existing raw asset");
+            //var asset = assetItem.Asset as AssetImportTracked;
+            //if (asset == null) throw new ArgumentException("The asset is not an existing importable asset");
+            //if (asset.Base == null) throw new ArgumentException("The asset to importItem must have a base to reimport");
+            //if (asset.Source == null) throw new ArgumentException("The asset to importItem has no source/location to an existing raw asset");
 
-            var baseAsset = asset.Base.Asset as AssetImportTracked;
-            if (baseAsset == null) throw new ArgumentException("The base asset to importItem is invalid");
+            //var baseAsset = asset.Base.Asset as AssetImportTracked;
+            //if (baseAsset == null) throw new ArgumentException("The base asset to importItem is invalid");
 
-            IAssetImporter importer = null;
-            // Try to use the previous importer if it exists
-            if (baseAsset.ImporterId.HasValue)
-            {
-                importer = AssetRegistry.FindImporterById(baseAsset.ImporterId.Value);
-            }
+            //IAssetImporter importer = null;
+            //// Try to use the previous importer if it exists
+            //if (baseAsset.ImporterId.HasValue)
+            //{
+            //    importer = AssetRegistry.FindImporterById(baseAsset.ImporterId.Value);
+            //}
 
-            // If not, take the first default importer
-            if (importer == null)
-            {
-                importer = AssetRegistry.FindImporterForFile(asset.Source).FirstOrDefault();
-            }
+            //// If not, take the first default importer
+            //if (importer == null)
+            //{
+            //    importer = AssetRegistry.FindImporterForFile(asset.Source).FirstOrDefault();
+            //}
 
-            if (importer == null)
-            {
-                throw new ArgumentException("No importer found for this asset item");
-            }
+            //if (importer == null)
+            //{
+            //    throw new ArgumentException("No importer found for this asset item");
+            //}
 
-            return RegisterImporter(asset.Source, assetItem.Package, assetItem.Location.GetDirectory(), importer, assetItem);
+            //return RegisterImporter(asset.Source, assetItem.Package, assetItem.Location.GetDirectory(), importer, assetItem);
+            return null;
         }
 
         /// <summary>
@@ -953,17 +954,17 @@ namespace SiliconStudio.Assets
                                 // Create mapping: source file => set of asset items
                                 RegisterAssetPerInput(assetImport.Source, assetItem);
 
-                                // Add assets from session
-                                foreach (var existingAssetItem in session.DependencyManager.SourceTracker.FindAssetItemsByInput(assetImport.Source))
-                                {
-                                    // Filter and only take current root imports
-                                    if (existingAssetItem.Asset.Base == null || !existingAssetItem.Asset.Base.IsRootImport)
-                                    {
-                                        continue;
-                                    }
+                                //// Add assets from session
+                                //foreach (var existingAssetItem in session.DependencyManager.SourceTracker.FindAssetItemsByInput(assetImport.Source))
+                                //{
+                                //    // Filter and only take current root imports
+                                //    if (existingAssetItem.Asset.Base == null || !existingAssetItem.Asset.Base.IsRootImport)
+                                //    {
+                                //        continue;
+                                //    }
 
-                                    RegisterAssetPerInput(assetImport.Source, existingAssetItem);
-                                }
+                                //    RegisterAssetPerInput(assetImport.Source, existingAssetItem);
+                                //}
                             }
                         }
                         finally

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
-    public class SkeletonAsset : AssetImportTracked
+    public class SkeletonAsset : AssetImport
     {
         /// <summary>
         /// The default file extension used by the <see cref="SkeletonAsset"/>.

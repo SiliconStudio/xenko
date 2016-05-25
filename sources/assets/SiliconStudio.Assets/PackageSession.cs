@@ -556,13 +556,6 @@ namespace SiliconStudio.Assets
                         return;
                     }
 
-                    // Suspend tracking when saving as we don't want to receive
-                    // all notification events
-                    if (dependencies != null)
-                    {
-                        dependencies.SourceTracker.BeginSavingSession();
-                    }
-
                     // Return immediately if there is any error
                     if (log.HasErrors)
                     {
@@ -750,11 +743,6 @@ namespace SiliconStudio.Assets
                 }
                 finally
                 {
-                    if (dependencies != null)
-                    {
-                        dependencies.SourceTracker.EndSavingSession();
-                    }
-
                     // Once all packages and assets have been saved, we can save the solution (as we need to have fullpath to
                     // be setup for the packages)
                     if (packagesSaved)

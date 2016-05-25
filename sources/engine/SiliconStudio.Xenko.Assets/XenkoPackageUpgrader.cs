@@ -15,15 +15,17 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
+using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.6.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.7.0-alpha01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -248,6 +250,31 @@ namespace SiliconStudio.Xenko.Assets
                         assetFile.Deleted = true;
                     }
                 }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha01"))
+            {
+                // Update source hash
+                foreach (var assetFile in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkm3d" || f.FilePath.GetFileExtension() == ".xkskel"))
+                {
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        var sourceNode = assetYaml.DynamicRootNode.Source;
+                        var sourceHashNode = assetYaml.DynamicRootNode.SourceHash;
+                        if (sourceHashNode != null)
+                        {
+                            var source = DynamicYamlExtensions.ConvertTo<UFile>(sourceNode);
+                            var sourceHash = DynamicYamlExtensions.ConvertTo<ObjectId>(sourceHashNode);
+                            var dictionary = new Dictionary<UFile, ObjectId> { { source, sourceHash } };
+                            var yamlDic = DynamicYamlExtensions.ConvertFrom(dictionary);
+                            yamlDic.Node.Tag = null;
+                            assetYaml.DynamicRootNode["~SourceHashes"] = yamlDic;
+                            assetYaml.DynamicRootNode.SourceHash = DynamicYamlEmpty.Default;
+                        }
+                    }
+                }
+
+                // TODO: remove base that comes from import
             }
 
             return true;

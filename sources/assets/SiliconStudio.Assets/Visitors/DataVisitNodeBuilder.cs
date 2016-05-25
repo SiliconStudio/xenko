@@ -3,6 +3,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Visitors
@@ -174,7 +176,7 @@ namespace SiliconStudio.Assets.Visitors
         private static bool AcceptMember(IMemberDescriptor member)
         {
             // Skip some properties that are not using when visiting
-            if ((typeof(AssetImport).IsAssignableFrom(member.DeclaringType) && (member.Name == nameof(AssetImport.ImporterId) || member.Name == nameof(AssetImportTracked.SourceHash)))
+            if ((typeof(AssetImport).IsAssignableFrom(member.DeclaringType) && (member.Name == nameof(AssetImport.ImporterId) || member.Name == SourceHashesHelper.MemberName))
                 || typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BaseProperty || member.Name == Asset.BasePartsProperty || member.Name == "Id"))
             {
                 return false;

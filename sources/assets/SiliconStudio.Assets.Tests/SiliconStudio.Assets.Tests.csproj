@@ -110,6 +110,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="data\SiliconStudio.Assets.Tests\TestPackage\SubPackage\SubPackage.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -128,11 +129,9 @@
     <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="data\box.fbx" />
     <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.xkraw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="data\uv.dds" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.xkpkg">
