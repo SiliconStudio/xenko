@@ -8,6 +8,11 @@ namespace <#= Properties.Namespace #>
     [TestFixture]
     public class TestClass1
     {
+        public static void Main()
+        {
+            // Use this method to easily start/debug test cases.
+        }
+
         [Test]
         public void Test()
         {
