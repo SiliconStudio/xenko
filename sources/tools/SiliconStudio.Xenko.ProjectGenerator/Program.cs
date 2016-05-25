@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -555,13 +556,14 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 if (context.Modified)
                 {
                     var projectDirectory = Path.GetDirectoryName(context.Project.FullPath);
+                    Debug.Assert(projectDirectory != null);
                     var projectFileName = Path.GetFileName(context.Project.FullPath);
                     var generatedProjectFileName = projectFileName.Replace(".Windows", string.Empty);
                     var fileExtPosition = generatedProjectFileName.LastIndexOf('.');
                     generatedProjectFileName = generatedProjectFileName.Substring(0, fileExtPosition + 1) + projectSuffix +
                                                    generatedProjectFileName.Substring(fileExtPosition);
 
-                    context.Document.Save(projectDirectory + Path.DirectorySeparatorChar + generatedProjectFileName);
+                    context.Document.Save(Path.Combine(projectDirectory, generatedProjectFileName));
 
                     // Solution should point to new generated file
                     context.Project.Name = context.Project.Name.Replace(".Windows", string.Empty) + "." + projectSuffix;
