@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.IO;
-
+using System.Text;
+using Microsoft.Win32;
 using SharpDX.Direct2D1;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Xenko.Graphics.Font;
@@ -30,67 +32,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         public float BaseLine { get; private set; }
 
 
-        private string fontSource = "";
-        private string msdfgenExe = "C:\\Dev\\xenko\\deps\\msdfgen\\msdfgen.exe";
-        private string tempDir    = "C:\\Temp\\";
-
-
-        // Option 1: Import as static, then swap the Bitmap
-        public void ImportOld(SpriteFontAsset options, List<char> characters)
-        {
-            var factory = new Factory();
-
-            // TODO Get file's path
-            // try to get the font face from the source file if not null
-            FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
-
-            var fontMetrics = fontFace.Metrics;
-
-            // Create a bunch of GDI+ objects.
-            var fontSize = FontHelper.PointsToPixels(options.Size);
-
-            var glyphList = new List<Glyph>();
-
-            // Remap the LineMap coming from the font with a user defined remapping
-            // Note:
-            // We are remapping the lineMap to allow to shrink the LineGap and to reposition it at the top and/or bottom of the 
-            // font instead of using only the top
-            // According to http://stackoverflow.com/questions/13939264/how-to-determine-baseline-position-using-directwrite#comment27947684_14061348
-            // (The response is from a MSFT employee), the BaseLine should be = LineGap + Ascent but this is not what
-            // we are experiencing when comparing with MSWord (LineGap + Ascent seems to offset too much.)
-            //
-            // So we are first applying a factor to the line gap:
-            //     NewLineGap = LineGap * LineGapFactor
-            var lineGap = fontMetrics.LineGap * options.LineGapFactor;
-
-            // Store the font height.
-            LineSpacing = (float)(lineGap + fontMetrics.Ascent + fontMetrics.Descent) / fontMetrics.DesignUnitsPerEm * fontSize;
-
-            // And then the baseline is also changed in order to allow the linegap to be distributed between the top and the 
-            // bottom of the font:
-            //     BaseLine = NewLineGap * LineGapBaseLineFactor
-            BaseLine = (float)(lineGap * options.LineGapBaseLineFactor + fontMetrics.Ascent) / fontMetrics.DesignUnitsPerEm * fontSize;
-
-            // TODO Use msdfgen HERE!!!
-            // Rasterize each character in turn.
-            foreach (var character in characters)
-                glyphList.Add(ImportGlyph(factory, fontFace, character, fontMetrics, fontSize, options.AntiAlias));
-
-            Glyphs = glyphList;
-
-            factory.Dispose();
-
-            // Swap the glyphs with MSDFGEN bitmaps
-            if (string.IsNullOrEmpty(options.Source))
-                return;
-
-            fontSource = options.Source;
-
-            foreach (var glyph in Glyphs)
-            {
-                SwapGlyphBitmap(glyph);
-            }
-        }
+        private string fontSource;
+        private string msdfgenExe;
+        private string tempDir;
 
         /// <summary>
         /// Generates and load a SDF font glyph using the msdfgen.exe
@@ -125,39 +69,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             if (File.Exists(outputFile))
             {
-                return (Bitmap)System.Drawing.Bitmap.FromFile(outputFile);
+                return (Bitmap)Bitmap.FromFile(outputFile);
             }
 
             return new Bitmap(1, 1, PixelFormat.Format32bppArgb);
         }
-
-        private void SwapGlyphBitmap(Glyph glyph)
-        {
-            var characterCode = Convert.ToUInt32(glyph.Character).ToString("x4");
-
-            var exportSize = " -size " + glyph.Bitmap.Width + " " + glyph.Bitmap.Height;
-
-            var startInfo = new ProcessStartInfo();
-            startInfo.FileName = msdfgenExe;
-            startInfo.Arguments = "msdf -font " + fontSource + " 0x" + characterCode + " -o " + tempDir + characterCode + ".bmp " + exportSize + " -translate 2 2 -autoframe";
-            startInfo.CreateNoWindow = true;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.RedirectStandardError = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.UseShellExecute = false;
-            var msdfgenProcess = Process.Start(startInfo);
-
-            if (msdfgenProcess == null)
-                return;
-
-            msdfgenProcess.WaitForExit();
-
-//            var image = (Bitmap)System.Drawing.Bitmap.FromFile(tempDir + characterCode + ".bmp");
-
-            // TODO Copy from file
-//            glyph.Bitmap = image;
-        }
-
+        
         private FontFace GetFontFaceFromSource(Factory factory, SpriteFontAsset options)
         {
             if (!File.Exists(options.Source))
@@ -218,143 +135,100 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             return new FontFace(font);
         }
 
-        private Glyph ImportGlyph(FontFace fontFace, char character, FontMetrics fontMetrics)
+        private string GetFontSource(SpriteFontAsset options)
         {
-            // 
+            if (!string.IsNullOrEmpty(options.Source))
+                return options.Source;
+
+            // TODO Cache this dictionary
+            Dictionary<string, string> foundFonts = new Dictionary<string, string>();
+
+            string fontsfolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Fonts);
+
+            if (!Directory.Exists(fontsfolder)) throw new Exception("directory doesnt exist");
+
+            foreach (FileInfo fi in new DirectoryInfo(fontsfolder).GetFiles("*.ttf"))
+            {
+                PrivateFontCollection fileFonts = new PrivateFontCollection();
+                fileFonts.AddFontFile(fi.FullName);
+                {
+                    var fontKey = fileFonts.Families[0].Name;
+
+                    // Regular
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Regular))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey))
+                        {
+                            foundFonts.Add(fontKey, fi.FullName);
+                        }
+                    }
+
+                    // Bold
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey + " Bold"))
+                        {
+                            foundFonts.Add(fontKey + " Bold", fi.FullName);
+                        }
+                    }
+
+                    // Italic
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Italic))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey + " Italic"))
+                        {
+                            foundFonts.Add(fontKey + " Italic", fi.FullName);
+                        }
+                    }
+
+                    // Bold Italic
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey + " Bold Italic"))
+                        {
+                            foundFonts.Add(fontKey + " Bold Italic", fi.FullName);
+                        }
+                    }
+                }
+            }
+
+            string outSource;
+            if (options.Style.IsBold() && options.Style.IsItalic())
+            {
+                if (foundFonts.TryGetValue(options.FontName + " Bold Italic", out outSource))
+                    return outSource;
+            }
+
+            if (options.Style.IsBold())
+            {
+                if (foundFonts.TryGetValue(options.FontName + " Bold", out outSource))
+                    return outSource;
+            }
+
+            if (options.Style.IsItalic())
+            {
+                if (foundFonts.TryGetValue(options.FontName + " Italic", out outSource))
+                    return outSource;
+            }
+
+            if (foundFonts.TryGetValue(options.FontName, out outSource))
+                return outSource;
+            
             return null;
         }
 
-        private Glyph ImportGlyph(Factory factory, FontFace fontFace, char character, FontMetrics fontMetrics, float fontSize, FontAntiAliasMode antiAliasMode)
-        {
-            var indices = fontFace.GetGlyphIndices(new int[] { character });
-
-            var metrics = fontFace.GetDesignGlyphMetrics(indices, false);
-            var metric = metrics[0];
-
-            var width = (float)(metric.AdvanceWidth - metric.LeftSideBearing - metric.RightSideBearing) / fontMetrics.DesignUnitsPerEm * fontSize;
-            var height = (float)(metric.AdvanceHeight - metric.TopSideBearing - metric.BottomSideBearing) / fontMetrics.DesignUnitsPerEm * fontSize;
-
-            var xOffset = (float)metric.LeftSideBearing / fontMetrics.DesignUnitsPerEm * fontSize;
-            var yOffset = (float)(metric.TopSideBearing - metric.VerticalOriginY) / fontMetrics.DesignUnitsPerEm * fontSize;
-
-            var advanceWidth = (float)metric.AdvanceWidth / fontMetrics.DesignUnitsPerEm * fontSize;
-            //var advanceHeight = (float)metric.AdvanceHeight / fontMetrics.DesignUnitsPerEm * fontSize;
-
-            var pixelWidth = (int)Math.Ceiling(width + 4);
-            var pixelHeight = (int)Math.Ceiling(height + 4);
-
-            var matrix = new RawMatrix3x2
-            {
-                M11 = 1,
-                M22 = 1,
-                M31 = -(float)Math.Floor(xOffset) + 1,
-                M32 = -(float)Math.Floor(yOffset) + 1
-            };
-
-            Bitmap bitmap;
-            if (char.IsWhiteSpace(character))
-            {
-                bitmap = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
-            }
-            else
-            {
-                var glyphRun = new GlyphRun
-                {
-                    FontFace = fontFace,
-                    Advances = new[] { (float)Math.Ceiling(advanceWidth) },
-                    FontSize = fontSize,
-                    BidiLevel = 0,
-                    Indices = indices,
-                    IsSideways = false,
-                    Offsets = new[] { new GlyphOffset() }
-                };
-
-
-                RenderingMode renderingMode;
-                if (antiAliasMode != FontAntiAliasMode.Aliased)
-                {
-                    var rtParams = new RenderingParams(factory);
-                    renderingMode = fontFace.GetRecommendedRenderingMode(fontSize, 1.0f, MeasuringMode.Natural, rtParams);
-                    rtParams.Dispose();
-                }
-                else
-                {
-                    renderingMode = RenderingMode.Aliased;
-                }
-
-                using (var runAnalysis = new GlyphRunAnalysis(factory,
-                    glyphRun,
-                    1.0f,
-                    matrix,
-                    renderingMode,
-                    MeasuringMode.Natural,
-                    0.0f,
-                    0.0f))
-                {
-
-                    var bounds = new RawRectangle(0, 0, pixelWidth, pixelHeight);
-                    bitmap = new Bitmap(pixelWidth, pixelHeight, PixelFormat.Format32bppArgb);
-
-                    if (renderingMode == RenderingMode.Aliased)
-                    {
-
-                        var texture = new byte[pixelWidth * pixelHeight];
-                        runAnalysis.CreateAlphaTexture(TextureType.Aliased1x1, bounds, texture, texture.Length);
-                        for (int y = 0; y < pixelHeight; y++)
-                        {
-                            for (int x = 0; x < pixelWidth; x++)
-                            {
-                                int pixelX = y * pixelWidth + x;
-                                var grey = texture[pixelX];
-                                var color = Color.FromArgb(grey, grey, grey);
-
-                                bitmap.SetPixel(x, y, color);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var texture = new byte[pixelWidth * pixelHeight * 3];
-                        runAnalysis.CreateAlphaTexture(TextureType.Cleartype3x1, bounds, texture, texture.Length);
-                        for (int y = 0; y < pixelHeight; y++)
-                        {
-                            for (int x = 0; x < pixelWidth; x++)
-                            {
-                                int pixelX = (y * pixelWidth + x) * 3;
-                                var red = LinearToGamma(texture[pixelX]);
-                                var green = LinearToGamma(texture[pixelX + 1]);
-                                var blue = LinearToGamma(texture[pixelX + 2]);
-                                var color = Color.FromArgb(red, green, blue);
-
-                                bitmap.SetPixel(x, y, color);
-                            }
-                        }
-                    }
-                }
-            }
-
-            var glyph = new Glyph(character, bitmap)
-            {
-                XOffset = -matrix.M31,
-                XAdvance = advanceWidth,
-                YOffset = -matrix.M32,
-            };
-            return glyph;
-        }
-
-        // Option 1: Import as static, then swap the Bitmap
+        /// <inheritdoc/>
         public void Import(SpriteFontAsset options, List<char> characters)
         {
-            // Swap the glyphs with MSDFGEN bitmaps
-            if (string.IsNullOrEmpty(options.Source))
-                return;
+            fontSource = GetFontSource(options);
+            if (string.IsNullOrEmpty(fontSource))
+              return;
 
-            fontSource = options.Source;
+            msdfgenExe = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\deps\\msdfgen\\msdfgen.exe";
+            tempDir = $"{Environment.GetEnvironmentVariable("TEMP")}\\";
 
             var factory = new Factory();
 
-            // TODO Get file's path
-            // try to get the font face from the source file if not null
             FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
 
             var fontMetrics = fontFace.Metrics;
@@ -386,15 +260,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             // Generate SDF bitmaps for each character in turn.
             foreach (var character in characters)
-                glyphList.Add(ImportGlyphProper(fontFace, character, fontMetrics, fontSize));
+                glyphList.Add(ImportGlyph(fontFace, character, fontMetrics, fontSize));
 
             Glyphs = glyphList;
 
             factory.Dispose();            
         }
 
-
-        private Glyph ImportGlyphProper(FontFace fontFace, char character, FontMetrics fontMetrics, float fontSize)
+        private Glyph ImportGlyph(FontFace fontFace, char character, FontMetrics fontMetrics, float fontSize)
         {
             var indices = fontFace.GetGlyphIndices(new int[] { character });
 
@@ -433,6 +306,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 XAdvance = advanceWidth,
                 YOffset = -matrixM32,
             };
+
             return glyph;
         }
 
