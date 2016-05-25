@@ -688,8 +688,11 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO VULKAN: Resetting the pool crashes. Only when using DescriptorSetCopies to the sets though.
 
             //GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
-            GraphicsDevice.NativeDevice.FreeDescriptorSets(obj.Pool, (uint)obj.Sets.Count, obj.Sets.Count > 0 ? (SharpVulkan.DescriptorSet*)Interop.Fixed(obj.Sets.Items) : null);
-            obj.Sets.Clear(true);
+            if (obj.Sets.Count > 0)
+            {
+                GraphicsDevice.NativeDevice.FreeDescriptorSets(obj.Pool, (uint)obj.Sets.Count, (SharpVulkan.DescriptorSet*)Interop.Fixed(obj.Sets.Items));
+                obj.Sets.Clear(true);
+            }
         }
 
         protected override unsafe void DestroyObject(DescriptorAllocation obj)
