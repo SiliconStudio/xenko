@@ -99,13 +99,6 @@ namespace SiliconStudio.Xenko.Games
             //gameForm.LayerRetainsBacking = false;
 
             currentOrientation = UIApplication.SharedApplication.StatusBarOrientation;
-
-            gameForm.Resize += GameFormOnResize;
-        }
-
-        private void GameFormOnResize(object sender, EventArgs eventArgs)
-        {
-            Debug.WriteLine("Resize()");
         }
 
         private void gameForm_Load(object sender, EventArgs e)
