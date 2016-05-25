@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 
 using SharpDX.Direct2D1;
+using SiliconStudio.Core.Transactions;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
@@ -28,7 +29,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
         public float BaseLine { get; private set; }
 
-        public void Import(SpriteFontAsset options, List<char> characters)
+
+        private string fontSource = "";
+        private string msdfgenExe = "C:\\Dev\\xenko\\deps\\msdfgen\\msdfgen.exe";
+        private string tempDir    = "C:\\Temp\\";
+
+
+        // Option 1: Import as static, then swap the Bitmap
+        public void ImportOld(SpriteFontAsset options, List<char> characters)
         {
             var factory = new Factory();
 
@@ -76,29 +84,78 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             if (string.IsNullOrEmpty(options.Source))
                 return;
 
-            var fontSource = options.Source;
-            var msdfgenExe = "C:\\Dev\\xenko\\deps\\msdfgen\\msdfgen.exe";
-            var tempDir = "C:\\Temp\\";
+            fontSource = options.Source;
 
             foreach (var glyph in Glyphs)
             {
-                SwapGlyphBitmap(glyph, fontSource, msdfgenExe, tempDir);
+                SwapGlyphBitmap(glyph);
             }
         }
 
-        private void SwapGlyphBitmap(Glyph glyph, string fontPath, string exePath, string tempPath)
+        /// <summary>
+        /// Generates and load a SDF font glyph using the msdfgen.exe
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="offsetx"></param>
+        /// <param name="offsety"></param>
+        /// <returns></returns>
+        private Bitmap LoadSDFBitmap(char c, int width, int height, int offsetx, int offsety)
         {
-            var characterCode = Convert.ToUInt32(glyph.Character).ToString("x4");
-            
+            var characterCode = "0x" + Convert.ToUInt32(c).ToString("x4");
+            var outputFile = tempDir + characterCode + ".bmp";
+            var exportSize = " -size " + width + " " + height + " ";
+            var translate = " -translate " + offsetx + " " + offsety + " ";
+
             var startInfo = new ProcessStartInfo();
-            startInfo.FileName = exePath;
-            startInfo.Arguments = "msdf -font " + fontPath + " 0x" + characterCode + " -o " + tempPath + characterCode + ".bmp -size 64 64 -translate 2 2";
+            startInfo.FileName = msdfgenExe;
+            startInfo.Arguments = "msdf -font " + fontSource + " " + characterCode + " -o " + outputFile + exportSize + translate + " -autoframe";
             startInfo.CreateNoWindow = true;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
-            Process.Start(startInfo);
+            var msdfgenProcess = Process.Start(startInfo);
+
+            if (msdfgenProcess == null)
+                return null;
+
+            msdfgenProcess.WaitForExit();
+
+            if (File.Exists(outputFile))
+            {
+                return (Bitmap)System.Drawing.Bitmap.FromFile(outputFile);
+            }
+
+            return new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+        }
+
+        private void SwapGlyphBitmap(Glyph glyph)
+        {
+            var characterCode = Convert.ToUInt32(glyph.Character).ToString("x4");
+
+            var exportSize = " -size " + glyph.Bitmap.Width + " " + glyph.Bitmap.Height;
+
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = msdfgenExe;
+            startInfo.Arguments = "msdf -font " + fontSource + " 0x" + characterCode + " -o " + tempDir + characterCode + ".bmp " + exportSize + " -translate 2 2 -autoframe";
+            startInfo.CreateNoWindow = true;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.RedirectStandardError = true;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.UseShellExecute = false;
+            var msdfgenProcess = Process.Start(startInfo);
+
+            if (msdfgenProcess == null)
+                return;
+
+            msdfgenProcess.WaitForExit();
+
+//            var image = (Bitmap)System.Drawing.Bitmap.FromFile(tempDir + characterCode + ".bmp");
+
+            // TODO Copy from file
+//            glyph.Bitmap = image;
         }
 
         private FontFace GetFontFaceFromSource(Factory factory, SpriteFontAsset options)
@@ -281,6 +338,100 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 XOffset = -matrix.M31,
                 XAdvance = advanceWidth,
                 YOffset = -matrix.M32,
+            };
+            return glyph;
+        }
+
+        // Option 1: Import as static, then swap the Bitmap
+        public void Import(SpriteFontAsset options, List<char> characters)
+        {
+            // Swap the glyphs with MSDFGEN bitmaps
+            if (string.IsNullOrEmpty(options.Source))
+                return;
+
+            fontSource = options.Source;
+
+            var factory = new Factory();
+
+            // TODO Get file's path
+            // try to get the font face from the source file if not null
+            FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
+
+            var fontMetrics = fontFace.Metrics;
+
+            // Create a bunch of GDI+ objects.
+            var fontSize = FontHelper.PointsToPixels(options.Size);
+
+            var glyphList = new List<Glyph>();
+
+            // Remap the LineMap coming from the font with a user defined remapping
+            // Note:
+            // We are remapping the lineMap to allow to shrink the LineGap and to reposition it at the top and/or bottom of the 
+            // font instead of using only the top
+            // According to http://stackoverflow.com/questions/13939264/how-to-determine-baseline-position-using-directwrite#comment27947684_14061348
+            // (The response is from a MSFT employee), the BaseLine should be = LineGap + Ascent but this is not what
+            // we are experiencing when comparing with MSWord (LineGap + Ascent seems to offset too much.)
+            //
+            // So we are first applying a factor to the line gap:
+            //     NewLineGap = LineGap * LineGapFactor
+            var lineGap = fontMetrics.LineGap * options.LineGapFactor;
+
+            // Store the font height.
+            LineSpacing = (float)(lineGap + fontMetrics.Ascent + fontMetrics.Descent) / fontMetrics.DesignUnitsPerEm * fontSize;
+
+            // And then the baseline is also changed in order to allow the linegap to be distributed between the top and the 
+            // bottom of the font:
+            //     BaseLine = NewLineGap * LineGapBaseLineFactor
+            BaseLine = (float)(lineGap * options.LineGapBaseLineFactor + fontMetrics.Ascent) / fontMetrics.DesignUnitsPerEm * fontSize;
+
+            // Generate SDF bitmaps for each character in turn.
+            foreach (var character in characters)
+                glyphList.Add(ImportGlyphProper(fontFace, character, fontMetrics, fontSize));
+
+            Glyphs = glyphList;
+
+            factory.Dispose();            
+        }
+
+
+        private Glyph ImportGlyphProper(FontFace fontFace, char character, FontMetrics fontMetrics, float fontSize)
+        {
+            var indices = fontFace.GetGlyphIndices(new int[] { character });
+
+            var metrics = fontFace.GetDesignGlyphMetrics(indices, false);
+            var metric = metrics[0];
+
+            var width = (float)(metric.AdvanceWidth - metric.LeftSideBearing - metric.RightSideBearing) / fontMetrics.DesignUnitsPerEm * fontSize;
+            var height = (float)(metric.AdvanceHeight - metric.TopSideBearing - metric.BottomSideBearing) / fontMetrics.DesignUnitsPerEm * fontSize;
+
+            var xOffset = (float)metric.LeftSideBearing / fontMetrics.DesignUnitsPerEm * fontSize;
+            var yOffset = (float)(metric.TopSideBearing - metric.VerticalOriginY) / fontMetrics.DesignUnitsPerEm * fontSize;
+
+            var advanceWidth = (float)metric.AdvanceWidth / fontMetrics.DesignUnitsPerEm * fontSize;
+            //var advanceHeight = (float)metric.AdvanceHeight / fontMetrics.DesignUnitsPerEm * fontSize;
+
+            var pixelWidth = (int)Math.Ceiling(width + 4);
+            var pixelHeight = (int)Math.Ceiling(height + 4);
+
+
+            var matrixM31 = -(float)Math.Floor(xOffset) + 1;
+            var matrixM32 = -(float)Math.Floor(yOffset) + 1;
+
+            Bitmap bitmap;
+            if (char.IsWhiteSpace(character))
+            {
+                bitmap = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+            }
+            else
+            {
+                bitmap = LoadSDFBitmap(character, pixelWidth, pixelHeight, 1, 1);
+            }
+
+            var glyph = new Glyph(character, bitmap)
+            {
+                XOffset = -matrixM31,
+                XAdvance = advanceWidth,
+                YOffset = -matrixM32,
             };
             return glyph;
         }
