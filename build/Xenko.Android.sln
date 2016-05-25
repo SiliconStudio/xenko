@@ -120,6 +120,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.Android", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.Android.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Android", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Android.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.Android", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.Android.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
@@ -410,6 +412,18 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Android.ActiveCfg = Release|Android
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Android.Build.0 = Release|Android
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Android.Deploy.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Android.ActiveCfg = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Android.Build.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Android.Deploy.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|Android.ActiveCfg = Debug|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|Android.Build.0 = Debug|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|Android.Deploy.0 = Debug|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|Android.ActiveCfg = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|Android.Build.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|Android.Deploy.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|Android.ActiveCfg = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|Android.Build.0 = Release|Android
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|Android.Deploy.0 = Release|Android
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Android.ActiveCfg = Release|Android
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Android.Build.0 = Release|Android
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|Android.Deploy.0 = Release|Android
@@ -509,6 +523,7 @@ Global
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {D38D3F54-0035-4D23-A119-A78E98DA1DD5}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC} = {D38D3F54-0035-4D23-A119-A78E98DA1DD5}
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {D38D3F54-0035-4D23-A119-A78E98DA1DD5}
 		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7} = {D38D3F54-0035-4D23-A119-A78E98DA1DD5}
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31} = {4C142567-C42B-40F5-B092-798882190209}
