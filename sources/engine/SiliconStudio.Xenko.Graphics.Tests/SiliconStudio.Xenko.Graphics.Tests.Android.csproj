@@ -81,9 +81,6 @@
     <Import_RootNamespace>SiliconStudio.Xenko.Graphics.Tests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="readme.md" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Label="Xenko.DoNotSync" Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
@@ -93,8 +90,7 @@
     <Compile Label="Xenko.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
       <Link>NUnitLiteLauncher.Android.cs</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="readme.md" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\CustomEffect.cs">
       <AutoGen>True</AutoGen>
