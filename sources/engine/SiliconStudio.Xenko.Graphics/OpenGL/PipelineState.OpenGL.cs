@@ -210,6 +210,9 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             storage.Remove(key);
                         }
+
+                        var graphicsResource = value as IReferencable;
+                        graphicsResource?.Release();
                     }
                 }
             }

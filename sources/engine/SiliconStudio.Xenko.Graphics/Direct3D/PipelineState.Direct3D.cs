@@ -289,6 +289,8 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             storage.Remove(key);
                         }
+
+                        value.Release();
                     }
                 }
             }
