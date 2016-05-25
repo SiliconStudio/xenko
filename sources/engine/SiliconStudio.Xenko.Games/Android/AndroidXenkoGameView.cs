@@ -92,12 +92,8 @@ namespace SiliconStudio.Xenko.Games.Android
         private GLVersion GetMaximumSupportedProfile()
         {
             var window = ((AndroidWindow)this.WindowInfo);
-            var mode = new AndroidGraphicsMode(window.Display, (int)this.ContextRenderingApi, new GraphicsMode(32, 0, 0));
-            using (var context = new AndroidGraphicsContext(mode, window, this.GraphicsContext, GLVersion.ES2, GraphicsContextFlags.Embedded))
+            using (var context = new OpenTK.Graphics.GraphicsContext(GraphicsMode.Default, window, (int)GLVersion.ES2, 0, GraphicsContextFlags.Embedded))
             {
-                mode.Initialize(window.Display, (int)this.ContextRenderingApi);
-                window.CreateSurface(mode.Config);
-
                 context.MakeCurrent(window);
 
                 PlatformConfigurations.RendererName = GL.GetString(StringName.Renderer);
@@ -113,7 +109,7 @@ namespace SiliconStudio.Xenko.Games.Android
 
                 if (version >= 300)
                 {
-                    return (version >= 310) ? GLVersion.ES31 : GLVersion.ES3;
+                    return GLVersion.ES3;
                 }
                 return GLVersion.ES2;
             }

@@ -9,17 +9,6 @@ using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
-#endif
-#if SILICONSTUDIO_PLATFORM_IOS
-using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
-using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;
-using OesPackedDepthStencil = OpenTK.Graphics.ES30.All;
-#elif SILICONSTUDIO_PLATFORM_ANDROID
-using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES20.ExtTextureFormatBgra8888;
-using OesCompressedEtc1Rgb8Texture = OpenTK.Graphics.ES20.OesCompressedEtc1Rgb8Texture;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
@@ -27,22 +16,17 @@ using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 
 // TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using CompressedInternalFormat2D = OpenTK.Graphics.ES30.CompressedInternalFormat;
 using CompressedInternalFormat3D = OpenTK.Graphics.ES30.CompressedInternalFormat;
 using TextureComponentCount2D = OpenTK.Graphics.ES30.TextureComponentCount;
 using TextureComponentCount3D = OpenTK.Graphics.ES30.TextureComponentCount;
 #else
-using CompressedInternalFormat2D = OpenTK.Graphics.ES30.PixelInternalFormat;
-using CompressedInternalFormat3D = OpenTK.Graphics.ES30.CompressedInternalFormat;
-using TextureComponentCount2D = OpenTK.Graphics.ES30.PixelInternalFormat;
-using TextureComponentCount3D = OpenTK.Graphics.ES30.TextureComponentCount;
-#endif
-#else
 using CompressedInternalFormat2D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
 using CompressedInternalFormat3D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
 using TextureComponentCount2D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
 using TextureComponentCount3D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
+using TextureTarget3d = OpenTK.Graphics.OpenGL.TextureTarget;
 #endif
 
 namespace SiliconStudio.Xenko.Graphics
@@ -399,21 +383,13 @@ namespace SiliconStudio.Xenko.Graphics
                 case PixelFormat.D32_Float:
                     if (graphicsDevice.IsOpenGLES2)
                         throw new NotSupportedException("Only 16 bits depth buffer or 24-8 bits depth-stencil buffer is supported on OpenGLES2");
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                    depthFormat = RenderbufferInternalFormat.DepthComponent32F;
-#else
                     depthFormat = RenderbufferInternalFormat.DepthComponent32f;
-#endif
                     break;
                 case PixelFormat.D32_Float_S8X24_UInt:
                     if (graphicsDevice.IsOpenGLES2)
                         throw new NotSupportedException("Only 16 bits depth buffer or 24-8 bits depth-stencil buffer is supported on OpenGLES2");
                     // no need to check graphicsDevice.HasPackedDepthStencilExtension since supported 32F depth means OpenGL ES 3, so packing is available.
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                    depthFormat = RenderbufferInternalFormat.Depth32FStencil8;
-#else
                     depthFormat = RenderbufferInternalFormat.Depth32fStencil8;
-#endif
                     break;
 #endif
                 default:
@@ -437,7 +413,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private static TextureTarget2d GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
         {
             // TODO: Proxy from ES 3.1?
@@ -450,26 +425,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return (TextureTarget3d)target;
         }
-#else
-        private static TextureTarget GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
-        {
-            // TODO: Proxy from ES 3.1?
-            if (target == TextureTarget.TextureCubeMap)
-                return TextureTarget.TextureCubeMapPositiveX + arrayIndex;
-            return target;
-        }
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private static TextureTarget3D GetTextureTargetForDataSet3D(TextureTarget target)
-        {
-            return (TextureTarget3D)target;
-        }
-#else
-        private static TextureTarget GetTextureTargetForDataSet3D(TextureTarget target)
-        {
-            return target;
-        }
-#endif
-#endif
 
         private static int TextureSetSize(TextureTarget target)
         {
