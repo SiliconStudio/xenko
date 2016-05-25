@@ -16,8 +16,11 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public static partial class DepthBaseKeys
+    public static partial class ParticleUtilitiesKeys
     {
-        public static readonly ObjectParameterKey<Texture> DepthStencil = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Matrix> ViewMatrix = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> ProjectionMatrix = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> ViewProjectionMatrix = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Vector4> ViewFrustum = ParameterKeys.NewValue<Vector4>();
     }
 }
