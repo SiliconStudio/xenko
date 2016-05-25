@@ -66,8 +66,8 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
             }
+
             base.OnDestroyed();
-            DestroyImpl();
         }
 
         /// <inheritdoc/>

@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a directional light
+    /// </summary>
+    class LightDirectional
+    {
+        struct DirectionalLightData
+        {
+            float3 DirectionWS;
+            [Color]
+            float3 Color;
+        };
+    };
+}

@@ -3,11 +3,6 @@
 
 #pragma once
 
-#include <NativePath.h>
-#include <NativeMath.h>
-#include <NativeMemory.h>
-#include <NativeTime.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif

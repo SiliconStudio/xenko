@@ -9,24 +9,16 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsResourceBase
     {
-        internal int resourceId;
-
         private void Initialize()
         {
         }
         
-        internal int ResourceId
-        {
-            get { return resourceId; }
-        }
-
         /// <summary>
         /// Called when graphics device has been detected to be internally destroyed.
         /// </summary>
+        /// <inheritdoc/>
         protected internal virtual void OnDestroyed()
         {
-            // If GL context is lost, set resource id to 0, as OpenGL destroys everything with it
-            resourceId = 0;
         }
 
         /// <summary>
@@ -36,10 +28,6 @@ namespace SiliconStudio.Xenko.Graphics
         protected internal virtual bool OnRecreate()
         {
             return false;
-        }
-
-        protected virtual void DestroyImpl()
-        {
         }
     }
 }

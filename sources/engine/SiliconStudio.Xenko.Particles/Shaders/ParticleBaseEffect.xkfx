@@ -6,11 +6,10 @@ namespace SiliconStudio.Xenko.Rendering
     {
         using params ParticleBaseKeys;
 
-        mixin ParticleBase;
+        using params ParticleUtilitiesKeys;
 
-        //if (ParticleBaseKeys.ParticleColor != null)
-        //{
-        //    mixin compose particleColor = ParticleBaseKeys.ParticleColor;
-        //}
+        mixin macro ParticleBaseKeys.UsesSoftEdge;
+
+        mixin ParticleBase;
    };
 }
