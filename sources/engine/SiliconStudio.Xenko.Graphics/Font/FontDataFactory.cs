@@ -49,5 +49,27 @@ namespace SiliconStudio.Xenko.Graphics.Font
                 AntiAlias = antiAliasMode,
             };
         }
+
+        public SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
+        {
+            if (textures == null) throw new ArgumentNullException("textures");
+
+            return new ScalableSpriteFont(size, glyphs, textures, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter);
+        }
+
+        public SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Image> images, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
+        {
+            // creates the textures from the images if any.
+            Texture[] textures = null;
+            if (images != null)
+            {
+                textures = new Texture[images.Count];
+                for (int i = 0; i < textures.Length; i++)
+                    textures[i] = images[i].ToSerializableVersion();
+            }
+
+            return new ScalableSpriteFont(size, glyphs, textures, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter);
+        }
+
     }
 }

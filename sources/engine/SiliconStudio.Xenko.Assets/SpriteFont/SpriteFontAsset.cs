@@ -75,6 +75,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [Display(null, "Font")]
         public FontStyle Style { get; set; } = FontStyle.Regular;
 
+        // TODO: Change to Static, Dynamic, Scalable enum
+
         /// <summary>
         ///  Gets or sets the value determining if the characters are pre-generated off-line or at run-time.
         /// </summary>
@@ -85,7 +87,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(50)]
         [Display(null, "Font")]
         public bool IsDynamic { get; set; }
-        // TODO: Change to Static, Dynamic, Scalable enum
+
+        /// <summary>
+        ///  Gets or sets the value determining if the characters are scalable SDF images or not
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the font textures are generated at build time and still allow the text to be scaled and resized at any time.
+        /// </userdoc>
         [DataMember(51)]
         [Display(null, "Font")]
         public bool IsScalable { get; set; }

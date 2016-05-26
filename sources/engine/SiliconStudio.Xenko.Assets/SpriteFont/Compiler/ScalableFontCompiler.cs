@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
     public class ScalableFontCompiler
     {
         /// <summary>
-        /// Compiles the specified font description into a <see cref="StaticSpriteFont" /> object.
+        /// Compiles the specified font description into a <see cref="ScalableSpriteFont" /> object.
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 }
             }
 
-            return StaticSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
+            return ScalableSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)

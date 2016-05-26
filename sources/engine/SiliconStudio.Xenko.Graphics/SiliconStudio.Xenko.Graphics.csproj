@@ -148,6 +148,9 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="Font\ScalableSpriteFont.cs" />
+    <Compile Include="Font\ScalableSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\ScalableSpriteFontSerializer.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
