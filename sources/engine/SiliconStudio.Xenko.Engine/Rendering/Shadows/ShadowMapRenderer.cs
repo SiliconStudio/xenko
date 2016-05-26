@@ -105,6 +105,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
+                // Clear atlases
+                foreach (var atlas in atlases)
+                {
+                    atlas.Clear();
+                }
+
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);
 
@@ -113,9 +119,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 {
                     continue;
                 }
-
-                // Assign rectangles to shadow maps
-                AssignRectangles();
 
                 // Collect shadow render views
                 var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
@@ -168,22 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        private void AssignRectangles()
-        {
-            // Clear atlases
-            foreach (var atlas in atlases)
-            {
-                atlas.Clear();
-            }
-
-            // Assign rectangles for shadowmaps
-            foreach (var shadowMapTexture in shadowMapTextures)
-            {
-                AssignRectangles(shadowMapTexture);
-            }
-        }
-
-        private void AssignRectangles(LightShadowMapTexture lightShadowMapTexture)
+        private void AssignRectangle(LightShadowMapTexture lightShadowMapTexture)
         {
             lightShadowMapTexture.CascadeCount = lightShadowMapTexture.Shadow.GetCascadeCount();
             var size = lightShadowMapTexture.Size;
@@ -272,9 +260,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
-                // Get or allocate  a ShadowMapTexture
+                // Get or allocate a ShadowMapTexture
                 var shadowMapTexture = shadowMapTextures.Add();
                 shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
+
+                // Assign rectangles for shadowmap
+                AssignRectangle(shadowMapTexture);
 
                 renderViewLightData.LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
             }
