@@ -934,7 +934,16 @@ namespace SiliconStudio.Xenko.Games
         {
             if ((!isChangingDevice && ((game.Window.ClientBounds.Height != 0) || (game.Window.ClientBounds.Width != 0))) && (game.Window.CurrentOrientation != currentWindowOrientation))
             {
-                Window_ClientSizeChanged(sender, e);
+                if ((game.Window.ClientBounds.Height > game.Window.ClientBounds.Width && preferredBackBufferWidth > preferredBackBufferHeight) ||
+                    (game.Window.ClientBounds.Width > game.Window.ClientBounds.Height && preferredBackBufferHeight > preferredBackBufferWidth))
+                {
+                    //Client size and Back Buffer size are different things
+                    //in this case all we care is if orientation changed, if so we swap width and height
+                    var w = PreferredBackBufferWidth;
+                    PreferredBackBufferWidth = PreferredBackBufferHeight;
+                    PreferredBackBufferHeight = w;
+                    ApplyChanges();
+                }
             }
         }
 
@@ -1003,92 +1012,110 @@ namespace SiliconStudio.Xenko.Games
         {
             // We make sure that we won't be call by an asynchronous event (windows resized)
             lock (lockDeviceCreation)
-            using (var profile = Profiler.Begin(GraphicsDeviceManagerProfilingKeys.CreateDevice))
             {
-                isChangingDevice = true;
-                int width = game.Window.ClientBounds.Width;
-                int height = game.Window.ClientBounds.Height;
-
-                bool isBeginScreenDeviceChange = false;
-                try
+                using (Profiler.Begin(GraphicsDeviceManagerProfilingKeys.CreateDevice))
                 {
-                    // Notifies the game window for the new orientation
-                    var orientation = SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true);
-                    game.Window.SetSupportedOrientations(orientation);
-                    
-                    var graphicsDeviceInformation = FindBestDevice(forceCreate);
+                    isChangingDevice = true;
+                    var width = game.Window.ClientBounds.Width;
+                    var height = game.Window.ClientBounds.Height;
 
-                    OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
-
-                    isFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
-                    game.Window.BeginScreenDeviceChange(graphicsDeviceInformation.PresentationParameters.IsFullScreen);
-                    isBeginScreenDeviceChange = true;
-                    bool needToCreateNewDevice = true;
-
-                    // If we are not forced to create a new device and this is already an existing GraphicsDevice
-                    // try to reset and resize it.
-                    if (!forceCreate && GraphicsDevice != null)
+                    //If the orientation is free to be changed from portrait to landscape we actually need this check now, 
+                    //it is mostly useful only at initialization actually tho because Window_OrientationChanged does the same logic on runtime change
+                    if (game.Window.CurrentOrientation != currentWindowOrientation)
                     {
-                        if (CanResetDevice(graphicsDeviceInformation))
+                        if ((game.Window.ClientBounds.Height > game.Window.ClientBounds.Width && preferredBackBufferWidth > preferredBackBufferHeight) ||
+                            (game.Window.ClientBounds.Width > game.Window.ClientBounds.Height && preferredBackBufferHeight > preferredBackBufferWidth))
                         {
-                            try
-                            {
-                                var newWidth = graphicsDeviceInformation.PresentationParameters.BackBufferWidth;
-                                var newHeight = graphicsDeviceInformation.PresentationParameters.BackBufferHeight;
-                                var newFormat = graphicsDeviceInformation.PresentationParameters.BackBufferFormat;
-                                var newOutputIndex = graphicsDeviceInformation.PresentationParameters.PreferredFullScreenOutputIndex;
-
-                                GraphicsDevice.Presenter.Description.PreferredFullScreenOutputIndex = newOutputIndex;
-                                GraphicsDevice.Presenter.Description.RefreshRate = graphicsDeviceInformation.PresentationParameters.RefreshRate;
-                                GraphicsDevice.Presenter.Resize(newWidth, newHeight, newFormat);
-
-                                // Change full screen if needed
-                                GraphicsDevice.Presenter.IsFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
-
-                                needToCreateNewDevice = false;
-                            }
-                            catch
-                            {
-                            }
+                            //Client size and Back Buffer size are different things
+                            //in this case all we care is if orientation changed, if so we swap width and height
+                            var w = preferredBackBufferWidth;
+                            preferredBackBufferWidth = preferredBackBufferHeight;
+                            preferredBackBufferHeight = w;
                         }
                     }
 
-                    // If we still need to create a device, then we need to create it
-                    if (needToCreateNewDevice)
+                    var isBeginScreenDeviceChange = false;
+                    try
                     {
-                        CreateDevice(graphicsDeviceInformation);
-                    }
+                        // Notifies the game window for the new orientation
+                        var orientation = SelectOrientation(supportedOrientations, PreferredBackBufferWidth, PreferredBackBufferHeight, true);
+                        game.Window.SetSupportedOrientations(orientation);
 
-                    if (GraphicsDevice == null)
+                        var graphicsDeviceInformation = FindBestDevice(forceCreate);
+
+                        OnPreparingDeviceSettings(this, new PreparingDeviceSettingsEventArgs(graphicsDeviceInformation));
+
+                        isFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
+                        game.Window.BeginScreenDeviceChange(graphicsDeviceInformation.PresentationParameters.IsFullScreen);
+                        isBeginScreenDeviceChange = true;
+                        bool needToCreateNewDevice = true;
+
+                        // If we are not forced to create a new device and this is already an existing GraphicsDevice
+                        // try to reset and resize it.
+                        if (!forceCreate && GraphicsDevice != null)
+                        {
+                            if (CanResetDevice(graphicsDeviceInformation))
+                            {
+                                try
+                                {
+                                    var newWidth = graphicsDeviceInformation.PresentationParameters.BackBufferWidth;
+                                    var newHeight = graphicsDeviceInformation.PresentationParameters.BackBufferHeight;
+                                    var newFormat = graphicsDeviceInformation.PresentationParameters.BackBufferFormat;
+                                    var newOutputIndex = graphicsDeviceInformation.PresentationParameters.PreferredFullScreenOutputIndex;
+
+                                    GraphicsDevice.Presenter.Description.PreferredFullScreenOutputIndex = newOutputIndex;
+                                    GraphicsDevice.Presenter.Description.RefreshRate = graphicsDeviceInformation.PresentationParameters.RefreshRate;
+                                    GraphicsDevice.Presenter.Resize(newWidth, newHeight, newFormat);
+
+                                    // Change full screen if needed
+                                    GraphicsDevice.Presenter.IsFullScreen = graphicsDeviceInformation.PresentationParameters.IsFullScreen;
+
+                                    needToCreateNewDevice = false;
+                                }
+                                catch
+                                {
+                                    // ignored
+                                }
+                            }
+                        }
+
+                        // If we still need to create a device, then we need to create it
+                        if (needToCreateNewDevice)
+                        {
+                            CreateDevice(graphicsDeviceInformation);
+                        }
+
+                        if (GraphicsDevice == null)
+                        {
+                            throw new InvalidOperationException("Unexpected null GraphicsDevice");
+                        }
+
+                        // Make sure to copy back coolor space to GraphicsDevice
+                        GraphicsDevice.ColorSpace = graphicsDeviceInformation.PresentationParameters.ColorSpace;
+
+                        var presentationParameters = GraphicsDevice.Presenter.Description;
+                        isReallyFullScreen = presentationParameters.IsFullScreen;
+                        if (presentationParameters.BackBufferWidth != 0)
+                        {
+                            width = presentationParameters.BackBufferWidth;
+                        }
+
+                        if (presentationParameters.BackBufferHeight != 0)
+                        {
+                            height = presentationParameters.BackBufferHeight;
+                        }
+                        deviceSettingsChanged = false;
+                    }
+                    finally
                     {
-                        throw new InvalidOperationException("Unexpected null GraphicsDevice");
-                    }
+                        if (isBeginScreenDeviceChange)
+                        {
+                            game.Window.EndScreenDeviceChange(width, height);
+                        }
 
-                    // Make sure to copy back coolor space to GraphicsDevice
-                    GraphicsDevice.ColorSpace = graphicsDeviceInformation.PresentationParameters.ColorSpace;
-
-                    var presentationParameters = GraphicsDevice.Presenter.Description;
-                    isReallyFullScreen = presentationParameters.IsFullScreen;
-                    if (presentationParameters.BackBufferWidth != 0)
-                    {
-                        width = presentationParameters.BackBufferWidth;
+                        currentWindowOrientation = game.Window.CurrentOrientation;
+                        isChangingDevice = false;
                     }
-
-                    if (presentationParameters.BackBufferHeight != 0)
-                    {
-                        height = presentationParameters.BackBufferHeight;
-                    }
-                    deviceSettingsChanged = false;
-                }
-                finally
-                {
-                    if (isBeginScreenDeviceChange)
-                    {
-                        game.Window.EndScreenDeviceChange(width, height);
-                    }
-
-                    currentWindowOrientation = game.Window.CurrentOrientation;
-                    isChangingDevice = false;
                 }
             }
         }
