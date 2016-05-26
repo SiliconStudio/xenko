@@ -61,9 +61,9 @@ namespace SiliconStudio.Xenko.Graphics
                         }
 
                         // Remember this, so we can choose the right DescriptorType in DescriptorSet.SetShaderResourceView
-                        immutableSamplers[usedBindingCount] = entry.ImmutableSampler.NativeSampler;
+                        immutableSamplers[i] = entry.ImmutableSampler.NativeSampler;
                         //bindings[i].DescriptorType = DescriptorType.CombinedImageSampler;
-                        bindings[usedBindingCount].ImmutableSamplers = new IntPtr(immutableSamplersPointer + usedBindingCount);
+                        bindings[usedBindingCount].ImmutableSamplers = new IntPtr(immutableSamplersPointer + i);
                     }
 
                     usedBindingCount++;

@@ -265,7 +265,7 @@ namespace SiliconStudio.Xenko.Graphics
                             var sourceBinding = setInfo.Bindings[j].Key;
                             var destinationBinding = setInfo.Bindings[j].Value;
 
-                            var immutableSampler = activePipeline.ImmutableSamplers[j];
+                            var immutableSampler = activePipeline.ImmutableSamplers[destinationBinding];
 
                             // TODO VULKAN: Why do we need to update bindings that are just an immutable sampler?
                             if (immutableSampler != Sampler.Null)
