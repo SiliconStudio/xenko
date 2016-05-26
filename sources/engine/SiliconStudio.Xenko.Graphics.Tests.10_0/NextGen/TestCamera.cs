@@ -268,6 +268,12 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     position += up * translationSpeed;
             }
 
+            // Update zoom factor when using the wheel
+            if (Input.MouseWheelDelta != 0)
+            {
+                position += forward * Input.MouseWheelDelta * translationSpeed;
+            }
+
             // Update the camera view matrix 
             UpdateViewMatrix();
         }
