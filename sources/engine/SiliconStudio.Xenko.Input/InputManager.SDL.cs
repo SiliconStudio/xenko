@@ -103,7 +103,8 @@ namespace SiliconStudio.Xenko.Input
             UiControl.MouseWheelActions += e =>
             {
                 Point pos = Cursor.Position;
-                OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, InputEventType.Wheel, Math.Max(e.x, e.y));
+                // Only use `e.y` on SDL as this will be where the deltas will be.
+                OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, InputEventType.Wheel, e.y);
             };
             UiControl.ResizeEndActions += UiWindowOnSizeChanged;
 
@@ -133,7 +134,7 @@ namespace SiliconStudio.Xenko.Input
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the Window boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !UiControl.ClientRectangle.Contains(Cursor.Position))
+            if (type == InputEventType.Wheel && !UiControl.ClientRectangle.Contains(UiControl.RelativeCursorPosition))
                 return;
 
             // the mouse events series has been interrupted because out of the window.
