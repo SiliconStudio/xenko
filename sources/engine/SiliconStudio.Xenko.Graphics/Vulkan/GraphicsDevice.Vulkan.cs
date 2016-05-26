@@ -245,6 +245,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 FillModeNonSolid = true,
                 ShaderClipDistance = true,
+                ShaderCullDistance = true,
                 SamplerAnisotropy = true,
                 DepthClamp = true,
             };

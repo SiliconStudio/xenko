@@ -385,7 +385,7 @@ namespace SiliconStudio.Xenko.Graphics
                         break;
                     default:
                         texture.NativeLayout = ImageLayout.General;
-                        texture.NativeAccessMask = (AccessFlags)~0;
+                        texture.NativeAccessMask = (AccessFlags)0x1FFFF; // TODO VULKAN: Don't hard-code this
                         break;
                 }
 
