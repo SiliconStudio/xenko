@@ -56,7 +56,10 @@
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Android' or '$(SiliconStudioPlatform)' == 'iOS'">
           <ItemGroup>
-            <Reference Include="OpenTK-1.0" />
+            <Reference Include="OpenTK-1.1">
+              <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
+            </Reference>
           </ItemGroup>
         </When>
       </Choose>

@@ -16,10 +16,10 @@
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>5.1.1</string>
+	<string>7.0</string>
 	<key>NSMainNibFile</key>
 	<string></string>
 	<key>UIStatusBarStyle</key>

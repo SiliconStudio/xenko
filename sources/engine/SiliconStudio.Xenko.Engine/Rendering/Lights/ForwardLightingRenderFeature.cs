@@ -109,23 +109,46 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             lightRenderers = new List<KeyValuePair<Type, LightGroupRendererBase>>(16);
 
             renderViewDatas = new Dictionary<RenderView, RenderViewLightData>();
-
-            // TODO: Make this pluggable
-            RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
-            RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
-            RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer());
-            RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
-            RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
         }
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
+            // TODO: Make this pluggable
+            if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
+            {
+                // Note: this renderer supports both Point and Spot lights
+                var clusteredLightRenderer = new LightClusteredPointGroupRenderer();
+
+                RegisterLightGroupRenderer(typeof(LightPoint), clusteredLightRenderer);
+                RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer { NonShadowRenderer = clusteredLightRenderer.SpotRenderer });
+            }
+            else
+            {
+                RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer());
+                RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
+            }
+
+            RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
+            RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
+            RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
+
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
 
             viewLightingKey = ((RootEffectRenderFeature)RootRenderFeature).CreateViewLogicalGroup("Lighting");
             drawLightingKey = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawLogicalGroup("Lighting");
+        }
+
+        public override void Unload()
+        {
+            // Unload light renderers
+            foreach (var lightRenderer in lightRenderers)
+            {
+                lightRenderer.Value.Unload();
+            }
+
+            base.Unload();
         }
 
         public override void Collect()
