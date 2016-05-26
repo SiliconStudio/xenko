@@ -6,10 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Text;
 using System.IO;
-using System.Text;
-using Microsoft.Win32;
-using SharpDX.Direct2D1;
-using SiliconStudio.Core.Transactions;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
@@ -31,19 +27,80 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
         public float BaseLine { get; private set; }
 
-
         private string fontSource;
         private string msdfgenExe;
         private string tempDir;
 
+        private static Dictionary<string, string> foundFonts;
+
+        /// <summary>
+        /// Builds a dictionary of system fonts so they can be mapped to their hdd location later.
+        /// </summary>
+        private static void BuildFontsDictionary()
+        {
+            if (foundFonts != null)
+                return;
+
+            foundFonts = new Dictionary<string, string>();
+
+            string fontsfolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Fonts);
+
+            if (!Directory.Exists(fontsfolder)) throw new Exception("directory doesnt exist");
+
+            foreach (FileInfo fi in new DirectoryInfo(fontsfolder).GetFiles("*.ttf"))
+            {
+                PrivateFontCollection fileFonts = new PrivateFontCollection();
+                fileFonts.AddFontFile(fi.FullName);
+                {
+                    var fontKey = fileFonts.Families[0].Name;
+
+                    // Regular
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Regular))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey))
+                        {
+                            foundFonts.Add(fontKey, fi.FullName);
+                        }
+                    }
+
+                    // Bold
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey + " Bold"))
+                        {
+                            foundFonts.Add(fontKey + " Bold", fi.FullName);
+                        }
+                    }
+
+                    // Italic
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Italic))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey + " Italic"))
+                        {
+                            foundFonts.Add(fontKey + " Italic", fi.FullName);
+                        }
+                    }
+
+                    // Bold Italic
+                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))
+                    {
+                        if (!foundFonts.ContainsKey(fontKey + " Bold Italic"))
+                        {
+                            foundFonts.Add(fontKey + " Bold Italic", fi.FullName);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Generates and load a SDF font glyph using the msdfgen.exe
         /// </summary>
-        /// <param name="c"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="offsetx"></param>
-        /// <param name="offsety"></param>
+        /// <param name="c">Character code</param>
+        /// <param name="width">Width of the output glyph</param>
+        /// <param name="height">Height of the output glyph</param>
+        /// <param name="offsetx">Left side offset of the glyph from the image border</param>
+        /// <param name="offsety">Bottom side offset of the glyph from the image border</param>
         /// <returns></returns>
         private Bitmap LoadSDFBitmap(char c, int width, int height, int offsetx, int offsety)
         {
@@ -135,62 +192,20 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             return new FontFace(font);
         }
 
+        /// <summary>
+        /// Gets the hdd path for the specified font so it can be passed to msdfgen.exe
+        /// </summary>
+        /// <param name="options">Font asset options</param>
+        /// <returns>Absolute path to the font file</returns>
         private string GetFontSource(SpriteFontAsset options)
         {
             if (!string.IsNullOrEmpty(options.Source))
                 return options.Source;
 
-            // TODO Cache this dictionary
-            Dictionary<string, string> foundFonts = new Dictionary<string, string>();
+            // Note! If fonts are added at runtime the dictionary will not get updated after it has been initialized
+            BuildFontsDictionary();
 
-            string fontsfolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Fonts);
-
-            if (!Directory.Exists(fontsfolder)) throw new Exception("directory doesnt exist");
-
-            foreach (FileInfo fi in new DirectoryInfo(fontsfolder).GetFiles("*.ttf"))
-            {
-                PrivateFontCollection fileFonts = new PrivateFontCollection();
-                fileFonts.AddFontFile(fi.FullName);
-                {
-                    var fontKey = fileFonts.Families[0].Name;
-
-                    // Regular
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Regular))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey))
-                        {
-                            foundFonts.Add(fontKey, fi.FullName);
-                        }
-                    }
-
-                    // Bold
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey + " Bold"))
-                        {
-                            foundFonts.Add(fontKey + " Bold", fi.FullName);
-                        }
-                    }
-
-                    // Italic
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Italic))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey + " Italic"))
-                        {
-                            foundFonts.Add(fontKey + " Italic", fi.FullName);
-                        }
-                    }
-
-                    // Bold Italic
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey + " Bold Italic"))
-                        {
-                            foundFonts.Add(fontKey + " Bold Italic", fi.FullName);
-                        }
-                    }
-                }
-            }
+            // TODO Check if msdfgen supports Bold/Italic font generation
 
             string outSource;
             if (options.Style.IsBold() && options.Style.IsItalic())
@@ -228,7 +243,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             tempDir = $"{Environment.GetEnvironmentVariable("TEMP")}\\";
 
             var factory = new Factory();
-
+            
             FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
 
             var fontMetrics = fontFace.Metrics;
@@ -267,6 +282,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             factory.Dispose();            
         }
 
+        /// <summary>
+        /// Imports a single glyph as a bitmap using the msdfgen to convert it to a signed distance field image
+        /// </summary>
+        /// <param name="fontFace">FontFace, use to obtain the metrics for the glyph</param>
+        /// <param name="character">The glyph's character code</param>
+        /// <param name="fontMetrics">Font metrics, used to obtain design units scale</param>
+        /// <param name="fontSize">Requested font size. The bigger, the more precise the SDF image is going to be</param>
+        /// <returns></returns>
         private Glyph ImportGlyph(FontFace fontFace, char character, FontMetrics fontMetrics, float fontSize)
         {
             var indices = fontFace.GetGlyphIndices(new int[] { character });
