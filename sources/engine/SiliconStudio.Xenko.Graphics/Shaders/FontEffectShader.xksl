@@ -1,0 +1,40 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+class FontEffectShader : ShaderBase, SDFFont
+{
+    // -------------------------------------
+    // streams
+    // -------------------------------------
+    stage stream float4 Position : POSITION;
+    stage stream float4 Color : COLOR;
+    stage stream float Swizzle : BATCH_SWIZZLE;
+            
+    // -------------------------------------
+    // VertexShader
+    // -------------------------------------
+    stage override void VSMain()
+    {
+        streams.ShadingPosition = streams.Position;
+        //if (TSRgb)
+        //{
+        //    streams.Color = ColorUtility.ToLinear(streams.Color);
+        //}
+    }
+        
+    // Shading of the sprite
+    stage override void PSMain()
+    {
+        streams.ColorTarget = Shading();
+    }
+
+    stage float4 Shading()
+    {
+        float4 signedMultiDistance = Texture0.Sample(Sampler, streams.TexCoord);
+
+        // TODO These values will go into streams most probably
+        float4 borderColor = float4(1, 0, 0, 1);
+        float borderThickness = 250;
+
+        return FontColor(signedMultiDistance, streams.Color, borderColor, borderThickness);
+    }
+};

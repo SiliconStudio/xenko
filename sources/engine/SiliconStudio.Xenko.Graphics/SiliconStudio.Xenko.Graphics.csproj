@@ -224,6 +224,10 @@
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders093.Bytecodes\FontEffect.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\FontEffectShader.fontBytecodeSDF.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\FontEffectShader.fontBytecodeSDF.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\FontEffectShader.fontBytecodeSDF.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -235,6 +239,18 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\FontEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>FontEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\FontEffectShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>FontEffectShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\SDFFont.cs">
       <AutoGen>True</AutoGen>
@@ -576,6 +592,14 @@
     <None Include="Shaders\BackgroundEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\FontEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>FontEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\FontEffectShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>FontEffectShader.cs</LastGenOutput>
     </None>
     <None Include="Shaders\SDFFont.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

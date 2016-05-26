@@ -129,6 +129,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="device">A valid instance of <see cref="GraphicsDevice"/>.</param>
         public UIBatch(GraphicsDevice device)
             : base(device, UIEffect.Bytecode, UIEffect.BytecodeSRgb,
+//            : base(device, FontEffectShader.Bytecode, FontEffectShader.BytecodeSRgb,    // TEST - UIBatch needs to be upgraded to allow custom effects to be added
             ResourceBufferInfo.CreateDynamicIndexBufferInfo("UIBatch.VertexIndexBuffers", MaxIndicesCount, MaxVerticesCount), 
             VertexPositionColorTextureSwizzle.Layout)
         {
@@ -441,6 +442,14 @@ namespace SiliconStudio.Xenko.Graphics
             Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
 
             // do not snap static fonts when real/virtual resolution does not match.
+            if (font.IsScalable)
+            {
+                drawCommand.SnapText = false;
+
+                // TODO Figure out the scale
+                // drawCommand.FontScale = new Vector2(4,4);
+            }
+            else
             if (!font.IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
             {
                 drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
