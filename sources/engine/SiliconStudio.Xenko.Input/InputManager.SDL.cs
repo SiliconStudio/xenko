@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Input
                 {
                     SetMousePosition(new Vector2(0.5f, 0.5f));
                 }
-                _capturedPosition = Cursor.Position;
+                _relativeCapturedPosition = UiControl.RelativeCursorPosition;
                 IsMousePositionLocked = true;
             }
         }
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Input
             if (IsMousePositionLocked)
             {
                 IsMousePositionLocked = false;
-                _capturedPosition = Point.Zero;
+                _relativeCapturedPosition = Point.Zero;
                 Game.IsMouseVisible = _wasMouseVisibleBeforeCapture;
             }
         }
@@ -158,9 +158,10 @@ namespace SiliconStudio.Xenko.Input
         private void OnMouseMoveEvent(SDL.SDL_MouseMotionEvent e)
         {
             var previousMousePosition = CurrentMousePosition;
+
             CurrentMousePosition = NormalizeScreenPosition(new Vector2(e.x, e.y));
             // Discard this event if it has been triggered by the replacing the cursor to its capture initial position
-            if (IsMousePositionLocked && Cursor.Position == _capturedPosition)
+            if (IsMousePositionLocked && (e.x == _relativeCapturedPosition.X && e.y == _relativeCapturedPosition.Y))
                 return;
 
             CurrentMouseDelta += CurrentMousePosition - previousMousePosition;
@@ -175,7 +176,9 @@ namespace SiliconStudio.Xenko.Input
 
             if (IsMousePositionLocked)
             {
-                Cursor.Position = _capturedPosition;
+                // Restore position to prevent mouse from going out of the window where we would not get
+                // mouse move event.
+                UiControl.RelativeCursorPosition = _relativeCapturedPosition;
             }
         }
 
@@ -244,7 +247,10 @@ namespace SiliconStudio.Xenko.Input
         }
 
         private readonly Stopwatch _pointerClock;
-        private Point _capturedPosition;
+        /// <summary>
+        /// Location of mouse in Window coordinate when mouse is captured
+        /// </summary>
+        private Point _relativeCapturedPosition;
         private bool _wasMouseVisibleBeforeCapture;
 
     }
