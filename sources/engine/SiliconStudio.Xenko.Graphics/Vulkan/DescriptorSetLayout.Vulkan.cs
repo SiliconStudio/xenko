@@ -13,20 +13,20 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class DescriptorSetLayout
     {
-        private readonly DescriptorSetLayoutBuilder builder;
+        internal readonly DescriptorSetLayoutBuilder Builder;
 
         internal SharpVulkan.DescriptorSetLayout NativeLayout;
         internal Sampler[] ImmutableSamplers;
 
         private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder) : base(device)
         {
-            this.builder = builder;
+            this.Builder = builder;
             Recreate();
         }
 
         private void Recreate()
         {
-            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, builder.Entries, out ImmutableSamplers);
+            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, Builder.Entries, out ImmutableSamplers);
         }
 
         internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries, out Sampler[] immutableSamplers)
