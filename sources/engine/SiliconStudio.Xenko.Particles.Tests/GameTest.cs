@@ -47,7 +47,9 @@ namespace SiliconStudio.Xenko.Particles.Tests
         private readonly string platformName;
         private int screenShots;
 
-        public GameTest(string name)
+        private GraphicsProfile overrideGraphicsProfile;
+
+        public GameTest(string name, GraphicsProfile profile = GraphicsProfile.Level_9_3)
         {
             screenShots = 0;
             testName = name;
@@ -60,14 +62,26 @@ namespace SiliconStudio.Xenko.Particles.Tests
             Directory.CreateDirectory(xenkoDir + "\\screenshots\\");
 #endif
 
-            AutoLoadDefaultSettings = true;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1, };
+            AutoLoadDefaultSettings = true; // Note! This will override the preferred graphics profile so save it for later
+            overrideGraphicsProfile = profile;
             
             IsFixedTimeStep = true;
             ForceOneUpdatePerDraw = true;
             IsDrawDesynchronized = false;
             // This still doesn't work IsDrawDesynchronized = false; // Double negation!
             TargetElapsedTime = TimeSpan.FromTicks(10000000 / 60); // target elapsed time is by default 60Hz
+        }
+
+        protected override void PrepareContext()
+        {
+            base.PrepareContext();
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { overrideGraphicsProfile };
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { overrideGraphicsProfile };
         }
 
         protected override async Task LoadContent()
@@ -162,6 +176,12 @@ namespace SiliconStudio.Xenko.Particles.Tests
             using (var game = new VisualTestRibbons()) { game.Run(); }
 
             using (var game = new VisualTestChildren()) { game.Run(); }
+
+            // using (var game = new VisualTestSoftEdge(GraphicsProfile.Level_9_3)) { game.Run(); } // This is not implemented yet and may not be
+
+            using (var game = new VisualTestSoftEdge(GraphicsProfile.Level_10_0)) { game.Run(); }
+
+            using (var game = new VisualTestSoftEdge(GraphicsProfile.Level_11_0)) { game.Run(); }
         }
     }
 }

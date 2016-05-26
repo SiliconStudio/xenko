@@ -193,6 +193,13 @@ namespace SiliconStudio.Xenko.Rendering
 
         public LogicalGroupReference CreateViewLogicalGroup(string logicalGroup)
         {
+            // Check existing slots
+            for (int i = 0; i < viewLogicalGroups.Count; i++)
+            {
+                if (viewLogicalGroups[i].Variable.Equals(logicalGroup))
+                    return new LogicalGroupReference(i);
+            }
+
             // Need a new slot
             var slotReference = new LogicalGroupReference(viewLogicalGroups.Count);
             viewLogicalGroups.Add(new NamedSlotDefinition(logicalGroup));
@@ -214,6 +221,13 @@ namespace SiliconStudio.Xenko.Rendering
 
         public LogicalGroupReference CreateDrawLogicalGroup(string logicalGroup)
         {
+            // Check existing slots
+            for (int i = 0; i < drawLogicalGroups.Count; i++)
+            {
+                if (drawLogicalGroups[i].Variable.Equals(logicalGroup))
+                    return new LogicalGroupReference(i);
+            }
+
             // Need a new slot
             var slotReference = new LogicalGroupReference(drawLogicalGroups.Count);
             drawLogicalGroups.Add(new NamedSlotDefinition(logicalGroup));

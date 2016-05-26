@@ -9,11 +9,7 @@ using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Extensions;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
-#else
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
@@ -98,16 +94,16 @@ namespace SiliconStudio.Xenko.Graphics
                 DepthStencilState.Apply(commandList);
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
-            base.DestroyImpl();
-
             var pipelineStateCache = GetPipelineStateCache();
 
             if (EffectProgram != null)
                 pipelineStateCache.EffectProgramCache.Release(EffectProgram);
             if (VertexAttribs != null)
                 pipelineStateCache.VertexAttribsCache.Release(VertexAttribs);
+
+            base.OnDestroyed();
         }
 
         struct VertexAttribsKey
@@ -196,9 +192,12 @@ namespace SiliconStudio.Xenko.Graphics
                 // Should we remove it from the cache?
                 lock (lockObject)
                 {
-                    var newRefCount = counter[value] - 1;
-                    counter[value] = newRefCount;
-                    if (newRefCount == 0)
+                    int refCount;
+                    if (!counter.TryGetValue(value, out refCount))
+                        return;
+
+                    counter[value] = --refCount;
+                    if (refCount == 0)
                     {
                         counter.Remove(value);
                         reverse.Remove(value);
@@ -207,7 +206,27 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             storage.Remove(key);
                         }
+
+                        var graphicsResource = value as IReferencable;
+                        graphicsResource?.Release();
                     }
+                }
+            }
+
+            public void Dispose()
+            {
+                lock (lockObject)
+                {
+                    // Release everything
+                    foreach (var entry in reverse)
+                    {
+                        var graphicsResource = entry.Key as IReferencable;
+                        graphicsResource?.Release();
+                    }
+
+                    reverse.Clear();
+                    storage.Clear();
+                    counter.Clear();
                 }
             }
         }
@@ -231,6 +250,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             public void Dispose()
             {
+                EffectProgramCache.Dispose();
+                VertexAttribsCache.Dispose();
             }
         }
     }

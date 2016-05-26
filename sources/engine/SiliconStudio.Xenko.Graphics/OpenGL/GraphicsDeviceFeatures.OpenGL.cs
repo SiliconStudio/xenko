@@ -73,6 +73,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasRenderTargetHalf = SupportedExtensions.Contains("GL_EXT_color_buffer_half_float");
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
             deviceRoot.HasTextureRG = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_texture_rg");
+            deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 320 || SupportedExtensions.Contains("GL_KHR_debug");
 
             // Either 3.2+, or 3.1+ with GL_EXT_texture_buffer
             // TODO: For now we don't have proper ES3 bindings on Android (and possibly iOS)
@@ -85,7 +86,11 @@ namespace SiliconStudio.Xenko.Graphics
             // Compute shaders available in OpenGL ES 3.1
             HasComputeShaders = isOpenGLES3 && deviceRoot.currentVersion >= 1;
             HasDoublePrecision = false;
-            
+
+            HasDepthAsSRV = isOpenGLES3;
+            HasDepthAsReadOnlyRT = isOpenGLES3;
+          
+
             // TODO: from 3.1: draw indirect, separate shader object
             // TODO: check tessellation & geometry shaders: GL_ANDROID_extension_pack_es31a
 #else
@@ -93,10 +98,14 @@ namespace SiliconStudio.Xenko.Graphics
 
             deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
             deviceRoot.HasTextureBuffers = true;
+            deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 430 || SupportedExtensions.Contains("GL_KHR_debug");
 
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.version >= 430;
             HasDoublePrecision = SupportedExtensions.Contains("GL_ARB_vertex_attrib_64bit");
+
+            HasDepthAsSRV = deviceRoot.version >= 300;
+            HasDepthAsReadOnlyRT = deviceRoot.version >= 300;
 
             // TODO: from 4.0: tessellation, draw indirect
             // TODO: from 4.1: separate shader object

@@ -1,6 +1,6 @@
 !SceneAsset
 Id: e28ed348-02ed-45c4-8437-538a39fdbb6c
-SerializedVersion: {Xenko: 1.6.0-beta03}
+SerializedVersion: {Xenko: 1.7.0-beta02}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -51,6 +51,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -64,6 +65,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.0, G: 0.137500048, B: 1.0, A: 1.0}
@@ -138,6 +141,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -151,6 +155,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeFloat4
                                             Value: {X: 1.0, Y: 3.0, Z: 0.5, W: 1.0}
@@ -225,6 +231,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -238,6 +245,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 1.0, G: 0.6375, B: 0.0, A: 1.0}
@@ -312,6 +321,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -325,6 +335,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.0, G: 1.0, B: 0.549999952, A: 1.0}
@@ -399,6 +411,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -412,6 +425,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Multiply
@@ -507,6 +522,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -520,6 +536,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
@@ -611,6 +629,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -624,6 +643,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
@@ -730,6 +751,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -743,6 +765,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
@@ -863,6 +887,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -876,6 +901,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.0, G: 1.0, B: 0.0999999046, A: 1.0}
@@ -920,6 +947,7 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: 1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            Interpolate: false
                                     Updaters: []
             Design: {}
         -   Entity:
@@ -965,6 +993,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -978,6 +1007,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
@@ -1038,6 +1069,7 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: 1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            Interpolate: false
                                     Updaters: []
             Design: {}
         -   Entity:
@@ -1068,6 +1100,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -1081,6 +1114,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
@@ -1172,6 +1207,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -1185,6 +1221,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.0, G: 0.5875001, B: 1.0, A: 1.0}
@@ -1245,6 +1283,7 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             PositionMin: {X: -1.0, Y: 1.0, Z: -1.0}
                                             PositionMax: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            Interpolate: false
                                     Updaters: []
             Design: {}
         -   Entity:
@@ -1275,6 +1314,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -1288,6 +1328,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.0, G: 0.887500048, B: 1.0, A: 1.0}
@@ -1362,6 +1404,7 @@ Hierarchy:
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
                                 -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    EmitterName: null
                                     MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
                                     SimulationSpace: World
@@ -1375,6 +1418,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
