@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         }
 
         private readonly bool[] shouldAnchor = new bool[3];
-        
+
         /// <summary>
         /// A comparer sorting the <see cref="Panel"/> children by increasing Z-Index.
         /// </summary>
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         protected Panel()
         {
             // activate anchoring by default
-            for (int i = 0; i < shouldAnchor.Length; i++)
+            for (var i = 0; i < shouldAnchor.Length; i++)
                 shouldAnchor[i] = true;
 
             Children = new UIElementCollection();
@@ -152,8 +152,8 @@ namespace SiliconStudio.Xenko.UI.Panels
             SetParent(newElement, this);
             SetVisualParent(newElement, this);
             VisualChildrenCollection.Sort(PanelChildrenSorter);
-            if(Children.Count > childrenArrangeWorldMatrix.Length)
-                childrenArrangeWorldMatrix = new Matrix[2*Children.Count];
+            if (Children.Count > childrenArrangeWorldMatrix.Length)
+                childrenArrangeWorldMatrix = new Matrix[2 * Children.Count];
         }
 
         protected override void UpdateWorldMatrix(ref Matrix parentWorldMatrix, bool parentWorldChanged)

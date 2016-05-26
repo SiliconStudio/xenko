@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.UI.Controls;
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
-    /// Class for rendering tests on the <see cref="ImageButton"/> 
+    /// Class for rendering tests on the <see cref="Button"/>  that has <see cref="Button.SizeToContent"/> set to <c>false</c>.
     /// </summary>
     public class ImageButtonTest : UITestGameBase
     {

@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             new HashSet<ScrollingMode> { ScrollingMode.VerticalInDepth, ScrollingMode.InDepthHorizontal, ScrollingMode.InDepth }
         };
 
-        private static Color transparent = new Color(0,0,0,0);
+        private static Color transparent = new Color(0, 0, 0, 0);
 
         private const float ScrollBarHidingSpeed = 1f;
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks><value>Null</value> if the <see cref="Content"/> does not implement the interface</remarks>
         protected IScrollInfo ContentAsScrollInfo { get; private set; }
-        
+
         /// <summary>
         /// The current content casted as <see cref="IScrollAnchorInfo"/>
         /// </summary>
@@ -110,12 +110,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </remarks>
         public Vector3 ScrollPosition => -ScrollOffsets;
 
-        private readonly ScrollBar[] scrollBars  = 
-            {
-                new ScrollBar { Name = "Left/Right scroll bar"},
-                new ScrollBar { Name = "Top/Bottom scroll bar"},
-                new ScrollBar { Name = "Back/Front scroll bar"}
-            };
+        private readonly ScrollBar[] scrollBars =
+        {
+            new ScrollBar { Name = "Left/Right scroll bar" },
+            new ScrollBar { Name = "Top/Bottom scroll bar" },
+            new ScrollBar { Name = "Back/Front scroll bar" }
+        };
 
         private struct ScrollRequest
         {
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// The list of scrolling requests that need to be performed during the next <see cref="ArrangeOverride"/>
         /// </summary>
         private readonly List<ScrollRequest> scrollingRequests = new List<ScrollRequest>();
-        
+
         public ScrollViewer()
         {
             // put the scroll bars above the presenter and add them to the grid canvas
@@ -187,11 +187,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         private bool touchScrollingEnabled = true;
         private float deceleration = 1500.0f;
 
-        public override UIElement Content 
-        { 
+        public override UIElement Content
+        {
+            get { return base.Content; }
             set
             {
-                if(Content == value)
+                if (base.Content == value)
                     return;
 
                 // reset scrolling owner of previous object
@@ -349,7 +350,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (IsUserScrollingViewer || userManuallyScrolled) // scrolling is controlled by the user.
             {
                 userManuallyScrolled = false;
-                for (int i = 0; i < startedSnapping.Length; i++)
+                for (var i = 0; i < startedSnapping.Length; i++)
                     startedSnapping[i] = false;
 
                 if (IsUserScrollingViewer) // compute the scrolling speed based on current translation
@@ -410,15 +411,15 @@ namespace SiliconStudio.Xenko.UI.Controls
                 CurrentScrollingSpeed[index] = Math.Sign(CurrentScrollingSpeed[index]) * Math.Max(0, Math.Abs(CurrentScrollingSpeed[index]) - elapsedSeconds * Deceleration);
 
             // update the scrolling position
-            if(lastFrameTranslation != Vector3.Zero)
+            if (lastFrameTranslation != Vector3.Zero)
                 ScrollOfInternal(ref lastFrameTranslation, false);
 
             // Smoothly hide the scroll bars if the no movements
-            for (int dim = 0; dim < 3; dim++)
+            for (var dim = 0; dim < 3; dim++)
             {
                 var shouldFadeOutScrollingBar = Math.Abs(CurrentScrollingSpeed[dim]) < MathUtil.ZeroTolerance && (!TouchScrollingEnabled || !IsUserScrollingViewer);
                 if (shouldFadeOutScrollingBar)
-                    for (int i = 0; i < 4; i++)
+                    for (var i = 0; i < 4; i++)
                         scrollBars[dim].BarColorInternal[i] = (byte)Math.Max(0, scrollBars[dim].BarColorInternal[i] - ScrollBarColor[i] * ScrollBarHidingSpeed * elapsedSeconds);
                 else
                     scrollBars[dim].BarColor = ScrollBarColor;
@@ -436,7 +437,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             ScrollToExtremity(direction, stopScrolling, true);
         }
-        
+
         /// <summary>
         /// Go to the end of the scroll viewer's content in the provided direction.
         /// </summary>
@@ -470,7 +471,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             else // scrolling should be performed by the scroll viewer
             {
                 var translation = Vector3.Zero;
-                translation[(int)direction] = isBeginning? float.NegativeInfinity: float.PositiveInfinity;
+                translation[(int)direction] = isBeginning ? float.NegativeInfinity : float.PositiveInfinity;
 
                 ScrollOf(translation, stopScrolling);
             }
@@ -494,7 +495,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             userManuallyScrolled = true;
 
-            if(VisualContent == null)
+            if (VisualContent == null)
                 return;
 
             // ask the content to internally scroll
@@ -673,7 +674,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     // perform the scrolling requests
                     foreach (var request in scrollingRequests)
                     {
-                        var scrollPosition = request.IsRelative? ScrollOffsets - request.ScrollValue: -request.ScrollValue;
+                        var scrollPosition = request.IsRelative ? ScrollOffsets - request.ScrollValue : -request.ScrollValue;
                         UpdateScrollOffsets(scrollPosition);
                     }
                 }
@@ -687,7 +688,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
 
             scrollingRequests.Clear();
-            
+
             return finalSizeWithoutMargins;
         }
 
@@ -700,8 +701,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             // set the size of the bar we want to show
             foreach (var index in ScrollModeToDirectionIndices[ScrollMode])
             {
-                var sizeChildren = (ContentAsScrollInfo != null) ? 
-                    ContentAsScrollInfo.Extent[index] : 
+                var sizeChildren = (ContentAsScrollInfo != null) ?
+                    ContentAsScrollInfo.Extent[index] :
                     VisualContent.RenderSize[index] + VisualContent.MarginInternal[index] + VisualContent.MarginInternal[3 + index];
 
                 var barLength = Math.Min(1f, ViewPort[index] / sizeChildren) * ViewPort[index];
@@ -718,12 +719,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             // calculate the offsets to move the element of
             var offsets = ScrollOffsets;
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 if (ContentAsScrollInfo != null && ContentAsScrollInfo.CanScroll((Orientation)i))
                     offsets[i] = ContentAsScrollInfo.Offset[i];
             }
-            
+
             // compute the rendering offsets of the child element wrt the parent origin (0,0,0)
             var childOffsets = offsets + new Vector3(Padding.Left, Padding.Top, Padding.Front) - ViewPort / 2;
 
@@ -819,16 +820,16 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private static void RaiseLeaveTouchEventTohierarchyChildren(UIElement parent, TouchEventArgs args)
         {
-            if(parent == null)
+            if (parent == null)
                 return;
 
             var argsCopy = new TouchEventArgs
-                {
-                    Action = args.Action,
-                    ScreenPosition = args.ScreenPosition,
-                    ScreenTranslation = args.ScreenTranslation,
-                    Timestamp = args.Timestamp
-                };
+            {
+                Action = args.Action,
+                ScreenPosition = args.ScreenPosition,
+                ScreenTranslation = args.ScreenTranslation,
+                Timestamp = args.Timestamp
+            };
 
             foreach (var child in parent.VisualChildrenCollection)
             {
@@ -859,16 +860,16 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         public void InvalidateScrollInfo()
         {
-            if(ContentAsScrollInfo == null)
+            if (ContentAsScrollInfo == null)
                 return;
 
             // reset current scrolling speed if we reached one extrema of the content
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 if (ContentAsScrollInfo.ScrollBarPositions[i] < MathUtil.ZeroTolerance || ContentAsScrollInfo.ScrollBarPositions[i] > 1 - MathUtil.ZeroTolerance)
                     CurrentScrollingSpeed[i] = 0f;
             }
-            
+
             UpdateScrollingBarsSize();
             UpdateVisualContentArrangeMatrix();
         }
