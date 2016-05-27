@@ -51,60 +51,60 @@ set __OldSkipTestBuild=%__SkipTestBuild%
 set __SkipTestBuild=false
 call :compile
 set __SkipTestBuild=%__OldSkipTestBuild%
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Direct3D.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Direct3D.SDL.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Direct3D.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.OpenGL.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.OpenGL.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Android.sln
 set _platform_target=Android
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.iOS.sln
 set _platform_target=iPhone
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.WindowsPhone.sln
 set _platform_target=WindowsPhone
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.WindowsStore.sln
 set _platform_target=WindowsStore
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Windows10.sln
 set _platform_target=Windows10
 call :compile
-if %ERRORLEVEL% NEQ 0 if %"__ContinueOnError%" == "false" goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 goto exit
 
@@ -157,8 +157,21 @@ if %ENDTIME% LSS %STARTTIME% set set /A DURATION=%STARTTIME%-%ENDTIME%
 
 set /A DURATION=%DURATION%/1000
 
+if %DURATION% GT 60 (
+    set /A MINUTES=%DURATION% / 60
+    rem Get rid of the part after the .
+    for /f "tokens=1,2 delims=." %%a  in ("%MINUTES%") do set MINUTES=%%a
+    set /A DURATION=%DURATION%%%60
+) else (
+    set /A MINUTES=0
+)
+
 rem outputing
-echo Duration is      : %DURATION% seconds
+if %MINUTES% NEQ 0 (
+    echo Duration is      : %MINUTES% minutes and %DURATION% seconds
+) else (
+    echo Duration is      : %DURATION% seconds
+)
 
 endlocal
 

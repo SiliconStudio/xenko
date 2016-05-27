@@ -344,6 +344,8 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnDetach()
         {
+            if (NativeCollisionObject == null) return;
+
             foreach (var c in LinkedConstraints)
             {
                 Simulation.RemoveConstraint(c);

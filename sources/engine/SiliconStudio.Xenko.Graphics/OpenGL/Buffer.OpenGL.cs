@@ -2,33 +2,31 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
+using TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
 #endif
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Buffer
     {
-        internal BufferTarget bufferTarget;
-        internal BufferUsageHint bufferUsageHint;
+        internal const int BufferTextureEmulatedWidth = 4096;
+
+        internal int BufferId;
+        internal BufferTarget BufferTarget;
+        internal BufferUsageHint BufferUsageHint;
+
+        private int bufferTextureElementSize;
 
         // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
         internal IntPtr StagingData { get; set; }
-
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        internal PixelFormatGl glPixelFormat;
-        internal PixelInternalFormat internalFormat;
-        internal PixelType type;
-#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
@@ -54,11 +52,9 @@ namespace SiliconStudio.Xenko.Graphics
             bufferDescription = description;
             ViewFlags = viewFlags;
 
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            int pixelSize;
             bool isCompressed;
-            OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
-#endif
+            OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref viewFormat, out TextureInternalFormat, out TextureFormat, out TextureType, out bufferTextureElementSize, out isCompressed);
+
             ViewFormat = viewFormat;
 
             Recreate(dataPointer);
@@ -75,24 +71,32 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if ((ViewFlags & BufferFlags.VertexBuffer) == BufferFlags.VertexBuffer)
             {
-                bufferTarget = BufferTarget.ArrayBuffer;
+                BufferTarget = BufferTarget.ArrayBuffer;
             }
             else if ((ViewFlags & BufferFlags.IndexBuffer) == BufferFlags.IndexBuffer)
             {
-                bufferTarget = BufferTarget.ElementArrayBuffer;
+                BufferTarget = BufferTarget.ElementArrayBuffer;
             }
             else if ((ViewFlags & BufferFlags.UnorderedAccess) == BufferFlags.UnorderedAccess)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 throw new NotSupportedException("GLES not support UnorderedAccess buffer");
 #else
-                bufferTarget = BufferTarget.ShaderStorageBuffer;
+                BufferTarget = BufferTarget.ShaderStorageBuffer;
+#endif
+            }
+            else if ((ViewFlags & BufferFlags.ShaderResource) == BufferFlags.ShaderResource && GraphicsDevice.HasTextureBuffers)
+            {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                Internal.Refactor.ThrowNotImplementedException();
+#else
+                BufferTarget = BufferTarget.TextureBuffer;
 #endif
             }
 
             if ((ViewFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
             {
-                bufferTarget = BufferTarget.UniformBuffer;
+                BufferTarget = BufferTarget.UniformBuffer;
 
                 // Special case: ConstantBuffer are stored CPU side
                 StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
@@ -126,7 +130,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected override void Destroy()
+        protected internal override void OnDestroyed()
         {
             if (StagingData != IntPtr.Zero)
             {
@@ -136,17 +140,17 @@ namespace SiliconStudio.Xenko.Graphics
 
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                GL.DeleteBuffers(1, ref resourceId);
+                GL.DeleteBuffers(1, ref BufferId);
             }
 
-            resourceId = 0;
+            BufferId = 0;
 
             if (GraphicsDevice != null)
             {
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
             }
 
-            base.Destroy();
+            base.OnDestroyed();
         }
 
         protected void Init(IntPtr dataPointer)
@@ -171,27 +175,111 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 case GraphicsResourceUsage.Default:
                 case GraphicsResourceUsage.Immutable:
-                    bufferUsageHint = BufferUsageHint.StaticDraw;
+                    BufferUsageHint = BufferUsageHint.StaticDraw;
                     break;
                 case GraphicsResourceUsage.Dynamic:
                 case GraphicsResourceUsage.Staging:
-                    bufferUsageHint = BufferUsageHint.DynamicDraw;
+                    BufferUsageHint = BufferUsageHint.DynamicDraw;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("description.Usage");
             }
 
-            using (var creationContext = GraphicsDevice.UseOpenGLCreationContext())
+            using (var openglContext = GraphicsDevice.UseOpenGLCreationContext())
             {
-                // If we're on main context, unbind VAO before binding context.
-                // It will be bound again on next draw.
-                //if (!creationContext.UseDeviceCreationContext)
-                //    GraphicsDevice.UnbindVertexArrayObject();
+                if ((Flags & BufferFlags.ShaderResource) != 0 && !GraphicsDevice.HasTextureBuffers)
+                {
+                    // Create a texture instead of a buffer on platforms where it's not supported
+                    elementCount = SizeInBytes / bufferTextureElementSize;
+                    TextureTarget = TextureTarget.Texture2D;
+                    GL.GenTextures(1, out TextureId);
+                    GL.BindTexture(TextureTarget, TextureId);
 
-                GL.GenBuffers(1, out resourceId);
-                GL.BindBuffer(bufferTarget, resourceId);
-                GL.BufferData(bufferTarget, (IntPtr)Description.SizeInBytes, dataPointer, bufferUsageHint);
-                GL.BindBuffer(bufferTarget, 0);
+                    GL.TexParameter(TextureTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(TextureTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                    GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+                    UpdateTextureSubresource(dataPointer, 0, 0, SizeInBytes);
+
+                    GL.BindTexture(TextureTarget, 0);
+
+                    if (openglContext.CommandList != null)
+                    {
+                        // If we messed up with some states of a command list, mark dirty states
+                        openglContext.CommandList.boundShaderResourceViews[openglContext.CommandList.activeTexture] = null;
+                    }
+                }
+                else
+                {
+                    // If we're on main context, unbind VAO before binding context.
+                    // It will be bound again on next draw.
+                    //if (!creationContext.UseDeviceCreationContext)
+                    //    GraphicsDevice.UnbindVertexArrayObject();
+
+                    GL.GenBuffers(1, out BufferId);
+                    GL.BindBuffer(BufferTarget, BufferId);
+                    GL.BufferData(BufferTarget, (IntPtr)Description.SizeInBytes, dataPointer, BufferUsageHint);
+                    GL.BindBuffer(BufferTarget, 0);
+
+                    if ((Flags & BufferFlags.ShaderResource) != 0)
+                    {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                        Internal.Refactor.ThrowNotImplementedException();
+#else
+                        TextureTarget = TextureTarget.TextureBuffer;
+                        GL.GenTextures(1, out TextureId);
+                        GL.BindTexture(TextureTarget, TextureId);
+                        // TODO: Check if this is really valid to cast PixelInternalFormat to SizedInternalFormat in all cases?
+                        GL.TexBuffer(TextureBufferTarget.TextureBuffer, (SizedInternalFormat)TextureInternalFormat, BufferId);
+#endif
+                    }
+                }
+            }
+        }
+
+        internal void UpdateTextureSubresource(IntPtr dataPointer, int subresouceLevel, int offset, int count)
+        {
+            // If overwriting everything, create a new texture
+            if (offset == 0 && count == SizeInBytes)
+                GL.TexImage2D((TextureTarget2d)TextureTarget, subresouceLevel, TextureInternalFormat, Math.Min(BufferTextureEmulatedWidth, elementCount), (elementCount + BufferTextureEmulatedWidth - 1) / BufferTextureEmulatedWidth, 0, TextureFormat, TextureType, IntPtr.Zero);
+
+            // Work with full elements
+            Debug.Assert(offset % bufferTextureElementSize == 0 && count % bufferTextureElementSize == 0, "When updating a buffer texture, offset and count should be a multiple of the element size");
+            offset /= bufferTextureElementSize;
+            count /= bufferTextureElementSize;
+
+            // Upload data
+            if (dataPointer != IntPtr.Zero)
+            {
+                // First line
+                if (offset % BufferTextureEmulatedWidth != 0)
+                {
+                    var firstLineSize = Math.Min(count, BufferTextureEmulatedWidth - (offset % BufferTextureEmulatedWidth));
+
+                    GL.TexSubImage2D((TextureTarget2d)TextureTarget, 0,
+                        offset % BufferTextureEmulatedWidth, offset / BufferTextureEmulatedWidth, // coordinates
+                        BufferTextureEmulatedWidth - (offset % BufferTextureEmulatedWidth), 1, // size
+                        TextureFormat, TextureType, dataPointer);
+
+                    offset += firstLineSize;
+                    count -= firstLineSize;
+                    dataPointer += firstLineSize * bufferTextureElementSize;
+                }
+
+                // Middle lines
+                if (count / BufferTextureEmulatedWidth > 0)
+                    GL.TexSubImage2D((TextureTarget2d)TextureTarget, 0,
+                        0, offset / BufferTextureEmulatedWidth, // coordinates
+                        BufferTextureEmulatedWidth, count / BufferTextureEmulatedWidth, // size
+                        TextureFormat, TextureType, dataPointer);
+
+                // Last line is done separately (to avoid buffer overrun if last line is not multiple of BufferTextureEmulatedWidth)
+                if (count % BufferTextureEmulatedWidth != 0)
+                    GL.TexSubImage2D((TextureTarget2d)TextureTarget, 0,
+                        0, count / BufferTextureEmulatedWidth, // coordinates
+                        count % BufferTextureEmulatedWidth, 1, // size
+                        TextureFormat, TextureType, dataPointer + (count/ BufferTextureEmulatedWidth * BufferTextureEmulatedWidth) * bufferTextureElementSize);
             }
         }
     }

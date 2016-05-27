@@ -160,9 +160,12 @@ namespace SiliconStudio.Xenko.Shaders
             unchecked
             {
                 int hashCode = 0;
-                hashCode = (hashCode * 397) ^ Utilities.GetHashCode(Mixins);
-                hashCode = (hashCode * 397) ^ Utilities.GetHashCode(Macros);
-                hashCode = (hashCode * 397) ^ Utilities.GetHashCode(Compositions);
+                foreach (var current in Mixins)
+                    hashCode = (hashCode * 397) ^ (current?.GetHashCode() ?? 0);
+                foreach (var current in Macros)
+                    hashCode = (hashCode * 397) ^ current.GetHashCode();
+                foreach (var current in Compositions)
+                    hashCode = (hashCode * 397) ^ current.GetHashCode();
                 return hashCode;
             }
         }

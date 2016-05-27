@@ -10,20 +10,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         mixin ParticleComputeColorShader;
 
-        //if (ParticleBaseKeys.ParticleColor != null)
-        //{
-        //    mixin compose particleColor = ParticleBaseKeys.ParticleColor;
-        //}
-
         if (ParticleBaseKeys.BaseColor != null)
         {
             mixin compose baseColor = ParticleBaseKeys.BaseColor;
         }
-
-        //if (ParticleBaseKeys.BaseIntensity != null)
-        //{
-        //    mixin compose baseIntensity = ParticleBaseKeys.BaseIntensity;
-        //}
-
    };
 }

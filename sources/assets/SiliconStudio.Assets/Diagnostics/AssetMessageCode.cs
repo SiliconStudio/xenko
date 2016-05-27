@@ -119,7 +119,7 @@ namespace SiliconStudio.Assets.Diagnostics
         PrerequisiteFailed,
 
         /// <summary>
-        /// An unexpected internal error occured.
+        /// An unexpected internal error occurred.
         /// </summary>
         InternalCompilerError,
 
@@ -139,7 +139,7 @@ namespace SiliconStudio.Assets.Diagnostics
         CompilationError,
 
         /// <summary>
-        /// A warning that occured in the asset compilation.
+        /// A warning that occurred in the asset compilation.
         /// </summary>
         CompilationWarning,
 

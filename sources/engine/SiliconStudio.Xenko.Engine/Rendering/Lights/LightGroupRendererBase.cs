@@ -3,15 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Threading;
-
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
-using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
+    /// <summary>
+    /// Base class for light renderers.
+    /// </summary>
     public abstract class LightGroupRendererBase
     {
         private static readonly Dictionary<Type, int> LightRendererIds = new Dictionary<Type, int>();
@@ -35,16 +35,46 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public byte LightRendererId { get; private set; }
 
-        public bool AllocateLightMaxCount { get; protected set; }
-
-        public int LightMaxCount { get; protected set; }
-
-        public bool CanHaveShadows { get; protected set; }
-
         public virtual void Initialize(RenderContext context)
         {
         }
 
-        public abstract LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup);
+        public virtual void Unload()
+        {
+        }
+
+        public virtual void Reset()
+        {
+        }
+
+        public virtual void SetViews(FastList<RenderView> views)
+        {
+            
+        }
+
+        public abstract void ProcessLights(ProcessLightsParameters parameters);
+
+        public struct ProcessLightsParameters
+        {
+            public RenderDrawContext Context;
+
+            // Information about the view
+            public int ViewIndex;
+            public RenderView View;
+            public FastList<RenderView> Views;
+
+            public LightComponentCollection LightCollection;
+            public Type LightType;
+            
+            // Light range to process in LightCollection
+            public int LightStart;
+            public int LightEnd;
+
+            public ShadowMapRenderer ShadowMapRenderer;
+
+            public Dictionary<LightComponent, LightShadowMapTexture> ShadowMapTexturesPerLight;
+        }
+
+        public abstract void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry);
     }
 }

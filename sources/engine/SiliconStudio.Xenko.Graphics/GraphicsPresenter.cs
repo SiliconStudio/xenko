@@ -190,10 +190,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        protected override void Destroy()
+        {
+            OnDestroyed();
+            base.Destroy();
+        }
+        
         /// <summary>
         /// Called when [destroyed].
         /// </summary>
-        public virtual void OnDestroyed()
+        protected internal virtual void OnDestroyed()
         {
         }
 

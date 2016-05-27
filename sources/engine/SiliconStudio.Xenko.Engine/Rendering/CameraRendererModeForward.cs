@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
@@ -16,6 +17,11 @@ namespace SiliconStudio.Xenko.Rendering
     public class CameraRendererModeForward : CameraRenderModeBase
     {
         private MeshPipelinePlugin meshPipelinePlugin;
+
+        private Texture depthStencilROCached;
+
+        // TODO This should be exposed to the user at some point
+        private bool enableDepthAsShaderResource = true;
 
         [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
@@ -37,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
                 MainRenderStage = RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (TransparentRenderStage == null)
                 TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-
+           
             // Setup stage RenderOutputDescription (since we have the render frame bound)
             var output = Context.Tags.Get(RenderFrame.Current);
             MainRenderStage.Output = output.GetRenderOutputDescription();
@@ -58,12 +64,24 @@ namespace SiliconStudio.Xenko.Rendering
                     ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
                 }
 
-                RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                // Mark this view as requiring shadows
+                var shadowPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
+                shadowPipelinePlugin.RenderViewsWithShadows.Add(MainRenderView);
+
                 meshPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<MeshPipelinePlugin>();
             }
 
             MainRenderView.RenderStages.Add(MainRenderStage);
             MainRenderView.RenderStages.Add(TransparentRenderStage);
+        }
+
+        protected override void Unload()
+        {
+            // This view don't need shadows anymore
+            var shadowPipelinePlugin = RenderSystem.PipelinePlugins.GetPlugin<ShadowPipelinePlugin>();
+            shadowPipelinePlugin?.RenderViewsWithShadows.Remove(MainRenderView);
+
+            base.Unload();
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -115,8 +133,53 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | main stage]
             RenderSystem.Draw(context, MainRenderView, MainRenderStage);
 
+            // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
+            Texture depthStencilSRV = ResolveDepthAsSRV(context);
+
             // Draw [main view | transparent stage]
             RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
+
+            // Free the depth texture since we won't need it anymore
+            if (depthStencilSRV != null)
+            {
+                context.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
+            }
+        }
+
+        private Texture ResolveDepthAsSRV(RenderDrawContext context)
+        {
+            if (!enableDepthAsShaderResource)
+                return null;
+
+            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+            var depthStencilSRV = context.Resolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
+
+            foreach (var renderFeature in RenderSystem.RenderFeatures)
+            {
+                if (!(renderFeature is RootEffectRenderFeature))
+                    continue;
+
+                var depthLogicalKey = ((RootEffectRenderFeature)renderFeature).CreateViewLogicalGroup("Depth");
+                var viewFeature = MainRenderView.Features[renderFeature.Index];
+
+                // Copy ViewProjection to PerFrame cbuffer
+                foreach (var viewLayout in viewFeature.Layouts)
+                {
+                    var resourceGroup = viewLayout.Entries[MainRenderView.Index].Resources;
+
+                    var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalKey);
+                    if (depthLogicalGroup.Hash == ObjectId.Empty)
+                        continue;
+
+                    // Might want to use ProcessLogicalGroup if more than 1 Recource
+                    resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
+                }
+            }
+
+            depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
+            currentRenderFrame.Activate(context, depthStencilROCached);
+
+            return depthStencilSRV;
         }
     }
 }

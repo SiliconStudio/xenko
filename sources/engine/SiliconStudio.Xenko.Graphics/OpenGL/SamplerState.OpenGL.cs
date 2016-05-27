@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal void Apply(bool hasMipmap, SamplerState oldSamplerState, TextureTarget target)
         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-    // TODO: support texture array, 3d and cube
+            // TODO: support texture array, 3d and cube
             if (!GraphicsDevice.IsOpenGLES2)
 #endif
             {
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (minFilter != oldSamplerState.minFilter)
                 GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)minFilter);
 #else
-    // On OpenGL ES, we need to choose the appropriate min filter ourself if the texture doesn't contain mipmaps (done at PreDraw)
+            // On OpenGL ES, we need to choose the appropriate min filter ourself if the texture doesn't contain mipmaps (done at PreDraw)
             if (minFilter != oldSamplerState.minFilter)
                 GL.TexParameter(target, TextureParameterName.TextureMinFilter, hasMipmap ? (int)minFilter : (int)minFilterNoMipmap);
 #endif

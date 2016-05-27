@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         LightShadowType GetShadowType(LightShadowMap lightShadowMap);
 
-        ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
+        ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
         void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
 

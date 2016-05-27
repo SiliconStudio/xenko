@@ -1,100 +1,86 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using SiliconStudio.Core.Collections;
+using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
+    /// <summary>
+    /// A group of lights of the same type (single loop in the shader).
+    /// </summary>
     public abstract class LightShaderGroup
     {
-        protected LightShaderGroup(ShaderSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroup)
+        protected LightShaderGroup()
         {
-            if (mixin == null) throw new ArgumentNullException("mixin");
-            if (compositionName == null) throw new ArgumentNullException("compositionName");
-            CompositionName = compositionName;
+        }
+
+        protected LightShaderGroup(ShaderSource mixin)
+        {
             ShaderSource = mixin;
-            ShadowGroup = shadowGroup;
         }
 
-        public ShaderSource ShaderSource { get; private set; }
+        public ShaderSource ShaderSource { get; protected set; }
 
-        public string CompositionName { get; private set; }
+        public bool HasEffectPermutations { get; protected set; } = false;
 
-        public ILightShadowMapShaderGroupData ShadowGroup { get; private set; }
-
-        public abstract void Reset();
-
-        public abstract LightShaderGroupData CreateGroupData();
-    }
-
-    public abstract class LightShaderGroupAndDataPool<T> : LightShaderGroup where T : LightShaderGroupData
-    {
-        private PoolListStruct<T> dataPool;
-
-        protected LightShaderGroupAndDataPool(ShaderSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
-            : base(mixin, compositionName, shadowGroupData)
+        /// <summary>
+        /// Called when layout is updated, so that parameter keys can be recomputed.
+        /// </summary>
+        /// <param name="compositionName"></param>
+        public virtual void UpdateLayout(string compositionName)
         {
-            dataPool = new PoolListStruct<T>(4, CreateData);
         }
 
-        protected abstract T CreateData();
-
-        public override void Reset()
+        /// <summary>
+        /// Resets states.
+        /// </summary>
+        public virtual void Reset()
         {
-            foreach (var data in dataPool)
-            {
-                data.Reset();
-            }
-
-            dataPool.Clear();
         }
 
-        public override LightShaderGroupData CreateGroupData()
-        {
-            var data = dataPool.Add();
-            return data;
-        }
-    }
-
-    public abstract class LightShaderGroupData
-    {
-        protected LightShaderGroupData(ILightShadowMapShaderGroupData shadowGroup)
-        {
-            ShadowGroup = shadowGroup;
-        }
-
-        public int Count { get; private set; }
-
-        public ILightShadowMapShaderGroupData ShadowGroup { get; private set; }
-
-        public void Reset()
-        {
-            Count = 0;
-        }
-
-        public void AddLight(LightComponent light, LightShadowMapTexture shadowMapTexture)
-        {
-            AddLightInternal(light);
-            ShadowGroup?.SetShadowMapShaderData(Count, shadowMapTexture.ShaderData);
-            Count++;
-        }
-
-        public void ApplyParameters(RenderDrawContext context, ParameterCollection parameters)
-        {
-            ApplyParametersInternal(context, parameters);
-            ShadowGroup?.ApplyParameters(context, parameters);
-        }
-
+        /// <summary>
+        /// Applies effect permutations.
+        /// </summary>
+        /// <param name="renderEffect"></param>
         public virtual void ApplyEffectPermutations(RenderEffect renderEffect)
         {
         }
 
-        protected abstract void AddLightInternal(LightComponent light);
+        /// <summary>
+        /// Applies PerView lighting parameters.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="viewIndex"></param>
+        /// <param name="parameters"></param>
+        public virtual void ApplyViewParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+        {
+        }
 
-        protected abstract void ApplyParametersInternal(RenderDrawContext context, ParameterCollection parameters);
+        /// <summary>
+        /// Applies PerDraw lighting parameters.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="viewIndex"></param>
+        /// <param name="parameters"></param>
+        /// <param name="boundingBox"></param>
+        public virtual void ApplyDrawParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters, ref BoundingBoxExt boundingBox)
+        {
+        }
+    }
+
+    public struct LightDynamicEntry
+    {
+        public readonly LightComponent Light;
+        public readonly LightShadowMapTexture ShadowMapTexture;
+
+        public LightDynamicEntry(LightComponent light, LightShadowMapTexture shadowMapTexture)
+        {
+            Light = light;
+            ShadowMapTexture = shadowMapTexture;
+        }
     }
 }
