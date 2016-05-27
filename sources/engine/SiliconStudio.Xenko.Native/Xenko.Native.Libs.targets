@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\targets\Xenko.PreSettings.targets" />
+  
+  <PropertyGroup>
+    <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows' or '$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libNativePath.lib;libCelt.lib</SiliconStudioXenkoNativePathLibs>
+    
+    <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'iOS'">libNativePath.a;libCelt.a</SiliconStudioXenkoNativePathLibs>
+  </PropertyGroup>
+</Project>
