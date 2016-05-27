@@ -2486,7 +2486,7 @@ namespace SiliconStudio.Shaders.Convertor
             // Then add the newly created variable
             foreach (var textureSampler in samplerMapping)
             {
-                if (!KeepSamplers || CombinedSamplers.Contains(textureSampler.Key.Sampler.Name))
+                if (!KeepSamplers || (textureSampler.Key.Sampler != null && CombinedSamplers.Contains(textureSampler.Key.Sampler.Name)))
                 {
                     declarationListToRemove.Add(textureSampler.Key.Sampler);
                     declarationListToRemove.Add(textureSampler.Key.Texture);
@@ -3655,9 +3655,16 @@ namespace SiliconStudio.Shaders.Convertor
                 return null;
             }
 
-            if (KeepSamplers && !CombinedSamplers.Contains(sampler.Name))
+            if (KeepSamplers)
             {
-                return new MethodInvocationExpression(new TypeReferenceExpression(glslSampler.Type), new VariableReferenceExpression(texture), new VariableReferenceExpression(sampler));
+                if (sampler != null && !CombinedSamplers.Contains(sampler.Name))
+                {
+                    return new MethodInvocationExpression(new TypeReferenceExpression(glslSampler.Type), new VariableReferenceExpression(texture), new VariableReferenceExpression(sampler));
+                }
+                else
+                {
+                    return new VariableReferenceExpression(texture.Name);
+                }
             }
 
             return new VariableReferenceExpression(glslSampler.Name);
@@ -4158,15 +4165,15 @@ namespace SiliconStudio.Shaders.Convertor
             //mapToGlsl.Add(SamplerStateType.SamplerComparisonState, new TypeName("sampler"));
 
             // Texture objects
-            mapToGlsl.Add(TextureType.Texture, new TextureType("texture2D"));
-            mapToGlsl.Add(TextureType.Texture1D, new TextureType("texture1D"));
-            mapToGlsl.Add(TextureType.Texture2D, new TextureType("texture2D"));
-            mapToGlsl.Add(TextureType.Texture3D, new TextureType("texture3D"));
-            mapToGlsl.Add(TextureType.TextureCube, new TextureType("textureCube"));
+            //mapToGlsl.Add(TextureType.Texture, new TextureType("texture2D"));
+            //mapToGlsl.Add(TextureType.Texture1D, new TextureType("texture1D"));
+            //mapToGlsl.Add(TextureType.Texture2D, new TextureType("texture2D"));
+            //mapToGlsl.Add(TextureType.Texture3D, new TextureType("texture3D"));
+            //mapToGlsl.Add(TextureType.TextureCube, new TextureType("textureCube"));
 
             // Combined texture sampler objects
-            mapToGlsl.Add(SamplerType.Sampler, SamplerType.Sampler2D);
-            mapToGlsl.Add(SamplerType.SamplerCube, new TypeName("samplerCube"));
+            //mapToGlsl.Add(SamplerType.Sampler, SamplerType.Sampler2D);
+            //mapToGlsl.Add(SamplerType.SamplerCube, new TypeName("samplerCube"));
 
             // Replace all generic shader types to their glsl equivalent.
             SearchVisitor.Run(
@@ -4183,10 +4190,42 @@ namespace SiliconStudio.Shaders.Convertor
                                 return outputType;
                             if (mapToGlsl.TryGetValue(type, out outputType))
                                 return outputType;
+
+                            outputType = ConvertType(targetType);
+                            if (outputType != null)
+                                return outputType;
                         }
 
                         return node;
                     });
+        }
+
+        private TypeBase ConvertType(TypeBase targetType)
+        {
+            var targetTypeName = targetType.Name.Text;
+
+            if (targetTypeName.StartsWith("Texture"))
+                targetTypeName = "texture" + targetTypeName.Substring("Texture".Length);
+            else if (targetTypeName.StartsWith("Buffer"))
+                targetTypeName = "samplerBuffer";
+            else return null;
+
+            // TODO: How do we support this on OpenGL ES 2.0? Cast to int/uint on Load()/Sample()?
+            var genericSamplerType = targetType as IGenerics;
+            if (genericSamplerType != null && genericSamplerType.GenericArguments.Count == 1)
+            {
+                var genericArgument = genericSamplerType.GenericArguments[0].ResolveType();
+                if (TypeBase.GetBaseType(genericArgument) == ScalarType.UInt)
+                    targetTypeName = "u" + targetTypeName;
+                else if (TypeBase.GetBaseType(genericArgument) == ScalarType.Int)
+                    targetTypeName = "i" + targetTypeName;
+            }
+
+            //// Handle comparison samplers
+            //if (needsComparison)
+            //    targetTypeName += "Shadow";
+
+            return new TypeName(targetTypeName);
         }
 
         /// <summary>
