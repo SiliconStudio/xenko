@@ -117,6 +117,23 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 
         /// <summary>
+        /// Get the coordinate of the mouse in Window coordinates
+        /// </summary>
+        public Point RelativeCursorPosition
+        {
+            get
+            {
+                int x, y;
+                SDL.SDL_GetMouseState(out x, out y);
+                return new Point(x, y);
+            }
+            set
+            {
+                SDL.SDL_WarpMouseInWindow(SdlHandle, value.X, value.Y);
+            }
+        }
+
+        /// <summary>
         /// Make the window topmost
         /// </summary>
         public bool TopMost
@@ -403,6 +420,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEWHEEL:
+                    // To match the Windows behavior we multiply the value by 120
+                    e.wheel.x *= 120;
+                    e.wheel.y *= 120;
                     MouseWheelActions?.Invoke(e.wheel);
                     break;
 

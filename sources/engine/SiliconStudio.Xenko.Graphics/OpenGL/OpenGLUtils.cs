@@ -117,11 +117,10 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
                     return GLVersion.ES2;
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
-                    return GLVersion.ES3;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
                 case GraphicsProfile.Level_11_2:
-                    return GLVersion.ES31;
+                    return GLVersion.ES3;
                 default:
                     throw new ArgumentOutOfRangeException("graphicsProfile");
             }

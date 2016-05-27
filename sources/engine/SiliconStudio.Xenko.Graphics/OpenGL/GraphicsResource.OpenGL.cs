@@ -7,9 +7,6 @@
 using OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
