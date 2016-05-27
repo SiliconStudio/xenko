@@ -274,6 +274,30 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                 position += forward * (Input.MouseWheelDelta / 120) * translationSpeed;
             }
 
+            if (Input.HasGamePad)
+            {
+                var state = Input.GetGamePad(-1);
+
+                if (state.LeftThumb.LengthSquared() > 0)
+                {
+                    position += right * state.LeftThumb.X * translationSpeed;
+                    position += forward * state.LeftThumb.Y * translationSpeed;
+                }
+                if (state.RightThumb.LengthSquared() > 0)
+                {
+                    position += right * state.RightThumb.X * translationSpeed;
+                    position += forward * state.RightThumb.Y * translationSpeed;
+                }
+                if (state.LeftTrigger > 0.0f)
+                {
+                    position += -forward * state.LeftTrigger * translationSpeed;
+                }
+                if (state.RightTrigger > 0.0f)
+                {
+                    position += forward * state.RightTrigger * translationSpeed;
+                }
+            }
+
             // Update the camera view matrix 
             UpdateViewMatrix();
         }
