@@ -16,7 +16,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly DescriptorSetLayoutBuilder Builder;
 
         internal SharpVulkan.DescriptorSetLayout NativeLayout;
-        internal Sampler[] ImmutableSamplers;
 
         private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder) : base(device)
         {
@@ -26,13 +25,13 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void Recreate()
         {
-            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, Builder.Entries, out ImmutableSamplers);
+            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, Builder.Entries);
         }
 
-        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries, out Sampler[] immutableSamplers)
+        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries)
         {
             var bindings = new DescriptorSetLayoutBinding[entries.Count];
-            immutableSamplers = new Sampler[entries.Count];
+            var immutableSamplers = new Sampler[entries.Count];
 
             int usedBindingCount = 0;
 

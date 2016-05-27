@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal RenderPass NativeRenderPass;
         internal int[] ResourceGroupMapping;
         internal int ResourceGroupCount;
-        internal Sampler[] ImmutableSamplers;
         internal PipelineStateDescription Description;
 
         // State exposed by the CommandList
@@ -353,7 +352,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            NativeDescriptorSetLayouts[0] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layoutEntries, out ImmutableSamplers);
+            NativeDescriptorSetLayouts[0] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layoutEntries);
 
             // Create pipeline layout
             var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo

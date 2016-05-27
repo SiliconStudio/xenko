@@ -247,69 +247,39 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &localDescriptorSet);
             this.descriptorSet = localDescriptorSet;
             
-            writes.Clear(true);
             copies.Clear(true);
-            samplerInfos.Clear(true);
-            samplerInfos.EnsureCapacity(activePipeline.ImmutableSamplers.Length);
 
-            fixed (DescriptorImageInfo* samplerInfosPointer = &samplerInfos.Items[0])
+            for (int i = 0; i < boundDescriptorSets.Count; i++)
             {
-                for (int i = 0; i < boundDescriptorSets.Count; i++)
+                var setInfo = activePipeline.DescriptorSetMapping[i];
+
+                if (setInfo.Index >= 0)
                 {
-                    var setInfo = activePipeline.DescriptorSetMapping[i];
-
-                    if (setInfo.Index >= 0)
+                    for (int j = 0; j < setInfo.Bindings.Length; j++)
                     {
-                        for (int j = 0; j < setInfo.Bindings.Length; j++)
+                        var sourceBinding = setInfo.Bindings[j].Key;
+                        var destinationBinding = setInfo.Bindings[j].Value;
+
+                        copies.Add(new CopyDescriptorSet
                         {
-                            var sourceBinding = setInfo.Bindings[j].Key;
-                            var destinationBinding = setInfo.Bindings[j].Value;
-
-                            var immutableSampler = activePipeline.ImmutableSamplers[destinationBinding];
-
-                            // TODO VULKAN: Why do we need to update bindings that are just an immutable sampler?
-                            if (immutableSampler != Sampler.Null)
-                            {
-                                writes.Add(new WriteDescriptorSet
-                                {
-                                    StructureType = StructureType.WriteDescriptorSet,
-                                    DescriptorCount = 1,
-                                    DestinationSet = localDescriptorSet,
-                                    DestinationBinding = (uint)destinationBinding,
-                                    DescriptorType = DescriptorType.Sampler,
-                                    ImageInfo = new IntPtr(samplerInfosPointer + samplerInfos.Count)
-                                });
-
-                                samplerInfos.Add(new DescriptorImageInfo { Sampler = immutableSampler });
-                            }
-                            else
-                            {
-                                copies.Add(new CopyDescriptorSet
-                                {
-                                    StructureType = StructureType.CopyDescriptorSet,
-                                    SourceSet = boundDescriptorSets[i],
-                                    SourceBinding = (uint)sourceBinding,
-                                    SourceArrayElement = 0,
-                                    DestinationSet = localDescriptorSet,
-                                    DestinationBinding = (uint)destinationBinding,
-                                    DestinationArrayElement = 0,
-                                    DescriptorCount = 1
-                                });
-                            }
-                        }
+                            StructureType = StructureType.CopyDescriptorSet,
+                            SourceSet = boundDescriptorSets[i],
+                            SourceBinding = (uint)sourceBinding,
+                            SourceArrayElement = 0,
+                            DestinationSet = localDescriptorSet,
+                            DestinationBinding = (uint)destinationBinding,
+                            DestinationArrayElement = 0,
+                            DescriptorCount = 1
+                        });
                     }
                 }
-
-                GraphicsDevice.NativeDevice.UpdateDescriptorSets(
-                    (uint)writes.Count, writes.Count > 0 ? (WriteDescriptorSet*)Interop.Fixed(writes.Items) : null,
-                    (uint)copies.Count, copies.Count > 0 ? (CopyDescriptorSet*)Interop.Fixed(copies.Items) : null);
             }
+
+            GraphicsDevice.NativeDevice.UpdateDescriptorSets(0, null, (uint)copies.Count, copies.Count > 0 ? (CopyDescriptorSet*)Interop.Fixed(copies.Items) : null);
 
             NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &localDescriptorSet, 0, null);
         }
 
-        private readonly FastList<DescriptorImageInfo> samplerInfos = new FastList<DescriptorImageInfo>();
-        private readonly FastList<WriteDescriptorSet> writes = new FastList<WriteDescriptorSet>();
         private readonly FastList<CopyDescriptorSet> copies = new FastList<CopyDescriptorSet>();
 
         public void SetStencilReference(int stencilReference)
