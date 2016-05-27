@@ -35,15 +35,23 @@ namespace SiliconStudio.Xenko.Graphics
             // For now, we put everything together so let's compute total count
             Count = counts.Length;
 
-            var poolSizes = new DescriptorPoolSize[Count];
-            for (int i = 0; i < Count; i++)
+            var poolSizes = new[]
             {
-                poolSizes[i] = new DescriptorPoolSize
-                {
-                    Type = VulkanConvertExtensions.ConvertDescriptorType(counts[i].Type),
-                    DescriptorCount = (uint)counts[i].Count
-                };
-            }
+                new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = 1 << 15 },
+                new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = 1 << 12 },
+                new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = 1 << 15 },
+                new DescriptorPoolSize { Type = DescriptorType.UniformTexelBuffer, DescriptorCount = 1 << 10 },
+            };
+
+            //var poolSizes = new DescriptorPoolSize[Count];
+            //for (int i = 0; i < Count; i++)
+            //{
+            //    poolSizes[i] = new DescriptorPoolSize
+            //    {
+            //        Type = VulkanConvertExtensions.ConvertDescriptorType(counts[i].Type),
+            //        DescriptorCount = (uint)counts[i].Count
+            //    };
+            //}
 
             fixed (DescriptorPoolSize* poolSizesPointer = &poolSizes[0])
             {

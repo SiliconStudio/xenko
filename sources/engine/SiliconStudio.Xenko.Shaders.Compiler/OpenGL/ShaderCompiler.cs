@@ -285,7 +285,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     if (variable.Type.Name.Text.Contains("sampler1D")
                         || variable.Type.Name.Text.Contains("sampler2D")
                         || variable.Type.Name.Text.Contains("sampler3D")
-                        || variable.Type.Name.Text.Contains("samplerCube"))
+                        || variable.Type.Name.Text.Contains("samplerCube")
+                        || variable.Type.Name.Text.Contains("samplerBuffer"))
                     {
                         // TODO: Make more robust
                         var textureBindingIndex = reflection.ResourceBindings.IndexOf(x => variable.Name.ToString().StartsWith(x.RawName));
@@ -314,7 +315,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                     var bindings = resourceGroups.SelectMany(resourceGroup => reflection.ResourceBindings
                         .Where(x => x.ResourceGroup == resourceGroup || (x.ResourceGroup == null && resourceGroup == "Globals"))
-                        .GroupBy(x => new { RawName = x.RawName, Class = x.Class, SlotCount = x.SlotCount, LogicalGroup = x.LogicalGroup })
+                        .GroupBy(x => new { RawName = x.RawName, Class = x.Class, Type = x.Type, SlotCount = x.SlotCount, LogicalGroup = x.LogicalGroup })
                         .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1))
                         .ToList();
 
@@ -338,7 +339,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                     foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
                     {
-                        var layoutBindingIndex = bindings.IndexOf(x => x.Key.RawName == variable.Name);
+                        var layoutBindingIndex = bindings.IndexOf(x => variable.Name.Text.StartsWith(x.Key.RawName));
 
                         //if (variable.Type.Name.Text.Contains("sampler1D")
                         //    || variable.Type.Name.Text.Contains("sampler2D")

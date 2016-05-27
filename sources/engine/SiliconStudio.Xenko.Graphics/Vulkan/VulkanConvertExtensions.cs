@@ -395,16 +395,33 @@ namespace SiliconStudio.Xenko.Graphics
             return *(ColorComponentFlags*)&colorWriteChannels;
         }
 
-        public static DescriptorType ConvertDescriptorType(EffectParameterClass type)
+        public static DescriptorType ConvertDescriptorType(EffectParameterClass @class, EffectParameterType type)
         {
-            switch (type)
+            switch (@class)
             {
                 case EffectParameterClass.ConstantBuffer:
                     return DescriptorType.UniformBuffer;
                 case EffectParameterClass.Sampler:
                     return DescriptorType.Sampler;
                 case EffectParameterClass.ShaderResourceView:
-                    return DescriptorType.SampledImage; // TODO VULKAN API: Or buffer :\
+                    switch (type)
+                    {
+                        case EffectParameterType.Texture:
+                        case EffectParameterType.Texture1D:
+                        case EffectParameterType.Texture2D:
+                        case EffectParameterType.Texture3D:
+                        case EffectParameterType.TextureCube:
+                        case EffectParameterType.Texture1DArray:
+                        case EffectParameterType.Texture2DArray:
+                        case EffectParameterType.TextureCubeArray:
+                            return DescriptorType.SampledImage;
+
+                        case EffectParameterType.Buffer:
+                            return DescriptorType.UniformTexelBuffer;
+
+                        default:
+                            throw new NotImplementedException();
+                    }
                 case EffectParameterClass.UnorderedAccessView:
                     return DescriptorType.StorageBuffer;
                 default:

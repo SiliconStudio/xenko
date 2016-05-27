@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     bindings[usedBindingCount] = new DescriptorSetLayoutBinding
                     {
-                        DescriptorType = VulkanConvertExtensions.ConvertDescriptorType(entry.Class),
+                        DescriptorType = VulkanConvertExtensions.ConvertDescriptorType(entry.Class, entry.Type),
                         StageFlags = ShaderStageFlags.All, // TODO VULKAN: Filter?
                         Binding = (uint)i,
                         DescriptorCount = (uint)entry.ArraySize
