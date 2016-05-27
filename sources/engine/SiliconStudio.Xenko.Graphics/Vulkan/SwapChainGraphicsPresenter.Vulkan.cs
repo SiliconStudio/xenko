@@ -200,23 +200,18 @@ namespace SiliconStudio.Xenko.Graphics
             base.OnNameChanged();
         }
 
-        public override void OnDestroyed()
+        /// <inheritdoc/>
+        protected internal override unsafe void OnDestroyed()
         {
             DestroySwapchain();
-
-            base.OnDestroyed();
-        }
-
-        protected override unsafe void Destroy()
-        {
-            OnDestroyed();
 
             GraphicsAdapterFactory.NativeInstance.DestroySurface(surface);
             surface = Surface.Null;
 
-            base.Destroy();
+            base.OnDestroyed();
         }
 
+        /// <inheritdoc/>
         public override void OnRecreated()
         {
             // TODO VULKAN: Violent driver crashes when recreating device and swapchain

@@ -60,22 +60,20 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        /// <inheritdoc/>
         protected internal override bool OnRecreate()
         {
             Recreate();
             return true;
         }
 
-        protected internal override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
-        protected override unsafe void DestroyImpl()
+        /// <inheritdoc/>
+        protected internal override unsafe void OnDestroyed()
         {
             // TODO VULKAN: Defer?
             GraphicsDevice.NativeDevice.DestroyDescriptorPool(NativeDescriptorPool);
+            
+            base.OnDestroyed();
         }
     }
 }

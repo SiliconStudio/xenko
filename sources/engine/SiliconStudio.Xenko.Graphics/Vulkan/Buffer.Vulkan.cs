@@ -49,13 +49,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
-        protected override unsafe void DestroyImpl()
+        protected internal override unsafe void OnDestroyed()
         {
             GraphicsDevice.BuffersMemory -= SizeInBytes / (float)0x100000;
 
@@ -73,7 +67,7 @@ namespace SiliconStudio.Xenko.Graphics
                 NativeMemory = DeviceMemory.Null;
             }
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         /// <inheritdoc/>

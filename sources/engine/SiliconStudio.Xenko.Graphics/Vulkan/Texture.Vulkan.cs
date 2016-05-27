@@ -377,7 +377,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override unsafe void DestroyImpl()
+        /// <inheritdoc/>
+        protected internal override unsafe void OnDestroyed()
         {
             if (ParentTexture != null || isNotOwningResources)
             {
@@ -418,14 +419,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            base.DestroyImpl();
-        }
-
-        /// <inheritdoc/>
-        protected internal override void OnDestroyed()
-        {
             base.OnDestroyed();
-            DestroyImpl();
         }
 
         private void OnRecreateImpl()

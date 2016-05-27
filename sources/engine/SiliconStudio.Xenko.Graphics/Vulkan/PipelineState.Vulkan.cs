@@ -199,6 +199,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        /// <inheritdoc/>
         protected internal override bool OnRecreate()
         {
             Recreate();
@@ -285,13 +286,8 @@ namespace SiliconStudio.Xenko.Graphics
             NativeRenderPass = GraphicsDevice.NativeDevice.CreateRenderPass(ref renderPassCreateInfo);
         }
 
-        protected internal override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
-        protected override unsafe void DestroyImpl()
+        /// <inheritdoc/>
+        protected internal override unsafe void OnDestroyed()
         {
             if (NativePipeline != Pipeline.Null)
             {
@@ -305,7 +301,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         internal struct DescriptorSetInfo

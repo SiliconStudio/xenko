@@ -1066,26 +1066,22 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        /// <inheritdoc/>
         protected internal override bool OnRecreate()
         {
             Recreate();
             return true;
         }
 
+        /// <inheritdoc/>
         protected internal override void OnDestroyed()
-        {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
-        protected override void DestroyImpl()
         {
             GraphicsDevice.NativeDevice.WaitIdle();
 
             commandBufferPool.Dispose();
             framebufferCollector.Dispose();
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         private unsafe void EnsureRenderPass()
