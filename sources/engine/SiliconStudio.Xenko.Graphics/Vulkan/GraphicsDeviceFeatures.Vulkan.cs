@@ -35,27 +35,29 @@ namespace SiliconStudio.Xenko.Graphics
     /// </remarks>
     public partial struct GraphicsDeviceFeatures
     {
-        //private readonly static List<SharpDX.DXGI.Format> ObsoleteFormatToExcludes = new List<SharpDX.DXGI.Format>() { Format.R1_UNorm, Format.B5G6R5_UNorm, Format.B5G5R5A1_UNorm };
-
         internal GraphicsDeviceFeatures(GraphicsDevice deviceRoot)
         {
-            var nativeDevice = deviceRoot.NativeDevice;
+            //var nativeDevice = deviceRoot.NativeDevice;
+
+            //PhysicalDeviceFeatures features;
+            //deviceRoot.Adapter.PhysicalDevice.GetFeatures(out features);
 
             HasSRgb = true;
 
             mapFeaturesPerFormat = new FeaturesPerFormat[256];
 
             // Set back the real GraphicsProfile that is used
-            // TODO D3D12
             RequestedProfile = deviceRoot.RequestedProfile;
             CurrentProfile = deviceRoot.RequestedProfile; // GraphicsProfileHelper.FromFeatureLevel(deviceRoot.CurrentFeatureLevel);
 
-            // TODO D3D12
             HasComputeShaders = true;
-            HasDoublePrecision = false;//nativeDevice.D3D12Options.DoublePrecisionFloatShaderOps;
+            HasDoublePrecision = false;
 
             HasMultiThreadingConcurrentResources = true;
             HasDriverCommandLists = true;
+
+            HasDepthAsSRV = true;
+            HasDepthAsReadOnlyRT = true;
 
             // TODO D3D12
             //// Check features for each DXGI.Format
