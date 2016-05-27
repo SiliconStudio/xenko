@@ -3,6 +3,8 @@
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using SDL2;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Serializers;
@@ -41,11 +43,64 @@ namespace SiliconStudio.Xenko.Input
                 controllers = new Dictionary<IntPtr, Guid>(SdlInputGamePadCount);
                 for (int i = 0; i < SdlInputGamePadCount; i++)
                 {
-                    if (SDL.SDL_IsGameController(i) == SDL.SDL_bool.SDL_TRUE)
+                    if (SDL.SDL_IsGameController(i) == SDL.SDL_bool.SDL_FALSE)
                     {
-                        var ptr = SDL.SDL_GameControllerOpen(i);
-                        controllers.Add(ptr, ControllerGuids[i]);
+                        // We have a joystick that is not recognized as a game controller, we will map it.
+                        var jPtr = SDL.SDL_JoystickOpen(i);
+                        if (jPtr != IntPtr.Zero)
+                        {
+                            var bytes = SDL.SDL_JoystickGetGUID(jPtr).ToByteArray();
+                            // Convert or bytes into a string representation. This is important because SDL expects
+                            // the string representation to represent the memory view without hyphe. Using
+                            // Guid.ToString() will not do that.
+                            string mapping = "";
+                            foreach (var b in bytes)
+                            {
+                                mapping += b.ToString("X2");
+                            }
+                            mapping += "," + SDL.SDL_JoystickName(jPtr);
+                            // Map various axes, buttons and hats.
+                            int j, n;
+                            n = SDL.SDL_JoystickNumAxes(jPtr);
+                            for (j = 1; j <= n; j++)
+                            {
+                                switch (j)
+                                {
+                                    case 1: mapping += ",leftx:a0,lefty:a1"; break;
+                                    case 2: mapping += ",rightx:a2,righty:a3"; break;
+                                    case 3: mapping += ",lefttrigger:a4"; break;
+                                    case 4: mapping += ",righttrigger:a5"; break;
+                                }
+                            }
+                            n = SDL.SDL_JoystickNumButtons(jPtr);
+                            for (j = 1; j <= n; j++)
+                            {
+                                switch (j)
+                                {
+                                    case 1: mapping += ",a:b0"; break;
+                                    case 2: mapping += ",b:b1"; break;
+                                    case 3: mapping += ",x:b2"; break;
+                                    case 4: mapping += ",y:b3"; break;
+                                    case 5: mapping += ",back:b4"; break;
+                                    case 6: mapping += ",start:b5"; break;
+                                    case 7: mapping += ",leftshoulder:b6"; break;
+                                    case 8: mapping += ",rightshoulder:b7"; break;
+                                    case 9: mapping += ",leftstick:b8"; break;
+                                    case 10: mapping += ",rightstick:b9"; break;
+                                    case 11: mapping += ",guide:b10"; break;
+                                }
+                            }
+                            n = SDL.SDL_JoystickNumHats(jPtr);
+                            if (n >= 1)
+                            {
+                                mapping += "dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1";
+                            }
+                            SDL.SDL_GameControllerAddMapping(mapping);
+                        }
                     }
+                    var ptr = SDL.SDL_GameControllerOpen(i);
+                    if (ptr != IntPtr.Zero)
+                        controllers.Add(ptr, ControllerGuids[i]);
                 }
             }
 
