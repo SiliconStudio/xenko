@@ -93,8 +93,22 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Size = textRegionSize
             };
 
+            if (editText.Font.IsScalable)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 1);
+            }
+
             // Draw the text
             Batch.DrawString(font, editText.TextToDisplay, ref drawCommand);
+
+            if (editText.Font.IsScalable)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 0);
+            }
 
             // Draw the cursor
             if (editText.IsCaretVisible)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -27,12 +28,21 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         private Matrix viewProjectionMatrix;
 
+        // Cached states
+        private BlendStateDescription? currentBlendState;
+        private SamplerState currentSamplerState;
+        private RasterizerStateDescription? currentRasterizerState;
+        private DepthStencilStateDescription? currentDepthStencilState;
+        private int currentStencilValue;
+
         private Vector4 vector4LeftTop = new Vector4(-0.5f, -0.5f, -0.5f, 1);
 
         private readonly Vector4[] shiftVectorX = new Vector4[4];
         private readonly Vector4[] shiftVectorY = new Vector4[4];
 
         private readonly Texture whiteTexture;
+
+        protected readonly EffectInstance SDFFontEffect;
 
         static UIBatch()
         {
@@ -135,6 +145,9 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Create a 1x1 pixel white texture
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
+
+            //  Load custom font rendering effects here
+            SDFFontEffect = new EffectInstance(new Effect(device, FontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
         }
 
         /// <summary>
@@ -146,6 +159,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="depthStencilState">Depth and stencil options.</param>
         /// <param name="viewProjection">The view projection matrix used for this series of draw calls</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
+        /// <param name="overrideEffect">The number of the override effect to use, if any</param>
         public void Begin(GraphicsContext graphicsContext, ref Matrix viewProjection, BlendStateDescription? blendState, DepthStencilStateDescription? depthStencilState, int stencilValue)
         {
             Begin(graphicsContext, ref viewProjection, blendState, null, null, depthStencilState, stencilValue);
@@ -166,7 +180,21 @@ namespace SiliconStudio.Xenko.Graphics
         {
             viewProjectionMatrix = viewProjection;
 
+            currentBlendState = blendState;
+            currentSamplerState = samplerState;
+            currentRasterizerState = rasterizerState;
+            currentDepthStencilState = depthStencilState;
+            currentStencilValue = stencilValue;
+
             Begin(graphicsContext, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+        }
+
+        public void BeginCustom(GraphicsContext graphicsContext, int overrideEffect)
+        {
+            EffectInstance effect = (overrideEffect == 0) ? null : SDFFontEffect;
+
+            Begin(graphicsContext, effect, SpriteSortMode.BackToFront, 
+                currentBlendState, currentSamplerState, currentDepthStencilState, currentRasterizerState, currentStencilValue);
         }
 
         /// <summary>

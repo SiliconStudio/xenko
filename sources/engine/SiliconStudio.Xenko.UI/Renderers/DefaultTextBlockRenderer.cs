@@ -39,7 +39,21 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Size = new Vector2(textBlock.ActualWidth, textBlock.ActualHeight)
             };
 
+            if (textBlock.Font.IsScalable)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 1);                
+            }
+
             Batch.DrawString(textBlock.Font, textBlock.TextToDisplay, ref drawCommand);
+
+            if (textBlock.Font.IsScalable)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 0);
+            }
         }
     }
 }
