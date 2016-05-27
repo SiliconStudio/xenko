@@ -15,7 +15,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
-	<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -40,10 +40,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Xenko.Native.Libs.targets" />
     <None Include="XenkoNative.h" />
     <None Include="SpriteBatchNative.c" />
     <None Include="symbols.def" />
     <None Include="Xenko.Native.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Celt.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
