@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
                 {
                     StructureType = StructureType.DescriptorPoolCreateInfo,
-                    PoolSizeCount = (uint)Count,
+                    PoolSizeCount = (uint)poolSizes.Length,
                     PoolSizes = new IntPtr(poolSizesPointer),
                     MaxSets = 16384, // TODO VULKAN API: Expose
                 };
