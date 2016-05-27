@@ -271,8 +271,6 @@ namespace SiliconStudio.Shaders.Convertor
 
         public bool KeepSamplers { get; set; }
 
-        public List<string> CombinedSamplers { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether [use builtin semantic].
         /// </summary>
@@ -2486,7 +2484,7 @@ namespace SiliconStudio.Shaders.Convertor
             // Then add the newly created variable
             foreach (var textureSampler in samplerMapping)
             {
-                if (!KeepSamplers || (textureSampler.Key.Sampler != null && CombinedSamplers.Contains(textureSampler.Key.Sampler.Name)))
+                if (!KeepSamplers)
                 {
                     declarationListToRemove.Add(textureSampler.Key.Sampler);
                     declarationListToRemove.Add(textureSampler.Key.Texture);
@@ -3657,7 +3655,7 @@ namespace SiliconStudio.Shaders.Convertor
 
             if (KeepSamplers)
             {
-                if (sampler != null && !CombinedSamplers.Contains(sampler.Name))
+                if (sampler != null)
                 {
                     return new MethodInvocationExpression(new TypeReferenceExpression(glslSampler.Type), new VariableReferenceExpression(texture), new VariableReferenceExpression(sampler));
                 }
@@ -4170,10 +4168,6 @@ namespace SiliconStudio.Shaders.Convertor
             //mapToGlsl.Add(TextureType.Texture2D, new TextureType("texture2D"));
             //mapToGlsl.Add(TextureType.Texture3D, new TextureType("texture3D"));
             //mapToGlsl.Add(TextureType.TextureCube, new TextureType("textureCube"));
-
-            // Combined texture sampler objects
-            //mapToGlsl.Add(SamplerType.Sampler, SamplerType.Sampler2D);
-            //mapToGlsl.Add(SamplerType.SamplerCube, new TypeName("samplerCube"));
 
             // Replace all generic shader types to their glsl equivalent.
             SearchVisitor.Run(

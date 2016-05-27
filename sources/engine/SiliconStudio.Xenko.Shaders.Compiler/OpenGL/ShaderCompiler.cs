@@ -235,7 +235,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 // Convert from HLSL to GLSL
                 // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
                 var glslConvertor = new ShaderConverter(shaderPlatform, shaderVersion);
-                glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, reflection, inputAttributeNames, shaderBytecodeResult);
+                glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, inputAttributeNames, shaderBytecodeResult);
 
                 if (glslShader == null || shaderBytecodeResult.HasErrors)
                     return null;
