@@ -474,8 +474,8 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 drawCommand.SnapText = false;
 
-                // TODO Figure out the scale
-                // drawCommand.FontScale = new Vector2(4,4);
+                float scaling = drawCommand.FontSize/font.Size;
+                drawCommand.FontScale = 1f / new Vector2(scaling, scaling);
             }
             else
             if (!font.IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 

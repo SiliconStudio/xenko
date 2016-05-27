@@ -211,6 +211,13 @@ namespace SiliconStudio.Xenko.UI.Controls
                 realSize.Y /= sizeRatio.Y;
             }
 
+            if (Font.IsScalable)
+            {
+                var scaleRatio = TextSize / Font.Size;
+                realSize.X *= scaleRatio;
+                realSize.Y *= scaleRatio;
+            }
+
             return realSize;
         } 
 

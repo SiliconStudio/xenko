@@ -13,9 +13,13 @@ class SDFFont : Texturing
     // Retrieves the pixel's color sampled from a signed distance field font texture, with font color, border and shadows
     stage float4 FontColor(float4 sampledColor, float4 textColor, float4 borderColor, float borderThickness)
     {
+        // Higher (more than 1) - sharper
+        // Lower (less than 1, more than 0) - blurry
+        float sharpnessMagnitude = 1.5f;
+
         // Detect opacity
         float sigDist = median(sampledColor.r, sampledColor.g, sampledColor.b) - 0.5;
-        float centralLine = sigDist/fwidth(sigDist) + 0.5;
+        float centralLine = sharpnessMagnitude * sigDist/fwidth(sigDist) + 0.5;
         float opacity = smoothstep(0, 1, centralLine);
 
         // Detect edge
@@ -26,6 +30,7 @@ class SDFFont : Texturing
             textColor = lerp(borderColor, textColor, border);
         }
 
+        textColor.a = 1;
         sampledColor = lerp(float4(0,0,0,0), textColor, opacity);
 
         return sampledColor;
