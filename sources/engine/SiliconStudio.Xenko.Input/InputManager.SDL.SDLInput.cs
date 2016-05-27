@@ -3,7 +3,6 @@
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using SDL2;
 using SiliconStudio.Core.Mathematics;
