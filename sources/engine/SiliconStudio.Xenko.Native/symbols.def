@@ -4,5 +4,11 @@ UpdateBufferValuesFromElementInfo
 XenkoOvrStartup
 XenkoOvrShutdown
 XenkoOvrGetError
-XenkoOvrCreateSession
+XenkoOvrCreateSessionDx
 XenkoOvrDestroySession
+XenkoOvrCreateTexturesDx
+XenkoOvrGetTextureAtIndexDx
+XenkoOvrGetCurrentTargetIndex
+XenkoOvrCommitFrame
+XenkoOvrPrepareRender
+XenkoOvrGetMirrorTextureDx

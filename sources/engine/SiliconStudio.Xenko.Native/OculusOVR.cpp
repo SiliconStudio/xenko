@@ -4,7 +4,15 @@
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/OculusOVR/Include/OVR_CAPI.h"
+#include "../../../deps/OculusOVR/Include/Extras/OVR_CAPI_Util.h"
 #include "../../../deps/NativePath/standard/stdio.h"
+
+typedef struct _GUID {
+	unsigned long  Data1;
+	unsigned short Data2;
+	unsigned short Data3;
+	unsigned char  Data4[8];
+} GUID;
 
 typedef ovrResult (*ovr_InitializePtr) (const ovrInitParams* params);
 typedef void (*ovr_ShutdownPtr) ();
@@ -47,6 +55,14 @@ typedef unsigned int (*ovr_GetFloatArrayPtr) (ovrSession session, const char* pr
 typedef ovrBool (*ovr_SetFloatArrayPtr) (ovrSession session, const char* propertyName, const float values[], unsigned int valuesSize);
 typedef const char* (*ovr_GetStringPtr) (ovrSession session, const char* propertyName, const char* defaultVal);
 typedef ovrBool (*ovr_SetStringPtr) (ovrSession session, const char* propertyName, const char* value);
+
+typedef ovrResult (*ovr_CreateTextureSwapChainDXPtr)(ovrSession session, void* d3dPtr, const ovrTextureSwapChainDesc* desc, ovrTextureSwapChain* out_TextureSwapChain);
+typedef ovrResult (*ovr_GetTextureSwapChainBufferDXPtr)(ovrSession session, ovrTextureSwapChain chain, int index, GUID iid, void** out_Buffer);
+typedef ovrResult (*ovr_CreateMirrorTextureDXPtr)(ovrSession session, void* d3dPtr,	const ovrMirrorTextureDesc* desc, ovrMirrorTexture* out_MirrorTexture);
+typedef ovrResult (*ovr_GetMirrorTextureBufferDXPtr)(ovrSession session, ovrMirrorTexture mirrorTexture, GUID iid, void** out_Buffer);
+
+typedef void (*ovr_CalcEyePosesPtr)(ovrPosef headPose, const ovrVector3f hmdToEyeOffset[2], ovrPosef outEyePoses[2]);
+typedef ovrMatrix4f (*ovrMatrix4f_ProjectionPtr)(ovrFovPort fov, float znear, float zfar, unsigned int projectionModFlags);
 
 extern "C" {
 
@@ -93,6 +109,14 @@ extern "C" {
 	ovr_SetFloatArrayPtr ovr_SetFloatArrayFunc = NULL;
 	ovr_GetStringPtr ovr_GetStringFunc = NULL;
 	ovr_SetStringPtr ovr_SetStringFunc = NULL;
+
+	ovr_CreateTextureSwapChainDXPtr ovr_CreateTextureSwapChainDXFunc = NULL;
+	ovr_GetTextureSwapChainBufferDXPtr ovr_GetTextureSwapChainBufferDXFunc = NULL;
+	ovr_CreateMirrorTextureDXPtr ovr_CreateMirrorTextureDXFunc = NULL;
+	ovr_GetMirrorTextureBufferDXPtr ovr_GetMirrorTextureBufferDXFunc = NULL;
+
+	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = NULL;
+	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
 
 	bool XenkoOvrStartup()
 	{
@@ -190,6 +214,20 @@ extern "C" {
 			if (!ovr_GetStringFunc) { printf("Failed to get ovr_GetString\n"); return false; }
 			ovr_SetStringFunc = (ovr_SetStringPtr)GetSymbolAddress(__libOvr, "ovr_SetString");
 			if (!ovr_SetStringFunc) { printf("Failed to get ovr_SetString\n"); return false; }
+
+			ovr_CreateTextureSwapChainDXFunc = (ovr_CreateTextureSwapChainDXPtr)GetSymbolAddress(__libOvr, "ovr_CreateTextureSwapChainDX");
+			if (!ovr_CreateTextureSwapChainDXFunc) { printf("Failed to get ovr_CreateTextureSwapChainDX\n"); return false; }
+			ovr_GetTextureSwapChainBufferDXFunc = (ovr_GetTextureSwapChainBufferDXPtr)GetSymbolAddress(__libOvr, "ovr_GetTextureSwapChainBufferDX");
+			if (!ovr_GetTextureSwapChainBufferDXFunc) { printf("Failed to get ovr_GetTextureSwapChainBufferDX\n"); return false; }
+			ovr_CreateMirrorTextureDXFunc = (ovr_CreateMirrorTextureDXPtr)GetSymbolAddress(__libOvr, "ovr_CreateMirrorTextureDX");
+			if (!ovr_CreateMirrorTextureDXFunc) { printf("Failed to get ovr_CreateMirrorTextureDX\n"); return false; }
+			ovr_GetMirrorTextureBufferDXFunc = (ovr_GetMirrorTextureBufferDXPtr)GetSymbolAddress(__libOvr, "ovr_GetMirrorTextureBufferDX");
+			if (!ovr_GetMirrorTextureBufferDXFunc) { printf("Failed to get ovr_GetMirrorTextureBufferDX\n"); return false; }
+
+			ovr_CalcEyePosesFunc = (ovr_CalcEyePosesPtr)GetSymbolAddress(__libOvr, "ovr_CalcEyePoses");
+			if (!ovr_CalcEyePosesFunc) { printf("Failed to get ovr_CalcEyePoses\n"); return false; }
+			ovrMatrix4f_ProjectionFunc = (ovrMatrix4f_ProjectionPtr)GetSymbolAddress(__libOvr, "ovrMatrix4f_Projection");
+			if (!ovrMatrix4f_ProjectionFunc) { printf("Failed to get ovrMatrix4f_Projection\n"); return false; }
 		}
 
 		ovrResult result = ovr_InitializeFunc(NULL);
@@ -215,24 +253,161 @@ extern "C" {
 		return errInfo.Result;
 	}
 
-	bool XenkoOvrCreateSession(ovrSession sessionOut, char* luidOut)
+	struct XenkoOvrSession
 	{
+		ovrSession Session;
+		ovrTextureSwapChain SwapChain;
+		ovrMirrorTexture Mirror;
+		ovrEyeRenderDesc EyeRenderDesc[2];
+		ovrVector3f HmdToEyeViewOffset[2];
+		ovrLayerEyeFov Layer;
+		ovrHmdDesc HmdDesc;
+	};
+
+	XenkoOvrSession* XenkoOvrCreateSessionDx(int64_t* luidOut)
+	{
+		ovrSession session;
 		ovrGraphicsLuid luid;
-		ovrResult result = ovr_CreateFunc(&sessionOut, &luid);
+		ovrResult result = ovr_CreateFunc(&session, &luid);
 
 		bool success = OVR_SUCCESS(result);
 		if(success)
 		{
-			sprintf(luidOut, "%l", *((int64_t*)luid.Reserved));
+			auto sessionOut = new XenkoOvrSession();
+			sessionOut->Session = session;
+			sessionOut->SwapChain = NULL;
+
+			*luidOut = *((int64_t*)luid.Reserved);
+			return sessionOut;
+		}
+
+		return NULL;
+	}
+
+	void XenkoOvrDestroySession(XenkoOvrSession* session)
+	{
+		ovr_DestroyFunc(session->Session);
+	}
+
+	bool XenkoOvrCreateTexturesDx(XenkoOvrSession* session, void* dxDevice, int* outTextureCount)
+	{
+		session->HmdDesc = ovr_GetHmdDescFunc(session->Session);
+		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], 1.0f);
+		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], 1.0f);
+		ovrSizei bufferSize;
+		bufferSize.w = sizel.w + sizer.w;
+		bufferSize.h = fmax(sizel.h, sizer.h);
+
+		ovrTextureSwapChainDesc texDesc = {};
+		texDesc.Type = ovrTexture_2D;
+		texDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+		texDesc.ArraySize = 1;
+		texDesc.Width = bufferSize.w;
+		texDesc.Height = bufferSize.h;
+		texDesc.MipLevels = 1;
+		texDesc.SampleCount = 1;
+		texDesc.StaticImage = ovrFalse;
+		texDesc.MiscFlags = ovrTextureMisc_None;
+		texDesc.BindFlags = ovrTextureBind_DX_RenderTarget;
+
+		if(!OVR_SUCCESS(ovr_CreateTextureSwapChainDXFunc(session->Session, dxDevice, &texDesc, &session->SwapChain)))
+		{
+			return false;
+		}
+
+		auto count = 0;
+		ovr_GetTextureSwapChainLengthFunc(session->Session, session->SwapChain, &count);
+		*outTextureCount = count;
+		
+		//init structures
+		session->EyeRenderDesc[0] = ovr_GetRenderDescFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0]);
+		session->EyeRenderDesc[1] = ovr_GetRenderDescFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1]);
+		session->HmdToEyeViewOffset[0] = session->EyeRenderDesc[0].HmdToEyeOffset;
+		session->HmdToEyeViewOffset[1] = session->EyeRenderDesc[1].HmdToEyeOffset;
+
+		session->Layer.Header.Type = ovrLayerType_EyeFov;
+		session->Layer.Header.Flags = 0;
+		session->Layer.ColorTexture[0] = session->SwapChain;
+		session->Layer.ColorTexture[1] = session->SwapChain;
+		session->Layer.Fov[0] = session->EyeRenderDesc[0].Fov;
+		session->Layer.Fov[1] = session->EyeRenderDesc[1].Fov;
+		session->Layer.Viewport[0].Pos.x = 0;
+		session->Layer.Viewport[0].Pos.y = 0;
+		session->Layer.Viewport[0].Size.w = bufferSize.w / 2;
+		session->Layer.Viewport[0].Size.h = bufferSize.h;
+		session->Layer.Viewport[1].Pos.x = bufferSize.w / 2;
+		session->Layer.Viewport[1].Pos.y = 0;
+		session->Layer.Viewport[1].Size.w = bufferSize.w / 2;
+		session->Layer.Viewport[1].Size.h = bufferSize.h;
+
+		//create mirror as well
+		ovrMirrorTextureDesc mirrorDesc = {};
+		mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+		mirrorDesc.Width = bufferSize.w / 2;
+		mirrorDesc.Height = bufferSize.h / 2;
+		if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+		{
+			return false;
+		}
+		
+		return true;
+	}
+
+	void* XenkoOvrGetTextureAtIndexDx(XenkoOvrSession* session, GUID textureGuid, int index)
+	{
+		void* texture = NULL;
+		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, session->SwapChain, index, textureGuid, &texture)))
+		{
+			return NULL;
+		}
+		return texture;
+	}
+
+	void* XenkoOvrGetMirrorTextureDx(XenkoOvrSession* session, GUID textureGuid)
+	{
+		void* texture = NULL;
+		if (!OVR_SUCCESS(ovr_GetMirrorTextureBufferDXFunc(session->Session, session->Mirror, textureGuid, &texture)))
+		{
+			return NULL;
+		}
+		return texture;
+	}
+
+	int XenkoOvrGetCurrentTargetIndex(XenkoOvrSession* session)
+	{
+		int index;
+		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, session->SwapChain, &index);
+		return index;
+	}
+
+	void XenkoOvrPrepareRender(XenkoOvrSession* session, float near, float far, float* projLeft, float* projRight)
+	{
+		session->EyeRenderDesc[0] = ovr_GetRenderDescFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0]);
+		session->EyeRenderDesc[1] = ovr_GetRenderDescFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1]);
+		session->HmdToEyeViewOffset[0] = session->EyeRenderDesc[0].HmdToEyeOffset;
+		session->HmdToEyeViewOffset[1] = session->EyeRenderDesc[1].HmdToEyeOffset;
+
+		session->Layer.SensorSampleTime = ovr_GetPredictedDisplayTimeFunc(session->Session, 0);
+		ovrTrackingState hmdState = ovr_GetTrackingStateFunc(session->Session, session->Layer.SensorSampleTime, ovrTrue);
+		ovr_CalcEyePosesFunc(hmdState.HeadPose.ThePose, session->HmdToEyeViewOffset, session->Layer.RenderPose);
+
+		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], near, far, 0);
+		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], near, far, 0);
+
+		memcpy(projLeft, &leftProj, sizeof(float) * 16);
+		memcpy(projRight, &rightProj, sizeof(float) * 16);
+	}
+
+	bool XenkoOvrCommitFrame(XenkoOvrSession* session)
+	{
+		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
+		ovrLayerHeader* layers = &session->Layer.Header;
+		if(OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
+		{
 			return true;
 		}
 
 		return false;
-	}
-
-	void XenkoOvrDestroySession(ovrSession session)
-	{
-		ovr_DestroyFunc(session);
 	}
 
 }

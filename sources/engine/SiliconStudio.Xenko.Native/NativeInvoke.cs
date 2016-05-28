@@ -57,14 +57,51 @@ namespace SiliconStudio.Xenko.Native
 #if !SILICONSTUDIO_RUNTIME_CORECLR
             [SuppressUnmanagedCodeSecurity]
 #endif
-            [DllImport(Library, EntryPoint = "XenkoOvrCreateSession", CallingConvention = CallingConvention.Cdecl)]
-            internal static extern bool Create(IntPtr outSessionPtr, IntPtr adapterLuidStr);
+            [DllImport(Library, EntryPoint = "XenkoOvrCreateSessionDx", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern IntPtr CreateSessionDx(out long adapterLuidStr);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
             [SuppressUnmanagedCodeSecurity]
 #endif
             [DllImport(Library, EntryPoint = "XenkoOvrDestroySession", CallingConvention = CallingConvention.Cdecl)]
-            internal static extern void Destroy(IntPtr outSessionPtr);
+            internal static extern void DestroySession(IntPtr outSessionPtr);
+
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrCreateTexturesDx", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern bool CreateTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrGetTextureAtIndexDx", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern IntPtr GetTextureDx(IntPtr session, Guid textureGuid, int index);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrGetMirrorTextureDx", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern IntPtr GetMirrorTexture(IntPtr session, Guid textureGuid);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrGetCurrentTargetIndex", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern int GetCurrentTargetIndex(IntPtr session);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrCommitFrame", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern bool CommitFrame(IntPtr session);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            [SuppressUnmanagedCodeSecurity]
+#endif
+            [DllImport(Library, EntryPoint = "XenkoOvrPrepareRender", CallingConvention = CallingConvention.Cdecl)]
+            internal static extern unsafe void PrepareRender(IntPtr session, float near, float far, float* projLeft, float* projRight);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
             [SuppressUnmanagedCodeSecurity]
