@@ -3,9 +3,16 @@
 
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../deps/NativePath/NativePath.h"
-#include "../../../deps/OculusOVR/Include/OVR_CAPI.h"
-#include "../../../deps/OculusOVR/Include/Extras/OVR_CAPI_Util.h"
 #include "../../../deps/NativePath/standard/stdio.h"
+#include "../../../deps/NativePath/standard/stddef.h"
+
+#ifndef __clang__
+//Make resharper work!
+#define OVR_ALIGNAS(n)
+#error "The compiler must be clang!"
+#endif
+
+#include "../../../deps/OculusOVR/Include/OVR_CAPI.h"
 
 typedef struct _GUID {
 	unsigned long  Data1;
@@ -66,57 +73,57 @@ typedef ovrMatrix4f (*ovrMatrix4f_ProjectionPtr)(ovrFovPort fov, float znear, fl
 
 extern "C" {
 
-	void* __libOvr = NULL;
+	void* __libOvr = nullptr;
 	
-	ovr_InitializePtr ovr_InitializeFunc = NULL;
-	ovr_ShutdownPtr ovr_ShutdownFunc = NULL;
-	ovr_GetLastErrorInfoPtr ovr_GetLastErrorInfoFunc = NULL;
-	ovr_GetVersionStringPtr ovr_GetVersionStringFunc = NULL;
-	ovr_TraceMessagePtr ovr_TraceMessageFunc = NULL;
-	ovr_GetHmdDescPtr ovr_GetHmdDescFunc = NULL;
-	ovr_GetTrackerCountPtr ovr_GetTrackerCountFunc = NULL;
-	ovr_GetTrackerDescPtr ovr_GetTrackerDescFunc = NULL;
-	ovr_CreatePtr ovr_CreateFunc = NULL;
-	ovr_DestroyPtr ovr_DestroyFunc = NULL;
-	ovr_GetSessionStatusPtr ovr_GetSessionStatusFunc = NULL;
-	ovr_SetTrackingOriginTypePtr ovr_SetTrackingOriginTypeFunc = NULL;
-	ovr_GetTrackingOriginTypePtr ovr_GetTrackingOriginTypeFunc = NULL;
-	ovr_RecenterTrackingOriginPtr ovr_RecenterTrackingOriginFunc = NULL;
-	ovr_ClearShouldRecenterFlagPtr ovr_ClearShouldRecenterFlagFunc = NULL;
-	ovr_GetTrackingStatePtr ovr_GetTrackingStateFunc = NULL;
-	ovr_GetTrackerPosePtr ovr_GetTrackerPoseFunc = NULL;
-	ovr_GetInputStatePtr ovr_GetInputStateFunc = NULL;
-	ovr_GetConnectedControllerTypesPtr ovr_GetConnectedControllerTypesFunc = NULL;
-	ovr_SetControllerVibrationPtr ovr_SetControllerVibrationFunc = NULL;
-	ovr_GetTextureSwapChainLengthPtr ovr_GetTextureSwapChainLengthFunc = NULL;
-	ovr_GetTextureSwapChainCurrentIndexPtr ovr_GetTextureSwapChainCurrentIndexFunc = NULL;
-	ovr_GetTextureSwapChainDescPtr ovr_GetTextureSwapChainDescFunc = NULL;
-	ovr_CommitTextureSwapChainPtr ovr_CommitTextureSwapChainFunc = NULL;
-	ovr_DestroyTextureSwapChainPtr ovr_DestroyTextureSwapChainFunc = NULL;
-	ovr_DestroyMirrorTexturePtr ovr_DestroyMirrorTextureFunc = NULL;
-	ovr_GetFovTextureSizePtr ovr_GetFovTextureSizeFunc = NULL;
-	ovr_GetRenderDescPtr ovr_GetRenderDescFunc = NULL;
-	ovr_SubmitFramePtr ovr_SubmitFrameFunc = NULL;
-	ovr_GetPredictedDisplayTimePtr ovr_GetPredictedDisplayTimeFunc = NULL;
-	ovr_GetTimeInSecondsPtr ovr_GetTimeInSecondsFunc = NULL;
-	ovr_GetBoolPtr ovr_GetBoolFunc = NULL;
-	ovr_SetBoolPtr ovr_SetBoolFunc = NULL;
-	ovr_GetIntPtr ovr_GetIntFunc = NULL;
-	ovr_SetIntPtr ovr_SetIntFunc = NULL;
-	ovr_GetFloatPtr ovr_GetFloatFunc = NULL;
-	ovr_SetFloatPtr ovr_SetFloatFunc = NULL;
-	ovr_GetFloatArrayPtr ovr_GetFloatArrayFunc = NULL;
-	ovr_SetFloatArrayPtr ovr_SetFloatArrayFunc = NULL;
-	ovr_GetStringPtr ovr_GetStringFunc = NULL;
-	ovr_SetStringPtr ovr_SetStringFunc = NULL;
+	ovr_InitializePtr ovr_InitializeFunc = nullptr;
+	ovr_ShutdownPtr ovr_ShutdownFunc = nullptr;
+	ovr_GetLastErrorInfoPtr ovr_GetLastErrorInfoFunc = nullptr;
+	ovr_GetVersionStringPtr ovr_GetVersionStringFunc = nullptr;
+	ovr_TraceMessagePtr ovr_TraceMessageFunc = nullptr;
+	ovr_GetHmdDescPtr ovr_GetHmdDescFunc = nullptr;
+	ovr_GetTrackerCountPtr ovr_GetTrackerCountFunc = nullptr;
+	ovr_GetTrackerDescPtr ovr_GetTrackerDescFunc = nullptr;
+	ovr_CreatePtr ovr_CreateFunc = nullptr;
+	ovr_DestroyPtr ovr_DestroyFunc = nullptr;
+	ovr_GetSessionStatusPtr ovr_GetSessionStatusFunc = nullptr;
+	ovr_SetTrackingOriginTypePtr ovr_SetTrackingOriginTypeFunc = nullptr;
+	ovr_GetTrackingOriginTypePtr ovr_GetTrackingOriginTypeFunc = nullptr;
+	ovr_RecenterTrackingOriginPtr ovr_RecenterTrackingOriginFunc = nullptr;
+	ovr_ClearShouldRecenterFlagPtr ovr_ClearShouldRecenterFlagFunc = nullptr;
+	ovr_GetTrackingStatePtr ovr_GetTrackingStateFunc = nullptr;
+	ovr_GetTrackerPosePtr ovr_GetTrackerPoseFunc = nullptr;
+	ovr_GetInputStatePtr ovr_GetInputStateFunc = nullptr;
+	ovr_GetConnectedControllerTypesPtr ovr_GetConnectedControllerTypesFunc = nullptr;
+	ovr_SetControllerVibrationPtr ovr_SetControllerVibrationFunc = nullptr;
+	ovr_GetTextureSwapChainLengthPtr ovr_GetTextureSwapChainLengthFunc = nullptr;
+	ovr_GetTextureSwapChainCurrentIndexPtr ovr_GetTextureSwapChainCurrentIndexFunc = nullptr;
+	ovr_GetTextureSwapChainDescPtr ovr_GetTextureSwapChainDescFunc = nullptr;
+	ovr_CommitTextureSwapChainPtr ovr_CommitTextureSwapChainFunc = nullptr;
+	ovr_DestroyTextureSwapChainPtr ovr_DestroyTextureSwapChainFunc = nullptr;
+	ovr_DestroyMirrorTexturePtr ovr_DestroyMirrorTextureFunc = nullptr;
+	ovr_GetFovTextureSizePtr ovr_GetFovTextureSizeFunc = nullptr;
+	ovr_GetRenderDescPtr ovr_GetRenderDescFunc = nullptr;
+	ovr_SubmitFramePtr ovr_SubmitFrameFunc = nullptr;
+	ovr_GetPredictedDisplayTimePtr ovr_GetPredictedDisplayTimeFunc = nullptr;
+	ovr_GetTimeInSecondsPtr ovr_GetTimeInSecondsFunc = nullptr;
+	ovr_GetBoolPtr ovr_GetBoolFunc = nullptr;
+	ovr_SetBoolPtr ovr_SetBoolFunc = nullptr;
+	ovr_GetIntPtr ovr_GetIntFunc = nullptr;
+	ovr_SetIntPtr ovr_SetIntFunc = nullptr;
+	ovr_GetFloatPtr ovr_GetFloatFunc = nullptr;
+	ovr_SetFloatPtr ovr_SetFloatFunc = nullptr;
+	ovr_GetFloatArrayPtr ovr_GetFloatArrayFunc = nullptr;
+	ovr_SetFloatArrayPtr ovr_SetFloatArrayFunc = nullptr;
+	ovr_GetStringPtr ovr_GetStringFunc = nullptr;
+	ovr_SetStringPtr ovr_SetStringFunc = nullptr;
 
-	ovr_CreateTextureSwapChainDXPtr ovr_CreateTextureSwapChainDXFunc = NULL;
-	ovr_GetTextureSwapChainBufferDXPtr ovr_GetTextureSwapChainBufferDXFunc = NULL;
-	ovr_CreateMirrorTextureDXPtr ovr_CreateMirrorTextureDXFunc = NULL;
-	ovr_GetMirrorTextureBufferDXPtr ovr_GetMirrorTextureBufferDXFunc = NULL;
+	ovr_CreateTextureSwapChainDXPtr ovr_CreateTextureSwapChainDXFunc = nullptr;
+	ovr_GetTextureSwapChainBufferDXPtr ovr_GetTextureSwapChainBufferDXFunc = nullptr;
+	ovr_CreateMirrorTextureDXPtr ovr_CreateMirrorTextureDXFunc = nullptr;
+	ovr_GetMirrorTextureBufferDXPtr ovr_GetMirrorTextureBufferDXFunc = nullptr;
 
-	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = NULL;
-	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
+	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = nullptr;
+	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = nullptr;
 
 	bool XenkoOvrStartup()
 	{
@@ -275,13 +282,13 @@ extern "C" {
 		{
 			auto sessionOut = new XenkoOvrSession();
 			sessionOut->Session = session;
-			sessionOut->SwapChain = NULL;
+			sessionOut->SwapChain = nullptr;
 
 			*luidOut = *((int64_t*)luid.Reserved);
 			return sessionOut;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	void XenkoOvrDestroySession(XenkoOvrSession* session)
