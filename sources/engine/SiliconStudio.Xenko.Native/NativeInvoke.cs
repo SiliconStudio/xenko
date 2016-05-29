@@ -101,7 +101,12 @@ namespace SiliconStudio.Xenko.Native
             [SuppressUnmanagedCodeSecurity]
 #endif
             [DllImport(Library, EntryPoint = "XenkoOvrPrepareRender", CallingConvention = CallingConvention.Cdecl)]
-            internal static extern unsafe void PrepareRender(IntPtr session, float near, float far, float* projLeft, float* projRight);
+            internal static extern unsafe void PrepareRender(IntPtr session, 
+                float near, float far, 
+                float* projLeft, float* projRight,
+                float* positionLeft, float* positionRight,
+                float* rotationLeft, float* rotationRight
+                );
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
             [SuppressUnmanagedCodeSecurity]

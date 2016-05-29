@@ -387,7 +387,11 @@ extern "C" {
 		return index;
 	}
 
-	void XenkoOvrPrepareRender(XenkoOvrSession* session, float near, float far, float* projLeft, float* projRight)
+	void XenkoOvrPrepareRender(XenkoOvrSession* session, 
+		float near, float far, 
+		float* projLeft, float* projRight, 
+		float* positionLeft, float* positionRight, 
+		float* rotationLeft, float* rotationRight)
 	{
 		session->EyeRenderDesc[0] = ovr_GetRenderDescFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0]);
 		session->EyeRenderDesc[1] = ovr_GetRenderDescFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1]);
@@ -395,20 +399,25 @@ extern "C" {
 		session->HmdToEyeViewOffset[1] = session->EyeRenderDesc[1].HmdToEyeOffset;
 
 		session->Layer.SensorSampleTime = ovr_GetPredictedDisplayTimeFunc(session->Session, 0);
-		ovrTrackingState hmdState = ovr_GetTrackingStateFunc(session->Session, session->Layer.SensorSampleTime, ovrTrue);
+		auto hmdState = ovr_GetTrackingStateFunc(session->Session, session->Layer.SensorSampleTime, ovrTrue);
 		ovr_CalcEyePosesFunc(hmdState.HeadPose.ThePose, session->HmdToEyeViewOffset, session->Layer.RenderPose);
 
 		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], near, far, 0);
 		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], near, far, 0);
 
 		memcpy(projLeft, &leftProj, sizeof(float) * 16);
+		memcpy(positionLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
+		memcpy(rotationLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
+		
 		memcpy(projRight, &rightProj, sizeof(float) * 16);
+		memcpy(positionRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
+		memcpy(rotationRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
 	bool XenkoOvrCommitFrame(XenkoOvrSession* session)
 	{
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		ovrLayerHeader* layers = &session->Layer.Header;
+		auto layers = &session->Layer.Header;
 		if(OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
 		{
 			return true;

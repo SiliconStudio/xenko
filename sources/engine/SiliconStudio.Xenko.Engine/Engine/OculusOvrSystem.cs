@@ -134,8 +134,10 @@ namespace SiliconStudio.Xenko.Engine
 
                 cameraLeft = compositor.Cameras.GetCamera(0);
                 cameraLeft.UseCustomProjectionMatrix = true;
+                cameraLeft.UseCustomViewMatrix = true;
                 cameraRight = compositor.Cameras.GetCamera(1);
                 cameraRight.UseCustomProjectionMatrix = true;
+                cameraRight.UseCustomViewMatrix = true;
 
                 currentCompositor = compositor;
             }
@@ -146,10 +148,26 @@ namespace SiliconStudio.Xenko.Engine
         internal unsafe void DrawEyes()
         {
             Matrix leftProj, rightProj;
-            NativeInvoke.OculusOvr.PrepareRender(sessionPtr, cameraLeft.NearClipPlane, cameraLeft.FarClipPlane, (float*)&leftProj, (float*)&rightProj);
+            Vector3 posLeft, posRight;
+            Quaternion rotLeft, rotRight;
+            NativeInvoke.OculusOvr.PrepareRender(sessionPtr, cameraLeft.NearClipPlane, cameraLeft.FarClipPlane, 
+                (float*)&leftProj, (float*)&rightProj, (float*)&posLeft, (float*)&posRight, (float*)&rotLeft, (float*)&rotRight);
 
             cameraLeft.ProjectionMatrix = leftProj;
+            var posL = cameraLeft.Entity.Transform.Position + Vector3.Transform(posLeft, cameraLeft.Entity.Transform.Rotation);
+            var rotL = Matrix.RotationQuaternion(cameraLeft.Entity.Transform.Rotation)*Matrix.RotationQuaternion(rotLeft);
+            var finalUpL =  Vector3.TransformCoordinate(new Vector3(0.0f, 1.0f, 0.0f), rotL);
+            var finalForwardL = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotL);
+            var viewL = Matrix.LookAtRH(posL, posL + finalForwardL, finalUpL);
+            cameraLeft.ViewMatrix = viewL;
+
             cameraRight.ProjectionMatrix = rightProj;
+            var posR = cameraRight.Entity.Transform.Position + Vector3.Transform(posRight, cameraRight.Entity.Transform.Rotation);
+            var rotR = Matrix.RotationQuaternion(cameraRight.Entity.Transform.Rotation) * Matrix.RotationQuaternion(rotRight);
+            var finalUpR = Vector3.TransformCoordinate(new Vector3(0.0f, 1.0f, 0.0f), rotR);
+            var finalForwardR = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotR);
+            var viewR = Matrix.LookAtRH(posR, posR + finalForwardR, finalUpR);
+            cameraRight.ViewMatrix = viewR;
 
             var index = NativeInvoke.OculusOvr.GetCurrentTargetIndex(sessionPtr);
 
