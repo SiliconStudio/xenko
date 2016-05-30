@@ -1,0 +1,146 @@
+using System;
+using System.Runtime.InteropServices;
+using System.Security;
+using SiliconStudio.Core;
+
+namespace SiliconStudio.Xenko.Native
+{
+    public class Celt : IDisposable
+    {
+        private IntPtr celtPtr;
+
+        static Celt()
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
+#else
+            NativeLibrary.PreloadLibrary(Library + ".so");
+#endif
+        }
+
+        /// <summary>
+        /// Initialize the Celt encoder/decoder
+        /// </summary>
+        /// <param name="sampleRate">Required sample rate</param>
+        /// <param name="bufferSize">Required buffer size</param>
+        /// <param name="channels">Required channels</param>
+        /// <param name="decoderOnly">If we desire only to decode set this to true</param>
+        public Celt(int sampleRate, int bufferSize, int channels, bool decoderOnly)
+        {
+            celtPtr = XenkoCeltCreate(sampleRate, bufferSize, channels, decoderOnly);
+            if (celtPtr == IntPtr.Zero)
+            {
+                throw new Exception("Failed to create an instance of the celt encoder/decoder.");
+            }
+        }
+
+        /// <summary>
+        /// Dispose the Celt encoder/decoder
+        /// Do not call Encode or Decode after disposal!
+        /// </summary>
+        public void Dispose()
+        {
+            if (celtPtr != IntPtr.Zero)
+            {
+                XenkoCeltDestroy(celtPtr);
+                celtPtr = IntPtr.Zero;
+            }
+        }
+
+        /// <summary>
+        /// Decodes compressed celt data into PCM 16 bit shorts
+        /// </summary>
+        /// <param name="inputBuffer">The input buffer</param>
+        /// <param name="outputSamples">The output buffer, the size of frames should be the same amount that is contained in the input buffer</param>
+        /// <returns></returns>
+        public unsafe int Decode(byte[] inputBuffer, short[] outputSamples)
+        {
+            fixed (short* samplesPtr = outputSamples)
+            fixed (byte* bufferPtr = inputBuffer)
+            {
+                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBuffer.Length, samplesPtr, outputSamples.Length);
+            }
+        }
+
+        /// <summary>
+        /// Encode PCM audio into celt compressed format
+        /// </summary>
+        /// <param name="audioSamples">A buffer containing interleaved channels (as from constructor channels) and samples (can be any number of samples)</param>
+        /// <param name="outputBuffer">An array of bytes, the size of the array will be the max possible size of the compressed packet</param>
+        /// <returns></returns>
+        public unsafe int Encode(short[] audioSamples, byte[] outputBuffer)
+        {
+            fixed (short* samplesPtr = audioSamples)
+            fixed (byte* bufferPtr = outputBuffer)
+            {
+                return XenkoCeltEncodeShort(celtPtr, samplesPtr, audioSamples.Length, bufferPtr, outputBuffer.Length);
+            }
+        }
+
+        /// <summary>
+        /// Decodes compressed celt data into PCM 32 bit floats
+        /// </summary>
+        /// <param name="inputBuffer">The input buffer</param>
+        /// <param name="outputSamples">The output buffer, the size of frames should be the same amount that is contained in the input buffer</param>
+        /// <returns></returns>
+        public unsafe int Decode(byte[] inputBuffer, float[] outputSamples)
+        {
+            fixed (float* samplesPtr = outputSamples)
+            fixed (byte* bufferPtr = inputBuffer)
+            {
+                return XenkoCeltDecodeFloat(celtPtr, bufferPtr, inputBuffer.Length, samplesPtr, outputSamples.Length);
+            }
+        }
+
+        /// <summary>
+        /// Encode PCM audio into celt compressed format
+        /// </summary>
+        /// <param name="audioSamples">A buffer containing interleaved channels (as from constructor channels) and samples (can be any number of samples)</param>
+        /// <param name="outputBuffer">An array of bytes, the size of the array will be the max possible size of the compressed packet</param>
+        /// <returns></returns>
+        public unsafe int Encode(float[] audioSamples, byte[] outputBuffer)
+        {
+            fixed (float* samplesPtr = audioSamples)
+            fixed (byte* bufferPtr = outputBuffer)
+            {
+                return XenkoCeltEncodeFloat(celtPtr, samplesPtr, audioSamples.Length, bufferPtr, outputBuffer.Length);
+            }
+        }
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr XenkoCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void XenkoCeltDestroy(IntPtr celt);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern unsafe int XenkoCeltEncodeFloat(IntPtr celt, float* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern unsafe int XenkoCeltDecodeFloat(IntPtr celt, byte* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern unsafe int XenkoCeltEncodeShort(IntPtr celt, short* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern unsafe int XenkoCeltDecodeShort(IntPtr celt, byte* inputBuffer, int inputBufferSize, short* outputBuffer, int numberOfOutputSamples);
+    }
+}

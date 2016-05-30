@@ -1,4 +1,9 @@
 LIBRARY libxenkonative.dll
 EXPORTS
 UpdateBufferValuesFromElementInfo
-InitCeltDecoder
+XenkoCeltCreate
+XenkoCeltDestroy
+XenkoCeltEncodeFloat
+XenkoCeltDecodeFloat
+XenkoCeltEncodeShort
+XenkoCeltDecodeShort

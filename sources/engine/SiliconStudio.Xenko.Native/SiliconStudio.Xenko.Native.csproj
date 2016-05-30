@@ -29,6 +29,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Celt.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

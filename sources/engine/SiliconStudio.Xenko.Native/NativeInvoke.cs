@@ -29,6 +29,6 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+        internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);       
     }
 }
