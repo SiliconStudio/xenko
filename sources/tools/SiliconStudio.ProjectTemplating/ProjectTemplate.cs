@@ -184,10 +184,29 @@ namespace SiliconStudio.ProjectTemplating
                         if (fileItem.IsTemplate)
                         {
                             var content = File.ReadAllText(sourceFilePath);
-                            // Replace the default platform with the selected one.
-                            expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)] = fileItem.CurrentPlatform;
+                            // Replace the default platform with the selected one from the ProjectItemTemplate.
+                            object oldPlatform = null;
+                            if (fileItem.CurrentPlatform != null)
+                            {
+                                if (expandoOptionsAsDictionary.ContainsKey(nameof(fileItem.CurrentPlatform)))
+                                {
+                                    oldPlatform = expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)];
+                                }
+                                expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)] = fileItem.CurrentPlatform;
+                            }
                             var host = new ProjectTemplatingHost(log, sourceFilePath, templateDirectory.FullName, expandoOptions, Assemblies.Select(assembly => assembly.FullPath));
                             var newContent = engine.ProcessTemplate(content, host);
+                            if (fileItem.CurrentPlatform != null)
+                            {
+                                if (oldPlatform != null)
+                                {
+                                    expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)] = oldPlatform;
+                                }
+                                else
+                                {
+                                    expandoOptionsAsDictionary.Remove(nameof(fileItem.CurrentPlatform));
+                                }
+                            }
                             if (newContent != null)
                             {
                                 fileGenerated = true;

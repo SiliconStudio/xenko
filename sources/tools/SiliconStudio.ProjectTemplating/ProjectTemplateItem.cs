@@ -43,8 +43,8 @@ namespace SiliconStudio.ProjectTemplating
         /// </summary>
         /// <value>The name of the current platform.</value>
         [DataMember(40)]
-        [DefaultValue(PlatformType.Shared)]
-        public PlatformType CurrentPlatform { get; set; }
+        [DefaultValue(null)]
+        public string CurrentPlatform { get; set; }
 
         public override string ToString()
         {
