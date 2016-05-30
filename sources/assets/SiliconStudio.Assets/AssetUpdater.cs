@@ -13,6 +13,8 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// The class in charge of updating the assets inter-dependent
     /// </summary>
+    // TODO: Remove this class - not used by current archetype system, not compatible with quantum
+    [Obsolete("This class will be removed in a future release")]
     public class AssetUpdater
     {
         private AssetDependencyManager dependencyManager;

@@ -78,10 +78,6 @@
     <Compile Include="AssetHash.cs" />
     <Compile Include="AssetImport.cs" />
     <Compile Include="AssetImporterParameters.cs" />
-    <Compile Include="AssetImportExtensions.cs" />
-    <Compile Include="AssetImportSessionEvent.cs" />
-    <Compile Include="AssetImportSessionStepType.cs" />
-    <Compile Include="AssetImportSessionEventType.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />
@@ -90,9 +86,6 @@
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
-    <Compile Include="AssetToImportMergeGroup.cs" />
-    <Compile Include="AssetToImportMerge.cs" />
-    <Compile Include="AssetToImportByImporter.cs" />
     <Compile Include="AssetUpdater.cs" />
     <Compile Include="AssetUpgraderAttribute.cs" />
     <Compile Include="AssetUpgraderBase.cs" />
@@ -102,8 +95,6 @@
     <Compile Include="Compiler\AssetBuildStep.cs" />
     <Compile Include="Compiler\AssetDependenciesCompiler.cs" />
     <Compile Include="AssetImporterBase.cs" />
-    <Compile Include="AssetToImport.cs" />
-    <Compile Include="AssetImportSession.cs" />
     <Compile Include="Compiler\ICompilerRegistry.cs" />
     <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
@@ -138,7 +129,6 @@
     <Compile Include="IAssetFactory.cs" />
     <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IFileSynchronizable.cs" />
-    <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="IO\FileExtensionCollection.cs" />
     <Compile Include="NugetLogEventArgs.cs" />

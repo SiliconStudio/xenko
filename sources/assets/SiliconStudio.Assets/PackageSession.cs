@@ -865,7 +865,7 @@ namespace SiliconStudio.Assets
 
         private static bool FilterAssetWithCopyLocal(AssetItem x)
         {
-            return x.Asset is AssetImport && ((AssetImport)x.Asset).Source != null && ((AssetImport)x.Asset).SourceKeepSideBySide;
+            return (x.Asset as AssetImport)?.Source != null && ((AssetImport)x.Asset).SourceKeepSideBySide;
         }
 
         /// <summary>

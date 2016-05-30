@@ -21,5 +21,10 @@ namespace SiliconStudio.Assets
         /// Gets whether the asset should be updated when the related source file changes.
         /// </summary>
         public bool UpdateAssetIfChanged { get; }
+
+        /// <summary>
+        /// Gets or sets whether this source file is optional for the compilation of the asset.
+        /// </summary>
+        public bool Optional { get; set; }
     }
 }
