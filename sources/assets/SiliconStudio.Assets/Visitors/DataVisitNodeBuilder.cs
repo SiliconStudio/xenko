@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Reflection;
 
@@ -14,8 +13,6 @@ namespace SiliconStudio.Assets.Visitors
     /// </summary>
     public sealed class DataVisitNodeBuilder : AssetVisitorBase
     {
-        private readonly object rootInstance;
-
         private readonly Stack<DataVisitNode> stackItems = new Stack<DataVisitNode>();
 
         /// <summary>
@@ -29,11 +26,11 @@ namespace SiliconStudio.Assets.Visitors
         {
             CustomVisitors.AddRange(AssetRegistry.GetDataVisitNodeBuilders());
 
-            if (rootInstance == null) throw new ArgumentNullException("rootInstance");
-            this.rootInstance = rootInstance;
+            if (rootInstance == null) throw new ArgumentNullException(nameof(rootInstance));
+            RootInstance = rootInstance;
             var objectDescriptor = typeDescriptorFactory.Find(rootInstance.GetType()) as ObjectDescriptor;
             if (objectDescriptor == null)
-                throw new ArgumentException("Expecting an object", "rootInstance");
+                throw new ArgumentException(@"Expecting an object", nameof(rootInstance));
             stackItems.Push(new DataVisitObject(rootInstance, objectDescriptor));
         }
 
@@ -43,24 +40,12 @@ namespace SiliconStudio.Assets.Visitors
         /// <value>
         /// The current <see cref="DataVisitNode"/>.
         /// </value>
-        public DataVisitNode CurrentNode
-        {
-            get
-            {
-                return stackItems.Peek();
-            }
-        }
+        public DataVisitNode CurrentNode => stackItems.Peek();
 
         /// <summary>
         /// Gets the root object visited by this instance.
         /// </summary>
-        public object RootInstance
-        {
-            get
-            {
-                return rootInstance;
-            }
-        }
+        public object RootInstance { get; }
 
         /// <summary>
         /// Creates <see cref="DataVisitNode"/> from the specified instance.
@@ -86,7 +71,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <returns>Returns the root node associated with the instance being visited.</returns>
         public DataVisitObject Run()
         {
-            Visit(rootInstance);
+            Visit(RootInstance);
             return (DataVisitObject)stackItems.Pop();
         }
 
@@ -149,7 +134,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <exception cref="System.ArgumentNullException">member</exception>
         private static void AddMember(DataVisitNode thisObject, DataVisitMember member)
         {
-            if (member == null) throw new ArgumentNullException("member");
+            if (member == null) throw new ArgumentNullException(nameof(member));
             if (thisObject.Members == null)
                 thisObject.Members = new List<DataVisitNode>();
 
@@ -165,7 +150,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <exception cref="System.ArgumentNullException">item</exception>
         private static void AddItem(DataVisitNode thisObject, DataVisitNode item)
         {
-            if (item == null) throw new ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException(nameof(item));
             if (thisObject.Items == null)
                 thisObject.Items = new List<DataVisitNode>();
 
@@ -175,14 +160,11 @@ namespace SiliconStudio.Assets.Visitors
 
         private static bool AcceptMember(IMemberDescriptor member)
         {
-            // Skip some properties that are not using when visiting
-            if ((typeof(AssetImport).IsAssignableFrom(member.DeclaringType) && (member.Name == nameof(AssetImport.ImporterId) || member.Name == SourceHashesHelper.MemberName))
-                || typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BaseProperty || member.Name == Asset.BasePartsProperty || member.Name == "Id"))
-            {
-                return false;
-            }
+            if (!typeof(Asset).IsAssignableFrom(member.DeclaringType))
+                return true;
 
-            return true;
+            // Skip some properties that are not using when visiting
+            return member.Name != SourceHashesHelper.MemberName && member.Name != Asset.BaseProperty && member.Name != Asset.BasePartsProperty && member.Name != "Id";
         }
     }
 }

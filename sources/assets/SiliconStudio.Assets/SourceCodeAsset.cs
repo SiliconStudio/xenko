@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets
     /// Class SourceCodeAsset.
     /// </summary>
     [DataContract("SourceCodeAsset")]
-    public abstract class SourceCodeAsset : AssetImport // TODO: temporary inherits from AssetImport
+    public abstract class SourceCodeAsset : Asset
     {
         private string text;
 

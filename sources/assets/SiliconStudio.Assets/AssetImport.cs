@@ -24,30 +24,5 @@ namespace SiliconStudio.Assets
         [DefaultValue(null)]
         [SourceFileMember(true)]
         public UFile Source { get; set; } = new UFile("");
-
-        /// <summary>
-        /// Gets or sets id of the importer used.
-        /// </summary>
-        /// <value>The id of the importer.</value>
-        [DataMember(-40)]
-        [DefaultValue(null)]
-        [Display(Browsable = false)]
-        [Obsolete("This property will be removed soon")]
-        public Guid? ImporterId { get; set; } = null;
-        
-        internal AssetImport GetRootBase()
-        {
-            if (Base?.Asset is AssetImport && Base.Id == Guid.Empty)
-            {
-                return (AssetImport)Base.Asset;
-            }
-            return null;
-        }
-
-        virtual internal void SetAsRootImport()
-        {
-            Id = Guid.Empty;
-            Source = null;
-        }
     }
 }
