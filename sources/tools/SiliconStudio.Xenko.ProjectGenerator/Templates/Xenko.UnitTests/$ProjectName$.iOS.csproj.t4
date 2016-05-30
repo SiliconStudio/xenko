@@ -1,6 +1,4 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
-<# Properties.CurrentPlatform = SiliconStudio.Core.PlatformType.iOS;
-   Properties.CurrentPlatformName = "iOS"; #>
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -17,7 +15,7 @@
     <RootNamespace><#= Properties.Namespace #></RootNamespace>
     <AssemblyName><#= ProjectName.Replace(".", "") #></AssemblyName>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
+    <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
     <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->

@@ -184,6 +184,8 @@ namespace SiliconStudio.ProjectTemplating
                         if (fileItem.IsTemplate)
                         {
                             var content = File.ReadAllText(sourceFilePath);
+                            // Replace the default platform with the selected one.
+                            expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)] = fileItem.CurrentPlatform;
                             var host = new ProjectTemplatingHost(log, sourceFilePath, templateDirectory.FullName, expandoOptions, Assemblies.Select(assembly => assembly.FullPath));
                             var newContent = engine.ProcessTemplate(content, host);
                             if (newContent != null)

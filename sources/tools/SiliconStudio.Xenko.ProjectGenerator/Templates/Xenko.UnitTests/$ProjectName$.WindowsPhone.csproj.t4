@@ -1,6 +1,4 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
-<# Properties.CurrentPlatform = SiliconStudio.Core.PlatformType.WindowsPhone;
-   Properties.CurrentPlatformName = "WindowsPhone"; #>
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -23,7 +21,7 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
+    <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
 	<SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -51,9 +49,9 @@
     <AppxManifest Label="Xenko.DoNotSync" Include="PackageWindowsPhone.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Label="Xenko.DoNotSync" Include="Assets\WindowsPhone\Logo.scale-100.png" />
-    <Content Label="Xenko.DoNotSync" Include="Assets\WindowsPhone\SmallLogo.scale-240.png" />
-    <Content Label="Xenko.DoNotSync" Include="Assets\WindowsPhone\SplashScreen.scale-100.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\WindowsPhone\Logo.scale-100.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\WindowsPhone\SmallLogo.scale-240.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\WindowsPhone\SplashScreen.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Label="Xenko.DoNotSync" Include="App.xaml">

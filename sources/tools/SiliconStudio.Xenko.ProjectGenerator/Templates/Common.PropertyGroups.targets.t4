@@ -3,6 +3,9 @@
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)<#= Properties.Package.Meta.Name #>.xkpkg</SiliconStudioCurrentPackagePath>
     <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
     <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
+    <IntermediateOutputPath>obj\$SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
+    <IntermediateOutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(IntermediateOutputPath)-$(SiliconStudioBuildDirExtension)</IntermediateOutputPath>
+    <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
 <#
 var currentPlatform = (SiliconStudio.Core.PlatformType)Properties.CurrentPlatform;
@@ -41,7 +44,6 @@ foreach(var platform in Properties.Platforms)
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;<#= string.Join(";", platform.DefineConstants) #></DefineConstants>
 <#  } #>
-    <IntermediateOutputPath>obj\<#= platform.Type #>\<#= config.Name #>\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
 <#  foreach(var configLine in platform.GetConfigurationProperties(platformPart, config.Name)) { #>

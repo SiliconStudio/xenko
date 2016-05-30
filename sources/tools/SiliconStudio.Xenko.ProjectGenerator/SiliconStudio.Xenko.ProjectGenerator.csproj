@@ -131,11 +131,11 @@
     <Folder Include="Templates\Xenko.GraphicsRegressionTests\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoSplashScreen620x300.png" />
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoSplashScreen480x800.png" />
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoIcon106x106.png" />
-    <Content Include="Templates\Xenko.UnitTests\Assets\XenkoIcon150x150.png" />
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoIcon54x54.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoSplashScreen620x300.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoSplashScreen480x800.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoIcon106x106.png" />
+    <Content Include="Templates\Xenko.UnitTests\Resources\XenkoIcon150x150.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoIcon54x54.png" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

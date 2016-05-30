@@ -1,6 +1,4 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
-<# Properties.CurrentPlatform = SiliconStudio.Core.PlatformType.WindowsStore;
-   Properties.CurrentPlatformName = "WindowsStore"; #>
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -21,8 +19,7 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-	<SiliconStudioPlatform><#= Properties.CurrentPlatform #></SiliconStudioPlatform>
-    <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
+    <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
 	<SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -50,9 +47,9 @@
     <AppxManifest Label="Xenko.DoNotSync" Include="PackageWindowsStore.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Label="Xenko.DoNotSync" Include="Assets\WindowsStore\Logo.scale-100.png" />
-    <Content Label="Xenko.DoNotSync" Include="Assets\WindowsStore\SmallLogo.scale-180.png" />
-    <Content Label="Xenko.DoNotSync" Include="Assets\WindowsStore\SplashScreen.scale-100.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\WindowsStore\Logo.scale-100.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\WindowsStore\SmallLogo.scale-180.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\WindowsStore\SplashScreen.scale-100.png" />
 
     <None Label="Xenko.DoNotSync" Include="<#= ProjectName #>.WindowsStore_TemporaryKey.pfx" />
 
