@@ -59,7 +59,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         {
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
+
             var inputAttributeNames = new Dictionary<int, string>();
+            var resourceBindings = new Dictionary<string, int>();
 
             GlslShaderPlatform shaderPlatform;
             int shaderVersion;
@@ -82,7 +84,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     throw new ArgumentOutOfRangeException("effectParameters.Platform");
             }
 
-            var shader = Compile(shaderSource, entryPoint, stage, shaderPlatform, shaderVersion, shaderBytecodeResult, reflection, inputAttributeNames, sourceFilename);
+            var shader = Compile(shaderSource, entryPoint, stage, shaderPlatform, shaderVersion, shaderBytecodeResult, reflection, inputAttributeNames, resourceBindings, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
@@ -99,7 +101,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, GlslShaderPlatform.OpenGLES, 300, shaderBytecodeResult, reflection, inputAttributeNames, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, GlslShaderPlatform.OpenGLES, 300, shaderBytecodeResult, reflection, inputAttributeNames, resourceBindings, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -160,6 +162,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 var shaderBytecodes = new ShaderInputBytecode
                 {
                     InputAttributeNames = inputAttributeNames,
+                    ResourceBindings = resourceBindings,
                     Data = File.ReadAllBytes(outputFileName),
                 };
 
@@ -188,7 +191,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, GlslShaderPlatform shaderPlatform, int shaderVersion, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, IDictionary<int, string> inputAttributeNames, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, GlslShaderPlatform shaderPlatform, int shaderVersion, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, IDictionary<int, string> inputAttributeNames, Dictionary<string, int> resourceBindings, string sourceFilename = null)
         {
             if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
@@ -315,7 +318,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                     var bindings = resourceGroups.SelectMany(resourceGroup => reflection.ResourceBindings
                         .Where(x => x.ResourceGroup == resourceGroup || (x.ResourceGroup == null && resourceGroup == "Globals"))
-                        .GroupBy(x => new { RawName = x.RawName, Class = x.Class, Type = x.Type, SlotCount = x.SlotCount, LogicalGroup = x.LogicalGroup })
+                        .GroupBy(x => new { KeyName = x.KeyInfo.KeyName, RawName = x.RawName, Class = x.Class, Type = x.Type, SlotCount = x.SlotCount, LogicalGroup = x.LogicalGroup })
                         .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1))
                         .ToList();
 
@@ -334,6 +337,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             //layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("set", 0));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
+
+                            resourceBindings.Add(bindings[layoutBindingIndex].Key.KeyName, layoutBindingIndex);
                         }
                     }
 
@@ -361,6 +366,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                             //layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("set", 0));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
+
+                            resourceBindings.Add(bindings[layoutBindingIndex].Key.KeyName, layoutBindingIndex);
                         }
                     }
                 }

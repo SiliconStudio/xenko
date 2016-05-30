@@ -305,11 +305,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal struct DescriptorSetInfo
         {
-            public int Index;
-            public KeyValuePair<int, int>[] Bindings;
+            public int SourceSet;
+            public int SourceBinding;
+            public int DestinationBinding;
         }
 
-        internal DescriptorSetInfo[] DescriptorSetMapping;
+        internal List<DescriptorSetInfo> DescriptorBindingMapping;
 
         private unsafe void CreatePipelineLayout(PipelineStateDescription pipelineStateDescription)
         {
@@ -318,41 +319,51 @@ namespace SiliconStudio.Xenko.Graphics
             ResourceGroupCount = resourceGroups.Count;
 
             var layouts = pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.Layouts;
-            DescriptorSetMapping = new DescriptorSetInfo[layouts.Count];
-            for (int i = 0; i < DescriptorSetMapping.Length; i++)
-            {
-                DescriptorSetMapping[i].Index = -1;
-            }
+            
+            // Get binding indices used by the shader
+            var destinationBindings = pipelineStateDescription.EffectBytecode.Stages
+                .SelectMany(x => BinarySerialization.Read<ShaderInputBytecode>(x.Data).ResourceBindings)
+                .GroupBy(x => x.Key, x => x.Value)
+                .ToDictionary(x => x.Key, x => x.First());
 
+            var maxBindingIndex = destinationBindings.Max(x => x.Value);
+            var destinationEntries = new DescriptorSetLayoutBuilder.Entry[maxBindingIndex + 1];
+
+            DescriptorBindingMapping = new List<DescriptorSetInfo>();
             NativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[1];
-            var layoutEntries = new List<DescriptorSetLayoutBuilder.Entry>();
+
             for (int i = 0; i < resourceGroups.Count; i++)
             {
                 var resourceGroupName = resourceGroups[i] == "Globals" ? pipelineStateDescription.RootSignature.EffectDescriptorSetReflection.DefaultSetSlot : resourceGroups[i];
                 var layoutIndex = resourceGroups[i] == null ? 0 : layouts.FindIndex(x => x.Name == resourceGroupName);
-                if (layoutIndex != -1)
+
+                // Check if the resource group is used by the shader
+                if (layoutIndex == -1)
+                    continue;
+
+                var sourceEntries = layouts[layoutIndex].Layout.Entries;
+
+                for (int sourceBinding = 0; sourceBinding < sourceEntries.Count; sourceBinding++)
                 {
-                    var usedLayoutEntries = layouts[layoutIndex].Layout.Entries
-                        .Select((x, binding) => new { Binding = binding, IsUsed = x.IsUsed })
-                        .Where(x => x.IsUsed).Select(x => x.Binding).ToArray();
+                    var sourceEntry = sourceEntries[sourceBinding];
+                    if (!sourceEntry.IsUsed)
+                        continue;
 
-                    var bindingOffset = layoutEntries.Count;
-                    DescriptorSetMapping[layoutIndex] = new DescriptorSetInfo
+                    int destinationBinding;
+                    if (destinationBindings.TryGetValue(sourceEntry.Key.Name, out destinationBinding))
                     {
-                        Index = 0,
-                        Bindings = new KeyValuePair<int, int>[usedLayoutEntries.Length]
-                    };
-
-                    for (int j = 0; j < usedLayoutEntries.Length; j++)
-                    {
-                        DescriptorSetMapping[layoutIndex].Bindings[j] = new KeyValuePair<int, int>(usedLayoutEntries[j], bindingOffset + usedLayoutEntries[j]);
+                        destinationEntries[destinationBinding] = sourceEntry;
+                        DescriptorBindingMapping.Add(new DescriptorSetInfo
+                        {
+                            SourceSet = layoutIndex,
+                            SourceBinding = sourceBinding,
+                            DestinationBinding = destinationBinding
+                        });
                     }
-
-                    layoutEntries.AddRange(layouts[layoutIndex].Layout.Entries);
                 }
             }
 
-            NativeDescriptorSetLayouts[0] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, layoutEntries);
+            NativeDescriptorSetLayouts[0] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, destinationEntries);
 
             // Create pipeline layout
             var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo

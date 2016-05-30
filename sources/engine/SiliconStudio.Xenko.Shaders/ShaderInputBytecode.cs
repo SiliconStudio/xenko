@@ -10,6 +10,9 @@ namespace SiliconStudio.Xenko.Shaders
     public struct ShaderInputBytecode
     {
         public Dictionary<int, string> InputAttributeNames;
+
+        public Dictionary<string, int> ResourceBindings;
+
         public byte[] Data;
     }
 }

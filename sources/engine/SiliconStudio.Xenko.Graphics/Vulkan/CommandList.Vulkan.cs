@@ -249,30 +249,19 @@ namespace SiliconStudio.Xenko.Graphics
             
             copies.Clear(true);
 
-            for (int i = 0; i < boundDescriptorSets.Count; i++)
+            foreach (var mapping in activePipeline.DescriptorBindingMapping)
             {
-                var setInfo = activePipeline.DescriptorSetMapping[i];
-
-                if (setInfo.Index >= 0)
+                copies.Add(new CopyDescriptorSet
                 {
-                    for (int j = 0; j < setInfo.Bindings.Length; j++)
-                    {
-                        var sourceBinding = setInfo.Bindings[j].Key;
-                        var destinationBinding = setInfo.Bindings[j].Value;
-
-                        copies.Add(new CopyDescriptorSet
-                        {
-                            StructureType = StructureType.CopyDescriptorSet,
-                            SourceSet = boundDescriptorSets[i],
-                            SourceBinding = (uint)sourceBinding,
-                            SourceArrayElement = 0,
-                            DestinationSet = localDescriptorSet,
-                            DestinationBinding = (uint)destinationBinding,
-                            DestinationArrayElement = 0,
-                            DescriptorCount = 1
-                        });
-                    }
-                }
+                    StructureType = StructureType.CopyDescriptorSet,
+                    SourceSet = boundDescriptorSets[mapping.SourceSet],
+                    SourceBinding = (uint)mapping.SourceBinding,
+                    SourceArrayElement = 0,
+                    DestinationSet = localDescriptorSet,
+                    DestinationBinding = (uint)mapping.DestinationBinding,
+                    DestinationArrayElement = 0,
+                    DescriptorCount = 1
+                });
             }
 
             GraphicsDevice.NativeDevice.UpdateDescriptorSets(0, null, (uint)copies.Count, copies.Count > 0 ? (CopyDescriptorSet*)Interop.Fixed(copies.Items) : null);
