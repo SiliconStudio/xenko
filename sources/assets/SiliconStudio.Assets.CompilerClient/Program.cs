@@ -33,6 +33,12 @@ namespace SiliconStudio.Assets.CompilerClient
             var installDir = DirectoryHelper.GetInstallationDirectory("Xenko");
             Environment.SetEnvironmentVariable("SiliconStudioXenkoDir", installDir);
 
+            // Use shadow caching only in dev environment
+            if (DirectoryHelper.IsRootDevDirectory(installDir))
+            {
+                newArgs.Insert(0, "/shadow");
+            }
+
             newArgs.AddRange(args);
             var result = serverApp.Run(newArgs.ToArray());
             return result;
