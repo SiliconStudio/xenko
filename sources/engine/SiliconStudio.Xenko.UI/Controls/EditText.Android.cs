@@ -1,8 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using SiliconStudio.Xenko.Games;
 #if SILICONSTUDIO_PLATFORM_ANDROID
+using System;
 using Android.Content;
 using Android.Text;
 using Android.Views;
@@ -10,6 +9,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using Android.Text.Method;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Games;
 using Exception = System.Exception;
 
 namespace SiliconStudio.Xenko.UI.Controls

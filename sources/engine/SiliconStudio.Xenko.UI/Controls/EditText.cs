@@ -107,12 +107,30 @@ namespace SiliconStudio.Xenko.UI.Controls
             InitializeStaticImpl();
         }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+        /// <summary>
+        /// Create a new instance of <see cref="EditText"/>.
+        /// </summary>
+        public EditText()
+        {
+            InitializeImpl();
+
+            CanBeHitByUser = true;
+            IsSelectionActive = false;
+            Padding = new Thickness(8, 4, 0, 8, 8, 0);
+            DrawLayerNumber += 4; // ( 1: image, 2: selection, 3: Text, 4:Cursor) 
+            CaretWidth = 1f;
+            CaretFrequency = 1f;
+        }
+#endif
+
         /// <summary>
         /// Create a new instance of <see cref="EditText"/>.
         /// </summary>
         /// <param name="services">The game services</param>
         /// <exception cref="ArgumentNullException"><paramref name="services"/> is null</exception>
         /// <exception cref="ArgumentException"><paramref name="services"/> does not contain an <see cref="IGame"/> service.</exception>
+        // FIXME: remove this constructor (see XK-3307)
         public EditText(IServiceRegistry services)
         {
             if (services == null)
@@ -126,7 +144,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             CanBeHitByUser = true;
             IsSelectionActive = false;
-            Padding = new Thickness(8,4,0,8,8,0);
+            Padding = new Thickness(8, 4, 0, 8, 8, 0);
             DrawLayerNumber += 4; // ( 1: image, 2: selection, 3: Text, 4:Cursor) 
             CaretWidth = 1f;
             CaretFrequency = 1f;
