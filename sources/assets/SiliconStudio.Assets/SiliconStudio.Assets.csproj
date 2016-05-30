@@ -67,6 +67,7 @@
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
+    <Compile Include="Tracking\SourceFilesCollector.cs" />
     <Compile Include="Tracking\SourceHashesHelper.cs" />
     <Compile Include="Tracking\TrackedAsset.cs" />
     <Compile Include="Tracking\SourceFileChangedData.cs" />
@@ -141,7 +142,6 @@
     <Compile Include="PackageExtensions.cs" />
     <Compile Include="PackageLoadingAssetFile.cs" />
     <Compile Include="PackageReferenceBase.cs" />
-    <Compile Include="PackageSaveSourceFileOperations.cs" />
     <Compile Include="PackageSessionHelper.cs" />
     <Compile Include="PackageSessionHelper.Solution.cs" />
     <Compile Include="PackageLoadParameters.cs" />

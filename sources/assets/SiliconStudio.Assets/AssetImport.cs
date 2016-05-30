@@ -26,17 +26,6 @@ namespace SiliconStudio.Assets
         public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
-        /// Gets or sets if source file of this asset should be copied alongside the asset file when saving.
-        /// </summary>
-        /// <userdoc>
-        /// When saving, source file will be copied/moved alongside the asset file. On next source update, make sure to save or export to the new location when this option has just been enabled.
-        /// </userdoc>
-        [DataMember(-46)]
-        [DefaultValue(false)]
-        [Display("Keep Source Side by Side")]
-        public bool SourceKeepSideBySide { get; set; } = false;
-
-        /// <summary>
         /// Gets or sets id of the importer used.
         /// </summary>
         /// <value>The id of the importer.</value>

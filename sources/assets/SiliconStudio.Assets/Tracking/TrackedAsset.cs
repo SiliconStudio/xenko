@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks.Dataflow;
-using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Tracking
 {
@@ -95,49 +93,6 @@ namespace SiliconStudio.Assets.Tracking
                 {
                     tracker.UnTrackAssetImportInput(AssetId, sourceFile);
                 }
-            }
-        }
-
-        private class SourceFilesCollector : AssetVisitorBase
-        {
-            private Dictionary<UFile, bool> sourceFileMembers;
-
-            public Dictionary<UFile, bool> GetSourceFiles(Asset asset)
-            {
-                sourceFileMembers = new Dictionary<UFile, bool>();
-                Visit(asset);
-                return sourceFileMembers;
-            }
-
-            public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
-            {
-                // Don't visit base parts as they are visited at the top level.
-                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BasePartsProperty))
-                {
-                    return;
-                }
-
-                if (member.Type == typeof(UFile) && value != null)
-                {
-                    var file = (UFile)value;
-                    if (!string.IsNullOrWhiteSpace(file.ToString()))
-                    {
-                        var attribute = member.GetCustomAttributes<SourceFileMemberAttribute>(true).SingleOrDefault();
-                        if (attribute != null)
-                        {
-                            if (!sourceFileMembers.ContainsKey(file))
-                            {
-                                sourceFileMembers.Add(file, attribute.UpdateAssetIfChanged);
-                            }
-                            else if (attribute.UpdateAssetIfChanged)
-                            {
-                                // If the file has already been collected, just update whether it should update the asset when changed
-                                sourceFileMembers[file] = true;
-                            }
-                        }
-                    }
-                }
-                base.VisitObjectMember(container, containerDescriptor, member, value);
             }
         }
     }
