@@ -597,11 +597,11 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
                 case PlatformType.Android:
-                case PlatformType.Linux:
                     configurations.Add(platform, platform);
                     needDeploy = true;
                     break;
 
+                case PlatformType.Linux:
                 case PlatformType.Windows10:
                     configurations.Add(platform, "Any CPU");
                     needDeploy = true;
