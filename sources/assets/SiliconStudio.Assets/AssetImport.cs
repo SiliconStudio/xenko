@@ -43,6 +43,7 @@ namespace SiliconStudio.Assets
         [DataMember(-40)]
         [DefaultValue(null)]
         [Display(Browsable = false)]
+        [Obsolete("This property will be removed soon")]
         public Guid? ImporterId { get; set; } = null;
         
         internal AssetImport GetRootBase()
