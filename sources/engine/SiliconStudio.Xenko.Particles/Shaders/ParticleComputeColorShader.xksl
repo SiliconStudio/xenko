@@ -19,15 +19,15 @@ class ParticleComputeColorShader : ParticleBase, SDFFont
         // -----------------------------------------------        
 
         // ORIGINAL
-        // float4 finalColor = base.Shading() * baseColor.Compute();
+        //float4 finalColor = base.Shading() * baseColor.Compute();
 
-        // TEST ->
+        //// TEST ->
         float4 finalColor = baseColor.Compute();
 
         float4 letterColor = base.Shading();
         letterColor.xyz *= 3;
 
-        finalColor = FontColor(finalColor, letterColor, float4(0, 1, 1, 1), 10);
+        finalColor = FontColor(finalColor, letterColor, float4(1, 0, 0, 1), 1);
         // <- TEST
 
         return finalColor;
