@@ -116,7 +116,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             base.InitializeCore();
 
             // TODO: Make this pluggable
-            if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
+            if (false)
+            //if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
             {
                 // Note: this renderer supports both Point and Spot lights
                 var clusteredLightRenderer = new LightClusteredPointGroupRenderer();
