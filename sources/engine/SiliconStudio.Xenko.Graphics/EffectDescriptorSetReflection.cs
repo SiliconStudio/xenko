@@ -33,9 +33,9 @@ namespace SiliconStudio.Xenko.Graphics
                     }
                     hasBindings = true;
 
-                    bool isUsed = resourceBinding.Any(x => x.Stage != ShaderStage.None);
-                    descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.LogicalGroup, resourceBinding.Key.Class, resourceBinding.Key.Type, resourceBinding.Key.SlotCount, isUsed, samplerState);
+                    descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.LogicalGroup, resourceBinding.Key.Class, resourceBinding.Key.Type, resourceBinding.Key.SlotCount, samplerState);
                 }
+
                 descriptorSetLayouts.AddLayout(effectDescriptorSetSlot, hasBindings ? descriptorSetLayoutBuilder : null);
             }
 

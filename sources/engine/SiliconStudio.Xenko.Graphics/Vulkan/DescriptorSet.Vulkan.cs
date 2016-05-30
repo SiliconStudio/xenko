@@ -63,9 +63,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="shaderResourceView">The shader resource view.</param>
         public unsafe void SetShaderResourceView(int slot, GraphicsResource shaderResourceView)
         {
-            if (!Description.Builder.Entries[slot].IsUsed)
-                return;
-
             var write = new WriteDescriptorSet
             {
                 StructureType = StructureType.WriteDescriptorSet,
@@ -99,9 +96,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="samplerState">The sampler state.</param>
         public unsafe void SetSamplerState(int slot, SamplerState samplerState)
         {
-            if (!Description.Builder.Entries[slot].IsUsed)
-                return;
-
             var imageInfo = new DescriptorImageInfo { Sampler = samplerState.NativeSampler };
 
             var write = new WriteDescriptorSet
@@ -127,9 +121,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public unsafe void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
-            if (!Description.Builder.Entries[slot].IsUsed)
-                return;
-
             var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = ~0UL /*size*/ }; // WholeSize, because size < bufferSize seems not to work?
 
             var write = new WriteDescriptorSet

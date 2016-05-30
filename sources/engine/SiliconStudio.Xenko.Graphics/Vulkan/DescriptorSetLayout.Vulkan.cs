@@ -40,7 +40,9 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int i = 0; i < entries.Count; i++)
                 {
                     var entry = entries[i];
-                    if (!entry.IsUsed)
+
+                    // TODO VULKAN: Special case for unused bindings in PipelineState. Handle more nicely.
+                    if (entry.ArraySize == 0)
                         continue;
 
                     bindings[usedBindingCount] = new DescriptorSetLayoutBinding

@@ -678,7 +678,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 LogicalGroup = (string)variable.GetTag(XenkoTags.LogicalGroup),
                 Type = parameterKey.Type,
                 RawName = variable.Name,
-                Offset = -1
             };
             
             members.Add(binding);

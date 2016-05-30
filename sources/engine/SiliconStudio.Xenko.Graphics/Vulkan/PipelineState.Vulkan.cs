@@ -346,8 +346,6 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int sourceBinding = 0; sourceBinding < sourceEntries.Count; sourceBinding++)
                 {
                     var sourceEntry = sourceEntries[sourceBinding];
-                    if (!sourceEntry.IsUsed)
-                        continue;
 
                     int destinationBinding;
                     if (destinationBindings.TryGetValue(sourceEntry.Key.Name, out destinationBinding))
