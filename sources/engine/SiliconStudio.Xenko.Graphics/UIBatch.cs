@@ -42,7 +42,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly Texture whiteTexture;
 
-        protected readonly EffectInstance SDFFontEffect;
+        private readonly EffectInstance sdfFontEffect;
+
+        private readonly EffectInstance sdfSpriteFontEffect;
+
+        public EffectInstance SDFSpriteFontEffect { get { return sdfSpriteFontEffect; }  }
 
         static UIBatch()
         {
@@ -147,7 +151,8 @@ namespace SiliconStudio.Xenko.Graphics
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
 
             //  Load custom font rendering effects here
-            SDFFontEffect = new EffectInstance(new Effect(device, FontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
+            sdfFontEffect = new EffectInstance(new Effect(device, FontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
+            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
         }
 
         /// <summary>
@@ -191,7 +196,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void BeginCustom(GraphicsContext graphicsContext, int overrideEffect)
         {
-            EffectInstance effect = (overrideEffect == 0) ? null : SDFFontEffect;
+            EffectInstance effect = (overrideEffect == 0) ? null : sdfFontEffect;
 
             Begin(graphicsContext, effect, SpriteSortMode.BackToFront, 
                 currentBlendState, currentSamplerState, currentDepthStencilState, currentRasterizerState, currentStencilValue);

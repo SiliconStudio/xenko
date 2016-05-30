@@ -33,7 +33,7 @@ class FontEffectShader : ShaderBase, SDFFont
 
         // TODO These values will go into streams most probably
         float4 borderColor = float4(1, 0, 0, 1);
-        float borderThickness = 0;
+        float borderThickness = 0.f;
 
         return FontColor(signedMultiDistance, streams.Color, borderColor, borderThickness);
     }

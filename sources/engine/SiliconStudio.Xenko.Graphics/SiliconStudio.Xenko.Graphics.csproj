@@ -228,6 +228,10 @@
     <Compile Include="Shaders093.Bytecodes\FontEffectShader.fontBytecodeSDF.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\FontEffectShader.fontBytecodeSDF.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\FontEffectShader.fontBytecodeSDF.OpenGLES.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteFontEffect.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteFontEffect.spriteFontBytecodeSDF.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteFontEffect.spriteFontBytecodeSDF.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteFontEffect.spriteFontBytecodeSDF.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -257,6 +261,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SDFFont.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteFontEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteFontEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
       <DependentUpon>UIEffect.xkfx</DependentUpon>
@@ -604,6 +614,10 @@
     <None Include="Shaders\SDFFont.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SDFFont.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteFontEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteFontEffect.cs</LastGenOutput>
     </None>
     <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
