@@ -60,6 +60,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal int defaultVAO;
 
+        internal int CopyColorSourceFBO, CopyDepthSourceFBO;
+
         DebugProc debugCallbackInstance;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         DebugProcKhr debugCallbackInstanceKHR;
@@ -419,7 +421,7 @@ namespace SiliconStudio.Xenko.Graphics
             throw new NotImplementedException();
         }
 
-        internal int FindOrCreateFBO(GraphicsResourceBase graphicsResource)
+        internal int FindOrCreateFBO(GraphicsResourceBase graphicsResource, int subresource)
         {
             if (graphicsResource == WindowProvidedRenderTexture)
                 return windowProvidedFrameBuffer;
@@ -427,47 +429,47 @@ namespace SiliconStudio.Xenko.Graphics
             var texture = graphicsResource as Texture;
             if (texture != null)
             {
-                return FindOrCreateFBO(texture);
+                return FindOrCreateFBO(new FBOTexture(texture, subresource / texture.MipLevels, subresource % texture.MipLevels));
             }
 
             throw new NotSupportedException();
         }
 
-        internal int FindOrCreateFBO(Texture texture)
+        internal int FindOrCreateFBO(FBOTexture texture)
         {
-            var isDepthBuffer = ((texture.Flags & TextureFlags.DepthStencil) != 0);
+            var isDepthBuffer = ((texture.Texture.Flags & TextureFlags.DepthStencil) != 0);
             lock (existingFBOs)
             {
                 foreach (var key in existingFBOs)
                 {
                     if ((isDepthBuffer && key.Key.DepthStencilBuffer == texture)
-                        || !isDepthBuffer && key.Key.LastRenderTarget == 1 && key.Key.RenderTargets[0] == texture)
+                        || !isDepthBuffer && key.Key.RenderTargetCount == 1 && key.Key.RenderTargets[0] == texture)
                         return key.Value;
                 }
             }
 
             if (isDepthBuffer)
-                return FindOrCreateFBO(texture, null);
-            return FindOrCreateFBO(null, new[] { texture });
+                return FindOrCreateFBO(texture, null, 0);
+            return FindOrCreateFBO(null, new FBOTexture[] { texture }, 1);
         }
 
-        internal int FindOrCreateFBO(Texture depthStencilBuffer, Texture[] renderTargets)
+        internal int FindOrCreateFBO(FBOTexture depthStencilBuffer, FBOTexture[] renderTargets, int renderTargetCount)
         {
             int framebufferId;
 
             // Check for existing FBO matching this configuration
             lock (existingFBOs)
             {
-                var fboKey = new FBOKey(depthStencilBuffer, renderTargets);
+                var fboKey = new FBOKey(depthStencilBuffer, renderTargets, renderTargetCount);
 
                 // Is it the default provided render target?
                 // TODO: Need to disable some part of rendering if either is null
-                var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == WindowProvidedRenderTexture);
-                if (isProvidedRenderTarget && depthStencilBuffer != null)
+                var isProvidedRenderTarget = (fboKey.RenderTargetCount == 1 && renderTargets[0] == WindowProvidedRenderTexture);
+                if (isProvidedRenderTarget && depthStencilBuffer.Texture != null)
                 {
                     throw new InvalidOperationException("It is impossible to bind device provided and user created buffers with OpenGL");
                 }
-                if (depthStencilBuffer == null && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
+                if (depthStencilBuffer.Texture == null && (isProvidedRenderTarget || fboKey.RenderTargetCount == 0)) // device provided framebuffer
                 {
                     return windowProvidedFrameBuffer;
                 }
@@ -477,81 +479,137 @@ namespace SiliconStudio.Xenko.Graphics
 
                 GL.GenFramebuffers(1, out framebufferId);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferId);
-                int lastRenderTargetIndex = -1;
-                if (renderTargets != null)
-                {
-                    for (int i = 0; i < renderTargets.Length; ++i)
-                    {
-                        if (renderTargets[i] != null)
-                        {
-                            lastRenderTargetIndex = i;
-                            // TODO: enable color render buffers when Texture creates one for other types than depth/stencil.
-                            //if (renderTargets[i].IsRenderbuffer)
-                            //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, RenderbufferTarget.Renderbuffer, renderTargets[i].TextureId);
-                            //else
-                                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget2d.Texture2D, renderTargets[i].TextureId, 0);
-                        }
-                    }
-                }
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (!IsOpenGLES2)
-#endif
-                {
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (lastRenderTargetIndex <= 0)
-                    {
-                        GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
-                    }
-                    else
-#endif
-                    {
-                        var drawBuffers = new DrawBuffersEnum[lastRenderTargetIndex + 1];
-                        for (var i = 0; i <= lastRenderTargetIndex; ++i)
-                            drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
-                        GL.DrawBuffers(lastRenderTargetIndex + 1, drawBuffers);
-                    }
-                }
-
-                if (depthStencilBuffer != null)
-                {
-                    bool useSharedAttachment = depthStencilBuffer.StencilId == depthStencilBuffer.TextureId;
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (IsOpenGLES2)  // FramebufferAttachment.DepthStencilAttachment is not supported in ES 2
-                        useSharedAttachment = false;
-#endif
-                    var attachmentType = useSharedAttachment ? FramebufferAttachment.DepthStencilAttachment : FramebufferAttachment.DepthAttachment;
-
-                    if (depthStencilBuffer.IsRenderbuffer)
-                    {
-                        // Bind depth-only or packed depth-stencil buffer
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.TextureId);
-
-                        // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                        if (depthStencilBuffer.HasStencil && !useSharedAttachment)
-                            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.StencilId);
-                    }
-                    else
-                    {
-                        // Bind depth-only or packed depth-stencil buffer
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTarget2d.Texture2D, depthStencilBuffer.TextureId, 0);
-
-                        // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                        if (depthStencilBuffer.HasStencil && !useSharedAttachment)
-                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTarget2d.Texture2D, depthStencilBuffer.StencilId, 0);
-                    }
-                }
+                UpdateFBO(FramebufferTarget.Framebuffer, depthStencilBuffer, renderTargets, renderTargetCount);
 
                 var framebufferStatus = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
                 if (framebufferStatus != FramebufferErrorCode.FramebufferComplete)
                 {
-                    throw new InvalidOperationException(string.Format("FBO is incomplete: RT {0} Depth {1} (error: {2})", renderTargets != null && renderTargets.Length > 0 ? renderTargets[0].TextureId : 0, depthStencilBuffer != null ? depthStencilBuffer.TextureId : 0, framebufferStatus));
+                    throw new InvalidOperationException(string.Format("FBO is incomplete: {0} RTs: [RT0: {1}]; Depth {2} (error: {3})", renderTargetCount, renderTargets != null && renderTargets.Length > 0 && renderTargets[0].Texture != null ? renderTargets[0].Texture.TextureId : 0, depthStencilBuffer.Texture != null ? depthStencilBuffer.Texture.TextureId : 0, framebufferStatus));
                 }
 
-                existingFBOs.Add(new GraphicsDevice.FBOKey(depthStencilBuffer, renderTargets != null ? renderTargets.ToArray() : null), framebufferId);
+                existingFBOs.Add(new GraphicsDevice.FBOKey(depthStencilBuffer, renderTargets != null ? renderTargets.ToArray() : null, renderTargetCount), framebufferId);
             }
 
             return framebufferId;
+        }
+
+        internal FramebufferAttachment UpdateFBO(FramebufferTarget framebufferTarget, FBOTexture renderTarget)
+        {
+            var texture = renderTarget.Texture;
+            var isDepthBuffer = Texture.InternalIsDepthStencilFormat(texture.Format);
+            if (isDepthBuffer)
+            {
+                return UpdateFBODepthStencil(framebufferTarget, renderTarget);
+            }
+            else
+            {
+                UpdateFBORenderTarget(framebufferTarget, 0, renderTarget);
+                return FramebufferAttachment.ColorAttachment0;
+            }
+        }
+
+        internal void UpdateFBO(FramebufferTarget framebufferTarget, FBOTexture depthStencilBuffer, FBOTexture[] renderTargets, int renderTargetCount)
+        {
+            for (int i = 0; i < renderTargetCount; ++i)
+            {
+                UpdateFBORenderTarget(framebufferTarget, i, renderTargets[i]);
+            }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (!IsOpenGLES2)
+#endif
+            {
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                if (renderTargetCount <= 1)
+                {
+                    GL.DrawBuffer(renderTargetCount != 0 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
+                }
+                else
+#endif
+                {
+                    var drawBuffers = new DrawBuffersEnum[renderTargetCount];
+                    for (var i = 0; i < renderTargetCount; ++i)
+                        drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
+                    GL.DrawBuffers(renderTargetCount, drawBuffers);
+                }
+            }
+
+            if (depthStencilBuffer.Texture != null)
+            {
+                UpdateFBODepthStencil(framebufferTarget, depthStencilBuffer);
+            }
+        }
+
+        internal void UpdateFBORenderTarget(FramebufferTarget framebufferTarget, int i, FBOTexture renderTarget)
+        {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (IsOpenGLES2 && renderTarget.MipLevel != 0)
+                throw new PlatformNotSupportedException("Can't read from mipmap level other than 0 on OpenGL ES 2");
+#endif
+
+            switch (renderTarget.Texture.TextureTarget)
+            {
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                case TextureTarget.Texture1D:
+                    GL.FramebufferTexture1D(framebufferTarget, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture1D, renderTarget.Texture.TextureId, renderTarget.MipLevel);
+                    break;
+#endif
+                case TextureTarget.Texture2D:
+                case TextureTarget.TextureCubeMap:
+                    // TODO: enable color render buffers when Texture creates one for other types than depth/stencil.
+                    //if (renderTarget.IsRenderbuffer)
+                    //    GL.FramebufferRenderbuffer(framebufferTarget, FramebufferAttachment.ColorAttachment0 + i, RenderbufferTarget.Renderbuffer, renderTarget.Texture.TextureId);
+                    //else
+                    GL.FramebufferTexture2D(framebufferTarget, FramebufferAttachment.ColorAttachment0 + i,
+                        Texture.GetTextureTargetForDataSet2D(renderTarget.Texture.TextureTarget, renderTarget.ArraySlice % 6), renderTarget.Texture.TextureId, renderTarget.MipLevel);
+                    break;
+                case TextureTarget.Texture2DArray:
+                case TextureTarget.Texture3D:
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    if (IsOpenGLES2)
+                        goto default; // not supported
+#endif
+                    GL.FramebufferTextureLayer(framebufferTarget, FramebufferAttachment.ColorAttachment0 + i, renderTarget.Texture.TextureId, renderTarget.MipLevel, renderTarget.ArraySlice);
+                    break;
+                default:
+                    throw new NotImplementedException($"Can't bind FBO with target [{renderTarget.Texture.TextureTarget}]");
+            }
+        }
+
+        internal FramebufferAttachment UpdateFBODepthStencil(FramebufferTarget framebufferTarget, FBOTexture depthStencilBuffer)
+        {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (IsOpenGLES2 && depthStencilBuffer.MipLevel != 0)
+                throw new PlatformNotSupportedException("Can't read from mipmap level other than 0 on OpenGL ES 2");
+#endif
+
+            bool useSharedAttachment = depthStencilBuffer.Texture.StencilId == depthStencilBuffer.Texture.TextureId;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (IsOpenGLES2)  // FramebufferAttachment.DepthStencilAttachment is not supported in ES 2
+                useSharedAttachment = false;
+#endif
+            var attachmentType = useSharedAttachment ? FramebufferAttachment.DepthStencilAttachment : FramebufferAttachment.DepthAttachment;
+
+            if (depthStencilBuffer.Texture.IsRenderbuffer)
+            {
+                // Bind depth-only or packed depth-stencil buffer
+                GL.FramebufferRenderbuffer(framebufferTarget, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.Texture.TextureId);
+
+                // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
+                if (depthStencilBuffer.Texture.HasStencil && !useSharedAttachment)
+                    GL.FramebufferRenderbuffer(framebufferTarget, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.Texture.StencilId);
+            }
+            else
+            {
+                // Bind depth-only or packed depth-stencil buffer
+                GL.FramebufferTexture2D(framebufferTarget, attachmentType, TextureTarget2d.Texture2D, depthStencilBuffer.Texture.TextureId, depthStencilBuffer.MipLevel);
+
+                // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
+                if (depthStencilBuffer.Texture.HasStencil && !useSharedAttachment)
+                    GL.FramebufferTexture2D(framebufferTarget, FramebufferAttachment.StencilAttachment, TextureTarget2d.Texture2D, depthStencilBuffer.Texture.StencilId, depthStencilBuffer.MipLevel);
+            }
+
+            return attachmentType;
         }
 
         internal int TryCompileShader(ShaderType shaderType, string sourceCode)
@@ -675,7 +733,7 @@ namespace SiliconStudio.Xenko.Graphics
             windowInfo = gameWindow.WindowInfo;
 
             // Doesn't seems to be working on Android
-#if SILICONSTUDIO_PLATFORM_ANDROID           
+#if SILICONSTUDIO_PLATFORM_ANDROID
             graphicsContext = gameWindow.GraphicsContext;
             gameWindow.Load += OnApplicationResumed;
             gameWindow.Unload += OnApplicationPaused;
@@ -724,13 +782,13 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_UI_SDL
             // Because OpenTK really wants a Sdl2GraphicsContext and not a dummy one, we will create
             // a new one using the dummy one and invalidate the dummy one.
-            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, version / 100, (version % 100) / 10, creationFlags);
+            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, version/100, (version%100)/10, creationFlags);
             gameWindow.DummyGLContext.Dispose();
 #else
             graphicsContext = gameWindow.Context;
 #endif
             deviceCreationWindowInfo = windowInfo;
-            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, version / 100, (version % 100) / 10, creationFlags);
+            deviceCreationContext = new OpenTK.Graphics.GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, version/100, (version%100)/10, creationFlags);
 #endif
 
             // Restore main context
@@ -753,6 +811,20 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.BindVertexArray(defaultVAO);
                 }
             }
+
+            // Save current FBO aside
+            int boundFBO;
+            GL.GetInteger(GetPName.FramebufferBinding, out boundFBO);
+
+            // Create FBO that will be used for copy operations
+            CopyColorSourceFBO = GL.GenFramebuffer();
+            CopyDepthSourceFBO = GL.GenFramebuffer();
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, CopyDepthSourceFBO);
+            GL.ReadBuffer(ReadBufferMode.None);
+
+            // Restore FBO
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
 
             if (HasKhronosDebug)
             {
@@ -826,12 +898,12 @@ namespace SiliconStudio.Xenko.Graphics
             lock (existingFBOs)
             {
                 existingFBOs.Clear();
-                existingFBOs[new FBOKey(null, new[] { WindowProvidedRenderTexture })] = windowProvidedFrameBuffer;
+                existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = windowProvidedFrameBuffer;
             }
 
             //// Clear bound states
             //for (int i = 0; i < boundTextures.Length; ++i)
-                //boundTextures[i] = null;
+            //boundTextures[i] = null;
 
             //boundFrontFace = FrontFaceDirection.Ccw;
 
@@ -844,7 +916,7 @@ namespace SiliconStudio.Xenko.Graphics
             //boundDepthStencilBuffer = null;
 
             //for (int i = 0; i < boundRenderTargets.Length; ++i)
-                //boundRenderTargets[i] = null;
+            //boundRenderTargets[i] = null;
 
             //boundFBO = 0;
             //boundFBOHeight = 0;
@@ -899,7 +971,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            existingFBOs[new FBOKey(null, new[] { WindowProvidedRenderTexture })] = windowProvidedFrameBuffer;
+            existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = windowProvidedFrameBuffer;
         }
 
         private class SwapChainBackend
@@ -933,10 +1005,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public PresentationParameters PresentationParameters
         {
-            get
-            {
-                throw new InvalidOperationException(FrameworkResources.NoDefaultRenterTarget);
-            }
+            get { throw new InvalidOperationException(FrameworkResources.NoDefaultRenterTarget); }
         }
 
         /// <summary>
@@ -968,8 +1037,8 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-        // Execute pending asynchronous object creation
-        // (on android devices where we can't create background context such as Tegra2/Tegra3)
+    // Execute pending asynchronous object creation
+    // (on android devices where we can't create background context such as Tegra2/Tegra3)
         internal void ExecutePendingTasks()
         {
             // Unbind context
@@ -983,30 +1052,76 @@ namespace SiliconStudio.Xenko.Graphics
         }
 #endif
 
-        internal struct FBOKey : IEquatable<FBOKey>
+        internal struct FBOTexture : IEquatable<FBOTexture>
         {
-            public readonly Texture DepthStencilBuffer;
-            public readonly Texture[] RenderTargets;
-            public readonly int LastRenderTarget;
+            public readonly Texture Texture;
+            public readonly short ArraySlice;
+            public readonly short MipLevel;
 
-            public FBOKey(Texture depthStencilBuffer, Texture[] renderTargets)
+            public FBOTexture(Texture texture, int arraySlice = 0, int mipLevel = 0)
             {
-                DepthStencilBuffer = depthStencilBuffer;
+                Texture = texture;
+                ArraySlice = (short)arraySlice;
+                MipLevel = (short)mipLevel;
+            }
 
-                LastRenderTarget = 0;
-                if (renderTargets != null)
+            public static implicit operator FBOTexture(Texture texture)
+            {
+                int arraySlice = 0;
+                int mipLevel = 0;
+                if (texture != null)
                 {
-                    for (int i = 0; i < renderTargets.Length; ++i)
-                    {
-                        if (renderTargets[i] != null)
-                        {
-                            LastRenderTarget = i + 1;
-                            break;
-                        }
-                    }
+                    mipLevel = texture.MipLevel;
+                    arraySlice = texture.ArraySlice;
                 }
 
-                RenderTargets = LastRenderTarget != 0 ? renderTargets : null;
+                return new FBOTexture(texture, arraySlice, mipLevel);
+            }
+            
+            public bool Equals(FBOTexture other)
+            {
+                return Texture == other.Texture && ArraySlice == other.ArraySlice && MipLevel == other.MipLevel;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is FBOTexture && Equals((FBOTexture)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = (Texture != null ? Texture.GetHashCode() : 0);
+                    hashCode = (hashCode*397) ^ ArraySlice.GetHashCode();
+                    hashCode = (hashCode*397) ^ MipLevel.GetHashCode();
+                    return hashCode;
+                }
+            }
+
+            public static bool operator ==(FBOTexture left, FBOTexture right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(FBOTexture left, FBOTexture right)
+            {
+                return !left.Equals(right);
+            }
+        }
+
+        internal struct FBOKey : IEquatable<FBOKey>
+        {
+            public readonly FBOTexture DepthStencilBuffer;
+            public readonly FBOTexture[] RenderTargets;
+            public readonly int RenderTargetCount;
+
+            public FBOKey(FBOTexture depthStencilBuffer, FBOTexture[] renderTargets, int renderTargetCount)
+            {
+                DepthStencilBuffer = depthStencilBuffer;
+                RenderTargetCount = renderTargetCount;
+                RenderTargets = RenderTargetCount != 0 ? renderTargets : null;
             }
 
             public bool Equals(FBOKey obj2)
@@ -1014,11 +1129,11 @@ namespace SiliconStudio.Xenko.Graphics
                 if (obj2.DepthStencilBuffer != DepthStencilBuffer) return false;
 
                 // Should have same number of render targets
-                if (LastRenderTarget != obj2.LastRenderTarget)
+                if (RenderTargetCount != obj2.RenderTargetCount)
                     return false;
 
                 // Since both object have same LastRenderTarget, array is valid at least until this spot.
-                for (int i = 0; i < LastRenderTarget; ++i)
+                for (int i = 0; i < RenderTargetCount; ++i)
                     if (obj2.RenderTargets[i] != RenderTargets[i])
                         return false;
 
@@ -1039,7 +1154,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var result = DepthStencilBuffer != null ? DepthStencilBuffer.GetHashCode() : 0;
                 if (RenderTargets != null)
                 {
-                    for (int index = 0; index < LastRenderTarget; index++)
+                    for (int index = 0; index < RenderTargetCount; index++)
                     {
                         var renderTarget = RenderTargets[index];
                         result ^= renderTarget != null ? renderTarget.GetHashCode() : 0;

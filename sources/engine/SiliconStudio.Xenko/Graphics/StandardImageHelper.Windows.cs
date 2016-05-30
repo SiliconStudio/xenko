@@ -94,6 +94,13 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     partial class StandardImageHelper
     {
+        static StandardImageHelper()
+        {
+#if SILICONSTUDIO_XENKO_UI_SDL
+            Core.NativeLibrary.PreloadLibrary("SDL2_image.dll");
+#endif
+        }
+
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
 #if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF

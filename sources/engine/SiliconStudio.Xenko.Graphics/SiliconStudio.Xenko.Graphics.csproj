@@ -114,6 +114,10 @@
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2_image.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
       </ItemGroup>
     </When>
   </Choose>
@@ -149,6 +153,7 @@
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
+    <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
