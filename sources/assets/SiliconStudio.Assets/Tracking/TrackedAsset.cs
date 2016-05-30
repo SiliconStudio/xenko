@@ -1,48 +1,58 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks.Dataflow;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Tracking
 {
+    /// <summary>
+    /// Represents a single asset which has source files currently being tracked for changes.
+    /// </summary>
     internal class TrackedAsset : IDisposable
     {
         private readonly AssetSourceTracker tracker;
-        private readonly Guid assetId;
         private readonly Asset sessionAsset;
         private Dictionary<UFile, bool> sourceFiles = new Dictionary<UFile, bool>();
         private Asset clonedAsset;
 
-        public TrackedAsset(AssetSourceTracker tracker, Guid assetId, Asset sessionAsset, Asset clonedAsset)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrackedAsset"/> class.
+        /// </summary>
+        /// <param name="tracker">The source tracker managing this object.</param>
+        /// <param name="sessionAsset">The actual asset in the current session.</param>
+        /// <param name="clonedAsset">A clone of the actual asset. If the actual asset is read-only, it is acceptable to use it instead of a clone.</param>
+        public TrackedAsset(AssetSourceTracker tracker, Asset sessionAsset, Asset clonedAsset)
         {
             if (tracker == null) throw new ArgumentNullException(nameof(tracker));
             this.tracker = tracker;
-            this.assetId = assetId;
             this.sessionAsset = sessionAsset;
             this.clonedAsset = clonedAsset;
             UpdateAssetImportPathsTracked(true);
         }
 
-        public bool NotifySourceFileChanged(UFile sourceFile, ObjectId newHash, ref SourceFileChangedData data)
+        /// <summary>
+        /// Gets the id of this asset.
+        /// </summary>
+        internal Guid AssetId => sessionAsset.Id;
+
+        /// <inheritdoc/>
+        public void Dispose()
         {
-            bool hasSourceChanged = false;
-            bool updateAssetIfChanged;
-            if (sourceFiles.TryGetValue(sourceFile, out updateAssetIfChanged))
-            {
-                var oldHash = SourceHashesHelper.FindSourceHash(assetId, sourceFile);
-                if (oldHash != newHash)
-                {
-                    data = new SourceFileChangedData(assetId, sourceFile, updateAssetIfChanged);
-                    hasSourceChanged = true;
-                }
+            // Track asset import paths
+            UpdateAssetImportPathsTracked(false);
+        }
 
-                SourceHashesHelper.UpdateHash(assetId, sourceFile, newHash);
-            }
-
-            return hasSourceChanged;
+        /// <summary>
+        /// Notifies this object that the asset has been modified.
+        /// </summary>
+        /// <remarks>This method will trigger the re-evaluation of properties containing the path to a source file.</remarks>
+        public void NotifyAssetChanged()
+        {
+            clonedAsset = (Asset)AssetCloner.Clone(sessionAsset, AssetClonerFlags.KeepBases);
+            UpdateAssetImportPathsTracked(true);
         }
 
         private void UpdateAssetImportPathsTracked(bool isTracking)
@@ -51,14 +61,14 @@ namespace SiliconStudio.Assets.Tracking
             {
                 var collector = new SourceFilesCollector();
                 var newSourceFiles = collector.GetSourceFiles(clonedAsset);
-
+                bool changed = false;
                 // Untrack previous paths
                 foreach (var sourceFile in sourceFiles.Keys)
                 {
                     if (!newSourceFiles.ContainsKey(sourceFile))
                     {
-                        tracker.UnTrackAssetImportInput(assetId, sourceFile);
-                        SourceHashesHelper.RemoveHash(assetId, sourceFile);
+                        tracker.UnTrackAssetImportInput(AssetId, sourceFile);
+                        changed = true;
                     }
                 }
 
@@ -67,31 +77,25 @@ namespace SiliconStudio.Assets.Tracking
                 {
                     if (!sourceFiles.ContainsKey(sourceFile))
                     {
-                        tracker.TrackAssetImportInput(assetId, sourceFile);
+                        tracker.TrackAssetImportInput(AssetId, sourceFile);
+                        changed = true;
                     }
                 }
 
                 sourceFiles = newSourceFiles;
+
+                if (changed)
+                {
+                    tracker.SourceFileChanged.Post(new[] { new SourceFileChangedData(SourceFileChangeType.Asset, AssetId, sourceFiles.Select(x => x.Key).ToList()) });
+                }
             }
             else
             {
                 foreach (var sourceFile in sourceFiles.Keys)
                 {
-                    tracker.UnTrackAssetImportInput(assetId, sourceFile);
+                    tracker.UnTrackAssetImportInput(AssetId, sourceFile);
                 }
             }
-        }
-
-        public void NotifyAssetChanged()
-        {
-            clonedAsset = (Asset)AssetCloner.Clone(sessionAsset, AssetClonerFlags.KeepBases);
-            UpdateAssetImportPathsTracked(true);
-        }
-
-        public void Dispose()
-        {
-            // Track asset import paths
-            UpdateAssetImportPathsTracked(false);
         }
 
         private class SourceFilesCollector : AssetVisitorBase

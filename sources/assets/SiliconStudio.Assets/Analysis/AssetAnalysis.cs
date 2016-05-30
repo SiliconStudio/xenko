@@ -97,7 +97,7 @@ namespace SiliconStudio.Assets.Analysis
                 // Find where this asset item was previously stored (in a different package for example)
                 CommonAnalysis.UpdatePaths(assetItem, assetReferences.Where(link => link.Reference is UPath), parameters);
                 // Source hashes are not processed by analysis, we need to manually indicate them to update
-                SourceHashesHelper.UpdateUPaths(assetItem.Id, assetItem.FullPath.GetParent(), parameters.ConvertUPathTo);
+                SourceHashesHelper.UpdateUPaths(assetItem.Asset, assetItem.FullPath.GetParent(), parameters.ConvertUPathTo);
             }
         }
 

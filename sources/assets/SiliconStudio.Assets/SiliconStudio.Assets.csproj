@@ -82,7 +82,6 @@
     <Compile Include="AssetImportSessionEvent.cs" />
     <Compile Include="AssetImportSessionStepType.cs" />
     <Compile Include="AssetImportSessionEventType.cs" />
-    <Compile Include="AssetImportTracked.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />

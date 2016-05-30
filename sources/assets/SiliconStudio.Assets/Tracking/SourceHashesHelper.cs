@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Tracking
@@ -12,24 +14,26 @@ namespace SiliconStudio.Assets.Tracking
     {
         public const string MemberName = "~SourceHashes";
 
-        private static readonly Dictionary<Guid, Dictionary<UFile, ObjectId>> AbsoluteSourceHashes = new Dictionary<Guid, Dictionary<UFile, ObjectId>>();
-        private static readonly Dictionary<Guid, Dictionary<UFile, ObjectId>> RelativeSourceHashes = new Dictionary<Guid, Dictionary<UFile, ObjectId>>();
+        private static readonly ShadowObjectPropertyKey AbsoluteSourceHashesKey = new ShadowObjectPropertyKey(new object());
+        private static readonly ShadowObjectPropertyKey RelativeSourceHashesKey = new ShadowObjectPropertyKey(new object());
+        private static readonly object LockObj = new object();
 
-        public static bool HasSourceHashes(Guid assetId)
+        public static bool HasSourceHashes(Asset asset)
         {
-            lock (AbsoluteSourceHashes)
+            lock (LockObj)
             {
-                Dictionary<UFile, ObjectId> hashes;
-                return AbsoluteSourceHashes.TryGetValue(assetId, out hashes) && hashes.Count > 0;
+                var hashes = TryGet(asset, AbsoluteSourceHashesKey);
+                return hashes != null && hashes.Count > 0;
             }
         }
 
-        public static ObjectId FindSourceHash(Guid assetId, UFile file)
+        public static ObjectId FindSourceHash(Asset asset, UFile file)
         {
-            lock (AbsoluteSourceHashes)
+            lock (LockObj)
             {
-                Dictionary<UFile, ObjectId> hashes;
-                if (!AbsoluteSourceHashes.TryGetValue(assetId, out hashes))
+                var hashes = TryGet(asset, AbsoluteSourceHashesKey);
+
+                if (hashes == null)
                     return ObjectId.Empty;
 
                 ObjectId hash;
@@ -38,38 +42,117 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        public static void UpdateHash(Guid assetId, UFile file, ObjectId hash)
+        public static void UpdateHash(Asset asset, UFile file, ObjectId hash)
         {
-            lock (AbsoluteSourceHashes)
+            lock (LockObj)
             {
-                Dictionary<UFile, ObjectId> hashes;
-                if (!AbsoluteSourceHashes.TryGetValue(assetId, out hashes))
-                {
-                    hashes = new Dictionary<UFile, ObjectId>();
-                    AbsoluteSourceHashes.Add(assetId, hashes);
-                }
-
+                var hashes = GetOrCreate(asset, AbsoluteSourceHashesKey);
                 hashes[file] = hash;
             }
         }
 
-        public static void RemoveHash(Guid assetId, UFile sourceFile)
+        public static void UpdateHashes(Asset asset, IReadOnlyDictionary<UFile, ObjectId> newHashes)
         {
-            lock (AbsoluteSourceHashes)
+            lock (LockObj)
             {
-                Dictionary<UFile, ObjectId> hashes;
-                if (AbsoluteSourceHashes.TryGetValue(assetId, out hashes))
+                var hashes = GetOrCreate(asset, AbsoluteSourceHashesKey);
+                hashes.Clear();
+                newHashes.ForEach(x => hashes.Add(x.Key, x.Value));
+            }
+        }
+
+        public static void RemoveHash(Asset asset, UFile sourceFile)
+        {
+            lock (LockObj)
+            {
+                var hashes = TryGet(asset, AbsoluteSourceHashesKey);
+                hashes?.Remove(sourceFile);
+            }
+        }
+
+        public static Dictionary<UFile, ObjectId> GetAllHashes(Asset asset)
+        {
+            var hashes = TryGet(asset, AbsoluteSourceHashesKey);
+            var result = new Dictionary<UFile, ObjectId>();
+            hashes?.ForEach(x => result.Add(x.Key, x.Value));
+            return result;
+        }
+
+        private static Dictionary<UFile, ObjectId> TryGet(Asset asset, ShadowObjectPropertyKey key)
+        {
+            var shadow = ShadowObject.GetOrCreate(asset);
+            object obj;
+            if (shadow.TryGetValue(key, out obj))
+            {
+                return (Dictionary<UFile, ObjectId>)obj;
+            }
+            return null;
+        }
+
+        private static Dictionary<UFile, ObjectId> GetOrCreate(Asset asset, ShadowObjectPropertyKey key)
+        {
+            var shadow = ShadowObject.GetOrCreate(asset);
+            object obj;
+            if (shadow.TryGetValue(key, out obj))
+            {
+                return (Dictionary<UFile, ObjectId>)obj;
+            }
+            var hashes = new Dictionary<UFile, ObjectId>();
+            shadow[key] = hashes;
+            return hashes;
+        }
+
+        private static void SetDictionary(Asset asset, ShadowObjectPropertyKey key, Dictionary<UFile, ObjectId> dictionary)
+        {
+            var shadow = ShadowObject.GetOrCreate(asset);
+            shadow[key] = dictionary;
+        }
+
+        internal static void AddSourceHashesMember(SharpYaml.Serialization.Descriptors.ObjectDescriptor objectDescriptor, List<SharpYaml.Serialization.IMemberDescriptor> memberDescriptors)
+        {
+            var type = objectDescriptor.Type;
+            if (!typeof(Asset).IsAssignableFrom(type))
+                return;
+
+            memberDescriptors.Add(SourceHashesDynamicMember.Default);
+        }
+
+        internal static void UpdateUPaths(Asset asset, UDirectory assetFolder, UPathType convertUPathTo)
+        {
+            switch (convertUPathTo)
+            {
+                case UPathType.Absolute:
+                    ConvertUPaths(asset, RelativeSourceHashesKey, AbsoluteSourceHashesKey, x => UPath.Combine(assetFolder, x));
+                    break;
+                case UPathType.Relative:
+                    ConvertUPaths(asset, AbsoluteSourceHashesKey, RelativeSourceHashesKey, x => x.MakeRelative(assetFolder));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(convertUPathTo), convertUPathTo, null);
+            }
+        }
+
+        private static void ConvertUPaths(Asset asset, ShadowObjectPropertyKey from, ShadowObjectPropertyKey to, Func<UFile, UFile> converter)
+        {
+            var fromHashes = TryGet(asset, from);
+            if (fromHashes != null)
+            {
+                var toHashes = GetOrCreate(asset, to);
+                toHashes.Clear();
+
+                foreach (var fromHAsh in fromHashes)
                 {
-                    hashes.Remove(sourceFile);
+                    var path = converter(fromHAsh.Key);
+                    toHashes[path] = fromHAsh.Value;
                 }
             }
         }
 
-        public class SourceHashesDynamicMember : DynamicMemberDescriptorBase
+        internal class SourceHashesDynamicMember : DynamicMemberDescriptorBase
         {
             public const int DefaultOrder = int.MaxValue;
 
-            public static readonly SourceHashesDynamicMember Default = new SourceHashesDynamicMember();
+            public static readonly SourceHashesDynamicMember Default = new SourceHashesDynamicMember { ShouldSerialize = x => { var asset = x as Asset; return asset != null && TryGet(asset, AbsoluteSourceHashesKey)?.Count > 0; } };
 
             static SourceHashesDynamicMember()
             {
@@ -84,6 +167,8 @@ namespace SiliconStudio.Assets.Tracking
                 Order = DefaultOrder;
             }
 
+            public override bool HasSet => true;
+
             public override object Get(object thisObject)
             {
                 var asset = (Asset)thisObject;
@@ -91,10 +176,9 @@ namespace SiliconStudio.Assets.Tracking
                 if (asset.Id == Guid.Empty)
                     return null;
 
-                lock (AbsoluteSourceHashes)
+                lock (LockObj)
                 {
-                    Dictionary<UFile, ObjectId> value;
-                    RelativeSourceHashes.TryGetValue(asset.Id, out value);
+                    var value = TryGet(asset, RelativeSourceHashesKey);
                     if (value == null || value.Count == 0)
                         return null;
 
@@ -113,58 +197,9 @@ namespace SiliconStudio.Assets.Tracking
                 if (asset.Id == Guid.Empty)
                     return;
 
-                lock (AbsoluteSourceHashes)
+                lock (LockObj)
                 {
-                    RelativeSourceHashes[asset.Id] = sourceHashes;
-                }
-            }
-
-            public override bool HasSet => true;
-
-        }
-
-        public static void AddSourceHashesMember(SharpYaml.Serialization.Descriptors.ObjectDescriptor objectDescriptor, List<SharpYaml.Serialization.IMemberDescriptor> memberDescriptors)
-        {
-            var type = objectDescriptor.Type;
-            if (!typeof(Asset).IsAssignableFrom(type))
-                return;
-
-            memberDescriptors.Add(SourceHashesDynamicMember.Default);
-        }
-
-        public static void UpdateUPaths(Guid assetId, UDirectory assetFolder, UPathType convertUPathTo)
-        {
-            switch (convertUPathTo)
-            {
-                case UPathType.Absolute:
-                    ConvertUPaths(assetId, RelativeSourceHashes, AbsoluteSourceHashes, x => UPath.Combine(assetFolder, x));
-                    break;
-                case UPathType.Relative:
-                    ConvertUPaths(assetId, AbsoluteSourceHashes, RelativeSourceHashes, x => x.MakeRelative(assetFolder));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(convertUPathTo), convertUPathTo, null);
-            }
-        }
-
-        private static void ConvertUPaths(Guid assetId, Dictionary<Guid, Dictionary<UFile, ObjectId>> from, Dictionary<Guid, Dictionary<UFile, ObjectId>> to, Func<UFile, UFile> converter)
-        {
-            Dictionary<UFile, ObjectId> fromHashes;
-            if (from.TryGetValue(assetId, out fromHashes))
-            {
-                Dictionary<UFile, ObjectId> toHashes;
-                if (!to.TryGetValue(assetId, out toHashes))
-                {
-                    toHashes = new Dictionary<UFile, ObjectId>();
-                    to.Add(assetId, toHashes);
-                }
-
-                toHashes.Clear();
-
-                foreach (var fromHAsh in fromHashes)
-                {
-                    var path = converter(fromHAsh.Key);
-                    toHashes[path] = fromHAsh.Value;
+                    SetDictionary(asset, RelativeSourceHashesKey, sourceHashes);
                 }
             }
         }

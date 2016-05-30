@@ -909,11 +909,11 @@ namespace SiliconStudio.Assets
                 baseAssetImport.SetAsRootImport();
 
                 baseAssetImport.ImporterId = importer.Id;
-                var assetImportTracked = assetImport as AssetImportTracked;
-                if (assetImportTracked != null)
-                {
-                    assetImportTracked.SourceHash = FileVersionManager.Instance.ComputeFileHash(assetImport.Source);
-                }
+                //var assetImportTracked = assetImport as AssetImportTracked;
+                //if (assetImportTracked != null)
+                //{
+                //    assetImportTracked.SourceHash = FileVersionManager.Instance.ComputeFileHash(assetImport.Source);
+                //}
             }
             assetItem.Asset.Base = new AssetBase(baseAsset);
         }
@@ -1039,12 +1039,12 @@ namespace SiliconStudio.Assets
 
             // If the new asset is an asset import, we need to copy the freshly computed SourceHash to it.
             var newAsset = (Asset)AssetCloner.Clone(previousAsset);
-            var newAssetImport = newAsset as AssetImportTracked;
-            if (newAssetImport != null)
-            {
-                var originAssetImport = (AssetImportTracked)toImportMergeGroup.Item.Asset;
-                newAssetImport.SourceHash = originAssetImport.SourceHash;
-            }
+            //var newAssetImport = newAsset as AssetImportTracked;
+            //if (newAssetImport != null)
+            //{
+            //    var originAssetImport = (AssetImportTracked)toImportMergeGroup.Item.Asset;
+            //    newAssetImport.SourceHash = originAssetImport.SourceHash;
+            //}
 
             // Make a diff between the previous asset and the new asset to importItem
             var assetDiff = new AssetDiff(previousBase, newAsset, newAssetBase);

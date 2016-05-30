@@ -17,10 +17,10 @@ namespace SiliconStudio.Assets.Tracking
         internal readonly object ThisLock = new object();
         internal readonly HashSet<Package> Packages;
         private readonly Dictionary<Guid, TrackedAsset> trackedAssets = new Dictionary<Guid, TrackedAsset>();
-
         // Objects used to track directories
         internal DirectoryWatcher DirectoryWatcher;
         private readonly Dictionary<string, HashSet<Guid>> mapSourceFilesToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ObjectId> currentHashes = new Dictionary<string, ObjectId>(StringComparer.OrdinalIgnoreCase);
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
         private readonly ManualResetEvent threadWatcherEvent;
         private readonly CancellationTokenSource tokenSourceForImportHash;
@@ -29,6 +29,7 @@ namespace SiliconStudio.Assets.Tracking
         private bool isDisposed;
         private bool isDisposing;
         private bool isTrackingPaused;
+        private bool isSaving;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetDependencyManager" /> class.
@@ -52,7 +53,10 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        public BroadcastBlock<IEnumerable<SourceFileChangedData>> SourceFileChanged { get; } = new BroadcastBlock<IEnumerable<SourceFileChangedData>>(null);
+        /// <summary>
+        /// Gets a source dataflow block in which notifications that a source file has changed are pushed.
+        /// </summary>
+        public BroadcastBlock<IReadOnlyList<SourceFileChangedData>> SourceFileChanged { get; } = new BroadcastBlock<IReadOnlyList<SourceFileChangedData>>(null);
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance should track file disk changed events. Default is <c>false</c>
@@ -168,6 +172,23 @@ namespace SiliconStudio.Assets.Tracking
             isDisposed = true;
         }
 
+        public void BeginSavingSession()
+        {
+            isSaving = true;
+        }
+
+        public void EndSavingSession()
+        {
+            isSaving = false;
+        }
+
+        public ObjectId GetCurrentHash(UFile file)
+        {
+            ObjectId result;
+            currentHashes.TryGetValue(file, out result);
+            return result;
+        }
+
         /// <summary>
         /// This method is called when a package needs to be tracked
         /// </summary>
@@ -243,7 +264,7 @@ namespace SiliconStudio.Assets.Tracking
 
                 // No need to clone assets from readonly package 
                 var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases);
-                var trackedAsset = new TrackedAsset(this, assetItem.Id, assetItem.Asset, clonedAsset);
+                var trackedAsset = new TrackedAsset(this, assetItem.Asset, clonedAsset);
 
                 // Adds to global list
                 trackedAssets.Add(assetId, trackedAsset);
@@ -316,8 +337,8 @@ namespace SiliconStudio.Assets.Tracking
 
         private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            // Don't update the source tracker while saving (setting dirty flag to false)
-            if (newValue)
+            // Don't update the source tracker while saving
+            if (!isSaving)
             {
                 lock (ThisLock)
                 {
@@ -406,7 +427,7 @@ namespace SiliconStudio.Assets.Tracking
                     fileEvents.Clear();
                 }
 
-                if (fileEventsWorkingCopy.Count == 0 || isTrackingPaused)
+                if (fileEventsWorkingCopy.Count == 0 || isTrackingPaused || isSaving)
                     continue;
 
                 // If this an asset belonging to a package
@@ -440,13 +461,17 @@ namespace SiliconStudio.Assets.Tracking
                 if (!mapSourceFilesToAssets.TryGetValue(sourceFile, out items))
                     return;
 
+                currentHashes[sourceFile] = hash;
+
                 var message = new List<SourceFileChangedData>();
-                var data = default(SourceFileChangedData);
                 foreach (var itemId in items)
                 {
                     TrackedAsset trackedAsset;
-                    if (trackedAssets.TryGetValue(itemId, out trackedAsset) && trackedAsset.NotifySourceFileChanged(sourceFile, hash, ref data))
+                    if (trackedAssets.TryGetValue(itemId, out trackedAsset))
+                    {
+                        var data = new SourceFileChangedData(SourceFileChangeType.SourceFile, trackedAsset.AssetId, new[] { sourceFile });
                         message.Add(data);
+                    }
                 }
                 if (message.Count > 0)
                 {
