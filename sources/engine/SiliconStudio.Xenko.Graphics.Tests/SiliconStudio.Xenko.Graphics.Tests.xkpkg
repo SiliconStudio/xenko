@@ -61,7 +61,7 @@ Profiles:
         Platform: iOS
         InheritProfiles: []
         AssetFolders:
-            -   Path: Assets/iPhone
+            -   Path: Assets/iOS
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
