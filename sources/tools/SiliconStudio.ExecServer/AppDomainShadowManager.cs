@@ -51,9 +51,10 @@ namespace SiliconStudio.ExecServer
         /// <param name="workingDirectory">The working directory.</param>
         /// <param name="environmentVariables">The environment variables.</param>
         /// <param name="args">The main arguments.</param>
+        /// <param name="shadowCache">If [true], use shadow cache.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>System.Int32.</returns>
-        public int Run(string workingDirectory, Dictionary<string, string> environmentVariables, string[] args, IServerLogger logger)
+        public int Run(string workingDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache, IServerLogger logger)
         {
             lock (disposingLock)
             {
@@ -68,7 +69,7 @@ namespace SiliconStudio.ExecServer
             AppDomainShadow shadowDomain = null;
             try
             {
-                shadowDomain = GetOrNew(IsCachingAppDomain);
+                shadowDomain = GetOrNew(shadowCache, IsCachingAppDomain);
                 return shadowDomain.Run(workingDirectory, environmentVariables, args, logger);
             }
             finally
@@ -130,13 +131,13 @@ namespace SiliconStudio.ExecServer
         /// Get or create a new <see cref="AppDomainShadow"/>.
         /// </summary>
         /// <returns></returns>
-        private AppDomainShadow GetOrNew(bool useCache)
+        private AppDomainShadow GetOrNew(bool shadowCache, bool appdomainCache)
         {
             lock (appDomainShadows)
             {
                 foreach (var appDomainShadow in appDomainShadows)
                 {
-                    if (appDomainShadow.TryLock())
+                    if (appDomainShadow.ShadowCache == shadowCache && appDomainShadow.TryLock())
                     {
                         Console.WriteLine("Use cached AppDomain {0}", appDomainShadow.Name);
                         return appDomainShadow;
@@ -145,10 +146,10 @@ namespace SiliconStudio.ExecServer
 
                 var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
                 Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
-                var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
+                var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, shadowCache, nativeDllsPathOrFolderList.ToArray());
                 newAppDomain.TryLock();
 
-                if (useCache)
+                if (appdomainCache)
                 {
                     appDomainShadows.Add(newAppDomain);
                 }
