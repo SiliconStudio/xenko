@@ -850,7 +850,9 @@ namespace SiliconStudio.Core.IO
                 // If we are expecting a directory, merge the fileName with the directory
                 if (fileName.IsValid)
                 {
-                    directory.Length = directory.Length + 1 + fileName.Length;
+                    // Handle the case when the directory is just / and we don't have a leading drive
+                    var separatorLength = directory.Length != 1 ? 1 : 0;
+                    directory.Length = directory.Length + separatorLength + fileName.Length;
                     fileName = new StringSpan();
                 }
             }

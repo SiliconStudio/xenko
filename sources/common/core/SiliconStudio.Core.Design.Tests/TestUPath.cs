@@ -415,7 +415,9 @@ namespace SiliconStudio.Core.Design.Tests
             var assetPath = new UDirectory("/a/b/c");
             Assert.AreEqual("/a/b/c", assetPath.GetDirectory());
             Assert.AreEqual("/a/b/c", assetPath.FullPath);
-            var directory = new UDirectory("/a");
+            var directory = new UDirectory("C:/a");
+            Assert.AreEqual("/a", directory.GetDirectory());
+            directory = new UDirectory("/a");
             Assert.AreEqual("/a", directory.GetDirectory());
         }
 
