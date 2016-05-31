@@ -7,7 +7,7 @@ Files:
   - {Source: $ProjectName$.WindowsStore.csproj.t4, Target: $ProjectName$.WindowsStore.csproj, IsTemplate: true, CurrentPlatform: WindowsStore}
   - {Source: $ProjectName$.iOS.csproj.t4, Target: $ProjectName$.iOS.csproj, IsTemplate: true, CurrentPlatform: iOS}
   - {Source: $ProjectName$.Android.csproj.t4, Target: $ProjectName$.Android.csproj, IsTemplate: true, CurrentPlatform: Android}
-  - {Source: readme.md.t4, Target: readme.md, IsTemplate: true}
+  - {Source: README.md.t4, Target: README.md, IsTemplate: true}
   - {Source: TestClass1.cs.t4, Target: TestClass1.cs, IsTemplate: true}
   - {Source: Properties\AssemblyInfo.cs.t4, Target: Properties\AssemblyInfo.cs, IsTemplate: true}
   - {Source: Properties\AndroidManifest.xml.t4, Target: Properties\AndroidManifest.xml, IsTemplate: true}
