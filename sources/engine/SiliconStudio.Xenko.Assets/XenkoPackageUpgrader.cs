@@ -25,7 +25,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.7.0-alpha01")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.7.0-alpha02")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -252,13 +252,15 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha02"))
             {
-                // Update source hash
-                foreach (var assetFile in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkm3d" || f.FilePath.GetFileExtension() == ".xkskel"))
+                foreach (var assetFile in assetFiles)
                 {
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
+                        if (assetYaml == null)
+                            continue;
+
                         var sourceNode = assetYaml.DynamicRootNode.Source;
                         var sourceHashNode = assetYaml.DynamicRootNode.SourceHash;
                         if (sourceHashNode != null)
@@ -271,10 +273,17 @@ namespace SiliconStudio.Xenko.Assets
                             assetYaml.DynamicRootNode["~SourceHashes"] = yamlDic;
                             assetYaml.DynamicRootNode.SourceHash = DynamicYamlEmpty.Default;
                         }
+                        assetYaml.DynamicRootNode.ImporterId = DynamicYamlEmpty.Default;
+                        assetYaml.DynamicRootNode.KeepSourceSideBySide = DynamicYamlEmpty.Default;
+
+                        var assetBase = assetYaml.DynamicRootNode["~Base"];
+                        if (assetBase != null)
+                        {
+                            if (assetBase.Location == "--import--")
+                                assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
+                        }
                     }
                 }
-
-                // TODO: remove base that comes from import
             }
 
             return true;
