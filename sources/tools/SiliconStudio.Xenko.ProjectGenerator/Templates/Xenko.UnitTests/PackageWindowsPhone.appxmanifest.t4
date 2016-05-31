@@ -30,12 +30,12 @@
         EntryPoint="<#= Properties.Namespace #>.App">
         <m3:VisualElements
             DisplayName="<#= ProjectName #>"
-            Square150x150Logo="AssetsWindowsPhone\Logo.png"
-            Square44x44Logo="AssetsWindowsPhone\SmallLogo.png"
+            Square150x150Logo="Resources\WindowsPhone\Logo.png"
+            Square44x44Logo="Resources\WindowsPhone\SmallLogo.png"
             Description="<#= ProjectName #>"
             ForegroundText="light"
             BackgroundColor="#464646">
-            <m3:SplashScreen Image="AssetsWindowsPhone\SplashScreen.png"/>
+            <m3:SplashScreen Image="Resources\WindowsPhone\SplashScreen.png"/>
         </m3:VisualElements>
     </Application>
   </Applications>
