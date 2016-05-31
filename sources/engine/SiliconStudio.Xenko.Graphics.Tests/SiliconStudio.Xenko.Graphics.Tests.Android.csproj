@@ -9,9 +9,6 @@
     <ProjectGuid>{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Graphics.Tests</AssemblyName>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
@@ -23,6 +20,9 @@
     <MandroidI18n />
     <JavaMaximumHeapSize />
     <JavaOptions />
+    <AssemblyName>SiliconStudio.Xenko.Graphics.Tests</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
     <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
@@ -86,7 +86,7 @@
     <Compile Label="Xenko.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
       <Link>NUnitLiteLauncher.Android.cs</Link>
     </Compile>
-    <None Include="readme.md" />
+    <None Include="README.md" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\CustomEffect.cs">
       <AutoGen>True</AutoGen>

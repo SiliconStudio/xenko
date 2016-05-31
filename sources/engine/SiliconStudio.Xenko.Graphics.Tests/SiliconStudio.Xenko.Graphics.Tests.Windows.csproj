@@ -9,13 +9,13 @@
     <ProjectGuid>{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
+    <XenkoBuildTags>*</XenkoBuildTags>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <XenkoBuildTags>*</XenkoBuildTags>
     <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
     <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -85,7 +85,7 @@
     <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestImageLoad</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="readme.md" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

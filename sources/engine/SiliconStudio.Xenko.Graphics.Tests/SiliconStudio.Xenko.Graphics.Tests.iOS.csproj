@@ -9,10 +9,10 @@
     <ProjectGuid>{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
     <AssemblyName>SiliconStudioXenkoGraphicsTests</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
     <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
@@ -109,7 +109,7 @@
     <Compile Label="Xenko.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
       <Link>NUnitLiteLauncher.iPhone.cs</Link>
     </Compile>
-    <None Include="readme.md" />
+    <None Include="README.md" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\CustomEffect.cs">
       <AutoGen>True</AutoGen>
