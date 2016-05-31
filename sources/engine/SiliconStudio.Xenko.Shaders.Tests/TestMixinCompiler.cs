@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             layers.Add(new MaterialBlendLayer
             {
                 BlendMap = new ComputeFloat(0.5f),
-                Material =  AttachedReferenceManager.CreateSerializableVersion<Material>(Guid.Empty, "fake")
+                Material =  AttachedReferenceManager.CreateProxyObject<Material>(Guid.Empty, "fake")
             });
 
             var materialAsset = new MaterialAsset

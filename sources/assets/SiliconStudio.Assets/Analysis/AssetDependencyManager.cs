@@ -204,9 +204,9 @@ namespace SiliconStudio.Assets.Analysis
         /// Finds the missing references for a particular asset.
         /// </summary>
         /// <param name="assetId">The asset identifier.</param>
-        /// <returns>IEnumerable{IContentReference}.</returns>
+        /// <returns>IEnumerable{IReference}.</returns>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public IEnumerable<IContentReference> FindMissingReferences(Guid assetId)
+        public IEnumerable<IReference> FindMissingReferences(Guid assetId)
         {
             lock (Initialize())
             {
@@ -217,7 +217,7 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            return Enumerable.Empty<IContentReference>();
+            return Enumerable.Empty<IReference>();
         }
 
         private object Initialize()
@@ -835,7 +835,7 @@ namespace SiliconStudio.Assets.Analysis
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
                 // references and base
-                var reference = obj as IContentReference;
+                var reference = obj as IReference;
                 if (reference == null)
                 {
                     var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);

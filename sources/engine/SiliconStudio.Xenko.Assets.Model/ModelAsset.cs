@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         protected override int InternalBuildOrder => -100; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 
         /// <inheritdoc/>
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
             if (Skeleton != null)
             {

@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
         }
 
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
             foreach (var shapeDesc in ColliderShapes.OfType<ConvexHullColliderShapeDesc>())
             {

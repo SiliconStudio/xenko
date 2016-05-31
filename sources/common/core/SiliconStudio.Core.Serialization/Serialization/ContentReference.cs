@@ -4,52 +4,42 @@ using System;
 
 namespace SiliconStudio.Core.Serialization
 {
-    [Obsolete("This class is deprecated will be removed in the future. Use AttachedReference instead.")]
-    public abstract class ContentReference : ITypedContentReference, IEquatable<ContentReference>
+    internal abstract class ContentReference : ILoadableReference, IEquatable<ContentReference>
     {
         internal const int NullIdentifier = -1;
 
         /// <summary>
-        /// Gets or sets the asset unique identifier.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL of the referenced data.
+        /// Gets or sets the location of the referenced content.
         /// </summary>
         /// <value>
-        /// The URL of the referenced data.
+        /// The location of the referenced content.
         /// </value>
         public abstract string Location { get; set; }
 
-        public ContentReferenceState State { get; set; }
+        public ContentReferenceState State { get; protected set; }
 
         public abstract Type Type { get; }
 
-        public abstract object ObjectValue { get; set; }
+        public abstract object ObjectValue { get; }
 
         public bool Equals(ContentReference other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id) && Equals(Location, other.Location);
+            return Equals(Location, other.Location);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((ContentReference)obj);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (Id.GetHashCode()*397) ^ (Location?.GetHashCode() ?? 0);
-            }
+            return Location?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(ContentReference left, ContentReference right)
@@ -65,19 +55,38 @@ namespace SiliconStudio.Core.Serialization
 
         public override string ToString()
         {
-            return $"{Id}:{Location}";
+            return $"{{{Location}}}";
         }
     }
 
     [DataSerializer(typeof(ContentReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    [Obsolete("This class is deprecated will be removed in the future. Use AttachedReference instead.")]
-    public sealed class ContentReference<T> : ContentReference where T : class
+    internal sealed class ContentReference<T> : ContentReference where T : class
     {
         // Depending on state, either value or Location is null (they can't be both non-null)
         private T value;
         private string url;
 
         public override Type Type => typeof(T);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentReference"/> class with the given value.
+        /// </summary>
+        /// <param name="value">The value of the referenced conten.t</param>
+        /// <remarks>This constructor should be used during serialization.</remarks>
+        public ContentReference(T value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentReference"/> class with the given id and location.
+        /// </summary>
+        /// <param name="location">The location of the referenced content.</param>
+        /// <remarks>This constructor should be used during deserialization.</remarks>
+        public ContentReference(string location)
+        {
+            Location = location;
+        }
 
         /// <summary>
         /// Gets or sets the value.
@@ -90,20 +99,6 @@ namespace SiliconStudio.Core.Serialization
         {
             get
             {
-                //if (State == ContentReferenceState.NeverLoad)
-                //    throw new InvalidOperationException("Value can't be read in this state.");
-                //lock (ContentManager)
-                //{
-                //    if (State == ContentReferenceState.LoadFirstAccess)
-                //    {
-                //        value = ContentManager.Load<T>(Location);
-                //        State = ContentReferenceState.Loaded;
-                //    }
-                //    else if (State == ContentReferenceState.LoadEverytime)
-                //    {
-                //        return ContentManager.Load<T>(Location);
-                //    }
-                //}
                 return value;
             }
             set
@@ -119,46 +114,24 @@ namespace SiliconStudio.Core.Serialization
             get
             {
                 // TODO: Should we return value.Location if value is not null, or just reference Location?
-                if (value == null)
+                if (ObjectValue == null)
                     return url;
 
-                return AttachedReferenceManager.GetUrl(value);
+                return AttachedReferenceManager.GetUrl(ObjectValue);
             }
             set
             {
-                if (this.value == null)
+                if (ObjectValue == null)
                 {
                     url = value;
                 }
                 else
                 {
-                    AttachedReferenceManager.SetUrl(this.value, value);
+                    AttachedReferenceManager.SetUrl(ObjectValue, value);
                 }
             }
         }
 
-        public override object ObjectValue
-        {
-            get { return Value; }
-            set { Value = (T)value; }
-        }
-
-        public ContentReference()
-        {
-            Value = null;
-        }
-
-        public ContentReference(Guid id, string location)
-        {
-            Id = id;
-            Location = location;
-        }
-
-        public static implicit operator ContentReference<T>(T value)
-        {
-            return new ContentReference<T>() { Value = value };
-        }
-
-
+        public override object ObjectValue => Value;
     }
 }

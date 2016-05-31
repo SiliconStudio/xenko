@@ -5,9 +5,9 @@ using System;
 namespace SiliconStudio.Core.Serialization
 {
     /// <summary>
-    /// An interface that provides a reference to an asset.
+    /// An interface that provides a reference to an object identified by a <see cref="Guid"/> and a location.
     /// </summary>
-    public interface IContentReference
+    public interface IReference
     {
         /// <summary>
         /// Gets the asset unique identifier.
@@ -24,9 +24,9 @@ namespace SiliconStudio.Core.Serialization
 
 
     /// <summary>
-    /// A typed <see cref="IContentReference"/>
+    /// A typed <see cref="IReference"/>
     /// </summary>
-    public interface ITypedContentReference : IContentReference
+    public interface ITypedReference : IReference
     {
         /// <summary>
         /// Gets the type of this content reference.

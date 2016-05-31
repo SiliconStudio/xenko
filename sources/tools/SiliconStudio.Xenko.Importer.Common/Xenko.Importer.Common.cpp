@@ -67,12 +67,7 @@ public:
 	{
 		ParameterKey<Texture^>^ parameterKey;
 
-		auto texture = gcnew ContentReference<Texture^>();
-
 		auto url = vfsOutputPath + "_" + Path::GetFileNameWithoutExtension(sourceTextureFile);
-
-		texture->Location = url;
-		//assetManager->Url->Set(texture, url);
 
 		if (File::Exists(sourceTextureFile))
 		{
@@ -82,10 +77,6 @@ public:
 								nullptr, CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 			}
 		}
-
-		//meshData->Parameters->Set(
-		//	parameterKey = ParameterKeys::IndexedKey(surfaceMaterialKey, textureCount++),
-		//	texture);
 
 		parameterKey = ParameterKeys::IndexedKey(surfaceMaterialKey, textureCount++);
 		String^ uvSetName = "TEXCOORD";
@@ -119,7 +110,7 @@ public:
 		auto uvScaling = textureUVscaling;
 		auto textureName = textureFileName;
 	
-		auto texture = AttachedReferenceManager::CreateSerializableVersion<Texture^>(System::Guid(), textureName);
+		auto texture = AttachedReferenceManager::CreateProxyObject<Texture^>(System::Guid(), textureName);
 
 		auto currentTexture = gcnew ComputeTextureColor(texture, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
 		currentTexture->AddressModeU = addressModeU;

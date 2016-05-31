@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     Texture texture = null;
                     if (textureUrl != null)
                     {
-                        texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, textureUrl);
+                        texture = AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, textureUrl);
                     }
                     else
                     {
