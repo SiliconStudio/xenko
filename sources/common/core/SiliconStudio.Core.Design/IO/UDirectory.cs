@@ -67,5 +67,11 @@ namespace SiliconStudio.Core.IO
 
             return path.FullPath.StartsWith(FullPath, StringComparison.OrdinalIgnoreCase) && path.FullPath.Length > FullPath.Length && path.FullPath[FullPath.Length] == DirectorySeparatorChar;
         }
+
+        public string GetDirectoryName()
+        {
+            var index = FullPath.IndexOfReverse(DirectorySeparatorChar);
+            return index >= 0 ? FullPath.Substring(index + 1) : "";
+        }
     }
 }
