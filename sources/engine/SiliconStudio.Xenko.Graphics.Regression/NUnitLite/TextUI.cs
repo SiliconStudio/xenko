@@ -64,6 +64,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         #region Constructors
 
+        public ITestListener TestListener { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TextUI"/> class.
         /// </summary>
@@ -316,6 +318,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             if (commandLineOptions.LabelTestsInOutput)
                 writer.WriteLine("***** {0}", test.Name);
+
+            TestListener?.TestStarted(test);
         }
 
         /// <summary>
@@ -324,6 +328,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// <param name="result">The result of the test</param>
         public void TestFinished(ITestResult result)
         {
+            TestListener?.TestFinished(result);
         }
 
         /// <summary>
@@ -332,6 +337,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// <param name="testOutput">A console message</param>
         public void TestOutput(TestOutput testOutput)
         {
+            TestListener?.TestOutput(testOutput);
         }
 
         #endregion

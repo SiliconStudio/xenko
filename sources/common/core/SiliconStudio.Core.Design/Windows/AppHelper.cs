@@ -25,13 +25,13 @@ namespace SiliconStudio.Core.Windows
             {
                 body.Append(header);
             }
-            body.AppendLine(string.Format("Current Directory: {0}", Environment.CurrentDirectory));
-            body.AppendLine(string.Format("Command Line Args: {0}", string.Join(" ", GetCommandLineArgs())));
-            body.AppendLine(string.Format("OS Version: {0} ({1})", Environment.OSVersion, Environment.Is64BitOperatingSystem ? "x64" : "x86"));
-            body.AppendLine(string.Format("Processor Count: {0}", Environment.ProcessorCount));
+            body.AppendLine($"Current Directory: {Environment.CurrentDirectory}");
+            body.AppendLine($"Command Line Args: {string.Join(" ", GetCommandLineArgs())}");
+            body.AppendLine($"OS Version: {Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? "x64" : "x86")})");
+            body.AppendLine($"Processor Count: {Environment.ProcessorCount}");
             body.AppendLine("Video configuration:");
             WriteVideoConfig(body);
-            body.AppendLine(string.Format("Exception: {0}", exception.FormatForReport()));
+            body.AppendLine($"Exception: {exception.FormatFull()}");
             return body.ToString();
         }
 
@@ -59,9 +59,9 @@ namespace SiliconStudio.Core.Windows
 
                 foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
                 {
-                    foreach (PropertyData property in managementObject.Properties)
+                    foreach (var property in managementObject.Properties)
                     {
-                        writer.AppendLine(string.Format("{0}: {1}", property.Name, property.Value));
+                        writer.AppendLine($"{property.Name}: {property.Value}");
                     }
                 }
             }
@@ -75,12 +75,12 @@ namespace SiliconStudio.Core.Windows
         {
             try
             {
-                int i = 0;
+                var i = 0;
                 var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
                 foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
                 {
-                    writer.AppendLine(string.Format("GPU {0}", ++i));
-                    foreach (PropertyData property in managementObject.Properties)
+                    writer.AppendLine($"GPU {++i}");
+                    foreach (var property in managementObject.Properties)
                     {
                         writer.AppendLine(string.Format("  {0}: {1}", property.Name, property.Value));
                     }

@@ -97,9 +97,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         public XenkoParsingInfo ParsingInfo { get; set; }
 
         /// <summary>
-        /// Occurence ID in the inheritance tree
+        /// Occurrence ID in the inheritance tree
         /// </summary>
-        public int OccurenceId = 0;
+        public int OccurrenceId = 0;
 
         /// <summary>
         /// List of variables that share their name i.e. potential conflicting variables

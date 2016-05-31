@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
                     new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
 
-                ((AndroidGraphicsContext)gameWindow.GraphicsContext).Swap();
+                gameWindow.GraphicsContext.SwapBuffers();
             }
         }
 

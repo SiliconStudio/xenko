@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="exception">The exception to format</param>
         /// <param name="startWithNewLine">Indicate whether a <see cref="Environment.NewLine"/> symbol should be included at the beginning of the resulting string.</param>
         /// <returns>A string representing the exception formatted for dialog message.</returns>
-        public static string FormatForDialog(this Exception exception, bool startWithNewLine)
+        public static string FormatSummary(this Exception exception, bool startWithNewLine)
         {
             // Get the innermost exception.
             while (exception.InnerException != null)
@@ -36,7 +36,7 @@ namespace SiliconStudio.Core.Extensions
                 exception = exception.InnerException;
             }
             var stackTrace = ExtractStackTrace(exception, 0, MaxStackTraceLines);
-            return string.Format("{0}{1}{2}{3}", startWithNewLine ? Environment.NewLine : "", exception.Message, Environment.NewLine, stackTrace);
+            return $"{(startWithNewLine ? Environment.NewLine : "")}{exception.Message}{Environment.NewLine}{stackTrace}";
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="indentIncrement">The number of spaces to add to the current indent when printing an inner exception.</param>
         /// <param name="indent">The number of spaces to insert at the beginning of each line.</param>
         /// <returns>A string representing the exception formatted for log or report.</returns>
-        public static string FormatForReport(this Exception exception, int indentIncrement = 2, int indent = 0)
+        public static string FormatFull(this Exception exception, int indentIncrement = 2, int indent = 0)
         {
             var stringBuilder = new StringBuilder();
             FormatForReportRecursively(stringBuilder, exception, indentIncrement, indent);

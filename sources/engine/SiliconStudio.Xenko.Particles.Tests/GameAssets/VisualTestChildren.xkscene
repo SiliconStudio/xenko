@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 78a8f1bb-a796-4e7a-aec6-23e6e599fa01
-SerializedVersion: {Xenko: 1.6.0-beta03}
+SerializedVersion: {Xenko: 1.7.0-beta02}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -57,6 +57,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
@@ -230,6 +232,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.237500012, G: 0.885624945, B: 1.0, A: 1.0}
@@ -355,6 +359,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 69179ec0-3970-4c49-8b2e-ad12252f0c90
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.919, G: 0.04020624, B: 0.04020624, A: 1.0}
@@ -536,6 +542,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 0969c0b5-d298-4245-bd62-a9abdcdec75c
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             FallbackValue:
@@ -634,6 +642,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 44d4e425-ffdb-4704-999a-c4c00f3fd674
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
@@ -844,6 +854,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.237500012, G: 0.885624945, B: 1.0, A: 1.0}
@@ -904,6 +916,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 69179ec0-3970-4c49-8b2e-ad12252f0c90
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.369, G: 0.369, B: 0.369, A: 1.0}
@@ -1049,6 +1063,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.237500012, G: 0.885624945, B: 1.0, A: 1.0}
@@ -1146,6 +1162,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 69179ec0-3970-4c49-8b2e-ad12252f0c90
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.369, G: 0.369, B: 0.369, A: 1.0}
@@ -1279,6 +1297,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.237500012, G: 0.885624945, B: 1.0, A: 1.0}
@@ -1339,6 +1359,8 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 69179ec0-3970-4c49-8b2e-ad12252f0c90
                                         AlphaAdditive: 0.0
+                                        ZOffset: 0.0
+                                        SoftEdgeDistance: 0.0
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeColor
                                             Value: {R: 0.5084375, G: 1.0, B: 0.243749976, A: 1.0}

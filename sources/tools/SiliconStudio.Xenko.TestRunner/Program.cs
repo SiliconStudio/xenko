@@ -30,6 +30,7 @@ namespace SiliconStudio.Xenko.TestRunner
         private string resultFile;
 
         private bool testFailed = true;
+        private bool testFinished = false;
 
         private readonly AutoResetEvent clientResultsEvent = new AutoResetEvent(false);
 
@@ -81,7 +82,7 @@ namespace SiliconStudio.Xenko.TestRunner
                 if (adbOutputs.ExitCode != 0)
                     throw new InvalidOperationException("Invalid error code from adb shell am start.");
 
-                if (!clientResultsEvent.WaitOne(TimeSpan.FromSeconds(30))) //wait 30 seconds for client connection
+                if (!clientResultsEvent.WaitOne(TimeSpan.FromSeconds(300))) //wait 30 seconds for client connection
                 {
                     Console.WriteLine(@"Device failed to connect.");
                     return -1;
@@ -89,7 +90,11 @@ namespace SiliconStudio.Xenko.TestRunner
 
                 Console.WriteLine(@"Device client connected, waiting for test results...");
 
-                clientResultsEvent.WaitOne(TimeSpan.FromMinutes(5)); //wait 5 minutes max for running tests results
+                // if we receive no events during more than 5 minutes, something is wrong
+                // we also check that test session is not finished as well
+                while (clientResultsEvent.WaitOne(TimeSpan.FromMinutes(5)) && !testFinished)
+                {
+                }
 
                 return testFailed ? -1 : 0;
             }
@@ -139,8 +144,49 @@ namespace SiliconStudio.Xenko.TestRunner
             {
                 var binaryReader = new BinaryReader(clientSocket.ReadStream);
 
-                //Read failure flag
-                testFailed = binaryReader.ReadBoolean();
+                //Read events
+                TestRunnerMessageType messageType;
+                do
+                {
+                    messageType = (TestRunnerMessageType)binaryReader.ReadInt32();
+                    switch (messageType)
+                    {
+                        case TestRunnerMessageType.TestStarted:
+                        {
+                            var testFullName = binaryReader.ReadString();
+                            Console.WriteLine($"Test Started: {testFullName}");
+                            clientResultsEvent.Set();
+                            break;
+                        }
+                        case TestRunnerMessageType.TestFinished:
+                        {
+                            var testFullName = binaryReader.ReadString();
+                            var status = binaryReader.ReadString();
+                            Console.WriteLine($"Test {status}: {testFullName}");
+                            clientResultsEvent.Set();
+                            break;
+                        }
+                        case TestRunnerMessageType.TestOutput:
+                        {
+                            var outputType = binaryReader.ReadString();
+                            var outputText = binaryReader.ReadString();
+                            Console.WriteLine($"  {outputType}: {outputText}");
+                            clientResultsEvent.Set();
+                            break;
+                        }
+                        case TestRunnerMessageType.SessionSuccess:
+                            testFailed = false;
+                            break;
+                        case TestRunnerMessageType.SessionFailure:
+                            testFailed = true;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                } while (messageType != TestRunnerMessageType.SessionFailure && messageType != TestRunnerMessageType.SessionSuccess);
+
+                // Mark test session as finished
+                testFinished = true;
 
                 //Read output
                 var output = binaryReader.ReadString();
@@ -159,7 +205,7 @@ namespace SiliconStudio.Xenko.TestRunner
             {
                 clientResultsEvent.Set();
                 Console.WriteLine(@"Client disconnected before sending results, a fatal crash might have occurred.");
-            }        
+            }
         }
     }
 
@@ -174,23 +220,9 @@ namespace SiliconStudio.Xenko.TestRunner
             bool reinstall = true;
 
             var p = new OptionSet
-                {
-                    "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Xenko Test Suite Tool - Version: "
-                    +
-                    Format(
-                        "{0}.{1}.{2}",
-                        typeof(Program).Assembly.GetName().Version.Major,
-                        typeof(Program).Assembly.GetName().Version.Minor,
-                        typeof(Program).Assembly.GetName().Version.Build) + Empty,
-                    Format("Usage: {0} [assemblies|apk] -option1 -option2:a", exeName),
-                    Empty,
-                    "=== Options ===",
-                    Empty,
-                    { "h|help", "Show this message and exit", v => showHelp = v != null },
-                    { "result-path:", "Result .XML output path", v => resultPath = v },
-                    { "no-reinstall-apk", "Do not reinstall APK", v => reinstall = false },
-                };
+            {
+                "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved", "Xenko Test Suite Tool - Version: " + Format("{0}.{1}.{2}", typeof(Program).Assembly.GetName().Version.Major, typeof(Program).Assembly.GetName().Version.Minor, typeof(Program).Assembly.GetName().Version.Build) + Empty, Format("Usage: {0} [assemblies|apk] -option1 -option2:a", exeName), Empty, "=== Options ===", Empty, { "h|help", "Show this message and exit", v => showHelp = v != null }, { "result-path:", "Result .XML output path", v => resultPath = v }, { "no-reinstall-apk", "Do not reinstall APK", v => reinstall = false },
+            };
 
             try
             {
@@ -250,15 +282,11 @@ namespace SiliconStudio.Xenko.TestRunner
                     testServerHost.TryConnect("127.0.0.1", RouterClient.DefaultPort, true).Wait();
                     Directory.CreateDirectory(resultPath);
                     var deviceResultFile = Path.Combine(resultPath, "TestResult_" + packageName + "_Android_" + device.Name + "_" + device.Serial + ".xml");
-                    
-                    var currentExitCode = testServerHost.RunAndroidTest(
-                        new TestServerHost.ConnectedDevice
-                        {
-                            Name = device.Name,
-                            Serial = device.Serial,
-                            Platform = TestPlatform.Android,
-                        },
-                        reinstall, packageName, packageFile, deviceResultFile);
+
+                    var currentExitCode = testServerHost.RunAndroidTest(new TestServerHost.ConnectedDevice
+                    {
+                        Name = device.Name, Serial = device.Serial, Platform = TestPlatform.Android,
+                    }, reinstall, packageName, packageFile, deviceResultFile);
 
                     var adbPath = AndroidDeviceEnumerator.GetAdbPath();
 

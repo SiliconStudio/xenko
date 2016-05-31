@@ -7,17 +7,10 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget;
-#else
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget2d;
-using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
-using TextureTarget_TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
+using TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
 #endif
 
 namespace SiliconStudio.Xenko.Graphics
@@ -137,7 +130,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             if (StagingData != IntPtr.Zero)
             {
@@ -157,7 +150,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
             }
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         protected void Init(IntPtr dataPointer)
@@ -249,7 +242,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // If overwriting everything, create a new texture
             if (offset == 0 && count == SizeInBytes)
-                GL.TexImage2D((TextureTarget_TextureTarget2d)TextureTarget, subresouceLevel, (PixelInternalFormat)TextureInternalFormat, Math.Min(BufferTextureEmulatedWidth, elementCount), (elementCount + BufferTextureEmulatedWidth - 1) / BufferTextureEmulatedWidth, 0, TextureFormat, TextureType, IntPtr.Zero);
+                GL.TexImage2D((TextureTarget2d)TextureTarget, subresouceLevel, TextureInternalFormat, Math.Min(BufferTextureEmulatedWidth, elementCount), (elementCount + BufferTextureEmulatedWidth - 1) / BufferTextureEmulatedWidth, 0, TextureFormat, TextureType, IntPtr.Zero);
 
             // Work with full elements
             Debug.Assert(offset % bufferTextureElementSize == 0 && count % bufferTextureElementSize == 0, "When updating a buffer texture, offset and count should be a multiple of the element size");
@@ -264,7 +257,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     var firstLineSize = Math.Min(count, BufferTextureEmulatedWidth - (offset % BufferTextureEmulatedWidth));
 
-                    GL.TexSubImage2D((TextureTarget_TextureTarget2d)TextureTarget, 0,
+                    GL.TexSubImage2D((TextureTarget2d)TextureTarget, 0,
                         offset % BufferTextureEmulatedWidth, offset / BufferTextureEmulatedWidth, // coordinates
                         BufferTextureEmulatedWidth - (offset % BufferTextureEmulatedWidth), 1, // size
                         TextureFormat, TextureType, dataPointer);
@@ -276,14 +269,14 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Middle lines
                 if (count / BufferTextureEmulatedWidth > 0)
-                    GL.TexSubImage2D((TextureTarget_TextureTarget2d)TextureTarget, 0,
+                    GL.TexSubImage2D((TextureTarget2d)TextureTarget, 0,
                         0, offset / BufferTextureEmulatedWidth, // coordinates
                         BufferTextureEmulatedWidth, count / BufferTextureEmulatedWidth, // size
                         TextureFormat, TextureType, dataPointer);
 
                 // Last line is done separately (to avoid buffer overrun if last line is not multiple of BufferTextureEmulatedWidth)
                 if (count % BufferTextureEmulatedWidth != 0)
-                    GL.TexSubImage2D((TextureTarget_TextureTarget2d)TextureTarget, 0,
+                    GL.TexSubImage2D((TextureTarget2d)TextureTarget, 0,
                         0, count / BufferTextureEmulatedWidth, // coordinates
                         count % BufferTextureEmulatedWidth, 1, // size
                         TextureFormat, TextureType, dataPointer + (count/ BufferTextureEmulatedWidth * BufferTextureEmulatedWidth) * bufferTextureElementSize);

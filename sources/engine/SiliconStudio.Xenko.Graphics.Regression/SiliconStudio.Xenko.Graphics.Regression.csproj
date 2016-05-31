@@ -34,7 +34,9 @@
       <ItemGroup>
         <Reference Include="MonoTouch.NUnitLite" />
         <Reference Include="MonoTouch.Dialog-1" />
-        <Reference Include="OpenTK-1.0" />
+        <Reference Include="OpenTK-1.1">
+          <HintPath>$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
+        </Reference>
       </ItemGroup>
       <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'iOS'">
         <Compile Include="TouchRunner\NUnitOutputTextWriter.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="RegressionHelpers.cs" />
     <Compile Include="NUnitLite\TextUI.cs" />
     <Compile Include="TestGraphicsDeviceManager.cs" />
+    <Compile Include="TestRunnerMessageType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">

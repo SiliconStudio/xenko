@@ -32,7 +32,8 @@ using Android.App;
 using Android.NUnitLite.UI;
 using Android.OS;
 using Java.IO;
-
+using NUnit.Framework.Api;
+using NUnit.Framework.Internal;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine.Network;
@@ -48,7 +49,7 @@ using static System.Int32;
 namespace NUnitLite.Tests
 {
     [Activity(MainLauncher = true, Name = "nunitlite.tests.MainActivity")]
-    public class MainActivity : Activity
+    public class MainActivity : Activity, ITestListener
     {
         private const char IpAddressesSplitCharacter = '%';
 
@@ -57,6 +58,7 @@ namespace NUnitLite.Tests
         private string resultFile;
         private StringBuilder stringBuilder;
         private SimpleSocket socketContext;
+        private BinaryWriter socketBinaryWriter;
 
         protected TcpClient Connect(string serverAddresses, int serverPort)
         {
@@ -148,6 +150,7 @@ namespace NUnitLite.Tests
             var url = "/task/SiliconStudio.Xenko.TestRunner.exe";
 
             socketContext = RouterClient.RequestServer(url).Result;
+            socketBinaryWriter = new BinaryWriter(socketContext.WriteStream);
 
             // Update build number (if available)
             ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
@@ -177,7 +180,10 @@ namespace NUnitLite.Tests
 
             try
             {
-                new TextUI(stringWriter).Execute(new[] { "-format:nunit2", $"-result:{resultFile}" });
+                new TextUI(stringWriter)
+                {
+                    TestListener = this
+                }.Execute(new[] { "-format:nunit2", $"-result:{resultFile}" });
             }
             catch (Exception ex)
             {
@@ -205,10 +211,10 @@ namespace NUnitLite.Tests
             Logger.Debug(@"Sending results to server");
 
             // Send back result
-            var binaryWriter = new BinaryWriter(socketContext.WriteStream);
-            binaryWriter.Write(failure);
-            binaryWriter.Write(output);
-            binaryWriter.Write(result);
+            socketBinaryWriter.Write((int)(failure ? TestRunnerMessageType.SessionFailure : TestRunnerMessageType.SessionSuccess));
+            socketBinaryWriter.Write(output);
+            socketBinaryWriter.Write(result);
+            socketBinaryWriter.Flush();
 
             Logger.Debug(@"Close connection");
 
@@ -219,6 +225,29 @@ namespace NUnitLite.Tests
             socketContext.Dispose();
 
             Finish();
+        }
+
+        public void TestStarted(ITest test)
+        {
+            socketBinaryWriter.Write((int)TestRunnerMessageType.TestStarted);
+            socketBinaryWriter.Write(test.FullName);
+            socketBinaryWriter.Flush();
+        }
+
+        public void TestFinished(ITestResult result)
+        {
+            socketBinaryWriter.Write((int)TestRunnerMessageType.TestFinished);
+            socketBinaryWriter.Write(result.FullName);
+            socketBinaryWriter.Write(result.ResultState.Status.ToString());
+            socketBinaryWriter.Flush();
+        }
+
+        public void TestOutput(TestOutput testOutput)
+        {
+            socketBinaryWriter.Write((int)TestRunnerMessageType.TestOutput);
+            socketBinaryWriter.Write(testOutput.Type.ToString());
+            socketBinaryWriter.Write(testOutput.Text);
+            socketBinaryWriter.Flush();
         }
 
         protected override void OnDestroy()

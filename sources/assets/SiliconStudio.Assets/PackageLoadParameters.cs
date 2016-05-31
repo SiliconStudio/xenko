@@ -106,6 +106,11 @@ namespace SiliconStudio.Assets
         public Func<Package, IList<PackageSession.PendingPackageUpgrade>, bool> PackageUpgradeRequested;
 
         /// <summary>
+        /// Occurs when an asset is about to be loaded, if false is returned the asset will be ignored and not loaded.
+        /// </summary>
+        public Func<PackageLoadingAssetFile, bool> AssetFilter;
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>PackageLoadParameters.</returns>

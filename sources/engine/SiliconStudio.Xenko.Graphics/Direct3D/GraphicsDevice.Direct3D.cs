@@ -238,7 +238,6 @@ namespace SiliconStudio.Xenko.Graphics
             // Display D3D11 ref counting info
             NativeDevice.ImmediateContext.ClearState();
             NativeDevice.ImmediateContext.Flush();
-            NativeDevice.ImmediateContext.Dispose();
 
             if (IsDebugMode)
             {
@@ -248,6 +247,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             nativeDevice.Dispose();
+            nativeDevice = null;
         }
 
         internal void OnDestroyed()

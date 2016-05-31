@@ -4,9 +4,6 @@
 using System;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using StencilFace = OpenTK.Graphics.ES30.CullFaceMode;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif

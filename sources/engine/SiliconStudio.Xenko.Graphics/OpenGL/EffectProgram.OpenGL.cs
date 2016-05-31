@@ -15,10 +15,6 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Shaders;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-// Use GetProgramParameterName which is what needs to be used with the new version of OpenTK (but not yet ported on Xamarin)
-using GetProgramParameterName = OpenTK.Graphics.ES30.ProgramParameter;
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
@@ -116,7 +112,7 @@ void main()
             CreateShaders();
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
@@ -125,7 +121,7 @@ void main()
 
             ProgramId = 0;
 
-            base.DestroyImpl();
+            base.OnDestroyed();
         }
 
         private void CreateShaders()
@@ -226,11 +222,7 @@ void main()
                         int size;
                         ActiveAttribType type;
                         var attribName = GL.GetActiveAttrib(ProgramId, activeAttribIndex, out size, out type);
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                        var attribIndex = GL.GetAttribLocation(ProgramId, new StringBuilder(attribName));
-#else
                         var attribIndex = GL.GetAttribLocation(ProgramId, attribName);
-#endif
                         Attributes.Add(attribName, attribIndex);
                     }
                 }
