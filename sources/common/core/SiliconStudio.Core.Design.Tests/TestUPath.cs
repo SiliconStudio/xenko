@@ -646,5 +646,16 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(dir1.Contains(new UFile("C:/a/b/x")));
             Assert.IsFalse(dir1.Contains(new UFile("C:/a/b/cx")));
         }
+
+        [Test]
+        public void TestGetDirectoryName()
+        {
+            Assert.AreEqual("c", new UDirectory("C:/a/b/c").GetDirectoryName());
+            Assert.AreEqual("b", new UDirectory("C:/a/b/").GetDirectoryName());
+            Assert.AreEqual("", new UDirectory("C:/").GetDirectoryName());
+            Assert.AreEqual("a", new UDirectory("/a").GetDirectoryName());
+            Assert.AreEqual("", new UDirectory("/").GetDirectoryName());
+            Assert.AreEqual("a", new UDirectory("//a//").GetDirectoryName());
+        }
     }
 }
