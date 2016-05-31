@@ -7,6 +7,12 @@ namespace SiliconStudio.Xenko.Native
 {
     public class Celt : IDisposable
     {
+        public int SampleRate { get; set; }
+
+        public int BufferSize { get; set; }
+
+        public int Channels { get; set; }
+
         private IntPtr celtPtr;
 
         static Celt()
@@ -27,6 +33,9 @@ namespace SiliconStudio.Xenko.Native
         /// <param name="decoderOnly">If we desire only to decode set this to true</param>
         public Celt(int sampleRate, int bufferSize, int channels, bool decoderOnly)
         {
+            SampleRate = sampleRate;
+            BufferSize = bufferSize;
+            Channels = channels;
             celtPtr = XenkoCeltCreate(sampleRate, bufferSize, channels, decoderOnly);
             if (celtPtr == IntPtr.Zero)
             {
@@ -98,12 +107,24 @@ namespace SiliconStudio.Xenko.Native
         /// <param name="audioSamples">A buffer containing interleaved channels (as from constructor channels) and samples (can be any number of samples)</param>
         /// <param name="outputBuffer">An array of bytes, the size of the array will be the max possible size of the compressed packet</param>
         /// <returns></returns>
-        public unsafe int Encode(float[] audioSamples, byte[] outputBuffer)
+        public int Encode(float[] audioSamples, byte[] outputBuffer)
+        {
+            return Encode(audioSamples, audioSamples.Length / Channels, outputBuffer);
+        }
+
+        /// <summary>
+        /// Encode PCM audio into celt compressed format
+        /// </summary>
+        /// <param name="audioSamples">a buffer with float audio data, must be numberOfSamples * Channels</param>
+        /// <param name="numberOfSamples">samples per channel!</param>
+        /// <param name="outputBuffer">the output byte array</param>
+        /// <returns></returns>
+        public unsafe int Encode(float[] audioSamples, int numberOfSamples, byte[] outputBuffer)
         {
             fixed (float* samplesPtr = audioSamples)
             fixed (byte* bufferPtr = outputBuffer)
             {
-                return XenkoCeltEncodeFloat(celtPtr, samplesPtr, audioSamples.Length, bufferPtr, outputBuffer.Length);
+                return XenkoCeltEncodeFloat(celtPtr, samplesPtr, numberOfSamples, bufferPtr, outputBuffer.Length);
             }
         }
 

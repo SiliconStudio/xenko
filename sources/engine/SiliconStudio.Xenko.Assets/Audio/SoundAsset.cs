@@ -12,5 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
         /// The default file extension used by the <see cref="SoundMusicAsset"/>.
         /// </summary>
         public const string FileExtension = ".xksnd;.pdxsnd";
+
+        public int CompressionRatio { get; set; } = 10;
     }
 }
