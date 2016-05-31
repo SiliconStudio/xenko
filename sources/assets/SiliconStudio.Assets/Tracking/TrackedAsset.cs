@@ -53,6 +53,13 @@ namespace SiliconStudio.Assets.Tracking
             UpdateAssetImportPathsTracked(true);
         }
 
+        public bool DependsOnSource(UFile sourceFile)
+        {
+            bool result;
+            sourceFiles.TryGetValue(sourceFile, out result);
+            return result;
+        }
+
         private void UpdateAssetImportPathsTracked(bool isTracking)
         {
             if (isTracking)
@@ -84,7 +91,7 @@ namespace SiliconStudio.Assets.Tracking
 
                 if (changed)
                 {
-                    tracker.SourceFileChanged.Post(new[] { new SourceFileChangedData(SourceFileChangeType.Asset, AssetId, sourceFiles.Select(x => x.Key).ToList()) });
+                    tracker.SourceFileChanged.Post(new[] { new SourceFileChangedData(SourceFileChangeType.Asset, AssetId, sourceFiles.Where(x => x.Value).Select(x => x.Key).ToList()) });
                 }
             }
             else
