@@ -320,7 +320,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                         SubresourceLayout layout;
                         GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource { AspectMask = NativeImageAspect, ArrayLayer = (uint)arraySlice, MipLevel = (uint)mipSlice}, out layout);
-
+                        
                         var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
                         uploadMemory += alignment;
                         uploadOffset += alignment;
@@ -450,14 +450,16 @@ namespace SiliconStudio.Xenko.Graphics
             if (viewType == ViewType.MipBand)
                 throw new NotSupportedException("ViewSlice.MipBand is not supported for render targets");
 
-            int arrayCount;
+            int arrayOrDepthCount;
             int mipCount;
-            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayOrDepthCount, out mipCount);
 
             Format nativeViewFormat;
             int pixelSize;
             bool compressed;
             VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeViewFormat, out pixelSize, out compressed);
+
+            var layerCount = Dimension == TextureDimension.Texture3D ? 1 : arrayOrDepthCount;
 
             var createInfo = new ImageViewCreateInfo
             {
@@ -465,7 +467,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Format = nativeViewFormat,
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)arrayCount, (uint)mipIndex, (uint)mipCount)
+                SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)
@@ -528,14 +530,16 @@ namespace SiliconStudio.Xenko.Graphics
             if (viewType == ViewType.MipBand)
                 throw new NotSupportedException("ViewSlice.MipBand is not supported for render targets");
 
-            int arrayCount;
+            int arrayOrDepthCount;
             int mipCount;
-            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayOrDepthCount, out mipCount);
 
             Format backBufferFormat;
             int pixelSize;
             bool compressed;
             VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out backBufferFormat, out pixelSize, out compressed);
+
+            var layerCount = Dimension == TextureDimension.Texture3D ? 1 : arrayOrDepthCount;
 
             var createInfo = new ImageViewCreateInfo
             {
@@ -547,7 +551,7 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceRange = new ImageSubresourceRange
                 {
                     BaseArrayLayer = (uint)arrayOrDepthSlice,
-                    LayerCount = (uint)arrayCount,
+                    LayerCount = (uint)layerCount,
                     BaseMipLevel = (uint)mipIndex,
                     LevelCount = (uint)mipCount,
                     AspectMask = ImageAspectFlags.Color
