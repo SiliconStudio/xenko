@@ -14,7 +14,7 @@ class SDFFont : Texturing
     stage float4 FontColor(float4 sampledColor, float4 textColor, float4 borderColor, float borderThickness)
     {
         // -0.5 to +0.5 is the maximum distance msdfgen can produce, but it's blurry so cap the border at 0.25
-        borderThickness = clamp(borderThickness, 0, 0.25);
+        borderThickness = clamp(borderThickness, 0, 0.2);
 
         // Higher (more than 1) - sharper
         // Lower (less than 1, more than 0) - blurry
@@ -27,19 +27,15 @@ class SDFFont : Texturing
         float sigDist = medianDistance - axisDistance;
 
         float transition = fwidth(sigDist) * 0.85;
-
-        //float centralLine = sharpnessMagnitude * sigDist/fwidth(sigDist) + axisDistance;
-        //float opacity = smoothstep(0, 1, centralLine);
         float opacity = smoothstep(-transition, transition, sigDist);
         opacity *= opacity;
 
         // Detect edge
-        // TODO Fix borderline as well
         if (borderThickness > 0)
         {
             float farDistance = axisDistance + borderThickness * 2;
             float sigDistBorder = medianDistance - farDistance;
-            float borderLine = sharpnessMagnitude * sigDistBorder/fwidth(sigDistBorder) + farDistance;
+            float borderLine = sharpnessMagnitude * sigDistBorder/fwidth(sigDistBorder) + farDistance;            
             float borderOpacity = smoothstep(0, 1, borderLine);
 
             textColor = lerp(borderColor, textColor, borderOpacity);
