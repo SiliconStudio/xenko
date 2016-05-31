@@ -19,16 +19,22 @@ class SDFFont : Texturing
         // Higher (more than 1) - sharper
         // Lower (less than 1, more than 0) - blurry
         float sharpnessMagnitude = 0.5f;
-        float axisDistance = 0.45 - borderThickness;
+        float axisDistance = 0.4 - borderThickness;
 
         // Get the median distance encoded in the signed distance field
         float medianDistance = median(sampledColor.r, sampledColor.g, sampledColor.b);
 
         float sigDist = medianDistance - axisDistance;
-        float centralLine = sharpnessMagnitude * sigDist/fwidth(sigDist) + axisDistance;
-        float opacity = smoothstep(0, 1, centralLine);
+
+        float transition = fwidth(sigDist) * 0.85;
+
+        //float centralLine = sharpnessMagnitude * sigDist/fwidth(sigDist) + axisDistance;
+        //float opacity = smoothstep(0, 1, centralLine);
+        float opacity = smoothstep(-transition, transition, sigDist);
+        opacity *= opacity;
 
         // Detect edge
+        // TODO Fix borderline as well
         if (borderThickness > 0)
         {
             float farDistance = axisDistance + borderThickness * 2;

@@ -27,7 +27,7 @@ class ParticleComputeColorShader : ParticleBase, SDFFont
         float4 letterColor = base.Shading();
         letterColor.xyz *= 3;
 
-        finalColor = FontColor(finalColor, letterColor, float4(1, 0, 0, 1), 1);
+        finalColor = FontColor(finalColor, letterColor, float4(1, 0, 0, 1), 0);
         // <- TEST
 
         return finalColor;
