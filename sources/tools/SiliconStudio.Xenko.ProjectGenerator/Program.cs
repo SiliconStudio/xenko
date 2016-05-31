@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             string outputFile = null;
             string platform = null;
             string projectName = null;
+            string projectNamespace = null;
             string outputDirectory = null;
 
             var p = new OptionSet
@@ -69,6 +70,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                     string.Empty,
                     { "project-name=", "Project name", v => projectName = v },
                     { "d|output-directory=", "Output directory", v => outputDirectory = v },
+                    { "n|namespace=", "Namespace", v => projectNamespace = v },
                     string.Empty,
                 };
 
@@ -100,7 +102,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                         GenerateUnitTestProject(
                             outputDirectory,
                             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(templateFolder, @"Xenko.UnitTests\Xenko.UnitTests.ttproj")),
-                            projectName);
+                            projectName, projectNamespace);
                         break;
 
                     default:
@@ -118,7 +120,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             return exitCode;
         }
 
-        private static void GenerateUnitTestProject(string outputDirectory, string templateFile, string name)
+        private static void GenerateUnitTestProject(string outputDirectory, string templateFile, string name, string projectNamespace)
         {
             var projectTemplate = ProjectTemplate.Load(templateFile);
 
@@ -175,7 +177,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 .Replace('/', '\\');
             xenkoRelativePath = xenkoRelativePath.TrimEnd('\\');
 
-            options["Namespace"] = name;
+            options["Namespace"] = projectNamespace ?? name;
             options["Package"] = package;
             options["Platforms"] = new List<SolutionPlatform>(AssetRegistry.SupportedPlatforms);
             options["XenkoSdkRelativeDir"] = xenkoRelativePath;
