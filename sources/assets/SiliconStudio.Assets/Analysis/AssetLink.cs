@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Analysis
 
         private ContentLinkType type;
 
-        private readonly IContentReference reference;
+        private readonly IReference reference;
 
         /// <summary>
         /// Create an asset dependency of type <paramref name="type"/> and pointing to <paramref name="item"/>
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Analysis
 
         // This constructor exists for better factorization of code in AssetDependencies. 
         // It should not be turned into public as AssetItem is not valid.
-        internal AssetLink(IContentReference reference, ContentLinkType type)
+        internal AssetLink(IReference reference, ContentLinkType type)
         {
             if (reference == null) throw new ArgumentNullException("reference");
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Assets.Analysis
             set { type = value; }
         }
 
-        public IContentReference Element { get { return reference; } }
+        public IReference Element { get { return reference; } }
 
         /// <summary>
         /// Gets a clone copy of the asset dependency.

@@ -390,7 +390,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 if (assetReference != null)
                 {
-                    // TODO: Currently ReferenceSerializer creates a ContentReference, so we will go through DeserializeObject later to add the reference
+                    // TODO: Currently ReferenceSerializer creates a reference, so we will go through DeserializeObject later to add the reference
                     // This should be unified at some point
                     return assetReference;
                 }
@@ -490,14 +490,12 @@ namespace SiliconStudio.Core.Serialization.Assets
                     {
                         // Create AssetReference
                         assetReference = new AssetReference(url, parentAssetReference == null);
-                        contentSerializerContext.AssetReference = assetReference;
                         result = obj ?? serializer.Construct(contentSerializerContext);
                         SetAssetObject(assetReference, result);
                     }
                     else
                     {
                         result = assetReference.Object;
-                        contentSerializerContext.AssetReference = assetReference;
                     }
 
                     assetReference.Deserialized = true;
@@ -528,8 +526,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                     //AssetReference childReference;
 
-                    if (settings.ContentFilter != null)
-                        settings.ContentFilter(contentReference, ref shouldBeLoaded);
+                    settings.ContentFilter?.Invoke(contentReference, ref shouldBeLoaded);
 
                     if (shouldBeLoaded)
                     {
@@ -619,7 +616,6 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             var assetReference = new AssetReference(url, publicReference);
-            contentSerializerContext.AssetReference = assetReference;
             SetAssetObject(assetReference, obj);
 
             // Process content references
@@ -675,7 +671,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 LoadedAssetReferences[obj] = assetReference;
 
-                // TODO: Currently here so that ContentReference.ObjectValue later keeps its Url.
+                // TODO: Currently here so that reference.ObjectValue later keeps its Url.
                 // Need some reorganization?
                 AttachedReferenceManager.SetUrl(obj, assetReference.Url);
             }

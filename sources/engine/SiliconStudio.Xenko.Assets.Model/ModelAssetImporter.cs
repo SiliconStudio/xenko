@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)
-                    asset.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
+                    asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
                 assetReferences.Add(new AssetItem(animUrl, asset));
             }
@@ -176,7 +176,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
                     {
-                        var reference = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location);
+                        var reference = AttachedReferenceManager.CreateProxyObject<Material>(foundMaterial.Id, foundMaterial.Location);
                         modelMaterial.MaterialInstance.Material = reference;
                     }
                     //todo Instead of null material add a default xenko material
@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             }
 
             if (skeletonAsset != null)
-                asset.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
+                asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
             var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""), null);
             var assetItem = new AssetItem(modelUrl, asset);
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
                     foreach (var materialAssetReferenceLink in materialAssetReferences)
                     {
-                        var materialAssetReference = materialAssetReferenceLink.Reference as IContentReference;
+                        var materialAssetReference = materialAssetReferenceLink.Reference as IReference;
                         if (materialAssetReference == null)
                             continue;
 

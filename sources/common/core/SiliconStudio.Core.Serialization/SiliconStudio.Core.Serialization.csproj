@@ -68,7 +68,8 @@
     <Compile Include="Serialization\ContentReference.cs" />
     <Compile Include="Serialization\ContentReferenceDataSerializer.cs" />
     <Compile Include="Serialization\IContentData.cs" />
-    <Compile Include="Serialization\IContentReference.cs" />
+    <Compile Include="Serialization\ILoadableReference.cs" />
+    <Compile Include="Serialization\IReference.cs" />
     <Compile Include="Serialization\AttachedReference.cs" />
     <Compile Include="Serialization\AttachedReferenceManager.cs" />
     <Compile Include="Storage\Blob.cs" />
