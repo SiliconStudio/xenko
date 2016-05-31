@@ -60,7 +60,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal int defaultVAO;
 
-        DebugProc debugCallbackInstance = DebugCallback;
+        DebugProc debugCallbackInstance;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+        DebugProcKhr debugCallbackInstanceKHR;
+#endif
 
         private const GraphicsPlatform GraphicPlatform =
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -551,21 +554,6 @@ namespace SiliconStudio.Xenko.Graphics
             return framebufferId;
         }
 
-        private void InitializePostFeatures()
-        {
-            // Create and bind default VAO
-            if (HasVAO)
-            {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (!IsOpenGLES2)
-#endif
-                {
-                    GL.GenVertexArrays(1, out defaultVAO);
-                    GL.BindVertexArray(defaultVAO);
-                }
-            }
-        }
-
         internal int TryCompileShader(ShaderType shaderType, string sourceCode)
         {
             int shaderGL = GL.CreateShader(shaderType);
@@ -639,11 +627,6 @@ namespace SiliconStudio.Xenko.Graphics
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {
                 creationFlags |= GraphicsContextFlags.Debug;
-                if (HasKhronosDebug)
-                {
-                    GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
-                    ProfileEnabled = true;
-                }
             }
 
             // set default values
@@ -753,17 +736,60 @@ namespace SiliconStudio.Xenko.Graphics
             // Restore main context
             graphicsContext.MakeCurrent(windowInfo);
 
-            // Setup GL debug log callback
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            // Create default OpenGL State objects
+            DefaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
+        }
+
+        private void InitializePostFeatures()
+        {
+            // Create and bind default VAO
+            if (HasVAO)
             {
-                if (HasKhronosDebug)
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                if (!IsOpenGLES2)
+#endif
                 {
-                    GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+                    GL.GenVertexArrays(1, out defaultVAO);
+                    GL.BindVertexArray(defaultVAO);
                 }
             }
 
-            // Create default OpenGL State objects
-            DefaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
+            if (HasKhronosDebug)
+            {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                bool useKhronoDebugKHR = false;
+                try
+                {
+                    // If properly implemented, we should use that one before ES 3.2 otherwise the other one without KHR prefix
+                    // Unfortunately, many ES implementations don't respect this so we just try both
+                    GL.Khr.DebugMessageCallback(debugCallbackInstanceKHR ?? (debugCallbackInstanceKHR = DebugCallback), IntPtr.Zero);
+                    useKhronoDebugKHR = true;
+                }
+                catch (EntryPointNotFoundException)
+#endif
+                {
+                    GL.DebugMessageCallback(debugCallbackInstance ?? (debugCallbackInstance = DebugCallback), IntPtr.Zero);
+                }
+                GL.Enable((EnableCap)KhrDebug.DebugOutputSynchronous);
+                ProfileEnabled = true;
+
+                // Also do it on async creation context
+                deviceCreationContext.MakeCurrent(deviceCreationWindowInfo);
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                if (useKhronoDebugKHR)
+                {
+                    // If properly implemented, we should use that one before ES 3.2 otherwise the other one without KHR prefix
+                    // Unfortunately, many ES implementations don't respect this so we just try both
+                    GL.Khr.DebugMessageCallback(debugCallbackInstanceKHR, IntPtr.Zero);
+                }
+                else
+#endif
+                {
+                    GL.DebugMessageCallback(debugCallbackInstance, IntPtr.Zero);
+                }
+                GL.Enable((EnableCap)KhrDebug.DebugOutputSynchronous);
+                graphicsContext.MakeCurrent(windowInfo);
+            }
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
