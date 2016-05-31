@@ -409,7 +409,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.AreEqual("test.txt", filePath.GetFileNameWithExtension());
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestWithSimpleDirectory()
         {
             var assetPath = new UDirectory("/a/b/c");
