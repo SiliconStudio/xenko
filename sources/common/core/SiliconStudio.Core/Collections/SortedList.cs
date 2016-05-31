@@ -318,11 +318,6 @@ namespace SiliconStudio.Core.Collections
             return (Find(key) >= 0);
         }
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
         public bool Remove(TKey key)
         {
             if (key == null)
@@ -406,6 +401,11 @@ namespace SiliconStudio.Core.Collections
         }
 
         // IEnumerable<KeyValuePair<TKey, TValue>>
+
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
 
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
@@ -748,7 +748,7 @@ namespace SiliconStudio.Core.Collections
         // Inner classes
         //
 
-        private sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        public sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
             private SortedList<TKey, TValue> host;
             private int pos = -1;

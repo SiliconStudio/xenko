@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             BuildMixinInheritance(mainModuleMixin);
             MixinInheritance = MixinInheritance.Distinct().ToList();
             
-            ComputeMixinOccurence();
+            ComputeMixinOccurrence();
             BuildStageInheritance();
             
             LinkVariables(mainModuleMixin, "", new List<ModuleMixin>());
@@ -428,16 +428,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         }
 
         /// <summary>
-        /// Compute the occurence Id of each mixin
+        /// Compute the occurrence Id of each mixin
         /// </summary>
-        private void ComputeMixinOccurence()
+        private void ComputeMixinOccurrence()
         {
             foreach (var mixin in MixinInheritance)
             {
                 foreach (var mixin2 in MixinInheritance)
                 {
                     if (mixin.MixinName == mixin2.MixinName)
-                        ++(mixin.OccurenceId);
+                        ++(mixin.OccurrenceId);
                     if (mixin == mixin2)
                         break;
                 }
@@ -596,15 +596,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                             continue;
 
                         var firstOccurence = stageMethodList.First();
-                        var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                        var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                        var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                        var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                         if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                             continue;
 
                         newEntry = false;
                         var extMixin = extMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                        if (isClone || extMixin.OccurenceId == 1)
+                        if (isClone || extMixin.OccurrenceId == 1)
                             stageMethodList.Add(extMethod);
                     }
                     
@@ -706,8 +706,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     continue;
 
                 var firstOccurence = stageMethodList.First();
-                var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                     continue;
@@ -748,8 +748,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     continue;
 
                 var firstOccurence = stageMethodList.First();
-                var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                     continue;
@@ -1205,9 +1205,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             MixedShader.Members.AddRange(constants);
             
             // Add structures, typedefs
-            foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
+            foreach (var mixin in MixinInheritance.Where(x => x.OccurrenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.Typedefs);
-            foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
+            foreach (var mixin in MixinInheritance.Where(x => x.OccurrenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.StructureDefinitions);
 
             var sortedNodes = SortNodes(MixedShader.Members);
@@ -1323,7 +1323,41 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             MergeSameSemanticVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
             MergeReferenceVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
-            var usefulVars = mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(KeepVariableInCBuffer);
+
+            // Order variables by cbuffer/rgroup (which still include logical group)
+            var variables = mainModuleMixin.ClassReferences.VariablesReferences.OrderBy(x => ((ConstantBuffer)x.Key.GetTag(XenkoTags.ConstantBuffer))?.Name.Text).ToList();
+
+            // Recreate cbuffer with proper logical groups
+            var constantBuffers = new List<ConstantBuffer>();
+            foreach (var variable in variables)
+            {
+                var cbuffer = (ConstantBuffer)variable.Key.GetTag(XenkoTags.ConstantBuffer);
+                if (cbuffer == null)
+                    continue;
+
+                // Find logical group
+                var cbufferNameSplit = cbuffer.Name.Text.IndexOf('.');
+                if (cbufferNameSplit == -1)
+                    continue;
+
+                var cbufferName = cbuffer.Name.Text.Substring(0, cbufferNameSplit);
+                var cbufferLogicalGroupName = cbufferNameSplit != -1 ? cbuffer.Name.Text.Substring(cbufferNameSplit + 1) : null;
+
+                // Find or create a matching cbuffer
+                var realCBuffer = constantBuffers.FirstOrDefault(x => x.Name.Text == cbufferName && x.Type == cbuffer.Type);
+                if (realCBuffer == null)
+                {
+                    // First time, let's create it
+                    realCBuffer = new ConstantBuffer { Name = cbufferName, Type = cbuffer.Type };
+                    constantBuffers.Add(realCBuffer);
+                }
+
+                // Set cbuffer and logical groups
+                variable.Key.SetTag(XenkoTags.ConstantBuffer, realCBuffer);
+                variable.Key.SetTag(XenkoTags.LogicalGroup, cbufferLogicalGroupName);
+            }
+
+            var usefulVars = variables.Select(x => x.Key).Where(KeepVariableInCBuffer);
             var varList = usefulVars.Where(x => x.ContainsTag(XenkoTags.ConstantBuffer)).ToList();
             var groupedVarList = varList.GroupBy(x =>
             {
@@ -1349,7 +1383,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
 
             // add textures, samplers etc.
-            MixedShader.Members.AddRange(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(IsOutOfCBufferVariable));
+            MixedShader.Members.AddRange(variables.Select(x => x.Key).Where(IsOutOfCBufferVariable));
         }
 
 

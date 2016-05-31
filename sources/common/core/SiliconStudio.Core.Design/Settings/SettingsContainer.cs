@@ -129,7 +129,7 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatForReport());
+                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatFull());
                 return null;
             }
 
@@ -171,7 +171,7 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatForReport());
+                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatFull());
             }
 
             var handler = SettingsFileLoaded;
@@ -226,7 +226,7 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while saving settings file [{0}]: {1}", e, filePath, e.FormatForReport());
+                Logger.Error("Error while saving settings file [{0}]: {1}", e, filePath, e.FormatFull());
                 return false;
             }
             finally

@@ -42,5 +42,10 @@ namespace SiliconStudio.Xenko.Shaders
         /// The default value.
         /// </summary>
         public byte[] DefaultValue;
+
+        /// <summary>
+        /// Logical group, used to group related descriptors and variables together.
+        /// </summary>
+        public string LogicalGroup;
     }
 }

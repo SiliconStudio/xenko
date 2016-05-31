@@ -177,6 +177,17 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Negates a plane by negating all its coefficients, which result in a plane in opposite direction.
+        /// </summary>
+        public void Negate()
+        {
+            Normal.X = -Normal.X;
+            Normal.Y = -Normal.Y;
+            Normal.Z = -Normal.Z;
+            D = -D;
+        }
+
+        /// <summary>
         /// Changes the coefficients of the normal vector of the plane to make it of unit length.
         /// </summary>
         public void Normalize()
@@ -389,6 +400,35 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Projects a point onto a plane.
+        /// </summary>
+        /// <param name="plane">The plane to project the point to.</param>
+        /// <param name="point">The point to project.</param>
+        /// <param name="result">The projected point.</param>
+        public static void Project(ref Plane plane, ref Vector3 point, out Vector3 result)
+        {
+            float distance;
+            DotCoordinate(ref plane, ref point, out distance);
+
+            // compute: point - distance * plane.Normal
+            Vector3.Multiply(ref plane.Normal, distance, out result);
+            Vector3.Subtract(ref point, ref result, out result);
+        }
+
+        /// <summary>
+        /// Projects a point onto a plane.
+        /// </summary>
+        /// <param name="plane">The plane to project the point to.</param>
+        /// <param name="point">The point to project.</param>
+        /// <returns>The projected point.</returns>
+        public static Vector3 Project(Plane plane, Vector3 point)
+        {
+            Vector3 result;
+            Project(ref plane, ref point, out result);
+            return result;
+        }
+
+        /// <summary>
         /// Changes the coefficients of the normal vector of the plane to make it of unit length.
         /// </summary>
         /// <param name="plane">The source plane.</param>
@@ -409,6 +449,30 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="plane">The source plane.</param>
         /// <returns>The normalized plane.</returns>
         public static Plane Normalize(Plane plane)
+        {
+            float magnitude = 1.0f / (float)(Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
+            return new Plane(plane.Normal.X * magnitude, plane.Normal.Y * magnitude, plane.Normal.Z * magnitude, plane.D * magnitude);
+        }
+
+        /// <summary>
+        /// Negates a plane by negating all its coefficients, which result in a plane in opposite direction.
+        /// </summary>
+        /// <param name="plane">The source plane.</param>
+        /// <param name="result">When the method completes, contains the flipped plane.</param>
+        public static void Negate(ref Plane plane, out Plane result)
+        {
+            result.Normal.X = -plane.Normal.X;
+            result.Normal.Y = -plane.Normal.Y;
+            result.Normal.Z = -plane.Normal.Z;
+            result.D = -plane.D;
+        }
+
+        /// <summary>
+        /// Negates a plane by negating all its coefficients, which result in a plane in opposite direction.
+        /// </summary>
+        /// <param name="plane">The source plane.</param>
+        /// <returns>The flipped plane.</returns>
+        public static Plane Negate(Plane plane)
         {
             float magnitude = 1.0f / (float)(Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
             return new Plane(plane.Normal.X * magnitude, plane.Normal.Y * magnitude, plane.Normal.Z * magnitude, plane.D * magnitude);
@@ -604,6 +668,15 @@ namespace SiliconStudio.Core.Mathematics
         public static Plane operator *(Plane plane, float scale)
         {
             return new Plane(plane.Normal.X * scale, plane.Normal.Y * scale, plane.Normal.Z * scale, plane.D * scale);
+        }
+
+        /// <summary>
+        /// Negates a plane by negating all its coefficients, which result in a plane in opposite direction.
+        /// </summary>
+        /// <returns>The negated plane.</returns>
+        public static Plane operator -(Plane plane)
+        {
+            return new Plane(-plane.Normal.X, -plane.Normal.Y, -plane.Normal.Z, -plane.D);
         }
 
         /// <summary>

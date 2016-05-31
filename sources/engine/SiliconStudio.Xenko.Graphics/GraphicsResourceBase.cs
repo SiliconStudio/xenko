@@ -88,13 +88,17 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (device != null)
             {
-                // Add GraphicsResourceBase to device resources
+                // Remove GraphicsResourceBase from device resources
                 var resources = device.Resources;
                 lock (resources)
                 {
                     resources.Remove(this);
                 }
-                DestroyImpl();
+                if (LifetimeState != GraphicsResourceLifetimeState.Destroyed)
+                {
+                    OnDestroyed();
+                    LifetimeState = GraphicsResourceLifetimeState.Destroyed;
+                }
             }
 
             // No need for reload anymore, allow it to be GC

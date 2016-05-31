@@ -98,9 +98,9 @@
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Android' Or '$(SiliconStudioPlatform)' == 'iOS' ">
           <ItemGroup>
-            <Reference Include="OpenTK-1.0" />
-            <Reference Include="OpenTK">
-              <Aliases>opentkold</Aliases>
+            <Reference Include="OpenTK-1.1">
+              <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -148,6 +148,7 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
@@ -363,7 +364,6 @@
     <Compile Include="GraphicsDeviceStatus.cs" />
     <Compile Include="GraphicsException.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.Android.cs" />
-    <Compile Include="OpenGL\AndroidAsyncGraphicsContext.cs" />
     <Compile Include="GraphicsPresenter.cs" />
     <Compile Include="IGraphicsDeviceService.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.OpenTK.cs" />

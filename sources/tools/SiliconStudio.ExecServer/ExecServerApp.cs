@@ -45,7 +45,7 @@ namespace SiliconStudio.ExecServer
         {
             if (argsCopy.Length == 0)
             {
-                Console.WriteLine("Usage ExecServer.exe [/direct executablePath|/server executablePath CPUindex] [executableArguments]");
+                Console.WriteLine("Usage ExecServer.exe [/direct executablePath|/server executablePath CPUindex] /shadow [executableArguments]");
                 return 0;
             }
             var args = new List<string>(argsCopy);
@@ -55,7 +55,7 @@ namespace SiliconStudio.ExecServer
                 args.RemoveAt(0);
                 var executablePath = ExtractPath(args, "executable");
                 var execServerApp = new ExecServerRemote(executablePath, false, false, true);
-                int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray());
+                int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray(), false);
                 return result;
             }
 
@@ -88,6 +88,13 @@ namespace SiliconStudio.ExecServer
             }
             else
             {
+                bool useShadowCache = false;
+                if (args[0] == "/shadow")
+                {
+                    args.RemoveAt(0);
+                    useShadowCache = true;
+                }
+
                 var executablePath = ExtractPath(args, "executable");
                 var workingDirectory = ExtractPath(args, "working directory");
 
@@ -96,7 +103,7 @@ namespace SiliconStudio.ExecServer
                 foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
                     environmentVariables.Add((string)environmentVariable.Key, (string)environmentVariable.Value);
 
-                var result = RunClient(executablePath, workingDirectory, environmentVariables, args);
+                var result = RunClient(executablePath, workingDirectory, environmentVariables, args, useShadowCache);
                 return result;
             }
         }
@@ -157,8 +164,9 @@ namespace SiliconStudio.ExecServer
         /// <param name="executablePath">The executable path.</param>
         /// <param name="workingDirectory">The working directory.</param>
         /// <param name="args">The arguments.</param>
+        /// <param name="shadowCache">If [true], use shadow cache.</param>
         /// <returns>Return status.</returns>
-        private int RunClient(string executablePath, string workingDirectory, Dictionary<string, string> environmentVariables, List<string> args)
+        private int RunClient(string executablePath, string workingDirectory, Dictionary<string, string> environmentVariables, List<string> args, bool shadowCache)
         {
             var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
@@ -203,7 +211,7 @@ namespace SiliconStudio.ExecServer
                             //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
                             try
                             {
-                                var result = service.Run(workingDirectory, environmentVariables, args.ToArray());
+                                var result = service.Run(workingDirectory, environmentVariables, args.ToArray(), shadowCache);
                                 if (result == ExecServerRemote.BusyReturnCode)
                                 {
                                     // Try next server

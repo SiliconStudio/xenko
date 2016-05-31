@@ -229,6 +229,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(1)]
         [Display("Emitter Name")]
+        [DefaultValue(null)]
         public string EmitterName
         {
             get { return emitterName; }
@@ -249,6 +250,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(5)]
         [Display("Max particles")]
+        [DefaultValue(0)]
         public int MaxParticlesOverride
         {
             get { return maxParticlesOverride; }
@@ -282,6 +284,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(11)]
         [Display("Space")]
+        [DefaultValue(EmitterSimulationSpace.World)]
         public EmitterSimulationSpace SimulationSpace
         {
             get { return simulationSpace; }
@@ -304,6 +307,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(12)]
         [Display("Randomize")]
+        [DefaultValue(EmitterRandomSeedMethod.Time)]
         public EmitterRandomSeedMethod RandomSeedMethod
         {
             get
@@ -319,6 +323,17 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
+        /// DrawPriority is used to sort emitters at the same position based on a user defined key and determine the order in which they will be drawn 
+        /// </summary>
+        /// <userdoc>
+        /// DrawPriority determines draw order within the same particle system. Higher priority appears on the top.
+        /// </userdoc>
+        [DataMember(33)]
+        [Display("Draw Priority")]
+        [DefaultValue(0)]
+        public byte DrawPriority { get; set; }
+
+        /// <summary>
         /// How and if particles are sorted, and how they are access during rendering
         /// </summary>
         /// <userdoc>
@@ -326,6 +341,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(35)]
         [Display("Sorting")]
+        [DefaultValue(EmitterSortingPolicy.None)]
         public EmitterSortingPolicy SortingPolicy
         {
             get { return sortingPolicy; }
