@@ -291,6 +291,14 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.R32G32SFloat;
                     pixelSize = 8;
                     break;
+                case PixelFormat.R32G32_UInt:
+                    format = Format.R32G32UInt;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R32G32_SInt:
+                    format = Format.R32G32SInt;
+                    pixelSize = 8;
+                    break;
 
                 case PixelFormat.R32G32B32_Float:
                     format = Format.R32G32B32SFloat;
