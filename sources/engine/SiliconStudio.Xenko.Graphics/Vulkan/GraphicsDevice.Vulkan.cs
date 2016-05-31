@@ -665,6 +665,7 @@ namespace SiliconStudio.Xenko.Graphics
                 new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = heapSize },
                 new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = heapSize },
                 new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = heapSize },
+                new DescriptorPoolSize { Type = DescriptorType.UniformTexelBuffer, DescriptorCount = heapSize },
             };
 
             var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo

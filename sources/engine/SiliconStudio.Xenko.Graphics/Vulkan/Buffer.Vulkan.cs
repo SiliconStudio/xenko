@@ -120,6 +120,12 @@ namespace SiliconStudio.Xenko.Graphics
                 NativeAccessMask = AccessFlags.UniformRead;
             }
 
+            if ((ViewFlags & BufferFlags.ShaderResource) != 0)
+            {
+                createInfo.Usage |= BufferUsageFlags.UniformTexelBuffer;
+                NativeAccessMask = AccessFlags.ShaderRead;
+            }
+
             // Create buffer
             var isStaging = bufferDescription.Usage == GraphicsResourceUsage.Staging;
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);

@@ -814,41 +814,51 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
         {
-            throw new NotImplementedException();
+            var texture = resource as Texture;
+            if (texture != null)
+            {
+                UpdateSubresource(resource, subResourceIndex, databox, new ResourceRegion(0, 0, 0, texture.Width, texture.Height, texture.Depth));
+            }
+            else
+            {
+                var buffer = resource as Buffer;
+                if (buffer != null)
+                {
+                    UpdateSubresource(resource, subResourceIndex, databox, new ResourceRegion(0, 0, 0, buffer.SizeInBytes, 1, 1));
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
         }
 
         internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
         {
+            // Barriers need to be global to command buffer
+            CleanupRenderPass();
+
+            // BufferImageCopy.BufferOffset needs to be a multiple of 4
+            SharpVulkan.Buffer uploadResource;
+            int uploadOffset;
+            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch + 4, out uploadResource, out uploadOffset);
+            var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
+
+            Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, databox.SlicePitch);
+
+            var uploadBufferMemoryBarrier = new BufferMemoryBarrier
+            {
+                StructureType = StructureType.BufferMemoryBarrier,
+                Buffer = uploadResource,
+                SourceAccessMask = AccessFlags.HostWrite,
+                DestinationAccessMask = AccessFlags.TransferRead,
+            };
+
             var texture = resource as Texture;
             if (texture != null)
-            {
-                CleanupRenderPass();
-
-                if (texture.Dimension != TextureDimension.Texture2D)
-                    throw new NotImplementedException();
-
-                var subresource = new ImageSubresource { AspectMask = ImageAspectFlags.Color, ArrayLayer = 0, MipLevel = 0 };
-                SubresourceLayout subResourceLayout;
-                GraphicsDevice.NativeDevice.GetImageSubresourceLayout(texture.NativeImage, subresource, out subResourceLayout);
-                
+            {               
                 var mipSlice = subResourceIndex % texture.MipLevels;
                 var arraySlice = subResourceIndex / texture.MipLevels;
-
-                // BufferImageCopy.BufferOffset needs to be a multiple of 4
-                SharpVulkan.Buffer uploadResource;
-                int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch + 4, out uploadResource, out uploadOffset);
-                var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
-
-                Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, databox.SlicePitch);
-
-                var bufferMemoryBarrier = new BufferMemoryBarrier
-                {
-                    StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = uploadResource,
-                    SourceAccessMask = AccessFlags.HostWrite,
-                    DestinationAccessMask = AccessFlags.TransferRead,
-                };
 
                 var memoryBarrier = new ImageMemoryBarrier
                 {
@@ -860,7 +870,7 @@ namespace SiliconStudio.Xenko.Graphics
                     SourceAccessMask = texture.NativeAccessMask,
                     DestinationAccessMask = AccessFlags.TransferWrite,
                 };
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &memoryBarrier);
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &uploadBufferMemoryBarrier, 1, &memoryBarrier);
 
                 // TODO VULKAN: Handle depth-stencil (NOTE: only supported on graphics queue)
                 // TODO VULKAN: Check on non-zero slices
@@ -890,7 +900,42 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                throw new NotImplementedException();
+                var buffer = resource as Buffer;
+                if (buffer != null)
+                {
+                    var memoryBarriers = stackalloc BufferMemoryBarrier[2];
+
+                    memoryBarriers[0] = uploadBufferMemoryBarrier;
+                    memoryBarriers[1] = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = buffer.NativeBuffer,
+                        SourceAccessMask = buffer.NativeAccessMask,
+                        DestinationAccessMask = AccessFlags.TransferWrite,
+                    };
+                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 2, memoryBarriers, 0, null);
+
+                    var bufferCopy = new BufferCopy
+                    {
+                        SourceOffset = (uint)region.Right,
+                        DestinationOffset = (uint)region.Right,
+                        Size = (uint)(region.Right - region.Left),
+                    };
+                    NativeCommandBuffer.CopyBuffer(uploadResource, buffer.NativeBuffer, 1, &bufferCopy);
+
+                    var memoryBarrier = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = buffer.NativeBuffer,
+                        SourceAccessMask = AccessFlags.TransferWrite,
+                        DestinationAccessMask = buffer.NativeAccessMask,
+                    };
+                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
             }
         }
 

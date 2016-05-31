@@ -78,14 +78,26 @@ namespace SiliconStudio.Xenko.Graphics
                 var imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
 
                 write.DescriptorType = DescriptorType.SampledImage;
-                //write.DescriptorType = Description.ImmutableSamplers[slot] != Sampler.Null ? DescriptorType.CombinedImageSampler : DescriptorType.SampledImage;
                 write.ImageInfo = new IntPtr(&imageInfo);
 
                 GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
             }
             else
             {
-                throw new NotImplementedException();
+                var buffer = shaderResourceView as Buffer;
+                if (buffer != null)
+                {
+                    var bufferViewCopy = buffer.NativeBufferView;
+
+                    write.DescriptorType = DescriptorType.UniformTexelBuffer;
+                    write.TexelBufferView = new IntPtr(&bufferViewCopy);
+
+                    GraphicsDevice.NativeDevice.UpdateDescriptorSets(1, &write, 0, null);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
             }
         }
 
