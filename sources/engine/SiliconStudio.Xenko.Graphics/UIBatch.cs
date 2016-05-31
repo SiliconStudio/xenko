@@ -143,7 +143,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="device">A valid instance of <see cref="GraphicsDevice"/>.</param>
         public UIBatch(GraphicsDevice device)
             : base(device, UIEffect.Bytecode, UIEffect.BytecodeSRgb,
-//            : base(device, FontEffectShader.Bytecode, FontEffectShader.BytecodeSRgb,    // TEST - UIBatch needs to be upgraded to allow custom effects to be added
             ResourceBufferInfo.CreateDynamicIndexBufferInfo("UIBatch.VertexIndexBuffers", MaxIndicesCount, MaxVerticesCount), 
             VertexPositionColorTextureSwizzle.Layout)
         {
@@ -151,7 +150,11 @@ namespace SiliconStudio.Xenko.Graphics
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
 
             //  Load custom font rendering effects here
+
+            // For signed distance field font rendering
             sdfFontEffect = new EffectInstance(new Effect(device, FontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
+
+            // For signed distance field thumbnail rendering
             sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
         }
 

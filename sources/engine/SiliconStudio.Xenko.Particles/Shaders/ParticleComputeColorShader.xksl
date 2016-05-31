@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Rendering
 {
 
-class ParticleComputeColorShader : ParticleBase, SDFFont
+class ParticleComputeColorShader : ParticleBase
 {
     // -------------------------------------
     // streams

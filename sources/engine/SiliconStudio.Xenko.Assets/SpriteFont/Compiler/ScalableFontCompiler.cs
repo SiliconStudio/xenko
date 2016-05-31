@@ -97,7 +97,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
-        /// <param name="srgb"></param>
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset)
         {
@@ -109,41 +108,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             var glyphs = ImportFont(fontAsset, out lineSpacing, out baseLine);
 
-            // TODO Check before optimization
-            //// Optimize.
-            //foreach (Glyph glyph in glyphs)
-            //    GlyphCropper.Crop(glyph);
-
             Bitmap bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
 
-            // Automatically detect whether this is a monochromatic or color font?
-            //if (fontAsset.Format == FontTextureFormat.Auto)
-            //{
-            //    bool isMono = BitmapUtils.IsRgbEntirely(Color.White, bitmap);
-            //
-            //    fontAsset.Format = isMono ? FontTextureFormat.CompressedMono :
-            //                                     FontTextureFormat.Rgba32;
-            //}
-
-            // TODO The SDF font should ALWAYS be in linear space
-            var srgb = false;
-
-            // TODO Plug the SDF font building here
-
-            // Convert to pre-multiplied alpha format.
-            if (fontAsset.IsPremultiplied)
-            {
-                if (fontAsset.AntiAlias == FontAntiAliasMode.ClearType)
-                {
-                    BitmapUtils.PremultiplyAlphaClearType(bitmap, srgb);
-                }
-                else
-                {
-                    BitmapUtils.PremultiplyAlpha(bitmap, srgb);
-                }
-            }
-
-            return ScalableSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
+            return ScalableSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)
@@ -158,8 +125,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             {
                 throw new Exception("SDF Font from image is not supported!");
             }
-
-            //importer = importFromBitmap ? (IFontImporter)new BitmapImporter() : new TrueTypeImporter();
 
             importer = new SDFImporter();
 
@@ -181,16 +146,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 throw new Exception("Font does not contain any glyphs.");
             }
 
-            // The resulting image must be RGB texture
-            //if (!importFromBitmap && options.AntiAlias != FontAntiAliasMode.ClearType)
-            //{
-            //    foreach (var glyph in importer.Glyphs)
-            //        BitmapUtils.ConvertGreyToAlpha(glyph.Bitmap, glyph.Subrect);
-            //}
-
             // Sort the glyphs
             glyphs.Sort((left, right) => left.Character.CompareTo(right.Character));
-
 
             // Check that the default character is part of the glyphs
             if (!DefaultCharacterExists(options.DefaultCharacter, glyphs))

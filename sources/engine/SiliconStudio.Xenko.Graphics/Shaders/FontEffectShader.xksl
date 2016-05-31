@@ -15,13 +15,11 @@ class FontEffectShader : ShaderBase, SDFFont
     stage override void VSMain()
     {
         streams.ShadingPosition = streams.Position;
-        //if (TSRgb)
-        //{
-        //    streams.Color = ColorUtility.ToLinear(streams.Color);
-        //}
     }
         
-    // Shading of the sprite
+    // -------------------------------------
+    // PixelShader
+    // -------------------------------------
     stage override void PSMain()
     {
         streams.ColorTarget = Shading();
@@ -29,10 +27,11 @@ class FontEffectShader : ShaderBase, SDFFont
 
     stage float4 Shading()
     {
+        // This should be a 3-channel signed distance field texture
         float4 signedMultiDistance = Texture0.Sample(Sampler, streams.TexCoord);
 
-        // TODO These values will go into streams most probably
-        float4 borderColor = float4(1, 0, 0, 1);
+        // These values can go into streams later
+        float4 borderColor = float4(0, 0, 0, 1);
         float borderThickness = 0.f;
 
         return FontColor(signedMultiDistance, streams.Color, borderColor, borderThickness);
