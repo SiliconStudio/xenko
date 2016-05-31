@@ -8,7 +8,7 @@
     <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
 <#
-var currentPlatform = (SiliconStudio.Core.PlatformType)Properties.CurrentPlatform;
+var currentPlatform = (SiliconStudio.Core.PlatformType)System.Enum.Parse(typeof(SiliconStudio.Core.PlatformType), Properties.CurrentPlatform);
 foreach(var platform in Properties.Platforms) 
 { 
     // Skip the platform if it is not current
