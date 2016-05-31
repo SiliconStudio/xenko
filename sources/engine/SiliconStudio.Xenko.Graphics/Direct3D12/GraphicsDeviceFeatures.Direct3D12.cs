@@ -56,6 +56,10 @@ namespace SiliconStudio.Xenko.Graphics
             HasComputeShaders = true;
             HasDoublePrecision = nativeDevice.D3D12Options.DoublePrecisionFloatShaderOps;
 
+            // TODO D3D12 Confirm these are correct
+            HasDepthAsSRV = true;
+            HasDepthAsReadOnlyRT = true;
+
             HasMultiThreadingConcurrentResources = true;
             HasDriverCommandLists = true;
 

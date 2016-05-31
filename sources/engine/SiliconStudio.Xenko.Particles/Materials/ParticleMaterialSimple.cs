@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -34,7 +35,30 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
         [Display("Alpha-Add")]
+        [DefaultValue(0)]
         public float AlphaAdditive { get; set; }
+
+        /// <summary>
+        /// Adjusts the depth of the particle in regard to opaque objects
+        /// </summary>
+        /// <userdoc>
+        /// Adjusts the depth of the particle in regard to opaque objects
+        /// </userdoc>
+        [DataMember(30)]
+        [Display("Z Offset")]
+        [DefaultValue(0)]
+        public float ZOffset { get; set; } = 0f;
+
+        /// <summary>
+        /// If positive, soft particle edges will be calculated with maximum distance of the value set.
+        /// </summary>
+        /// <userdoc>
+        /// If positive, soft particle edges will be calculated with maximum distance of the value set.
+        /// </userdoc>
+        [DataMember(35)]
+        [Display("Soft Edge")]
+        [DefaultValue(0)]
+        public float SoftEdgeDistance { get; set; } = 0f;
 
         /// <summary>
         /// Allows the particle shape to be back- or front-face culled.
@@ -44,6 +68,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(40)]
         [Display("Culling")]
+        [DefaultValue(ParticleMaterialCulling.CullNone)]
         public ParticleMaterialCulling FaceCulling { get; set; }
 
         /// <summary>
@@ -72,6 +97,18 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+
+            Parameters.Set(ParticleBaseKeys.ZOffset, ZOffset);
+
+            // This is correct. We invert the value here to reduce calculations on the shader side later
+            Parameters.Set(ParticleBaseKeys.SoftEdgeInverseDistance, (SoftEdgeDistance > 0) ? (1f / SoftEdgeDistance) : 0f);
+        }
+
+        public override void ValidateEffect(RenderContext context, ref EffectValidator effectValidator)
+        {
+            base.ValidateEffect(context, ref effectValidator);
+
+            effectValidator.ValidateParameter(ParticleBaseKeys.UsesSoftEdge, (SoftEdgeDistance > 0) ? 1u : 0u);
         }
 
         public override void SetupPipeline(RenderContext renderContext, PipelineStateDescription pipelineState)

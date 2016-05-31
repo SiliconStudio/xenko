@@ -24,11 +24,6 @@ namespace SiliconStudio.Xenko.Graphics
                 return GraphicsDevice != null && GraphicsDevice.IsDebugMode;
             }
         }
-
-        protected override void DestroyImpl()
-        {
-            base.DestroyImpl();
-        }
     }
 }
  

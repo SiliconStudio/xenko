@@ -76,7 +76,13 @@ namespace SiliconStudio.Xenko.Shaders
         {
             unchecked
             {
-                return Values.GetHashCode();
+                int hashCode = 0;
+                if (Values != null)
+                {
+                    foreach (var current in Values)
+                        hashCode = (hashCode*397) ^ (current?.GetHashCode() ?? 0);
+                }
+                return hashCode;
             }
         }
 

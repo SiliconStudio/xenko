@@ -74,26 +74,18 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
             else
             {
-                // TODO: Check transformComponent.WorldMatrix.Decompose(out scale, out rot, out pos);
+                Vector3 dummyVector;
+                transformComponent.WorldMatrix.Decompose(out dummyVector, out particleSystem.Rotation, out particleSystem.Translation);
 
-                // The transform has a parent - do not use local transform values, instead check the world matrix
-
-                // Position
-                particleSystem.Translation = new Vector3(transformComponent.WorldMatrix.M41, transformComponent.WorldMatrix.M42, transformComponent.WorldMatrix.M43);
-
-                // Scale
-                var uniformScaleX = new Vector3(transformComponent.WorldMatrix.M11, transformComponent.WorldMatrix.M12, transformComponent.WorldMatrix.M13);
-                particleSystem.UniformScale = uniformScaleX.Length();
-
-                // Rotation
-                // TODO Maybe implement Quaternion.RotationMatrix which also handles cases when the matrix has scaling?
-                var invScl = (particleSystem.UniformScale > 0) ? 1f / particleSystem.UniformScale : 1f;
-                var rotMatrix = new Matrix(
-                    transformComponent.WorldMatrix.M11 * invScl, transformComponent.WorldMatrix.M12 * invScl, transformComponent.WorldMatrix.M13 * invScl, 0,
-                    transformComponent.WorldMatrix.M21 * invScl, transformComponent.WorldMatrix.M22 * invScl, transformComponent.WorldMatrix.M23 * invScl, 0,
-                    transformComponent.WorldMatrix.M31 * invScl, transformComponent.WorldMatrix.M32 * invScl, transformComponent.WorldMatrix.M33 * invScl, 0,
-                    0, 0, 0, 1);
-                Quaternion.RotationMatrix(ref rotMatrix, out particleSystem.Rotation);
+                // Rotation breaks uniform scaling, so only inherit the X-scaling manually
+                float xScale = transformComponent.Scale.X;
+                var nextParent = transformComponent.Parent;
+                while (nextParent != null)
+                {
+                    xScale *= nextParent.Scale.X;
+                    nextParent = nextParent.Parent;
+                }
+                particleSystem.UniformScale = xScale;
             }
 
             particleSystem.Update(deltaTime * speed);

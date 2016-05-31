@@ -98,6 +98,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="Shaders\ParticleUtilities.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleUtilities.xksl</DependentUpon>
+    </Compile>
     <Compile Include="ShapeBuilders\EdgePolicy.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
@@ -239,6 +245,10 @@
     <None Include="Shaders\ParticleEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ParticleUtilities.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ParticleUtilities.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

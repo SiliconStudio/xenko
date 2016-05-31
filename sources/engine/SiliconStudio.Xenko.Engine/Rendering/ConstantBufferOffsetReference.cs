@@ -5,6 +5,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public struct ConstantBufferOffsetReference
     {
+        public static readonly ConstantBufferOffsetReference Invalid = new ConstantBufferOffsetReference(-1);
+
         internal int Index;
 
         internal ConstantBufferOffsetReference(int index)

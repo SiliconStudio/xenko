@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Games
         /// Calls this method on each frame.
         /// </summary>
         /// <returns><c>true</c> if if the control is still active, <c>false</c> otherwise.</returns>
-        /// <exception cref="System.InvalidOperationException">An error occured </exception>
+        /// <exception cref="System.InvalidOperationException">An error occurred </exception>
         public bool NextFrame()
         {
             // Setup new control

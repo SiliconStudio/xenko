@@ -55,6 +55,9 @@ namespace SiliconStudio.Xenko.Graphics
             HasDoublePrecision = nativeDevice.CheckFeatureSupport(Feature.ShaderDoubles);
             nativeDevice.CheckThreadingSupport(out HasMultiThreadingConcurrentResources, out this.HasDriverCommandLists);
 
+            HasDepthAsSRV = (CurrentProfile >= GraphicsProfile.Level_10_0);
+            HasDepthAsReadOnlyRT = (CurrentProfile >= GraphicsProfile.Level_11_0);
+
             // Check features for each DXGI.Format
             foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
             {

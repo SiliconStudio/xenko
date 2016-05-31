@@ -6,6 +6,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Ast
     {
         public const string ConstantBuffer = "ConstantBuffer";
 
+        public const string LogicalGroup = "LogicalGroup";
+
         public const string ClassRef = "ClassReference";
 
         public const string StaticRef = "StaticReference";

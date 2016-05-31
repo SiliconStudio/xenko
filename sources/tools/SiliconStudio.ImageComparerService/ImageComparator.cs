@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(@"An exception occured in ImageMagick.");
+                    Console.WriteLine(@"An exception occurred in ImageMagick.");
                     Console.WriteLine(ex);
                 }
                 finally
