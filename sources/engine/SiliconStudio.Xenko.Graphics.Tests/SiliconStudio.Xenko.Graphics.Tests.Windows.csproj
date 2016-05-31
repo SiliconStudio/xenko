@@ -27,7 +27,7 @@
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Graphics.Tests.xkpkg</SiliconStudioCurrentPackagePath>
     <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
     <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
-    <IntermediateOutputPath>obj\$SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
     <IntermediateOutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(IntermediateOutputPath)-$(SiliconStudioBuildDirExtension)</IntermediateOutputPath>
     <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
