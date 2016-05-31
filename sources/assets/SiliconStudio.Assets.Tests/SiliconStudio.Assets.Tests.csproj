@@ -57,7 +57,6 @@
     <Compile Include="TestAssetInheritance.cs" />
     <Compile Include="TestAssetReferenceAnalysis.cs" />
     <Compile Include="AssetObjectTest.cs" />
-    <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestAssetReferenceCollection.cs" />
     <Compile Include="TestAssetUpdater.cs" />
     <Compile Include="TestAssetUpgrade.cs" />
