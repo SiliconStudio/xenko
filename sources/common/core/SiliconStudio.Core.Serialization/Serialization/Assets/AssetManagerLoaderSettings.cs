@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// </summary>
     public sealed class AssetManagerLoaderSettings
     {
-        public delegate void ContentFilterDelegate(ITypedContentReference contentReference, ref bool shouldBeLoaded);
+        public delegate void ContentFilterDelegate(ILoadableReference reference, ref bool shouldBeLoaded);
 
         /// <summary>
         /// Gets the default loader settings.
@@ -29,15 +29,15 @@ namespace SiliconStudio.Core.Serialization.Assets
         public static AssetManagerLoaderSettings IgnoreReferences { get; } = new AssetManagerLoaderSettings { LoadContentReferences = false };
 
         /// <summary>
-        /// Gets or sets a value indicating whether <see cref="IContentReference"/> should be loaded.
+        /// Gets or sets a value indicating whether <see cref="IReference"/> should be loaded.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if <see cref="IContentReference"/> should be loaded; otherwise, <c>false</c>.
+        ///   <c>true</c> if <see cref="IReference"/> should be loaded; otherwise, <c>false</c>.
         /// </value>
         public bool LoadContentReferences { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a filter that can indicate whether <see cref="IContentReference"/> should be loaded.
+        /// Gets or sets a filter that can indicate whether <see cref="IReference"/> should be loaded.
         /// </summary>
         /// <value>
         /// The content reference filter.
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         public static ContentFilterDelegate NewContentFilterByType(params Type[] types)
         {
             // We could convert to HashSet, but usually not worth it for small sets
-            return (ITypedContentReference contentReference, ref bool shouldBeLoaded) =>
+            return (ILoadableReference contentReference, ref bool shouldBeLoaded) =>
             {
                 if (!types.Contains(contentReference.Type))
                     shouldBeLoaded = false;

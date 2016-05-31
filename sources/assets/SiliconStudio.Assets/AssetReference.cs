@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    public abstract class AssetReference : ITypedContentReference, IEquatable<AssetReference>
+    public abstract class AssetReference : ITypedReference, IEquatable<AssetReference>
     {
         private readonly UFile location;
         private readonly Guid id;

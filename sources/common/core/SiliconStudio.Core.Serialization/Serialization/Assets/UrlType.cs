@@ -13,12 +13,12 @@ namespace SiliconStudio.Core.Serialization.Assets
         File,
 
         /// <summary>
-        /// The location is a IContentReference just used as a link
+        /// The location is a IReference just used as a link
         /// </summary>
         ContentLink,
 
         /// <summary>
-        /// The location is a IContentReference and the content is used by the command
+        /// The location is a IReference and the content is used by the command
         /// </summary>
         Content,
 

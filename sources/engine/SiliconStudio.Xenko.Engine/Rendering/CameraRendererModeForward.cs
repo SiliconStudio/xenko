@@ -151,6 +151,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (!enableDepthAsShaderResource)
                 return null;
 
+            context.PushRenderTargets();
+
             var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
             var depthStencilSRV = context.Resolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
 
@@ -178,6 +180,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
             currentRenderFrame.Activate(context, depthStencilROCached);
+
+            context.PopRenderTargets();
 
             return depthStencilSRV;
         }
