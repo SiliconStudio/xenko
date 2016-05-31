@@ -361,6 +361,16 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
+            // Create default sampler, used by texture and buffer loads
+            destinationEntries[0] = new DescriptorSetLayoutBuilder.Entry
+            {
+                Class = EffectParameterClass.Sampler,
+                Type = EffectParameterType.Sampler,
+                ImmutableSampler = GraphicsDevice.SamplerStates.PointWrap,
+                ArraySize = 1,
+            };
+
+            // Create descriptor set layout
             NativeDescriptorSetLayouts[0] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, destinationEntries);
 
             // Create pipeline layout

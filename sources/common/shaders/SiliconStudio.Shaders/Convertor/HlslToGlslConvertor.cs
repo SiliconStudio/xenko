@@ -2482,14 +2482,18 @@ namespace SiliconStudio.Shaders.Convertor
             stripVisitor.Visit(shader);
 
             // Then add the newly created variable
-            foreach (var textureSampler in samplerMapping)
+            if (!KeepSamplers)
             {
-                if (!KeepSamplers)
+                foreach (var textureSampler in samplerMapping)
                 {
                     declarationListToRemove.Add(textureSampler.Key.Sampler);
                     declarationListToRemove.Add(textureSampler.Key.Texture);
                     AddGlobalDeclaration(textureSampler.Value);
                 }
+            }
+            else
+            {
+                AddGlobalDeclaration(new Variable(SamplerStateType.SamplerState, "NoSampler"));
             }
         }
 
@@ -3661,7 +3665,7 @@ namespace SiliconStudio.Shaders.Convertor
                 }
                 else
                 {
-                    return new VariableReferenceExpression(texture.Name);
+                    return new MethodInvocationExpression(new TypeReferenceExpression(glslSampler.Type), new VariableReferenceExpression(texture), new VariableReferenceExpression("NoSampler"));
                 }
             }
 
@@ -4201,7 +4205,7 @@ namespace SiliconStudio.Shaders.Convertor
             if (targetTypeName.StartsWith("Texture"))
                 targetTypeName = "texture" + targetTypeName.Substring("Texture".Length);
             else if (targetTypeName.StartsWith("Buffer"))
-                targetTypeName = "samplerBuffer";
+                targetTypeName = "textureBuffer";
             else return null;
 
             // TODO: How do we support this on OpenGL ES 2.0? Cast to int/uint on Load()/Sample()?

@@ -336,9 +336,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                             //layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("set", 0));
-                            layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
+                            layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex + 1));
 
-                            resourceBindings.Add(bindings[layoutBindingIndex].Key.KeyName, layoutBindingIndex);
+                            resourceBindings.Add(bindings[layoutBindingIndex].Key.KeyName, layoutBindingIndex + 1);
                         }
                     }
 
@@ -365,9 +365,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
                             //layoutQualifier.Layouts.Add(new LayoutKeyValue("set", resourceGroups.IndexOf(resourceGroup)));
                             layoutQualifier.Layouts.Add(new LayoutKeyValue("set", 0));
-                            layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex));
+                            layoutQualifier.Layouts.Add(new LayoutKeyValue("binding", layoutBindingIndex + 1));
 
-                            resourceBindings.Add(bindings[layoutBindingIndex].Key.KeyName, layoutBindingIndex);
+                            resourceBindings.Add(bindings[layoutBindingIndex].Key.KeyName, layoutBindingIndex + 1);
                         }
                     }
                 }
