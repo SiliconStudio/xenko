@@ -3,7 +3,7 @@
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)<#= Properties.Package.Meta.Name #>.xkpkg</SiliconStudioCurrentPackagePath>
     <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
     <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
-    <IntermediateOutputPath>obj\$SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
     <IntermediateOutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(IntermediateOutputPath)-$(SiliconStudioBuildDirExtension)</IntermediateOutputPath>
     <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
