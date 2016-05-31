@@ -5,6 +5,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -12,12 +13,24 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
-    public class SkeletonAsset : AssetImport
+    public class SkeletonAsset : Asset
     {
         /// <summary>
         /// The default file extension used by the <see cref="SkeletonAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkskel";
+
+        /// <summary>
+        /// Gets or sets the source file of this asset.
+        /// </summary>
+        /// <value>The source.</value>
+        /// <userdoc>
+        /// The source file of this asset.
+        /// </userdoc>
+        [DataMember(-50)]
+        [DefaultValue(null)]
+        [SourceFileMember(true)]
+        public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
         /// Gets or sets the scale import.
@@ -39,6 +52,9 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// </userdoc>
         [DataMember(20), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
+
+        [DataMemberIgnore]
+        public override UFile MainSource => Source;
 
         protected override int InternalBuildOrder => -200; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 

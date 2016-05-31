@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [CategoryOrder(10, "Font Data")]
     [CategoryOrder(20, "Font Properties")]
     [CategoryOrder(30, "Font Characters")]
-    public class PrecompiledSpriteFontAsset : AssetImport // TODO: temporary inherits from AssetImport
+    public class PrecompiledSpriteFontAsset : Asset
     {
         /// <summary>
         /// The default file extension used by the <see cref="PrecompiledSpriteFontAsset"/>.

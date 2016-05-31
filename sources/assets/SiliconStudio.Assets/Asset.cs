@@ -125,6 +125,12 @@ namespace SiliconStudio.Assets
         public TagCollection Tags { get; private set; }
 
         /// <summary>
+        /// Gets the main source file for this asset, used in the editor.
+        /// </summary>
+        [DataMemberIgnore]
+        public virtual UFile MainSource => null;
+
+        /// <summary>
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="location">The location of this asset.</param>

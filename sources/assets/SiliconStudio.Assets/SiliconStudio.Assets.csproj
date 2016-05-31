@@ -77,7 +77,7 @@
     <Compile Include="AssetComposite.cs" />
     <Compile Include="AssetFactory.cs" />
     <Compile Include="AssetHash.cs" />
-    <Compile Include="AssetImport.cs" />
+    <Compile Include="AssetWithSource.cs" />
     <Compile Include="AssetImporterParameters.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
