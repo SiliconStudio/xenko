@@ -87,7 +87,6 @@
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
-    <Compile Include="AssetUpdater.cs" />
     <Compile Include="AssetUpgraderAttribute.cs" />
     <Compile Include="AssetUpgraderBase.cs" />
     <Compile Include="AssetUpgraderCollection.cs" />
