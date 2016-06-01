@@ -328,12 +328,20 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PixelFormat.R8G8B8A8_UNorm_SRgb:
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    internalFormat = graphicsDevice.IsOpenGLES2 ? SrgbAlpha : Srgb8Alpha8;
-                    format = graphicsDevice.IsOpenGLES2 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Rgba;
-#else
-                    internalFormat = Srgb8Alpha8;
-                    format = PixelFormatGl.Rgba;
+                    if (graphicsDevice.currentVersion < 300)
+                    {
+                        // HasSRgb was true because we have GL_EXT_sRGB
+                        // Note: Qualcomm Adreno 4xx fails to use GL_EXT_sRGB with FBO,
+                        // but they will report a currentVersion >= 300 (ES 3.0) anyway
+                        internalFormat = SrgbAlpha;
+                        format = (PixelFormatGl)SrgbAlpha;
+                    }
+                    else
 #endif
+                    {
+                        internalFormat = Srgb8Alpha8;
+                        format = PixelFormatGl.Rgba;
+                    }
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
