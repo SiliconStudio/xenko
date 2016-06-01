@@ -37,6 +37,14 @@ namespace SiliconStudio.ProjectTemplating
         [DataMember(30)]
         [DefaultValue(false)]
         public bool IsTemplate { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value the name of the current platform.
+        /// </summary>
+        /// <value>The name of the current platform.</value>
+        [DataMember(40)]
+        [DefaultValue(null)]
+        public string CurrentPlatform { get; set; }
 
         public override string ToString()
         {

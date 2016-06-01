@@ -197,8 +197,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerAAA")));
         }
 
-        // Disabled until XK-3123 is fixed (material blending SM flush results in layer masks applied improperly)
-        [Test, Ignore]
+        [Test, Ignore("Disabled until XK-3123 is fixed (material blending SM flush results in layer masks applied improperly)")]
         public void MaterialLayerABB()
         {
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerABB")));
@@ -216,8 +215,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerABC")));
         }
 
-        // Disabled until XK-3123 is fixed (material blending SM flush results in layer masks applied improperly)
-        [Test, Ignore]
+        [Test, Ignore("Disabled until XK-3123 is fixed (material blending SM flush results in layer masks applied improperly)")]
         public void MaterialLayerBAA()
         {
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerBAA")));
@@ -229,8 +227,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerBBB")));
         }
 
-        // Similar to MaterialLayerABB but using API for easier debugging
-        [Test, Ignore]
+        [Test, Ignore("Similar to MaterialLayerABB but using API for easier debugging")]
         public void MaterialLayerABBWithAPI()
         {
             //RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Layers/MaterialLayerABB")));

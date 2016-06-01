@@ -1,11 +1,14 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
-  <!--Import Local Pre Settings for the solution being loaded -->
-  <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)<#= Properties.Package.Meta.Name #>.xkpkg</SiliconStudioCurrentPackagePath>
+    <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
+    <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
+    <IntermediateOutputPath>obj\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</IntermediateOutputPath>
+    <IntermediateOutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(IntermediateOutputPath)-$(SiliconStudioBuildDirExtension)</IntermediateOutputPath>
+    <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
 <#
-var currentPlatform = (SiliconStudio.Core.PlatformType)Properties.CurrentPlatform;
+var currentPlatform = (SiliconStudio.Core.PlatformType)System.Enum.Parse(typeof(SiliconStudio.Core.PlatformType), Properties.CurrentPlatform);
 foreach(var platform in Properties.Platforms) 
 { 
     // Skip the platform if it is not current
@@ -41,8 +44,6 @@ foreach(var platform in Properties.Platforms)
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;<#= string.Join(";", platform.DefineConstants) #></DefineConstants>
 <#  } #>
-    <OutputPath><#= Properties.XenkoSdkRelativeDir #>\Bin\<#= platform.Type #>\</OutputPath>
-    <IntermediateOutputPath>obj\<#= platform.Type #>\<#= config.Name #>\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
 <#  foreach(var configLine in platform.GetConfigurationProperties(platformPart, config.Name)) { #>
@@ -54,90 +55,3 @@ foreach(var platform in Properties.Platforms)
     }
 }
 #>
-  <ItemGroup>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
-      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
-      <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
-      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
-      <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
-      <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
-      <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
-      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
-      <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
-      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
-      <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
-      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
-      <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
-      <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Xenko.Input</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
-      <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
-      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
-      <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
-      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
-      <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
-      <Name>SiliconStudio.Xenko.Shaders</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
-      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Xenko</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
-      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Xenko.Engine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.XenkoSdkRelativeDir #>\sources\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Xenko.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
-      <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
-      <Name>SiliconStudio.Xenko.Games</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
-      <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
-      <Name>SiliconStudio.Xenko.UI</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Audio\SiliconStudio.Xenko.Audio.csproj">
-      <Project>{de042125-c270-4d1d-9270-0759c167567a}</Project>
-      <Name>SiliconStudio.Xenko.Audio</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
-      <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
-      <Name>SiliconStudio.Shaders</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
