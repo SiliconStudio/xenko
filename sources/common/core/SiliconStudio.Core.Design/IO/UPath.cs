@@ -510,13 +510,6 @@ namespace SiliconStudio.Core.IO
                             continue;
                         }
 
-                        // If the root path is a drive, and we are trying to go its parent directory, return an error
-                        if (IsInvalidBacktrackOnDrive(builder, currentPath, paths))
-                        {
-                            error = "Cannot go to parent directory '..' with a root drive";
-                            return null;
-                        }
-
                         // Append the directory '/' separator
                         builder.Append(DirectorySeparatorChar);
 
@@ -586,15 +579,6 @@ namespace SiliconStudio.Core.IO
             {
                 // Remove trailing '/'
                 RemoveTrailing(builder, DirectorySeparatorChar);
-            }
-            else
-            {
-                // If the root path is a drive, and we are trying to go its parent directory, return an error
-                if (IsInvalidBacktrackOnDrive(builder, currentPath, paths))
-                {
-                    error = "Cannot go to parent directory '..' with a root drive";
-                    return null;
-                }
             }
 
             // Go back to upper path if current is not vaid
@@ -666,21 +650,9 @@ namespace SiliconStudio.Core.IO
             return path.Length == 1 && builder[path.Start] == '.';
         }
 
-        private static unsafe bool IsInvalidBacktrackOnDrive(StringBuilder builder, int currentPath, StringSpan* paths)
-        {
-            // If the root path is a drive, and we are going to back slash, just don't
-            return currentPath > 0 && IsParentPath(builder, paths[currentPath]) && IsInvalidRelativeBacktrackOnDrive(currentPath, paths);
-        }
-
         private static bool IsDriveSpan(StringSpan stringSpan)
         {
             return stringSpan.Length < 0;
-        }
-
-        private static unsafe bool IsInvalidRelativeBacktrackOnDrive(int currentPath, StringSpan* paths)
-        {
-            // If the root path is a drive, and we are going to back slash, just don't
-            return IsDriveSpan(paths[0]) && (currentPath == 1 || (currentPath == 2 && paths[1].Length == 0));
         }
 
         /// <summary>
@@ -696,17 +668,20 @@ namespace SiliconStudio.Core.IO
             var path = paths[currentPath];
             if (currentPath > 0 && IsParentPath(builder, path))
             {
-                // If the root path is a drive, and we are going to back slash, just don't
-                if (IsInvalidRelativeBacktrackOnDrive(currentPath, paths))
-                {
-                    return false;
-                }
-
                 // If previous path is already a relative path, then we probably can popup
                 var previousPath = paths[currentPath - 1];
                 if (IsParentPath(builder, previousPath))
                 {
                     return false;
+                }
+
+                // Note: the drive path has a negative Length at that moment so it will also be considered invalid (which is what we want)
+                if (!previousPath.IsValid)
+                {
+                    // Swallow the parent path if we reached some root level
+                    paths[currentPath].Length = 0;
+                    builder.Length = paths[currentPath].Start;
+                    return true;
                 }
 
                 // We can popup the previous path

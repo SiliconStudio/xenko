@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestUPathFullPath()
         {
-            // TODO
+            // TODO (include tests with parent and self paths .. and .)
         }
 
         [Test]
@@ -230,13 +230,20 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestUPathCombine()
         {
-            // TODO
+            // TODO: not enough test!
+            Assert.AreEqual(new UFile("/a/b/d/e.txt"), UPath.Combine("/a/b/c", new UFile("../d/e.txt")));
+            Assert.AreEqual(new UFile("/d/e.txt"), UPath.Combine("/a/b/c", new UFile("../../../d/e.txt")));
+            Assert.AreEqual(new UFile("/d/e.txt"), UPath.Combine("/a/b/c", new UFile("../../../../../../d/e.txt")));
+            Assert.AreEqual(new UFile("C:/a/d/e.txt"), UPath.Combine("C:/a/b/c", new UFile("../../d/e.txt")));
+            Assert.AreEqual(new UFile("C:/d/e.txt"), UPath.Combine("C:/a/b/c", new UFile("../../../d/e.txt")));
+            Assert.AreEqual(new UFile("C:/d/e.txt"), UPath.Combine("C:/a/b/c", new UFile("../../../../../../d/e.txt")));
         }
 
         [Test]
         public void TestUPathMakeRelative()
         {
             // TODO
+            //Assert.AreEqual(new UDirectory("../.."), new UDirectory("C:/a").MakeRelative("/a/b/c"));
         }
 
         [Test]

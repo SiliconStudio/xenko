@@ -300,22 +300,22 @@ namespace SiliconStudio.Core.Design.Tests
 
             // Test drive backslash invalid
             UPath.Normalize("C:/..", out driveSpan, out dirSpan, out nameSpan, out error);
-            Assert.IsNotNull(error);
-            Assert.IsFalse(driveSpan.IsValid);
+            Assert.IsNull(error);
+            Assert.IsTrue(driveSpan.IsValid);
             Assert.IsFalse(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
             // Test drive backslash invalid
             UPath.Normalize("C:/../", out driveSpan, out dirSpan, out nameSpan, out error);
-            Assert.IsNotNull(error);
-            Assert.IsFalse(driveSpan.IsValid);
+            Assert.IsNull(error);
+            Assert.IsTrue(driveSpan.IsValid);
             Assert.IsFalse(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
             // Test drive backslash invalid
             UPath.Normalize("C:/../..", out driveSpan, out dirSpan, out nameSpan, out error);
-            Assert.IsNotNull(error);
-            Assert.IsFalse(driveSpan.IsValid);
+            Assert.IsNull(error);
+            Assert.IsTrue(driveSpan.IsValid);
             Assert.IsFalse(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
