@@ -116,6 +116,10 @@
       <Name>SiliconStudio.TextureConverter</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Audio\SiliconStudio.Xenko.Audio.csproj">
+      <Project>{DE042125-C270-4D1D-9270-0759C167567A}</Project>
+      <Name>SiliconStudio.Xenko.Audio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Xenko.Engine</Name>
