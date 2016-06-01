@@ -105,7 +105,7 @@ namespace SiliconStudio.Core.IO
         /// Determines whether this instance is absolute.
         /// </summary>
         /// <returns><c>true</c> if this instance is absolute; otherwise, <c>false</c>.</returns>
-        public bool IsAbsolute => HasDrive || fullPath[DirectorySpan.Start] == DirectorySeparatorChar;
+        public bool IsAbsolute => HasDrive || (DirectorySpan.IsValid && fullPath[DirectorySpan.Start] == DirectorySeparatorChar);
 
         /// <summary>
         /// Gets a value indicating whether this instance is a location to a file. Can be null.
