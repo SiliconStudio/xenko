@@ -191,20 +191,20 @@ namespace SiliconStudio.Core.IO
         /// <returns>System.String.</returns>
         public UDirectory GetFullDirectory()
         {
-            if (HasDirectory)
+            if (IsFile)
             {
-                var subPath = fullPath.Substring(0, DirectorySpan.Start + DirectorySpan.Length);
+                // No directory in this path
+                if (NameSpan.Start == 0)
+                    return new UDirectory(null);
+                // This path only contains a leading '/', we should return it
+                if (NameSpan.Start == 1)
+                    return new UDirectory("/", driveSpan, DirectorySpan);
+
+                // Return the path until the name, excluding the last '/'
+                var subPath = fullPath.Substring(0, NameSpan.Start - 1);
                 return new UDirectory(subPath, driveSpan, DirectorySpan);
             }
-
-            if (HasDrive)
-            {
-                var subPath = fullPath.Substring(0, driveSpan.Length);
-                return new UDirectory(subPath, driveSpan, DirectorySpan);
-            }
-
-            // TODO: Should we return null or an empty directory for this specific method?
-            return new UDirectory(string.Empty);
+            return (UDirectory)this;
         }
 
         public bool Equals(UPath other)
