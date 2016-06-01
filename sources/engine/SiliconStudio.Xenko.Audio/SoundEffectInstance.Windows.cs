@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_XENKO_SOUND_SDL
 
 using System;
-
+using SharpDX;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Audio.Wave;
 
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             //////////////////////////////////////////////////////////////
             // 1. First let's calculate the parameters to set to the voice
-            var inputChannels = soundEffect.WaveFormat.Channels;
+            var inputChannels = soundEffect.Channels;
             var outputChannels = MasterVoice.VoiceDetails.InputChannelCount;
 
             if (inputChannels != 1 || outputChannels != 2)
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Audio
 
         private void UpdateStereoVolumes()
         {
-            var sourceChannelCount = WaveFormat.Channels;
+            var sourceChannelCount = soundEffect.Channels;
 
             // then update the volume of each channel
             Single[] matrix;
@@ -130,15 +130,21 @@ namespace SiliconStudio.Xenko.Audio
 
         internal SourceVoice SourceVoice;
 
-        internal void CreateVoice(WaveFormat format)
+        internal void CreateVoice(int sampleRate, int channels)
         {
-            SourceVoice = new SourceVoice(AudioEngine.XAudio2, format.ToSharpDX(), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
+            SourceVoice = new SourceVoice(AudioEngine.XAudio2, new SharpDX.Multimedia.WaveFormat(sampleRate, 16, channels), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
             SourceVoice.StreamEnd += Stop;
         }
 
         internal override void LoadBuffer()
         {
-            var buffer = new AudioBuffer(new SharpDX.DataPointer(soundEffect.WaveDataPtr, soundEffect.WaveDataSize));
+            if (soundEffect.PreloadedData == null)
+            {
+                soundEffect.Init();
+                soundEffect.Preload();
+            }
+
+            var buffer = new AudioBuffer(new DataPointer(soundEffect.PreloadedData.Pointer, soundEffect.PreloadedData.Length));
             
             if (IsLooped)
                 buffer.LoopCount = AudioBuffer.LoopInfinite;

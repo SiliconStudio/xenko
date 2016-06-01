@@ -26,11 +26,6 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         private readonly WaveFormat waveFormat;
 
-        internal override WaveFormat WaveFormat
-        {
-            get { return waveFormat; }
-        }
-
         /// <summary>
         /// This constant represent the number of buffers under which the <see cref="BufferNeeded"/> event should be thrown.
         /// </summary>
@@ -80,7 +75,7 @@ namespace SiliconStudio.Xenko.Audio
             
             Name = "Dynamic Sound Effect Instance - "+totalNbOfInstances;
 
-            CreateVoice(WaveFormat);
+            CreateVoice(sampleRate, (int)channels);
 
             InitializeDynamicSound();
 

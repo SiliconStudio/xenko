@@ -66,6 +66,7 @@
     <Compile Include="AudioDataEncoding.cs" />
     <Compile Include="AudioVoice.iOS.cs" />
     <Compile Include="AudioEngineFactory.cs" />
+    <Compile Include="CompressedSoundPacket.cs" />
     <Compile Include="ConversionExtensions.Android.cs" />
     <Compile Include="ConversionExtensions.Windows.cs" />
     <Compile Include="DynamicSoundEffectInstance.Android.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="SoundEffectInstance.cs" />
     <Compile Include="SoundEffectInstance.iOS.cs" />
     <Compile Include="SoundEffectInstance.SDL.cs" />
-    <Compile Include="SoundEffectSerializer.cs" />
     <Compile Include="SoundInstanceBase.cs" />
     <Compile Include="SoundMusic.cs" />
     <Compile Include="SoundMusicAction.cs" />
@@ -134,6 +134,10 @@
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1DBBC150-F085-43EF-B41D-27C72D133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>

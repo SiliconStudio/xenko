@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Audio
                     if(soundEffect == null)
                         continue;
 
-                    var sizeSoundEffect = soundEffect.WaveDataSize / soundEffect.WaveFormat.BlockAlign;
+                    var sizeSoundEffect = soundEffect.PreloadedData?.Length*sizeof(short) ?? 0;
                     if(sizeSoundEffect >= bestCandidateSize)
                         continue;
 

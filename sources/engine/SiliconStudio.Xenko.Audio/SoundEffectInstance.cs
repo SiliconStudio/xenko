@@ -35,8 +35,6 @@ namespace SiliconStudio.Xenko.Audio
     {
         private readonly SoundEffect soundEffect;
 
-        internal virtual WaveFormat WaveFormat => soundEffect.WaveFormat;
-
         //prevent creation of SoundEffectInstance to the user
         internal SoundEffectInstance(SoundEffect correspSoundEffect)
         {
@@ -44,7 +42,7 @@ namespace SiliconStudio.Xenko.Audio
             soundEffect = correspSoundEffect;
             
             if (EngineState != AudioEngineState.Invalidated)
-                CreateVoice(soundEffect.WaveFormat);
+                CreateVoice(soundEffect.SampleRate, soundEffect.Channels);
 
             ResetStateToDefault();
         }
@@ -120,7 +118,7 @@ namespace SiliconStudio.Xenko.Audio
             if(emitter == null)
                 throw new ArgumentNullException("emitter");
 
-            if(soundEffect.WaveFormat.Channels > 1)
+            if(soundEffect.Channels > 1)
                 throw new InvalidOperationException("Apply3D cannot be used on multi-channels sounds.");
 
             // reset Pan its default values.
