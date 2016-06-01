@@ -65,6 +65,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.True(new UFile("/a/b/c.txt").HasDirectory);
             Assert.True(new UFile("/a/b/c").HasDirectory);
             Assert.True(new UFile("/a.txt").HasDirectory);
+            Assert.True(new UFile("E:/a.txt").HasDirectory);
             Assert.True(new UFile("E:/a/b.txt").HasDirectory);
             Assert.True(new UFile("E:/a/b/c.txt").HasDirectory);
             Assert.True(new UFile("E:/a/b/c").HasDirectory);
@@ -73,11 +74,10 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.True(new UDirectory("/a").HasDirectory);
             Assert.True(new UDirectory("E:/a").HasDirectory);
             Assert.True(new UDirectory("/").HasDirectory);
-            // TODO: "E:/" should return true if "/" does. But shouldn't we always return true when it's an UDirectory anyway?
-            //Assert.True(new UDirectory("E:/").HasDirectory);
+            Assert.True(new UDirectory("E:/").HasDirectory);
+            Assert.True(new UDirectory("E:").HasDirectory);
             Assert.False(new UFile("a.txt").HasDirectory);
-            Assert.False(new UDirectory("E:").HasDirectory);
-            Assert.False(new UFile("E:").HasDirectory);
+            Assert.False(new UFile("a").HasDirectory);
         }
 
         [Test]

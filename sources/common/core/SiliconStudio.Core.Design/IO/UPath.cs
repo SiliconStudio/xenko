@@ -93,7 +93,7 @@ namespace SiliconStudio.Core.IO
         /// Gets a value indicating whether this instance has a <see cref="GetDirectory()"/> != null;
         /// </summary>
         /// <value><c>true</c> if this instance has directory; otherwise, <c>false</c>.</value>
-        public bool HasDirectory => DirectorySpan.IsValid; // TODO: should always return true if UDirectory. Currently "E:/" returns false and "/" returns true
+        public bool HasDirectory => !IsFile || NameSpan.Start > 0;
 
         /// <summary>
         /// Gets a value indicating whether this location is a relative location.
@@ -105,7 +105,7 @@ namespace SiliconStudio.Core.IO
         /// Determines whether this instance is absolute.
         /// </summary>
         /// <returns><c>true</c> if this instance is absolute; otherwise, <c>false</c>.</returns>
-        public bool IsAbsolute => HasDrive || (HasDirectory && fullPath[DirectorySpan.Start] == DirectorySeparatorChar);
+        public bool IsAbsolute => HasDrive || fullPath[DirectorySpan.Start] == DirectorySeparatorChar;
 
         /// <summary>
         /// Gets a value indicating whether this instance is a location to a file. Can be null.
