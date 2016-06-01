@@ -151,7 +151,22 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestUPathGetFullDirectory()
         {
-            // TODO
+            Assert.AreEqual(new UDirectory("/a"), new UFile("/a/b.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("/a/b"), new UFile("/a/b/c.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("/a/b"), new UFile("/a/b/c").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("/"), new UFile("/a.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/"), new UFile("E:/a.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/a"), new UFile("E:/a/b.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/a/b"), new UFile("E:/a/b/c.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/a/b"), new UFile("E:/a/b/c").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("/a/b/c"), new UDirectory("/a/b/c").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/a/b/c"), new UDirectory("E:/a/b/c").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("/a"), new UDirectory("/a").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/a"), new UDirectory("E:/a").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("/"), new UDirectory("/").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/"), new UDirectory("E:/").GetFullDirectory());
+            Assert.AreEqual(new UDirectory(null), new UFile("a.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory("E:/"), new UDirectory("E:").GetFullDirectory());
         }
 
         [Test]
