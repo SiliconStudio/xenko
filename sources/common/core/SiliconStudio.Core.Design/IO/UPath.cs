@@ -69,39 +69,6 @@ namespace SiliconStudio.Core.IO
             hashCode = ComputeStringHashCodeCaseInsensitive(fullPath);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UPath" /> class.
-        /// </summary>
-        /// <param name="drive">The drive.</param>
-        /// <param name="directory">The directory.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="extension">The extension.</param>
-        /// <exception cref="System.ArgumentException">Invalid DirectorySeparatorChar for name</exception>
-        internal UPath(string drive, string directory, string name, string extension)
-        {
-            var builder = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(drive))
-            {
-                builder.Append(drive);
-            }
-            if (!string.IsNullOrWhiteSpace(directory))
-            {
-                builder.Append(directory);
-                builder.Append(DirectorySeparatorChar);
-            }
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                builder.Append(name);
-            }
-            if (!string.IsNullOrWhiteSpace(extension))
-            {
-                builder.Append(extension);
-            }
-
-            fullPath = Decode(builder.ToString(), string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(extension), out this.driveSpan, out this.DirectorySpan, out this.NameSpan, out this.ExtensionSpan);
-            hashCode = ComputeStringHashCodeCaseInsensitive(fullPath);
-        }
-
         protected UPath(string fullPath, StringSpan driveSpan, StringSpan directorySpan)
         {
             this.fullPath = fullPath;

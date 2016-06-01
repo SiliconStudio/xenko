@@ -55,6 +55,17 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Combines the specified left uniform location and right location and return a new <see cref="UDirectory"/>
+        /// </summary>
+        /// <param name="leftPath">The left path.</param>
+        /// <param name="rightPath">The right path.</param>
+        /// <returns>The combination of both paths.</returns>
+        public static UDirectory Combine(UDirectory leftPath, UDirectory rightPath)
+        {
+            return UPath.Combine(leftPath, rightPath);
+        }
+
+        /// <summary>
         /// Determines whether this directory contains the specified path.
         /// </summary>
         /// <param name="path">The path.</param>
