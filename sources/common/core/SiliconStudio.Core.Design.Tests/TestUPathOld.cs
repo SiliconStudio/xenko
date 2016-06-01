@@ -385,10 +385,7 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestIsDirectoryOnly()
         {
-            Assert.False(new UFile("/a/b/c.txt").IsDirectoryOnly);
-
             var dirPath = new UDirectory("/a/b/c");
-            Assert.True(dirPath.IsDirectoryOnly);
             Assert.AreEqual("/a/b/c", dirPath.GetDirectory());
 
             var filePath = new UFile("/test.txt");

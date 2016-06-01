@@ -93,13 +93,7 @@ namespace SiliconStudio.Core.IO
         /// Gets a value indicating whether this instance has a <see cref="GetDirectory()"/> != null;
         /// </summary>
         /// <value><c>true</c> if this instance has directory; otherwise, <c>false</c>.</value>
-        public bool HasDirectory => DirectorySpan.IsValid;
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is a directory only path.
-        /// </summary>
-        /// <value><c>true</c> if this instance is directory only; otherwise, <c>false</c>.</value>
-        public bool IsDirectoryOnly => FullPath == string.Empty || (HasDirectory && !IsFile);
+        public bool HasDirectory => DirectorySpan.IsValid; // TODO: should always return true if UDirectory. Currently "E:/" returns false and "/" returns true
 
         /// <summary>
         /// Gets a value indicating whether this location is a relative location.
@@ -303,10 +297,6 @@ namespace SiliconStudio.Core.IO
                 return rightPath;
             }
 
-            if (!leftPath.IsDirectoryOnly)
-            {
-                throw new ArgumentException(@"Expecting a directory", nameof(leftPath));
-            }
             var path = $"{leftPath.FullPath}{(string.IsNullOrEmpty(leftPath.FullPath) ? string.Empty : DirectorySeparatorString)}{rightPath.FullPath}";
             return rightPath is UFile ? (T)(object)new UFile(path) : (T)(object)new UDirectory(path);
         }
@@ -327,7 +317,7 @@ namespace SiliconStudio.Core.IO
             }
 
             // If anchor directory is not absolute directory, throw an error
-            if (!anchorDirectory.IsAbsolute || !anchorDirectory.IsDirectoryOnly)
+            if (!anchorDirectory.IsAbsolute)
             {
                 throw new ArgumentException(@"Expecting an absolute directory", nameof(anchorDirectory));
             }
@@ -394,7 +384,7 @@ namespace SiliconStudio.Core.IO
                 relativePath.Append(((UFile)absoluteFile).GetFileNameWithExtension());
             }
             var newPath = relativePath.ToString();
-            return IsDirectoryOnly ? (UPath)new UDirectory(newPath) : new UFile(newPath);
+            return !IsFile ? (UPath)new UDirectory(newPath) : new UFile(newPath);
         }
 
         /// <summary>
