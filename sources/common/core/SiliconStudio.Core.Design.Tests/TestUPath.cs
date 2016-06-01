@@ -115,12 +115,6 @@ namespace SiliconStudio.Core.Design.Tests
         }
 
         [Test]
-        public void TestUPathIsDirectoryOnly()
-        {
-            // TODO
-        }
-
-        [Test]
         public void TestUPathIsRelativeAndIsAbsolute()
         {
             var assert = new Action<UPath, bool>((x, isAbsolute) =>
