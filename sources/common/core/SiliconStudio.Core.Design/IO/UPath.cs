@@ -126,15 +126,6 @@ namespace SiliconStudio.Core.IO
         public UPathType PathType => IsAbsolute ? UPathType.Absolute : UPathType.Relative;
 
         /// <summary>
-        /// Gets the drive (contains the ':' if any), can be null.
-        /// </summary>
-        /// <returns>The drive.</returns>
-        public string GetDrive()
-        {
-            return driveSpan.IsValid ? fullPath.Substring(driveSpan) : null;
-        }
-
-        /// <summary>
         /// Indicates whether the specified <see cref="UPath"/> is null or empty.
         /// </summary>
         /// <param name="path">The path to test</param>
@@ -145,13 +136,12 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Indicates whether the specified <see cref="UPath"/> is null, empty, or consists only of white-space characters.
+        /// Gets the drive (contains the ':' if any), can be null.
         /// </summary>
-        /// <param name="path">The path to test</param>
-        /// <returns><c>true</c> if the value parameter is null, empty, or consists only of white-space characters, otherwise <c>false</c>.</returns>
-        public static bool IsNullOrWhiteSpace(UPath path)
+        /// <returns>The drive.</returns>
+        public string GetDrive()
         {
-            return string.IsNullOrWhiteSpace(path?.FullPath);
+            return driveSpan.IsValid ? fullPath.Substring(driveSpan) : null;
         }
 
         /// <summary>
