@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.IO
         /// <param name="isDirectory">if set to <c>true</c> the filePath is considered as a directory and not a filename.</param>
         internal UPath(string filePath, bool isDirectory)
         {
-            if (!isDirectory && filePath != null && (filePath.EndsWith("/") || filePath.EndsWith(@"\")))
+            if (!isDirectory && filePath != null && (filePath.EndsWith(DirectorySeparatorString) || filePath.EndsWith(DirectorySeparatorStringAlt) || filePath.EndsWith(Path.VolumeSeparatorChar)))
             {
                 throw new ArgumentException("A file path cannot end with with directory char '\\' or '/' ");
             }
@@ -560,6 +560,12 @@ namespace SiliconStudio.Core.IO
                 }
                 else if (!InvalidFileNameChars.Contains(pathItem))
                 {
+                    if (currentPath == 1 && IsDriveSpan(paths[0]))
+                    {
+                        error = @"Path must contain a separator '/' or '\' after the volume separator ':'";
+                        return null;
+                    }
+
                     // If no invalid character, we can add the current character
                     builder.Append(pathItem);
                     paths[currentPath].Length++;

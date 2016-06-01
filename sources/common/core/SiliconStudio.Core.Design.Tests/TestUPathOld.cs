@@ -280,17 +280,6 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.AreEqual(new StringSpan(3, 1), nameSpan);
 
             // Test drive standard
-            text = UPath.Normalize("C:a", out driveSpan, out dirSpan, out nameSpan, out error);
-            Assert.IsNull(error);
-            Assert.NotNull(text);
-            Assert.AreEqual("C:a", text.ToString());
-            Assert.IsTrue(driveSpan.IsValid);
-            Assert.IsTrue(dirSpan.IsValid);
-            Assert.IsFalse(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 2), driveSpan);
-            Assert.AreEqual(new StringSpan(2, 1), dirSpan);
-
-            // Test drive standard
             text = UPath.Normalize("C:/a/b/c", out driveSpan, out dirSpan, out nameSpan, out error);
             Assert.IsNull(error);
             Assert.NotNull(text);
@@ -330,24 +319,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
-            // Test drive backslash is valid
-            text = UPath.Normalize("C:a/..", out driveSpan, out dirSpan, out nameSpan, out error);
-            Assert.IsNull(error);
-            Assert.NotNull(text);
-            Assert.AreEqual("C:", text.ToString());
-            Assert.IsTrue(driveSpan.IsValid);
-            Assert.IsFalse(dirSpan.IsValid);
-            Assert.IsFalse(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 2), driveSpan);
-
-            // Test drive backslash is invalid
-            UPath.Normalize("C:a/../..", out driveSpan, out dirSpan, out nameSpan, out error);
-            Assert.IsNotNull(error);
-            Assert.IsFalse(driveSpan.IsValid);
-            Assert.IsFalse(dirSpan.IsValid);
-            Assert.IsFalse(nameSpan.IsValid);
-
-            // Test drive start ':' is invali
+            // Test drive start ':' is invalid
             UPath.Normalize(":a/b/c", out driveSpan, out dirSpan, out nameSpan, out error);
             Assert.IsNotNull(error);
             Assert.IsFalse(driveSpan.IsValid);

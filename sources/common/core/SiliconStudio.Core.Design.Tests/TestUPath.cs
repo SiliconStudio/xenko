@@ -30,6 +30,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.DoesNotThrow(() => { var s = "/a/b.txt"; new UFile(s); new UFile(s.Replace('/', '\\')); });
             Assert.DoesNotThrow(() => { var s = "/a/b/c/d.txt"; new UFile(s); new UFile(s.Replace('/', '\\')); });
             Assert.DoesNotThrow(() => { var s = "/a/b/c/.txt"; new UFile(s); new UFile(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a.txt"; new UFile(s); new UFile(s.Replace('/', '\\')); });
             Assert.DoesNotThrow(() => { var s = "E:/a/b"; new UFile(s); new UFile(s.Replace('/', '\\')); });
             Assert.DoesNotThrow(() => { var s = "E:/a/b.txt"; new UFile(s); new UFile(s.Replace('/', '\\')); });
             Assert.DoesNotThrow(() => { var s = "E:/a/b/c/d.txt"; new UFile(s); new UFile(s.Replace('/', '\\')); });
@@ -38,12 +39,45 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.Throws<ArgumentException>(() => new UFile("*.txt"));
             Assert.Throws<ArgumentException>(() => new UFile("/a/"));
             Assert.Throws<ArgumentException>(() => new UFile("/"));
+            Assert.Throws<ArgumentException>(() => new UFile("E:/"));
+            Assert.Throws<ArgumentException>(() => new UFile("E:"));
+            Assert.Throws<ArgumentException>(() => new UFile("E:e"));
         }
 
         [Test]
         public void TestUDirectoryConstructor()
         {
-            // TODO
+            Assert.DoesNotThrow(() => new UDirectory(null));
+            Assert.DoesNotThrow(() => new UDirectory(""));
+            Assert.DoesNotThrow(() => { var s = "a"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a.txt/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = ".txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/b"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/b/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/b.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/b/c/d.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "a/b/c/.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a/b"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a/b.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a/b/c/d.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a/b/c/.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a.txt/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a/b"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a/b.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a/b/c/d.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/a/b/c/.txt"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "E:"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.DoesNotThrow(() => { var s = "/a/"; new UDirectory(s); new UDirectory(s.Replace('/', '\\')); });
+            Assert.Throws<ArgumentException>(() => new UDirectory("*.txt"));
+            Assert.Throws<ArgumentException>(() => new UDirectory("E:e"));
         }
 
         [Test]
