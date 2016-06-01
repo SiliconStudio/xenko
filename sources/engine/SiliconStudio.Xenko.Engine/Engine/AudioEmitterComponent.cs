@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 throw new ArgumentNullException(nameof(soundEffect));
             }
-            if (soundEffect.WaveFormat.Channels > 1)
+            if (soundEffect.Channels > 1)
             {
                 throw new InvalidOperationException("The provided SoundEffect has more than one channel. It can not be localized in the 3D scene.");
             }
