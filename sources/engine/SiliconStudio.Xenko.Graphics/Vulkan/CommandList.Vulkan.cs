@@ -574,6 +574,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public unsafe void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
+            // Barriers need to be global to command buffer
+            CleanupRenderPass();
+
             var memoryBarrier = new ImageMemoryBarrier
             {
                 StructureType = StructureType.ImageMemoryBarrier,
@@ -625,6 +628,8 @@ namespace SiliconStudio.Xenko.Graphics
         public unsafe void Clear(Texture renderTarget, Color4 color)
         {
             // TODO VULKAN: Detect if inside render pass. If so, NativeCommandBuffer.ClearAttachments()
+            // Barriers need to be global to command buffer
+            CleanupRenderPass();
 
             var memoryBarrier = new ImageMemoryBarrier
             {
@@ -756,9 +761,9 @@ namespace SiliconStudio.Xenko.Graphics
                     StructureType = StructureType.ImageMemoryBarrier,
                     Image = destinationParent.NativeImage,
                     SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
-                    OldLayout = sourceTexture.NativeLayout,
+                    OldLayout = destinationTexture.NativeLayout,
                     NewLayout = ImageLayout.TransferDestinationOptimal,
-                    SourceAccessMask = sourceTexture.NativeAccessMask,
+                    SourceAccessMask = destinationTexture.NativeAccessMask,
                     DestinationAccessMask = AccessFlags.TransferWrite,
                 };
 
