@@ -25,6 +25,7 @@ namespace SiliconStudio.Assets.Tracking
         public TrackedAsset(AssetSourceTracker tracker, Asset sessionAsset, Asset clonedAsset)
         {
             if (tracker == null) throw new ArgumentNullException(nameof(tracker));
+            if (sessionAsset == null) throw new ArgumentNullException(nameof(sessionAsset));
             this.tracker = tracker;
             this.sessionAsset = sessionAsset;
             this.clonedAsset = clonedAsset;
