@@ -539,8 +539,6 @@ namespace SiliconStudio.Xenko.Graphics
             bool compressed;
             VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out backBufferFormat, out pixelSize, out compressed);
 
-            var layerCount = Dimension == TextureDimension.Texture3D ? 1 : arrayOrDepthCount;
-
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
@@ -551,7 +549,7 @@ namespace SiliconStudio.Xenko.Graphics
                 SubresourceRange = new ImageSubresourceRange
                 {
                     BaseArrayLayer = (uint)arrayOrDepthSlice,
-                    LayerCount = (uint)layerCount,
+                    LayerCount = 1,
                     BaseMipLevel = (uint)mipIndex,
                     LevelCount = (uint)mipCount,
                     AspectMask = ImageAspectFlags.Color
