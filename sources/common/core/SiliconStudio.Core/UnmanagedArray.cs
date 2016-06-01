@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SiliconStudio.Core
 {
     public class UnmanagedArray<T> : IDisposable where T : struct
     {
         private readonly int sizeOfT;
+        private readonly bool dontFree;
 
         public UnmanagedArray(int length)
         {
@@ -16,6 +13,7 @@ namespace SiliconStudio.Core
             sizeOfT = Utilities.SizeOf<T>();
             var finalSize = length * sizeOfT;
             Pointer = Utilities.AllocateMemory(finalSize);
+            dontFree = false;
         }
 
         public UnmanagedArray(int length, IntPtr unmanagedDataPtr)
@@ -23,11 +21,15 @@ namespace SiliconStudio.Core
             this.Length = length;
             sizeOfT = Utilities.SizeOf<T>();
             Pointer = unmanagedDataPtr;
+            dontFree = true;
         }
 
         public void Dispose()
         {
-            Utilities.FreeMemory(Pointer);
+            if (!dontFree)
+            {
+                Utilities.FreeMemory(Pointer);
+            }
         }
 
         public T this[int index]
