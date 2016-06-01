@@ -232,7 +232,7 @@ namespace SiliconStudio.Assets.Tests
                     Name = rawAssetPath.GetFileName() + "Name"
                 };
 
-            var assetUrl = new UFile(rawAssetPath.GetFileName(), null);
+            var assetUrl = new UFile(rawAssetPath.GetFileName());
 
             // Emulate a change in a sub-asset
             var subAsset = new AssetObjectTestSub() { Value = value };
