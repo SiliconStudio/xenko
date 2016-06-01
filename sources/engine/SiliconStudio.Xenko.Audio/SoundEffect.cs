@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio.Wave;
 using SiliconStudio.Xenko.Native;
 
@@ -46,6 +47,7 @@ namespace SiliconStudio.Xenko.Audio
     /// <seealso cref="SoundMusic"/>
     /// <seealso cref="IPositionableSound"/>    
     [DataContract]
+    [ContentSerializer(typeof(DataContentSerializer<SoundEffect>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SoundEffect>), Profile = "Content")]
     public sealed partial class SoundEffect : SoundBase, IPositionableSound
     {
