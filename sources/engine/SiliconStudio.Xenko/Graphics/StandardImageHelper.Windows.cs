@@ -94,13 +94,6 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     partial class StandardImageHelper
     {
-        static StandardImageHelper()
-        {
-#if SILICONSTUDIO_XENKO_UI_SDL
-            Core.NativeLibrary.PreloadLibrary("SDL2_image.dll");
-#endif
-        }
-
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
 #if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
@@ -140,8 +133,9 @@ namespace SiliconStudio.Xenko.Graphics
     #if SILICONSTUDIO_XENKO_UI_SDL
             // FIXME: Manu: The following beginning of code shows that we can read images using SDL.
             // FIXME: We will do the implementation logic later.
-            IntPtr rw = SDL.SDL_RWFromMemNative((byte *)pSource, size);
-            IntPtr image = SDL_image.IMG_Load_RW(rw, 1);
+            //Core.NativeLibrary.PreloadLibrary("SDL2_image.dll");
+            //IntPtr rw = SDL.SDL_RWFromMemNative((byte *)pSource, size);
+            //IntPtr image = SDL_image.IMG_Load_RW(rw, 1);
     #elif SILICONSTUDIO_XENKO_UI_OPENTK
     #endif
             return null;
