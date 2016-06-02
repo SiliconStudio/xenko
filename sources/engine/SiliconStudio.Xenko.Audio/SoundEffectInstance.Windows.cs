@@ -5,8 +5,6 @@
 using System;
 using SharpDX;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Audio.Wave;
-
 using SharpDX.XAudio2;
 using SharpDX.X3DAudio;
 
@@ -138,12 +136,6 @@ namespace SiliconStudio.Xenko.Audio
 
         internal override void LoadBuffer()
         {
-            if (soundEffect.PreloadedData == null)
-            {
-                soundEffect.Init();
-                soundEffect.Preload();
-            }
-
             var buffer = new AudioBuffer(new DataPointer(soundEffect.PreloadedData.Pointer, soundEffect.PreloadedData.Length));
             
             if (IsLooped)

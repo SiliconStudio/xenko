@@ -60,14 +60,15 @@ namespace SiliconStudio.Xenko.Native
         /// Decodes compressed celt data into PCM 16 bit shorts
         /// </summary>
         /// <param name="inputBuffer">The input buffer</param>
+        /// <param name="inputBufferSize">The size of the valid bytes in the input buffer</param>
         /// <param name="outputSamples">The output buffer, the size of frames should be the same amount that is contained in the input buffer</param>
         /// <returns></returns>
-        public unsafe int Decode(byte[] inputBuffer, short[] outputSamples)
+        public unsafe int Decode(byte[] inputBuffer, int inputBufferSize, short[] outputSamples)
         {
             fixed (short* samplesPtr = outputSamples)
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBuffer.Length, samplesPtr, outputSamples.Length);
+                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length);
             }
         }
 
@@ -90,14 +91,15 @@ namespace SiliconStudio.Xenko.Native
         /// Decodes compressed celt data into PCM 32 bit floats
         /// </summary>
         /// <param name="inputBuffer">The input buffer</param>
+        /// <param name="inputBufferSize">The size of the valid bytes in the input buffer</param>
         /// <param name="outputSamples">The output buffer, the size of frames should be the same amount that is contained in the input buffer</param>
         /// <returns></returns>
-        public unsafe int Decode(byte[] inputBuffer, float[] outputSamples)
+        public unsafe int Decode(byte[] inputBuffer, int inputBufferSize, float[] outputSamples)
         {
             fixed (float* samplesPtr = outputSamples)
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeFloat(celtPtr, bufferPtr, inputBuffer.Length, samplesPtr, outputSamples.Length);
+                return XenkoCeltDecodeFloat(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length);
             }
         }
 
@@ -107,24 +109,12 @@ namespace SiliconStudio.Xenko.Native
         /// <param name="audioSamples">A buffer containing interleaved channels (as from constructor channels) and samples (can be any number of samples)</param>
         /// <param name="outputBuffer">An array of bytes, the size of the array will be the max possible size of the compressed packet</param>
         /// <returns></returns>
-        public int Encode(float[] audioSamples, byte[] outputBuffer)
-        {
-            return Encode(audioSamples, audioSamples.Length / Channels, outputBuffer);
-        }
-
-        /// <summary>
-        /// Encode PCM audio into celt compressed format
-        /// </summary>
-        /// <param name="audioSamples">a buffer with float audio data, must be numberOfSamples * Channels</param>
-        /// <param name="numberOfSamples">samples per channel!</param>
-        /// <param name="outputBuffer">the output byte array</param>
-        /// <returns></returns>
-        public unsafe int Encode(float[] audioSamples, int numberOfSamples, byte[] outputBuffer)
+        public unsafe int Encode(float[] audioSamples, byte[] outputBuffer)
         {
             fixed (float* samplesPtr = audioSamples)
             fixed (byte* bufferPtr = outputBuffer)
             {
-                return XenkoCeltEncodeFloat(celtPtr, samplesPtr, numberOfSamples, bufferPtr, outputBuffer.Length);
+                return XenkoCeltEncodeFloat(celtPtr, samplesPtr, audioSamples.Length / Channels, bufferPtr, outputBuffer.Length);
             }
         }
 

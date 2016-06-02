@@ -3,14 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Audio.Wave;
 using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
@@ -51,19 +47,10 @@ namespace SiliconStudio.Xenko.Audio
     [DataSerializerGlobal(typeof(ReferenceSerializer<SoundEffect>), Profile = "Content")]
     public sealed partial class SoundEffect : SoundBase, IPositionableSound
     {
-        public List<CompressedSoundPacket> Packets;
-
-        public int SampleRate { get; set; } = 44100;
-
-        public int SamplesSize { get; set; } = 1024;
-
-        public int Channels { get; set; } = 2;
-
-        [DataMemberIgnore]
-        internal UnmanagedArray<short> PreloadedData;
-
-        public void Init()
+        public void Attach(AudioEngine engine)
         {
+            AttachEngine(engine);
+
             Name = "Sound Effect " + Interlocked.Add(ref soundEffectCreationCount, 1);
 
             AdaptAudioDataImpl();
@@ -78,24 +65,6 @@ namespace SiliconStudio.Xenko.Audio
             DefaultInstance.Pan = defaultPan;
             DefaultInstance.Volume = defaultVolume;
             DefaultInstance.IsLooped = defaultIsLooped;
-        }
-
-        public void Preload()
-        {
-            var decoder = new Celt(SampleRate, SamplesSize, Channels, true);
-
-            var samplesPerPacket = SamplesSize * Channels;
-
-            PreloadedData = new UnmanagedArray<short>(samplesPerPacket * Packets.Count);
-
-            var offset = 0;  
-            var buffer = new short[samplesPerPacket];
-            foreach (var compressedSoundPacket in Packets)
-            {
-                decoder.Decode(compressedSoundPacket.Data, buffer);
-                PreloadedData.Write(buffer, offset);
-                offset += samplesPerPacket;
-            }
         }
 
         /// <summary>

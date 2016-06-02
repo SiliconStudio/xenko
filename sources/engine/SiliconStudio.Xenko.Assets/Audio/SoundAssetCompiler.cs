@@ -7,10 +7,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Native;
@@ -97,11 +99,14 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 var uncompressed = bsize * channels * sizeof(short);
                 var target = (int)Math.Floor(uncompressed / (float)AssetParameters.CompressionRatio);
 
-                var newSound = new SoundEffect();
-                newSound.Packets = new List<CompressedSoundPacket>();
+                var dataUrl = Url + "_Data";
+                var newSound = new SoundEffect { CompressedDataUrl = dataUrl };
 
                 using (var reader = new BinaryReader(new FileStream(tempPcmFile, FileMode.Open, FileAccess.Read)))
+                using (var outputStream = ContentManager.FileProvider.OpenStream(dataUrl, VirtualFileMode.Create, VirtualFileAccess.Write))
                 {
+                    var writer = new BinarySerializationWriter(outputStream);
+
                     var outputBuffer = new byte[target];
                     var buffer = new float[2048];
                     var count = 0;
@@ -110,11 +115,12 @@ namespace SiliconStudio.Xenko.Assets.Audio
                         if (count == 2048) //flush
                         {
                             var len = encoder.Encode(buffer, outputBuffer);
-                            var packet = new CompressedSoundPacket { Data = new byte[len], Length = len };
-                            Array.Copy(outputBuffer, packet.Data, packet.Length);
-                            newSound.Packets.Add(packet);
-                            Array.Clear(buffer, 0, 2048);
+                            writer.Write(len);
+                            outputStream.Write(outputBuffer, 0, len);
                             count = 0;
+
+                            newSound.NumberOfPackets++;
+                            newSound.MaxPacketLength = Math.Max(newSound.MaxPacketLength, len);
                         }
 
                         try
@@ -131,9 +137,11 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     if (count > 0) //flush
                     {
                         var len = encoder.Encode(buffer, outputBuffer);
-                        var packet = new CompressedSoundPacket { Data = new byte[len], Length = len };
-                        Array.Copy(outputBuffer, packet.Data, packet.Length);
-                        newSound.Packets.Add(packet);
+                        writer.Write(len);
+                        outputStream.Write(outputBuffer, 0, len);
+
+                        newSound.NumberOfPackets++;
+                        newSound.MaxPacketLength = Math.Max(newSound.MaxPacketLength, len);
                     }
                 }
 

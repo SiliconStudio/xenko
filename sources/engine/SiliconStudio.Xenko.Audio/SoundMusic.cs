@@ -3,7 +3,9 @@
 using System;
 using System.IO;
 using System.Threading;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -26,8 +28,9 @@ namespace SiliconStudio.Xenko.Audio
     /// <seealso cref="SoundEffect"/>
     /// <seealso cref="IPlayableSound"/>
     /// <seealso cref="DynamicSoundEffectInstance"/>
+    [DataContract]
+    [ContentSerializer(typeof(DataContentSerializer<SoundMusic>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SoundMusic>), Profile = "Content")]
-    [DataSerializer(typeof(NullSerializer<SoundMusic>))]
     public sealed class SoundMusic : SoundInstanceBase
     {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -39,80 +42,29 @@ namespace SiliconStudio.Xenko.Audio
 #endif
 
         /// <summary>
-        /// Create and Load a sound music from an input file.
-        /// </summary>
-        /// <param name="engine">The audio engine in which to load the soundMusic</param>
-        /// <param name="stream">The stream.</param>
-        /// <returns>A new instance of soundMusic ready to be played</returns>
-        /// <exception cref="System.ArgumentNullException">engine
-        /// or
-        /// filename</exception>
-        /// <exception cref="System.ObjectDisposedException">The AudioEngine in which to create the voice is disposed.</exception>
-        /// <exception cref="System.ArgumentException">engine or stream</exception>
-        /// <exception cref="ObjectDisposedException">The AudioEngine in which to create the voice is disposed.</exception>
-        /// <exception cref="ArgumentNullException">File ' + filename + ' does not exist.</exception>
-        /// <remarks>On all platform the wav format is supported.
-        /// For compressed formats, it is the task of the build engine to automatically adapt the original files to the best hardware specific format.</remarks>
-        public static SoundMusic Load(AudioEngine engine, Stream stream)
-        {
-            if(engine == null)
-                throw new ArgumentNullException("engine");
-
-            if (stream == null)
-                throw new ArgumentNullException("stream");
-
-            if(engine.IsDisposed)
-                throw new ObjectDisposedException("The AudioEngine in which to create the voice is disposed.");
-
-            // TODO: Not portable on WindowsStore
-
-            var ret = new SoundMusic();
-            ret.AttachEngine(engine);
-            ret.Load(stream);
-
-            return ret;
-        }
-
-        /// <summary>
         /// The number of SoundMusic Created so far. Used only to give a unique name to the SoundEffect.
         /// </summary>
         private static int soundMusicCreationCount;
 
-        // for serialization
-        internal SoundMusic()
+        private bool contentIsReady;
+
+        public void Attach(AudioEngine engine)
         {
-        }
+            if (contentIsReady) return;
 
-        // for serialization
-        internal void Load(Stream stream)
-        {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            var virtualStream = stream as VirtualFileStream;
-            if (virtualStream == null)
-                throw new InvalidOperationException("Expecting VirtualFileStream. Music files needs to be stored on the virtual file system in a non-compressed form.");
-
-            var fileStream = virtualStream.InternalStream as FileStream;
-            if (fileStream == null)
-                throw new InvalidOperationException("Expecting FileStream in VirtualFileStream.InternalStream. Music files needs to be stored on the virtual file system in a non-compressed form.");
-
-            FileName = fileStream.Name;
-            StartPosition = virtualStream.StartPosition;
-            Length = virtualStream.Length;
-#else
-            // Make a memory copy of the stream so that the source can be properly disposed
-            var memoryStream = new MemoryStream();
-            stream.CopyTo(memoryStream);
-            Stream = memoryStream;
-            Stream.Position = 0;
-#endif
+            AttachEngine(engine);
 
             ResetStateToDefault();
+
             Name = "SoundMusic " + soundMusicCreationCount;
 
             AudioEngine.RegisterSound(this);
 
             Interlocked.Increment(ref soundMusicCreationCount);
+
+            contentIsReady = true;
         }
+
 
         private void ResetStateToDefault()
         {

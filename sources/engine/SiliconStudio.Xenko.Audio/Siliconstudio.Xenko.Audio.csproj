@@ -84,6 +84,7 @@
     <Compile Include="SoundBase.cs" />
     <Compile Include="SoundBase.Generic.cs" />
     <Compile Include="SoundBase.Windows.cs" />
+    <Compile Include="SoundBaseSerializer.cs" />
     <Compile Include="SoundEffect.cs" />
     <Compile Include="SoundEffect.iOS.cs" />
     <Compile Include="SoundEffect.Android.cs" />
@@ -98,7 +99,6 @@
     <Compile Include="SoundMusicActionRequest.cs" />
     <Compile Include="SoundMusicEvent.cs" />
     <Compile Include="SoundMusicEventNotification.cs" />
-    <Compile Include="SoundMusicSerializer.cs" />
     <Compile Include="SoundPlayState.cs" />
     <Compile Include="AudioEngine.Windows.cs" />
     <Compile Include="DynamicSoundEffectInstance.Windows.cs" />
