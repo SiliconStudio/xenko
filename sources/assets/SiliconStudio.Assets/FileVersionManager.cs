@@ -4,7 +4,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
@@ -32,7 +31,7 @@ namespace SiliconStudio.Assets
 
             // Loads the file version cache
             tracker = FileVersionTracker.GetDefault();
-            asyncRunner = new Thread(SafeAction.Wrap(ComputeFileHashAsyncRunner)) { IsBackground = true };
+            asyncRunner = new Thread(SafeAction.Wrap(ComputeFileHashAsyncRunner)) { Name = "File Version Manager", IsBackground = true };
             asyncRunner.Start();
         }
 
@@ -74,7 +73,7 @@ namespace SiliconStudio.Assets
 
         public void ComputeFileHashAsync(UFile path, Action<UFile, ObjectId> fileHashCallback = null, CancellationToken? cancellationToken = null)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
             lock (asyncRequests)
             {
@@ -85,7 +84,7 @@ namespace SiliconStudio.Assets
 
         public void ComputeFileHashAsync(IEnumerable<UFile> paths, Action<UFile, ObjectId> fileHashCallback = null, CancellationToken? cancellationToken = null)
         {
-            if (paths == null) throw new ArgumentNullException("paths");
+            if (paths == null) throw new ArgumentNullException(nameof(paths));
 
             lock (asyncRequests)
             {
@@ -210,8 +209,8 @@ namespace SiliconStudio.Assets
             {
                 unchecked
                 {
-                    int hashCode = (File != null ? File.GetHashCode() : 0);
-                    hashCode = (hashCode*397) ^ (FileHashCallback != null ? FileHashCallback.GetHashCode() : 0);
+                    int hashCode = File?.GetHashCode() ?? 0;
+                    hashCode = (hashCode*397) ^ (FileHashCallback?.GetHashCode() ?? 0);
                     hashCode = (hashCode*397) ^ CancellationToken.GetHashCode();
                     return hashCode;
                 }
