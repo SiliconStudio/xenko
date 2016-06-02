@@ -467,9 +467,10 @@ namespace SiliconStudio.Assets.Tracking
                 foreach (var itemId in items)
                 {
                     TrackedAsset trackedAsset;
-                    if (trackedAssets.TryGetValue(itemId, out trackedAsset) && trackedAsset.DependsOnSource(sourceFile))
+                    if (trackedAssets.TryGetValue(itemId, out trackedAsset))
                     {
-                        var data = new SourceFileChangedData(SourceFileChangeType.SourceFile, trackedAsset.AssetId, new[] { sourceFile });
+                        bool needUpdate = trackedAsset.DependsOnSource(sourceFile);
+                        var data = new SourceFileChangedData(SourceFileChangeType.SourceFile, trackedAsset.AssetId, new[] { sourceFile }, needUpdate);
                         message.Add(data);
                     }
                 }

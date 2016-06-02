@@ -67,6 +67,7 @@
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
+    <Compile Include="Tracking\SourceFileChangeType.cs" />
     <Compile Include="Tracking\SourceFilesCollector.cs" />
     <Compile Include="Tracking\SourceHashesHelper.cs" />
     <Compile Include="Tracking\TrackedAsset.cs" />

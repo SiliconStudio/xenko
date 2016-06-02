@@ -68,22 +68,25 @@ namespace SiliconStudio.Assets.Tracking
                 var collector = new SourceFilesCollector();
                 var newSourceFiles = collector.GetSourceFiles(clonedAsset);
                 bool changed = false;
+                bool needUpdate = false;
                 // Untrack previous paths
-                foreach (var sourceFile in sourceFiles.Keys)
+                foreach (var sourceFile in sourceFiles)
                 {
-                    if (!newSourceFiles.ContainsKey(sourceFile))
+                    if (!newSourceFiles.ContainsKey(sourceFile.Key))
                     {
-                        tracker.UnTrackAssetImportInput(AssetId, sourceFile);
+                        tracker.UnTrackAssetImportInput(AssetId, sourceFile.Key);
+                        needUpdate = needUpdate || sourceFile.Value;
                         changed = true;
                     }
                 }
 
                 // Track new paths
-                foreach (var sourceFile in newSourceFiles.Keys)
+                foreach (var sourceFile in newSourceFiles)
                 {
-                    if (!sourceFiles.ContainsKey(sourceFile))
+                    if (!sourceFiles.ContainsKey(sourceFile.Key))
                     {
-                        tracker.TrackAssetImportInput(AssetId, sourceFile);
+                        tracker.TrackAssetImportInput(AssetId, sourceFile.Key);
+                        needUpdate = needUpdate || sourceFile.Value;
                         changed = true;
                     }
                 }
@@ -92,7 +95,8 @@ namespace SiliconStudio.Assets.Tracking
 
                 if (changed)
                 {
-                    tracker.SourceFileChanged.Post(new[] { new SourceFileChangedData(SourceFileChangeType.Asset, AssetId, sourceFiles.Where(x => x.Value).Select(x => x.Key).ToList()) });
+                    var files = sourceFiles.Where(x => x.Value).Select(x => x.Key).ToList();
+                    tracker.SourceFileChanged.Post(new[] { new SourceFileChangedData(SourceFileChangeType.Asset, AssetId, files, needUpdate) });
                 }
             }
             else
