@@ -100,6 +100,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal bool HasDepthClamp;
 
+        internal bool HasAnisotropicFiltering;
+
         internal bool HasTextureBuffers;
         internal bool HasKhronosDebug;
 
