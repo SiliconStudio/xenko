@@ -311,7 +311,7 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
 
                 case PixelFormat.D16_UNorm:
-                    format = Format.R16UNorm;
+                    format = Format.D16UNorm;
                     pixelSize = 2;
                     break;
                 case PixelFormat.D24_UNorm_S8_UInt:
