@@ -598,7 +598,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user suggested width of this element.
+        /// Gets or sets the user suggested depth of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
         /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
