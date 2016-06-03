@@ -32,6 +32,7 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class Texture
     {
         internal SharpVulkan.Image NativeImage;
+        internal SharpVulkan.Buffer NativeBuffer;
         internal ImageView NativeColorAttachmentView;
         internal ImageView NativeDepthStencilView;
         internal ImageView NativeImageView;
@@ -39,8 +40,6 @@ namespace SiliconStudio.Xenko.Graphics
         private bool isNotOwningResources;
 
         internal Format NativeFormat;
-        internal int RowPitch;
-        internal int DepthPitch;
         internal bool HasStencil;
 
         internal ImageLayout NativeLayout;
@@ -77,304 +76,286 @@ namespace SiliconStudio.Xenko.Graphics
             NativeColorAttachmentView = attachmentView;
         }
 
-        private unsafe void InitializeFromImpl(DataBox[] dataBoxes = null)
+        private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
-            int pixelSize;
-            bool compressed;
-            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out NativeFormat, out pixelSize, out compressed);
-
-            DepthPitch = Description.Width * Description.Height * pixelSize;
-            RowPitch = Description.Width * pixelSize;
-
-            NativeLayout =
-                IsRenderTarget ? ImageLayout.ColorAttachmentOptimal :
-                IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal :
-                IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal :
-                ImageLayout.General;
-
-            if (ParentTexture != null)
-            {
-                // Create only a view
-                NativeImage = ParentTexture.NativeImage;
-                NativeMemory = ParentTexture.NativeMemory;
-            }
-            else
-            {
-                if (NativeImage == SharpVulkan.Image.Null)
-                {
-                    if (!isNotOwningResources)
-                    {
-                        // Create a new image
-                        var createInfo = new ImageCreateInfo
-                        {
-                            StructureType = StructureType.ImageCreateInfo,
-                            ArrayLayers = (uint)ArraySize,
-                            Extent = new Extent3D((uint)Width, (uint)Height, (uint)Depth),
-                            MipLevels = (uint)MipLevels,
-                            Samples = SampleCountFlags.Sample1,
-                            Format = NativeFormat,
-                            Flags = ImageCreateFlags.None,
-                            Tiling = ImageTiling.Optimal,
-                            InitialLayout = ImageLayout.Undefined
-                        };
-
-                        switch (Dimension)
-                        {
-                            case TextureDimension.Texture1D:
-                                createInfo.ImageType = ImageType.Image1D;
-                                break;
-                            case TextureDimension.Texture2D:
-                                createInfo.ImageType = ImageType.Image2D;
-                                break;
-                            case TextureDimension.Texture3D:
-                                createInfo.ImageType = ImageType.Image3D;
-                                break;
-                            case TextureDimension.TextureCube:
-                                createInfo.ImageType = ImageType.Image2D;
-                                createInfo.Flags |= ImageCreateFlags.CubeCompatible;
-                                break;
-                        }
-
-                        if (IsRenderTarget)
-                            createInfo.Usage |= ImageUsageFlags.ColorAttachment;
-
-                        if (IsDepthStencil)
-                            createInfo.Usage |= ImageUsageFlags.DepthStencilAttachment;
-
-                        if (IsShaderResource)
-                            createInfo.Usage |= ImageUsageFlags.Sampled; // TODO VULKAN: Input attachments
-
-                        // TODO VULKAN: Can we restrict more based on GraphicsResourceUsage? 
-                        createInfo.Usage |= ImageUsageFlags.TransferSource | ImageUsageFlags.TransferDestination;
-                        
-                        // TODO VULKAN: Simulate staging textures?
-                        var memoryProperties = MemoryPropertyFlags.DeviceLocal;
-                        if (Usage == GraphicsResourceUsage.Dynamic || Usage == GraphicsResourceUsage.Staging)
-                        {
-                            createInfo.Tiling = ImageTiling.Linear;
-                            memoryProperties = MemoryPropertyFlags.HostVisible;
-                        }
-
-                        // TODO: Multisampling, flags, usage, etc.
-
-                        NativeImage = GraphicsDevice.NativeDevice.CreateImage(ref createInfo);
-
-                        MemoryRequirements memoryRequirements;
-                        GraphicsDevice.NativeDevice.GetImageMemoryRequirements(NativeImage, out memoryRequirements);
-
-                        var allocateInfo = new MemoryAllocateInfo
-                        {
-                            StructureType = StructureType.MemoryAllocateInfo,
-                            AllocationSize = memoryRequirements.Size,
-                        };
-
-                        PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-                        GraphicsDevice.Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
-                        var typeBits = memoryRequirements.MemoryTypeBits;
-                        for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
-                        {
-                            if ((typeBits & 1) == 1)
-                            {
-                                // Type is available, does it match user properties?
-                                var memoryType = *((MemoryType*)&physicalDeviceMemoryProperties.MemoryTypes + i);
-                                if ((memoryType.PropertyFlags & memoryProperties) == memoryProperties)
-                                {
-                                    allocateInfo.MemoryTypeIndex = i;
-                                    break;
-                                }
-                            }
-                            typeBits >>= 1;
-                        }
-
-                        NativeMemory = GraphicsDevice.NativeDevice.AllocateMemory(ref allocateInfo);
-
-                        GraphicsDevice.NativeDevice.BindImageMemory(NativeImage, NativeMemory, 0);
-
-                        //AllocateMemory(IntPtr.Zero, memoryProperties);
-
-                        //if (dataBoxes != null && dataBoxes.Length > 0)
-                        //{
-                        //    if ((memoryProperties & MemoryPropertyFlags.HostVisible) != 0)
-                        //    {
-                        //        long offset = 0;
-                        //        for (var i = 0; i < dataBoxes.Length; i++)
-                        //        {
-                        //            var subresource = new ImageSubresource
-                        //            {
-                        //                Aspect = ImageAspect.Color,
-                        //                ArraySlice = i / MipLevels,
-                        //                MipLevel = i % MipLevels
-                        //            };
-
-                        //            var mipMapDesc = GetMipMapDescription(i % MipLevels);
-
-                        //            // TODO: Not reporting correct values for subresources for linear tiling textures?
-                        //            var subresourceLayout = GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, subresource);
-
-                        //            subresourceLayout.Offset = offset;
-                        //            subresourceLayout.Size = mipMapDesc.Depth * mipMapDesc.DepthStride;
-
-                        //            var dataPointer = GraphicsDevice.NativeDevice.MapMemory(NativeMemory, subresourceLayout.Offset, subresourceLayout.Size, 0);
-                        //            Utilities.CopyMemory(dataPointer, dataBoxes[i].DataPointer, (int)subresourceLayout.Size);
-                        //            GraphicsDevice.NativeDevice.UnmapMemory(NativeMemory);
-
-                        //            offset += subresourceLayout.Size;
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        using (var stagingTexture = New(GraphicsDevice, Description.ToStagingDescription(), dataBoxes))
-                        //        {
-                        //            GraphicsDevice.Copy(stagingTexture, this);
-                        //        }
-                        //    }
-
-                        //// Trigger copy
-                        //var commandList = GraphicsDevice.NativeCopyCommandList;
-                        //commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
-                        //commandList.CopyResource(NativeResource, nativeUploadTexture);
-                        //commandList.ResourceBarrierTransition(NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
-                        //commandList.Close();
-
-                        //GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
-                        //}
-                    }
-
-                    //GraphicsDevice.SetImageLayout(this, IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, ImageLayout.Undefined, NativeLayout);
-                    //GraphicsDevice.Flush();
-                }
-            }
-
-            if (NativeLayout == ImageLayout.TransferDestinationOptimal)
-                NativeAccessMask = AccessFlags.TransferRead;
-
-            if (NativeLayout == ImageLayout.ColorAttachmentOptimal)
-                NativeAccessMask = AccessFlags.ColorAttachmentWrite;
-
-            if (NativeLayout == ImageLayout.DepthStencilAttachmentOptimal)
-                NativeAccessMask = AccessFlags.DepthStencilAttachmentWrite;
-
-            if (NativeLayout == ImageLayout.ShaderReadOnlyOptimal)
-                NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
-
-            if (!isNotOwningResources && Usage != GraphicsResourceUsage.Staging)
-            {
-                NativeImageView = GetImageView(ViewType, ArraySlice, MipLevel);
-                NativeColorAttachmentView = GetColorAttachmentView(ViewType, ArraySlice, MipLevel);
-                NativeDepthStencilView = GetDepthStencilView(out HasStencil);
-            }
-
+            NativeFormat = VulkanConvertExtensions.ConvertPixelFormat(ViewFormat);
+            HasStencil = IsStencilFormat(ViewFormat);
+            
             NativeImageAspect = IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color;
             if (HasStencil)
                 NativeImageAspect |= ImageAspectFlags.Stencil;
 
-            if (NativeImage != SharpVulkan.Image.Null && ParentTexture == null)
+            if (Usage == GraphicsResourceUsage.Staging)
             {
-                var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-                var beginInfo = new CommandBufferBeginInfo
+                if (NativeImage != SharpVulkan.Image.Null)
+                    throw new InvalidOperationException();
+
+                if (isNotOwningResources)
+                    throw new InvalidOperationException();
+
+                if (ParentTexture != null)
                 {
-                    StructureType = StructureType.CommandBufferBeginInfo,
-                };
-                commandBuffer.Begin(ref beginInfo);
-
-                if (dataBoxes != null && dataBoxes.Length > 0)
+                    // Create only a view
+                    NativeBuffer = ParentTexture.NativeBuffer;
+                    NativeMemory = ParentTexture.NativeMemory;
+                }
+                else
                 {
-                    int totalSize = dataBoxes.Length * 4;
-                    for (int i = 0; i < dataBoxes.Length; i++)
+                    CreateBuffer();
+
+                    if (dataBoxes != null)
+                        throw new InvalidOperationException();
+                }
+            }
+            else
+            {
+                if (NativeImage != SharpVulkan.Image.Null)
+                    throw new InvalidOperationException();
+
+                NativeLayout =
+                    IsRenderTarget ? ImageLayout.ColorAttachmentOptimal :
+                    IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal :
+                    IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal :
+                    ImageLayout.General;
+
+                if (NativeLayout == ImageLayout.TransferDestinationOptimal)
+                    NativeAccessMask = AccessFlags.TransferRead;
+
+                if (NativeLayout == ImageLayout.ColorAttachmentOptimal)
+                    NativeAccessMask = AccessFlags.ColorAttachmentWrite;
+
+                if (NativeLayout == ImageLayout.DepthStencilAttachmentOptimal)
+                    NativeAccessMask = AccessFlags.DepthStencilAttachmentWrite;
+
+                if (NativeLayout == ImageLayout.ShaderReadOnlyOptimal)
+                    NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
+
+                if (ParentTexture != null)
+                {
+                    // Create only a view
+                    NativeImage = ParentTexture.NativeImage;
+                    NativeMemory = ParentTexture.NativeMemory;
+                }
+                else
+                {
+                    if (!isNotOwningResources)
                     {
-                        totalSize += dataBoxes[i].SlicePitch;
-                    }
+                        CreateImage();
 
-                    SharpVulkan.Buffer uploadResource;
-                    int uploadOffset;
-                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer(totalSize, out uploadResource, out uploadOffset);
-
-                    var bufferMemoryBarrier = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = uploadResource,
-                        SourceAccessMask = AccessFlags.HostWrite,
-                        DestinationAccessMask = AccessFlags.TransferRead,
-                    };
-
-                    var initialBarrier = new ImageMemoryBarrier
-                    {
-                        StructureType = StructureType.ImageMemoryBarrier,
-                        OldLayout = ImageLayout.Undefined,
-                        NewLayout = ImageLayout.TransferDestinationOptimal,
-                        Image = NativeImage,
-                        SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                        SourceAccessMask = AccessFlags.None,
-                        DestinationAccessMask = AccessFlags.TransferWrite
-                    };
-                    commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &initialBarrier);
-
-                    var copies = new BufferImageCopy[dataBoxes.Length];
-                    for (int i = 0; i < copies.Length; i++)
-                    {
-                        var slicePitch = dataBoxes[i].SlicePitch;
-
-                        int arraySlice = i / MipLevels;
-                        int mipSlice = i % MipLevels;
-                        var mipMapDescription = GetMipMapDescription(mipSlice);
-
-                        SubresourceLayout layout;
-                        GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource { AspectMask = NativeImageAspect, ArrayLayer = (uint)arraySlice, MipLevel = (uint)mipSlice}, out layout);
-                        
-                        var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
-                        uploadMemory += alignment;
-                        uploadOffset += alignment;
-
-                        Utilities.CopyMemory(uploadMemory, dataBoxes[i].DataPointer, slicePitch);
-
-                        // TODO VULKAN: Check if pitches are valid
-                        copies[i] = new BufferImageCopy
-                        {
-                            BufferOffset = (ulong)uploadOffset,
-                            ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
-                            BufferRowLength = 0,//(uint)(dataBoxes[i].RowPitch / pixelSize),
-                            BufferImageHeight = 0,//(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
-                            ImageOffset = new Offset3D(0, 0, arraySlice),
-                            ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
-                        };
-
-                        uploadMemory += slicePitch;
-                        uploadOffset += slicePitch;
-                    }
-
-                    fixed (BufferImageCopy* copiesPointer = &copies[0])
-                    {
-                        commandBuffer.CopyBufferToImage(uploadResource, NativeImage, ImageLayout.TransferDestinationOptimal, (uint)copies.Length, copiesPointer);
+                        InitializeImage(dataBoxes);
                     }
                 }
 
-                // Transition to default layout
-                var imageMemoryBarrier = new ImageMemoryBarrier
+                if (!isNotOwningResources)
+                {
+                    NativeImageView = GetImageView(ViewType, ArraySlice, MipLevel);
+                    NativeColorAttachmentView = GetColorAttachmentView(ViewType, ArraySlice, MipLevel);
+                    NativeDepthStencilView = GetDepthStencilView();
+                }
+            }
+        }
+
+        private unsafe void CreateBuffer()
+        {
+            var createInfo = new BufferCreateInfo
+            {
+                StructureType = StructureType.BufferCreateInfo,
+                Flags = BufferCreateFlags.None
+            };
+
+            for (int i = 0; i < MipLevels; i++)
+            { 
+                var mipmap = GetMipMapDescription(i);
+                createInfo.Size += (uint)(mipmap.DepthStride * mipmap.Depth * ArraySize);
+            }
+
+            createInfo.Usage = BufferUsageFlags.TransferSource | BufferUsageFlags.TransferDestination;
+
+            // Create buffer
+            NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
+
+            // Allocate and bind memory
+            MemoryRequirements memoryRequirements;
+            GraphicsDevice.NativeDevice.GetBufferMemoryRequirements(NativeBuffer, out memoryRequirements);
+
+            AllocateMemory(MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent, memoryRequirements);
+
+            if (NativeMemory != DeviceMemory.Null)
+            {
+                GraphicsDevice.NativeDevice.BindBufferMemory(NativeBuffer, NativeMemory, 0);
+            }
+        }
+
+        private unsafe void CreateImage()
+        {
+            // Create a new image
+            var createInfo = new ImageCreateInfo
+            {
+                StructureType = StructureType.ImageCreateInfo,
+                ArrayLayers = (uint)ArraySize,
+                Extent = new Extent3D((uint)Width, (uint)Height, (uint)Depth),
+                MipLevels = (uint)MipLevels,
+                Samples = SampleCountFlags.Sample1,
+                Format = NativeFormat,
+                Flags = ImageCreateFlags.None,
+                Tiling = ImageTiling.Optimal,
+                InitialLayout = ImageLayout.Undefined
+            };
+
+            switch (Dimension)
+            {
+                case TextureDimension.Texture1D:
+                    createInfo.ImageType = ImageType.Image1D;
+                    break;
+                case TextureDimension.Texture2D:
+                    createInfo.ImageType = ImageType.Image2D;
+                    break;
+                case TextureDimension.Texture3D:
+                    createInfo.ImageType = ImageType.Image3D;
+                    break;
+                case TextureDimension.TextureCube:
+                    createInfo.ImageType = ImageType.Image2D;
+                    createInfo.Flags |= ImageCreateFlags.CubeCompatible;
+                    break;
+            }
+
+            // TODO VULKAN: Can we restrict more based on GraphicsResourceUsage? 
+            createInfo.Usage |= ImageUsageFlags.TransferSource | ImageUsageFlags.TransferDestination;
+
+            if (IsRenderTarget)
+                createInfo.Usage |= ImageUsageFlags.ColorAttachment;
+
+            if (IsDepthStencil)
+                createInfo.Usage |= ImageUsageFlags.DepthStencilAttachment;
+
+            if (IsShaderResource)
+                createInfo.Usage |= ImageUsageFlags.Sampled; // TODO VULKAN: Input attachments
+
+            var memoryProperties = MemoryPropertyFlags.DeviceLocal;
+
+            // Create native image
+            // TODO: Multisampling, flags, usage, etc.
+            NativeImage = GraphicsDevice.NativeDevice.CreateImage(ref createInfo);
+
+            // Allocate and bind memory
+            MemoryRequirements memoryRequirements;
+            GraphicsDevice.NativeDevice.GetImageMemoryRequirements(NativeImage, out memoryRequirements);
+
+            AllocateMemory(memoryProperties, memoryRequirements);
+
+            if (NativeMemory != DeviceMemory.Null)
+            {
+                GraphicsDevice.NativeDevice.BindImageMemory(NativeImage, NativeMemory, 0);
+            }
+        }
+
+        private unsafe void InitializeImage(DataBox[] dataBoxes)
+        {
+            var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
+            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo };
+            commandBuffer.Begin(ref beginInfo);
+
+            if (dataBoxes != null && dataBoxes.Length > 0)
+            {
+                int totalSize = dataBoxes.Length * 4;
+                for (int i = 0; i < dataBoxes.Length; i++)
+                {
+                    totalSize += dataBoxes[i].SlicePitch;
+                }
+
+                SharpVulkan.Buffer uploadResource;
+                int uploadOffset;
+                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(totalSize, out uploadResource, out uploadOffset);
+
+                // Upload buffer barrier
+                var bufferMemoryBarrier = new BufferMemoryBarrier
+                {
+                    StructureType = StructureType.BufferMemoryBarrier,
+                    Buffer = uploadResource,
+                    SourceAccessMask = AccessFlags.HostWrite,
+                    DestinationAccessMask = AccessFlags.TransferRead,
+                };
+
+                // Image barrier
+                var initialBarrier = new ImageMemoryBarrier
                 {
                     StructureType = StructureType.ImageMemoryBarrier,
-                    OldLayout = dataBoxes == null || dataBoxes.Length == 0 ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal,
-                    NewLayout = NativeLayout,
+                    OldLayout = ImageLayout.Undefined,
+                    NewLayout = ImageLayout.TransferDestinationOptimal,
                     Image = NativeImage,
                     SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                    SourceAccessMask = dataBoxes == null || dataBoxes.Length == 0 ? AccessFlags.None : AccessFlags.TransferWrite,
-                    DestinationAccessMask = NativeAccessMask
+                    SourceAccessMask = AccessFlags.None,
+                    DestinationAccessMask = AccessFlags.TransferWrite
                 };
-                commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
+                commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &initialBarrier);
 
-                // Close and submit
-                commandBuffer.End();
-
-                var submitInfo = new SubmitInfo
+                // Copy data boxes to upload buffer
+                var copies = new BufferImageCopy[dataBoxes.Length];
+                for (int i = 0; i < copies.Length; i++)
                 {
-                    StructureType = StructureType.SubmitInfo,
-                    CommandBufferCount = 1,
-                    CommandBuffers = new IntPtr(&commandBuffer),
-                };
+                    var slicePitch = dataBoxes[i].SlicePitch;
 
-                GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
-                GraphicsDevice.NativeCommandQueue.WaitIdle();
-                commandBuffer.Reset(CommandBufferResetFlags.None);
+                    int arraySlice = i / MipLevels;
+                    int mipSlice = i % MipLevels;
+                    var mipMapDescription = GetMipMapDescription(mipSlice);
+
+                    SubresourceLayout layout;
+                    GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource { AspectMask = NativeImageAspect, ArrayLayer = (uint)arraySlice, MipLevel = (uint)mipSlice }, out layout);
+
+                    var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
+                    uploadMemory += alignment;
+                    uploadOffset += alignment;
+
+                    Utilities.CopyMemory(uploadMemory, dataBoxes[i].DataPointer, slicePitch);
+
+                    // TODO VULKAN: Check if pitches are valid
+                    copies[i] = new BufferImageCopy
+                    {
+                        BufferOffset = (ulong)uploadOffset,
+                        ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
+                        BufferRowLength = 0,//(uint)(dataBoxes[i].RowPitch / pixelSize),
+                        BufferImageHeight = 0,//(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
+                        ImageOffset = new Offset3D(0, 0, arraySlice),
+                        ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
+                    };
+
+                    uploadMemory += slicePitch;
+                    uploadOffset += slicePitch;
+                }
+
+                // Copy from upload buffer to image
+                fixed (BufferImageCopy* copiesPointer = &copies[0])
+                {
+                    commandBuffer.CopyBufferToImage(uploadResource, NativeImage, ImageLayout.TransferDestinationOptimal, (uint)copies.Length, copiesPointer);
+                }
             }
+
+            // Transition to default layout
+            var imageMemoryBarrier = new ImageMemoryBarrier
+            {
+                StructureType = StructureType.ImageMemoryBarrier,
+                OldLayout = dataBoxes == null || dataBoxes.Length == 0 ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal,
+                NewLayout = NativeLayout,
+                Image = NativeImage,
+                SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
+                SourceAccessMask = dataBoxes == null || dataBoxes.Length == 0 ? AccessFlags.None : AccessFlags.TransferWrite,
+                DestinationAccessMask = NativeAccessMask
+            };
+            commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
+
+            // Close and submit
+            commandBuffer.End();
+
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = 1,
+                CommandBuffers = new IntPtr(&commandBuffer),
+            };
+
+            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+            GraphicsDevice.NativeCommandQueue.WaitIdle();
+            commandBuffer.Reset(CommandBufferResetFlags.None);
         }
 
         /// <inheritdoc/>
@@ -398,6 +379,12 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     GraphicsDevice.NativeDevice.DestroyImage(NativeImage);
                     NativeImage = SharpVulkan.Image.Null;
+                }
+
+                if (NativeBuffer != SharpVulkan.Buffer.Null)
+                {
+                    GraphicsDevice.NativeDevice.DestroyImage(NativeImage);
+                    NativeBuffer = SharpVulkan.Buffer.Null;
                 }
 
                 if (NativeImageView != ImageView.Null)
@@ -454,20 +441,15 @@ namespace SiliconStudio.Xenko.Graphics
             int mipCount;
             GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayOrDepthCount, out mipCount);
 
-            Format nativeViewFormat;
-            int pixelSize;
-            bool compressed;
-            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeViewFormat, out pixelSize, out compressed);
-
             var layerCount = Dimension == TextureDimension.Texture3D ? 1 : arrayOrDepthCount;
 
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
-                Format = nativeViewFormat,
+                Format = VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount)
+                SubresourceRange = new ImageSubresourceRange(NativeImageAspect, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)
@@ -579,9 +561,8 @@ namespace SiliconStudio.Xenko.Graphics
             return GraphicsDevice.NativeDevice.CreateImageView(ref createInfo);
         }
 
-        private unsafe ImageView GetDepthStencilView(out bool hasStencil)
+        private unsafe ImageView GetDepthStencilView()
         {
-            hasStencil = false;
             if (!IsDepthStencil)
                 return ImageView.Null;
 
@@ -594,9 +575,6 @@ namespace SiliconStudio.Xenko.Graphics
             //if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == PixelFormat.None)
             //    throw new NotSupportedException("Depth stencil format [{0}] not supported".ToFormat(ViewFormat));
 
-            // Setup the HasStencil flag
-            hasStencil = IsStencilFormat(ViewFormat);
-
             // Create a Depth stencil view on this texture2D
             var createInfo = new ImageViewCreateInfo
             {
@@ -605,7 +583,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Format = nativeFormat,
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Depth | (HasStencil ? ImageAspectFlags.Stencil : ImageAspectFlags.None), 0, 1, 0, 1)
+                SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, 1, 0, 1)
             };
 
             //if (IsDepthStencilReadOnly)
@@ -626,12 +604,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return false;
         }
-        
+
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
             return format;
         }
-        
+
         /// <summary>
         /// Check and modify if necessary the mipmap levels of the image (Troubles with DXT images whose resolution in less than 4x4 in DX9.x).
         /// </summary>

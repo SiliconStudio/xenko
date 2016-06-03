@@ -98,6 +98,8 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = BufferCreateFlags.None,
             };
 
+            createInfo.Usage |= BufferUsageFlags.TransferSource;
+
             // We always fill using transfer
             //if (bufferDescription.Usage != GraphicsResourceUsage.Immutable)
                 createInfo.Usage |= BufferUsageFlags.TransferDestination;
@@ -105,31 +107,48 @@ namespace SiliconStudio.Xenko.Graphics
             if ((ViewFlags & BufferFlags.VertexBuffer) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.VertexBuffer;
-                NativeAccessMask = AccessFlags.VertexAttributeRead;
+                NativeAccessMask |= AccessFlags.VertexAttributeRead;
             }
 
             if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.IndexBuffer;
-                NativeAccessMask = AccessFlags.IndexRead;
+                NativeAccessMask |= AccessFlags.IndexRead;
             }
 
             if ((ViewFlags & BufferFlags.ConstantBuffer) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.UniformBuffer;
-                NativeAccessMask = AccessFlags.UniformRead;
+                NativeAccessMask |= AccessFlags.UniformRead;
             }
 
             if ((ViewFlags & BufferFlags.ShaderResource) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.UniformTexelBuffer;
-                NativeAccessMask = AccessFlags.ShaderRead;
+                NativeAccessMask |= AccessFlags.ShaderRead;
+
+                if ((ViewFlags & BufferFlags.UnorderedAccess) != 0)
+                {
+                    createInfo.Usage |= BufferUsageFlags.StorageTexelBuffer;
+                    NativeAccessMask |= AccessFlags.ShaderWrite;
+                }
             }
 
             // Create buffer
             var isStaging = bufferDescription.Usage == GraphicsResourceUsage.Staging;
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
-            AllocateMemory(dataPointer, isStaging || dataPointer != IntPtr.Zero ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal);
+
+            var memoryProperties = isStaging || dataPointer != IntPtr.Zero ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal;
+
+            MemoryRequirements memoryRequirements;
+            GraphicsDevice.NativeDevice.GetBufferMemoryRequirements(NativeBuffer, out memoryRequirements);
+
+            AllocateMemory(memoryProperties, memoryRequirements);
+
+            if (NativeMemory != DeviceMemory.Null)
+            {
+                GraphicsDevice.NativeDevice.BindBufferMemory(NativeBuffer, NativeMemory, 0);
+            }
 
             // Begin copy command buffer
             //var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
@@ -178,7 +197,6 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else
                 {
-                    // TODO VULKAN: Not be needed when synced correctly
                     commandBuffer.FillBuffer(NativeBuffer, 0, (uint)bufferDescription.SizeInBytes, 0);
                 }
 
@@ -243,53 +261,6 @@ namespace SiliconStudio.Xenko.Graphics
             };
 
             return GraphicsDevice.NativeDevice.CreateBufferView(ref createInfo);
-        }
-
-        protected unsafe void AllocateMemory(IntPtr dataPointer, MemoryPropertyFlags memoryProperties)
-        {
-            if (NativeMemory != DeviceMemory.Null)
-                return;
-
-            MemoryRequirements memoryRequirements;
-            GraphicsDevice.NativeDevice.GetBufferMemoryRequirements(NativeBuffer, out memoryRequirements);
-
-            if (memoryRequirements.Size == 0)
-                return;
-
-            var allocateInfo = new MemoryAllocateInfo
-            {
-                StructureType = StructureType.MemoryAllocateInfo,
-                AllocationSize = memoryRequirements.Size,
-            };
-
-            PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-            GraphicsDevice.Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
-            var typeBits = memoryRequirements.MemoryTypeBits;
-            for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
-            {
-                if ((typeBits & 1) == 1)
-                {
-                    // Type is available, does it match user properties?
-                    var memoryType = *((MemoryType*)&physicalDeviceMemoryProperties.MemoryTypes + i);
-                    if ((memoryType.PropertyFlags & memoryProperties) == memoryProperties)
-                    {
-                        allocateInfo.MemoryTypeIndex = i;
-                        break;
-                    }
-                }
-                typeBits >>= 1;
-            }
-
-            NativeMemory = GraphicsDevice.NativeDevice.AllocateMemory(ref allocateInfo);
-
-            //if (dataPointer != IntPtr.Zero)
-            //{
-            //    var pData = GraphicsDevice.NativeDevice.MapMemory(NativeMemory, 0, (ulong)bufferDescription.SizeInBytes, MemoryMapFlags.None);
-            //    Utilities.CopyMemory(pData, dataPointer, (int)memoryRequirements.Size);
-            //    GraphicsDevice.NativeDevice.UnmapMemory(NativeMemory);
-            //}
-
-            GraphicsDevice.NativeDevice.BindBufferMemory(NativeBuffer, NativeMemory, 0);
         }
 
         private void InitCountAndViewFormat(out int count, ref PixelFormat viewFormat)

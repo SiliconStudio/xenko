@@ -733,6 +733,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public unsafe void Copy(GraphicsResource source, GraphicsResource destination)
         {
+            // TODO VULKAN: One copy per mip level
+
             var sourceTexture = source as Texture;
             var destinationTexture = destination as Texture;
 
@@ -740,60 +742,151 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 CleanupRenderPass();
 
+                var imageBarriers = stackalloc ImageMemoryBarrier[2];
+                var bufferBarriers = stackalloc BufferMemoryBarrier[2];
+
                 var sourceParent = sourceTexture.ParentTexture ?? sourceTexture;
                 var destinationParent = destinationTexture.ParentTexture ?? destinationTexture;
 
-                var barriers = stackalloc ImageMemoryBarrier[2];
+                uint bufferBarrierCount = 0;
+                uint imageBarrierCount = 0;
 
-                barriers[0] = new ImageMemoryBarrier
+                if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    Image = sourceParent.NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
-                    OldLayout = sourceTexture.NativeLayout,
-                    NewLayout = ImageLayout.TransferSourceOptimal,
-                    SourceAccessMask = sourceTexture.NativeAccessMask,
-                    DestinationAccessMask = AccessFlags.TransferRead,
-                };
-
-                barriers[1] = new ImageMemoryBarrier
+                    bufferBarriers[bufferBarrierCount++] = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = sourceParent.NativeBuffer,
+                        Size = ~0UL,
+                        SourceAccessMask = sourceTexture.NativeAccessMask,
+                        DestinationAccessMask = AccessFlags.TransferRead,
+                    };
+                }
+                else
                 {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    Image = destinationParent.NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
-                    OldLayout = destinationTexture.NativeLayout,
-                    NewLayout = ImageLayout.TransferDestinationOptimal,
-                    SourceAccessMask = destinationTexture.NativeAccessMask,
-                    DestinationAccessMask = AccessFlags.TransferWrite,
-                };
-
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 0, null, 2, barriers);
-
-                // TODO VULKAN: One copy per mip level
-                var copy = new ImageCopy
-                {
-                    SourceSubresource = new ImageSubresourceLayers { AspectMask = sourceParent.NativeImageAspect, BaseArrayLayer = (uint)sourceTexture.ArraySlice, LayerCount = (uint)sourceTexture.ArraySize, MipLevel = (uint)sourceTexture.MipLevel },
-                    DestinationSubresource = new ImageSubresourceLayers { AspectMask = destinationParent.NativeImageAspect, BaseArrayLayer = (uint)destinationTexture.ArraySlice, LayerCount = (uint)destinationTexture.ArraySize, MipLevel = (uint)destinationTexture.MipLevel },
-                    Extent = new Extent3D((uint)sourceTexture.ViewWidth, (uint)sourceTexture.ViewHeight, (uint)sourceTexture.ViewDepth),
-                };
-                NativeCommandBuffer.CopyImage(sourceParent.NativeImage, ImageLayout.TransferSourceOptimal, destinationParent.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &copy);
+                    imageBarriers[imageBarrierCount++] = new ImageMemoryBarrier
+                    {
+                        StructureType = StructureType.ImageMemoryBarrier,
+                        Image = sourceParent.NativeImage,
+                        SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
+                        OldLayout = sourceTexture.NativeLayout,
+                        NewLayout = ImageLayout.TransferSourceOptimal,
+                        SourceAccessMask = sourceTexture.NativeAccessMask,
+                        DestinationAccessMask = AccessFlags.TransferRead,
+                    };
+                }
 
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    destinationParent.StagingFenceValue = GraphicsDevice.NextFenceValue;
+                    bufferBarriers[bufferBarrierCount++] = new BufferMemoryBarrier
+                    {
+                        StructureType = StructureType.BufferMemoryBarrier,
+                        Buffer = destinationParent.NativeBuffer,
+                        Size = ~0UL,
+                        SourceAccessMask = destinationTexture.NativeAccessMask,
+                        DestinationAccessMask = AccessFlags.TransferWrite,
+                    };
+                }
+                else
+                {
+                    imageBarriers[imageBarrierCount++] = new ImageMemoryBarrier
+                    {
+                        StructureType = StructureType.ImageMemoryBarrier,
+                        Image = destinationParent.NativeImage,
+                        SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
+                        OldLayout = destinationTexture.NativeLayout,
+                        NewLayout = ImageLayout.TransferDestinationOptimal,
+                        SourceAccessMask = destinationTexture.NativeAccessMask,
+                        DestinationAccessMask = AccessFlags.TransferWrite,
+                    };
                 }
 
-                barriers[0].OldLayout = ImageLayout.TransferSourceOptimal;
-                barriers[0].NewLayout = sourceParent.NativeLayout;
-                barriers[0].SourceAccessMask = AccessFlags.TransferRead;
-                barriers[0].DestinationAccessMask = sourceParent.NativeAccessMask;
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, bufferBarrierCount, bufferBarriers, imageBarrierCount, imageBarriers);
 
-                barriers[1].OldLayout = ImageLayout.TransferDestinationOptimal;
-                barriers[1].NewLayout = destinationParent.NativeLayout;
-                barriers[1].SourceAccessMask = AccessFlags.TransferWrite;
-                barriers[1].DestinationAccessMask = destinationParent.NativeAccessMask;
+                if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
+                {
+                    if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
+                    {
+                        var copy = new BufferCopy
+                        {
+                            SourceOffset = 0,
+                            DestinationOffset = 0,
+                            Size = (uint)(sourceParent.ViewWidth * sourceParent.ViewHeight * sourceParent.ViewDepth * sourceParent.ViewFormat.SizeInBytes())
+                        };
+                        NativeCommandBuffer.CopyBuffer(sourceParent.NativeBuffer, destinationParent.NativeBuffer, 1, &copy);
+                    }
+                    else
+                    {
+                        var copy = new BufferImageCopy
+                        {
+                            ImageSubresource = new ImageSubresourceLayers { AspectMask = sourceParent.NativeImageAspect, BaseArrayLayer = (uint)sourceTexture.ArraySlice, LayerCount = (uint)sourceTexture.ArraySize, MipLevel = (uint)sourceTexture.MipLevel },
+                            ImageExtent = new Extent3D((uint)destinationTexture.Width, (uint)destinationTexture.Height, (uint)destinationTexture.Depth)
+                        };
+                        NativeCommandBuffer.CopyImageToBuffer(sourceParent.NativeImage, ImageLayout.TransferSourceOptimal, destinationParent.NativeBuffer, 1, &copy);
+                    }
 
-                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 2, barriers);
+                    // Fence for host access
+                    destinationParent.StagingFenceValue = GraphicsDevice.NextFenceValue;
+                }
+                else
+                {
+                    var destinationSubresource = new ImageSubresourceLayers { AspectMask = destinationParent.NativeImageAspect, BaseArrayLayer = (uint)destinationTexture.ArraySlice, LayerCount = (uint)destinationTexture.ArraySize, MipLevel = (uint)destinationTexture.MipLevel };
+
+                    if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
+                    {
+                        var copy = new BufferImageCopy
+                        {
+                            ImageSubresource = destinationSubresource,
+                            ImageExtent = new Extent3D((uint)destinationTexture.Width, (uint)destinationTexture.Height, (uint)destinationTexture.Depth)
+                        };
+                        NativeCommandBuffer.CopyBufferToImage(sourceParent.NativeBuffer, destinationParent.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &copy);
+                    }
+                    else
+                    {
+                        var copy = new ImageCopy
+                        {
+                            SourceSubresource = new ImageSubresourceLayers { AspectMask = sourceParent.NativeImageAspect, BaseArrayLayer = (uint)sourceTexture.ArraySlice, LayerCount = (uint)sourceTexture.ArraySize, MipLevel = (uint)sourceTexture.MipLevel },
+                            DestinationSubresource = destinationSubresource,
+                            Extent = new Extent3D((uint)sourceTexture.ViewWidth, (uint)sourceTexture.ViewHeight, (uint)sourceTexture.ViewDepth),
+                        };
+                        NativeCommandBuffer.CopyImage(sourceParent.NativeImage, ImageLayout.TransferSourceOptimal, destinationParent.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &copy);
+                    }
+                }
+
+                imageBarrierCount = 0;
+                bufferBarrierCount = 0;
+
+                if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
+                {
+                    bufferBarriers[bufferBarrierCount].SourceAccessMask = AccessFlags.TransferRead;
+                    bufferBarriers[bufferBarrierCount].DestinationAccessMask = sourceParent.NativeAccessMask;
+                    bufferBarrierCount++;
+                }
+                else
+                {
+                    imageBarriers[imageBarrierCount].OldLayout = ImageLayout.TransferSourceOptimal;
+                    imageBarriers[imageBarrierCount].NewLayout = sourceParent.NativeLayout;
+                    imageBarriers[imageBarrierCount].SourceAccessMask = AccessFlags.TransferRead;
+                    imageBarriers[imageBarrierCount].DestinationAccessMask = sourceParent.NativeAccessMask;
+                    imageBarrierCount++;
+                }
+
+                if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
+                {
+                    bufferBarriers[bufferBarrierCount].SourceAccessMask = AccessFlags.TransferWrite;
+                    bufferBarriers[bufferBarrierCount].DestinationAccessMask = destinationParent.NativeAccessMask;
+                    bufferBarrierCount++;
+                }
+                else
+                {
+                    imageBarriers[imageBarrierCount].OldLayout = ImageLayout.TransferDestinationOptimal;
+                    imageBarriers[imageBarrierCount].NewLayout = destinationParent.NativeLayout;
+                    imageBarriers[imageBarrierCount].SourceAccessMask = AccessFlags.TransferWrite;
+                    imageBarriers[imageBarrierCount].DestinationAccessMask = destinationParent.NativeAccessMask;
+                    imageBarrierCount++;
+                }
+
+                NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, bufferBarrierCount, bufferBarriers, imageBarrierCount, imageBarriers);
             }
             else
             {
