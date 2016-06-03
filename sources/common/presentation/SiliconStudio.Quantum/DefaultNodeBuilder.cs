@@ -20,7 +20,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
-        private static readonly Type[] InternalPrimitiveTypes = { typeof(string), typeof(Guid) };
+        private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private GraphNode rootNode;
         private Guid rootGuid;
         private NodeFactoryDelegate currentNodeFactory;
