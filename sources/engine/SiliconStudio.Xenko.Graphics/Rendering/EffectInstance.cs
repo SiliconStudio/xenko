@@ -87,10 +87,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var commandList = graphicsContext.CommandList;
 
-            UpdateEffect(commandList.GraphicsDevice);
-
-            //effect.ApplyProgram(graphicsDevice);
-
             parameterUpdater.Update(commandList.GraphicsDevice, graphicsContext.ResourceGroupAllocator, Parameters);
 
             var resourceGroups = parameterUpdater.ResourceGroups;
