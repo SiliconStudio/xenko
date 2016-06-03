@@ -247,15 +247,16 @@ namespace SiliconStudio.Quantum
 
         public IReference CreateReferenceForNode(Type type, object value)
         {
-            // We don't create references for primitive types
+            // We don't create references for primitive types and structs
             if (IsPrimitiveType(type) || type.IsStruct())
                 return null;
 
+            // At this point it is either a reference type or a collection
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
-            // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || (!IsPrimitiveType(valueType) && !valueType.IsStruct()))
+            // We create reference only for structs (in case of collection of structs) and classes (in a collection or not) 
+            if (valueType == null || !IsPrimitiveType(valueType))
                 return Reference.CreateReference(value, type, Reference.NotInCollection);
 
             return null;
