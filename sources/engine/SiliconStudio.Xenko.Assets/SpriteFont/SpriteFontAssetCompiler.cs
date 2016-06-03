@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source) : null;
                 assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet) : null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new ScalableFontCommand(urlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new SDFFontCommand(urlInStorage, assetClone) };
             }
             else
             if (asset.FontType == SpriteFontType.Dynamic)
@@ -143,9 +143,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <summary>
         /// Scalable (SDF) font build step
         /// </summary>
-        internal class ScalableFontCommand : AssetCommand<SpriteFontAsset>
+        internal class SDFFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public ScalableFontCommand(string url, SpriteFontAsset description)
+            public SDFFontCommand(string url, SpriteFontAsset description)
                 : base(url, description)
             {
             }

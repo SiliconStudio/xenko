@@ -9,21 +9,21 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Graphics.Font
 {
-    [DataSerializerGlobal(typeof(ReferenceSerializer<ScalableSpriteFont>), Profile = "Content")]
-    [ContentSerializer(typeof(ScalableSpriteFontContentSerializer))]
-    [DataSerializer(typeof(ScalableSpriteFontSerializer))]
-    internal class ScalableSpriteFont : SpriteFont
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SDFSpriteFont>), Profile = "Content")]
+    [ContentSerializer(typeof(SDFSpriteFontContentSerializer))]
+    [DataSerializer(typeof(SDFSpriteFontSerializer))]
+    internal class SDFSpriteFont : SpriteFont
     {
         internal Dictionary<char, Glyph> CharacterToGlyph;
 
         internal List<Texture> StaticTextures;
 
-        internal ScalableSpriteFont()
+        internal SDFSpriteFont()
         {
             FontType = SpriteFontType.SDF;
         }
 
-        internal ScalableSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
+        internal SDFSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
         {
             FontType = SpriteFontType.SDF;
 

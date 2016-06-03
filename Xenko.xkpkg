@@ -71,7 +71,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Prefabs/PrefabInstance.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/DynamicSpriteFont.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/ScalableSpriteFont.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SDFSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetSprites.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/StaticSpriteFont.xktpl

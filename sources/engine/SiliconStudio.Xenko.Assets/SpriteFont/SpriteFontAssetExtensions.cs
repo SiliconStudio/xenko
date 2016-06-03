@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         public static PrecompiledSpriteFontAsset GeneratePrecompiledSDFSpriteFont(this SpriteFontAsset asset, AssetItem sourceAsset, string texturePath)
         {
             // TODO create PrecompiledSDFSpriteFontAsset
-            var scalableFont = (ScalableSpriteFont)SDFFontCompiler.Compile(FontDataFactory, asset);
+            var scalableFont = (SDFSpriteFont)SDFFontCompiler.Compile(FontDataFactory, asset);
 
             var referenceToSourceFont = new AssetReference<SpriteFontAsset>(sourceAsset.Id, sourceAsset.Location);
             var glyphs = new List<Glyph>(scalableFont.CharacterToGlyph.Values);

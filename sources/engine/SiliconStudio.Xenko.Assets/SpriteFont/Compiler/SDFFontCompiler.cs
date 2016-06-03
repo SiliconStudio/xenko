@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
     public class SDFFontCompiler
     {
         /// <summary>
-        /// Compiles the specified font description into a <see cref="ScalableSpriteFont" /> object.
+        /// Compiles the specified font description into a <see cref="SDFSpriteFont" /> object.
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>

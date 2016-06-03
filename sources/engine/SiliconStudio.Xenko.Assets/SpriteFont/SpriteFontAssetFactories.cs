@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         }
     }
 
-    public class ScalableSpriteFontFactory : AssetFactory<SpriteFontAsset>
+    public class SDFSpriteFontFactory : AssetFactory<SpriteFontAsset>
     {
         public static SpriteFontAsset Create()
         {
