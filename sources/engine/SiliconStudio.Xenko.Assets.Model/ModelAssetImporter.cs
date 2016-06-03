@@ -39,13 +39,15 @@ namespace SiliconStudio.Xenko.Assets.Model
                 yield return typeof(TextureAsset);
             }
         }
+
         /// <summary>
         /// Get the entity information.
         /// </summary>
         /// <param name="localPath">The path of the asset.</param>
         /// <param name="logger">The logger to use to log import message.</param>
+        /// <param name="importParameters">The import parameters.</param>
         /// <returns>The EntityInfo.</returns>
-        public abstract EntityInfo GetEntityInfo(UFile localPath, Logger logger);
+        public abstract EntityInfo GetEntityInfo(UFile localPath, Logger logger, AssetImporterParameters importParameters);
         
         /// <summary>
         /// Imports the model.
@@ -57,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             var rawAssetReferences = new List<AssetItem>(); // the asset references without subdirectory path
 
-            var entityInfo = GetEntityInfo(localPath, importParameters.Logger);
+            var entityInfo = GetEntityInfo(localPath, importParameters.Logger, importParameters);
 
             //var isImportingEntity = importParameters.IsTypeSelectedForOutput<PrefabAsset>();
 

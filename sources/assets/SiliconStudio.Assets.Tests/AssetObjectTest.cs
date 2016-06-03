@@ -153,7 +153,7 @@ namespace SiliconStudio.Assets.Tests
 
     [DataContract("!AssetImportObjectTest")]
     [AssetDescription(".xkimptest")]
-    public class AssetImportObjectTest : AssetImport
+    public class AssetImportObjectTest : AssetWithSource
     {
         public AssetImportObjectTest()
         {

@@ -54,6 +54,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // TODO GRAPHICS REFACTOR
             simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
+            simpleEffect.UpdateEffect(GraphicsDevice);
 
             primitives = new List<GeometricPrimitive>();
 
@@ -149,13 +150,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
                 // Disable Cull only for the plane primitive, otherwise use standard culling
                 var defaultRasterizerState = i == 0 ? RasterizerStates.CullNone : RasterizerStates.CullBack;
-                // TODO GRAPHICS REFACTOR
-                //GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
+                primitive.PipelineState.State.RasterizerState = isWireframe ? wireframeState : defaultRasterizerState;
 
                 // Draw the primitive using BasicEffect
                 simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
-                simpleEffect.Apply(GraphicsContext);
-                primitive.Draw(GraphicsContext.CommandList, simpleEffect);
+                primitive.Draw(GraphicsContext, simpleEffect);
             }
         }
         

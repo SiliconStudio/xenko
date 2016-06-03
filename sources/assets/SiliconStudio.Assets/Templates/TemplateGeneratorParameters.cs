@@ -109,6 +109,7 @@ namespace SiliconStudio.Assets.Templates
             Description = parameters.Description;
             Logger = parameters.Logger;
             parameters.Tags.CopyTo(ref Tags);
+            Id = parameters.Id;
         }
 
         /// <summary>
@@ -116,6 +117,12 @@ namespace SiliconStudio.Assets.Templates
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the project ID used to generate the template.
+        /// </summary>
+        /// <value>The ID</value>
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the default namespace of this project.

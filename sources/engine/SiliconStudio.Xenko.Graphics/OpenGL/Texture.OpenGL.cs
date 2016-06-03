@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Runtime.InteropServices;
-
+using SiliconStudio.Core;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
@@ -36,15 +36,11 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class Texture
     {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && SILICONSTUDIO_PLATFORM_MONO_MOBILE
-        private const BufferUsageHint BufferUsageHintStreamRead = (BufferUsageHint)0x88E1;
-#else
-        private const BufferUsageHint BufferUsageHintStreamRead = BufferUsageHint.StreamRead;
-#endif
         internal const TextureFlags TextureFlagsCustomResourceId = (TextureFlags)0x1000;
 
         internal SamplerState BoundSamplerState;
         internal int PixelBufferFrame;
+        internal int TextureTotalSize;
         private int pixelBufferObjectId;
         private int stencilId;
 
@@ -125,35 +121,32 @@ namespace SiliconStudio.Xenko.Graphics
                 switch (Dimension)
                 {
                     case TextureDimension.Texture1D:
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                        if (ArraySize > 1)
+                            throw new PlatformNotSupportedException("Texture1DArray is not implemented under OpenGL");
                         TextureTarget = TextureTarget.Texture1D;
                         break;
 #endif
                     case TextureDimension.Texture2D:
-                        TextureTarget = TextureTarget.Texture2D;
+                        TextureTarget = ArraySize > 1 ? TextureTarget.Texture2DArray : TextureTarget.Texture2D;
                         break;
                     case TextureDimension.Texture3D:
                         TextureTarget = TextureTarget.Texture3D;
                         break;
                     case TextureDimension.TextureCube:
+                        if (ArraySize > 6)
+                            throw new PlatformNotSupportedException("TextureCubeArray is not implemented under OpenGL");
                         TextureTarget = TextureTarget.TextureCubeMap;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
-                PixelInternalFormat internalFormat;
-                PixelFormatGl format;
-                PixelType type;
-                int pixelSize;
                 bool compressed;
-                OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref textureDescription.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
+                OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref textureDescription.Format, out TextureInternalFormat, out TextureFormat, out TextureType, out TexturePixelSize, out compressed);
 
-                TextureInternalFormat = internalFormat;
-                TextureFormat = format;
-                TextureType = type;
-                DepthPitch = Description.Width * Description.Height * pixelSize;
-                RowPitch = Description.Width * pixelSize;
+                DepthPitch = Description.Width * Description.Height * TexturePixelSize;
+                RowPitch = Description.Width * TexturePixelSize;
 
                 if ((Description.Flags & TextureFlags.DepthStencil) != 0)
                 {
@@ -201,10 +194,18 @@ namespace SiliconStudio.Xenko.Graphics
                         return;
                     }
 
+                    IsRenderbuffer = false;
+
+                    TextureTotalSize = ComputeTotalSize();
+
+                    if (Description.Usage == GraphicsResourceUsage.Staging)
+                    {
+                        InitializeStagingPixelBufferObject(dataBoxes);
+                        return;
+                    }
+
                     GL.GenTextures(1, out TextureId);
                     GL.BindTexture(TextureTarget, TextureId);
-
-                    IsRenderbuffer = false;
 
                     // No filtering on depth buffer
                     if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) != TextureFlags.None)
@@ -214,6 +215,12 @@ namespace SiliconStudio.Xenko.Graphics
                         GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
                         GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
                         BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
+
+                        if (HasStencil)
+                        {
+                            // depth+stencil in a single texture
+                            stencilId = TextureId;
+                        }
                     }
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     else if (Description.MipLevels <= 1)
@@ -241,60 +248,91 @@ namespace SiliconStudio.Xenko.Graphics
                         var offsetArray = arrayIndex*Description.MipLevels;
                         for (int i = 0; i < Description.MipLevels; ++i)
                         {
-                            IntPtr data = IntPtr.Zero;
+                            DataBox dataBox;
                             var width = CalculateMipSize(Description.Width, i);
                             var height = CalculateMipSize(Description.Height, i);
+                            var depth = CalculateMipSize(Description.Depth, i);
                             if (dataBoxes != null && i < dataBoxes.Length)
                             {
-                                if (setSize > 1 && !compressed && dataBoxes[i].RowPitch != width*pixelSize)
-                                    throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
+                                if (setSize > 1 && !compressed && dataBoxes[i].RowPitch != width*TexturePixelSize)
+                                    throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D/3D.");
                                 // Might be possible, need to check API better.
-                                data = dataBoxes[offsetArray + i].DataPointer;
+                                dataBox = dataBoxes[offsetArray + i];
+                            }
+                            else
+                            {
+                                dataBox = new DataBox();
                             }
 
-                            if (setSize == 2)
+                            switch (TextureTarget)
                             {
-                                var dataSetTarget = GetTextureTargetForDataSet2D(TextureTarget, arrayIndex);
-                                if (compressed)
-                                {
-                                    GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat2D)internalFormat,
-                                        width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
-                                }
-                                else
-                                {
-                                    GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat, width, height, 0, format, type, data);
-                                }
-                            }
-                            else if (setSize == 3)
-                            {
-                                var dataSetTarget = GetTextureTargetForDataSet3D(TextureTarget);
-                                var depth = TextureTarget == TextureTarget.Texture2DArray ? Description.Depth : CalculateMipSize(Description.Depth, i); // no depth mipmaps in Texture2DArray
-                                if (compressed)
-                                {
-                                    GL.CompressedTexImage3D(dataSetTarget, i, (CompressedInternalFormat3D)internalFormat,
-                                        width, height, depth, 0, dataBoxes[offsetArray + i].SlicePitch, data);
-                                }
-                                else
-                                {
-                                    GL.TexImage3D(dataSetTarget, i, (TextureComponentCount3D)internalFormat,
-                                        width, height, depth, 0, format, type, data);
-                                }
-                            }
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                            else if (setSize == 1)
-                            {
-                                if (compressed)
+                                case TextureTarget.Texture1D:
+                                    if (compressed)
+                                    {
+                                        GL.CompressedTexImage1D(TextureTarget, i, TextureInternalFormat, width, 0, dataBox.SlicePitch, dataBox.DataPointer);
+                                    }
+                                    else
+                                    {
+                                        GL.TexImage1D(TextureTarget, i, TextureInternalFormat, width, 0, TextureFormat, TextureType, dataBox.DataPointer);
+                                    }
+                                    break;
+#endif
+                                case TextureTarget.Texture2D:
+                                case TextureTarget.TextureCubeMap:
                                 {
-                                    GL.CompressedTexImage1D(TextureTarget.Texture1D, i, internalFormat,
-                                        width, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                    var dataSetTarget = GetTextureTargetForDataSet2D(TextureTarget, arrayIndex);
+                                    if (compressed)
+                                    {
+                                        GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat2D)TextureInternalFormat, width, height, 0, dataBox.SlicePitch, dataBox.DataPointer);
+                                    }
+                                    else
+                                    {
+                                        GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)TextureInternalFormat, width, height, 0, TextureFormat, TextureType, dataBox.DataPointer);
+                                    }
+                                    break;
                                 }
-                                else
+                                case TextureTarget.Texture3D:
                                 {
-                                    GL.TexImage1D(TextureTarget.Texture1D, i, internalFormat,
-                                        width, 0, format, type, data);
+                                    if (compressed)
+                                    {
+                                        GL.CompressedTexImage3D((TextureTarget3d)TextureTarget, i, (CompressedInternalFormat3D)TextureInternalFormat, width, height, depth, 0, dataBox.SlicePitch, dataBox.DataPointer);
+                                    }
+                                    else
+                                    {
+                                        GL.TexImage3D((TextureTarget3d)TextureTarget, i, (TextureComponentCount3D)TextureInternalFormat, width, height, depth, 0, TextureFormat, TextureType, dataBox.DataPointer);
+                                    }
+                                    break;
+                                }
+                                case TextureTarget.Texture2DArray:
+                                {
+                                    // We create all array slices at once, but upload them one by one
+                                    if (arrayIndex == 0)
+                                    {
+                                        if (compressed)
+                                        {
+                                            GL.CompressedTexImage3D((TextureTarget3d)TextureTarget, i, (CompressedInternalFormat3D)TextureInternalFormat, width, height, ArraySize, 0, 0, IntPtr.Zero);
+                                        }
+                                        else
+                                        {
+                                            GL.TexImage3D((TextureTarget3d)TextureTarget, i, (TextureComponentCount3D)TextureInternalFormat, width, height, ArraySize, 0, TextureFormat, TextureType, IntPtr.Zero);
+                                        }
+                                    }
+
+                                    if (dataBox.DataPointer != IntPtr.Zero)
+                                    {
+                                        if (compressed)
+                                        {
+                                            GL.CompressedTexSubImage3D((TextureTarget3d)TextureTarget, i, 0, 0, arrayIndex, width, height, 1, TextureFormat, dataBox.SlicePitch, dataBox.DataPointer);
+                                        }
+                                        else
+                                        {
+                                            GL.TexSubImage3D((TextureTarget3d)TextureTarget, i, 0, 0, arrayIndex, width, height, 1, TextureFormat, TextureType, dataBox.DataPointer);
+                                        }
+                                    }
+                                    break;
                                 }
                             }
-#endif
                         }
                     }
                     GL.BindTexture(TextureTarget, 0);
@@ -303,8 +341,6 @@ namespace SiliconStudio.Xenko.Graphics
                         // If we messed up with some states of a command list, mark dirty states
                         openglContext.CommandList.boundShaderResourceViews[openglContext.CommandList.activeTexture] = null;
                     }
-
-                    InitializePixelBufferObject();
                 }
 
                 GraphicsDevice.TextureMemory += (Depth * DepthStride) / (float)0x100000;
@@ -321,10 +357,9 @@ namespace SiliconStudio.Xenko.Graphics
                 StagingData = IntPtr.Zero;
             }
 #endif
-
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                if (TextureId != 0)
+                if (TextureId != 0 && ParentTexture == null)
                 {
                     if (IsRenderbuffer)
                         GL.DeleteRenderbuffers(1, ref TextureId);
@@ -341,6 +376,7 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.DeleteBuffers(1, ref pixelBufferObjectId);
             }
 
+            TextureTotalSize = 0;
             TextureId = 0;
             stencilId = 0;
             pixelBufferObjectId = 0;
@@ -413,7 +449,25 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private static TextureTarget2d GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
+        internal static bool InternalIsDepthStencilFormat(PixelFormat format)
+        {
+            switch (format)
+            {
+                case PixelFormat.D16_UNorm:
+                case PixelFormat.D32_Float:
+                case PixelFormat.D32_Float_S8X24_UInt:
+                case PixelFormat.R32_Float_X8X24_Typeless:
+                case PixelFormat.X32_Typeless_G8X24_UInt:
+                case PixelFormat.D24_UNorm_S8_UInt:
+                case PixelFormat.R24_UNorm_X8_Typeless:
+                case PixelFormat.X24_Typeless_G8_UInt:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        internal static TextureTarget2d GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
         {
             // TODO: Proxy from ES 3.1?
             if (target == TextureTarget.TextureCubeMap)
@@ -421,7 +475,7 @@ namespace SiliconStudio.Xenko.Graphics
             return (TextureTarget2d)target;
         }
 
-        private static TextureTarget3d GetTextureTargetForDataSet3D(TextureTarget target)
+        internal static TextureTarget3d GetTextureTargetForDataSet3D(TextureTarget target)
         {
             return (TextureTarget3d)target;
         }
@@ -455,42 +509,141 @@ namespace SiliconStudio.Xenko.Graphics
             return GraphicsDevice.WindowProvidedRenderTexture == this;
         }
 
-        private void InitializePixelBufferObject()
+        private void InitializeStagingPixelBufferObject(DataBox[] dataBoxes)
         {
-            if (Description.Usage == GraphicsResourceUsage.Staging)
-            {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (GraphicsDevice.IsOpenGLES2)
-                {
-                    StagingData = Marshal.AllocHGlobal(DepthPitch);
-                }
-                else
-#endif
-                {
-                    GeneratePixelBufferObject(BufferTarget.PixelPackBuffer, BufferUsageHintStreamRead); // enum not available on some platforms
-                }
+            if (GraphicsDevice.IsOpenGLES2)
+            {
+                StagingData = Marshal.AllocHGlobal(TextureTotalSize);
             }
-            else if (Description.Usage == GraphicsResourceUsage.Dynamic)
-            {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                // unable to create PBO on OpenGL ES 2 but we do not throw an exception. It will be thrown if the code tries performs writes on the texture.
-                if (!GraphicsDevice.IsOpenGLES2)
+            else
 #endif
+            {
+                pixelBufferObjectId = GeneratePixelBufferObject(BufferTarget.PixelPackBuffer, PixelStoreParameter.PackAlignment, BufferUsageHint.StreamRead, TextureTotalSize);
+            }
+            UploadInitialData(BufferTarget.PixelPackBuffer, dataBoxes);
+        }
+
+        private void UploadInitialData(BufferTarget bufferTarget, DataBox[] dataBoxes)
+        {
+            // Upload initial data
+            int offset = 0;
+            var bufferData = IntPtr.Zero;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            bufferData = StagingData;
+#endif
+
+            if (PixelBufferObjectId != 0)
+            {
+                GL.BindBuffer(bufferTarget, PixelBufferObjectId);
+                bufferData = GL.MapBufferRange(bufferTarget, (IntPtr)0, (IntPtr)TextureTotalSize, BufferAccessMask.MapWriteBit | BufferAccessMask.MapUnsynchronizedBit);
+            }
+
+            if (bufferData != IntPtr.Zero)
+            {
+                for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
                 {
-                    GeneratePixelBufferObject(BufferTarget.PixelUnpackBuffer, BufferUsageHint.DynamicDraw);
+                    var offsetArray = arrayIndex * Description.MipLevels;
+                    for (int i = 0; i < Description.MipLevels; ++i)
+                    {
+                        IntPtr data = IntPtr.Zero;
+                        var width = CalculateMipSize(Description.Width, i);
+                        var height = CalculateMipSize(Description.Height, i);
+                        var depth = CalculateMipSize(Description.Depth, i);
+                        if (dataBoxes != null && i < dataBoxes.Length)
+                        {
+                            data = dataBoxes[offsetArray + i].DataPointer;
+                        }
+
+                        if (data != IntPtr.Zero)
+                        {
+                            Utilities.CopyMemory(bufferData + offset, data, width * height * depth * TexturePixelSize);
+                        }
+
+                        offset += width*height*TexturePixelSize;
+                    }
+                }
+
+                if (PixelBufferObjectId != 0)
+                {
+                    GL.UnmapBuffer(bufferTarget);
+                    GL.BindBuffer(bufferTarget, 0);
                 }
             }
         }
 
-        private void GeneratePixelBufferObject(BufferTarget target, BufferUsageHint bufferUsage)
+        internal int ComputeRowPitch(int mipLevel)
         {
-            GL.GenBuffers(1, out pixelBufferObjectId);
+            return CalculateMipSize(Width, mipLevel) * TexturePixelSize;
+        }
 
-            GL.BindBuffer(target, pixelBufferObjectId);
+        internal int ComputeSlicePitch(int mipLevel)
+        {
+            return ComputeRowPitch(mipLevel)*CalculateMipSize(Height, mipLevel);
+        }
+
+        internal int ComputeSubresourceSize(int subresource)
+        {
+            var mipLevel = subresource % MipLevels;
+
+            var width = CalculateMipSize(Description.Width, mipLevel);
+            var height = CalculateMipSize(Description.Height, mipLevel);
+            var depth = CalculateMipSize(Description.Depth, mipLevel);
+
+            return width * height * depth * TexturePixelSize;
+        }
+
+        private int ComputeTotalSize()
+        {
+            int result = 0;
+
+            for (int i = 0; i < Description.MipLevels; ++i)
+            {
+                var width = CalculateMipSize(Description.Width, i);
+                var height = CalculateMipSize(Description.Height, i);
+                var depth = CalculateMipSize(Description.Depth, i);
+
+                result += Description.ArraySize * width * height * depth * TexturePixelSize;
+            }
+
+            return result;
+        }
+
+        internal int ComputeOffset(int subresource, int depthSlice)
+        {
+            int offset = 0;
+
+            for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
+            {
+                for (int i = 0; i < Description.MipLevels; ++i)
+                {
+                    var width = CalculateMipSize(Description.Width, i);
+                    var height = CalculateMipSize(Description.Height, i);
+
+                    if (subresource-- == 0)
+                        return offset + (width * height * TexturePixelSize * depthSlice);
+
+                    var depth = CalculateMipSize(Description.Depth, i);
+
+                    offset += width * height * depth * TexturePixelSize;
+                }
+            }
+
+            return offset;
+        }
+
+        internal int GeneratePixelBufferObject(BufferTarget target, PixelStoreParameter alignment, BufferUsageHint bufferUsage, int totalSize)
+        {
+            int result;
+
+            GL.GenBuffers(1, out result);
+            GL.BindBuffer(target, result);
             if (RowPitch < 4)
-                GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
-            GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
+                GL.PixelStore(alignment, 1);
+            GL.BufferData(target, totalSize, IntPtr.Zero, bufferUsage);
             GL.BindBuffer(target, 0);
+
+            return result;
         }
     }
 }

@@ -1,8 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Templates;
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -16,6 +20,8 @@ namespace SiliconStudio.Assets
 
             // Make sure that this assembly is registered
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
+
+            YamlSerializer.PrepareMembers += SourceHashesHelper.AddSourceHashesMember;
         }
     }
 }

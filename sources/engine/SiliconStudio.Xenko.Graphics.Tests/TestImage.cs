@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         }
 
         [Test]
-        [Ignore]
+        [Ignore("")]
         public void TestPerfLoadSave()
         {
             Image image;
