@@ -225,7 +225,7 @@ namespace SiliconStudio.Quantum
 
             // If this member should contains a reference, create it now.
             GraphNode containerNode = GetContextNode();
-            IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
+            IContent content = ContentFactory.CreateMemberContent(this, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
             var node = (GraphNode)currentNodeFactory(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
