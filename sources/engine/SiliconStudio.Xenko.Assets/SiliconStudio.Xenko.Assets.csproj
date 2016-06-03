@@ -201,10 +201,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetCompilerContextExtensions.cs" />
-    <Compile Include="Audio\SoundEffectAsset.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
-    <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
@@ -264,7 +262,6 @@
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
-    <Compile Include="Audio\SoundMusicAsset.cs" />
     <Compile Include="Audio\SoundAssetCompiler.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="XenkoConfig.cs" />

@@ -2,12 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
@@ -84,40 +81,47 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
                 var tempPcmFile = Path.GetTempFileName();
                 //todo add samplerate control and maybe channels too?
-                var ret = RunProcessAndGetOutput(ffmpeg, $"-i \"{assetSource}\" -f f32le -acodec pcm_f32le -y \"{tempPcmFile}\"");
+                var ret = RunProcessAndGetOutput(ffmpeg, $"-i \"{assetSource}\" -f f32le -acodec pcm_f32le -ac {AssetParameters.Channels} -ar {AssetParameters.SampleRate} -y \"{tempPcmFile}\"");
                 if (ret != 0)
                 {
                     File.Delete(tempPcmFile);
                     throw new AssetException($"Failed to compile a sound asset, ffmpeg failed to convert {assetSource}");
                 }
 
-                var sr = 44100;
-                var bsize = 1024;
-                var channels = 2;
-                var encoder = new Celt(sr, bsize, channels, false);
+                var encoder = new Celt(AssetParameters.SampleRate, Sound.SamplesPerFrame, AssetParameters.Channels, false);
 
-                var uncompressed = bsize * channels * sizeof(short);
+                var uncompressed = Sound.SamplesPerFrame * AssetParameters.Channels * sizeof(short); //compare with int16 for CD quality comparison.. but remember we are dealing with 32 bit floats for encoding!!
                 var target = (int)Math.Floor(uncompressed / (float)AssetParameters.CompressionRatio);
 
                 var dataUrl = Url + "_Data";
-                var newSound = new SoundEffect { CompressedDataUrl = dataUrl };
+                var newSound = new Sound
+                {
+                    CompressedDataUrl = dataUrl,
+                    Channels = AssetParameters.Channels,
+                    SampleRate = AssetParameters.SampleRate,
+                    StreamFromDisk = AssetParameters.StreamFromDisk,
+                    Spatialized = AssetParameters.Spatialized,
+                };
 
+                var frameSize = Sound.SamplesPerFrame*AssetParameters.Channels;
                 using (var reader = new BinaryReader(new FileStream(tempPcmFile, FileMode.Open, FileAccess.Read)))
                 using (var outputStream = ContentManager.FileProvider.OpenStream(dataUrl, VirtualFileMode.Create, VirtualFileAccess.Write))
                 {
                     var writer = new BinarySerializationWriter(outputStream);
 
                     var outputBuffer = new byte[target];
-                    var buffer = new float[2048];
+                    var buffer = new float[frameSize];
                     var count = 0;
                     for (;;)
                     {
-                        if (count == 2048) //flush
+                        if (count == frameSize) //flush
                         {
                             var len = encoder.Encode(buffer, outputBuffer);
-                            writer.Write(len);
+                            writer.Write((short)len);
                             outputStream.Write(outputBuffer, 0, len);
+
                             count = 0;
+                            Array.Clear(buffer, 0, frameSize);
 
                             newSound.NumberOfPackets++;
                             newSound.MaxPacketLength = Math.Max(newSound.MaxPacketLength, len);
@@ -137,7 +141,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     if (count > 0) //flush
                     {
                         var len = encoder.Encode(buffer, outputBuffer);
-                        writer.Write(len);
+                        writer.Write((short)len);
                         outputStream.Write(outputBuffer, 0, len);
 
                         newSound.NumberOfPackets++;
