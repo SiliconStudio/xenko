@@ -128,6 +128,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIElementExtensions.cs" />
     <Compile Include="UIElementCollection.cs" />
+    <Compile Include="UIElementServices.cs" />
     <Compile Include="UIInternalException.cs" />
     <Compile Include="UIProfilerKeys.cs" />
     <Compile Include="UISystem.cs" />

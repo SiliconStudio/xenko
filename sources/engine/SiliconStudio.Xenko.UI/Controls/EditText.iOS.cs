@@ -48,6 +48,18 @@ namespace SiliconStudio.Xenko.UI.Controls
             overlayView.BackgroundColor = new UIColor(0,0,0,0.4f);
         }
 
+        internal GameBase GetGame()
+        {
+            if (uiElementServices == null || uiElementServices.Services == null)
+                throw new ArgumentNullException("services");
+
+            var game = uiElementServices.Services.GetService(typeof(IGame)) as GameBase;
+            if (game == null)
+                throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
+
+            return game;
+        }
+
         private static void TextFieldOnEditingDidBegin(object sender, EventArgs eventArgs)
         {
             overlayView.Hidden = false;
@@ -58,7 +70,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 // we need to skip some draw calls here to let the time to iOS to draw its own keyboard animations... (Thank you iOS)
                 // If we don't do this when changing the type of keyboard (split / docked / undocked), the keyboard freeze for about 5/10 seconds before updating.
                 // Note: Setting UIView.EnableAnimation to false does not solve the problem. Only animation when the keyboard appear/disappear are skipped.
-                currentActiveEditText.game.SlowDownDrawCalls = true;
+                currentActiveEditText.GetGame().SlowDownDrawCalls = true;
             }
         }
 
@@ -66,7 +78,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             if (gameContext == null)
             {
+                var game = GetGame();
+                if (game == null)
+                    throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
+
                 Debug.Assert(game.Context is GameContextiOS, "There is only one possible descendant of GameContext for iOS.");
+
                 gameContext = (GameContextiOS)game.Context;
                 gameContext.Control.GameView.AddSubview(overlayView);
 
@@ -110,7 +127,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (currentActiveEditText != null)
             {
                 // Editing finished, we can now draw back to normal frame rate.
-                currentActiveEditText.game.SlowDownDrawCalls = false;
+                currentActiveEditText.GetGame().SlowDownDrawCalls = false;
             }
         }
 

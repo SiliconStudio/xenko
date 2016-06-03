@@ -210,18 +210,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Create a new instance of <see cref="EditText"/>.
         /// </summary>
-        /// <param name="services">The game services</param>
-        /// <exception cref="ArgumentNullException"><paramref name="services"/> is null</exception>
-        /// <exception cref="ArgumentException"><paramref name="services"/> does not contain an <see cref="IGame"/> service.</exception>
-        public EditText(IServiceRegistry services)
+        public EditText()
         {
-            if (services == null)
-                throw new ArgumentNullException("services");
-
-            game = services.GetService(typeof(IGame)) as GameBase;
-            if(game == null)
-                throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
-
             InitializeImpl();
 
             CanBeHitByUser = true;
@@ -233,9 +223,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         private bool isSelectionActive;
-
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private readonly GameBase game;
 
         private Func<char, bool> characterFilterPredicate;
 
