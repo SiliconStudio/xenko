@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Glyphs = glyphs,
                 Size = asset.Size,
                 Style = asset.Style,
-                Source = referenceToSourceFont,
+                OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,
                 BaseOffset = scalableFont.BaseOffsetY,
                 DefaultLineSpacing = scalableFont.DefaultLineSpacing,
