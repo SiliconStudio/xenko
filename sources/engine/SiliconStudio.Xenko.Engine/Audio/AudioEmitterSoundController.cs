@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// The underlying <see cref="SoundEffect"/>
         /// </summary>
-        private readonly SoundEffect soundEffect;
+        private readonly Sound soundEffect;
 
         /// <summary>
         /// The parent <see cref="AudioEmitterComponent"/> to which to controller is associated.
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// The instances of <see cref="soundEffect"/> currently created by this controller (one for each listener).
         /// </summary>
-        private readonly HashSet<SoundEffectInstance> associatedSoundEffectInstances = new HashSet<SoundEffectInstance>();
+        private readonly HashSet<SoundInstance> associatedSoundEffectInstances = new HashSet<SoundInstance>();
 
         /// <summary>
         /// Created a new <see cref="AudioEmitterSoundController"/> instance.
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="parent">The parent AudioEmitterComponent to which the controller is associated.</param>
         /// <param name="soundEffect">The underlying SoundEffect to be controlled</param>
         /// <remarks>A <see cref="SoundEffect"/> can be associated to several controllers.</remarks>
-        internal AudioEmitterSoundController(AudioEmitterComponent parent, SoundEffect soundEffect)
+        internal AudioEmitterSoundController(AudioEmitterComponent parent, Sound soundEffect)
         {
             if(soundEffect == null)
                 throw new ArgumentNullException("soundEffect");
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Create an new instance of underlying sound, and register it in the controller's sound instance list.
         /// </summary>
         /// <returns>The new sound effect instance created</returns>
-        internal SoundEffectInstance CreateSoundInstance()
+        internal SoundInstance CreateSoundInstance()
         {
             var newInstance = soundEffect.CreateInstance();
 
@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Dispose and sound instance and removes it from the controller sound instance list.
         /// </summary>
         /// <param name="soundInstance">Sound instance to destroy</param>
-        internal void DestroySoundInstance(SoundEffectInstance soundInstance)
+        internal void DestroySoundInstance(SoundInstance soundInstance)
         {
             soundInstance.Dispose();
             associatedSoundEffectInstances.Remove(soundInstance);

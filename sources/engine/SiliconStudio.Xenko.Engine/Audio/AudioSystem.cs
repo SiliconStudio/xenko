@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Audio
     /// The Audio System.
     /// It creates an underlying instance of <see cref="AudioEngine"/>.
     /// </summary>
-    public class AudioSystem : GameSystemBase
+    public class AudioSystem : GameSystemBase, IAudioEngineProvider
     {
         /// <summary>
         /// Create an new instance of AudioSystem
@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Audio
             AudioEngine = AudioEngineFactory.NewAudioEngine();
 
             registry.AddService(typeof(AudioSystem), this);
+            registry.AddService(typeof(IAudioEngineProvider), this);
         }
 
         /// <summary>

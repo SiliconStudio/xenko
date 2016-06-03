@@ -37,13 +37,13 @@ namespace SiliconStudio.Xenko.Engine
         /// Dictionary associating each soundEffect to a single soundController.
         /// The controller a valid as long as the corresponding SoundEffect is present in the dictionary.
         /// </summary>
-        internal readonly Dictionary<SoundEffect, AudioEmitterSoundController> SoundEffectToController = new Dictionary<SoundEffect, AudioEmitterSoundController>();
+        internal readonly Dictionary<Sound, AudioEmitterSoundController> SoundEffectToController = new Dictionary<Sound, AudioEmitterSoundController>();
 
         /// <summary>
         /// Create an instance of <see cref="AudioEmitterComponent"/> with a list default <see cref="SoundEffect"/> associated.
         /// </summary>
         /// <param name="soundEffectToAttach">The SoundEffect to attach to the emitter by default.</param>
-        public AudioEmitterComponent(IEnumerable<SoundEffect> soundEffectToAttach)
+        public AudioEmitterComponent(IEnumerable<Sound> soundEffectToAttach)
         {
             DistanceScale = 1;
             DopplerScale = 1;
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Create an instance of <see cref="AudioEmitterComponent"/> with no default <see cref="SoundEffect"/> associated.
         /// </summary>
         public AudioEmitterComponent()
-            : this(new List<SoundEffect>())
+            : this(new List<Sound>())
         {
         }
 
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Engine
         /// (1) the associated soundEffect is attached to the emitter, 
         /// (2) the associated soundEffect is not disposed and,
         /// (3) the emitter component's entity is present into Entity system.</remarks>
-        public AudioEmitterSoundController GetSoundEffectController(SoundEffect soundEffect)
+        public AudioEmitterSoundController GetSoundEffectController(Sound soundEffect)
         {
             if (soundEffect == null)
             {
@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <exception cref="ArgumentNullException">The provided <paramref name="soundEffect"/> is null.</exception>
         /// <exception cref="InvalidOperationException">The provided <paramref name="soundEffect"/> can not be localized (contains more than one channel).</exception>
         /// <remarks>Attaching a soundEffect already attached has no effects.</remarks>
-        public void AttachSoundEffect(SoundEffect soundEffect)
+        public void AttachSoundEffect(Sound soundEffect)
         {
             if (soundEffect == null)
             {
@@ -158,7 +158,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <exception cref="ArgumentNullException">The provided <paramref name="soundEffects"/> list is null.</exception>
         /// <exception cref="InvalidOperationException">One or more of the provided SoundEffect can not be localized (contains more than one channel).</exception>
         /// <remarks>Attaching a soundEffect already attached has no effects.</remarks>
-        public void AttachSoundEffects(IEnumerable<SoundEffect> soundEffects)
+        public void AttachSoundEffects(IEnumerable<Sound> soundEffects)
         {
             if (soundEffects == null)
             {
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="soundEffect">The soundEffect to detach.</param>
         /// <exception cref="ArgumentNullException">The provided <paramref name="soundEffect"/> is null.</exception>
         /// <exception cref="ArgumentException">The provided <paramref name="soundEffect"/> is not currently attached to the emitter component.</exception>
-        public void DetachSoundEffect(SoundEffect soundEffect)
+        public void DetachSoundEffect(Sound soundEffect)
         {
             if (soundEffect == null)
             {
@@ -201,7 +201,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="soundEffects">The soundEffects to detach.</param>
         /// <exception cref="ArgumentNullException">The provided <paramref name="soundEffects"/> is null.</exception>
         /// <exception cref="ArgumentException">One or more of the provided SoundEffect is not currently attached to the emitter component.</exception>
-        public void DetachSoundEffects(IEnumerable<SoundEffect> soundEffects)
+        public void DetachSoundEffects(IEnumerable<Sound> soundEffects)
         {
             if (soundEffects == null)
             {

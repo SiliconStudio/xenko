@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Audio
             /// <summary>
             /// A dictionary associating each activated listener of the AudioSystem and each sound controller of the <see cref="AudioEmitterComponent"/> to a valid sound effect instance.
             /// </summary>
-            public Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance> ListenerControllerToSoundInstance;
+            public Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundInstance> ListenerControllerToSoundInstance;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Audio
             {
                 AudioEmitterComponent = component,
                 TransformComponent = entity.Transform,
-                ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance>()
+                ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundInstance>()
             };
         }
 
