@@ -334,7 +334,7 @@ namespace SiliconStudio.Xenko.Graphics
                 ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight),
                 ImageFormat = backBufferFormat,
                 ImageColorSpace = Description.ColorSpace == ColorSpace.Gamma ? SharpVulkan.ColorSpace.SRgbNonlinear : 0,
-                ImageUsage = ImageUsageFlags.ColorAttachment,
+                ImageUsage = ImageUsageFlags.ColorAttachment | ImageUsageFlags.TransferSource,
                 PresentMode = swapChainPresentMode,
                 CompositeAlpha = CompositeAlphaFlags.Opaque,
                 MinImageCount = desiredImageCount,
@@ -433,11 +433,7 @@ namespace SiliconStudio.Xenko.Graphics
             var imageMemoryBarrier = new ImageMemoryBarrier
             {
                 StructureType = StructureType.ImageMemoryBarrier,
-                OldLayout = ImageLayout.Undefined,
-                NewLayout = ImageLayout.PresentSource,
                 SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, 1, 0, 1),
-                SourceAccessMask = AccessFlags.None,
-                DestinationAccessMask = AccessFlags.MemoryRead
             };
 
             var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
@@ -454,6 +450,21 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Transition to default layout
                 imageMemoryBarrier.Image = buffers[i];
+
+                // Clear swapchain images initially
+                imageMemoryBarrier.OldLayout = ImageLayout.Undefined;
+                imageMemoryBarrier.NewLayout = ImageLayout.TransferDestinationOptimal;
+                imageMemoryBarrier.SourceAccessMask = AccessFlags.None;
+                imageMemoryBarrier.DestinationAccessMask = AccessFlags.TransferWrite;
+                commandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
+
+                var range = new ImageSubresourceRange(ImageAspectFlags.Color, 0, 1, 0, 1);
+                commandBuffer.ClearColorImage(buffers[i], ImageLayout.TransferDestinationOptimal, new ClearColorValue(), 1, &range);
+
+                imageMemoryBarrier.OldLayout = ImageLayout.TransferDestinationOptimal;
+                imageMemoryBarrier.NewLayout = ImageLayout.PresentSource;
+                imageMemoryBarrier.SourceAccessMask = AccessFlags.TransferWrite;
+                imageMemoryBarrier.DestinationAccessMask = AccessFlags.MemoryRead;
                 commandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
             }
 
