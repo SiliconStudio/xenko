@@ -764,7 +764,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
                 }
 
-                var mappedMemory = resource.NativeResource.Map(subResourceIndex) + offsetInBytes;
+                var mappedMemory = resource.NativeResource.Map(subResourceIndex) + offsetInBytes; // TODO D3D12: This is a buffer. Calculate offset from subResourceIndex
                 return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, 0), offsetInBytes, lengthInBytes);
             }
             else

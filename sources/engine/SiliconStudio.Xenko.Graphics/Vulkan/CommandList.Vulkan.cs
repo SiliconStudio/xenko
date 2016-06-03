@@ -1063,7 +1063,7 @@ namespace SiliconStudio.Xenko.Graphics
                 usage = texture.Usage;
                 if (lengthInBytes == 0)
                     lengthInBytes = texture.ViewWidth * texture.ViewHeight * texture.ViewDepth * texture.ViewFormat.SizeInBytes();
-                // rowPitch = (texture.RowStride + 255) / 256 * 256;
+                rowPitch = texture.RowStride;
             }
             else
             {
@@ -1108,6 +1108,19 @@ namespace SiliconStudio.Xenko.Graphics
                             FlushInternal(false);
 
                         GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
+                    }
+                }
+
+                if (texture != null)
+                {
+                    var mipLevel = subResourceIndex % texture.MipLevels;
+                    var arraySlice = subResourceIndex / texture.MipLevels;
+
+                    for (int i = 0; i < texture.MipLevels; i++)
+                    {
+                        var slices = i < mipLevel ? arraySlice + 1 : arraySlice;
+                        var mipmap = texture.GetMipMapDescription(i);
+                        offsetInBytes += mipmap.DepthStride * mipmap.Depth * arraySlice;
                     }
                 }
 

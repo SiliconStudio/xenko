@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Graphics
                     heapType = HeapType.Readback;
                     initialResourceState = ResourceStates.CopyDestination;
                     currentResourceState = ResourceStates.CopyDestination;
-                    nativeDescription = ResourceDescription.Buffer((RowStride + 255)/256*256 * Height * Depth);
+                    nativeDescription = ResourceDescription.Buffer((RowStride + 255)/256*256 * Height * Depth); // TODO D3D12: Arrays and miplevels
 
                     // TODO: Alloc in readback heap as a buffer
                     //return;
