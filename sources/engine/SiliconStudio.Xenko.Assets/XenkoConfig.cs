@@ -4,13 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.Xenko.Assets.Textures;
-using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -49,6 +45,24 @@ namespace SiliconStudio.Xenko.Assets
         {
             var solutionPlatforms = new List<SolutionPlatform>();
 
+            // Define CoreCLR configurations
+            var coreClrRelease = new SolutionConfiguration("CoreCLR_Release");
+            var coreClrDebug = new SolutionConfiguration("CoreCLR_Debug");
+            coreClrDebug.IsDebug = true;
+            // Add CoreCLR specific properties
+            coreClrDebug.Properties.AddRange(new[]
+            {
+                "<SiliconStudioRuntime Condition=\"'$(SiliconStudioProjectType)' == 'Executable'\">CoreCLR</SiliconStudioRuntime>",
+                "<SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>",
+                "<DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>"
+            });
+            coreClrRelease.Properties.AddRange(new[]
+            {
+                "<SiliconStudioRuntime Condition=\"'$(SiliconStudioProjectType)' == 'Executable'\">CoreCLR</SiliconStudioRuntime>",
+                "<SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>",
+                "<DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>"
+            });
+
             // Windows
             var windowsPlatform = new SolutionPlatform()
                 {
@@ -57,13 +71,14 @@ namespace SiliconStudio.Xenko.Assets
                     Alias = "Any CPU",
                     Type = PlatformType.Windows
                 };
-            windowsPlatform.PlatformsPart.Add(new SolutionPlatformPart("Any CPU") { InheritConfigurations = true });
+            windowsPlatform.PlatformsPart.Add(new SolutionPlatformPart("Any CPU"));
             windowsPlatform.PlatformsPart.Add(new SolutionPlatformPart("Mixed Platforms") { Alias = "Any CPU"});
             windowsPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
             windowsPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP");
             windowsPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             windowsPlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
-
+            windowsPlatform.Configurations.Add(coreClrDebug);
+            windowsPlatform.Configurations.Add(coreClrRelease);
             foreach (var part in windowsPlatform.PlatformsPart)
             {
                 part.Configurations.Clear();
@@ -204,8 +219,9 @@ namespace SiliconStudio.Xenko.Assets
                 Type = PlatformType.Linux,
             };
             linuxPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_LINUX");
-// Following is commented until we have full fledge support (templates and other needed stuff)
-//            solutionPlatforms.Add(linuxPlatform);
+            linuxPlatform.Configurations.Add(coreClrRelease);
+            linuxPlatform.Configurations.Add(coreClrDebug);
+            solutionPlatforms.Add(linuxPlatform);
 
             // Android
             var androidPlatform = new SolutionPlatform()

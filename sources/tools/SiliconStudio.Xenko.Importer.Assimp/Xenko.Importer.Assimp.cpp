@@ -1447,7 +1447,7 @@ private:
 	}
 
 public:
-	EntityInfo^ ExtractEntity(String^ inputFilename, String^ outputFilename)
+	EntityInfo^ ExtractEntity(String^ inputFilename, String^ outputFilename, bool extractTextureDependencies)
 	{
 		try
 		{
@@ -1466,7 +1466,8 @@ public:
 			GenerateNodeNames(scene, nodeNames);
 
 			auto entityInfo = gcnew EntityInfo();
-			entityInfo->TextureDependencies = ExtractTextureDependencies(scene);
+			if (extractTextureDependencies)
+				entityInfo->TextureDependencies = ExtractTextureDependencies(scene);
 			entityInfo->Materials = ExtractMaterials(scene, materialNames);
 			entityInfo->Models = ExtractModel(scene, meshNames, materialNames, nodeNames);
 			entityInfo->Nodes = ExtractNodeHierarchy(scene, nodeNames);

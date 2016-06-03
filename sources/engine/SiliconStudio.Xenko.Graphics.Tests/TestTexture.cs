@@ -47,8 +47,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture1DMipMap()
         {
-            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
-
             PerformTest(
                 game =>
                 {
@@ -119,8 +117,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture2DArray()
         {
-            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
-
             PerformTest(
                 game =>
                 {
@@ -171,6 +167,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture2DUnorderedAccess()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
             PerformTest(
@@ -213,8 +210,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture3D()
         {
-            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
-
             PerformTest(
                 game =>
                 {
@@ -237,8 +232,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture3DRenderTarget()
         {
-            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
-
             PerformTest(
                 game =>
                 {
@@ -297,7 +290,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
                     var values = texture.GetData<float>(commandList);
                     Assert.That(values.Length, Is.EqualTo(256*256));
-                    Assert.That(values[0], Is.EqualTo(0.5f));
+                    Assert.That(MathUtil.WithinEpsilon(values[0], 0.5f, 0.00001f));
 
                     // Create a new copy of the depth stencil buffer
                     var textureCopy = texture.CreateDepthTextureCompatible();
@@ -306,7 +299,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
                     values = textureCopy.GetData<float>(commandList);
                     Assert.That(values.Length, Is.EqualTo(256 * 256));
-                    Assert.That(values[0], Is.EqualTo(0.5f));
+                    Assert.That(MathUtil.WithinEpsilon(values[0], 0.5f, 0.00001f));
 
                     // Dispose the depth stencil buffer
                     textureCopy.Dispose();
@@ -471,12 +464,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [TestCase(GraphicsProfile.Level_10_0, GraphicsResourceUsage.Default)]
         public void TestGetData(GraphicsProfile profile, GraphicsResourceUsage usage)
         {
-            if(usage == GraphicsResourceUsage.Staging)
-                IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES); // TODO remove this as soon as it is correctly implemented in OpenGLES
+            var testArray = profile >= GraphicsProfile.Level_10_0; // TODO modify this when when supported on openGL
+            var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.OpenGLES && profile < GraphicsProfile.Level_10_0 ? 1 : 3; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
 
-            var testArray = profile >= GraphicsProfile.Level_10_0 && GraphicsDevice.Platform == GraphicsPlatform.Direct3D11; // TODO modify this when when supported on openGL
-            var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.Direct3D11 ? 3 : 1; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
-            
             PerformTest(
                 game =>
                 {
@@ -505,8 +495,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [TestCase(GraphicsProfile.Level_10_0, GraphicsResourceUsage.Default)]
         public void TestCopy(GraphicsProfile profile, GraphicsResourceUsage usageSource)
         {
-            var testArray = profile >= GraphicsProfile.Level_10_0 && GraphicsDevice.Platform == GraphicsPlatform.Direct3D11; // TODO modify this when when supported on openGL
-            var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.Direct3D11 ? 3 : 1; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
+            var testArray = profile >= GraphicsProfile.Level_10_0; // TODO modify this when when supported on openGL
+            var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.OpenGLES && profile < GraphicsProfile.Level_10_0 ? 1 : 3; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
 
             PerformTest(
                 game =>

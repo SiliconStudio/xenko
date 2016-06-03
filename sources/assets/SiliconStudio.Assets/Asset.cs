@@ -42,7 +42,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
         /// </summary>
-        internal protected virtual int InternalBuildOrder => 0;
+        protected internal virtual int InternalBuildOrder => 0;
 
         /// <summary>
         /// Gets or sets the unique identifier of this asset.
@@ -123,6 +123,12 @@ namespace SiliconStudio.Assets
         [Display(Browsable = false)]
         [NotNullItems]
         public TagCollection Tags { get; private set; }
+
+        /// <summary>
+        /// Gets the main source file for this asset, used in the editor.
+        /// </summary>
+        [DataMemberIgnore]
+        public virtual UFile MainSource => null;
 
         /// <summary>
         /// Creates an asset that inherits from this asset.

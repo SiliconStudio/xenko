@@ -15,6 +15,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     {
         ShaderSource Generate(SkyboxGeneratorContext context);
 
-        IEnumerable<IContentReference> GetDependencies();
+        IEnumerable<IReference> GetDependencies();
     }
 }

@@ -225,6 +225,9 @@ namespace SiliconStudio.Xenko.Audio
             try
             {
                 var jniEnvGetter = typeof(JNIEnv).GetMethod("get_Env", BindingFlags.Static | BindingFlags.NonPublic);
+                if (jniEnvGetter == null)
+                    return;
+
                 var jniEnvInstanceField = jniEnvGetter.ReturnType.GetField("JniEnv", BindingFlags.NonPublic | BindingFlags.Instance);
                 var setByteArrayFunctionField = jniEnvInstanceField.FieldType.GetField("SetByteArrayRegion", BindingFlags.Public | BindingFlags.Instance);
 
@@ -235,7 +238,6 @@ namespace SiliconStudio.Xenko.Audio
             }
             catch (Exception)
             {
-                setJavaByteArray = null;
             }
             // ReSharper restore PossibleNullReferenceException
         }

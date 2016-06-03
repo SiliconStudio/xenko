@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkeletonAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
+            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
                 return;
 
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);

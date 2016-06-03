@@ -134,6 +134,7 @@ namespace SiliconStudio.BuildEngine
             {
                 if (!storage.TryGetValue(inputVersionKey, out hash))
                 {
+                    // TODO: we might want to allow retries, timeout, etc. since file processed here are files currently being edited by user
                     try
                     {
                         using (var fileStream = File.OpenRead(filePath))

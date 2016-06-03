@@ -151,6 +151,7 @@
     <Compile Include="Font\ScalableSpriteFont.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
     <Compile Include="Font\ScalableSpriteFontContentSerializer.cs" />
+    <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="Font\ScalableSpriteFontSerializer.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />

@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             // Creates the package
             var package = NewPackage(name);
+            package.Id = parameters.Id;
 
             // Setup the default namespace
             package.Meta.RootNamespace = parameters.Namespace;
