@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.IO
 {
@@ -22,16 +23,15 @@ namespace SiliconStudio.Core.IO
     {
         private static readonly HashSet<char> InvalidFileNameChars = new HashSet<char>(Path.GetInvalidFileNameChars());
 
-        private readonly string fullPath; // is always non-null
         private readonly int hashCode;
 
-        private readonly StringSpan driveSpan;
+        protected readonly StringSpan DriveSpan;
 
-        internal readonly StringSpan DirectorySpan;
+        protected readonly StringSpan DirectorySpan;
 
-        internal readonly StringSpan NameSpan;
+        protected readonly StringSpan NameSpan;
 
-        internal readonly StringSpan ExtensionSpan;
+        protected readonly StringSpan ExtensionSpan;
 
         /// <summary>
         /// The directory separator char '/' used to separate directory in an url. 
@@ -65,29 +65,31 @@ namespace SiliconStudio.Core.IO
                 throw new ArgumentException("A file path cannot end with with directory char '\\' or '/' ");
             }
 
-            fullPath = Decode(filePath, isDirectory, out driveSpan, out DirectorySpan, out NameSpan, out ExtensionSpan);
-            hashCode = ComputeStringHashCodeCaseInsensitive(fullPath);
+            FullPath = Decode(filePath, isDirectory, out DriveSpan, out DirectorySpan, out NameSpan, out ExtensionSpan);
+            hashCode = ComputeStringHashCodeCaseInsensitive(FullPath);
         }
 
         protected UPath(string fullPath, StringSpan driveSpan, StringSpan directorySpan)
         {
-            this.fullPath = fullPath;
-            this.hashCode = ComputeStringHashCodeCaseInsensitive(fullPath);
-            this.driveSpan = driveSpan;
-            this.DirectorySpan = directorySpan;
+            if (fullPath == null) throw new ArgumentNullException(nameof(fullPath));
+            FullPath = fullPath;
+            hashCode = ComputeStringHashCodeCaseInsensitive(fullPath);
+            DriveSpan = driveSpan;
+            DirectorySpan = directorySpan;
         }
 
         /// <summary>
         /// Gets the full path ((drive?)(directory?/)(name.ext?)). An empty path is an empty string.
         /// </summary>
         /// <value>The full path.</value>
-        public string FullPath => fullPath;
+        /// <remarks>This property cannot be null.</remarks>
+        public string FullPath { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance has a <see cref="Drive"/> != null.
         /// </summary>
         /// <value><c>true</c> if this instance has drive; otherwise, <c>false</c>.</value>
-        public bool HasDrive => driveSpan.IsValid;
+        public bool HasDrive => DriveSpan.IsValid;
 
         /// <summary>
         /// Gets a value indicating whether this instance has a <see cref="GetDirectory()"/> != null;
@@ -105,7 +107,7 @@ namespace SiliconStudio.Core.IO
         /// Determines whether this instance is absolute.
         /// </summary>
         /// <returns><c>true</c> if this instance is absolute; otherwise, <c>false</c>.</returns>
-        public bool IsAbsolute => HasDrive || (DirectorySpan.IsValid && fullPath[DirectorySpan.Start] == DirectorySeparatorChar);
+        public bool IsAbsolute => HasDrive || (DirectorySpan.IsValid && FullPath[DirectorySpan.Start] == DirectorySeparatorChar);
 
         /// <summary>
         /// Gets a value indicating whether this instance is a location to a file. Can be null.
@@ -135,7 +137,7 @@ namespace SiliconStudio.Core.IO
         /// <returns>The drive.</returns>
         public string GetDrive()
         {
-            return driveSpan.IsValid ? fullPath.Substring(driveSpan) : null;
+            return DriveSpan.IsValid ? FullPath.Substring(DriveSpan) : null;
         }
 
         /// <summary>
@@ -144,7 +146,7 @@ namespace SiliconStudio.Core.IO
         /// <returns>The directory.</returns>
         public string GetDirectory()
         {
-            return DirectorySpan.IsValid ? fullPath.Substring(DirectorySpan) : null;
+            return DirectorySpan.IsValid ? FullPath.Substring(DirectorySpan) : null;
         }
 
         /// <summary>
@@ -158,27 +160,27 @@ namespace SiliconStudio.Core.IO
             {
                 if (DirectorySpan.IsValid)
                 {
-                    return new UDirectory(fullPath.Substring(0, DirectorySpan.Next), driveSpan, DirectorySpan);
+                    return new UDirectory(FullPath.Substring(0, DirectorySpan.Next), DriveSpan, DirectorySpan);
                 }
-                if (driveSpan.IsValid)
+                if (DriveSpan.IsValid)
                 {
-                    return new UDirectory(fullPath.Substring(driveSpan), driveSpan, new StringSpan());
+                    return new UDirectory(FullPath.Substring(DriveSpan), DriveSpan, new StringSpan());
                 }
             } 
             else if (DirectorySpan.IsValid)
             {
                 if (DirectorySpan.Length > 1)
                 {
-                    var index = fullPath.IndexOfReverse(DirectorySeparatorChar);
+                    var index = FullPath.IndexOfReverse(DirectorySeparatorChar);
                     if (index >= 0)
                     {
                         index = index == 0 ? index + 1 : index;
-                        return new UDirectory(fullPath.Substring(0, index), driveSpan, new StringSpan(DirectorySpan.Start, index - DirectorySpan.Start));
+                        return new UDirectory(FullPath.Substring(0, index), DriveSpan, new StringSpan(DirectorySpan.Start, index - DirectorySpan.Start));
                     }
                 }
-                if (driveSpan.IsValid)
+                if (DriveSpan.IsValid)
                 {
-                    return new UDirectory(fullPath.Substring(driveSpan), driveSpan, new StringSpan());
+                    return new UDirectory(FullPath.Substring(DriveSpan), DriveSpan, new StringSpan());
                 }
             }
 
@@ -198,11 +200,11 @@ namespace SiliconStudio.Core.IO
                     return new UDirectory(null);
                 // This path only contains a leading '/', we should return it
                 if (NameSpan.Start == 1)
-                    return new UDirectory("/", driveSpan, DirectorySpan);
+                    return new UDirectory("/", DriveSpan, DirectorySpan);
 
                 // Return the path until the name, excluding the last '/'
-                var subPath = fullPath.Substring(0, NameSpan.Start - 1);
-                return new UDirectory(subPath, driveSpan, DirectorySpan);
+                var subPath = FullPath.Substring(0, NameSpan.Start - 1);
+                return new UDirectory(subPath, DriveSpan, DirectorySpan);
             }
             return (UDirectory)this;
         }
@@ -228,7 +230,7 @@ namespace SiliconStudio.Core.IO
 
         private static int ComputeStringHashCodeCaseInsensitive(string text)
         {
-            return text?.Aggregate(0, (current, t) => (current*397) ^ char.ToLowerInvariant(t)) ?? 0;
+            return text.Aggregate(0, (current, t) => (current*397) ^ char.ToLowerInvariant(t));
         }
 
         public int CompareTo(object obj)
@@ -255,7 +257,7 @@ namespace SiliconStudio.Core.IO
         /// <returns>A string representation of this path in windows form.</returns>
         public string ToWindowsPath()
         {
-            return FullPath?.Replace('/', '\\');
+            return FullPath.Replace('/', '\\');
         }
 
         /// <summary>

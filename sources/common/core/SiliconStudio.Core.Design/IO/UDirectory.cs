@@ -73,9 +73,6 @@ namespace SiliconStudio.Core.IO
         public bool Contains(UPath path)
         {
             if (path == null) throw new ArgumentNullException("path");
-            if (FullPath == null) return false;
-            if (path.FullPath == null) return false;
-
             return path.FullPath.StartsWith(FullPath, StringComparison.OrdinalIgnoreCase) && path.FullPath.Length > FullPath.Length && path.FullPath[FullPath.Length] == DirectorySeparatorChar;
         }
 

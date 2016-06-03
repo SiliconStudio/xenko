@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.IO
 {
@@ -16,7 +15,7 @@ namespace SiliconStudio.Core.IO
         {
             if (mode == ArchiveMode.Serialize)
             {
-                var path = obj == null ? null : obj.FullPath;
+                var path = obj?.FullPath;
                 stream.Serialize(ref path);
             }
             else if (mode == ArchiveMode.Deserialize)
