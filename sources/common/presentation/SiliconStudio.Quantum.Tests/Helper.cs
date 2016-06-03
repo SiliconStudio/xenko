@@ -237,13 +237,13 @@ namespace SiliconStudio.Quantum.Tests
         public static void ConsistencyCheck(NodeContainer container, object rootObject)
         {
             return;
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            var model = container.GetNode(rootObject);
-            visitor.Check((GraphNode)model, rootObject, rootObject.GetType(), true);
-            foreach (var node in container.Nodes)
-            {
-                visitor.Check((GraphNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            //var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
+            //var model = container.GetNode(rootObject);
+            //visitor.Check((GraphNode)model, rootObject, rootObject.GetType(), true);
+            //foreach (var node in container.Nodes)
+            //{
+            //    visitor.Check((GraphNode)node, node.Content.Value, node.Content.Type, true);
+            //}
         }
     }
 }

@@ -11,7 +11,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    [Obsolete("This class will be removed soon")]
+    [Obsolete("This class will be removed soon", true)]
     public class ModelConsistencyCheckVisitor : DataVisitorBase
     {
         private class ReferenceInfo
@@ -124,8 +124,8 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            bool shouldProcessReference;
-            nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
+            //bool shouldProcessReference;
+            //nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
 
             var node = GetContextNode();
             GraphNode child;

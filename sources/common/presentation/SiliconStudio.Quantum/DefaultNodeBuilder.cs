@@ -187,20 +187,9 @@ namespace SiliconStudio.Quantum
         /// <param name="descriptor">The descriptor of the root object being constructed.</param>
         /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
-        /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
         private void NotifyNodeConstructing(ObjectDescriptor descriptor, out bool shouldProcessReference)
         {
-            var handler = NodeConstructing;
-            if (handler != null)
-            {
-                var args = new NodeConstructingArgs(descriptor, null);
-                handler(this, args);
-                shouldProcessReference = args.ShouldProcessReference;
-            }
-            else
-            {
-                shouldProcessReference = true;
-            }
+            NotifyNodeConstructing(descriptor, null, out shouldProcessReference);
         }
 
         /// <summary>
@@ -210,8 +199,7 @@ namespace SiliconStudio.Quantum
         /// <param name="member">The member descriptor of the member being constructed.</param>
         /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
-        /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal void NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
+        private void NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
         {
             var handler = NodeConstructing;
             if (handler != null)
